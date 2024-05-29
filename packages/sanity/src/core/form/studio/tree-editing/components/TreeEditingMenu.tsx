@@ -113,17 +113,20 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   return (
     <Stack as="li" aria-expanded={open} key={title} role="treeitem" space={STACK_SPACE}>
       <Card data-as="button" radius={2} tone="inherit">
-        <ItemFlex align="center" data-selected={selected} gap={1} justify="space-between">
-          <Button mode="bleed" onClick={handleClick} padding={2} width="fill">
-            <Flex align="center" gap={2}>
-              {isArrayParent && (
-                <Text size={1}>
-                  <StackCompactIcon />
-                </Text>
-              )}
-              {titleNode}
-            </Flex>
-          </Button>
+        <ItemFlex align="center" data-selected={selected} gap={1}>
+          <Stack flex={1}>
+            <Button mode="bleed" onClick={handleClick} padding={2}>
+              <Flex align="center" gap={2}>
+                {isArrayParent && (
+                  <Text size={1}>
+                    <StackCompactIcon />
+                  </Text>
+                )}
+
+                {titleNode}
+              </Flex>
+            </Button>
+          </Stack>
 
           {icon && (
             <Button
