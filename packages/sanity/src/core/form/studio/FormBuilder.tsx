@@ -254,7 +254,7 @@ export function FormBuilder(props: FormBuilderProps) {
           <DocumentFieldActionsProvider actions={fieldActions}>
             {renderInput(rootInputProps)}
 
-            {(treeEditing.enabled || !treeEditing.legacyEditing) && (
+            {treeEditing.enabled && (
               <TreeEditingDialog
                 onPathFocus={onPathFocus}
                 onPathOpen={onPathOpen}
