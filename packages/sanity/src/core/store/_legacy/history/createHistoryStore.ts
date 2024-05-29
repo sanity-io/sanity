@@ -29,12 +29,7 @@ export interface HistoryStore {
 
   getTransactions: (documentIds: string[]) => Promise<TransactionLogEventWithMutations[]>
 
-  restore: (
-    id: string,
-    targetId: string,
-    rev: string,
-    options?: RestoreOptions,
-  ) => Observable<SanityDocument>
+  restore: (id: string, targetId: string, rev: string, options?: RestoreOptions) => Observable<void>
 
   /** @internal */
   getTimelineController: (options: {
@@ -192,10 +187,7 @@ function restore(
   targetDocumentId: string,
   rev: string,
   options?: RestoreOptions,
-) {
-  const vXClient = client.withConfig({apiVersion: 'X'})
-  const {dataset} = client.config()
-
+): Observable<void> {
   return from(getDocumentAtRevision(client, documentId, rev)).pipe(
     mergeMap((documentAtRevision) => {
       if (!documentAtRevision) {
@@ -217,23 +209,25 @@ function restore(
     }),
     mergeMap((restoredDraft) => {
       if (options?.useServerDocumentActions) {
-        return vXClient.observable.request({
-          url: `/data/actions/${dataset}`,
-          method: 'post',
-          body: {
-            actions: [
-              {
-                actionType: 'sanity.action.document.replaceDraft',
-                publishedId: documentId,
-                attributes: restoredDraft,
-              },
-            ],
+        return client.observable.action([
+          {
+            actionType: 'sanity.action.document.create',
+            publishedId: documentId,
+            attributes: restoredDraft,
+            ifExists: 'ignore',
           },
-        })
+          // @ts-expect-error FIXME
+          {
+            actionType: 'sanity.action.document.replaceDraft',
+            publishedId: documentId,
+            attributes: restoredDraft,
+          },
+        ])
       }
 
       return client.observable.createOrReplace(restoredDraft, {visibility: 'async'})
     }),
+    map(() => undefined),
   )
 }
 

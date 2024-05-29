@@ -12,23 +12,14 @@ export const discardChanges: OperationImpl<[], DisabledReason> = {
     }
     return false
   },
-  execute: ({client: globalClient, idPair}) => {
-    const vXClient = globalClient.withConfig({apiVersion: 'X'})
-    const {dataset} = globalClient.config()
-
-    return vXClient.observable.request({
-      url: `/data/actions/${dataset}`,
-      method: 'post',
-      tag: 'document.discard-changes',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.document.discard',
-            draftId: idPair.draftId,
-            publishedId: idPair.publishedId,
-          },
-        ],
+  execute: ({client, idPair}) => {
+    return client.observable.action(
+      {
+        actionType: 'sanity.action.document.discard',
+        draftId: idPair.draftId,
+        purge: false,
       },
-    })
+      {tag: 'document.discard-changes'},
+    )
   },
 }
