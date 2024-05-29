@@ -15,7 +15,6 @@ export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
         {
           actionType: 'sanity.action.document.discard',
           draftId: idPair.draftId,
-          purge: false,
         },
         {tag: 'document.delete'},
       )
@@ -26,7 +25,6 @@ export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
         actionType: 'sanity.action.document.delete',
         includeDrafts: snapshots.draft ? [idPair.draftId] : [],
         publishedId: idPair.publishedId,
-        purge: false,
       },
       {
         tag: 'document.delete',

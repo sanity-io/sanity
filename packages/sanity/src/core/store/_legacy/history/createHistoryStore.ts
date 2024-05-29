@@ -216,7 +216,6 @@ function restore(
             attributes: restoredDraft,
             ifExists: 'ignore',
           },
-          // @ts-expect-error FIXME
           {
             actionType: 'sanity.action.document.replaceDraft',
             publishedId: documentId,
