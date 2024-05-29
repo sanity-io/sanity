@@ -17,7 +17,6 @@ export const discardChanges: OperationImpl<[], DisabledReason> = {
       {
         actionType: 'sanity.action.document.discard',
         draftId: idPair.draftId,
-        purge: false,
       },
       {tag: 'document.discard-changes'},
     )

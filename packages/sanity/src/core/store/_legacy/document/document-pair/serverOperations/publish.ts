@@ -29,7 +29,6 @@ export const publish: OperationImpl<[], DisabledReason> = {
         // locking using `ifDraftRevisionId` and `ifPublishedRevisionId` ensures the client and
         // server are synchronised.
         ifDraftRevisionId: snapshots.draft._rev,
-        // @ts-expect-error FIXME
         ifPublishedRevisionId: snapshots.published?._rev,
       },
       {
