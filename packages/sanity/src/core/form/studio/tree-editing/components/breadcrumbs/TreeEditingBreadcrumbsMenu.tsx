@@ -17,7 +17,13 @@ interface TreeEditingBreadcrumbsMenuProps {
 export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProps): JSX.Element {
   const {items, onPathSelect, selectedPath, textInputElement} = props
 
-  const getItemDisabled = useCallback((index: number) => false, [])
+  const getItemDisabled = useCallback(
+    (index: number) => {
+      const item = items[index]
+      return isEqual(item.path, selectedPath)
+    },
+    [items, selectedPath],
+  )
 
   const renderItem = useCallback(
     (item: TreeEditingMenuItem) => {
