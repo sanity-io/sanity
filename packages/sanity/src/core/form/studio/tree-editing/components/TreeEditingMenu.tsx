@@ -4,6 +4,7 @@ import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path} from 'sanity'
+import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import styled, {css} from 'styled-components'
 
 import {type TreeEditingMenuItem} from '../types'
@@ -18,6 +19,12 @@ function hasOpenChild(item: TreeEditingMenuItem, selectedPath: Path | null): boo
 }
 
 const STACK_SPACE = 2
+
+const SCROLL_BEHAVIOR_OPTIONS: StandardBehaviorOptions = {
+  block: 'center',
+  behavior: 'smooth',
+  scrollMode: 'if-needed',
+}
 
 const ItemFlex = styled(Flex)(({theme}) => {
   const hoverBg = theme.sanity.v2?.color.button.bleed.default.hovered.bg
@@ -74,6 +81,8 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   const hasChildren = children && children.length > 0
   const [open, setOpen] = useState<boolean>(false)
 
+  const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
+
   const selected = useMemo(() => isEqual(item.path, selectedPath), [item.path, selectedPath])
   const isArrayParent = useMemo(() => !isArrayItemPath(item.path), [item.path])
 
@@ -99,6 +108,13 @@ function MenuItem(props: TreeEditingMenuItemProps) {
     }
   }, [item, selectedPath])
 
+  // Scroll to the selected item
+  useEffect(() => {
+    if (!rootElement || !selected) return
+
+    scrollIntoViewIfNeeded(rootElement, SCROLL_BEHAVIOR_OPTIONS)
+  }, [rootElement, selected])
+
   const titleNode = useMemo(
     () => (
       <Box flex={1}>
@@ -111,7 +127,14 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   )
 
   return (
-    <Stack as="li" aria-expanded={open} key={title} role="treeitem" space={STACK_SPACE}>
+    <Stack
+      aria-expanded={open}
+      as="li"
+      key={title}
+      ref={setRootElement}
+      role="treeitem"
+      space={STACK_SPACE}
+    >
       <Card data-as="button" radius={2} tone="inherit">
         <ItemFlex align="center" data-selected={selected} gap={1}>
           <Stack flex={1}>
