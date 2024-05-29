@@ -1,5 +1,5 @@
 import {PanelLeftIcon} from '@sanity/icons'
-import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {Fragment, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Path, PresenceOverlay, VirtualizerScrollInstanceProvider} from 'sanity'
@@ -72,11 +72,11 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
           />
 
           {open && (
-            <Flex flex={1}>
+            <Box flex={1}>
               <Text size={1} muted weight="medium" textOverflow="ellipsis">
                 {title}
               </Text>
-            </Flex>
+            </Box>
           )}
         </FixedHeightFlex>
 
