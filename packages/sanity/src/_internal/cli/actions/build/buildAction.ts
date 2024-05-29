@@ -59,20 +59,12 @@ export default async function buildSanityStudio(
   const autoUpdatesEnabled =
     flags['auto-updates'] ||
     (cliConfig && 'autoUpdates' in cliConfig && cliConfig.autoUpdates === true)
-  let importMap
+
+  const version = encodeURIComponent(`^${installedSanityVersion}`)
+  const autoUpdatesImports = getAutoUpdateImportMap(version)
 
   if (autoUpdatesEnabled) {
     output.print(`${info} Building with auto-updates enabled`)
-
-    const version = encodeURIComponent(`^${installedSanityVersion}`)
-    const autoUpdatesImports = getAutoUpdateImportMap(version)
-
-    importMap = {
-      imports: {
-        ...(await buildVendorDependencies({cwd: workDir, outputDir})),
-        ...autoUpdatesImports,
-      },
-    }
 
     // Check the versions
     try {
@@ -154,6 +146,17 @@ export default async function buildSanityStudio(
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
+
+  let importMap
+
+  if (autoUpdatesEnabled) {
+    importMap = {
+      imports: {
+        ...(await buildVendorDependencies({cwd: workDir, outputDir})),
+        ...autoUpdatesImports,
+      },
+    }
+  }
 
   try {
     timer.start('bundleStudio')
