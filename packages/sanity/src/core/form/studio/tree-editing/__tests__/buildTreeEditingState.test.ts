@@ -197,28 +197,34 @@ describe('tree-editing: buildTreeEditingState', () => {
       menuItems: [
         {
           title: 'My string 1',
+          parentTitle: 'Array 1',
           path: ['array1', {_key: 'key1'}],
           children: [],
         },
         {
           title: 'My string 2',
+          parentTitle: 'Array 1',
           path: ['array1', {_key: 'key2'}],
           children: [],
         },
         {
           title: 'My string 3',
+          parentTitle: 'Array 1',
           path: ['array1', {_key: 'key3'}],
           children: [
             {
               title: 'Array 1 Object 1 Array',
+              parentTitle: 'My string 3',
               path: ['array1', {_key: 'key3'}, 'array1Object1Array'],
               children: [
                 {
+                  parentTitle: 'Array 1 Object 1 Array',
                   path: ['array1', {_key: 'key3'}, 'array1Object1Array', {_key: 'key4'}],
                   title: 'My string 4',
                   children: [],
                 },
                 {
+                  parentTitle: 'Array 1 Object 1 Array',
                   path: ['array1', {_key: 'key3'}, 'array1Object1Array', {_key: 'key5'}],
                   title: 'My string 5',
                   children: [],
@@ -229,23 +235,28 @@ describe('tree-editing: buildTreeEditingState', () => {
         },
         {
           title: 'My string 6',
+          parentTitle: 'Array 1',
           path: ['array1', {_key: 'key6'}],
           children: [],
         },
         {
           title: 'My string 7',
+          parentTitle: 'Array 1',
           path: ['array1', {_key: 'key7'}],
           children: [
             {
               title: 'Array 1 Object 1 Array',
+              parentTitle: 'My string 7',
               path: ['array1', {_key: 'key7'}, 'array1Object1Array'],
               children: [
                 {
+                  parentTitle: 'Array 1 Object 1 Array',
                   path: ['array1', {_key: 'key7'}, 'array1Object1Array', {_key: 'key8'}],
                   title: 'My string 8',
                   children: [],
                 },
                 {
+                  parentTitle: 'Array 1 Object 1 Array',
                   path: ['array1', {_key: 'key7'}, 'array1Object1Array', {_key: 'key9'}],
                   title: 'My string 9',
                   children: [],
@@ -315,6 +326,7 @@ describe('tree-editing: buildTreeEditingState', () => {
       menuItems: [
         {
           title: 'My string 1',
+          parentTitle: 'Array',
           path: ['objectWithArray', 'myArray', {_key: 'key1'}],
           children: [],
         },
