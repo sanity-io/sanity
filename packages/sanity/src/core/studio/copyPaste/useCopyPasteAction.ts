@@ -1,10 +1,10 @@
 import {useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {getPublishedId, PatchEvent, set, useGetFormValue, useProjectId, useSchema} from 'sanity'
+import {getPublishedId, PatchEvent, set, useGetFormValue, useSchema} from 'sanity'
 
 import {useCopyPaste} from './CopyPasteProvider'
 import {type CopyActionResult, type UseCopyPasteActionProps} from './types'
-import {getLocalStorageItem, getLocalStorageKey, setLocalStorageItem} from './utils'
+import {getClipboardItem, isCopyPasteResult, parseCopyResult, writeClipboardItem} from './utils'
 import {transferValue} from './valueTransfer'
 
 /**
@@ -12,13 +12,12 @@ import {transferValue} from './valueTransfer'
  * @hidden
  */
 export const useCopyPasteAction = ({
-  documentId,
-  documentType,
   path,
   schemaType: maybeSchemaType,
 }: UseCopyPasteActionProps) => {
-  const projectId = useProjectId()
   const {
+    documentId,
+    documentType,
     setCopyResult,
     sendMessage,
     onChange,
@@ -39,18 +38,24 @@ export const useCopyPasteAction = ({
     return _isValidTargetType(schemaType.name)
   }, [_isValidTargetType, schemaType])
 
-  const onCopy = useCallback(() => {
-    const docValue = getFormValue(path)
+  const onCopy = useCallback(async () => {
+    const existingValue = getFormValue(path)
     const isDocument = schemaType?.type?.name === 'document'
     const isArray = schemaType?.type?.name === 'array'
     const isObject = schemaType?.type?.name === 'document'
+    const parsedDocValue = parseCopyResult(existingValue)
+    const normalizedValue = isCopyPasteResult(parsedDocValue)
+      ? parsedDocValue.docValue
+      : existingValue
 
     const payloadValue: CopyActionResult = {
+      _type: 'copyResult',
       documentId: documentId ? getPublishedId(documentId) : undefined,
       documentType,
       schemaTypeName: schemaType.name,
+      schemaTypeTitle: schemaType?.title || schemaType?.name,
       path,
-      docValue,
+      docValue: normalizedValue,
       isDocument,
       isArray,
       isObject,
@@ -58,26 +63,16 @@ export const useCopyPasteAction = ({
 
     setCopyResult(payloadValue)
     sendMessage(payloadValue)
-    setLocalStorageItem(getLocalStorageKey(projectId), payloadValue)
+    await writeClipboardItem(payloadValue)
 
     toast.push({
       status: 'success',
-      title: `${isDocument ? 'Document' : 'Field'} ${schemaType.name} copied`,
+      title: `${isDocument ? 'Document' : 'Field'} ${payloadValue.schemaTypeTitle} copied`,
     })
-  }, [
-    documentId,
-    documentType,
-    path,
-    schemaType,
-    setCopyResult,
-    sendMessage,
-    toast,
-    getFormValue,
-    projectId,
-  ])
+  }, [documentId, documentType, path, schemaType, setCopyResult, sendMessage, toast, getFormValue])
 
-  const onPaste = useCallback(() => {
-    const value = getLocalStorageItem(getLocalStorageKey(projectId))
+  const onPaste = useCallback(async () => {
+    const value = await getClipboardItem()
     if (!value) {
       toast.push({
         status: 'info',
@@ -86,7 +81,9 @@ export const useCopyPasteAction = ({
       return
     }
 
+    const targetSchemaTypeTitle = schemaType?.title || schemaType?.name
     let targetValue = null
+
     if (value) {
       try {
         targetValue = transferValue(value, {
@@ -96,7 +93,7 @@ export const useCopyPasteAction = ({
         onChange(PatchEvent.from(set(targetValue, path)))
         toast.push({
           status: 'success',
-          title: `${value.isDocument ? 'Document' : 'Field'} updated`,
+          title: `${value.isDocument ? 'Document' : 'Field'} ${targetSchemaTypeTitle} updated`,
         })
       } catch (error) {
         toast.push({
@@ -105,7 +102,7 @@ export const useCopyPasteAction = ({
         })
       }
     }
-  }, [projectId, toast, schemaType, documentType, onChange, path])
+  }, [toast, schemaType, documentType, onChange, path])
 
   return {onCopy, onPaste, isValidTargetType}
 }
