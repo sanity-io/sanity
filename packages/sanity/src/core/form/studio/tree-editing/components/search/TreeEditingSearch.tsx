@@ -45,6 +45,10 @@ const StyledPopover = styled(Popover)(() => {
   `
 })
 
+const StyledTextInput = styled(TextInput)`
+  border-radius: inherit;
+`
+
 interface TreeEditingSearchProps {
   items: TreeEditingMenuItem[]
   onPathSelect: (path: Path) => void
@@ -83,6 +87,14 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
     },
     [resetSearch, textInputElement],
   )
+
+  const handleSearchBlur = useCallback(() => {
+    // Run this in the next frame to avoid clearing the search query
+    // when the user clicks on a search result
+    requestAnimationFrame(() => {
+      resetSearch()
+    })
+  }, [resetSearch])
 
   const content = useMemo(() => {
     if (filteredList.length === 0) {
@@ -131,16 +143,14 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
       portal
     >
       <Card radius={2}>
-        <TextInput
-          clearButton={hasSearchQuery}
+        <StyledTextInput
           fontSize={1}
           icon={SearchIcon}
+          onBlur={handleSearchBlur}
           onChange={handleSearchChange}
-          onClear={resetSearch}
           onKeyDown={handleSearchKeyDown}
           placeholder="Search"
           ref={setTextInputElement}
-          style={{borderRadius: 'inherit'}}
           value={query}
         />
       </Card>
