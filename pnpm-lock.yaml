@@ -768,7 +768,7 @@ importers:
         version: link:../codegen
       '@sanity/telemetry':
         specifier: ^0.7.7
-        version: 0.7.8(react@18.3.1)
+        version: 0.7.9(react@18.3.1)
       '@sanity/util':
         specifier: 3.43.0
         version: link:../util
@@ -1570,7 +1570,7 @@ importers:
         version: link:../@sanity/schema
       '@sanity/telemetry':
         specifier: ^0.7.7
-        version: 0.7.8(react@18.3.1)
+        version: 0.7.9(react@18.3.1)
       '@sanity/types':
         specifier: 3.43.0
         version: link:../@sanity/types
@@ -7002,8 +7002,8 @@ packages:
       react: 18.3.1
     dev: false
 
-  /@sanity/telemetry@0.7.8(react@18.3.1):
-    resolution: {integrity: sha512-9TWC61EKsFpTOBC2dqmPgy+ZvO1eV/rxuYR1ZIj/1AhtBSI2FQXqO8CtXPKJ3u0zoIxngoBqtaoP1ZKS9nZyTA==}
+  /@sanity/telemetry@0.7.9(react@18.3.1):
+    resolution: {integrity: sha512-TBBRK2SUwiNND+ZJPwdWSu8tbEjdIz7UjagmCCBBWcfXtDKXXlWawC/DOEWuI4Q+WcA5OWLDjboxZT4ApWjVbw==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       react: '*'
