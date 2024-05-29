@@ -143,8 +143,8 @@ importers:
         specifier: ^7.34.2
         version: 7.34.2(eslint@8.57.0)
       eslint-plugin-react-compiler:
-        specifier: 0.0.0-experimental-c8b3f72-20240517
-        version: 0.0.0-experimental-c8b3f72-20240517(eslint@8.57.0)
+        specifier: 0.0.0-experimental-a97cca1-20240529
+        version: 0.0.0-experimental-a97cca1-20240529(eslint@8.57.0)
       eslint-plugin-react-hooks:
         specifier: ^4.6.2
         version: 4.6.2(eslint@8.57.0)
@@ -11368,8 +11368,8 @@ packages:
       synckit: 0.8.8
     dev: true
 
-  /eslint-plugin-react-compiler@0.0.0-experimental-c8b3f72-20240517(eslint@8.57.0):
-    resolution: {integrity: sha512-cxUTFNMEKiLX6uFaRfrr2GHnB7KUHDMYLjEGzDec82ka6WyBCHg906nGSf3JvVnQKHaBDfUk7Mmv/JMvdgQB8Q==}
+  /eslint-plugin-react-compiler@0.0.0-experimental-a97cca1-20240529(eslint@8.57.0):
+    resolution: {integrity: sha512-njzsfZUekKIFtohmf8UFynUEczq/+riFeXQgtuQjoHGEihArcwdSUmxZZ5yPSqbHjAju3mE807LybaZfiyP7xA==}
     engines: {node: ^14.17.0 || ^16.0.0 || >= 18.0.0}
     peerDependencies:
       eslint: '>=7'
