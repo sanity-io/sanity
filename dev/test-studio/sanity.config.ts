@@ -12,7 +12,8 @@ import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
-import {structureTool} from 'sanity/structure'
+import {type StructureBuilder, structureTool} from 'sanity/structure'
+import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {muxInput} from 'sanity-plugin-mux-input'
 
@@ -49,6 +50,7 @@ import {routerDebugTool} from './plugins/router-debug'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {schemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
+import {homepage} from './schema/homePage'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
@@ -325,5 +327,38 @@ export default defineConfig([
       sharedSettings(),
     ],
     basePath: '/presentation',
+  },
+
+  {
+    name: 'treeEditingInterview',
+    title: 'Tree Editing Interview',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [
+      structureTool({
+        structure: (S: StructureBuilder) =>
+          S.list()
+            .title('Content')
+            .items([
+              // Replace 'mySchemaType' with your actual schema type name
+              S.documentTypeListItem('homepage').title('HomePage'),
+            ]),
+      }),
+      unsplashImageAsset(),
+    ],
+    schema: {
+      types: [
+        homepage, // Include your schema here
+        // Add other schema types here if needed
+      ],
+    },
+    features: {
+      beta: {
+        treeArrayEditing: {
+          enabled: true,
+        },
+      },
+    },
+    basePath: '/treeEditing',
   },
 ]) as WorkspaceOptions[]
