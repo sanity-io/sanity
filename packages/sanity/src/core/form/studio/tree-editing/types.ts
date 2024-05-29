@@ -2,6 +2,7 @@ import {type Path} from 'sanity'
 
 export interface TreeEditingMenuItem {
   title: string
+  parentTitle?: string
   path: Path
   children?: TreeEditingMenuItem[]
 }

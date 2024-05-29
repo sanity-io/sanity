@@ -102,6 +102,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           title: getSchemaTypeTitle(childField.type) as string,
           path: childPath,
           children: childState?.menuItems || EMPTY_ARRAY,
+          parentTitle: getSchemaTypeTitle(arraySchemaType) as string,
         })
       }
     })
@@ -119,6 +120,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         title,
         path: itemPath as Path,
         children: childrenMenuItems,
+        parentTitle: getSchemaTypeTitle(arraySchemaType) as string,
       })
     }
   })

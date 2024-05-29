@@ -1,4 +1,4 @@
-import {Card, Flex, Popover, type PopoverProps, useClickOutside} from '@sanity/ui'
+import {Box, Flex, Popover, type PopoverProps, useClickOutside} from '@sanity/ui'
 import {cloneElement, type ReactElement, useCallback, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 import {type Path} from 'sanity'
@@ -13,11 +13,7 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom
 
 const RootFlex = styled(Flex)``
 
-export const PopoverHeaderCard = styled(Card)`
-  min-height: max-content;
-`
-
-export const PopoverListFlex = styled(Flex)<{
+const PopoverListFlex = styled(Flex)<{
   $maxDisplayedItems: number
   $itemHeight: number
 }>((props) => {
@@ -106,7 +102,10 @@ export function TreeEditingBreadcrumbsMenuButton(
         direction="column"
         overflow="hidden"
       >
-        <TreeEditingBreadcrumbsTitle title={parentArrayTitle} />
+        <Box style={{minHeight: 'max-content'}}>
+          <TreeEditingBreadcrumbsTitle title={parentArrayTitle} />
+        </Box>
+
         <TreeEditingBreadcrumbsMenu
           items={items}
           onPathSelect={handlePathSelect}
