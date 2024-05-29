@@ -1,4 +1,4 @@
-import {ChevronDownIcon, ChevronUpIcon} from '@sanity/icons'
+import {ChevronDownIcon, ChevronUpIcon, StackCompactIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
@@ -7,6 +7,7 @@ import {type Path} from 'sanity'
 import styled, {css} from 'styled-components'
 
 import {type TreeEditingMenuItem} from '../types'
+import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
 
 function hasOpenChild(item: TreeEditingMenuItem, selectedPath: Path | null): boolean {
   return (
@@ -74,6 +75,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   const [open, setOpen] = useState<boolean>(false)
 
   const selected = useMemo(() => isEqual(item.path, selectedPath), [item.path, selectedPath])
+  const isArrayParent = useMemo(() => !isArrayItemPath(item.path), [item.path])
 
   const handleClick = useCallback(() => {
     onPathSelect(item.path)
@@ -113,7 +115,14 @@ function MenuItem(props: TreeEditingMenuItemProps) {
       <Card data-as="button" radius={2} tone="inherit">
         <ItemFlex align="center" data-selected={selected} gap={1} justify="space-between">
           <Button mode="bleed" onClick={handleClick} padding={2} width="fill">
-            {titleNode}
+            <Flex align="center" gap={2}>
+              {isArrayParent && (
+                <Text size={1}>
+                  <StackCompactIcon />
+                </Text>
+              )}
+              {titleNode}
+            </Flex>
           </Button>
 
           {icon && (
