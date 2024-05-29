@@ -98,11 +98,14 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           initial: false,
         })
 
+        // Get the title of the parent item (the value)
+        const parentTitle = getArrayItemPreview({arrayItem: item, arraySchemaType}).title
+
         childrenMenuItems.push({
           title: getSchemaTypeTitle(childField.type) as string,
           path: childPath,
           children: childState?.menuItems || EMPTY_ARRAY,
-          parentTitle: getSchemaTypeTitle(arraySchemaType) as string,
+          parentTitle,
         })
       }
     })
@@ -110,6 +113,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
 
     const {title} = getArrayItemPreview({arrayItem: item, arraySchemaType})
+    const parentTitle = getSchemaTypeTitle(arraySchemaType) as string
 
     if (isSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
@@ -120,7 +124,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         title,
         path: itemPath as Path,
         children: childrenMenuItems,
-        parentTitle: getSchemaTypeTitle(arraySchemaType) as string,
+        parentTitle,
       })
     }
   })
