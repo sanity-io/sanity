@@ -149,6 +149,7 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
           onBlur={handleSearchBlur}
           onChange={handleSearchChange}
           onKeyDown={handleSearchKeyDown}
+          // todo: localize
           placeholder="Search"
           ref={setTextInputElement}
           value={query}
