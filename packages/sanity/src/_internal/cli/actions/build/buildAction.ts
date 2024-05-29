@@ -24,7 +24,7 @@ export interface BuildSanityStudioCommandFlags {
   'minify'?: boolean
   'stats'?: boolean
   'source-maps'?: boolean
-  'enable-auto-updates'?: boolean
+  'auto-updates'?: boolean
 }
 
 export default async function buildSanityStudio(
@@ -54,11 +54,11 @@ export default async function buildSanityStudio(
     return {didCompile: false}
   }
 
-  const enableAutoUpdates =
-    flags['enable-auto-updates'] ||
-    (cliConfig && 'unstable_enableAutoUpdates' in cliConfig && cliConfig.unstable_enableAutoUpdates)
+  const autoUpdatesEnabled =
+    flags['auto-updates'] ||
+    (cliConfig && 'autoUpdates' in cliConfig && cliConfig.autoUpdates === true)
 
-  if (enableAutoUpdates) {
+  if (autoUpdatesEnabled) {
     output.print(`${info} Building with auto-updates enabled`)
   }
 
@@ -120,7 +120,7 @@ export default async function buildSanityStudio(
 
   let importMap
 
-  if (enableAutoUpdates) {
+  if (autoUpdatesEnabled) {
     const version = encodeURIComponent(`^${installedSanityVersion}`)
     const autoUpdatesImports = {
       'sanity': `https://api.sanity.work/v1/modules/sanity/default/${version}`,
