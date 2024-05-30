@@ -29,6 +29,7 @@ import {StudioTelemetryProvider} from './StudioTelemetryProvider'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
+import { PackageVersionStatusProvider } from './packageVersionStatus/PackageVersionStatusProvider'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
@@ -64,7 +65,9 @@ export function StudioProvider({
     <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       <StudioTelemetryProvider config={config}>
         <LocaleProvider>
-          <ResourceCacheProvider>{children}</ResourceCacheProvider>
+          <PackageVersionStatusProvider>
+            <ResourceCacheProvider>{children}</ResourceCacheProvider>
+          </PackageVersionStatusProvider>
         </LocaleProvider>
       </StudioTelemetryProvider>
     </WorkspaceLoader>
