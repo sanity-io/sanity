@@ -3,8 +3,13 @@ import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detecto
 
 import initPlugin from '../../actions/init-plugin/initPlugin'
 import initProject from '../../actions/init-project/initProject'
-import {type PackageManager} from '../../packageManager/packageManagerChoice'
+import {
+  ALLOWED_PACKAGE_MANAGERS,
+  type PackageManager,
+} from '../../packageManager/packageManagerChoice'
 import {type CliCommandDefinition} from '../../types'
+
+const allowedPms = ALLOWED_PACKAGE_MANAGERS.map((pm) => `"${pm}"`).join(' | ')
 
 const helpText = `
 Options
@@ -23,7 +28,7 @@ Options
   --project-plan <name> Optionally select a plan for a new project
   --coupon <name> Optionally select a coupon for a new project (cannot be used with --project-plan)
   --no-typescript Do not use TypeScript for template files
-  --package-manager <manager> Specify which package manager to use [allowed: "npm" | "yarn" | "pnpm" | "bun" | "manual"]
+  --package-manager <manager> Specify which package manager to use [allowed: ${allowedPms}]
 
 Examples
   # Initialize a new project, prompt for required information along the way
