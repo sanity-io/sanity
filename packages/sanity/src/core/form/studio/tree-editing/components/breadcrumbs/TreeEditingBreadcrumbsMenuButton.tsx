@@ -2,7 +2,7 @@ import {Box, Flex, Popover, type PopoverProps, useClickOutside} from '@sanity/ui
 import {cloneElement, type KeyboardEvent, type ReactElement, useCallback, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 import {type Path} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {type TreeEditingBreadcrumb} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
