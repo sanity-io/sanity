@@ -8,7 +8,7 @@ export interface AutoUpdatesImportMap {
   '@sanity/vision/': string
 }
 
-const MODULES_HOST = 'https://api.sanity.work'
+const MODULES_HOST = 'https://sanity-cdn.work'
 
 /**
  * @internal
