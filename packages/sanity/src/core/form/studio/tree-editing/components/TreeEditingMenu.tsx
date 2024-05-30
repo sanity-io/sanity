@@ -5,7 +5,7 @@ import {isEqual} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {type TreeEditingMenuItem} from '../types'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
