@@ -3,10 +3,9 @@ import {promisify} from 'node:util'
 
 import chalk from 'chalk'
 import {info} from 'log-symbols'
+import semver from 'semver'
 import {noopLogger} from '@sanity/telemetry'
 import rimrafCallback from 'rimraf'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore This may not yet be built.
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
 import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
@@ -60,7 +59,12 @@ export default async function buildSanityStudio(
     flags['auto-updates'] ||
     (cliConfig && 'autoUpdates' in cliConfig && cliConfig.autoUpdates === true)
 
-  const version = encodeURIComponent(`^${installedSanityVersion}`)
+  // Get the version without any tags if any
+  const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
+  if (autoUpdatesEnabled && !coercedSanityVersion) {
+    throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
+  }
+  const version = encodeURIComponent(`^${coercedSanityVersion}`)
   const autoUpdatesImports = getAutoUpdateImportMap(version)
 
   if (autoUpdatesEnabled) {
