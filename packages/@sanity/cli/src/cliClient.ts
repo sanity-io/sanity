@@ -6,7 +6,7 @@ import {resolveRootDir} from './util/resolveRootDir'
 /**
  * `getCliClient` accepts all options the `ClientConfig` does but provides
  * `projectId` and `dataset` from the `sanity.cli.ts` configuration file along
- * with a token in certain scenarios (e.g. `sanity exec SCRIPT -with-user-token`)
+ * with a token in certain scenarios (e.g. `sanity exec SCRIPT --with-user-token`)
  */
 export interface CliClientOptions extends ClientConfig {
   /**
