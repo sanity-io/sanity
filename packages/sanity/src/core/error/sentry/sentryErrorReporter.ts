@@ -6,8 +6,8 @@ import {
   captureException,
   dedupeIntegration,
   defaultStackParser,
+  type ErrorEvent,
   type Event,
-  type Exception,
   functionToStringIntegration,
   getClient,
   getCurrentScope,
@@ -90,7 +90,9 @@ export function getSentryErrorReporter(): ErrorReporter {
         ...clientOptions,
         defaultIntegrations: false,
         integrations,
-        beforeSend,
+        beforeSend(event, hint) {
+          return event
+        },
       })
       client = getClient()
       scope = getCurrentScope()
@@ -246,7 +248,7 @@ function getMessage(error: Error | null): string | null {
  * @param event - The event to mark as unhandled
  * @internal
  */
-function setAsUnhandled(event: {exception?: {values?: Exception[]}}) {
+function setAsUnhandled(event: ErrorEvent) {
   for (const exception of event.exception?.values || []) {
     if (exception.mechanism) {
       exception.mechanism.handled = false
@@ -262,7 +264,7 @@ function setAsUnhandled(event: {exception?: {values?: Exception[]}}) {
  * @returns The event to be sent
  * @internal
  */
-function beforeSend(event: {exception?: {values?: Exception[]}}) {
+function beforeSend(event: ErrorEvent): ErrorEvent {
   setAsUnhandled(event)
   return event
 }
@@ -279,9 +281,6 @@ function sanityDedupeIntegration() {
 
   return {
     name: 'SanityDedupe',
-    setupOnce() {
-      // intentionally empty - required to not crash Sentry
-    },
     processEvent(currentEvent: Event): Event | null | PromiseLike<Event | null> {
       // We want to ignore any non-error type events, e.g. transactions or replays
       // These should never be deduped, and also not be compared against _previousEvent.
