@@ -429,7 +429,7 @@ importers:
         version: 6.6.0(@react-three/fiber@8.16.6)(react@18.3.1)(three@0.164.1)(typescript@5.4.5)
       '@react-three/drei':
         specifier: ^9.80.1
-        version: 9.105.6(@react-three/fiber@8.16.6)(@types/react@18.3.3)(@types/three@0.164.1)(react-dom@18.3.1)(react@18.3.1)(three@0.164.1)
+        version: 9.106.0(@react-three/fiber@8.16.6)(@types/react@18.3.3)(@types/three@0.164.1)(react-dom@18.3.1)(react@18.3.1)(three@0.164.1)
       '@react-three/fiber':
         specifier: ^8.13.6
         version: 8.16.6(react-dom@18.3.1)(react@18.3.1)(three@0.164.1)
@@ -480,13 +480,13 @@ importers:
         version: link:../../packages/@sanity/portable-text-editor
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.16(@sanity/client@6.19.1)
+        version: 1.6.17(@sanity/client@6.19.1)
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.10.0(@sanity/client@6.19.1)(react@18.3.1)
+        version: 1.10.1(@sanity/client@6.19.1)(react@18.3.1)
       '@sanity/tsdoc':
-        specifier: 1.0.67
-        version: 1.0.67(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
+        specifier: 1.0.69
+        version: 1.0.69(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -506,8 +506,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: 2.1.2
-        version: 2.1.2(@sanity/client@6.19.1)(react-dom@18.3.1)(react@18.3.1)
+        specifier: 2.1.3
+        version: 2.1.3(@sanity/client@6.19.1)(react-dom@18.3.1)(react@18.3.1)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -573,7 +573,7 @@ importers:
         version: 0.164.1
       three-stdlib:
         specifier: ^2.24.2
-        version: 2.30.1(three@0.164.1)
+        version: 2.30.2(three@0.164.1)
     devDependencies:
       vite:
         specifier: ^4.5.3
@@ -6134,8 +6134,8 @@ packages:
       - typescript
     dev: false
 
-  /@react-three/drei@9.105.6(@react-three/fiber@8.16.6)(@types/react@18.3.3)(@types/three@0.164.1)(react-dom@18.3.1)(react@18.3.1)(three@0.164.1):
-    resolution: {integrity: sha512-JBgYeV36N9N9f1c3o1ZfLYW4rXZA7UQTq32Y8s3DEF6lwj1/y+RP/yq2VG5I8OzUPl7gsmWdy8fpWZgrlAqUpQ==}
+  /@react-three/drei@9.106.0(@react-three/fiber@8.16.6)(@types/react@18.3.3)(@types/three@0.164.1)(react-dom@18.3.1)(react@18.3.1)(three@0.164.1):
+    resolution: {integrity: sha512-P+X3Iz79ea+L4YTVPOIFAzqVU8hwrKdr/I6UgN7ZQkJ9qIQ7qa7ew8ss/+c3+46RT1tzxgo5ec89RnLjFIBmuw==}
     peerDependencies:
       '@react-three/fiber': '>=8.0'
       react: '*'
@@ -6151,13 +6151,13 @@ packages:
       '@react-spring/three': 9.6.1(@react-three/fiber@8.16.6)(react@18.3.1)(three@0.164.1)
       '@react-three/fiber': 8.16.6(react-dom@18.3.1)(react@18.3.1)(three@0.164.1)
       '@use-gesture/react': 10.3.1(react@18.3.1)
-      camera-controls: 2.8.3(three@0.164.1)
+      camera-controls: 2.8.4(three@0.164.1)
       cross-env: 7.0.3
       detect-gpu: 5.0.38
       glsl-noise: 0.0.0
       hls.js: 1.3.5
       maath: 0.10.7(@types/three@0.164.1)(three@0.164.1)
-      meshline: 3.3.0(three@0.164.1)
+      meshline: 3.2.1(three@0.164.1)
       react: 18.3.1
       react-composer: 5.0.3(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)
@@ -6166,7 +6166,7 @@ packages:
       suspend-react: 0.1.3(react@18.3.1)
       three: 0.164.1
       three-mesh-bvh: 0.7.4(three@0.164.1)
-      three-stdlib: 2.30.1(three@0.164.1)
+      three-stdlib: 2.30.2(three@0.164.1)
       troika-three-text: 0.49.1(three@0.164.1)
       tunnel-rat: 0.1.2(@types/react@18.3.3)(react@18.3.1)
       utility-types: 3.11.0
@@ -6609,11 +6609,11 @@ packages:
     resolution: {integrity: sha512-2TjYEvOftD0v7ukx3Csdh9QIu44P2z7NDJtlC3qITJRYV36J7R6Vfd3trVhFnN77/7CZrGjqngrtohv8VqO5nw==}
     engines: {node: '>=18.0.0'}
 
-  /@sanity/core-loader@1.6.16(@sanity/client@6.19.1):
-    resolution: {integrity: sha512-h7OyCEf3XW4uAIMEdT8UT2nCoxW2sDWiqM4gwK3dg250yEteW31XXF2peSFjc6OhPdzwHpd118dPZ5+23iDFdQ==}
+  /@sanity/core-loader@1.6.17(@sanity/client@6.19.1):
+    resolution: {integrity: sha512-BSMZD1/PZ4455IAgBB9UcCz1zm3jXv5rvE8DLN2MSpFledKZI2I2AnyrwnAgEM5phQHazyaK6AWnhBBjRT6MXA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.19.0
+      '@sanity/client': ^6.19.1
     dependencies:
       '@sanity/client': 6.19.1
     dev: false
@@ -6960,7 +6960,7 @@ packages:
     dependencies:
       '@sanity/client': 6.19.1(debug@4.3.4)
       '@sanity/icons': 3.0.0(react@18.3.1)
-      '@sanity/preview-url-secret': 1.6.16(@sanity/client@6.19.1)
+      '@sanity/preview-url-secret': 1.6.17(@sanity/client@6.19.1)
       '@sanity/ui': 2.1.14(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6988,25 +6988,25 @@ packages:
       prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
     dev: true
 
-  /@sanity/preview-url-secret@1.6.16(@sanity/client@6.19.1):
-    resolution: {integrity: sha512-iZaE8LNrt9InD9R3yxhpPAluMVnZkN2NC46OaciruKrW/juot3lGBAi7JK0CrqH8iOGNWjBCDlmhDfG0CogCGg==}
+  /@sanity/preview-url-secret@1.6.17(@sanity/client@6.19.1):
+    resolution: {integrity: sha512-Gj0bnochUdyGJdcYdZMJ8up81aqp6dCy1ldE5Hx3tIktANc7LYie0KfZctexY1h+teBi50vKpk8uiVID/V2e2w==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.19.0
+      '@sanity/client': ^6.19.1
     dependencies:
       '@sanity/client': 6.19.1
       '@sanity/uuid': 3.0.2
     dev: false
 
-  /@sanity/react-loader@1.10.0(@sanity/client@6.19.1)(react@18.3.1):
-    resolution: {integrity: sha512-/xpddmI5KmPFumJksCZb85SFSB7IsSnUrHN5dbfaKKnAIVnCrChZ/buiL/KflQxhMQNff72DoSGsoDbLRjbwVA==}
+  /@sanity/react-loader@1.10.1(@sanity/client@6.19.1)(react@18.3.1):
+    resolution: {integrity: sha512-xAljKDK+Nq/jQv4NwxS8WBlL8bJqgSzOACnZ/Br9+JgDZ+x07vLl9rHD8BxKqbD47IfLanqs7Yq96FN8QTivqA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.19.0
+      '@sanity/client': ^6.19.1
       react: '*'
     dependencies:
       '@sanity/client': 6.19.1
-      '@sanity/core-loader': 1.6.16(@sanity/client@6.19.1)
+      '@sanity/core-loader': 1.6.17(@sanity/client@6.19.1)
       react: 18.3.1
     dev: false
 
@@ -7154,6 +7154,68 @@ packages:
       - sugarss
       - supports-color
       - terser
+    dev: true
+
+  /@sanity/tsdoc@1.0.69(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
+    resolution: {integrity: sha512-IKdCMYSeX0Rlj5evZRYzffzZooIbxkQgIWImTrro8GHnehQFUqNXQ8LLOaaHQQkGaTKMAi+rCK3YNp9o/fmTqg==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    peerDependencies:
+      react: '*'
+      react-dom: '*'
+      sanity: ^3
+      styled-components: ^5.2 || ^6
+    dependencies:
+      '@microsoft/api-extractor': 7.43.8(@types/node@18.19.31)
+      '@microsoft/api-extractor-model': 7.28.18(@types/node@18.19.31)
+      '@microsoft/tsdoc': 0.14.2
+      '@microsoft/tsdoc-config': 0.16.2
+      '@portabletext/react': 3.1.0(react@18.3.1)
+      '@portabletext/toolkit': 2.0.15
+      '@sanity/client': 6.19.1
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 3.0.0(react@18.3.1)
+      '@sanity/pkg-utils': 6.8.18(@types/node@18.19.31)(typescript@5.4.5)
+      '@sanity/ui': 2.1.14(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+      '@types/cpx': 1.5.5
+      '@vitejs/plugin-react': 4.3.0(vite@5.2.11)
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      cors: 2.8.5
+      dotenv-flow: 3.3.0
+      esbuild: 0.21.3
+      esbuild-register: 3.5.0(esbuild@0.21.3)
+      express: 4.19.2
+      globby: 11.1.0
+      groq: 3.44.0
+      groq-js: 1.9.0
+      history: 5.3.0
+      jsonc-parser: 3.2.1
+      mkdirp: 1.0.4
+      pkg-up: 3.1.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-refractor: 2.2.0(react@18.3.1)
+      sanity: link:packages/sanity
+      slugify: 1.6.6
+      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
+      tmp: 0.2.3
+      typescript: 5.4.5
+      vite: 5.2.11(@types/node@18.19.31)
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - less
+      - lightningcss
+      - react-is
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    dev: false
 
   /@sanity/types@3.37.2(debug@4.3.4):
     resolution: {integrity: sha512-1EfKkNlJ86wIDtc7oFHb79JI8lKDOxKDYrkmwhvuHgJY83GpSABc1kFdbwAtWZfrWVWyqVXUv/KlNwA3b99y/g==}
@@ -7264,12 +7326,12 @@ packages:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  /@sanity/visual-editing@2.1.2(@sanity/client@6.19.1)(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-MTd2re32qu8kFBziWpxrak0A4RPXNvKaSQKdE+smkbVzrmznm7W+/ZIJm1SEmiZXd17oOHrhkVaIgWc//DtZmw==}
+  /@sanity/visual-editing@2.1.3(@sanity/client@6.19.1)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-P2M1WIlhJLCwtMR1shmACRWnRMsW5WD5RHVsOFMXolFdL3CY1/O/8yvK9xZ6QEHONDpKsJo2zr+CG2LZ9cX0QQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
-      '@sanity/client': ^6.19.0
+      '@sanity/client': ^6.19.1
       '@sveltejs/kit': '>= 2'
       next: '>= 13 || >=14.3.0-canary.0 <14.3.0'
       react: '*'
@@ -7288,7 +7350,7 @@ packages:
         optional: true
     dependencies:
       '@sanity/client': 6.19.1
-      '@sanity/preview-url-secret': 1.6.16(@sanity/client@6.19.1)
+      '@sanity/preview-url-secret': 1.6.17(@sanity/client@6.19.1)
       '@vercel/stega': 0.1.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -9438,8 +9500,8 @@ packages:
   /camelize@1.0.1:
     resolution: {integrity: sha512-dU+Tx2fsypxTgtLoE36npi3UqcjSSMNYfkqgmoEhtZrraP5VWq0K7FkWVTYa8eMPtnU/G2txVsfdCJTn9uzpuQ==}
 
-  /camera-controls@2.8.3(three@0.164.1):
-    resolution: {integrity: sha512-zFjqUR6onLkG+z1A6vAWfzovxZxWVSvp6e5t3lfZgfgPZtX3n74aykNAUaoRbq8Y3tOxadHkDjbfGDOP9hFf2w==}
+  /camera-controls@2.8.4(three@0.164.1):
+    resolution: {integrity: sha512-pzVKpeZCRXIx2VOMB+E4OPjOhErHqhxrHYxcRLofOVgBeCeKSb8QAC2toc1onMllrxldRWXR8bl4K50hkrtwsg==}
     peerDependencies:
       three: '>=0.126.1'
     dependencies:
@@ -15342,8 +15404,8 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
 
-  /meshline@3.3.0(three@0.164.1):
-    resolution: {integrity: sha512-EKKf2TLnfyqUeA7ryWFKgT9HchTMATvECGZnMQjtlcyxK0sB8shVLVkemBUp9dB3tkDEmoqQDLJCPStjkH8D7A==}
+  /meshline@3.2.1(three@0.164.1):
+    resolution: {integrity: sha512-/Zrhq1sbQCtqSsrud0hN/U8wOdKKOcxCWefEowZRHsosIcy1p87+2PlWSNO4s9zOoT/zjrQR8YikXYao8XCqVQ==}
     peerDependencies:
       three: '>=0.137'
     dependencies:
@@ -19206,8 +19268,8 @@ packages:
       three: 0.164.1
     dev: false
 
-  /three-stdlib@2.30.1(three@0.164.1):
-    resolution: {integrity: sha512-3WHpc6rB5aiqkrbVA0h09NcwwCdcZ/bTN/01BbjcxzLQLjclhi163JUA02VZ93jR5zN7und6gfrWwewNHQTMog==}
+  /three-stdlib@2.30.2(three@0.164.1):
+    resolution: {integrity: sha512-R4HRbSRfTwEIJPAybj3XnunXF0esGiCTol8p7n0hxKX0x6Ta44ESPHKoQn/uvZmgPNrtNxLsH3YWjywyF6Z2Mw==}
     peerDependencies:
       three: '>=0.128.0'
     dependencies:
