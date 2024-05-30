@@ -11,7 +11,7 @@ import {
   useState,
 } from 'react'
 import {type Path} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {type TreeEditingBreadcrumb} from '../../types'
 import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'
