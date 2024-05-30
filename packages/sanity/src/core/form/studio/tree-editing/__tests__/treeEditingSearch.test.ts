@@ -35,21 +35,20 @@ const ITEMS: TreeEditingMenuItem[] = [
 ]
 
 describe('tree-editing: search', () => {
-  test('should return the correct result when searching', () => {
-    // Case 1
-    const result1 = treeEditingSearch(ITEMS, 'Item 1')
-
-    const expected1: TreeEditingMenuItem[] = [
+  test('should return the correct result when searching for "Item 1"', () => {
+    const result = treeEditingSearch(ITEMS, 'Item 1')
+    const expected: TreeEditingMenuItem[] = [
       {
         path: ['path-1'],
         title: 'Item 1',
       },
     ]
+    expect(result).toEqual(expected)
+  })
 
-    // Case 2
-    const result2 = treeEditingSearch(ITEMS, 'Item')
-
-    const expected2: TreeEditingMenuItem[] = [
+  test('should return the correct result when searching for "Item"', () => {
+    const result = treeEditingSearch(ITEMS, 'Item')
+    const expected: TreeEditingMenuItem[] = [
       {
         path: ['path-1'],
         title: 'Item 1',
@@ -63,11 +62,12 @@ describe('tree-editing: search', () => {
         title: 'Item 3',
       },
     ]
+    expect(result).toEqual(expected)
+  })
 
-    // Case 3
-    const result3 = treeEditingSearch(ITEMS, 'Child')
-
-    const expected3: TreeEditingMenuItem[] = [
+  test('should return the correct result when searching for "Child"', () => {
+    const result = treeEditingSearch(ITEMS, 'Child')
+    const expected: TreeEditingMenuItem[] = [
       {
         path: ['path-2', 'child-1'],
         title: 'Child 1',
@@ -81,11 +81,12 @@ describe('tree-editing: search', () => {
         title: 'Grandchild 2',
       },
     ]
+    expect(result).toEqual(expected)
+  })
 
-    // Case 4
-    const result4 = treeEditingSearch(ITEMS, 'Grandchild')
-
-    const expected4: TreeEditingMenuItem[] = [
+  test('should return the correct result when searching for "Grandchild"', () => {
+    const result = treeEditingSearch(ITEMS, 'Grandchild')
+    const expected: TreeEditingMenuItem[] = [
       {
         path: ['path-2', 'child-1', 'grandchild-1'],
         title: 'Grandchild 1',
@@ -95,15 +96,12 @@ describe('tree-editing: search', () => {
         title: 'Grandchild 2',
       },
     ]
+    expect(result).toEqual(expected)
+  })
 
-    // Case 5
-    const result5 = treeEditingSearch(ITEMS, 'NO MATCH QUERY')
-    const expected5: TreeEditingMenuItem[] = []
-
-    expect(result1).toEqual(expected1)
-    expect(result2).toEqual(expected2)
-    expect(result3).toEqual(expected3)
-    expect(result4).toEqual(expected4)
-    expect(result5).toEqual(expected5)
+  test('should return an empty array when searching for "NO MATCH QUERY"', () => {
+    const result = treeEditingSearch(ITEMS, 'NO MATCH QUERY')
+    const expected: TreeEditingMenuItem[] = []
+    expect(result).toEqual(expected)
   })
 })
