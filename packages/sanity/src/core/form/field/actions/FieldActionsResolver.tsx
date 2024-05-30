@@ -1,5 +1,6 @@
+/* eslint-disable max-nested-callbacks */
 import {type Path, type SchemaType} from '@sanity/types'
-import {memo, useCallback, useEffect, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {type DocumentFieldAction, type DocumentFieldActionNode} from '../../../config'
 import {useUnique} from '../../../util'
@@ -34,7 +35,7 @@ export interface FieldActionsProps {
  *
  * @internal
  */
-export const FieldActionsResolver = memo(function FieldActions(props: FieldActionsProps) {
+export const FieldActionsResolver = memo(function FieldActionsResolver(props: FieldActionsProps) {
   const {actions, documentId, documentType, onActions, path, schemaType} = props
 
   const len = actions.length
@@ -76,26 +77,41 @@ export const FieldActionsResolver = memo(function FieldActions(props: FieldActio
     }
   }, [len])
 
+  const FieldActions = useMemo(() => {
+    return actions.map((action, index) => {
+      return defineFieldActionComponent({
+        action,
+        documentId,
+        documentType,
+        index,
+        path,
+        schemaType,
+        setFieldAction,
+      })
+    })
+  }, [actions, documentId, documentType, path, schemaType, setFieldAction])
+
   return (
     <>
-      {actions.map((a, aIdx) => (
+      {FieldActions.map((FieldAction, key) => (
         <FieldAction
-          action={a}
-          index={aIdx}
           // eslint-disable-next-line react/no-array-index-key
-          key={aIdx}
-          documentId={documentId}
-          documentType={documentType}
-          path={path}
-          schemaType={schemaType}
-          setFieldAction={setFieldAction}
+          key={key}
         />
       ))}
     </>
   )
 })
 
-interface FieldActionProps {
+function defineFieldActionComponent({
+  action,
+  documentId,
+  documentType,
+  index,
+  path,
+  schemaType,
+  setFieldAction,
+}: {
   action: DocumentFieldAction
   documentId: string
   documentType: string
@@ -103,23 +119,21 @@ interface FieldActionProps {
   path: Path
   schemaType: SchemaType
   setFieldAction: (index: number, node: DocumentFieldActionNode) => void
-}
-
-const FieldAction = memo(function FieldAction(props: FieldActionProps) {
-  const {action, documentId, documentType, index, path, schemaType, setFieldAction} = props
-
-  const node = useUnique(
-    action.useAction({
+}) {
+  const {useAction} = action
+  return memo(function FieldAction() {
+    const _action = useAction({
       documentId,
       documentType,
       path,
       schemaType,
-    }),
-  )
+    })
+    const node = useUnique(_action)
 
-  useEffect(() => {
-    setFieldAction(index, node)
-  }, [index, node, setFieldAction])
+    useEffect(() => {
+      setFieldAction(index, node)
+    }, [node])
 
-  return null
-})
+    return null
+  })
+}
