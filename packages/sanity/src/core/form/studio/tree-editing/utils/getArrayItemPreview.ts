@@ -5,6 +5,8 @@ import {
   type PreviewValue,
 } from 'sanity'
 
+import {getItemType} from '../../../store/utils/getItemType'
+
 interface GetArrayItemPreviewProps {
   arrayItem: Record<string, unknown>
   arraySchemaType: ArraySchemaType
@@ -17,22 +19,7 @@ interface ReturnValue extends Omit<PreviewValue, 'title'> {
 export function getArrayItemPreview(props: GetArrayItemPreviewProps): ReturnValue {
   const {arrayItem, arraySchemaType} = props
 
-  const itemType = arrayItem?._type as string
-
-  const itemSchemaField = arraySchemaType?.of?.find(
-    (type) => type.name === itemType,
-  ) as ObjectSchemaType
-
-  if (!itemType) {
-    return {
-      title: 'Untitled',
-      description: undefined,
-      imageUrl: undefined,
-      media: undefined,
-      subtitle: undefined,
-    }
-  }
-
+  const itemSchemaField = getItemType(arraySchemaType, arrayItem) as ObjectSchemaType
   const preview = prepareForPreview(arrayItem, itemSchemaField)
 
   return {
