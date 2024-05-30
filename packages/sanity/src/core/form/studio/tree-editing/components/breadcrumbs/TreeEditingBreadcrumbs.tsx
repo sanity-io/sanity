@@ -139,9 +139,11 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
       // is also included in the children array.
       const hasChildren = item.children.length > 1
 
+      const isSelected = isEqual(item.path, selectedPath)
+
       const button = (
         <StyledButton
-          data-active={isEqual(item.path, selectedPath) ? 'true' : 'false'}
+          data-active={isSelected ? 'true' : 'false'}
           mode="bleed"
           // eslint-disable-next-line react/jsx-no-bind
           onClick={() => onPathSelect(item.path)}
@@ -149,14 +151,15 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
           space={2}
         >
           <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">
-            <StyledText size={1} muted weight="medium" textOverflow="ellipsis">
+            <StyledText size={1} muted={!isSelected} weight="medium" textOverflow="ellipsis">
               {item.title}
             </StyledText>
-            {hasChildren ? (
+
+            {hasChildren && (
               <Text size={0}>
                 <ChevronDownIcon />
               </Text>
-            ) : undefined}
+            )}
           </Flex>
         </StyledButton>
       )
