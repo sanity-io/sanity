@@ -1,6 +1,8 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
+import {waitForOpacityChange} from '../utils/waitForOpacityChange'
+
 test.describe('basic - open and close', () => {
   test(`opening - when creating new array item, the tree editing modal should open`, async ({
     page,
@@ -79,17 +81,23 @@ test.describe('navigation - tree sidebar', () => {
 
     // click on second array item
     await modal.getByRole('button', {name: 'Lucy, the cat'}).click()
-    await page.waitForTimeout(500) // Hack, need to wait for animation to finish
+
+    // Wait for the animation to change form to finish
+    await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
+
+    //await page.waitForTimeout(500) // Hack, need to wait for animation to finish
 
     // make sure that item is selected on nav tree
-    expect(
-      await page.getByTestId('tree-editing-sidebar').getByRole('button', {name: 'Lucy, the cat'}),
+    await expect(
+      await page.getByRole('treeitem', {name: 'Lucy, the cat'}).getByTestId('side-menu-item'),
     ).toHaveAttribute('data-selected')
 
     // make sure first input has the right data
-    expect(await modal.getByTestId('string-input').inputValue()).toBe('Lucy, the cat')
+    await expect(await modal.getByTestId('string-input').inputValue()).toBe('Lucy, the cat')
 
     // make sure breadcrumb shows the right item
-    expect(await modal.locator('#tree-breadcrumb-menu-button').textContent()).toBe('Lucy, the cat')
+    await expect(await modal.locator('#tree-breadcrumb-menu-button').textContent()).toBe(
+      'Lucy, the cat',
+    )
   })
 })
