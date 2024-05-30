@@ -1,4 +1,4 @@
-import {expect, type Locator} from '@playwright/test'
+import {expect, type Locator, type Page} from '@playwright/test'
 import {test} from '@sanity/test'
 
 test.describe('Portable Text Input - Open Block Style Select', () => {
@@ -24,6 +24,10 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
 
   test('on a full screen simple editor', async ({page}) => {
     await pteInput.getByLabel('Expand editor').click()
+
+    // wait for PTE to be full screen
+    await waitForFullScreen(page)
+
     await page.locator('[data-testid="block-style-select"]').click()
 
     await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
@@ -31,6 +35,9 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
 
   test('on a full screen multi nested PTE', async ({page}) => {
     await pteInput.getByLabel('Expand editor').click()
+
+    // wait for PTE to be full screen
+    await waitForFullScreen(page)
 
     // add a object with a nested PTE
     await page.getByRole('button', {name: 'Insert Nested (inline)'}).click()
@@ -50,9 +57,19 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     // nested block full screen
     await nestedPTE.getByLabel('Expand editor').click()
 
+    // wait for PTE to be full screen
+    await waitForFullScreen(page)
+
     // click the block style select
     await page.locator('[data-testid="block-style-select"]').nth(1).click()
 
     await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
 })
+
+// wait for PTE to be full screen
+async function waitForFullScreen(page: Page) {
+  return await page
+    .getByTestId('document-panel-portal')
+    .evaluate((element) => element.children.length > 0)
+}
