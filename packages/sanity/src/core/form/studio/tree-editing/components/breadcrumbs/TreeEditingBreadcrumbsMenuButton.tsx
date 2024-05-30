@@ -1,5 +1,5 @@
 import {Box, Flex, Popover, type PopoverProps, useClickOutside} from '@sanity/ui'
-import {cloneElement, type ReactElement, useCallback, useState} from 'react'
+import {cloneElement, type KeyboardEvent, type ReactElement, useCallback, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 import {type Path} from 'sanity'
 import styled, {css} from 'styled-components'
@@ -72,7 +72,7 @@ export function TreeEditingBreadcrumbsMenuButton(
   }, [buttonElement, open])
 
   const handlePopoverKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+    (event: KeyboardEvent<HTMLDivElement>) => {
       const {key, shiftKey} = event
 
       if ((shiftKey && key === 'Tab') || key === 'Escape' || key === 'Tab') {
