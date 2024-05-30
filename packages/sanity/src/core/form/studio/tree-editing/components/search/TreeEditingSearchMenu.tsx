@@ -15,8 +15,6 @@ interface TreeEditingSearchMenuProps {
 export function TreeEditingSearchMenu(props: TreeEditingSearchMenuProps): JSX.Element {
   const {items, onPathSelect, textInputElement} = props
 
-  const getItemDisabled = useCallback((index: number) => false, [])
-
   const renderItem = useCallback(
     (item: TreeEditingMenuItem) => {
       const isFirst = isEqual(item.path, items[0].path)
@@ -55,7 +53,6 @@ export function TreeEditingSearchMenu(props: TreeEditingSearchMenuProps): JSX.El
       /* eslint-disable @sanity/i18n/no-attribute-string-literals */
       ariaLabel="Search menu"
       autoFocus={supportsTouch ? undefined : 'input'}
-      getItemDisabled={getItemDisabled}
       inputElement={textInputElement}
       itemHeight={ITEM_HEIGHT}
       items={items}
