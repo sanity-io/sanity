@@ -224,7 +224,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
         footer={
           <Card borderTop>
             <Flex align="center" justify="flex-end" paddingX={3} paddingY={2} sizing="border">
-              <Button text="Done" onClick={onClose} />
+              <Button data-testid="tree-editing-done" text="Done" onClick={onClose} />
             </Flex>
           </Card>
         }
