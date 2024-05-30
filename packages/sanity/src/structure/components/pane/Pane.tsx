@@ -1,11 +1,4 @@
-import {
-  BoundaryElementProvider,
-  Card,
-  type CardProps,
-  Code,
-  Flex,
-  useForwardedRef,
-} from '@sanity/ui'
+import {BoundaryElementProvider, Card, type CardProps, Code, Flex} from '@sanity/ui'
 import {
   type ForwardedRef,
   forwardRef,
@@ -13,7 +6,9 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
@@ -81,18 +76,20 @@ export const Pane = forwardRef(function Pane(
   const expanded = expandedElement === rootElement
   const collapsed = layoutCollapsed ? false : pane?.collapsed || false
   const nextCollapsed = nextPane?.collapsed || false
-  const forwardedRef = useForwardedRef(ref)
+  const forwardedRef = useRef<HTMLDivElement>(null)
   const flex = pane?.flex ?? flexProp
   const currentMinWidth = pane?.currentMinWidth ?? currentMinWidthProp
   const currentMaxWidth = pane?.currentMaxWidth ?? currentMaxWidthProp
 
-  const setRef = useCallback(
-    (refValue: HTMLDivElement | null) => {
-      setRootElement(refValue)
-      forwardedRef.current = refValue
-    },
-    [forwardedRef],
-  )
+  // Forward ref to parent
+  useImperativeHandle(ref, () => forwardedRef.current!)
+  useEffect(() => {
+    if (!forwardedRef.current) return undefined
+    setRootElement(forwardedRef.current)
+    return () => {
+      setRootElement(null)
+    }
+  }, [])
 
   useEffect(() => {
     if (!rootElement) return undefined
@@ -211,7 +208,7 @@ export const Pane = forwardRef(function Pane(
               data-pane-collapsed={collapsed ? '' : undefined}
               data-pane-index={paneIndex}
               data-pane-selected={selected ? '' : undefined}
-              ref={setRef}
+              ref={forwardedRef}
               style={style}
             >
               {PANE_DEBUG && (

@@ -96,8 +96,11 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   }, [documentId, documentStore, documentType, patchChannel])
 
   const hasRev = Boolean(value?._rev)
+  const [lastHasRev, setHasRev] = useState<boolean | null>(null)
   useEffect(() => {
-    if (hasRev) {
+    // React to changes in hasRev only
+    if (hasRev !== lastHasRev) {
+      setHasRev(hasRev)
       // this is a workaround for an issue that caused the document pushed to withDocument to get
       // stuck at the first initial value.
       // This effect is triggered only when the document goes from not having a revision, to getting one
@@ -108,9 +111,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
         snapshot: value,
       })
     }
-    // React to changes in hasRev only
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasRev])
+  }, [hasRev, lastHasRev, patchChannel, value])
 
   const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
 

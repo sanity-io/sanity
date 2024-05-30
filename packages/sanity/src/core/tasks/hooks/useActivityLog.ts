@@ -65,10 +65,13 @@ export function useActivityLog(task: TaskDocument): {
     [transactionsUrl, token, publishedId],
   )
 
+  const [lastRev, setLastRev] = useState<typeof task._rev>()
   useEffect(() => {
-    fetchAndParse(task)
     // Task is updated on every change, wait until the revision changes to update the activity log.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchAndParse, task._rev])
+    if (lastRev !== task._rev) {
+      setLastRev(task._rev)
+      fetchAndParse(task)
+    }
+  }, [fetchAndParse, lastRev, task])
   return {changes}
 }
