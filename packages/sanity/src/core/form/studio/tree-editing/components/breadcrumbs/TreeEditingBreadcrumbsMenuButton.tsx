@@ -13,6 +13,10 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom
 
 const RootFlex = styled(Flex)``
 
+const TitleBox = styled(Box)`
+  min-height: max-content;
+`
+
 const PopoverListFlex = styled(Flex)<{
   $maxDisplayedItems: number
   $itemHeight: number
@@ -102,9 +106,9 @@ export function TreeEditingBreadcrumbsMenuButton(
         direction="column"
         overflow="hidden"
       >
-        <Box style={{minHeight: 'max-content'}}>
+        <TitleBox>
           <TreeEditingBreadcrumbsTitle title={parentArrayTitle} />
-        </Box>
+        </TitleBox>
 
         <TreeEditingBreadcrumbsMenu
           items={items}
