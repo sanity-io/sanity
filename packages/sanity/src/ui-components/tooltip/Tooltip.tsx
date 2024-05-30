@@ -1,8 +1,6 @@
-/* eslint-disable no-restricted-imports */
 import {
   Box,
   Flex,
-  Hotkeys,
   type HotkeysProps,
   Text,
   Tooltip as UITooltip,
@@ -10,9 +8,11 @@ import {
 } from '@sanity/ui'
 import {type ForwardedRef, forwardRef} from 'react'
 
+import {Hotkeys} from '../../core/components/Hotkeys'
 import {TOOLTIP_DELAY_PROPS} from './constants'
 
 /** @internal */
+
 export type TooltipProps = Omit<UITooltipProps, 'arrow' | 'padding' | 'shadow'> & {
   hotkeys?: HotkeysProps['keys']
 }
