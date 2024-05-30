@@ -61,6 +61,7 @@ export interface MigrationContext {
     getDocument<T extends SanityDocument>(id: string): Promise<T | undefined>
     getDocuments<T extends SanityDocument>(ids: string[]): Promise<T[]>
   }
+  dryRun: boolean
 }
 
 /**
