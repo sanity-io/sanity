@@ -199,7 +199,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         <Box paddingX={1}>{item}</Box>
       </ChangeIndicator>
 
-      {/* TODO: add schema config to enable/disable edit portal */}
       {openPortal && (
         <EditPortal
           header={
