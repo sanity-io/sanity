@@ -23,7 +23,6 @@ import {
 } from '@sentry/react'
 
 import {isDev} from '../../environment'
-import {isRecord} from '../../util'
 import {globalScope} from '../../util/globalScope'
 import {SANITY_VERSION} from '../../version'
 import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
@@ -63,15 +62,27 @@ const integrations = [
 export function getSentryErrorReporter(): ErrorReporter {
   let client: BrowserClient | undefined
   let scope: Scope | undefined
-  let prevMessage: string | undefined
-  let isInitialized = false
 
   function initialize() {
-    if (isInitialized) {
+    // If this _Sanity_ implementation of the reporter is already initialized, do not re-instantiate
+    if (client) {
       return
     }
 
-    if (IS_EMBEDDED_STUDIO) {
+    // This normally shouldn't happen, but if we're initialized and already using the Sanity DSN,
+    // then assume we can reuse the global client
+    const isSentryInitialized = sentryIsInitialized()
+    const hasThirdPartySentry = isSentryInitialized && getClient()?.getOptions().dsn === SANITY_DSN
+    if (isSentryInitialized && !hasThirdPartySentry) {
+      client = getClient()
+      scope = getCurrentScope()
+      return
+    }
+
+    // "Third party" means the customer already has an instance of the Sentry SDK on the page,
+    // but it is not configured to use the Sanity DSN. In this case, we'll create a new client
+    // for ourselves, and try to avoid the global scope.
+    if (hasThirdPartySentry) {
       client = new BrowserClient({
         ...clientOptions,
         transport: makeFetchTransport,
@@ -85,39 +96,32 @@ export function getSentryErrorReporter(): ErrorReporter {
 
       // Initializing has to be done after setting the client on the scope
       client.init()
-    } else if (!sentryIsInitialized()) {
-      init({
-        ...clientOptions,
-        defaultIntegrations: false,
-        integrations,
-        beforeSend(event, hint) {
-          return event
-        },
-      })
-      client = getClient()
-      scope = getCurrentScope()
+      return
     }
 
-    // By this point, Sentry will already have registered a global error handler if not in an
-    // embedded studio (only the root hub reports errors on the global scope)
-    isInitialized = true
-  }
-
-  function assertInitialized() {
-    if (!isInitialized) {
-      console.warn('Error reporter is not initialized')
+    if (IS_EMBEDDED_STUDIO) {
+      // We may or may not want to initialize Sentry in embedded studios,
+      // And if we do, we may want to use a scoped client - same as the `hasThirdPartySentry` case.
+      // For now, we're leaving this branch _intentionally_ empty -  we _will_ register Sentry.
     }
+
+    // There is no active client on the page, so assume we can take ownership of the
+    // global scope and client. This is the default, recommended behavior for the Sentry client,
+    // and as such is what we primarily want to rely on.
+    init({
+      ...clientOptions,
+      defaultIntegrations: false,
+      integrations,
+      beforeSend,
+    })
+
+    client = getClient()
+    scope = getCurrentScope()
   }
 
   function reportError(error: Error, options: ErrorInfo = {}) {
-    assertInitialized()
     if (!client) {
-      return null
-    }
-
-    // Skip reporting duplicate errors
-    const errMessage = getMessage(error)
-    if (errMessage && errMessage === prevMessage) {
+      console.warn('[reportError] called before reporter is initialized, skipping')
       return null
     }
 
@@ -226,17 +230,6 @@ function setCause(error: Error & {cause?: Error}, cause: Error): void {
   }
 
   recurse(error, cause)
-}
-
-/**
- * Tries to extract the `message` property from an error-like object, if it exists
- *
- * @param error - The error-like object to extract the message from
- * @returns A string representing the message, or `null` if not found
- * @internal
- */
-function getMessage(error: Error | null): string | null {
-  return isRecord(error) && typeof error.message === 'string' ? error.message : null
 }
 
 /**
