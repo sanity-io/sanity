@@ -136,7 +136,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
       space={STACK_SPACE}
     >
       <Card data-as="button" radius={2} tone="inherit">
-        <ItemFlex align="center" data-selected={selected} gap={1}>
+        <ItemFlex align="center" data-selected={selected} data-testid="side-menu-item" gap={1}>
           <Stack flex={1}>
             <Button mode="bleed" onClick={handleClick} padding={2}>
               <Flex align="center" gap={2}>
