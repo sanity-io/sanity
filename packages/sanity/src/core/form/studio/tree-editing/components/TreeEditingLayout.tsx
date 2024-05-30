@@ -33,6 +33,10 @@ const SidebarStack = styled(motion(Stack))`
   overflow-x: hidden;
 `
 
+const SearchStack = styled(Stack)`
+  min-height: max-content;
+`
+
 interface SidebarProps {
   items: TreeEditingMenuItem[]
   onOpenToggle: () => void
@@ -81,9 +85,9 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
         </FixedHeightFlex>
 
         {open && (
-          <Stack padding={2} sizing="border" style={{minHeight: 'max-content'}}>
+          <SearchStack padding={2} sizing="border">
             <TreeEditingSearch items={items} onPathSelect={onPathSelect} />
-          </Stack>
+          </SearchStack>
         )}
 
         <AnimatePresence mode="wait">
