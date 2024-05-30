@@ -36,7 +36,19 @@ test(`actions - blocked main document action when modal is open`, async ({
 
   await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
 
-  await page.getByTestId('action-Publish').isDisabled()
+  await expect(page.getByTestId('action-Publish')).toBeDisabled()
+})
+
+test(`actions - main document action when modal is closed will be enabled`, async ({
+  page,
+  createDraftDocument,
+}) => {
+  await createDraftDocument('/test/content/input-debug;objectsDebug')
+
+  await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+  await page.getByTestId('tree-editing-done').click()
+
+  await expect(page.getByTestId('action-Publish')).not.toBeDisabled()
 })
 
 test.describe('navigation - tree sidebar', () => {
