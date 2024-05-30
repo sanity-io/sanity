@@ -32,6 +32,9 @@ const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
   const {bold} = theme.sanity.v2?.font.text?.weights || {}
 
   return css`
+    max-height: 1rem;
+    overflow: hidden;
+
     &[data-active='true'] {
       [data-ui='Text']:first-child {
         font-weight: ${bold};
@@ -39,6 +42,11 @@ const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
     }
   `
 })
+
+const StyledText = styled(Text)`
+  overflow: hidden;
+  padding: 8px 0;
+`
 
 type Item = TreeEditingBreadcrumb[] | TreeEditingBreadcrumb
 
@@ -134,14 +142,23 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
       const button = (
         <StyledButton
           data-active={isEqual(item.path, selectedPath) ? 'true' : 'false'}
-          iconRight={hasChildren ? ChevronDownIcon : undefined}
           mode="bleed"
           // eslint-disable-next-line react/jsx-no-bind
           onClick={() => onPathSelect(item.path)}
           padding={1}
           space={2}
-          text={item.title}
-        />
+        >
+          <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">
+            <StyledText size={1} muted weight="medium" textOverflow="ellipsis">
+              {item.title}
+            </StyledText>
+            {hasChildren ? (
+              <Text size={0}>
+                <ChevronDownIcon />
+              </Text>
+            ) : undefined}
+          </Flex>
+        </StyledButton>
       )
 
       return (
