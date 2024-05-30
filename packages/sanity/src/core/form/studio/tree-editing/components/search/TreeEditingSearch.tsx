@@ -142,7 +142,7 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
       placement="bottom-start"
       portal
     >
-      <Card radius={2}>
+      <Card radius={3}>
         <StyledTextInput
           fontSize={1}
           icon={SearchIcon}
