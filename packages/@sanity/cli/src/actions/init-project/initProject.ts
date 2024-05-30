@@ -21,6 +21,7 @@ import {
   installNewPackages,
 } from '../../packageManager'
 import {
+  ALLOWED_PACKAGE_MANAGERS,
   getPartialEnvWithNpmPath,
   type PackageManager,
 } from '../../packageManager/packageManagerChoice'
@@ -133,6 +134,7 @@ export default async function initSanity(
   const useGit = typeof commitMessage === 'undefined' ? true : Boolean(commitMessage)
   const bareOutput = cliFlags.bare
   const env = cliFlags.env
+  const packageManager = cliFlags['package-manager']
 
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
@@ -542,15 +544,25 @@ export default async function initSanity(
   // Bootstrap Sanity, creating required project files, manifests etc
   await bootstrapTemplate(templateOptions, context)
 
+  let pkgManager: PackageManager
+
+  // If the user has specified a package manager, and it's allowed use that
+  if (packageManager && ALLOWED_PACKAGE_MANAGERS.includes(packageManager)) {
+    pkgManager = packageManager
+  } else {
+    // Otherwise, try to find the most optimal package manager to use
+    pkgManager = (
+      await getPackageManagerChoice(outputPath, {
+        prompt,
+        interactive: unattended ? false : isInteractive,
+      })
+    ).chosen
+  }
+
+  trace.log({step: 'selectPackageManager', selectedOption: pkgManager})
+
   // Now for the slow part... installing dependencies
-  const pkgManager = await getPackageManagerChoice(outputPath, {
-    prompt,
-    interactive: unattended ? false : isInteractive,
-  })
-
-  trace.log({step: 'selectPackageManager', selectedOption: pkgManager.chosen})
-
-  await installDeclaredPackages(outputPath, pkgManager.chosen, context)
+  await installDeclaredPackages(outputPath, pkgManager, context)
 
   // Try initializing a git repository
   if (useGit) {
@@ -585,7 +597,7 @@ export default async function initSanity(
     bun: 'bun dev',
     manual: 'npm run dev',
   }
-  const devCommand = devCommandMap[pkgManager.chosen]
+  const devCommand = devCommandMap[pkgManager]
 
   const isCurrentDir = outputPath === process.cwd()
   if (isCurrentDir) {

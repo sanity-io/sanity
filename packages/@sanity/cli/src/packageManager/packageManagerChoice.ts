@@ -9,6 +9,8 @@ import {isInteractive} from '../util/isInteractive'
 
 export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'bun' | 'manual'
 
+export const ALLOWED_PACKAGE_MANAGERS: PackageManager[] = ['npm', 'yarn', 'pnpm', 'bun', 'manual']
+
 const EXPERIMENTAL = ['bun']
 
 /**
