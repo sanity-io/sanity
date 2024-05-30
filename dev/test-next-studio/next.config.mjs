@@ -69,6 +69,9 @@ const config = {
       'sanity/structure': requireResolve('../../packages/sanity/src/_exports/structure.ts'),
       'sanity/migrate': requireResolve('../../packages/sanity/src/_exports/migrate.ts'),
       'sanity': requireResolve('../../packages/sanity/src/_exports/index.ts'),
+      'styled-components': requireResolve(
+        'styled-components/dist/styled-components.browser.esm.js',
+      ),
     }
     return config
   },
@@ -76,7 +79,7 @@ const config = {
   // when testing on https://test-next-studio.sanity.build
   productionBrowserSourceMaps: true,
   experimental: {
-    reactCompiler: true,
+    reactCompiler: process.env.REACT_COMPILER === 'true' ? true : false,
     turbo: {
       resolveAlias: {
         '@sanity/block-tools': '@sanity/block-tools/src/index.ts',
@@ -106,6 +109,7 @@ const config = {
         'sanity/structure': 'sanity/src/_exports/structure.ts',
         'sanity/migrate': 'sanity/src/_exports/migrate.ts',
         'sanity': 'sanity/src/_exports/index.ts',
+        'styled-components': {browser: 'styled-components/dist/styled-components.browser.esm.js'},
       },
     },
   },
