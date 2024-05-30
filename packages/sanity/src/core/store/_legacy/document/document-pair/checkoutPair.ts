@@ -100,7 +100,7 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
     // published version of the document already exists.
     if (mutations.createIfNotExists) {
       // ignore all createIfNotExists, as these should be covered by the actions api and only be done locally
-      return []
+      throw new Error('Server side actions should not be using createIfNotExists')
     }
     if (mutations.create) {
       // the actions API requires attributes._id to be set, while it's optional in the mutation API
