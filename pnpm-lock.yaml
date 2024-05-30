@@ -18121,7 +18121,7 @@ packages:
     dependencies:
       '@sanity/icons': 2.11.8(react@18.3.1)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1)(react@18.3.1)
-      '@sanity/ui': 2.1.12(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+      '@sanity/ui': 2.1.14(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       react: 18.3.1
       react-infinite-scroll-component: 6.1.0(react@18.3.1)
       react-photo-album: 2.3.1(react@18.3.1)
@@ -18133,7 +18133,7 @@ packages:
       - react-is
     dev: false
 
-  /sanity-plugin-hotspot-array@2.0.0(@sanity/ui@2.1.12)(react-dom@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
+  /sanity-plugin-hotspot-array@2.0.0(@sanity/ui@2.1.14)(react-dom@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
     resolution: {integrity: sha512-y+FP4JgRaIKO17cBMyzCCVcxwl3fh7DXEp99QlvZSWUFi3NJJg2ZXFIXc2Om66HNkprfH2ORzEmEZMuDShtlTg==}
     engines: {node: '>=18'}
     peerDependencies:
