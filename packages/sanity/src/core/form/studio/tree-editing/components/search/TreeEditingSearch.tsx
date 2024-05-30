@@ -2,7 +2,7 @@ import {SearchIcon} from '@sanity/icons'
 import {Card, Flex, Popover, type PopoverProps, Stack, Text, TextInput} from '@sanity/ui'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useState} from 'react'
 import {type Path} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {type TreeEditingMenuItem} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
