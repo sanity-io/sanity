@@ -47,3 +47,16 @@ export const PreviewCard = forwardRef(function PreviewCard(
     </StyledCard>
   )
 })
+
+/**
+ *  This is a workaround for a circular import issue.
+ * Calling `styled(PreviewCard)` at program load time triggered a build error with the commonjs bundle because it tried
+ * to access the PreviewCard variable/symbol before it was initialized.
+ * The workaround is to colocate the styled component with the component itself.
+ * @internal
+ */
+export const ReferenceInputPreviewCard = styled(PreviewCard)`
+  /* this is a hack to avoid layout jumps while previews are loading
+there's probably better ways of solving this */
+  min-height: 36px;
+`

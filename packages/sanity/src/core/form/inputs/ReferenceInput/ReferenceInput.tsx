@@ -1,21 +1,12 @@
 import {Stack, Text, useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {
-  type FocusEvent,
-  forwardRef,
-  type KeyboardEvent,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
-import {PreviewCard} from '../../../components'
+import {ReferenceInputPreviewCard} from '../../../components'
 import {Translate, useTranslation} from '../../../i18n'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {Alert} from '../../components/Alert'
@@ -35,22 +26,6 @@ import {
 import {useReferenceInfo} from './useReferenceInfo'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceItemRef} from './useReferenceItemRef'
-
-// This is a workaround for a circular import issue.
-// Calling `styled(PreviewCard)` at program load time triggered a build error with the commonjs bundle because it tried
-// to access the PreviewCard variable/symbol before it was initialized.
-// The workaround is to defer creating StyledPreviewCard until react render time
-let StyledPreviewCardImpl: undefined | typeof PreviewCard
-const StyledPreviewCard: typeof PreviewCard = forwardRef(function StyledPreviewCard(props, ref) {
-  if (!StyledPreviewCardImpl) {
-    StyledPreviewCardImpl = styled(PreviewCard)`
-      /* this is a hack to avoid layout jumps while previews are loading
-      there's probably better ways of solving this */
-      min-height: 36px;
-    `
-  }
-  return <StyledPreviewCardImpl ref={ref} {...props} />
-})
 
 const INITIAL_SEARCH_STATE: ReferenceSearchState = {
   hits: [],
@@ -225,14 +200,14 @@ export function ReferenceInput(props: ReferenceInputProps) {
       const documentId = option.hit.draft?._id || option.hit.published?._id || option.value
 
       return (
-        <StyledPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
+        <ReferenceInputPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
           <OptionPreview
             getReferenceInfo={getReferenceInfo}
             id={documentId}
             renderPreview={renderPreview}
             type={schemaType}
           />
-        </StyledPreviewCard>
+        </ReferenceInputPreviewCard>
       )
     },
     [schemaType, getReferenceInfo, renderPreview],
