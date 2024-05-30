@@ -99,7 +99,7 @@ export function TreeEditingBreadcrumbsMenuButton(
   useClickOutside(() => setOpen(false), [rootElement, buttonElement])
 
   const content = (
-    <RootFlex direction="column" flex={1} forwardedAs={ReactFocusLock} height="fill">
+    <RootFlex direction="column" flex={1} forwardedAs={ReactFocusLock} height="fill" returnFocus>
       <PopoverListFlex
         $itemHeight={ITEM_HEIGHT}
         $maxDisplayedItems={MAX_DISPLAYED_ITEMS}
