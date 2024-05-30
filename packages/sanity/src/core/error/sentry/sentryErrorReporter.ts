@@ -34,12 +34,14 @@ const IS_EMBEDDED_STUDIO = !('__sanityErrorChannel' in globalScope)
 
 const DEBUG_ERROR_REPORTING = Boolean(process.env.SANITY_STUDIO_DEBUG_ERROR_REPORTING)
 
+const IS_BROWSER = typeof window !== 'undefined'
+
 const clientOptions: BrowserOptions = {
   dsn: SANITY_DSN,
   release: SANITY_VERSION,
   environment: isDev ? 'development' : 'production',
   debug: DEBUG_ERROR_REPORTING,
-  enabled: !isDev || DEBUG_ERROR_REPORTING,
+  enabled: IS_BROWSER && (!isDev || DEBUG_ERROR_REPORTING),
 }
 
 const integrations = [
