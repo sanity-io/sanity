@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
 import {Card, Flex, Popover, type PopoverProps, Stack, Text, TextInput} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useState} from 'react'
 import {type Path} from 'sanity'
 import styled, {css} from 'styled-components'
 
@@ -66,7 +66,7 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
 
   const resetSearch = useCallback(() => setQuery(''), [])
 
-  const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
   }, [])
 
@@ -79,7 +79,7 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
   )
 
   const handleSearchKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
+    (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Escape') {
         resetSearch()
         textInputElement?.focus()
