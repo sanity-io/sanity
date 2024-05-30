@@ -3,7 +3,7 @@ import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {Fragment, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Path, PresenceOverlay, VirtualizerScrollInstanceProvider} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../types'
