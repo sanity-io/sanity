@@ -101,10 +101,7 @@ export function FormBuilder(props: FormBuilderProps) {
     value,
   } = props
 
-  // The modal should open if the item is open and:
-  // - tree array editing is enabled
-  // - legacy array editing is enabled (e.g. in a Portable Text editor)
-  const treeEditing = useTreeArrayEditingEnabled()
+  const {enabled: treeEditingEnabled} = useTreeArrayEditingEnabled()
 
   const handleCollapseField = useCallback(
     (fieldName: string) => onSetPathCollapsed([fieldName], true),
@@ -259,7 +256,7 @@ export function FormBuilder(props: FormBuilderProps) {
           <DocumentFieldActionsProvider actions={fieldActions}>
             {renderInput(rootInputProps)}
 
-            {treeEditing.enabled && (
+            {treeEditingEnabled && (
               <TreeEditingDialog
                 onPathFocus={onPathFocus}
                 onPathOpen={onPathOpen}
