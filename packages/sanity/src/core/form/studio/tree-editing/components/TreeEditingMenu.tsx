@@ -1,4 +1,4 @@
-import {ChevronDownIcon, ChevronUpIcon, StackCompactIcon} from '@sanity/icons'
+import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
@@ -26,13 +26,21 @@ const SCROLL_BEHAVIOR_OPTIONS: StandardBehaviorOptions = {
   scrollMode: 'if-needed',
 }
 
+const AnimateChevronIcon = styled(ChevronRightIcon)`
+  transition: transform 0.2s ease;
+
+  &[data-expanded='true'] {
+    transform: rotate(90deg);
+  }
+`
+
 const ItemFlex = styled(Flex)(({theme}) => {
   const hoverBg = theme.sanity.v2?.color.button.bleed.default.hovered.bg
   const hoverBg2 = theme.sanity.v2?.color.button.bleed.default.pressed.bg
   const selectedBg = theme.sanity.v2?.color.button.bleed.default.selected.bg
 
   return css`
-    padding: 2px;
+    padding: 2px 3px;
     padding-right: 3px;
     box-sizing: border-box;
     transition: inherit;
@@ -97,7 +105,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   const icon = useMemo(() => {
     if (!hasChildren) return null
 
-    return open ? <ChevronUpIcon /> : <ChevronDownIcon />
+    return <AnimateChevronIcon data-expanded={open ? 'true' : 'false'} />
   }, [hasChildren, open])
 
   useEffect(() => {

@@ -61,6 +61,7 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
         data-testid="tree-editing-sidebar"
         data-ui="SidebarCard"
         display="flex"
+        forwardedAs="aside"
         height="fill"
         overflow="hidden"
         tone="transparent"
