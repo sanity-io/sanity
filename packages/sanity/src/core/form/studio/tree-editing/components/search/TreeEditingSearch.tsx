@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons'
 import {Card, Flex, Popover, type PopoverProps, Stack, Text, TextInput} from '@sanity/ui'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useState} from 'react'
-import {type Path} from 'sanity'
+import {type Path, useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {type TreeEditingMenuItem} from '../../types'
@@ -59,6 +59,7 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
 
   const [textInputElement, setTextInputElement] = useState<HTMLInputElement | null>(null)
   const [query, setQuery] = useState<string>('')
+  const {t} = useTranslation()
 
   const hasSearchQuery = query.length > 0
 
@@ -102,9 +103,7 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
         <Card>
           <Stack padding={4} sizing="border" space={3}>
             <Text align="center" muted size={1} weight="medium">
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              {/* todo: localize */}
-              No results found
+              {t('tree-editing-dialog.search.no-results-title')}
             </Text>
           </Stack>
         </Card>
@@ -129,7 +128,7 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
         </Card>
       </RootFlex>
     )
-  }, [filteredList, handlePathSelect, textInputElement])
+  }, [filteredList, handlePathSelect, textInputElement, t])
 
   return (
     <StyledPopover
@@ -149,8 +148,7 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
           onBlur={handleSearchBlur}
           onChange={handleSearchChange}
           onKeyDown={handleSearchKeyDown}
-          // todo: localize
-          placeholder="Search"
+          placeholder={t('tree-editing-dialog.search-placeholder')}
           ref={setTextInputElement}
           value={query}
         />

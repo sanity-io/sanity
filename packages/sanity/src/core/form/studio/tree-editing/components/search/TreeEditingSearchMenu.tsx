@@ -1,7 +1,7 @@
 import {Box, Button, Stack, Text} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
-import {CommandList, type Path, supportsTouch} from 'sanity'
+import {CommandList, type Path, supportsTouch, useTranslation} from 'sanity'
 
 import {type TreeEditingMenuItem} from '../../types'
 import {ITEM_HEIGHT} from './constants'
@@ -14,6 +14,7 @@ interface TreeEditingSearchMenuProps {
 
 export function TreeEditingSearchMenu(props: TreeEditingSearchMenuProps): JSX.Element {
   const {items, onPathSelect, textInputElement} = props
+  const {t} = useTranslation()
 
   const renderItem = useCallback(
     (item: TreeEditingMenuItem) => {
@@ -49,9 +50,7 @@ export function TreeEditingSearchMenu(props: TreeEditingSearchMenuProps): JSX.El
   return (
     <CommandList
       activeItemDataAttr="data-hovered"
-      // todo: localize
-      /* eslint-disable @sanity/i18n/no-attribute-string-literals */
-      ariaLabel="Search menu"
+      ariaLabel={t('tree-editing-dialog.search.menu-label')}
       autoFocus={supportsTouch ? undefined : 'input'}
       inputElement={textInputElement}
       itemHeight={ITEM_HEIGHT}
