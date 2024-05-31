@@ -1,8 +1,12 @@
 import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
+<<<<<<< HEAD
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {useTreeArrayEditingEnabled} from 'sanity'
+=======
+import {useCallback, useMemo, useRef} from 'react'
+>>>>>>> 8fe3d35e5c (refactor(core): move code, fix imports)
 import {styled} from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
@@ -19,6 +23,7 @@ import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
+import {useTreeArrayEditingEnabled} from '../../../../studio/tree-editing'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {CellLayout} from '../../layouts/CellLayout'
