@@ -5,7 +5,7 @@ import {decodeText} from '../it-utils'
 import {parse, stringify} from '../it-utils/ndjson'
 import {fromExportArchive} from '../sources/fromExportArchive'
 import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
-import {type APIConfig, type Migration} from '../types'
+import {type MigrationContext, type APIConfig, type Migration} from '../types'
 import {asyncIterableToStream} from '../utils/asyncIterableToStream'
 import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {collectMigrationMutations} from './collectMigrationMutations'
@@ -43,9 +43,10 @@ export async function* dryRun(config: MigrationRunnerOptions, migration: Migrati
   const client = createContextClient({...config.api, useCdn: false})
 
   const filteredDocumentsClient = createFilteredDocumentsClient(createReader)
-  const context = {
+  const context: MigrationContext = {
     client,
     filtered: filteredDocumentsClient,
+    dryRun: true,
   }
 
   yield* collectMigrationMutations(
