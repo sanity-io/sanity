@@ -2,7 +2,7 @@ import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {memo, type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
@@ -34,9 +34,32 @@ const AnimateChevronIcon = styled(ChevronRightIcon)`
   }
 `
 
+// This component is used to keep buttons aligned in the tree menu
+// when the expand button is not present on an item.
+// The width should match the width of the expand button.
+const Spacer = styled.div`
+  min-width: 23px;
+  max-width: 23px;
+`
+
+const ChildStack = styled(Stack)(({theme}) => {
+  const space = theme.sanity.space[3]
+
+  return css`
+    margin-left: ${space + 2}px;
+    box-sizing: border-box;
+    border-left: 1px solid transparent;
+    transition: border-color 0.1s ease;
+
+    &[data-mouse-over='true'] {
+      border-left: 1px solid var(--card-border-color);
+    }
+  `
+})
+
 const ItemFlex = styled(Flex)(({theme}) => {
-  const hoverBg = theme.sanity.v2?.color.button.bleed.default.hovered.bg
-  const hoverBg2 = theme.sanity.v2?.color.button.bleed.default.pressed.bg
+  const defaultHoverBg = theme.sanity.v2?.color.button.bleed.default.hovered.bg
+  const selectedHoverBg = theme.sanity.v2?.color.button.bleed.default.pressed.bg
   const selectedBg = theme.sanity.v2?.color.button.bleed.default.selected.bg
 
   return css`
@@ -50,29 +73,27 @@ const ItemFlex = styled(Flex)(({theme}) => {
       border-radius: ${theme.sanity.radius[2]}px;
     }
 
-    [data-ui='Button'] {
+    [data-ui='ExpandButton'],
+    [data-ui='NavigateButton'] {
       transition: inherit;
+      background-color: inherit;
     }
 
     @media (hover: hover) {
       &:hover {
         &[data-selected='false'] {
-          background-color: ${hoverBg};
+          background-color: ${defaultHoverBg};
           border-radius: ${theme.sanity.radius[2]}px;
 
-          [data-ui='Button']:last-child:not(:only-child):hover {
-            background-color: ${hoverBg2};
+          [data-ui='ExpandButton']:hover {
+            background-color: ${selectedHoverBg};
           }
         }
 
-        [data-ui='Button']:last-child:not(:only-child):hover {
-          background-color: ${hoverBg};
+        [data-ui='ExpandButton']:hover {
+          background-color: ${defaultHoverBg};
         }
       }
-    }
-
-    [data-ui='Button'] {
-      background-color: inherit;
     }
   `
 })
@@ -81,19 +102,32 @@ interface TreeEditingMenuItemProps {
   item: TreeEditingMenuItem
   onPathSelect: (path: Path) => void
   selectedPath: Path | null
+  siblingHasChildren?: boolean
 }
 
 function MenuItem(props: TreeEditingMenuItemProps) {
-  const {item, onPathSelect, selectedPath} = props
+  const {item, onPathSelect, selectedPath, siblingHasChildren} = props
   const {children, title} = item
   const hasChildren = children && children.length > 0
   const [open, setOpen] = useState<boolean>(false)
   const {t} = useTranslation()
+  const [mouseOver, setMouseOver] = useState<boolean>(false)
 
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
 
   const selected = useMemo(() => isEqual(item.path, selectedPath), [item.path, selectedPath])
   const isArrayParent = useMemo(() => !isArrayItemPath(item.path), [item.path])
+
+  const handleMouseEnter = useCallback((e: MouseEvent<HTMLUListElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
+    setMouseOver(true)
+  }, [])
+  const handleMouseLeave = useCallback((e: MouseEvent<HTMLUListElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
+    setMouseOver(false)
+  }, [])
 
   const handleClick = useCallback(() => {
     onPathSelect(item.path)
@@ -145,24 +179,11 @@ function MenuItem(props: TreeEditingMenuItemProps) {
       space={STACK_SPACE}
     >
       <Card data-as="button" radius={2} tone="inherit">
-        <ItemFlex align="center" data-selected={selected} data-testid="side-menu-item" gap={1}>
-          <Stack flex={1}>
-            <Button mode="bleed" onClick={handleClick} padding={2}>
-              <Flex align="center" gap={2}>
-                {isArrayParent && (
-                  <Text size={1}>
-                    <StackCompactIcon />
-                  </Text>
-                )}
-
-                {titleNode}
-              </Flex>
-            </Button>
-          </Stack>
-
+        <ItemFlex align="center" data-selected={selected} data-testid="side-menu-item">
           {icon && (
             <Button
               aria-label={`${open ? t('tree-editing-dialog.sidebar.action.collapse') : t('tree-editing-dialog.sidebar.action.expand')} ${title}`}
+              data-ui="ExpandButton"
               mode="bleed"
               onClick={handleExpandClick}
               padding={2}
@@ -172,20 +193,60 @@ function MenuItem(props: TreeEditingMenuItemProps) {
               </Text>
             </Button>
           )}
+
+          {!icon && siblingHasChildren && <Spacer />}
+
+          <Stack flex={1}>
+            <Button
+              data-ui="NavigateButton"
+              mode="bleed"
+              onClick={handleClick}
+              padding={2}
+              paddingLeft={1}
+            >
+              <Flex align="center" gap={2}>
+                {isArrayParent && (
+                  <Box marginLeft={1}>
+                    <Text size={1}>
+                      <StackCompactIcon />
+                    </Text>
+                  </Box>
+                )}
+
+                {titleNode}
+              </Flex>
+            </Button>
+          </Stack>
         </ItemFlex>
       </Card>
 
       {open && hasChildren && (
-        <Stack as="ul" paddingLeft={2} role="group" space={STACK_SPACE}>
-          {children.map((child) => (
-            <MenuItem
-              item={child}
-              key={child.title}
-              onPathSelect={onPathSelect}
-              selectedPath={selectedPath}
-            />
-          ))}
-        </Stack>
+        <ChildStack
+          data-mouse-over={mouseOver ? 'true' : 'false'}
+          flex={1}
+          forwardedAs="ul"
+          onMouseOut={handleMouseLeave}
+          onMouseOver={handleMouseEnter}
+          paddingLeft={1}
+          role="group"
+          space={STACK_SPACE}
+        >
+          {children.map((child) => {
+            const childSiblingHasChildren = children.some(
+              (sibling) => sibling.children && sibling.children.length > 0,
+            )
+
+            return (
+              <MenuItem
+                item={child}
+                key={child.title}
+                onPathSelect={onPathSelect}
+                selectedPath={selectedPath}
+                siblingHasChildren={childSiblingHasChildren}
+              />
+            )
+          })}
+        </ChildStack>
       )}
     </Stack>
   )
@@ -204,14 +265,21 @@ export const TreeEditingMenu = memo(function TreeEditingMenu(
 
   return (
     <Stack as="ul" role="tree" space={STACK_SPACE}>
-      {items.map((item) => (
-        <MenuItem
-          item={item}
-          key={toString(item.path)}
-          onPathSelect={onPathSelect}
-          selectedPath={selectedPath}
-        />
-      ))}
+      {items.map((item) => {
+        const siblingHasChildren = items.some(
+          (sibling) => sibling.children && sibling.children.length > 0,
+        )
+
+        return (
+          <MenuItem
+            item={item}
+            key={toString(item.path)}
+            onPathSelect={onPathSelect}
+            selectedPath={selectedPath}
+            siblingHasChildren={siblingHasChildren}
+          />
+        )
+      })}
     </Stack>
   )
 })
