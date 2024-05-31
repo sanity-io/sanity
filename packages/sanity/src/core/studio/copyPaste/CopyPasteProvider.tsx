@@ -1,7 +1,7 @@
 import {useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react'
+import {type PatchEvent} from 'sanity'
 import {CopyPasteContext} from 'sanity/_singletons'
-import {useDocumentPane} from 'sanity/structure'
 
 import {BROADCAST_CHANNEL_NAME} from './constants'
 import {type CopyActionResult} from './types'
@@ -15,10 +15,10 @@ export const CopyPasteProvider: React.FC<{
   children: ReactNode
   documentId?: string
   documentType?: string
-}> = ({documentId, documentType, children}) => {
+  onChange?: (event: PatchEvent) => void
+}> = ({documentId, documentType, children, onChange}) => {
   const [copyResult, setCopyResult] = useState<CopyActionResult | null>(null)
   const [isCopyResultInClipboard, setIsCopyResultInClipboard] = useState<boolean | null>(null)
-  const {onChange} = useDocumentPane()
   const toast = useToast()
   const broadcastChannelRef = useRef<BroadcastChannel | null>(null)
 
@@ -32,7 +32,13 @@ export const CopyPasteProvider: React.FC<{
     [copyResult],
   )
 
-  const refreshCopyResult = useCallback(async () => {
+  const refreshCopyResult = useCallback(async (isCopyResultOverride?: boolean) => {
+    if (isCopyResultOverride) {
+      setIsCopyResultInClipboard(isCopyResultOverride)
+
+      return
+    }
+
     const storedCopyResult = await getClipboardItem()
     setIsCopyResultInClipboard(!!storedCopyResult)
   }, [])
@@ -65,7 +71,7 @@ export const CopyPasteProvider: React.FC<{
 
   useEffect(() => {
     refreshCopyResult()
-  })
+  }, [refreshCopyResult])
 
   useEffect(() => {
     setIsCopyResultInClipboard(!!copyResult)
