@@ -80,7 +80,7 @@ export const Pane = forwardRef(function Pane(
   const currentMaxWidth = pane?.currentMaxWidth ?? currentMaxWidthProp
 
   // Forward ref to parent
-  useImperativeHandle(ref, () => rootElement!, [rootElement])
+  useImperativeHandle<typeof rootElement, typeof rootElement>(ref, () => rootElement, [rootElement])
 
   useEffect(() => {
     if (!rootElement) return undefined
