@@ -21,7 +21,9 @@ export const useCopyPasteAction = ({
     setCopyResult,
     sendMessage,
     onChange,
+    refreshCopyResult,
     isValidTargetType: _isValidTargetType,
+    isCopyResultInClipboard,
   } = useCopyPaste()
   const toast = useToast()
   const getFormValue = useGetFormValue()
@@ -90,7 +92,7 @@ export const useCopyPasteAction = ({
           targetSchemaType: schemaType,
           targetDocumentType: documentType,
         })
-        onChange(PatchEvent.from(set(targetValue, path)))
+        onChange?.(PatchEvent.from(set(targetValue, path)))
         toast.push({
           status: 'success',
           title: `${value.isDocument ? 'Document' : 'Field'} ${targetSchemaTypeTitle} updated`,
@@ -104,5 +106,5 @@ export const useCopyPasteAction = ({
     }
   }, [toast, schemaType, documentType, onChange, path])
 
-  return {onCopy, onPaste, isValidTargetType}
+  return {onCopy, onPaste, refreshCopyResult, isValidTargetType, isCopyResultInClipboard}
 }

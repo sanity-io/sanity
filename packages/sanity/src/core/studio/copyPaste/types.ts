@@ -38,8 +38,8 @@ export interface CopyPasteContextType {
   copyResult: CopyActionResult | null
   setCopyResult: (result: CopyActionResult) => void
   sendMessage: (message: CopyActionResult) => void
-  onChange: (event: PatchEvent) => void
-  refreshCopyResult: () => Promise<void>
+  onChange?: (event: PatchEvent) => void
+  refreshCopyResult: (isCopyResultOverride?: boolean) => Promise<void>
   isValidTargetType: (targetType: string) => boolean
   isCopyResultInClipboard: boolean | null
 }
