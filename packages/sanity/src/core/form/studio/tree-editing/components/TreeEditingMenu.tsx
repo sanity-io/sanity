@@ -1,3 +1,4 @@
+import {hues} from '@sanity/color'
 import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
@@ -43,12 +44,14 @@ const Spacer = styled.div`
 `
 
 const ChildStack = styled(Stack)(({theme}) => {
-  const space = theme.sanity.space[3]
+  const space = theme.sanity?.v2?.space[3] || 0
+  const isDark = theme.sanity?.v2?.color._dark
+  const borderColor = hues.gray[isDark ? 900 : 200].hex
 
   return css`
     margin-left: ${space + 2}px;
     box-sizing: border-box;
-    border-left: 1px solid var(--card-backdrop-color);
+    border-left: 1px solid ${borderColor};
   `
 })
 
