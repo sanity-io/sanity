@@ -1,6 +1,8 @@
 import {expect, type Locator, type Page} from '@playwright/test'
 import {test} from '@sanity/test'
 
+import {waitForOpacityChange} from '../utils/waitForOpacityChange'
+
 test.describe('Portable Text Input - Open Block Style Select', () => {
   let pteInput: Locator
 
@@ -62,6 +64,8 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
 
     // click the block style select
     await page.locator('[data-testid="block-style-select"]').nth(1).click()
+
+    await waitForOpacityChange(page, '[data-ui="MenuButton__popover"]', 30000)
 
     await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
