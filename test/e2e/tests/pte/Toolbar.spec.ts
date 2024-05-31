@@ -63,6 +63,8 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     // click the block style select
     await page.locator('[data-testid="block-style-select"]').nth(1).click()
 
+    await page.waitForSelector('[data-ui="MenuButton__popover"]', {state: 'attached'})
+
     await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
 })
