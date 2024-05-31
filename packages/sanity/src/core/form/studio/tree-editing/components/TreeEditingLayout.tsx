@@ -56,8 +56,8 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
   const tooltipProps = useMemo(
     () => ({
       content: open
-        ? t('tree-editing-dialog.sidebar.close-label')
-        : t('tree-editing-dialog.sidebar.open-label'),
+        ? t('tree-editing-dialog.sidebar.action.close')
+        : t('tree-editing-dialog.sidebar.action.open'),
     }),
     [open, t],
   )
