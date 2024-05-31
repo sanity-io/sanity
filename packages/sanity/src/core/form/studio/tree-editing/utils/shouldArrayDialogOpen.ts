@@ -23,7 +23,7 @@ export function shouldArrayDialogOpen(schemaType: ObjectSchemaType, path: Path):
   // Check if the field is an array of objects
   if (isArrayOfObjectsSchemaType(field?.type)) {
     // Check if the array of objects is an array of references.
-    const isArrayOfReferences = field.type.of.some((type) => type?.hasOwnProperty('to'))
+    const isArrayOfReferences = field.type.of.every((type) => type?.hasOwnProperty('to'))
     const isPortableText = field.type.of.some((type) => type?.name === 'block')
 
     // Return false if the array of objects is an array of references
