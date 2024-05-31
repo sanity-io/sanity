@@ -5,7 +5,6 @@ import {
   Button,
   LayerProvider,
   useClickOutside,
-  useForwardedRef,
   usePortal,
 } from '@sanity/ui'
 import {
@@ -14,6 +13,7 @@ import {
   forwardRef,
   type KeyboardEvent,
   useCallback,
+  useImperativeHandle,
   useRef,
   useState,
 } from 'react'
@@ -54,8 +54,13 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
 
   const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
 
-  const inputRef = useForwardedRef(forwardedRef)
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
+
+  useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
+    forwardedRef,
+    () => inputRef.current,
+  )
 
   const [isPickerOpen, setPickerOpen] = useState(false)
 

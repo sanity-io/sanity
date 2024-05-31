@@ -1,12 +1,14 @@
 /* eslint-disable no-nested-ternary */
 
-import {TextInput, useForwardedRef} from '@sanity/ui'
+import {TextInput} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
   forwardRef,
   useCallback,
   useEffect,
+  useImperativeHandle,
+  useRef,
   useState,
 } from 'react'
 
@@ -34,7 +36,7 @@ const DEFAULT_PLACEHOLDER_TIME = new Date()
 
 export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
   props: CommonDateTimeInputProps,
-  ref: ForwardedRef<HTMLInputElement>,
+  forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
   const {
     id,
@@ -88,7 +90,12 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
     [serialize, onChange],
   )
 
-  const forwardedRef = useForwardedRef(ref)
+  const ref = useRef<HTMLInputElement | null>(null)
+
+  useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
+    forwardedRef,
+    () => ref.current,
+  )
 
   const parseResult = localValue ? parseInputValue(localValue) : value ? deserialize(value) : null
 
@@ -113,7 +120,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
           example: formatInputValue(DEFAULT_PLACEHOLDER_TIME),
         })
       }
-      ref={forwardedRef}
+      ref={ref}
       value={parseResult?.date}
       inputValue={inputValue || ''}
       readOnly={Boolean(readOnly)}

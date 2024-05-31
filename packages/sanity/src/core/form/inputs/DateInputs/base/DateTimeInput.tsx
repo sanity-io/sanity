@@ -1,11 +1,12 @@
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Flex, LayerProvider, useClickOutside, useForwardedRef} from '@sanity/ui'
+import {Box, Flex, LayerProvider, useClickOutside} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
   forwardRef,
   type KeyboardEvent,
   useCallback,
+  useImperativeHandle,
   useRef,
   useState,
 } from 'react'
@@ -32,7 +33,7 @@ export interface DateTimeInputProps {
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
   props: DateTimeInputProps,
-  ref: ForwardedRef<HTMLInputElement>,
+  forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
   const {
     value,
@@ -45,17 +46,22 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     ...rest
   } = props
   const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
-  const forwardedRef = useForwardedRef(ref)
+  const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
+
+  useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
+    forwardedRef,
+    () => ref.current,
+  )
 
   const [isPickerOpen, setPickerOpen] = useState(false)
 
   useClickOutside(() => setPickerOpen(false), [popoverRef])
 
   const handleDeactivation = useCallback(() => {
-    forwardedRef.current?.focus()
-    forwardedRef.current?.select()
-  }, [forwardedRef])
+    ref.current?.focus()
+    ref.current?.select()
+  }, [])
 
   const handleKeyUp = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape') {
@@ -81,7 +87,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
 
   return (
     <LazyTextInput
-      ref={forwardedRef}
+      ref={ref}
       {...rest}
       value={inputValue}
       onChange={onInputChange}

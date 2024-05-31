@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme, useForwardedRef} from '@sanity/ui'
+import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -7,9 +7,9 @@ import {
   type HTMLProps,
   type KeyboardEvent,
   type PointerEvent,
-  type Ref,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from 'react'
@@ -147,7 +147,7 @@ export const TagInput = forwardRef(
       placeholder?: string
       value?: {value: string}[]
     } & Omit<HTMLProps<HTMLInputElement>, 'as' | 'onChange' | 'onFocus' | 'ref' | 'value'>,
-    ref: Ref<HTMLInputElement>,
+    forwardedRef: React.ForwardedRef<HTMLInputElement>,
   ) => {
     const {
       disabled,
@@ -163,23 +163,25 @@ export const TagInput = forwardRef(
     const [inputValue, setInputValue] = useState('')
     const enabled = !disabled && !readOnly
     const [focused, setFocused] = useState(false)
-    const forwardedRef = useForwardedRef(ref)
+    const ref = useRef<HTMLInputElement | null>(null)
     const rootRef = useRef<HTMLDivElement | null>(null)
 
-    const handleRootPointerDown = useCallback(
-      (event: PointerEvent<HTMLDivElement>) => {
-        const isTagElement = isHTMLElement(event.target) && event.target.closest('[data-ui="Tag"]')
-
-        if (isTagElement) return
-
-        const inputElement = forwardedRef.current
-
-        if (inputElement) {
-          setTimeout(() => inputElement.focus(), 0)
-        }
-      },
-      [forwardedRef],
+    useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
+      forwardedRef,
+      () => ref.current,
     )
+
+    const handleRootPointerDown = useCallback((event: PointerEvent<HTMLDivElement>) => {
+      const isTagElement = isHTMLElement(event.target) && event.target.closest('[data-ui="Tag"]')
+
+      if (isTagElement) return
+
+      const inputElement = ref.current
+
+      if (inputElement) {
+        setTimeout(() => inputElement.focus(), 0)
+      }
+    }, [])
 
     const handleInputBlur = useCallback(() => {
       setFocused(false)
@@ -229,13 +231,13 @@ export const TagInput = forwardRef(
     )
 
     useEffect(() => {
-      const inputElement = forwardedRef.current
+      const inputElement = ref.current
 
       if (inputElement) {
         inputElement.style.width = '0'
         inputElement.style.width = `${inputElement.scrollWidth}px`
       }
-    }, [forwardedRef, inputValue])
+    }, [inputValue])
 
     return (
       <Root
@@ -285,7 +287,7 @@ export const TagInput = forwardRef(
               onChange={handleInputChange}
               onFocus={handleInputFocus}
               onKeyDown={handleInputKeyDown}
-              ref={forwardedRef}
+              ref={ref}
               type="text"
               value={inputValue}
             />
