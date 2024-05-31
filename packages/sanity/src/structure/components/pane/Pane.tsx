@@ -8,6 +8,7 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
@@ -46,7 +47,7 @@ export const Pane = forwardRef(function Pane(
   props: PaneProps &
     Omit<CardProps, 'as' | 'overflow'> &
     Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
-  ref: ForwardedRef<HTMLDivElement>,
+  forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {
     children,
@@ -75,12 +76,18 @@ export const Pane = forwardRef(function Pane(
   const expanded = expandedElement === rootElement
   const collapsed = layoutCollapsed ? false : pane?.collapsed || false
   const nextCollapsed = nextPane?.collapsed || false
+  const ref = useRef<HTMLDivElement | null>(null)
   const flex = pane?.flex ?? flexProp
   const currentMinWidth = pane?.currentMinWidth ?? currentMinWidthProp
   const currentMaxWidth = pane?.currentMaxWidth ?? currentMaxWidthProp
 
   // Forward ref to parent
-  useImperativeHandle(ref, () => rootElement!, [rootElement])
+  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
+
+  const setRef = useCallback((refValue: HTMLDivElement | null) => {
+    setRootElement(refValue)
+    ref.current = refValue
+  }, [])
 
   useEffect(() => {
     if (!rootElement) return undefined
@@ -199,7 +206,7 @@ export const Pane = forwardRef(function Pane(
               data-pane-collapsed={collapsed ? '' : undefined}
               data-pane-index={paneIndex}
               data-pane-selected={selected ? '' : undefined}
-              ref={setRootElement}
+              ref={setRef}
               style={style}
             >
               {PANE_DEBUG && (
