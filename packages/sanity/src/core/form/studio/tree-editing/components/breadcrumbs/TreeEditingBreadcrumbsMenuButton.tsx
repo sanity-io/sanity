@@ -1,4 +1,4 @@
-import {Box, Flex, Popover, type PopoverProps, useClickOutside} from '@sanity/ui'
+import {Box, Card, Flex, Popover, type PopoverProps, Text, useClickOutside} from '@sanity/ui'
 import {cloneElement, type KeyboardEvent, type ReactElement, useCallback, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 import {type Path} from 'sanity'
@@ -7,13 +7,12 @@ import {css, styled} from 'styled-components'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
 import {TreeEditingBreadcrumbsMenu} from './TreeEditingBreadcrumbsMenu'
-import {TreeEditingBreadcrumbsTitle} from './TreeEditingBreadcrumbsTitle'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom-start']
 
 const RootFlex = styled(Flex)``
 
-const TitleBox = styled(Box)`
+const TitleCard = styled(Card)`
   min-height: max-content;
 `
 
@@ -106,9 +105,13 @@ export function TreeEditingBreadcrumbsMenuButton(
         direction="column"
         overflow="hidden"
       >
-        <TitleBox>
-          <TreeEditingBreadcrumbsTitle title={parentArrayTitle} />
-        </TitleBox>
+        <TitleCard borderBottom padding={3} sizing="border">
+          <Box paddingX={1} sizing="border">
+            <Text muted size={1} textOverflow="ellipsis" weight="semibold">
+              {parentArrayTitle}
+            </Text>
+          </Box>
+        </TitleCard>
 
         <TreeEditingBreadcrumbsMenu
           items={items}
