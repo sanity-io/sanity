@@ -3,7 +3,7 @@ import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {type Path} from 'sanity'
+import {type Path, useTranslation} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
 
@@ -88,6 +88,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   const {children, title} = item
   const hasChildren = children && children.length > 0
   const [open, setOpen] = useState<boolean>(false)
+  const {t} = useTranslation()
 
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
 
@@ -161,7 +162,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
 
           {icon && (
             <Button
-              aria-label={`${open ? 'Collapse' : 'Expand'} ${title}`}
+              aria-label={`${open ? t('tree-editing-dialog.sidebar.action.collapse') : t('tree-editing-dialog.sidebar.action.expand')} ${title}`}
               mode="bleed"
               onClick={handleExpandClick}
               padding={2}
