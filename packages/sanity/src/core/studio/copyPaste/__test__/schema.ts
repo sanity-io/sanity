@@ -1,5 +1,5 @@
-import {Schema as SchemaBuilder} from '@sanity/schema'
 import {defineType, type Schema} from '@sanity/types'
+import {createSchema} from 'sanity'
 
 const Icon = () => null
 
@@ -22,7 +22,7 @@ const myStringType = defineType({
   fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
 })
 
-export const schema = SchemaBuilder.compile({
+export const schema = createSchema({
   name: 'default',
   types: [
     linkType,
