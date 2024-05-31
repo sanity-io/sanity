@@ -29,6 +29,13 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
 
     const patchMutation = draft.patch(patches)
 
+    if (snapshots.published && !snapshots.draft) {
+      // If there's a published version, but no draft version, editing the published version will
+      // ensure a draft version is created.
+      published.mutate(patchMutation)
+      return
+    }
+
     // If there's no draft, the user's edits will be based on the published document in the form in front of them
     // so before patching it we need to make sure it's created based on the current published version first.
     const ensureDraft = snapshots.draft
@@ -36,7 +43,6 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
       : [
           draft.create({
             ...initialDocument,
-            ...(snapshots.published ? snapshots.published : {}),
             _id: idPair.draftId,
             _type: typeName,
           }),
