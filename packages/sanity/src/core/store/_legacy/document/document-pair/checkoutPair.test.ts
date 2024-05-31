@@ -318,7 +318,7 @@ describe('checkoutPair -- server actions', () => {
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
-
+    const logSpy = jest.spyOn(console, 'error')
     draft.mutate([
       draft.createIfNotExists({
         _id: 'draftId',
@@ -330,11 +330,16 @@ describe('checkoutPair -- server actions', () => {
     ])
     draft.commit()
 
+    // Note: server side actions should never need to use createIfNotExists patches, but if it does, a console error will be issued
+    // However – the createIfNotExist is mapped to an empty array of actions, which will be rejected by the server
     expect(mockedActionRequest).toHaveBeenCalledWith([], {
       tag: 'document.commit',
       transactionId: expect.any(String),
     })
 
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.objectContaining({message: 'Server actions should not be using createIfNotExists'}),
+    )
     sub.unsubscribe()
   })
 })

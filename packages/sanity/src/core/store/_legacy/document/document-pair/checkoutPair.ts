@@ -99,8 +99,10 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
     // This action is not always interoperable with the equivalent mutation. It will fail if the
     // published version of the document already exists.
     if (mutations.createIfNotExists) {
-      // ignore all createIfNotExists, as these should be covered by the actions api and only be done locally
-      throw new Error('Server side actions should not be using createIfNotExists')
+      console.error(new Error('Server actions should not be using createIfNotExists'))
+      // Note: we could throw an error here, but any error thrown here will propagate to the buffered document failure handler and ignored silently
+      // https://github.com/sanity-io/sanity/blob/b14622ed44899ad6da7bb0fd1d46f56c0186a04b/packages/@sanity/mutator/src/document/BufferedDocument.ts#L227
+      return []
     }
     if (mutations.create) {
       // the actions API requires attributes._id to be set, while it's optional in the mutation API
@@ -120,7 +122,10 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
         patch: omit(mutations.patch, 'id'),
       }
     }
-    throw new Error('Cannot map mutation to action')
+    // Note: we should ideally throw an error here, but any error thrown here will propagate to the buffered document failure handler and ignored silently
+    // https://github.com/sanity-io/sanity/blob/b14622ed44899ad6da7bb0fd1d46f56c0186a04b/packages/@sanity/mutator/src/document/BufferedDocument.ts#L227
+    console.error(new Error('Cannot map mutation to action'), mutations)
+    return []
   })
 }
 
