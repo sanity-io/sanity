@@ -2,7 +2,7 @@ import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
-import {CommandList, type Path, supportsTouch} from 'sanity'
+import {CommandList, type Path, supportsTouch, useTranslation} from 'sanity'
 
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {ITEM_HEIGHT} from './constants'
@@ -16,6 +16,7 @@ interface TreeEditingBreadcrumbsMenuProps {
 
 export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProps): JSX.Element {
   const {items, onPathSelect, selectedPath, textInputElement} = props
+  const {t} = useTranslation()
 
   const getItemDisabled = useCallback(
     (index: number) => {
@@ -61,9 +62,7 @@ export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProp
   return (
     <CommandList
       activeItemDataAttr="data-hovered"
-      // todo: localize
-      /* eslint-disable @sanity/i18n/no-attribute-string-literals */
-      ariaLabel="Breadcrumb menu"
+      ariaLabel={t('tree-editing-dialog.breadcrumbs.menu')}
       autoFocus={supportsTouch ? undefined : 'input'}
       getItemDisabled={getItemDisabled}
       inputElement={textInputElement}
