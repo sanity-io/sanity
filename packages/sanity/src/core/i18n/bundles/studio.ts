@@ -1655,6 +1655,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'tree-editing-dialog.sidebar.action.close': 'Close sidebar',
   /** Collapse label the menu item in the sidebar  */
   'tree-editing-dialog.sidebar.action.collapse': 'Collapse',
+  /** Label to close the dialog */
+  'tree-editing-dialog.sidebar.action.done': 'Done',
   /** Exapnd label the menu item in the sidebar  */
   'tree-editing-dialog.sidebar.action.expand': 'Expand',
   /** Label to open the sidebar */
