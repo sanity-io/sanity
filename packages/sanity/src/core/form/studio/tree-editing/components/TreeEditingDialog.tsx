@@ -11,6 +11,7 @@ import {
   type ObjectInputProps,
   type ObjectSchemaType,
   type Path,
+  useTranslation,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
@@ -66,6 +67,7 @@ interface TreeEditingDialogProps {
 export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | null {
   const {onPathFocus, onPathOpen, openPath, rootInputProps, schemaType} = props
   const {value} = rootInputProps
+  const {t} = useTranslation()
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
   const [layoutScrollElement, setLayoutScrollElement] = useState<HTMLDivElement | null>(null)
@@ -224,7 +226,11 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
         footer={
           <Card borderTop>
             <Flex align="center" justify="flex-end" paddingX={3} paddingY={2} sizing="border">
-              <Button data-testid="tree-editing-done" text="Done" onClick={onClose} />
+              <Button
+                data-testid="tree-editing-done"
+                text={t('tree-editing-dialog.sidebar.action.done')}
+                onClick={onClose}
+              />
             </Flex>
           </Card>
         }
