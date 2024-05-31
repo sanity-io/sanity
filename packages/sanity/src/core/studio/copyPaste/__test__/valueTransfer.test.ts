@@ -21,6 +21,7 @@ describe('transferValue', () => {
       ],
     }
     const copyActionResult: CopyActionResult = {
+      _type: 'copyResult',
       documentId: '123',
       documentType: 'author',
       schemaTypeName: 'author',
