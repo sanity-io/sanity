@@ -92,6 +92,38 @@ const schema = Schema.compile({
   ],
 })
 
+const schemaWithReferences = Schema.compile({
+  name: 'default',
+  types: [
+    {
+      name: 'testDocument',
+      title: 'Document',
+      type: 'document',
+      fields: [
+        {
+          type: 'array',
+          name: 'arrayOfObjectsWithReferences',
+          title: 'Array of objects with references',
+          of: [
+            {
+              type: 'object',
+              name: 'objectWithReference',
+              fields: [
+                {
+                  name: 'reference',
+                  type: 'reference',
+                  title: 'Reference',
+                  to: [{type: 'author'}],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
 describe('tree-editing: buildTreeEditingState', () => {
   test('should build tree editing state for an array of objects', () => {
     const documentValue: SanityDocumentLike = {
@@ -352,5 +384,89 @@ describe('tree-editing: buildTreeEditingState', () => {
 
     expect(result1).toEqual(expectedResult)
     expect(result2).toEqual(expectedResult)
+  })
+
+  test('should build tree editing state for an object with an array of references', () => {
+    // references will not appear in the list of menu items
+
+    const documentValue: SanityDocumentLike = {
+      _id: 'testDocument',
+      _type: 'testDocument',
+      title: 'Test document',
+      arrayOfObjectsWithReferences: [
+        {
+          _type: 'objectWithReference',
+          _key: '1',
+          reference: {
+            _type: 'reference',
+            _ref: 'jrr-tolkien',
+          },
+        },
+      ],
+    }
+
+    const schemaType = schemaWithReferences.get('testDocument')
+
+    const expectedResult: TreeEditingState = {
+      rootTitle: 'Array of objects with references',
+      breadcrumbs: [
+        {
+          path: [
+            'arrayOfObjectsWithReferences',
+            {
+              _key: '1',
+            },
+          ],
+          title: 'reference: {empty}',
+          children: [
+            {
+              path: [
+                'arrayOfObjectsWithReferences',
+                {
+                  _key: '1',
+                },
+              ],
+              title: 'reference: {empty}',
+              children: [],
+              parentArrayTitle: 'Array of objects with references',
+            },
+          ],
+          parentArrayTitle: 'Array of objects with references',
+        },
+      ],
+      menuItems: [
+        {
+          title: 'reference: {empty}',
+          path: [
+            'arrayOfObjectsWithReferences',
+            {
+              _key: '1',
+            },
+          ],
+          children: [],
+          parentTitle: 'Array of objects with references',
+        },
+      ],
+      relativePath: [
+        'arrayOfObjectsWithReferences',
+        {
+          _key: '1',
+        },
+      ],
+    }
+
+    // Path to the array item
+    const result1 = buildTreeEditingState({
+      documentValue,
+      openPath: [
+        'arrayOfObjectsWithReferences',
+        {
+          _key: '1',
+        },
+      ],
+      schemaType,
+    })
+
+    expect(result1).toEqual(expectedResult)
   })
 })
