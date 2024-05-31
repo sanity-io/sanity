@@ -2,7 +2,7 @@ import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
-import {memo, type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
@@ -48,12 +48,7 @@ const ChildStack = styled(Stack)(({theme}) => {
   return css`
     margin-left: ${space + 2}px;
     box-sizing: border-box;
-    border-left: 1px solid transparent;
-    transition: border-color 0.1s ease;
-
-    &[data-mouse-over='true'] {
-      border-left: 1px solid var(--card-border-color);
-    }
+    border-left: 1px solid var(--card-backdrop-color);
   `
 })
 
@@ -111,23 +106,11 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   const hasChildren = children && children.length > 0
   const [open, setOpen] = useState<boolean>(false)
   const {t} = useTranslation()
-  const [mouseOver, setMouseOver] = useState<boolean>(false)
 
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
 
   const selected = useMemo(() => isEqual(item.path, selectedPath), [item.path, selectedPath])
   const isArrayParent = useMemo(() => !isArrayItemPath(item.path), [item.path])
-
-  const handleMouseEnter = useCallback((e: MouseEvent<HTMLUListElement>) => {
-    e.stopPropagation()
-    e.preventDefault()
-    setMouseOver(true)
-  }, [])
-  const handleMouseLeave = useCallback((e: MouseEvent<HTMLUListElement>) => {
-    e.stopPropagation()
-    e.preventDefault()
-    setMouseOver(false)
-  }, [])
 
   const handleClick = useCallback(() => {
     onPathSelect(item.path)
@@ -221,16 +204,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
       </Card>
 
       {open && hasChildren && (
-        <ChildStack
-          data-mouse-over={mouseOver ? 'true' : 'false'}
-          flex={1}
-          forwardedAs="ul"
-          onMouseOut={handleMouseLeave}
-          onMouseOver={handleMouseEnter}
-          paddingLeft={1}
-          role="group"
-          space={STACK_SPACE}
-        >
+        <ChildStack flex={1} forwardedAs="ul" paddingLeft={1} role="group" space={STACK_SPACE}>
           {children.map((child) => {
             const childSiblingHasChildren = children.some(
               (sibling) => sibling.children && sibling.children.length > 0,
