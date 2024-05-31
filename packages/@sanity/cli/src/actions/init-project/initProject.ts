@@ -22,6 +22,7 @@ import {
 } from '../../packageManager'
 import {
   ALLOWED_PACKAGE_MANAGERS,
+  allowedPackageManagersString,
   getPartialEnvWithNpmPath,
   type PackageManager,
 } from '../../packageManager/packageManagerChoice'
@@ -460,8 +461,6 @@ export default async function initSanity(
 
     // eslint-disable-next-line no-process-exit
     process.exit(0)
-
-    return
   }
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -557,6 +556,16 @@ export default async function initSanity(
         interactive: unattended ? false : isInteractive,
       })
     ).chosen
+
+    // only log warning if a package manager flag is passed
+    if (packageManager) {
+      output.warn(
+        chalk.yellow(
+          `Given package manager "${packageManager}" is not supported. Supported package managers are ${allowedPackageManagersString}.`,
+        ),
+      )
+      output.print(`Using ${pkgManager} as package manager`)
+    }
   }
 
   trace.log({step: 'selectPackageManager', selectedOption: pkgManager})
