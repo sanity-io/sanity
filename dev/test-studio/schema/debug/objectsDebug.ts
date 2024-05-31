@@ -222,6 +222,12 @@ const arrayOfMixedTypes = defineField({
       name: 'image',
       title: 'Image',
     },
+    {
+      name: 'author',
+      type: 'reference',
+      title: 'Author',
+      to: [{type: 'author'}],
+    },
   ],
 })
 
