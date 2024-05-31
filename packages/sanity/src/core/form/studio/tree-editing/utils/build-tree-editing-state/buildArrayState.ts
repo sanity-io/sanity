@@ -6,6 +6,7 @@ import {
   isArrayOfPrimitivesSchemaType,
   isArraySchemaType,
   isPrimitiveSchemaType,
+  isReferenceSchemaType,
   type ObjectSchemaType,
   type Path,
 } from 'sanity'
@@ -42,6 +43,13 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: TreeEditingMenuItem[] = []
+
+    const isReference = isReferenceSchemaType(itemSchemaField)
+
+    // if the item is a reference, we don't want to add it to the menu / breadcrumbs
+    if (isReference) {
+      return
+    }
 
     if (shouldBeInBreadcrumb(itemPath, openPath)) {
       const breadcrumbsResult = buildBreadcrumbsState({
