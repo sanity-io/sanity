@@ -1,5 +1,6 @@
-import {defineType, type Schema} from '@sanity/types'
-import {createSchema} from 'sanity'
+import {defineField, defineType, type Schema} from '@sanity/types'
+
+import {createSchema} from '../../../schema'
 
 const Icon = () => null
 
@@ -27,33 +28,33 @@ export const schema = createSchema({
   types: [
     linkType,
     myStringType,
-    {
-      name: 'customNamedBlock',
-      type: 'block',
-      title: 'A named custom block',
-      marks: {
-        annotations: [linkType, myStringType],
-      },
-      of: [
-        {type: 'image'},
-        {
-          type: 'object',
-          name: 'test',
-          fields: [myStringType],
-        },
-        {
-          type: 'reference',
-          name: 'strongAuthorRef',
-          title: 'A strong author ref',
-          to: {type: 'author'},
-        },
-      ],
-    },
-    {
+    // {
+    //   name: 'customNamedBlock',
+    //   type: 'block',
+    //   title: 'A named custom block',
+    //   marks: {
+    //     annotations: [linkType, myStringType],
+    //   },
+    //   of: [
+    //     {type: 'image'},
+    //     {
+    //       type: 'object',
+    //       name: 'test',
+    //       fields: [myStringType],
+    //     },
+    //     {
+    //       type: 'reference',
+    //       name: 'strongAuthorRef',
+    //       title: 'A strong author ref',
+    //       to: {type: 'author'},
+    //     },
+    //   ],
+    // },
+    defineType({
       name: 'author',
       title: 'Author',
       type: 'document',
-      icon: Icon,
+      //icon: Icon,
       fields: [
         {
           name: 'name',
@@ -63,22 +64,22 @@ export const schema = createSchema({
           name: 'role',
           type: 'string',
         },
-        {
-          name: 'bio',
-          type: 'array',
-          of: [{type: 'customNamedBlock'}],
-        },
-        {
+        // {
+        //   name: 'bio',
+        //   type: 'array',
+        //   of: [{type: 'customNamedBlock'}],
+        // },
+        defineField({
           name: 'bestFriend',
           type: 'reference',
           to: [{type: 'author'}],
-        },
+        }),
       ],
       initialValue: () => ({
         role: 'Developer',
       }),
-    },
-    {
+    }),
+    defineType({
       name: 'address',
       title: 'Address',
       type: 'object',
@@ -94,7 +95,7 @@ export const schema = createSchema({
           initialValue: '123',
         },
       ],
-    },
+    }),
     {
       name: 'contact',
       title: 'Contact',
@@ -137,11 +138,11 @@ export const schema = createSchema({
           name: 'title',
           type: 'string',
         },
-        {
-          name: 'body',
-          type: 'array',
-          of: [{type: 'customNamedBlock'}],
-        },
+        // {
+        //   name: 'body',
+        //   type: 'array',
+        //   of: [{type: 'customNamedBlock'}],
+        // },
         {
           name: 'author',
           type: 'reference',
@@ -154,13 +155,13 @@ export const schema = createSchema({
       name: 'captionedImage',
       type: 'object',
       fields: [
-        {
-          // This doesn't have a default value, so shouldn't be present,
-          // not even with a `_type` stub
-          name: 'asset',
-          type: 'reference',
-          to: [{type: 'sanity.imageAsset'}],
-        },
+        // {
+        //   // This doesn't have a default value, so shouldn't be present,
+        //   // not even with a `_type` stub
+        //   name: 'asset',
+        //   type: 'reference',
+        //   to: [{type: 'sanity.imageAsset'}],
+        // },
         {
           name: 'caption',
           type: 'string',
