@@ -6,6 +6,7 @@ import {type Path, PresenceOverlay, VirtualizerScrollInstanceProvider} from 'san
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../types'
 import {TreeEditingBreadcrumbs} from './breadcrumbs'
 import {Resizable} from './resizer'
@@ -48,11 +49,18 @@ interface SidebarProps {
 
 const Sidebar = memo(function Sidebar(props: SidebarProps) {
   const {items, onPathSelect, selectedPath, onOpenToggle, open, title} = props
+  const {t} = useTranslation()
 
   const ConditionalResizer = open ? Resizable : Fragment
 
-  // todo: localize
-  const tooltipProps = useMemo(() => ({content: open ? 'Close sidebar' : 'Open sidebar'}), [open])
+  const tooltipProps = useMemo(
+    () => ({
+      content: open
+        ? t('tree-editing-dialog.sidebar.action.close')
+        : t('tree-editing-dialog.sidebar.action.open'),
+    }),
+    [open, t],
+  )
 
   return (
     <ConditionalResizer maxWidth={450} minWidth={150} initialWidth={250}>
