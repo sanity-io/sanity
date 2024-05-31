@@ -1,7 +1,6 @@
 import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
-import {pick} from 'lodash'
 import {memo, useMemo} from 'react'
 import {
   ReferenceInputOptionsProvider,
@@ -14,7 +13,6 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {CopyPasteProvider} from '../../../core/studio/copyPaste/CopyPasteProvider'
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
@@ -69,10 +67,6 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       ? mergeDocumentType(props, options, documentType)
       : props
   }, [props, documentType, isLoaded, options])
-
-  const copyPasteProviderProps = useMemo(() => {
-    return pick(providerProps, ['documentId', 'documentType'])
-  }, [providerProps])
 
   const {ReferenceChildLink, handleEditReference, groupIndex, routerPanesState} = paneRouter
   const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
@@ -144,11 +138,9 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <CopyPasteProvider {...copyPasteProviderProps}>
-          <CommentsWrapper documentId={options.id} documentType={options.type}>
-            <DocumentLayout documentId={options.id} documentType={options.type} />
-          </CommentsWrapper>
-        </CopyPasteProvider>
+        <CommentsWrapper documentId={options.id} documentType={options.type}>
+          <DocumentLayout documentId={options.id} documentType={options.type} />
+        </CommentsWrapper>
       </ReferenceInputOptionsProvider>
     </DocumentPaneProvider>
   )
