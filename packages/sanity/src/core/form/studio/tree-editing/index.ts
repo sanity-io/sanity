@@ -1,2 +1,3 @@
 export * from './components'
-export {shouldArrayDialogOpen, useTreeArrayEditingEnabled} from './utils'
+export * from './hooks'
+export {shouldArrayDialogOpen} from './utils'

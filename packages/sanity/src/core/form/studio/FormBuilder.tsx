@@ -3,7 +3,6 @@
 
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {useCallback, useRef} from 'react'
-import {useTreeArrayEditingEnabled} from 'sanity'
 
 import {type DocumentFieldAction} from '../../config'
 import {type FormNodePresence} from '../../presence'
@@ -35,7 +34,7 @@ import {
 } from '../types'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormProvider} from './FormProvider'
-import {TreeEditingDialog} from './tree-editing'
+import {TreeEditingDialog, useTreeArrayEditingEnabled} from './tree-editing'
 
 /**
  * @alpha
