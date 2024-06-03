@@ -93,13 +93,9 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
       const hasNoRelativePath = len === 0
 
-      // If the last segment has a `_key` property, it is an array item path.
-      // In that case, we want to use the built relative path as the relative path.
-      // Otherwise, the built relative path is pointing to an non-array item path.
-      // In that case, we do not want to use the built relative path as that would
-      // lead to filtering out only those fields in the form.
-      // We only want to change the fields being displayed when the path is
-      // pointing to an array item.
+      // If there is not relative path or the path is not an array item path, we want to use the
+      // current relative path. This is to avoid changing the fields being displayed in the form
+      // when the path is not an array item path.
       const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath(builtRelativePath)
       const nextRelativePath = useCurrentRelativePath ? treeState.relativePath : builtRelativePath
 
@@ -169,7 +165,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     const openPathChanged = !isEqual(openPath, openPathRef.current)
     const isInitialRender = valueRef.current === undefined && openPathRef.current === undefined
 
-    // If the value has not changed but the openPath has changed or
+    // If the value has not changed but the openPath has changed, or
     // if it is the initial render, build the tree editing state
     // without debouncing. We do this to make sure that the UI is
     // updated immediately when the openPath changes.
