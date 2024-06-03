@@ -215,6 +215,31 @@ const arrayOfMixedTypes = defineField({
           type: 'string',
           title: 'String',
         },
+        // Array of objects
+        {
+          name: 'arrayOfObjects',
+          type: 'array',
+          title: 'Array of objects',
+          of: [
+            {
+              type: 'object',
+              name: 'myObject',
+              fields: [
+                {
+                  name: 'string',
+                  type: 'string',
+                  title: 'String',
+                },
+              ],
+            },
+            {
+              type: 'reference',
+              name: 'author',
+              title: 'Author',
+              to: [{type: 'author'}],
+            },
+          ],
+        },
       ],
     },
     {
