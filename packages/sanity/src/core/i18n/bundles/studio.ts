@@ -1541,6 +1541,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'search.recent-searches-label': 'Recent searches',
   /** Accessibility label for the search results section, shown when the user has typed valid terms */
   'search.search-results-aria-label': 'Search results',
+  /** Label for the header menu option to hide a field from the sheet list */
+  'sheet-list.hide-field': 'Remove from table',
   /** Accessibility label for the navbar status button */
   'status-button.aria-label': 'Configuration status',
 

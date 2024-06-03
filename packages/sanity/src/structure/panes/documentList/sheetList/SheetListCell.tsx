@@ -143,6 +143,7 @@ export function SheetListCell(props: SheetListCellProps) {
         style={{
           boxShadow: 'none',
           border: getBorderStyle(),
+          padding: 0,
         }}
         value={JSON.stringify(renderValue)}
       >
@@ -160,6 +161,7 @@ export function SheetListCell(props: SheetListCellProps) {
       border={false}
       style={{
         border: getBorderStyle(),
+        padding: 0,
       }}
       value={
         typeof renderValue === 'string' || typeof renderValue === 'number'
