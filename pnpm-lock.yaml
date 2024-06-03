@@ -65,8 +65,8 @@ importers:
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
-        specifier: 1.0.67
-        version: 1.0.67(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
+        specifier: 1.0.70
+        version: 1.0.70(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -1849,8 +1849,8 @@ importers:
         specifier: 6.8.19
         version: 6.8.19(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
       '@sanity/tsdoc':
-        specifier: 1.0.67
-        version: 1.0.67(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
+        specifier: 1.0.70
+        version: 1.0.70(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
         version: 1.2.11(@sanity/icons@3.0.0)(@sanity/ui@2.1.14)(@types/node@18.19.31)(react-dom@18.3.1)(react@18.3.1)(styled-components@6.1.11)
@@ -6799,6 +6799,7 @@ packages:
       react: '*'
     dependencies:
       react: 18.3.1
+    dev: false
 
   /@sanity/icons@3.0.0(react@18.3.1):
     resolution: {integrity: sha512-tvAxP5XaqZ6lG3JpAe+ZHWF4JqjFHnvtheY64VyLLO/8lwbiy7Q/Xhh0hYw9Anm0k0HCONcahyMvO+Q18n05tw==}
@@ -7218,128 +7219,6 @@ packages:
       - debug
     dev: true
 
-  /@sanity/tsdoc@1.0.67(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
-    resolution: {integrity: sha512-Vsji0DNODyYWpE3PKBpzd/zq/qaxcOqWTKi6RC0vWXVOmrxG9WT0VTi5H23+5waViSaJeL558R2M3nmcQUX1pg==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    peerDependencies:
-      react: '*'
-      react-dom: '*'
-      sanity: ^3
-      styled-components: ^5.2 || ^6
-    dependencies:
-      '@microsoft/api-extractor': 7.43.8(@types/node@18.19.31)
-      '@microsoft/api-extractor-model': 7.28.18(@types/node@18.19.31)
-      '@microsoft/tsdoc': 0.14.2
-      '@microsoft/tsdoc-config': 0.16.2
-      '@portabletext/react': 3.1.0(react@18.3.1)
-      '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.19.1(debug@4.3.4)
-      '@sanity/color': 3.0.6
-      '@sanity/icons': 2.11.8(react@18.3.1)
-      '@sanity/pkg-utils': 6.8.18(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
-      '@sanity/ui': 2.1.14(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
-      '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.0(vite@5.2.11)
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      cors: 2.8.5
-      dotenv-flow: 3.3.0
-      esbuild: 0.21.4
-      esbuild-register: 3.5.0(esbuild@0.21.4)
-      express: 4.19.2
-      globby: 11.1.0
-      groq: 3.44.0
-      groq-js: 1.9.0
-      history: 5.3.0
-      jsonc-parser: 3.2.1
-      mkdirp: 1.0.4
-      pkg-up: 3.1.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-refractor: 2.2.0(react@18.3.1)
-      sanity: link:packages/sanity
-      slugify: 1.6.6
-      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
-      tmp: 0.2.3
-      typescript: 5.4.5
-      vite: 5.2.11(@types/node@18.19.31)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - less
-      - lightningcss
-      - react-is
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: true
-
-  /@sanity/tsdoc@1.0.67(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
-    resolution: {integrity: sha512-Vsji0DNODyYWpE3PKBpzd/zq/qaxcOqWTKi6RC0vWXVOmrxG9WT0VTi5H23+5waViSaJeL558R2M3nmcQUX1pg==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    peerDependencies:
-      react: '*'
-      react-dom: '*'
-      sanity: ^3
-      styled-components: ^5.2 || ^6
-    dependencies:
-      '@microsoft/api-extractor': 7.43.8(@types/node@18.19.31)
-      '@microsoft/api-extractor-model': 7.28.18(@types/node@18.19.31)
-      '@microsoft/tsdoc': 0.14.2
-      '@microsoft/tsdoc-config': 0.16.2
-      '@portabletext/react': 3.1.0(react@18.3.1)
-      '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.19.1
-      '@sanity/color': 3.0.6
-      '@sanity/icons': 2.11.8(react@18.3.1)
-      '@sanity/pkg-utils': 6.8.18(@types/node@18.19.31)(typescript@5.4.5)
-      '@sanity/ui': 2.1.14(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
-      '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.0(vite@5.2.11)
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      cors: 2.8.5
-      dotenv-flow: 3.3.0
-      esbuild: 0.21.4
-      esbuild-register: 3.5.0(esbuild@0.21.4)
-      express: 4.19.2
-      globby: 11.1.0
-      groq: 3.44.0
-      groq-js: 1.9.0
-      history: 5.3.0
-      jsonc-parser: 3.2.1
-      mkdirp: 1.0.4
-      pkg-up: 3.1.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-refractor: 2.2.0(react@18.3.1)
-      sanity: link:packages/sanity
-      slugify: 1.6.6
-      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
-      tmp: 0.2.3
-      typescript: 5.4.5
-      vite: 5.2.11(@types/node@18.19.31)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - less
-      - lightningcss
-      - react-is
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: true
-
   /@sanity/tsdoc@1.0.69(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
     resolution: {integrity: sha512-IKdCMYSeX0Rlj5evZRYzffzZooIbxkQgIWImTrro8GHnehQFUqNXQ8LLOaaHQQkGaTKMAi+rCK3YNp9o/fmTqg==}
     engines: {node: '>=14.0.0'}
@@ -7362,7 +7241,7 @@ packages:
       '@sanity/pkg-utils': 6.8.18(@types/node@18.19.31)(typescript@5.4.5)
       '@sanity/ui': 2.1.14(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.0(vite@5.2.11)
+      '@vitejs/plugin-react': 4.3.0(vite@5.2.12)
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 3.6.0
@@ -7386,7 +7265,7 @@ packages:
       styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
       tmp: 0.2.3
       typescript: 5.4.5
-      vite: 5.2.11(@types/node@18.19.31)
+      vite: 5.2.12(@types/node@18.19.31)
     transitivePeerDependencies:
       - '@types/babel__core'
       - '@types/node'
@@ -7400,6 +7279,128 @@ packages:
       - supports-color
       - terser
     dev: false
+
+  /@sanity/tsdoc@1.0.70(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
+    resolution: {integrity: sha512-/VypwI3yGwtaR5CyDbhYr/diti4nrw/63ldVPpJCm8th3PzT0zjVmq75bzRE4KC9BH5s2HlH002kiTs59sIROw==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    peerDependencies:
+      react: '*'
+      react-dom: '*'
+      sanity: ^3
+      styled-components: ^5.2 || ^6
+    dependencies:
+      '@microsoft/api-extractor': 7.43.8(@types/node@18.19.31)
+      '@microsoft/api-extractor-model': 7.28.18(@types/node@18.19.31)
+      '@microsoft/tsdoc': 0.14.2
+      '@microsoft/tsdoc-config': 0.16.2
+      '@portabletext/react': 3.1.0(react@18.3.1)
+      '@portabletext/toolkit': 2.0.15
+      '@sanity/client': 6.19.1(debug@4.3.4)
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 3.0.0(react@18.3.1)
+      '@sanity/pkg-utils': 6.8.18(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
+      '@sanity/ui': 2.1.14(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+      '@types/cpx': 1.5.5
+      '@vitejs/plugin-react': 4.3.0(vite@5.2.12)
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      cors: 2.8.5
+      dotenv-flow: 3.3.0
+      esbuild: 0.21.4
+      esbuild-register: 3.5.0(esbuild@0.21.4)
+      express: 4.19.2
+      globby: 11.1.0
+      groq: 3.44.0
+      groq-js: 1.9.0
+      history: 5.3.0
+      jsonc-parser: 3.2.1
+      mkdirp: 1.0.4
+      pkg-up: 3.1.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-refractor: 2.2.0(react@18.3.1)
+      sanity: link:packages/sanity
+      slugify: 1.6.6
+      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
+      tmp: 0.2.3
+      typescript: 5.4.5
+      vite: 5.2.12(@types/node@18.19.31)
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - less
+      - lightningcss
+      - react-is
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    dev: true
+
+  /@sanity/tsdoc@1.0.70(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
+    resolution: {integrity: sha512-/VypwI3yGwtaR5CyDbhYr/diti4nrw/63ldVPpJCm8th3PzT0zjVmq75bzRE4KC9BH5s2HlH002kiTs59sIROw==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    peerDependencies:
+      react: '*'
+      react-dom: '*'
+      sanity: ^3
+      styled-components: ^5.2 || ^6
+    dependencies:
+      '@microsoft/api-extractor': 7.43.8(@types/node@18.19.31)
+      '@microsoft/api-extractor-model': 7.28.18(@types/node@18.19.31)
+      '@microsoft/tsdoc': 0.14.2
+      '@microsoft/tsdoc-config': 0.16.2
+      '@portabletext/react': 3.1.0(react@18.3.1)
+      '@portabletext/toolkit': 2.0.15
+      '@sanity/client': 6.19.1
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 3.0.0(react@18.3.1)
+      '@sanity/pkg-utils': 6.8.18(@types/node@18.19.31)(typescript@5.4.5)
+      '@sanity/ui': 2.1.14(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+      '@types/cpx': 1.5.5
+      '@vitejs/plugin-react': 4.3.0(vite@5.2.12)
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      cors: 2.8.5
+      dotenv-flow: 3.3.0
+      esbuild: 0.21.4
+      esbuild-register: 3.5.0(esbuild@0.21.4)
+      express: 4.19.2
+      globby: 11.1.0
+      groq: 3.44.0
+      groq-js: 1.9.0
+      history: 5.3.0
+      jsonc-parser: 3.2.1
+      mkdirp: 1.0.4
+      pkg-up: 3.1.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-refractor: 2.2.0(react@18.3.1)
+      sanity: link:packages/sanity
+      slugify: 1.6.6
+      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
+      tmp: 0.2.3
+      typescript: 5.4.5
+      vite: 5.2.12(@types/node@18.19.31)
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - less
+      - lightningcss
+      - react-is
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    dev: true
 
   /@sanity/types@3.37.2(debug@4.3.4):
     resolution: {integrity: sha512-1EfKkNlJ86wIDtc7oFHb79JI8lKDOxKDYrkmwhvuHgJY83GpSABc1kFdbwAtWZfrWVWyqVXUv/KlNwA3b99y/g==}
@@ -8622,7 +8623,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@vitejs/plugin-react@4.3.0(vite@5.2.11):
+  /@vitejs/plugin-react@4.3.0(vite@5.2.12):
     resolution: {integrity: sha512-KcEbMsn4Dpk+LIbHMj7gDPRKaTMStxxWRkRmxsg/jVdFdJCZWt1SchZcf0M4t8lIKdwwMsEyzhrcOXRrDPtOBw==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
@@ -8633,7 +8634,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.24.1(@babel/core@7.24.6)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 5.2.11(@types/node@18.19.31)
+      vite: 5.2.12(@types/node@18.19.31)
     transitivePeerDependencies:
       - supports-color
 
@@ -20305,8 +20306,8 @@ packages:
     optionalDependencies:
       fsevents: 2.3.3
 
-  /vite@5.2.11(@types/node@18.19.31):
-    resolution: {integrity: sha512-HndV31LWW05i1BLPMUCE1B9E9GFbOu1MbenhS58FuK6owSO5qHm7GiCotrNY1YE5rMeQSFBGmT5ZaLEjFizgiQ==}
+  /vite@5.2.12(@types/node@18.19.31):
+    resolution: {integrity: sha512-/gC8GxzxMK5ntBwb48pR32GGhENnjtY30G4A0jemunsBkiEZFw60s8InGpN8gkhHEkjnRK1aSAxeQgwvFhUHAA==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
