@@ -65,6 +65,7 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
         borderRight: `${borderWidth}px solid var(--card-border-color)`,
       }}
       key={header.id}
+      data-testid={`header-${header.id}`}
       width={header.getSize()}
     >
       <Flex justify="space-between" marginX={2} align="baseline">
@@ -81,6 +82,7 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
                   tooltipProps={{content: 'Open field menu'}}
                   mode="bleed"
                   icon={EllipsisHorizontalIcon}
+                  data-testid="field-menu-button"
                 />
               }
               id="field menu"
