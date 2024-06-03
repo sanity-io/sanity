@@ -106,11 +106,4 @@ export default defineConfig({
   __internal_serverDocumentActions: {
     enabled: true,
   },
-  features: {
-    beta: {
-      treeArrayEditing: {
-        enabled: true,
-      },
-    },
-  },
 })
