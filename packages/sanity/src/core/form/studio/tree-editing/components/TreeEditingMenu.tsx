@@ -1,6 +1,8 @@
 import {hues} from '@sanity/color'
 import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
@@ -42,8 +44,8 @@ const Spacer = styled.div`
 `
 
 const ChildStack = styled(Stack)(({theme}) => {
-  const space = theme.sanity?.v2?.space[3] || 0
-  const isDark = theme.sanity?.v2?.color._dark
+  const space = getTheme_v2(theme)?.space[3] || 0
+  const isDark = getTheme_v2(theme)?.color._dark
   const borderColor = hues.gray[isDark ? 900 : 200].hex
 
   return css`
@@ -54,9 +56,9 @@ const ChildStack = styled(Stack)(({theme}) => {
 })
 
 const ItemFlex = styled(Flex)(({theme}) => {
-  const defaultHoverBg = theme.sanity.v2?.color.button.bleed.default.hovered.bg
-  const selectedHoverBg = theme.sanity.v2?.color.button.bleed.default.pressed.bg
-  const selectedBg = theme.sanity.v2?.color.button.bleed.default.selected.bg
+  const defaultHoverBg = getTheme_v2(theme)?.color.button.bleed.default.hovered.bg
+  const selectedHoverBg = getTheme_v2(theme)?.color.button.bleed.default.pressed.bg
+  const selectedBg = getTheme_v2(theme)?.color.button.bleed.default.selected.bg
 
   return css`
     padding: 2px 3px;

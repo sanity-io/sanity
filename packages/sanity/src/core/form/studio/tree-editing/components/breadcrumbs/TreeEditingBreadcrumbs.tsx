@@ -1,6 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Button, Flex, Stack, Text, Tooltip, useElementSize} from '@sanity/ui'
-import {type Theme} from '@sanity/ui/theme'
+// eslint-disable-next-line camelcase
+import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {isEqual} from 'lodash'
 import {
   type ForwardedRef,
@@ -29,7 +30,7 @@ const SeparatorBox = styled(Box)`
 `
 
 const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
-  const {bold} = theme.sanity.v2?.font.text?.weights || {}
+  const {bold} = getTheme_v2(theme)?.font.text?.weights || {}
 
   return css`
     max-height: 1rem;
