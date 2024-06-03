@@ -50,17 +50,13 @@ export const MentionsMenu = forwardRef(function MentionsMenu(
   const [searchTerm, setSearchTerm] = useState<string>('')
   const commandListRef = useRef<CommandListHandle>(null)
 
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
-        setSearchTerm(term: string) {
-          setSearchTerm(term)
-        },
-      }
-    },
-    [],
-  )
+  useImperativeHandle(ref, () => {
+    return {
+      setSearchTerm(term: string) {
+        setSearchTerm(term)
+      },
+    }
+  }, [])
 
   const renderItem = useCallback(
     (itemProps: UserWithPermission) => {
