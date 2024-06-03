@@ -1,6 +1,7 @@
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
 import {Button, Card, Dialog, Flex} from '@sanity/ui'
-import {type Theme} from '@sanity/ui/theme'
+// eslint-disable-next-line camelcase
+import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, isEqual} from 'lodash'
@@ -40,7 +41,7 @@ function renderDefault(props: InputProps) {
 }
 
 const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
-  const spacing = theme.sanity.v2?.space[4]
+  const spacing = getTheme_v2(theme)?.space[4]
 
   return css`
     [data-ui='DialogCard'] {
