@@ -447,33 +447,29 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     }
   }, [hideChildrenActiveState, onlyShowSelectionWhenActive])
 
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
-        focusInputElement() {
-          focusInputElement()
-        },
-        focusListElement() {
-          focusListElement()
-        },
-        getTopIndex() {
-          return handleGetTopIndex()
-        },
-        scrollToIndex(index: number) {
-          setActiveIndex({index})
-          enableChildContainerPointerEvents(true)
-        },
-      }
-    },
-    [
-      enableChildContainerPointerEvents,
-      focusInputElement,
-      focusListElement,
-      handleGetTopIndex,
-      setActiveIndex,
-    ],
-  )
+  useImperativeHandle(ref, () => {
+    return {
+      focusInputElement() {
+        focusInputElement()
+      },
+      focusListElement() {
+        focusListElement()
+      },
+      getTopIndex() {
+        return handleGetTopIndex()
+      },
+      scrollToIndex(index: number) {
+        setActiveIndex({index})
+        enableChildContainerPointerEvents(true)
+      },
+    }
+  }, [
+    enableChildContainerPointerEvents,
+    focusInputElement,
+    focusListElement,
+    handleGetTopIndex,
+    setActiveIndex,
+  ])
 
   /**
    * Optionally set active index (and align) on mount only

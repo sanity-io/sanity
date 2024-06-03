@@ -3,6 +3,10 @@ import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detecto
 
 import initPlugin from '../../actions/init-plugin/initPlugin'
 import initProject from '../../actions/init-project/initProject'
+import {
+  allowedPackageManagersString,
+  type PackageManager,
+} from '../../packageManager/packageManagerChoice'
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
@@ -22,6 +26,7 @@ Options
   --project-plan <name> Optionally select a plan for a new project
   --coupon <name> Optionally select a coupon for a new project (cannot be used with --project-plan)
   --no-typescript Do not use TypeScript for template files
+  --package-manager <name> Specify which package manager to use [allowed: ${allowedPackageManagersString}]
 
 Examples
   # Initialize a new project, prompt for required information along the way
@@ -80,6 +85,8 @@ export interface InitFlags {
   'reconfigure'?: boolean
 
   'organization'?: string
+
+  'package-manager'?: PackageManager
 }
 
 export const initCommand: CliCommandDefinition<InitFlags> = {
