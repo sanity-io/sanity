@@ -1,9 +1,7 @@
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
-/* eslint-disable i18next/no-literal-string */
 import {Box, Button, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
 import {type Column, type Table} from '@tanstack/react-table'
 import {useCallback} from 'react'
-import {type SanityDocument} from 'sanity'
+import {type SanityDocument, useTranslation} from 'sanity'
 
 import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
@@ -12,6 +10,7 @@ type ColumnsControlProps = {
 }
 
 export function ColumnsControl({table}: ColumnsControlProps) {
+  const {t} = useTranslation()
   const isVisibleLimitReached =
     table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length >= VISIBLE_COLUMN_LIMIT
 
@@ -33,13 +32,13 @@ export function ColumnsControl({table}: ColumnsControlProps) {
 
   return (
     <MenuButton
-      button={<Button mode="bleed" text="Edit columns" size={1} />}
+      button={<Button mode="bleed" text={t('sheet-list.edit-columns')} size={1} />}
       id="columns-control"
       menu={
         <Menu padding={3} paddingTop={4} style={{width: 240}}>
           <Flex direction="column" height="fill" gap={3}>
             <Text weight="semibold" size={1}>
-              Select up to 5 field types
+              {t('sheet-list.select-fields')}
             </Text>
             <Flex style={{flex: '1 1 auto', maxHeight: 320, overflowY: 'scroll'}}>
               <Stack>
@@ -70,7 +69,7 @@ export function ColumnsControl({table}: ColumnsControlProps) {
               width="fill"
               mode="ghost"
               size={1}
-              text="Reset choices"
+              text={t('sheet-list.reset-columns')}
               onClick={setInitialColumns}
             />
           </Flex>

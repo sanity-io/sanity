@@ -3,7 +3,7 @@ import {type SanityDocument} from '@sanity/types'
 import {Box, Flex, Menu, MenuButton, Text} from '@sanity/ui'
 import {flexRender, type Header as HeaderType, type HeaderGroup} from '@tanstack/react-table'
 import {useTranslation} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, MenuItem, Tooltip} from '../../../../ui-components'
 
