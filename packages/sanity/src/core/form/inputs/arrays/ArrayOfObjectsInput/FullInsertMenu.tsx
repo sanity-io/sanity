@@ -6,6 +6,7 @@ import {
   Flex,
   Grid,
   Menu,
+  MenuItem,
   Popover,
   Stack,
   Text,
@@ -13,9 +14,18 @@ import {
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
-import {type ChangeEvent, type Dispatch, useCallback, useMemo, useReducer, useState} from 'react'
+import {
+  type ChangeEvent,
+  createElement,
+  type Dispatch,
+  useCallback,
+  useMemo,
+  useReducer,
+  useState,
+} from 'react'
+import {isValidElementType} from 'react-is'
 
-import {Button, MenuItem} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components'
 import {type StudioLocaleResourceKeys, useTranslation} from '../../../../i18n'
 import {FieldGroupTabs} from '../../ObjectInput/fieldGroups'
 import {getSchemaTypeIcon} from './getSchemaTypeIcon'
@@ -210,22 +220,91 @@ function FullInsertMenu<TSchemaType extends ArraySchemaType>(props: {
               </Text>
             </Box>
           ) : (
-            <ViewContainer {...(props.state.view === 'grid' ? {columns: 3} : {})}>
-              {filteredSchemaTypes.map((schemaType) => (
-                <MenuItem
-                  key={schemaType.name}
-                  text={schemaType.title ?? schemaType.name}
-                  onClick={() => {
-                    props.onSelect(schemaType)
-                  }}
-                  icon={getSchemaTypeIcon(schemaType)}
-                />
-              ))}
+            <ViewContainer
+              flex={1}
+              {...(props.state.view === 'grid'
+                ? {autoRows: 'max', columns: 3, gap: 1}
+                : {space: 1})}
+            >
+              {filteredSchemaTypes.map((schemaType) =>
+                props.state.view === 'grid' ? (
+                  <GridMenuItem
+                    key={schemaType.name}
+                    onClick={() => {
+                      props.onSelect(schemaType)
+                    }}
+                    schemaType={schemaType}
+                  />
+                ) : (
+                  <MenuItem
+                    key={schemaType.name}
+                    text={schemaType.title ?? schemaType.name}
+                    onClick={() => {
+                      props.onSelect(schemaType)
+                    }}
+                    icon={getSchemaTypeIcon(schemaType)}
+                  />
+                ),
+              )}
             </ViewContainer>
           )}
         </Menu>
       </Box>
     </Flex>
+  )
+}
+
+function GridMenuItem<TSchemaType extends ArraySchemaType>(props: {
+  onClick: () => void
+  schemaType: TSchemaType['of'][number]
+}) {
+  const icon = getSchemaTypeIcon(props.schemaType)
+  const [failedToLoad, setFailedToLoad] = useState(false)
+
+  return (
+    <MenuItem padding={0} onClick={props.onClick}>
+      <Flex direction="column" gap={3} padding={2}>
+        <Box
+          flex="none"
+          style={{
+            backgroundColor: 'var(--card-muted-bg-color)',
+            paddingBottom: '66.6%',
+            position: 'relative',
+          }}
+        >
+          {isValidElementType(icon)
+            ? createElement(icon, {
+                style: {
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  transform: 'translateX(-50%) translateY(-50%)',
+                },
+              })
+            : null}
+          {failedToLoad ? null : (
+            <img
+              src={`/static/preview-${props.schemaType.name}.png`}
+              style={{
+                objectFit: 'contain',
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                inset: 0,
+              }}
+              onError={() => {
+                setFailedToLoad(true)
+              }}
+            />
+          )}
+        </Box>
+        <Box flex={1}>
+          <Text size={1} weight="medium">
+            {props.schemaType.title ?? props.schemaType.name}
+          </Text>
+        </Box>
+      </Flex>
+    </MenuItem>
   )
 }
 
