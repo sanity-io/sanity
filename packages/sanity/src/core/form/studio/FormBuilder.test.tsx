@@ -1,4 +1,4 @@
-import {describe, expect, it, jest} from '@jest/globals'
+import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 /* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
 import {defineType, type Path} from '@sanity/types'
@@ -13,7 +13,7 @@ import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
 import {type FormDocumentValue} from '../types'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
-import {useTreeArrayEditingEnabled} from './tree-editing'
+import {useTreeArrayEditingEnabled} from './tree-editing/hooks/useTreeArrayEditingEnabled'
 
 const schemaTypes = [
   defineType({
@@ -30,8 +30,16 @@ const schemaTypes = [
   }),
 ]
 
+jest.mock('./tree-editing/hooks/useTreeArrayEditingEnabled')
+
 describe('FormBuilder', () => {
-  it('should render a studio form', async () => {
+  const mockedUseTreeArrayEditingEnabled = useTreeArrayEditingEnabled as jest.Mock
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('should render a studio form (without tree editing dialog)', async () => {
     const client = createMockSanityClient() as unknown as SanityClient
     const TestProvider = await createTestProvider({
       client,
@@ -42,6 +50,7 @@ describe('FormBuilder', () => {
         schema: {types: schemaTypes},
       },
     })
+    mockedUseTreeArrayEditingEnabled.mockImplementation(() => ({enabled: false}))
 
     const focusPath: Path = []
     const openPath: Path = []
@@ -59,7 +68,6 @@ describe('FormBuilder', () => {
     function TestForm() {
       const {schema} = useWorkspace()
       const schemaType = schema.get('test')
-      const useNewTreeDialog = useTreeArrayEditingEnabled()
 
       if (!schemaType) {
         throw new Error('missing schema type')
@@ -109,9 +117,8 @@ describe('FormBuilder', () => {
           schemaType: formState?.schemaType || schemaType,
           validation: EMPTY_ARRAY,
           value: formState?.value as FormDocumentValue,
-          useNewTreeDialog,
         }),
-        [formState, patchChannel, schemaType, useNewTreeDialog],
+        [formState, patchChannel, schemaType],
       )
 
       return <FormBuilder {...formBuilderProps} />
