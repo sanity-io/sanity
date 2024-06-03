@@ -36,13 +36,15 @@ type Group = NonNullable<
   selected?: boolean
 }
 
+type Views = Extract<ArrayOptions['insertMenu'], {layout: 'full'}>['views']
+
 const ALL_ITEMS_GROUP_NAME = 'all-items'
 
 type FullInsertMenuState = {
   open: boolean
   query: string
   groups: Array<Group>
-  view: 'list' | 'grid'
+  view: NonNullable<Views>[number]
 }
 
 type FullInsertMenuEvent =
@@ -72,6 +74,7 @@ export function FullInsertMenuButton<TSchemaType extends ArraySchemaType>(props:
   groups: Extract<ArrayOptions['insertMenu'], {layout: 'full'}>['groups']
   schemaTypes: TSchemaType['of']
   onSelect: (schemaType: TSchemaType['of'][number]) => void
+  views: Views
 }) {
   const {t} = useTranslation()
   const [state, send] = useReducer(fullInsertMenuReducer, {
@@ -87,7 +90,7 @@ export function FullInsertMenuButton<TSchemaType extends ArraySchemaType>(props:
           ...props.groups,
         ]
       : [],
-    view: 'list',
+    view: (props.views ?? ['list'])[0],
   })
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLDivElement | null>(null)
@@ -129,6 +132,7 @@ export function FullInsertMenuButton<TSchemaType extends ArraySchemaType>(props:
           schemaTypes={props.schemaTypes}
           send={send}
           state={state}
+          views={props.views ?? ['list']}
         />
       }
       fallbackPlacements={['top', 'bottom']}
@@ -157,6 +161,7 @@ function FullInsertMenu<TSchemaType extends ArraySchemaType>(props: {
   schemaTypes: TSchemaType['of']
   send: Dispatch<FullInsertMenuEvent>
   state: FullInsertMenuState
+  views: NonNullable<Views>
 }) {
   const {t} = useTranslation()
 
@@ -190,16 +195,18 @@ function FullInsertMenu<TSchemaType extends ArraySchemaType>(props: {
             value={props.state.query}
           />
         </Box>
-        <Box flex="none">
-          <Button
-            mode="bleed"
-            icon={viewToggleIcon[props.state.view]}
-            onClick={() => {
-              props.send({type: 'toggle view'})
-            }}
-            tooltipProps={{content: t(viewToggleTooltip[props.state.view])}}
-          />
-        </Box>
+        {props.views.length > 1 ? (
+          <Box flex="none">
+            <Button
+              mode="bleed"
+              icon={viewToggleIcon[props.state.view]}
+              onClick={() => {
+                props.send({type: 'toggle view'})
+              }}
+              tooltipProps={{content: t(viewToggleTooltip[props.state.view])}}
+            />
+          </Box>
+        ) : null}
       </Flex>
       <Box padding={1}>
         {props.state.groups && props.state.groups.length > 0 ? (

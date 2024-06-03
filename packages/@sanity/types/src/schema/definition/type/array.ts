@@ -29,6 +29,8 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration {
       }
     | {
         layout: 'full'
+        /** @defaultValue `['list']` */
+        views?: ['list'] | ['list', 'grid'] | ['grid'] | ['grid', 'list']
         groups?: Array<Pick<FieldGroupDefinition, 'name' | 'title'> & {of?: Array<string>}>
       }
 }

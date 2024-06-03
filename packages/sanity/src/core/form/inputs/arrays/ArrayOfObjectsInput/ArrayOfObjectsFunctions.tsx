@@ -90,6 +90,7 @@ export function ArrayOfObjectsFunctions<
           insertButtonProps={insertButtonProps}
           schemaTypes={schemaType.of}
           onSelect={insertItem}
+          views={schemaType.options.insertMenu.views}
         />
         {children}
       </Container>
