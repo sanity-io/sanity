@@ -19,8 +19,6 @@ function hasOpenChild(item: TreeEditingMenuItem, selectedPath: Path | null): boo
   )
 }
 
-const STACK_SPACE = 2
-
 const SCROLL_BEHAVIOR_OPTIONS: StandardBehaviorOptions = {
   block: 'center',
   behavior: 'smooth',
@@ -156,14 +154,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   )
 
   return (
-    <Stack
-      aria-expanded={open}
-      as="li"
-      key={title}
-      ref={setRootElement}
-      role="treeitem"
-      space={STACK_SPACE}
-    >
+    <Stack aria-expanded={open} as="li" key={title} ref={setRootElement} role="treeitem" space={1}>
       <Card data-as="button" radius={2} tone="inherit">
         <ItemFlex align="center" data-selected={selected} data-testid="side-menu-item">
           {icon && (
@@ -207,7 +198,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
       </Card>
 
       {open && hasChildren && (
-        <ChildStack flex={1} forwardedAs="ul" paddingLeft={1} role="group" space={STACK_SPACE}>
+        <ChildStack flex={1} forwardedAs="ul" paddingLeft={1} role="group" space={1}>
           {children.map((child) => {
             const childSiblingHasChildren = children.some(
               (sibling) => sibling.children && sibling.children.length > 0,
@@ -241,7 +232,7 @@ export const TreeEditingMenu = memo(function TreeEditingMenu(
   const {items, onPathSelect, selectedPath} = props
 
   return (
-    <Stack as="ul" role="tree" space={STACK_SPACE}>
+    <Stack as="ul" role="tree" space={2}>
       {items.map((item) => {
         const siblingHasChildren = items.some(
           (sibling) => sibling.children && sibling.children.length > 0,
