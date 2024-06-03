@@ -94,8 +94,24 @@ function isLiveEditMutation(mutationParams: Mutation['params'], publishedId: str
   return patchTargets.every((target) => target === publishedId)
 }
 
+/**
+ * @param idPair - The `{publishedId, draftId}` pair of the document
+ */
+function dummyAction(idPair: IdPair): Action {
+  return {
+    actionType: 'sanity.action.document.edit',
+    draftId: idPair.draftId,
+    publishedId: idPair.publishedId,
+    patch: {
+      // eslint-disable-next-line camelcase
+      set: {__server_side_actions_workaround: true},
+      unset: ['__server_side_actions_workaround'],
+    },
+  }
+}
+
 function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[] {
-  return mutationParams.mutations.flatMap((mutations) => {
+  const actions = mutationParams.mutations.flatMap<Action>((mutations) => {
     // This action is not always interoperable with the equivalent mutation. It will fail if the
     // published version of the document already exists.
     if (mutations.createIfNotExists) {
@@ -122,6 +138,16 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
     }
     throw new Error('Cannot map mutation to action')
   })
+  return actions.length === 0
+    ? // In some cases, the buffered document may optimize the outgoing patches in a way that makes the "create draft" become
+      // the only mutation scheduled to be submitted by the buffered document, and since we omit this mutation it on the way out,
+      // we’ll end up submitting an empty actions array, which the server will then reject – causing the studio to crash.
+      // The “obvious” fix here would be to just not submit these “empty” actions, BUT there’s internal bookkeeping
+      // in the buffered document that requires all mutations it submits to come back over the listener, and if they don’t,
+      // the buffered document will get confused and stop submitting any more patches.
+      // This workaround adds a "dummy noop" patch to the actions array in this case
+      [dummyAction(idPair)]
+    : actions
 }
 
 function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
