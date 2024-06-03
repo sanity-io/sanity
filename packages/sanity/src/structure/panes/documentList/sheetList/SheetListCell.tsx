@@ -26,7 +26,8 @@ interface SheetListCellInnerProps extends CellContext<SanityDocument, unknown> {
   fieldType: ObjectFieldType
 }
 
-type InputRef = HTMLInputElement | HTMLSelectElement | null
+type CellInputElement = HTMLInputElement | HTMLSelectElement
+type InputRef = CellInputElement | null
 
 /** @internal */
 export function SheetListCellInner(props: SheetListCellInnerProps) {
@@ -51,9 +52,16 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
   }, [column.id, focusAnchorCell, row.index, setSelectedAnchorCell])
   const {patchDocument} = props.table.options.meta || {}
 
-  const handleOnMouseDown: MouseEventHandler<HTMLInputElement | HTMLSelectElement> = (event) => {
+  const handleProgrammaticFocus = () => {
+    inputRef.current?.focus()
+    if (inputRef.current instanceof HTMLInputElement) {
+      inputRef.current.select()
+    }
+  }
+
+  const handleOnMouseDown: MouseEventHandler<CellInputElement> = (event) => {
     if (event.detail === 2) {
-      inputRef.current?.focus()
+      handleProgrammaticFocus()
     } else {
       event.preventDefault()
       setSelectedAnchorCell(column.id, row.index)
@@ -64,7 +72,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     (event: KeyboardEvent) => {
       const {key} = event
       if (key === 'Enter') {
-        if (cellState === 'selectedAnchor') inputRef.current?.focus()
+        if (cellState === 'selectedAnchor') handleProgrammaticFocus()
         if (cellState === 'focused') submitFocusedCell()
       }
     },
