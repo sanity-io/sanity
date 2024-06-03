@@ -29,6 +29,7 @@ import {
   type FormEventHandler,
   type MutableRefObject,
   type ReactElement,
+  type ReactNode,
 } from 'react'
 
 import {type RenderPortableTextInputEditableProps} from '../inputs'
@@ -171,6 +172,16 @@ export interface ObjectInputProps<
    * @hidden
    * @beta */
   elementProps: ComplexElementProps
+
+  /**
+   * @deprecated – DO NOT USE
+   *
+   * The node of the array editing modal.
+   * This is used to render the array editing modal as a child of the root input.
+   * The array editing dialog needs to be a child of the root input since the root input might be
+   * wrapped in a React context using the Components API, which is consumed by inputs in the form.
+   */
+  __internal_arrayEditingModal?: ReactNode
 }
 
 /**
