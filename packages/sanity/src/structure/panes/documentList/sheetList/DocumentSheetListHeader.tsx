@@ -90,7 +90,6 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
               menu={
                 <Menu>
                   <MenuItem
-                    // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
                     text={t('sheet-list.hide-field')}
                     icon={CloseIcon}
                     onClick={() => header.column.toggleVisibility()}

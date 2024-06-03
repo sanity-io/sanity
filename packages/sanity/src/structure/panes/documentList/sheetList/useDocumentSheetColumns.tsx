@@ -19,7 +19,7 @@ import {
 
 import {type PaneItemPreviewState} from '../../../components/paneItem/types'
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
-import {SheetListCell} from './SheetListCell'
+import {SheetListCellInner} from './SheetListCell'
 
 export const VISIBLE_COLUMN_LIMIT = 5
 
@@ -72,7 +72,7 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
           id: parentalField ? `${parentalField}_${field.name}` : field.name,
           header: field.type.title,
           enableHiding: true,
-          cell: (info) => <SheetListCell {...info} fieldType={type} />,
+          cell: (info) => <SheetListCellInner {...info} fieldType={type} />,
         },
       )
 

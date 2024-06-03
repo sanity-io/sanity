@@ -1,7 +1,6 @@
 import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 import {
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -18,6 +17,7 @@ import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListHeader} from './DocumentSheetListHeader'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
 import {DocumentSheetListProvider} from './DocumentSheetListProvider'
+import {SheetListCell} from './SheetListCell'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 
@@ -50,21 +50,6 @@ const Table = styled.table`
   tr:last-child {
     border-bottom: none;
   }
-`
-
-const DataCell = styled.td<{width: number}>`
-  display: flex;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 22px 16px;
-  width: ${({width}) => width}px;
-  border-top: 1px solid var(--card-border-color);
-  background-color: white;
-`
-
-const PinnedDataCell = styled(DataCell)`
-  position: sticky;
-  z-index: 2;
 `
 
 function DocumentSheetListPaneInner({
@@ -116,24 +101,9 @@ function DocumentSheetListPaneInner({
         paddingY={2}
         style={{display: 'flex', width: '100%'}}
       >
-        {row.getVisibleCells().map((cell) => {
-          const isPinned = cell.column.getIsPinned()
-          const Row = isPinned ? PinnedDataCell : DataCell
-          const borderWidth = isPinned && cell.column.getIsLastColumn('left') ? 2 : 1
-
-          return (
-            <Row
-              key={row.original._id + cell.id}
-              style={{
-                left: cell.column.getStart('left') ?? undefined,
-                borderRight: `${borderWidth}px solid var(--card-border-color)`,
-              }}
-              width={cell.column.getSize()}
-            >
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </Row>
-          )
-        })}
+        {row.getVisibleCells().map((cell) => (
+          <SheetListCell {...cell} key={row.original._id + cell.id} />
+        ))}
       </Box>
     )
   }, [])

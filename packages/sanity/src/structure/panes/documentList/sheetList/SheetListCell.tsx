@@ -1,20 +1,35 @@
 /* eslint-disable i18next/no-literal-string */
 import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
-import {type CellContext} from '@tanstack/react-table'
+import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {type SanityDocument} from 'sanity'
+import {styled} from 'styled-components'
 
 import {useDocumentSheetListContext} from './DocumentSheetListProvider'
 
-interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
+const DataCell = styled.td<{width: number}>`
+  display: flex;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: ${({width}) => width}px;
+  border-top: 1px solid var(--card-border-color);
+  background-color: var(--card-bg-color);
+`
+
+const PinnedDataCell = styled(DataCell)`
+  position: sticky;
+  z-index: 2;
+`
+
+interface SheetListCellInnerProps extends CellContext<SanityDocument, unknown> {
   fieldType: ObjectFieldType
 }
 
 type InputRef = HTMLInputElement | HTMLSelectElement | null
 
 /** @internal */
-export function SheetListCell(props: SheetListCellProps) {
+export function SheetListCellInner(props: SheetListCellInnerProps) {
   const {getValue, column, row, fieldType} = props
   const cellId = `cell-${column.id}-${row.index}`
   const [renderValue, setRenderValue] = useState<string>(getValue() as string)
@@ -161,7 +176,7 @@ export function SheetListCell(props: SheetListCellProps) {
       border={false}
       style={{
         border: getBorderStyle(),
-        padding: 0,
+        padding: '22px 16px',
       }}
       value={
         typeof renderValue === 'string' || typeof renderValue === 'number'
@@ -170,5 +185,25 @@ export function SheetListCell(props: SheetListCellProps) {
       }
       onChange={handleOnChange}
     />
+  )
+}
+
+/** @internal */
+export function SheetListCell(cell: Cell<SanityDocument, unknown>) {
+  const isPinned = cell.column.getIsPinned()
+  const Cell = isPinned ? PinnedDataCell : DataCell
+  const borderWidth = isPinned && cell.column.getIsLastColumn('left') ? 2 : 1
+
+  return (
+    <Cell
+      key={cell.row.original._id + cell.id}
+      style={{
+        left: cell.column.getStart('left') ?? undefined,
+        borderRight: `${borderWidth}px solid var(--card-border-color)`,
+      }}
+      width={cell.column.getSize()}
+    >
+      {flexRender(cell.column.columnDef.cell, cell.getContext?.())}
+    </Cell>
   )
 }
