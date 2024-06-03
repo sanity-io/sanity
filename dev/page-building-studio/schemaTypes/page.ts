@@ -18,6 +18,7 @@ export const page = defineType({
       options: {
         insertMenu: {
           layout: 'full',
+          views: ['grid', 'list'],
           groups: [
             {
               name: 'intro',
