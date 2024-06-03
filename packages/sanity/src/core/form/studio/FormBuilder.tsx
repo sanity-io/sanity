@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-handler-names */
 
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
-import {useCallback, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
 import {type FormNodePresence} from '../../presence'
@@ -187,32 +187,86 @@ export function FormBuilder(props: FormBuilderProps) {
     [Annotation],
   )
 
-  const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = {
-    focusPath,
-    elementProps: {
-      'ref': focusRef,
+  const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = useMemo(() => {
+    const inputProps: Omit<ObjectInputProps, 'renderDefault'> = {
+      focusPath,
+      elementProps: {
+        'ref': focusRef,
+        id,
+        'onBlur': handleBlur,
+        'onFocus': handleFocus,
+        'aria-describedby': undefined, // Root input should not have any aria-describedby
+      },
+      changed: members.some((m) => m.kind === 'field' && m.field.changed),
+      focused,
+      groups,
       id,
-      'onBlur': handleBlur,
-      'onFocus': handleFocus,
-      'aria-describedby': undefined, // Root input should not have any aria-describedby
-    },
-    changed: members.some((m) => m.kind === 'field' && m.field.changed),
+      level: 0,
+      members,
+      onChange: handleChange,
+      onFieldClose: handleCloseField,
+      onFieldCollapse: handleCollapseField,
+      onFieldSetCollapse: handleCollapseFieldSet,
+      onFieldExpand: handleExpandField,
+      onFieldSetExpand: handleExpandFieldSet,
+      onPathFocus: onPathFocus,
+      onFieldOpen: handleOpenField,
+      onFieldGroupSelect: handleSelectFieldGroup,
+      path: EMPTY_ARRAY,
+      presence: EMPTY_ARRAY,
+      readOnly,
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
+      renderPreview,
+      schemaType,
+      validation: EMPTY_ARRAY,
+      value,
+    }
+
+    const isRootInput = id === 'root'
+
+    const arrayEditingModal = treeEditingEnabled && isRootInput && (
+      <TreeEditingDialog
+        onPathFocus={onPathFocus}
+        onPathOpen={onPathOpen}
+        openPath={openPath}
+        rootInputProps={inputProps}
+        schemaType={schemaType}
+      />
+    )
+
+    return {
+      ...inputProps,
+
+      // The array editing modal must be rendered as a child of the root input.
+      // This is crucial because the root input might be wrapped in a React context using the
+      // Components API, which is consumed by inputs in the form. If the array editing modal is
+      // rendered outside of the root input, it will not have access to the context.
+      __internal_arrayEditingModal: arrayEditingModal,
+    }
+  }, [
+    focusPath,
     focused,
     groups,
+    handleBlur,
+    handleChange,
+    handleCloseField,
+    handleCollapseField,
+    handleCollapseFieldSet,
+    handleExpandField,
+    handleExpandFieldSet,
+    handleFocus,
+    handleOpenField,
+    handleSelectFieldGroup,
     id,
-    level: 0,
     members,
-    onChange: handleChange,
-    onFieldClose: handleCloseField,
-    onFieldCollapse: handleCollapseField,
-    onFieldSetCollapse: handleCollapseFieldSet,
-    onFieldExpand: handleExpandField,
-    onFieldSetExpand: handleExpandFieldSet,
-    onPathFocus: onPathFocus,
-    onFieldOpen: handleOpenField,
-    onFieldGroupSelect: handleSelectFieldGroup,
-    path: EMPTY_ARRAY,
-    presence: EMPTY_ARRAY,
+    onPathFocus,
+    onPathOpen,
+    openPath,
     readOnly,
     renderAnnotation,
     renderBlock,
@@ -222,9 +276,9 @@ export function FormBuilder(props: FormBuilderProps) {
     renderItem,
     renderPreview,
     schemaType,
-    validation: EMPTY_ARRAY,
+    treeEditingEnabled,
     value,
-  }
+  ])
 
   return (
     <FormProvider
@@ -254,16 +308,6 @@ export function FormBuilder(props: FormBuilderProps) {
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
             {renderInput(rootInputProps)}
-
-            {treeEditingEnabled && (
-              <TreeEditingDialog
-                onPathFocus={onPathFocus}
-                onPathOpen={onPathOpen}
-                openPath={openPath}
-                rootInputProps={rootInputProps}
-                schemaType={schemaType}
-              />
-            )}
           </DocumentFieldActionsProvider>
         </FormValueProvider>
       </GetFormValueProvider>
