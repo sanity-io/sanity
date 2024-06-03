@@ -60,32 +60,31 @@ describe('ColumnsControl', () => {
   })
 
   it('should set default column visibilities', () => {
-    fireEvent.click(screen.getByText('Columns'))
+    fireEvent.click(screen.getByText('Edit columns'))
     expect(screen.getByRole('checkbox', {name: 'First Column'})).toBeChecked()
     expect(screen.getByRole('checkbox', {name: 'Nested First Column'})).toBeChecked()
     expect(screen.getByRole('checkbox', {name: 'Sixth Column'})).not.toBeChecked()
   })
 
   it('should not allow unhideable columns to be hidden', () => {
-    fireEvent.click(screen.getByText('Columns'))
+    fireEvent.click(screen.getByText('Edit columns'))
     expect(screen.queryByRole('checkbox', {name: 'Third Column'})).toBeNull()
   })
 
   it('should toggle column visibility', () => {
-    fireEvent.click(screen.getByText('Columns'))
+    fireEvent.click(screen.getByText('Edit columns'))
     fireEvent.click(screen.getByRole('checkbox', {name: 'First Column'}))
     expect(screen.getByRole('checkbox', {name: 'First Column'})).not.toBeChecked()
   })
 
   it('should not allow more than 5 columns to be visible', () => {
-    fireEvent.click(screen.getByText('Columns'))
+    fireEvent.click(screen.getByText('Edit columns'))
 
     expect(screen.getByRole('checkbox', {name: 'Sixth Column'})).toBeDisabled()
-    screen.getByText('You may only have 5 columns visible')
   })
 
   it('should not allow the last visible column to be hidden', () => {
-    fireEvent.click(screen.getByText('Columns'))
+    fireEvent.click(screen.getByText('Edit columns'))
 
     fireEvent.click(screen.getByRole('checkbox', {name: 'First Column'}))
     fireEvent.click(screen.getByRole('checkbox', {name: 'Second Column'}))
@@ -93,5 +92,21 @@ describe('ColumnsControl', () => {
     fireEvent.click(screen.getByRole('checkbox', {name: 'Nested First Column'}))
 
     expect(screen.getByRole('checkbox', {name: 'Fifth Column'})).toBeDisabled()
+  })
+
+  it('should reset column visibility', () => {
+    fireEvent.click(screen.getByText('Edit columns'))
+
+    fireEvent.click(screen.getByRole('checkbox', {name: 'First Column'}))
+    fireEvent.click(screen.getByRole('checkbox', {name: 'Second Column'}))
+    fireEvent.click(screen.getByRole('checkbox', {name: 'Nested Second Column'}))
+    fireEvent.click(screen.getByRole('checkbox', {name: 'Nested First Column'}))
+
+    fireEvent.click(screen.getByText('Reset choices'))
+
+    expect(screen.getByRole('checkbox', {name: 'First Column'})).toBeChecked()
+    expect(screen.getByRole('checkbox', {name: 'Second Column'})).toBeChecked()
+    expect(screen.getByRole('checkbox', {name: 'Nested Second Column'})).toBeChecked()
+    expect(screen.getByRole('checkbox', {name: 'Nested First Column'})).toBeChecked()
   })
 })
