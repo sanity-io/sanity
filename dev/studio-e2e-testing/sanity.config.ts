@@ -105,11 +105,4 @@ export default defineConfig({
   unstable_serverActions: {
     enabled: true,
   },
-  features: {
-    beta: {
-      treeArrayEditing: {
-        enabled: true,
-      },
-    },
-  },
 })
