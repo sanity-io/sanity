@@ -80,7 +80,7 @@ importers:
         specifier: ^18.19.8
         version: 18.19.31
       '@types/react':
-        specifier: ^18.3.1
+        specifier: ^18.3.3
         version: 18.3.3
       '@types/semver':
         specifier: ^7.5.6
@@ -746,7 +746,7 @@ importers:
         specifier: ^4.14.149
         version: 4.17.0
       '@types/react':
-        specifier: ^18.3.1
+        specifier: ^18.3.3
         version: 18.3.3
       '@vercel/stega':
         specifier: 0.1.2
@@ -1211,7 +1211,7 @@ importers:
         specifier: ^9.2.0
         version: 9.2.3
       '@types/react':
-        specifier: ^18.3.1
+        specifier: ^18.3.3
         version: 18.3.3
       '@types/react-dom':
         specifier: ^18.3.0
@@ -1305,7 +1305,7 @@ importers:
         specifier: ^1.13.0
         version: 1.13.0
       '@types/react':
-        specifier: ^18.3.1
+        specifier: ^18.3.3
         version: 18.3.3
       rimraf:
         specifier: ^3.0.2
@@ -1891,7 +1891,7 @@ importers:
         specifier: ^3.4.0
         version: 3.4.3
       '@types/react':
-        specifier: ^18.3.1
+        specifier: ^18.3.3
         version: 18.3.3
       '@types/react-dom':
         specifier: ^18.3.0
