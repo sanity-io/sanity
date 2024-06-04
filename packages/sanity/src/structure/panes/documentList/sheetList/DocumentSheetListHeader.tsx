@@ -1,11 +1,11 @@
 import {CloseIcon, EllipsisHorizontalIcon} from '@sanity/icons'
-import {type SanityDocument} from '@sanity/types'
 import {Box, Flex, Menu, MenuButton, Text} from '@sanity/ui'
 import {flexRender, type Header as HeaderType, type HeaderGroup} from '@tanstack/react-table'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, MenuItem, Tooltip} from '../../../../ui-components'
+import {DocumentSheetTableRow} from './types'
 
 const Header = styled.th<{width: number}>`
   margin: 16px;
@@ -33,8 +33,8 @@ const HoverMenu = styled.div`
 `
 
 type DocumentSheetListHeaderProps = {
-  header: HeaderType<SanityDocument, unknown>
-  headerGroup: HeaderGroup<SanityDocument>
+  header: HeaderType<DocumentSheetTableRow, unknown>
+  headerGroup: HeaderGroup<DocumentSheetTableRow>
 }
 
 export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
