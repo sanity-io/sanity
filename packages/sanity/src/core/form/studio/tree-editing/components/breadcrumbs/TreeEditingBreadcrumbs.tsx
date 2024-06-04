@@ -1,5 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Box, Button, Flex, Stack, Text, Tooltip, useElementSize} from '@sanity/ui'
+import {Box, Button, Flex, Text, useElementSize} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {isEqual} from 'lodash'
@@ -15,6 +15,8 @@ import {type Path} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {type TreeEditingBreadcrumb} from '../../types'
+import {BreadcrumbOverflowList} from './BreadcrumbOverflowList'
+import {BreadcrumbSiblingsMenu} from './BreadcrumbSiblingsMenu'
 import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'
 
 const EMPTY_ARRAY: [] = []
@@ -25,16 +27,13 @@ const RootFlex = styled(Flex)`
   width: 100%;
 `
 
-const SeparatorBox = styled(Box)`
-  min-width: max-content;
-`
-
 const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
   const {bold} = getTheme_v2(theme)?.font.text?.weights || {}
 
   return css`
     max-height: 1rem;
     overflow: hidden;
+    min-width: 2ch;
 
     &[data-active='true'] {
       [data-ui='Text']:first-child {
@@ -76,15 +75,16 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const size = useElementSize(rootElement)
 
-  // todo: evaluate if these values are working as expected
-  // in various screen sizes
+  // a dropdown will show the "overflow items" when there are too many
+  // levels in the breadcrumbs. This will return how many
+  // items the breadcrumb allows before it starts to overflow into a new "..." item
+  // which keeps the rest
   const maxLength = useMemo(() => {
     const w = size?.border.width
 
     if (!w) return MAX_LENGTH
-    if (w < 300) return 3
-    if (w < 500) return 4
-    if (w < 700) return 5
+    if (w < 500) return 3
+    if (w < 700) return 4
 
     return MAX_LENGTH
   }, [size?.border.width])
@@ -110,26 +110,24 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
       const key = `${item}-${index}`
       const showSeparator = index < items.length - 1
 
+      // in instances where we have to show the "..." item
+      // which means we have too many items in breadcrumb
+      // and so there's an overflow
       if (Array.isArray(item)) {
         return (
           <Fragment key={key}>
-            <Tooltip
-              content={
-                <Stack space={2} padding={2}>
-                  {item.map((subItem) => (
-                    <Box as="li" key={`${subItem.title}-${index}`}>
-                      <Text textOverflow="ellipsis" size={1}>
-                        {subItem.title}
-                      </Text>
-                    </Box>
-                  ))}
-                </Stack>
+            <TreeEditingBreadcrumbsMenuButton
+              button={
+                <StyledButton mode="bleed" padding={1} space={2}>
+                  <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">
+                    <StyledText size={1} weight="medium" textOverflow="ellipsis">
+                      ...
+                    </StyledText>
+                  </Flex>
+                </StyledButton>
               }
-            >
-              <SeparatorBox>
-                <SeparatorItem>...</SeparatorItem>
-              </SeparatorBox>
-            </Tooltip>
+              popoverContent={<BreadcrumbOverflowList items={item} onPathSelect={onPathSelect} />}
+            />
 
             {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
           </Fragment>
@@ -172,10 +170,14 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
           {hasChildren && (
             <TreeEditingBreadcrumbsMenuButton
               button={button}
-              parentArrayTitle={item.parentArrayTitle}
-              items={item.children}
-              onPathSelect={onPathSelect}
-              selectedPath={item.path}
+              popoverContent={
+                <BreadcrumbSiblingsMenu
+                  items={item.children}
+                  handlePathSelect={onPathSelect}
+                  selectedPath={item.path}
+                  parentArrayTitle={item.parentArrayTitle}
+                />
+              }
             />
           )}
 
