@@ -6,6 +6,7 @@ import {styled} from 'styled-components'
 
 import {Button, MenuItem, Tooltip} from '../../../../ui-components'
 import {type DocumentSheetTableRow} from './types'
+import {getBorderWidth} from './utils'
 
 const Header = styled.th<{width: number}>`
   margin: 16px;
@@ -56,13 +57,11 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
     header.column.getCanHide() &&
     (headerGroup.depth === 0 ? !header.column.columns.length : header.column.parent)
 
-  const borderWidth = isPinned && header.column.getIsLastColumn('left') ? 2 : 1
-
   return (
     <HeaderTag
       style={{
         left: header.column.getStart('left') ?? undefined,
-        borderRight: `${borderWidth}px solid var(--card-border-color)`,
+        borderRight: `${getBorderWidth(header)}px solid var(--card-border-color)`,
       }}
       key={header.id}
       data-testid={`header-${header.id}`}

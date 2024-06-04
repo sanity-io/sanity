@@ -4,8 +4,10 @@ import {Select, TextInput} from '@sanity/ui'
 import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {type DocumentSheetTableRow} from './types'
+
 import {useDocumentSheetListContext} from './DocumentSheetListProvider'
+import {type DocumentSheetTableRow} from './types'
+import {getBorderWidth} from './utils'
 
 const DataCell = styled.td<{width: number}>`
   display: flex;
@@ -199,14 +201,13 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
 export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const isPinned = cell.column.getIsPinned()
   const Cell = isPinned ? PinnedDataCell : DataCell
-  const borderWidth = isPinned && cell.column.getIsLastColumn('left') ? 2 : 1
 
   return (
     <Cell
       key={cell.row.original._id + cell.id}
       style={{
         left: cell.column.getStart('left') ?? undefined,
-        borderRight: `${borderWidth}px solid var(--card-border-color)`,
+        borderRight: `${getBorderWidth(cell)}px solid var(--card-border-color)`,
       }}
       width={cell.column.getSize()}
     >
