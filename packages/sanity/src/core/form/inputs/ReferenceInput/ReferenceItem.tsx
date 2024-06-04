@@ -30,7 +30,7 @@ import {set, unset} from '../../patch'
 import {type ObjectItem, type ObjectItemProps} from '../../types'
 import {randomKey} from '../../utils/randomKey'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
-import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
+import {InsertMenuGroups} from '../arrays/ArrayOfObjectsInput/InsertMenuGroups'
 import {RowLayout} from '../arrays/layouts/RowLayout'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
@@ -216,7 +216,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                     icon={DuplicateIcon}
                     onClick={handleDuplicate}
                   />
-                  <InsertMenu onInsert={handleInsert} types={insertableTypes} />
+                  <InsertMenuGroups onInsert={handleInsert} types={insertableTypes} />
                 </>
               )}
 
