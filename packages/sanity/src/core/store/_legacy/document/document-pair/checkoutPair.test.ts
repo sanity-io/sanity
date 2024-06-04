@@ -330,10 +330,26 @@ describe('checkoutPair -- server actions', () => {
     ])
     draft.commit()
 
-    expect(mockedActionRequest).toHaveBeenCalledWith([], {
-      tag: 'document.commit',
-      transactionId: expect.any(String),
-    })
+    expect(mockedActionRequest).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.edit',
+          draftId: 'draftId',
+          patch: {
+            set: {
+              // eslint-disable-next-line camelcase
+              __server_side_actions_workaround: true,
+            },
+            unset: ['__server_side_actions_workaround'],
+          },
+          publishedId: 'publishedId',
+        },
+      ],
+      {
+        tag: 'document.commit',
+        transactionId: expect.any(String),
+      },
+    )
 
     sub.unsubscribe()
   })
