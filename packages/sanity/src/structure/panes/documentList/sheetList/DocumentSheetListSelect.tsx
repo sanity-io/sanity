@@ -1,9 +1,16 @@
 import {Checkbox} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
 import {type MouseEvent, useCallback} from 'react'
+import {styled} from 'styled-components'
 
 import {type DocumentSheetTableRow} from './types'
 
+const SelectRoot = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`
 export function DocumentSheetListSelect(props: CellContext<DocumentSheetTableRow, unknown>) {
   const {row, table} = props
 
@@ -45,15 +52,16 @@ export function DocumentSheetListSelect(props: CellContext<DocumentSheetTableRow
   )
 
   return (
-    <Checkbox
-      style={{paddingLeft: 4}}
-      checked={props.row.getIsSelected()}
-      disabled={!props.row.getCanSelect()}
-      // onChange doesn't have shiftKey in event, but want to control this checkbox
-      // need to define noop onChange to suppress the warning
-      // eslint-disable-next-line react/jsx-no-bind
-      onChange={() => null}
-      onClick={handleOnClick}
-    />
+    <SelectRoot>
+      <Checkbox
+        checked={props.row.getIsSelected()}
+        disabled={!props.row.getCanSelect()}
+        // onChange doesn't have shiftKey in event, but want to control this checkbox
+        // need to define noop onChange to suppress the warning
+        // eslint-disable-next-line react/jsx-no-bind
+        onChange={() => null}
+        onClick={handleOnClick}
+      />
+    </SelectRoot>
   )
 }

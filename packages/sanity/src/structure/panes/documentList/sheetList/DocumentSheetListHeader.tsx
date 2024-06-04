@@ -5,7 +5,7 @@ import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, MenuItem, Tooltip} from '../../../../ui-components'
-import {DocumentSheetTableRow} from './types'
+import {type DocumentSheetTableRow} from './types'
 
 const Header = styled.th<{width: number}>`
   margin: 16px;
@@ -68,38 +68,42 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
       data-testid={`header-${header.id}`}
       width={header.getSize()}
     >
-      <Flex justify="space-between" marginX={2} align="baseline">
-        <Tooltip delay={500} content={headerTitle}>
-          <Box style={{boxSizing: 'border-box'}} marginLeft={3} marginRight={3}>
-            {headerTitle}
-          </Box>
-        </Tooltip>
-        {canShowHeaderMenu && (
-          <HoverMenu>
-            <MenuButton
-              button={
-                <Button
-                  tooltipProps={{content: 'Open field menu'}}
-                  mode="bleed"
-                  icon={EllipsisHorizontalIcon}
-                  data-testid="field-menu-button"
-                />
-              }
-              id="field menu"
-              popover={{placement: 'bottom-end'}}
-              menu={
-                <Menu>
-                  <MenuItem
-                    text={t('sheet-list.hide-field')}
-                    icon={CloseIcon}
-                    onClick={() => header.column.toggleVisibility()}
+      {header.column.columnDef.meta?.customHeader ? (
+        flexRender(header.column.columnDef.header, header.getContext())
+      ) : (
+        <Flex justify="space-between" marginX={2} align="baseline">
+          <Tooltip delay={500} content={headerTitle}>
+            <Box style={{boxSizing: 'border-box'}} marginLeft={3} marginRight={3}>
+              {headerTitle}
+            </Box>
+          </Tooltip>
+          {canShowHeaderMenu && (
+            <HoverMenu>
+              <MenuButton
+                button={
+                  <Button
+                    tooltipProps={{content: 'Open field menu'}}
+                    mode="bleed"
+                    icon={EllipsisHorizontalIcon}
+                    data-testid="field-menu-button"
                   />
-                </Menu>
-              }
-            />
-          </HoverMenu>
-        )}
-      </Flex>
+                }
+                id="field menu"
+                popover={{placement: 'bottom-end'}}
+                menu={
+                  <Menu>
+                    <MenuItem
+                      text={t('sheet-list.hide-field')}
+                      icon={CloseIcon}
+                      onClick={() => header.column.toggleVisibility()}
+                    />
+                  </Menu>
+                }
+              />
+            </HoverMenu>
+          )}
+        </Flex>
+      )}
     </HeaderTag>
   )
 }
