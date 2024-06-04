@@ -543,6 +543,24 @@ export default async function initSanity(
   // Bootstrap Sanity, creating required project files, manifests etc
   await bootstrapTemplate(templateOptions, context)
 
+  // update that files were initialized locally; do not halt flow for request
+  apiClient({api: {projectId: projectId}})
+    .request<SanityProject>({uri: `/projects/${projectId}`})
+    .then((project: SanityProject) => {
+      if (!project?.metadata?.cliInitializedAt) {
+        return apiClient({api: {projectId}}).request({
+          method: 'PATCH',
+          uri: `/projects/${projectId}`,
+          body: {metadata: {cliInitializedAt: new Date().toISOString()}},
+        })
+      }
+      return Promise.resolve()
+    })
+    .catch(() => {
+      // Non-critical update
+      debug('Failed to update cliInitializedAt metadata')
+    })
+
   let pkgManager: PackageManager
 
   // If the user has specified a package manager, and it's allowed use that
@@ -623,21 +641,6 @@ export default async function initSanity(
     print(`sanity docs - to open the documentation in a browser`)
     print(`sanity manage - to open the project settings in a browser`)
     print(`sanity help - to explore the CLI manual`)
-  }
-
-  try {
-    const client = apiClient({api: {projectId: projectId}})
-    const project = await client.request<SanityProject>({uri: `/projects/${projectId}`})
-    if (!project?.metadata?.cliInitializedAt) {
-      await apiClient({api: {projectId}}).request({
-        method: 'PATCH',
-        uri: `/projects/${projectId}`,
-        body: {metadata: {cliInitializedAt: new Date().toISOString()}},
-      })
-    }
-  } catch (err: unknown) {
-    // Non-critical update
-    debug('Failed to update cliInitializedAt metadata')
   }
 
   const sendInvite =
