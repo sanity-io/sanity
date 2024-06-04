@@ -1,20 +1,36 @@
 /* eslint-disable i18next/no-literal-string */
 import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
-import {type CellContext} from '@tanstack/react-table'
+import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {type SanityDocument} from 'sanity'
+import {styled} from 'styled-components'
 
 import {useDocumentSheetListContext} from './DocumentSheetListProvider'
 
-interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
+const DataCell = styled.td<{width: number}>`
+  display: flex;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: ${({width}) => width}px;
+  border-top: 1px solid var(--card-border-color);
+  background-color: var(--card-bg-color);
+`
+
+const PinnedDataCell = styled(DataCell)`
+  position: sticky;
+  z-index: 2;
+`
+
+interface SheetListCellInnerProps extends CellContext<SanityDocument, unknown> {
   fieldType: ObjectFieldType
 }
 
-type InputRef = HTMLInputElement | HTMLSelectElement | null
+type CellInputElement = HTMLInputElement | HTMLSelectElement
+type InputRef = CellInputElement | null
 
 /** @internal */
-export function SheetListCell(props: SheetListCellProps) {
+export function SheetListCellInner(props: SheetListCellInnerProps) {
   const {getValue, column, row, fieldType} = props
   const cellId = `cell-${column.id}-${row.index}`
   const [renderValue, setRenderValue] = useState<string>(getValue() as string)
@@ -36,9 +52,16 @@ export function SheetListCell(props: SheetListCellProps) {
   }, [column.id, focusAnchorCell, row.index, setSelectedAnchorCell])
   const {patchDocument} = props.table.options.meta || {}
 
-  const handleOnMouseDown: MouseEventHandler<HTMLInputElement | HTMLSelectElement> = (event) => {
+  const handleProgrammaticFocus = () => {
+    inputRef.current?.focus()
+    if (inputRef.current instanceof HTMLInputElement) {
+      inputRef.current.select()
+    }
+  }
+
+  const handleOnMouseDown: MouseEventHandler<CellInputElement> = (event) => {
     if (event.detail === 2) {
-      inputRef.current?.focus()
+      handleProgrammaticFocus()
     } else {
       event.preventDefault()
       setSelectedAnchorCell(column.id, row.index)
@@ -49,7 +72,7 @@ export function SheetListCell(props: SheetListCellProps) {
     (event: KeyboardEvent) => {
       const {key} = event
       if (key === 'Enter') {
-        if (cellState === 'selectedAnchor') inputRef.current?.focus()
+        if (cellState === 'selectedAnchor') handleProgrammaticFocus()
         if (cellState === 'focused') submitFocusedCell()
       }
     },
@@ -143,6 +166,7 @@ export function SheetListCell(props: SheetListCellProps) {
         style={{
           boxShadow: 'none',
           border: getBorderStyle(),
+          padding: 0,
         }}
         value={JSON.stringify(renderValue)}
       >
@@ -160,6 +184,7 @@ export function SheetListCell(props: SheetListCellProps) {
       border={false}
       style={{
         border: getBorderStyle(),
+        padding: '22px 16px',
       }}
       value={
         typeof renderValue === 'string' || typeof renderValue === 'number'
@@ -168,5 +193,25 @@ export function SheetListCell(props: SheetListCellProps) {
       }
       onChange={handleOnChange}
     />
+  )
+}
+
+/** @internal */
+export function SheetListCell(cell: Cell<SanityDocument, unknown>) {
+  const isPinned = cell.column.getIsPinned()
+  const Cell = isPinned ? PinnedDataCell : DataCell
+  const borderWidth = isPinned && cell.column.getIsLastColumn('left') ? 2 : 1
+
+  return (
+    <Cell
+      key={cell.row.original._id + cell.id}
+      style={{
+        left: cell.column.getStart('left') ?? undefined,
+        borderRight: `${borderWidth}px solid var(--card-border-color)`,
+      }}
+      width={cell.column.getSize()}
+    >
+      {flexRender(cell.column.columnDef.cell, cell.getContext?.())}
+    </Cell>
   )
 }

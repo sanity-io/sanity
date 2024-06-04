@@ -1541,6 +1541,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'search.recent-searches-label': 'Recent searches',
   /** Accessibility label for the search results section, shown when the user has typed valid terms */
   'search.search-results-aria-label': 'Search results',
+  /** Label for the edit columns button to change field visibility in sheet list */
+  'sheet-list.edit-columns': 'Edit columns',
+  /** Label for the header menu option to hide a field from the sheet list */
+  'sheet-list.hide-field': 'Remove from table',
+  /** Label for reset column visibilities button */
+  'sheet-list.reset-columns': 'Reset columns',
+  /** Title for the edit columns menu */
+  'sheet-list.select-fields': 'Select up to 5 field types',
   /** Accessibility label for the navbar status button */
   'status-button.aria-label': 'Configuration status',
 

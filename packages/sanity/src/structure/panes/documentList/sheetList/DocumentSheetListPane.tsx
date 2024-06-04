@@ -1,7 +1,6 @@
 import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 import {
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -15,8 +14,10 @@ import {styled} from 'styled-components'
 import {type BaseStructureToolPaneProps} from '../../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
+import {DocumentSheetListHeader} from './DocumentSheetListHeader'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
 import {DocumentSheetListProvider} from './DocumentSheetListProvider'
+import {SheetListCell} from './SheetListCell'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 
@@ -30,38 +31,24 @@ const TableContainer = styled.div`
   position: relative; //needed for sticky header
 `
 const Table = styled.table`
-  border-collapse: collapse;
+  border-collapse: separate;
   border-spacing: 0;
   font-family: arial, sans-serif;
-  table-layout: fixed;
   white-space: nowrap;
   width: 100%;
   border: 1px solid lightgray;
 
   thead {
-    background: lightgray;
     display: grid;
     position: sticky;
     top: 0;
     z-index: 10;
   }
   tr {
-    border-bottom: 1px solid lightgray;
-    display: flex;
     padding: 0;
   }
   tr:last-child {
     border-bottom: none;
-  }
-  th {
-    border-bottom: 1px solid lightgray;
-    border-right: 1px solid lightgray;
-    padding: 2px 4px;
-    text-align: left;
-  }
-
-  td {
-    padding: 0;
   }
 `
 
@@ -85,6 +72,7 @@ function DocumentSheetListPaneInner({
     // Avoids resetting the page index when the data changes, e.g. a mutation is received
     autoResetPageIndex: false,
     initialState: {
+      columnPinning: {left: ['selected', 'Preview']},
       pagination: {pageSize: 25},
       columnVisibility: initialColumnsVisibility,
     },
@@ -113,20 +101,9 @@ function DocumentSheetListPaneInner({
         paddingY={2}
         style={{display: 'flex', width: '100%'}}
       >
-        {row.getVisibleCells().map((cell) => {
-          return (
-            <td
-              key={row.original._id + cell.id}
-              style={{
-                display: 'flex',
-                overflow: 'hidden',
-                width: cell.column.getSize(),
-              }}
-            >
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </td>
-          )
-        })}
+        {row.getVisibleCells().map((cell) => (
+          <SheetListCell {...cell} key={row.original._id + cell.id} />
+        ))}
       </Box>
     )
   }, [])
@@ -134,30 +111,27 @@ function DocumentSheetListPaneInner({
   const rowsCount = `Total: ${totalRows} rows, showing ${rows.length} rows`
   return (
     <PaneContainer direction="column" paddingX={3} data-testid="document-sheet-list-pane">
-      <DocumentSheetListFilter />
-      <Flex paddingBottom={3} paddingLeft={3}>
-        <Text size={0} muted>
-          {rowsCount}
-        </Text>
+      <Flex direction="row" align="center" paddingY={3} paddingX={1} justify="space-between">
+        <Flex direction="row" align="center">
+          <DocumentSheetListFilter />
+          <Text size={0} muted>
+            {rowsCount}
+          </Text>
+        </Flex>
+        <ColumnsControl table={table} />
       </Flex>
       <TableContainer>
-        <ColumnsControl table={table} />
         <DocumentSheetListProvider table={table}>
           <Table>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
-                <Box
-                  as="tr"
-                  key={headerGroup.id}
-                  style={{display: 'flex', width: '100%'}}
-                  paddingY={1}
-                >
+                <Box as="tr" key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <th key={header.id} style={{display: 'flex', width: header.getSize()}}>
-                      {headerGroup.depth > 0 && !header.column.parent ? null : (
-                        <div>{flexRender(header.column.columnDef.header, header.getContext())}</div>
-                      )}
-                    </th>
+                    <DocumentSheetListHeader
+                      key={header.id}
+                      header={header}
+                      headerGroup={headerGroup}
+                    />
                   ))}
                 </Box>
               ))}

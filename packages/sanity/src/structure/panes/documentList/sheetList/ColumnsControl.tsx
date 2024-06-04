@@ -1,9 +1,7 @@
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
-/* eslint-disable i18next/no-literal-string */
-import {Box, Button, Card, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
+import {Box, Button, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
 import {type Column, type Table} from '@tanstack/react-table'
 import {useCallback} from 'react'
-import {type SanityDocument} from 'sanity'
+import {type SanityDocument, useTranslation} from 'sanity'
 
 import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
@@ -12,6 +10,7 @@ type ColumnsControlProps = {
 }
 
 export function ColumnsControl({table}: ColumnsControlProps) {
+  const {t} = useTranslation()
   const isVisibleLimitReached =
     table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length >= VISIBLE_COLUMN_LIMIT
 
@@ -33,45 +32,47 @@ export function ColumnsControl({table}: ColumnsControlProps) {
 
   return (
     <MenuButton
-      button={<Button text="Columns" />}
+      button={<Button mode="bleed" text={t('sheet-list.edit-columns')} size={1} />}
       id="columns-control"
       menu={
-        <Menu padding={3} paddingBottom={1} style={{maxHeight: 300, overflow: 'scroll'}}>
-          <Button size={0} text="Reset" onClick={setInitialColumns} />
-          <Stack>
-            {table
-              .getAllLeafColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => (
-                <Flex key={column.id} marginY={2} align="center">
-                  <Checkbox
-                    readOnly={getColumnVisibilityDisabled(column)}
-                    checked={column.getIsVisible()}
-                    onChange={handleColumnOnChange(column)}
-                    id={`col-visibility-${column.id}`}
-                    style={{display: 'block'}}
-                  />
-                  <Box flex={1} paddingLeft={3}>
-                    <Text size={1}>
-                      <label htmlFor={`col-visibility-${column.id}`}>
-                        {column.columnDef.header?.toString()}
-                      </label>
-                    </Text>
-                  </Box>
-                </Flex>
-              ))}
-            {isVisibleLimitReached && (
-              <Card
-                padding={2}
-                style={{position: 'sticky', bottom: 0}}
-                radius={2}
-                shadow={1}
-                tone="caution"
-              >
-                <Text size={1}>You may only have {VISIBLE_COLUMN_LIMIT} columns visible</Text>
-              </Card>
-            )}
-          </Stack>
+        <Menu padding={3} paddingTop={4} style={{width: 240}}>
+          <Flex direction="column" height="fill" gap={3}>
+            <Text weight="semibold" size={1}>
+              {t('sheet-list.select-fields')}
+            </Text>
+            <Flex style={{flex: '1 1 auto', maxHeight: 320, overflowY: 'scroll'}}>
+              <Stack>
+                {table
+                  .getAllLeafColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => (
+                    <Flex key={column.id} marginY={2} align="center">
+                      <Checkbox
+                        readOnly={getColumnVisibilityDisabled(column)}
+                        checked={column.getIsVisible()}
+                        onChange={handleColumnOnChange(column)}
+                        id={`col-visibility-${column.id}`}
+                        style={{display: 'block'}}
+                      />
+                      <Box flex={1} paddingLeft={3}>
+                        <Text size={1}>
+                          <label htmlFor={`col-visibility-${column.id}`}>
+                            {column.columnDef.header?.toString()}
+                          </label>
+                        </Text>
+                      </Box>
+                    </Flex>
+                  ))}
+              </Stack>
+            </Flex>
+            <Button
+              width="fill"
+              mode="ghost"
+              size={1}
+              text={t('sheet-list.reset-columns')}
+              onClick={setInitialColumns}
+            />
+          </Flex>
         </Menu>
       }
       placement="bottom"
