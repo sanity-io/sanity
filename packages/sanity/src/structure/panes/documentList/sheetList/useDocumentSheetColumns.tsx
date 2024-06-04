@@ -1,22 +1,19 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
-import {Checkbox, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {Box, Checkbox, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {
   type AccessorKeyColumnDef,
+  type CellContext,
   createColumnHelper,
   type GroupColumnDef,
   type VisibilityState,
 } from '@tanstack/react-table'
 import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
-import {
-  type DocumentPreviewStore,
-  DocumentStatusIndicator,
-  getPreviewStateObservable,
-  useDocumentPreviewStore,
-} from 'sanity'
+import {type DocumentPreviewStore, getPreviewStateObservable, useDocumentPreviewStore} from 'sanity'
 
 import {useValidationMarkers} from '../../../../core/form/studio/contexts/Validation'
+import {PaneItem} from '../../../components'
 import {type PaneItemPreviewState} from '../../../components/paneItem/types'
 import {ValidationCard} from '../../document/inspectors/validation/ValidationInspector'
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
@@ -56,13 +53,14 @@ const RowValidation = ({
     </Tooltip>
   )
 }
-const PreviewCell = (props: {
+interface PreviewCellProps extends CellContext<DocumentSheetTableRow, unknown> {
   documentPreviewStore: DocumentPreviewStore
   schemaType: ObjectSchemaType
-  row: {
-    original: DocumentSheetTableRow
-  }
-}) => {
+}
+
+const PreviewCell = (props: PreviewCellProps) => {
+  const paneProps = props.table.options.meta?.paneProps
+
   const {documentPreviewStore, row, schemaType} = props
   const title = 'Document title'
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -78,10 +76,20 @@ const PreviewCell = (props: {
     )
   }
   const displayValue = (draft?.title ?? published?.title ?? 'Untitled') as string
+  const id = row.original.__metadata.idPair.publishedId
+  const isSelected = paneProps?.isActive && paneProps.childItemId === id
+
   return (
-    <Flex align="center" gap={3}>
-      <DocumentStatusIndicator draft={draft} published={published} />
-      <Text size={1}>{displayValue}</Text>
+    <Flex align="center" gap={3} flex={1} paddingX={2}>
+      <Box flex={1}>
+        <PaneItem
+          schemaType={schemaType}
+          value={row.original}
+          title={displayValue}
+          id={id}
+          selected={isSelected}
+        />
+      </Box>
       <RowValidation schemaType={schemaType} value={row.original} />
     </Flex>
   )
@@ -165,6 +173,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         size: 53,
         meta: {
           customHeader: true,
+          borderWidth: 0,
         },
         header: (info) => (
           <Flex justify="center">
@@ -178,6 +187,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
       }),
       columnHelper.accessor('List preview', {
         enableHiding: false,
+        size: 320,
         id: 'Preview',
         cell: (info) => {
           return (
