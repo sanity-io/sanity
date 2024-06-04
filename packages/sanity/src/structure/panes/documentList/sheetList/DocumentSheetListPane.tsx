@@ -173,7 +173,7 @@ function DocumentSheetListPaneInner(
     [documentSchemaType.name],
   )
 
-  const rowsCount = `Total: ${totalRows} rows, showing ${rows.length} rows`
+  const rowsCount = `List total: ${totalRows} item${totalRows === 1 ? '' : 's'}`
   return (
     <PaneContainer
       direction="column"
