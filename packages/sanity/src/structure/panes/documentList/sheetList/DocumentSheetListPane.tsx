@@ -7,10 +7,11 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import {useCallback, useEffect, useState} from 'react'
-import {SearchProvider, useSchema, useSearchState} from 'sanity'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import {SearchProvider, useSchema, useSearchState, useValidationStatus} from 'sanity'
 import {styled} from 'styled-components'
 
+import {ValidationProvider} from '../../../../core/form/studio/contexts/Validation'
 import {type BaseStructureToolPaneProps} from '../../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetActions} from './DocumentSheetActions'
@@ -54,11 +55,39 @@ const Table = styled.table`
   }
 `
 
+const DocumentRow = ({
+  row,
+  docTypeName,
+}: {
+  row: Row<DocumentSheetTableRow>
+  docTypeName: string
+}) => {
+  const validationStatus = useValidationStatus(
+    row.original.__metadata.idPair.publishedId,
+    docTypeName,
+  )
+  return (
+    <ValidationProvider validation={validationStatus.validation}>
+      <Box
+        as="tr"
+        key={row.original._id + row.id}
+        paddingY={2}
+        style={{display: 'flex', width: '100%'}}
+      >
+        {row.getVisibleCells().map((cell) => (
+          <SheetListCell {...cell} key={row.original._id + cell.id} />
+        ))}
+      </Box>
+    </ValidationProvider>
+  )
+}
 function DocumentSheetListPaneInner({
   documentSchemaType,
 }: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType}) {
   const {dispatch, state} = useSearchState()
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
+  const paneContainerRef = useRef<HTMLDivElement | null>(null)
+
   const {data} = useDocumentSheetList({
     typeName: documentSchemaType.name,
   })
@@ -95,24 +124,21 @@ function DocumentSheetListPaneInner({
     }
   }, [documentSchemaType, dispatch])
 
-  const renderRow = useCallback((row: Row<DocumentSheetTableRow>) => {
-    return (
-      <Box
-        as="tr"
-        key={row.original._id + row.id}
-        paddingY={2}
-        style={{display: 'flex', width: '100%'}}
-      >
-        {row.getVisibleCells().map((cell) => (
-          <SheetListCell {...cell} key={row.original._id + cell.id} />
-        ))}
-      </Box>
-    )
-  }, [])
+  const renderRow = useCallback(
+    (row: Row<DocumentSheetTableRow>) => {
+      return <DocumentRow key={row.id} row={row} docTypeName={documentSchemaType.name} />
+    },
+    [documentSchemaType.name],
+  )
 
   const rowsCount = `Total: ${totalRows} rows, showing ${rows.length} rows`
   return (
-    <PaneContainer direction="column" paddingX={3} data-testid="document-sheet-list-pane">
+    <PaneContainer
+      direction="column"
+      paddingX={3}
+      data-testid="document-sheet-list-pane"
+      ref={paneContainerRef}
+    >
       <Flex direction="row" align="center" paddingY={3} paddingX={1} justify="space-between">
         <Flex direction="row" align="center">
           <DocumentSheetListFilter />
@@ -121,7 +147,6 @@ function DocumentSheetListPaneInner({
           </Text>
         </Flex>
         <ColumnsControl table={table} />
-        <DocumentSheetActions table={table} schemaType={documentSchemaType} />
       </Flex>
       <TableContainer>
         <DocumentSheetListProvider table={table}>
@@ -142,6 +167,11 @@ function DocumentSheetListPaneInner({
             <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
           </Table>
         </DocumentSheetListProvider>
+        <DocumentSheetActions
+          table={table}
+          schemaType={documentSchemaType}
+          parentRef={paneContainerRef.current}
+        />
       </TableContainer>
       <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
         <DocumentSheetListPaginator table={table} />
