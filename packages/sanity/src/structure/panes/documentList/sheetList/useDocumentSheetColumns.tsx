@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
-import {Box, Checkbox, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {Checkbox, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {
   type AccessorKeyColumnDef,
   createColumnHelper,
@@ -38,6 +38,7 @@ const RowValidation = ({
   }
   return (
     <Tooltip
+      portal
       content={
         <Stack space={2} paddingY={2}>
           {validation.map((marker) => (
@@ -161,20 +162,21 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
       columnHelper.display({
         id: 'selected',
         enableHiding: false,
+        size: 53,
+        meta: {
+          customHeader: true,
+        },
         header: (info) => (
-          <Box>
+          <Flex justify="center">
             <Checkbox
-              style={{paddingLeft: 4}}
               indeterminate={info.table.getIsSomeRowsSelected()}
               onChange={info.table.getToggleAllPageRowsSelectedHandler()}
             />
-            {/* eslint-disable-next-line i18next/no-literal-string */}
-            {info.table.getSelectedRowModel().rows.length} selected
-          </Box>
+          </Flex>
         ),
         cell: DocumentSheetListSelect,
       }),
-      columnHelper.accessor('Preview', {
+      columnHelper.accessor('List preview', {
         enableHiding: false,
         id: 'Preview',
         cell: (info) => {
