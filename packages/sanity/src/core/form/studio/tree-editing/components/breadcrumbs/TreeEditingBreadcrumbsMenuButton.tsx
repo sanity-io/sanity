@@ -43,12 +43,13 @@ const StyledPopover = styled(Popover)(() => {
 interface TreeEditingBreadcrumbsMenuButtonProps {
   button: ReactElement
   popoverContent: ReactElement
+  parentElement: HTMLElement | null
 }
 
 export function TreeEditingBreadcrumbsMenuButton(
   props: TreeEditingBreadcrumbsMenuButtonProps,
 ): JSX.Element {
-  const {button, popoverContent} = props
+  const {button, popoverContent, parentElement} = props
   const [open, setOpen] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -105,6 +106,7 @@ export function TreeEditingBreadcrumbsMenuButton(
     <StyledPopover
       animate
       constrainSize
+      referenceBoundary={parentElement}
       content={content}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       onKeyDown={handlePopoverKeyDown}

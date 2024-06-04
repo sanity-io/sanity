@@ -117,6 +117,7 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
         return (
           <Fragment key={key}>
             <TreeEditingBreadcrumbsMenuButton
+              parentElement={rootElement}
               button={
                 <StyledButton mode="bleed" padding={1} space={2}>
                   <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">
@@ -169,6 +170,7 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
 
           {hasChildren && (
             <TreeEditingBreadcrumbsMenuButton
+              parentElement={rootElement}
               button={button}
               popoverContent={
                 <BreadcrumbSiblingsMenu
@@ -185,7 +187,7 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
         </Fragment>
       )
     })
-  }, [items, onPathSelect, selectedPath])
+  }, [items, onPathSelect, selectedPath, rootElement])
 
   return (
     <RootFlex align="center" forwardedAs="ol" gap={2} ref={setRootElement}>
