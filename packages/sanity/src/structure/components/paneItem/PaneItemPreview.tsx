@@ -59,12 +59,13 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       </Flex>
     </TooltipDelayGroupProvider>
   )
-
+  const previewTitle = (draft?.title || published?.title || title) as string | null
   const tooltip = <DocumentStatus draft={draft} published={published} />
 
   return (
     <SanityDefaultPreview
       {...getPreviewValueWithFallback({value, draft, published})}
+      title={previewTitle}
       isPlaceholder={isLoading}
       icon={icon}
       layout={layout}

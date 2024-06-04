@@ -7,7 +7,6 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table'
 import {useMemo} from 'react'
-import {useDocumentPreviewStore} from 'sanity'
 
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {PreviewCell} from './DocumentSheetPreviewCell'
@@ -81,8 +80,6 @@ const flatColumns = (cols: Columns): AccessorKeyColumnDef<DocumentSheetTableRow,
 }
 
 export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
-  const documentPreviewStore = useDocumentPreviewStore()
-
   const columns: Columns = useMemo(() => {
     if (!documentSchemaType) {
       return []
@@ -111,18 +108,12 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         size: 320,
         id: 'Preview',
         cell: (info) => {
-          return (
-            <PreviewCell
-              {...info}
-              documentPreviewStore={documentPreviewStore}
-              schemaType={documentSchemaType}
-            />
-          )
+          return <PreviewCell {...info} schemaType={documentSchemaType} />
         },
       }),
       ...getColsFromSchemaType(documentSchemaType),
     ]
-  }, [documentPreviewStore, documentSchemaType])
+  }, [documentSchemaType])
 
   const [initialColumnsVisibility]: [VisibilityState, number] = useMemo(
     () =>
