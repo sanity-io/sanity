@@ -1,5 +1,6 @@
+import {ErrorOutlineIcon} from '@sanity/icons'
 import {isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
-import {Box, Checkbox, Flex, Text} from '@sanity/ui'
+import {Box, Checkbox, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {
   type AccessorKeyColumnDef,
   createColumnHelper,
@@ -12,19 +13,50 @@ import {
   type DocumentPreviewStore,
   DocumentStatusIndicator,
   getPreviewStateObservable,
-  type SchemaType,
   useDocumentPreviewStore,
 } from 'sanity'
 
+import {useValidationMarkers} from '../../../../core/form/studio/contexts/Validation'
+import {ValidationCard} from '../../document/inspectors/validation/ValidationInspector'
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {SheetListCellInner} from './SheetListCell'
 import {type DocumentSheetTableRow} from './types'
 
 export const VISIBLE_COLUMN_LIMIT = 5
 
+const RowValidation = ({
+  value,
+  schemaType,
+}: {
+  value: DocumentSheetTableRow
+  schemaType: ObjectSchemaType
+}) => {
+  const validation = useValidationMarkers()
+  if (validation.length === 0) {
+    return null
+  }
+  return (
+    <Tooltip
+      content={
+        <Stack space={2} paddingY={2}>
+          {validation.map((marker) => (
+            <ValidationCard
+              key={marker.path.join('.')}
+              marker={marker}
+              schemaType={schemaType}
+              value={value}
+            />
+          ))}
+        </Stack>
+      }
+    >
+      <ErrorOutlineIcon />
+    </Tooltip>
+  )
+}
 const PreviewCell = (props: {
   documentPreviewStore: DocumentPreviewStore
-  schemaType: SchemaType
+  schemaType: ObjectSchemaType
   row: {
     original: DocumentSheetTableRow
   }
@@ -52,6 +84,7 @@ const PreviewCell = (props: {
     <Flex align="center" gap={3}>
       <DocumentStatusIndicator draft={draft} published={published} />
       <Text size={1}>{displayValue}</Text>
+      <RowValidation schemaType={schemaType} value={row.original} />
     </Flex>
   )
 }

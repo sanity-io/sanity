@@ -1,11 +1,10 @@
-import {type SanityDocument} from '@sanity/types'
-import {type Table} from '@tanstack/react-table'
 import {type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {DocumentSheetListContext} from 'sanity/_singletons'
+import {DocumentSheetListTable} from './types'
 
 interface DocumentSheetListProviderProps {
   children?: ReactNode
-  table: Table<SanityDocument>
+  table: DocumentSheetListTable
 }
 
 type SelectedCellDetails = {
