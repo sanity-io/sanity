@@ -1,20 +1,13 @@
-import {Box, Card, Flex, Popover, type PopoverProps, Text, useClickOutside} from '@sanity/ui'
+import {Flex, Popover, type PopoverProps, useClickOutside} from '@sanity/ui'
 import {cloneElement, type KeyboardEvent, type ReactElement, useCallback, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
-import {type Path} from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {type TreeEditingBreadcrumb} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
-import {TreeEditingBreadcrumbsMenu} from './TreeEditingBreadcrumbsMenu'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom-start']
 
 const RootFlex = styled(Flex)``
-
-const TitleCard = styled(Card)`
-  min-height: max-content;
-`
 
 const PopoverListFlex = styled(Flex)<{
   $maxDisplayedItems: number
@@ -49,16 +42,13 @@ const StyledPopover = styled(Popover)(() => {
 
 interface TreeEditingBreadcrumbsMenuButtonProps {
   button: ReactElement
-  items: TreeEditingBreadcrumb[]
-  onPathSelect: (path: Path) => void
-  selectedPath: Path
-  parentArrayTitle: string
+  popoverContent: ReactElement
 }
 
 export function TreeEditingBreadcrumbsMenuButton(
   props: TreeEditingBreadcrumbsMenuButtonProps,
 ): JSX.Element {
-  const {button, items, selectedPath, onPathSelect, parentArrayTitle} = props
+  const {button, popoverContent} = props
   const [open, setOpen] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -87,14 +77,6 @@ export function TreeEditingBreadcrumbsMenuButton(
     setOpen(next)
   }, [open])
 
-  const handlePathSelect = useCallback(
-    (path: Path) => {
-      onPathSelect(path)
-      setOpen(false)
-    },
-    [onPathSelect],
-  )
-
   useClickOutside(() => setOpen(false), [rootElement, buttonElement])
 
   const content = (
@@ -105,20 +87,7 @@ export function TreeEditingBreadcrumbsMenuButton(
         direction="column"
         overflow="hidden"
       >
-        <TitleCard borderBottom padding={3} sizing="border">
-          <Box paddingX={1} sizing="border">
-            <Text muted size={1} textOverflow="ellipsis" weight="semibold">
-              {parentArrayTitle}
-            </Text>
-          </Box>
-        </TitleCard>
-
-        <TreeEditingBreadcrumbsMenu
-          items={items}
-          onPathSelect={handlePathSelect}
-          selectedPath={selectedPath}
-          textInputElement={null}
-        />
+        {popoverContent}
       </PopoverListFlex>
     </RootFlex>
   )
