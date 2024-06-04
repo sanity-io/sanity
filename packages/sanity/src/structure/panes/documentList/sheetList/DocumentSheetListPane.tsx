@@ -47,7 +47,6 @@ const Table = styled.table`
   font-family: arial, sans-serif;
   white-space: nowrap;
   width: 100%;
-  border: 1px solid lightgray;
 
   thead {
     display: grid;
@@ -89,9 +88,10 @@ const DocumentRow = ({
     </ValidationProvider>
   )
 }
-function DocumentSheetListPaneInner({
-  documentSchemaType,
-}: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType}) {
+function DocumentSheetListPaneInner(
+  props: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType},
+) {
+  const {documentSchemaType, ...paneProps} = props
   const {dispatch, state} = useSearchState()
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
   const paneContainerRef = useRef<HTMLDivElement | null>(null)
@@ -104,9 +104,8 @@ function DocumentSheetListPaneInner({
   const meta = {
     selectedAnchor,
     setSelectedAnchor,
-    patchDocument: () => {
-      throw new Error('patchDocument not implemented')
-    },
+    patchDocument: () => null,
+    paneProps,
   }
 
   const totalRows = state.result.hits.length
