@@ -5,7 +5,7 @@ import {type TreeEditingMenuItem} from '../../types'
 /**
  * Flattens a list of items and their children into a single list.
  */
-function flattenItems(items: TreeEditingMenuItem[]): TreeEditingMenuItem[] {
+export function flattenItems(items: TreeEditingMenuItem[]): TreeEditingMenuItem[] {
   const result: TreeEditingMenuItem[] = items.reduce(
     (acc: TreeEditingMenuItem[], item: TreeEditingMenuItem) => {
       if (item?.children) {

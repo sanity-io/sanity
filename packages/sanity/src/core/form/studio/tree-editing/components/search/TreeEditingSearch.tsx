@@ -7,6 +7,7 @@ import {css, styled} from 'styled-components'
 import {type TreeEditingMenuItem} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
 import {TreeEditingSearchMenu} from './TreeEditingSearchMenu'
+import {useSearchableList} from './useSearchableList'
 import {treeEditingSearch} from './utils'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom-start']
@@ -63,7 +64,12 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
 
   const hasSearchQuery = query.length > 0
 
-  const filteredList = useMemo(() => treeEditingSearch(items, query), [query, items])
+  const searchableList = useSearchableList(items)
+
+  const filteredList = useMemo(
+    () => treeEditingSearch(searchableList, query),
+    [query, searchableList],
+  )
 
   const resetSearch = useCallback(() => setQuery(''), [])
 

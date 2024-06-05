@@ -1,3 +1,4 @@
+import {Schema} from '@sanity/schema'
 import {Container, Flex} from '@sanity/ui'
 
 import {TreeEditingSearch} from '../components'
@@ -7,30 +8,71 @@ function noop() {
   // ...
 }
 
+const schema = Schema.compile({
+  name: 'default',
+  types: [
+    {
+      name: 'testDocument',
+      title: 'Document',
+      type: 'document',
+      fields: [
+        {
+          type: 'object',
+          name: 'testObject',
+          title: 'Object',
+          fields: [
+            {
+              type: 'string',
+              name: 'title',
+              title: 'Title',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
 const ITEMS: TreeEditingMenuItem[] = [
   {
-    path: ['path-1'],
-    title: 'Item 1',
-  },
-  {
-    path: ['path-2'],
-    title: 'Item 2',
+    path: ['first-item', 'first-child'],
+    schemaType: schema.get('testDocument').fields[0].type,
+    value: {_key: 'first-item', title: 'First item'},
+    parentSchemaType: schema.get('testDocument').fields[0].type,
     children: [
       {
-        path: ['path-2', 'child-1'],
-        title: 'Child 1',
-        children: [
-          {
-            path: ['path-2', 'child-1', 'grandchild-1'],
-            title: 'Grandchild 1',
-          },
-        ],
+        path: ['first-item', 'first-child'],
+        schemaType: schema.get('testDocument').fields[0].type,
+        value: {_key: 'first-item', title: 'First item'},
+        parentSchemaType: schema.get('testDocument').fields[0].type,
+      },
+      {
+        path: ['second-item', 'first-child', 'first-grandchild'],
+        schemaType: schema.get('testDocument').fields[0].type,
+        value: {_key: 'first-grandchild', title: 'First grandchild'},
+        parentSchemaType: schema.get('testDocument').fields[0].type,
+      },
+      {
+        path: ['second-item', 'first-child', 'second-grandchild'],
+        schemaType: schema.get('testDocument').fields[0].type,
+        value: {_key: 'second-grandchild', title: 'Second grandchild'},
+        parentSchemaType: schema.get('testDocument').fields[0].type,
       },
     ],
   },
   {
-    path: ['path-3'],
-    title: 'Item 3',
+    path: ['third-item'],
+    schemaType: schema.get('testDocument').fields[0].type,
+    value: {_key: 'third-item', title: 'Third item'},
+    parentSchemaType: schema.get('testDocument').fields[0].type,
+    children: [
+      {
+        path: ['third-item'],
+        schemaType: schema.get('testDocument').fields[0].type,
+        value: {_key: 'third-item', title: 'Third item'},
+        parentSchemaType: schema.get('testDocument').fields[0].type,
+      },
+    ],
   },
 ]
 
