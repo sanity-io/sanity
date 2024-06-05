@@ -1,9 +1,11 @@
+import {type Path} from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {getPublishedId, PatchEvent, set, useGetFormValue, useSchema} from 'sanity'
+import {useCallback} from 'react'
+import {type FormDocumentValue, getValueAtPath, PatchEvent, set} from 'sanity'
 
 import {useCopyPaste} from './CopyPasteProvider'
-import {type CopyActionResult, type UseCopyPasteActionProps} from './types'
+import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
+import {type CopyActionResult} from './types'
 import {getClipboardItem, isCopyPasteResult, parseCopyResult, writeClipboardItem} from './utils'
 import {transferValue} from './valueTransfer'
 
@@ -11,100 +13,105 @@ import {transferValue} from './valueTransfer'
  * @internal
  * @hidden
  */
-export const useCopyPasteAction = ({
-  path,
-  schemaType: maybeSchemaType,
-}: UseCopyPasteActionProps) => {
-  const {
-    documentId,
-    documentType,
-    setCopyResult,
-    sendMessage,
-    onChange,
-    refreshCopyResult,
-    isValidTargetType: _isValidTargetType,
-    isCopyResultInClipboard,
-  } = useCopyPaste()
+export function useCopyPasteAction() {
+  const {getDocumentMeta, setCopyResult, isValidTargetType: _isValidTargetType} = useCopyPaste()
   const toast = useToast()
-  const getFormValue = useGetFormValue()
-  const schema = useSchema()
-  const schemaType = useMemo(() => {
-    if (typeof maybeSchemaType === 'string') {
-      return schema.get(maybeSchemaType)!
-    }
+  const {onChange} = getDocumentMeta()! || {}
 
-    return maybeSchemaType
-  }, [schema, maybeSchemaType])
+  const onCopy = useCallback(
+    async (path: Path, value: FormDocumentValue | undefined) => {
+      const {documentId, documentType, schemaType: sourceSchemaType} = getDocumentMeta()!
+      const schemaType = resolveSchemaTypeForPath(sourceSchemaType!, path)
+      const existingValue = getValueAtPath(value, path)
+      const isDocument = schemaType?.type?.name === 'document'
+      const isArray = schemaType?.type?.name === 'array'
+      const isObject = schemaType?.type?.name === 'document'
+      const parsedDocValue = parseCopyResult(existingValue)
+      const normalizedValue = isCopyPasteResult(parsedDocValue)
+        ? parsedDocValue.docValue
+        : existingValue
 
-  const isValidTargetType = useMemo(() => {
-    return _isValidTargetType(schemaType.name)
-  }, [_isValidTargetType, schemaType])
-
-  const onCopy = useCallback(async () => {
-    const existingValue = getFormValue(path)
-    const isDocument = schemaType?.type?.name === 'document'
-    const isArray = schemaType?.type?.name === 'array'
-    const isObject = schemaType?.type?.name === 'document'
-    const parsedDocValue = parseCopyResult(existingValue)
-    const normalizedValue = isCopyPasteResult(parsedDocValue)
-      ? parsedDocValue.docValue
-      : existingValue
-
-    const payloadValue: CopyActionResult = {
-      _type: 'copyResult',
-      documentId: documentId ? getPublishedId(documentId) : undefined,
-      documentType,
-      schemaTypeName: schemaType.name,
-      schemaTypeTitle: schemaType?.title || schemaType?.name,
-      path,
-      docValue: normalizedValue,
-      isDocument,
-      isArray,
-      isObject,
-    }
-
-    setCopyResult(payloadValue)
-    sendMessage(payloadValue)
-    await writeClipboardItem(payloadValue)
-
-    toast.push({
-      status: 'success',
-      title: `${isDocument ? 'Document' : 'Field'} ${payloadValue.schemaTypeTitle} copied`,
-    })
-  }, [documentId, documentType, path, schemaType, setCopyResult, sendMessage, toast, getFormValue])
-
-  const onPaste = useCallback(async () => {
-    const value = await getClipboardItem()
-    if (!value) {
-      toast.push({
-        status: 'info',
-        title: 'Nothing to paste',
-      })
-      return
-    }
-
-    const targetSchemaTypeTitle = schemaType?.title || schemaType?.name
-    let targetValue = null
-
-    if (value) {
-      try {
-        targetValue = transferValue(value, {
-          targetSchemaType: schemaType,
-          targetDocumentType: documentType,
+      if (!schemaType) {
+        console.warn(`Failed to resolve schema type for path ${path.join('.')}.`, {
+          sourceSchemaType,
         })
-        onChange?.(PatchEvent.from(set(targetValue, path)))
-        toast.push({
-          status: 'success',
-          title: `${value.isDocument ? 'Document' : 'Field'} ${targetSchemaTypeTitle} updated`,
-        })
-      } catch (error) {
         toast.push({
           status: 'error',
-          title: error.message,
+          title: `Can't lookup the field due to unknown error`,
         })
+        return
       }
-    }
-  }, [toast, schemaType, documentType, onChange, path])
 
-  return {onCopy, onPaste, refreshCopyResult, isValidTargetType, isCopyResultInClipboard}
+      const payloadValue: CopyActionResult = {
+        _type: 'copyResult',
+        documentId,
+        documentType,
+        schemaTypeName: schemaType?.name || 'unknown',
+        schemaTypeTitle: schemaType?.title || schemaType?.name || 'unknown',
+        path,
+        docValue: normalizedValue,
+        isDocument,
+        isArray,
+        isObject,
+      }
+
+      setCopyResult(payloadValue)
+      await writeClipboardItem(payloadValue)
+
+      toast.push({
+        status: 'success',
+        title: `${isDocument ? 'Document' : 'Field'} ${payloadValue.schemaTypeTitle} copied`,
+      })
+    },
+    [getDocumentMeta, setCopyResult, toast],
+  )
+
+  const onPaste = useCallback(
+    async (path: Path) => {
+      const {documentType, schemaType: sourceSchemaType} = getDocumentMeta()!
+      const schemaType = resolveSchemaTypeForPath(sourceSchemaType!, path)!
+      const value = await getClipboardItem()
+
+      if (!value) {
+        toast.push({
+          status: 'info',
+          title: 'Nothing to paste',
+        })
+        return
+      }
+
+      if (!schemaType) {
+        toast.push({
+          status: 'error',
+          title: `Failed to resolve schema type for path ${path.join('.')}`,
+        })
+        return
+      }
+
+      const targetSchemaTypeTitle = schemaType?.title || schemaType?.name
+      let targetValue = null
+
+      if (value) {
+        try {
+          targetValue = transferValue(value, {
+            targetSchemaType: schemaType,
+            targetDocumentType: documentType,
+          })
+          onChange?.(PatchEvent.from(set(targetValue, path)))
+          toast.push({
+            status: 'success',
+            title: `${value.isDocument ? 'Document' : 'Field'} ${targetSchemaTypeTitle} updated`,
+          })
+        } catch (error) {
+          toast.push({
+            status: 'error',
+            title: error.message,
+          })
+        }
+      }
+    },
+    [toast, getDocumentMeta, onChange],
+  )
+
+  return {onCopy, onPaste, onChange}
 }

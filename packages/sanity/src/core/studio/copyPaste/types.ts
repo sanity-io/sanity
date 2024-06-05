@@ -1,14 +1,14 @@
-import {type PatchEvent, type Path, type SchemaType} from 'sanity'
+import {type ObjectSchemaType, type PatchEvent} from 'sanity'
 
 /**
  * @beta
  * @hidden
  */
-export interface UseCopyPasteActionProps {
+export interface DocumentMeta {
   documentId?: string
   documentType?: string
-  path: Path
-  schemaType: SchemaType | string
+  schemaType: ObjectSchemaType | undefined
+  onChange?: (event: PatchEvent) => void
 }
 
 /**
@@ -33,13 +33,9 @@ export interface CopyActionResult {
  * @hidden
  */
 export interface CopyPasteContextType {
-  documentId?: string
-  documentType?: string
+  getDocumentMeta: () => DocumentMeta | null
   copyResult: CopyActionResult | null
   setCopyResult: (result: CopyActionResult) => void
-  sendMessage: (message: CopyActionResult) => void
-  onChange?: (event: PatchEvent) => void
-  refreshCopyResult: (isCopyResultOverride?: boolean) => Promise<void>
+  setDocumentMeta: (meta: Required<DocumentMeta>) => void
   isValidTargetType: (targetType: string) => boolean
-  isCopyResultInClipboard: boolean | null
 }
