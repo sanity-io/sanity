@@ -23,15 +23,17 @@ export function DocumentSheetListSelect(props: CellContext<DocumentSheetTableRow
         const lowerIndex = shiftClickIndex < selectedAnchor ? shiftClickIndex : selectedAnchor
         const upperIndex = shiftClickIndex < selectedAnchor ? selectedAnchor : shiftClickIndex
 
-        const additionalSelectedRows = Array.from(
-          {length: upperIndex - lowerIndex + 1},
-          (_, index) => lowerIndex + index,
-        )
+        const additionalSelectedRows = table
+          .getRowModel()
+          .flatRows.slice(lowerIndex, upperIndex + 1)
+          .map(({id}) => id)
 
-        const currentSelectedRows = table.getSelectedRowModel().rows.map(({index}) => index)
+        console.log({t: additionalSelectedRows})
+
+        const currentSelectedRows = table.getSelectedRowModel().rows.map(({id}) => id)
         table.setRowSelection(() =>
           [...additionalSelectedRows, ...currentSelectedRows].reduce(
-            (nextSelectedRows, rowIndex) => ({...nextSelectedRows, [rowIndex]: true}),
+            (nextSelectedRows, rowId) => ({...nextSelectedRows, [rowId]: true}),
             {},
           ),
         )

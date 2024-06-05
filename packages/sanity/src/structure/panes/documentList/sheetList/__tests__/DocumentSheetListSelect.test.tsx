@@ -12,8 +12,11 @@ const mockSetRowSelection = jest.fn()
 
 const props = {
   table: {
-    getSelectedRowModel: () => ({rows: [{index: 100}, {index: 122}]}),
+    getSelectedRowModel: () => ({rows: [{id: 'id-100'}, {id: 'id-122'}]}),
     setRowSelection: mockSetRowSelection,
+    getRowModel: () => ({
+      flatRows: [{id: 'id-0'}, {id: 'id-120'}, {id: 'id-121'}, {id: 'id-123'}],
+    }),
 
     options: {
       meta: {
@@ -23,7 +26,7 @@ const props = {
     },
   },
   row: {
-    index: 123,
+    index: 3,
     getCanSelect: () => true,
     getIsSelected: () => null,
     toggleSelected: mockToggleSelected,
@@ -51,7 +54,7 @@ describe('DocumentSheetListSelect', () => {
 
     fireEvent.click(checkbox)
     expect(mockToggleSelected).toHaveBeenCalledTimes(1)
-    expect(mockSetSelectedAnchor).toHaveBeenCalledWith(123)
+    expect(mockSetSelectedAnchor).toHaveBeenCalledWith(3)
   })
 
   it('unselected current checkbox', async () => {
@@ -84,24 +87,30 @@ describe('DocumentSheetListSelect', () => {
 
   it('resets the select anchor if shift not pressed on check', () => {
     const selectProps = {...props}
-    selectProps.table.options.meta!.selectedAnchor = 321
+    selectProps.table.options.meta!.selectedAnchor = 5
     renderTest(selectProps)
 
     const checkbox = screen.getByRole('checkbox')
 
     fireEvent.click(checkbox)
-    expect(mockSetSelectedAnchor).toHaveBeenCalledWith(123)
+    expect(mockSetSelectedAnchor).toHaveBeenCalledWith(3)
   })
 
   it('selects multiple rows when shift key is pressed and anchor exists', () => {
     const selectProps = {...props}
-    selectProps.table.options.meta!.selectedAnchor = 120
+    selectProps.table.options.meta!.selectedAnchor = 1
     renderTest(selectProps)
 
     const checkbox = screen.getByRole('checkbox')
 
     fireEvent.click(checkbox, {shiftKey: true})
     const setRowSelectionCall = mockSetRowSelection.mock.calls[0][0] as () => unknown
-    expect(setRowSelectionCall()).toEqual({100: true, 120: true, 121: true, 122: true, 123: true})
+    expect(setRowSelectionCall()).toEqual({
+      'id-100': true,
+      'id-120': true,
+      'id-121': true,
+      'id-122': true,
+      'id-123': true,
+    })
   })
 })

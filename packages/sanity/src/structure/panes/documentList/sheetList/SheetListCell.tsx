@@ -4,8 +4,9 @@ import {Select, TextInput} from '@sanity/ui'
 import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {type DocumentSheetTableRow} from './types'
+
 import {useDocumentSheetListContext} from './DocumentSheetListProvider'
+import {type DocumentSheetTableRow} from './types'
 
 const DataCell = styled.td<{width: number}>`
   display: flex;
@@ -85,7 +86,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
 
   const handleOnBlur = () => {
     if (isDirty) {
-      patchDocument?.(row.id, column.id, renderValue)
+      patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, renderValue)
       setIsDirty(false)
     }
     resetFocusSelection()
@@ -98,10 +99,10 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
       if (typeof clipboardData === 'string' || typeof clipboardData === 'number') {
         setRenderValue(clipboardData)
         // patch immediately when pasting
-        patchDocument?.(row.id, column.id, clipboardData)
+        patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, clipboardData)
       }
     },
-    [column.id, patchDocument, row.id],
+    [column.id, patchDocument, row.original.__metadata.idPair.publishedId],
   )
 
   const handleCopy = useCallback(() => {

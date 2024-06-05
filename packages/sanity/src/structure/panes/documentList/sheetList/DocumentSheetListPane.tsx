@@ -8,7 +8,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {SearchProvider, useSchema, useSearchState, useValidationStatus} from 'sanity'
+import {
+  SearchProvider,
+  set,
+  toMutationPatches,
+  useSchema,
+  useSearchState,
+  useValidationStatus,
+} from 'sanity'
 import {styled} from 'styled-components'
 
 import {ValidationProvider} from '../../../../core/form/studio/contexts/Validation'
@@ -23,6 +30,7 @@ import {SheetListCell} from './SheetListCell'
 import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
+import {useDocumentSheetListOperations} from './useDocumentSheetListOperations'
 
 type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'>
 
@@ -93,6 +101,15 @@ function DocumentSheetListPaneInner({
   })
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 
+  const meta = {
+    selectedAnchor,
+    setSelectedAnchor: (...args) => {
+      console.log('set ancjhor', args)
+      setSelectedAnchor(...args)
+    },
+    patchDocument: () => null,
+  }
+
   const totalRows = state.result.hits.length
   const table = useReactTable({
     data,
@@ -108,14 +125,27 @@ function DocumentSheetListPaneInner({
       columnVisibility: initialColumnsVisibility,
     },
     getRowId: (row) => row._id,
-    meta: {
-      selectedAnchor,
-      setSelectedAnchor,
-      patchDocument: (documentId, fieldId, value) => null,
-    },
+    meta,
   })
 
   const {rows} = table.getRowModel()
+
+  const rowOperations = useDocumentSheetListOperations(
+    rows.map((row) => row.original.__metadata.idPair.publishedId),
+    documentSchemaType.name,
+  )
+
+  const handlePatchDocument = (publishedDocumentId: string, fieldId: string, value: any) => {
+    const operation = rowOperations?.[publishedDocumentId]
+    console.log('go', fieldId)
+    if (!operation || operation.patch.disabled !== false) return
+
+    operation.patch.execute(toMutationPatches([set(value, [fieldId.replace('_', '.')])]))
+  }
+
+  if (table.options.meta) {
+    table.options.meta.patchDocument = handlePatchDocument
+  }
 
   useEffect(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType: documentSchemaType})
