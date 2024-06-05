@@ -387,42 +387,49 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         slateEditor.insertData(event.clipboardData)
         return
       }
-      // Resolve it as promise (can be either async promise or sync return value)
-      new Promise<OnPasteResult>((resolve) => {
+
+      try{
         const value = PortableTextEditor.getValue(portableTextEditor)
         const ptRange = toPortableTextRange(value, slateEditor.selection, schemaTypes)
         const path = ptRange?.focus.path || []
-        resolve(
-          onPaste({
-            event,
-            value,
-            path,
-            schemaTypes,
-          }),
-        )
-      })
-        .then((result) => {
-          debug('Custom paste function from client resolved', result)
-          change$.next({type: 'loading', isLoading: true})
-          if (!result || !result.insert) {
-            debug('No result from custom paste handler, pasting normally')
-            slateEditor.insertData(event.clipboardData)
-            return
-          }
-          if (result && result.insert) {
-            slateEditor.insertFragment(
-              toSlateValue(result.insert as PortableTextBlock[], {schemaTypes}),
-            )
+        const result = onPaste({
+          event,
+          value,
+          path,
+          schemaTypes,
+        })
+        change$.next({type: 'loading', isLoading: true})
+        if(!result){
+          debug('No result from custom paste handler, pasting normally')
+          slateEditor.insertData(event.clipboardData)
+        } else {
+          Promise.resolve(result)
+          .then((result) => {
+            debug('Custom paste function from client resolved', result)
+            change$.next({type: 'loading', isLoading: true})
+            if (!result || !result.insert) {
+              debug('No result from custom paste handler, pasting normally')
+              slateEditor.insertData(event.clipboardData)
+              return
+            }
+            if (result && result.insert) {
+              slateEditor.insertFragment(
+                toSlateValue(result.insert as PortableTextBlock[], {schemaTypes}),
+              )
+              change$.next({type: 'loading', isLoading: false})
+              return
+            }
+            console.warn('Your onPaste function returned something unexpected:', result)
+          })
+          .catch((error) => {
             change$.next({type: 'loading', isLoading: false})
-            return
-          }
-          console.warn('Your onPaste function returned something unexpected:', result)
-        })
-        .catch((error) => {
-          change$.next({type: 'loading', isLoading: false})
-          console.error(error) // eslint-disable-line no-console
-          return error
-        })
+            console.error(error) // eslint-disable-line no-console
+          })
+        }
+      }catch(error){
+        change$.next({type: 'loading', isLoading: false})
+        console.error(error) // eslint-disable-line no-console
+      }
     },
     [change$, onPaste, portableTextEditor, schemaTypes, slateEditor],
   )
