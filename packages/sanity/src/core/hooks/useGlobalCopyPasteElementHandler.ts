@@ -12,6 +12,7 @@ import {
   transformValueToPrimitive,
 } from '../studio/copyPaste/utils'
 
+/** @internal */
 export interface GlobalCopyPasteElementHandler {
   value: FormDocumentValue | undefined
   element: HTMLElement | null
@@ -21,6 +22,7 @@ export interface GlobalCopyPasteElementHandler {
 const isCopyHotKey = isHotkey(`mod+c`)
 const isPasteHotKey = isHotkey(`mod+v`)
 
+/** @internal */
 export function useGlobalCopyPasteElementHandler({
   value,
   element,
