@@ -1,15 +1,8 @@
 import {isEqual} from 'lodash'
-import {
-  type ArraySchemaType,
-  EMPTY_ARRAY,
-  getSchemaTypeTitle,
-  isReferenceSchemaType,
-  type Path,
-} from 'sanity'
+import {type ArraySchemaType, EMPTY_ARRAY, isReferenceSchemaType, type Path} from 'sanity'
 
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type TreeEditingBreadcrumb} from '../../types'
-import {getArrayItemPreview} from '../getArrayItemPreview'
 
 interface BuildBreadcrumbsStateProps {
   arraySchemaType: ArraySchemaType
@@ -21,36 +14,34 @@ interface BuildBreadcrumbsStateProps {
 export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEditingBreadcrumb {
   const {arraySchemaType, arrayValue, itemPath, parentPath} = props
 
-  const parentTitle = getSchemaTypeTitle(arraySchemaType)
-
   const items: TreeEditingBreadcrumb[] = arrayValue
     .map((arrayItem) => {
       const nestedItemPath = [...parentPath, {_key: arrayItem._key}] as Path
 
       const itemType = getItemType(arraySchemaType, arrayItem)
-
       const isReference = isReferenceSchemaType(itemType)
 
       // Don't add reference items to the breadcrumbs
-      if (isReference) return null
-
-      const {title} = getArrayItemPreview({arrayItem, arraySchemaType})
+      // or items without a type
+      if (isReference || !itemType) return null
 
       return {
-        path: nestedItemPath,
-        title,
         children: EMPTY_ARRAY,
-        parentArrayTitle: parentTitle,
-      }
+        parentSchemaType: arraySchemaType,
+        path: nestedItemPath,
+        schemaType: itemType,
+        value: arrayItem,
+      } satisfies TreeEditingBreadcrumb
     })
     .filter(Boolean) as TreeEditingBreadcrumb[]
 
-  const selectedItemTitle = items.find((item) => isEqual(item.path, itemPath))?.title
+  const selectedItem = items.find((item) => isEqual(item.path, itemPath)) as TreeEditingBreadcrumb
 
   return {
-    path: itemPath,
-    title: selectedItemTitle as string,
     children: items,
-    parentArrayTitle: parentTitle,
+    parentSchemaType: arraySchemaType,
+    path: itemPath,
+    schemaType: selectedItem.schemaType,
+    value: selectedItem.value,
   }
 }

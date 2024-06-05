@@ -1,3 +1,4 @@
+import {Schema} from '@sanity/schema'
 import {Container} from '@sanity/ui'
 import {useState} from 'react'
 import {type Path} from 'sanity'
@@ -5,90 +6,50 @@ import {type Path} from 'sanity'
 import {TreeEditingMenu} from '../components'
 import {type TreeEditingMenuItem} from '../types'
 
-function buildStructure(depth: number): TreeEditingMenuItem[] {
+const schema = Schema.compile({
+  name: 'default',
+  types: [
+    {
+      name: 'testDocument',
+      title: 'Document',
+      type: 'document',
+      fields: [
+        {
+          type: 'object',
+          name: 'testObject',
+          title: 'Object',
+          fields: [
+            {
+              type: 'string',
+              name: 'title',
+              title: 'Title',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
+function buildStructure(depth: number, start: number): TreeEditingMenuItem[] {
   function createItem(level: number): TreeEditingMenuItem {
-    return {
-      title: `Level ${level}`,
-      path: Array.from({length: level}, (_, i) => `level-${i + 1}`),
-      children: level < depth ? [createItem(level + 1)] : [],
-    }
+    const path = Array.from({length: level}, (_, i) => `level-${i + 1 + start}`)
+    const children = level < depth ? [createItem(level + 1)] : []
+    const schemaType = schema.get('testDocument').fields[0].type
+    const value = {_key: `level-${level + start}`, title: `Level ${level + start}`}
+
+    return {path, children, schemaType, value}
   }
 
   return [createItem(1)]
 }
 
 const ITEMS: TreeEditingMenuItem[] = [
-  buildStructure(100)[0],
-  // {
-  //   title: 'Level 1',
-  //   path: ['level-1'],
-  //   children: [
-  //     {
-  //       title: 'Level 1.1',
-  //       path: ['level-1', 'level-1.1'],
-  //     },
-  //     {
-  //       title: 'Level 1.2',
-  //       path: ['level-1', 'level-1.2'],
-  //     },
-  //     {
-  //       title: 'Level 1.3',
-  //       path: ['level-1', 'level-1.3'],
-  //     },
-  //   ],
-  // },
-  {
-    title: 'Level 2',
-    path: ['level-2'],
-    children: [
-      {
-        title: 'Level 2.1',
-        path: ['level-2', 'level-2.1'],
-        children: [
-          {
-            title: 'Level 2.1.1',
-            path: ['level-2', 'level-2.1', 'level-2.1.1'],
-          },
-          {
-            title: 'Level 2.1.2',
-            path: ['level-2', 'level-2.1', 'level-2.1.2'],
-            children: [
-              {
-                title: 'Level 2.1.2.1',
-                path: ['level-2', 'level-2.1', 'level-2.1.2', 'level-2.1.2.1'],
-              },
-              {
-                title: 'Level 2.1.2.2',
-                path: ['level-2', 'level-2.1', 'level-2.1.2', 'level-2.1.2.2'],
-              },
-            ],
-          },
-          {
-            title: 'Level 2.1.3',
-            path: ['level-2', 'level-2.1', 'level-2.1.3'],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: 'Level 3',
-    path: ['level-3'],
-  },
-  {
-    title: 'Level 4',
-    path: ['level-4'],
-    children: [
-      {
-        title: 'Level 4.1',
-        path: ['level-4', 'level-4.1'],
-      },
-      {
-        title: 'Level 4.2',
-        path: ['level-4', 'level-4.2'],
-      },
-    ],
-  },
+  ...buildStructure(5, 0),
+  ...buildStructure(5, 1),
+  ...buildStructure(0, 2),
+  ...buildStructure(10, 3),
+  ...buildStructure(5, 4),
 ]
 
 export default function TreeEditingMenuStory(): JSX.Element {
