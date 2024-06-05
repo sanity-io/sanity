@@ -48,7 +48,6 @@ const Table = styled.table`
   border-spacing: 0;
   font-family: arial, sans-serif;
   white-space: nowrap;
-  width: 100%;
 
   thead {
     display: grid;
