@@ -10,6 +10,7 @@ const ITEMS: TreeEditingBreadcrumb[] = [...Array(100).keys()].map((index) => ({
   title: `Item ${index}`,
   path: [`${index}-item`],
   children: [],
+  parentArrayTitle: 'Array',
 }))
 
 export default function TreeEditingBreadcrumbsMenuButtonStory(): JSX.Element {
@@ -18,10 +19,11 @@ export default function TreeEditingBreadcrumbsMenuButtonStory(): JSX.Element {
   return (
     <Flex align="center" justify="center" height="fill">
       <TreeEditingBreadcrumbsMenuButton
+        button={<Button text="Open menu" />}
         items={ITEMS}
         onPathSelect={setSelectedPath}
+        parentElement={document.body}
         selectedPath={selectedPath}
-        button={<Button text="Open menu" />}
       />
     </Flex>
   )

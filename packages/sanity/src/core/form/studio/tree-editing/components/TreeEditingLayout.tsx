@@ -51,8 +51,6 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
   const {items, onPathSelect, selectedPath, onOpenToggle, open, title} = props
   const {t} = useTranslation()
 
-  const ConditionalResizer = open ? Resizable : Fragment
-
   const tooltipProps = useMemo(
     () => ({
       content: open
@@ -62,64 +60,70 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
     [open, t],
   )
 
-  return (
-    <ConditionalResizer maxWidth={450} minWidth={150} initialWidth={250}>
-      <SidebarCard
-        borderRight={!open}
-        data-testid="tree-editing-sidebar"
-        data-ui="SidebarCard"
-        display="flex"
-        forwardedAs="aside"
-        height="fill"
-        overflow="hidden"
-        tone="transparent"
-      >
-        <FixedHeightFlex align="center" gap={2}>
-          <Button
-            data-testid="tree-editing-sidebar-toggle"
-            icon={PanelLeftIcon}
-            mode="bleed"
-            onClick={onOpenToggle}
-            selected={open}
-            tooltipProps={tooltipProps}
-          />
-
-          {open && (
-            <Box flex={1}>
-              <Text size={1} muted weight="medium" textOverflow="ellipsis">
-                {title}
-              </Text>
-            </Box>
-          )}
-        </FixedHeightFlex>
+  const SideBarParent = (
+    <SidebarCard
+      borderRight={!open}
+      data-testid="tree-editing-sidebar"
+      data-ui="SidebarCard"
+      display="flex"
+      forwardedAs="aside"
+      height="fill"
+      overflow="hidden"
+      tone="transparent"
+    >
+      <FixedHeightFlex align="center" gap={2}>
+        <Button
+          data-testid="tree-editing-sidebar-toggle"
+          icon={PanelLeftIcon}
+          mode="bleed"
+          onClick={onOpenToggle}
+          selected={open}
+          tooltipProps={tooltipProps}
+        />
 
         {open && (
-          <SearchStack padding={2} sizing="border">
-            <TreeEditingSearch items={items} onPathSelect={onPathSelect} />
-          </SearchStack>
+          <Box flex={1}>
+            <Text size={1} muted weight="medium" textOverflow="ellipsis">
+              {title}
+            </Text>
+          </Box>
         )}
+      </FixedHeightFlex>
 
-        <AnimatePresence mode="wait">
-          {open && (
-            <SidebarStack
-              animate="animate"
-              exit="exit"
-              initial="initial"
-              overflow="auto"
-              padding={3}
-              sizing="border"
-              variants={ANIMATION_VARIANTS}
-            >
-              <TreeEditingMenu
-                items={items}
-                onPathSelect={onPathSelect}
-                selectedPath={selectedPath}
-              />
-            </SidebarStack>
-          )}
-        </AnimatePresence>
-      </SidebarCard>
-    </ConditionalResizer>
+      {open && (
+        <SearchStack padding={2} sizing="border">
+          <TreeEditingSearch items={items} onPathSelect={onPathSelect} />
+        </SearchStack>
+      )}
+
+      <AnimatePresence mode="wait">
+        {open && (
+          <SidebarStack
+            animate="animate"
+            exit="exit"
+            initial="initial"
+            overflow="auto"
+            padding={3}
+            sizing="border"
+            variants={ANIMATION_VARIANTS}
+          >
+            <TreeEditingMenu
+              items={items}
+              onPathSelect={onPathSelect}
+              selectedPath={selectedPath}
+            />
+          </SidebarStack>
+        )}
+      </AnimatePresence>
+    </SidebarCard>
+  )
+
+  return open ? (
+    <Resizable maxWidth={450} minWidth={150} initialWidth={250}>
+      {SideBarParent}
+    </Resizable>
+  ) : (
+    <Fragment>{SideBarParent}</Fragment>
   )
 })
 
