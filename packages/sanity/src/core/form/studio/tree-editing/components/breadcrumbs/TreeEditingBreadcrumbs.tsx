@@ -208,7 +208,7 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
               button={button}
               items={item.children || EMPTY_ARRAY}
               onPathSelect={onPathSelect}
-              parentArrayTitle={getSchemaTypeTitle(item.schemaType)}
+              menuTitle={getSchemaTypeTitle(item.schemaType)}
               parentElement={rootElement}
               // We don't use the `selectedPath` here as the selected path
               // since that is the current selected path and not the selected
