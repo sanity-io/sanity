@@ -1,15 +1,9 @@
 import {Box, Button, Stack, Text} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
-import {
-  CommandList,
-  getSchemaTypeTitle,
-  type Path,
-  supportsTouch,
-  unstable_useValuePreview as useValuePreview,
-  useTranslation,
-} from 'sanity'
+import {CommandList, getSchemaTypeTitle, type Path, supportsTouch, useTranslation} from 'sanity'
 
+import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingMenuItem} from '../../types'
 import {ITEM_HEIGHT} from './constants'
 
@@ -22,12 +16,12 @@ interface ResultItemProps {
 function ResultItem(props: ResultItemProps): JSX.Element {
   const {item, onPathSelect, isFirst} = props
 
-  const {value} = useValuePreview({
+  const {value} = useValuePreviewWithFallback({
     value: item.value,
     schemaType: item.schemaType,
   })
 
-  const title = value?.title || 'Untitled'
+  const title = value.title
 
   return (
     <Stack marginTop={isFirst ? undefined : 1}>
