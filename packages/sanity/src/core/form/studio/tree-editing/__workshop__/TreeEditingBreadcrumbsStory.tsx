@@ -1,5 +1,5 @@
 import {Schema} from '@sanity/schema'
-import {Container, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 import {useState} from 'react'
 import {type Path} from 'sanity'
 
@@ -59,9 +59,27 @@ const ITEMS: TreeEditingBreadcrumb[] = [
     ],
   },
   {
+    path: ['second-item'],
+    schemaType: schema.get('testDocument').fields[0].type,
+    value: {_key: 'second-item', title: 'Second item'},
+    parentSchemaType: schema.get('testDocument'),
+  },
+  {
     path: ['third-item'],
     schemaType: schema.get('testDocument').fields[0].type,
     value: {_key: 'third-item', title: 'Third item'},
+    parentSchemaType: schema.get('testDocument'),
+  },
+  {
+    path: ['fourth-item'],
+    schemaType: schema.get('testDocument').fields[0].type,
+    value: {_key: 'fourth-item', title: 'Fourth item'},
+    parentSchemaType: schema.get('testDocument'),
+  },
+  {
+    path: ['fifth-item'],
+    schemaType: schema.get('testDocument').fields[0].type,
+    value: {_key: 'fifth-item', title: 'Fifth item'},
     parentSchemaType: schema.get('testDocument'),
   },
 ]
@@ -70,14 +88,14 @@ export default function TreeEditingBreadcrumbsStory(): JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>(['second-item'])
 
   return (
-    <Flex align="center" height="fill">
-      <Container width={0}>
+    <Flex align="center" justify="center" height="fill">
+      <Card>
         <TreeEditingBreadcrumbs
           items={ITEMS}
           onPathSelect={setSelectedPath}
           selectedPath={selectedPath}
         />
-      </Container>
+      </Card>
     </Flex>
   )
 }
