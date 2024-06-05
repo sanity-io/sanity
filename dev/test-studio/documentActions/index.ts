@@ -1,7 +1,5 @@
 import {type DocumentActionsResolver} from 'sanity'
 
-import {CopyDocumentAction} from './actions/CopyDocumentAction'
-import {PasteDocumentAction} from './actions/PasteDocumentAction'
 import {TestConfirmDialogAction} from './actions/TestConfirmDialogAction'
 import {TestCustomComponentAction} from './actions/TestCustomComponentAction'
 import {TestCustomRestoreAction} from './actions/TestCustomRestoreAction'
@@ -15,8 +13,6 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
       TestModalDialogAction,
       TestPopoverDialogAction,
       TestCustomComponentAction,
-      CopyDocumentAction,
-      PasteDocumentAction,
       ...prev,
     ].map((action) => {
       if (action.action === 'restore') {
@@ -31,5 +27,5 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
     return prev.filter(({action}) => action !== 'restore')
   }
 
-  return [...prev, PasteDocumentAction, CopyDocumentAction]
+  return [...prev]
 }
