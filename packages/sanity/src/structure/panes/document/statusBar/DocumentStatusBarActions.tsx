@@ -29,17 +29,11 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const {enabled: isTreeArrayEditingEnabled} = useTreeArrayEditingEnabled()
 
-  const isDialogOpen = useMemo(
-    () => shouldArrayDialogOpen(schemaType, openPath),
-    [openPath, schemaType],
-  )
-
   // should only disable the main action if the new dialog is open and the feature enabled
   const isTreeArrayEditingEnabledOpen = useMemo(
-    () => isTreeArrayEditingEnabled && isDialogOpen,
-    [isDialogOpen, isTreeArrayEditingEnabled],
+    () => isTreeArrayEditingEnabled && shouldArrayDialogOpen(schemaType, openPath),
+    [isTreeArrayEditingEnabled, openPath, schemaType],
   )
-
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
     if (!firstActionState || (!firstActionState.title && !firstActionState.shortcut)) return null
