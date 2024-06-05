@@ -1,6 +1,7 @@
 import {deburr} from 'lodash'
 
 import {type TreeEditingMenuItem} from '../../types'
+import {type SearchableTreeEditingMenuItem} from './types'
 
 /**
  * Flattens a list of items and their children into a single list.
@@ -27,11 +28,11 @@ export function flattenItems(items: TreeEditingMenuItem[]): TreeEditingMenuItem[
  * Returns a list of items that match the search query.
  */
 export function treeEditingSearch(
-  items: TreeEditingMenuItem[],
+  items: SearchableTreeEditingMenuItem[],
   query: string,
 ): TreeEditingMenuItem[] {
   // Flatten the items list so we can search through all items and their children
-  const flattenItemsList = flattenItems(items)
+  const flattenItemsList = flattenItems(items) as SearchableTreeEditingMenuItem[]
 
   // We use deburr to remove diacritics from the query and the item titles. This way we can
   // search for "nino" and get results for "niño" as well.
