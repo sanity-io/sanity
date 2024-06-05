@@ -1,11 +1,8 @@
-import {useToast} from '@sanity/ui'
-import {type ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react'
-import {type PatchEvent} from 'sanity'
+import {type ReactNode, useCallback, useContext, useMemo, useRef, useState} from 'react'
+import {getPublishedId} from 'sanity'
 import {CopyPasteContext} from 'sanity/_singletons'
 
-import {BROADCAST_CHANNEL_NAME} from './constants'
-import {type CopyActionResult} from './types'
-import {getClipboardItem} from './utils'
+import {type CopyActionResult, type DocumentMeta} from './types'
 
 /**
  * @beta
@@ -13,81 +10,43 @@ import {getClipboardItem} from './utils'
  */
 export const CopyPasteProvider: React.FC<{
   children: ReactNode
-  documentId?: string
-  documentType?: string
-  onChange?: (event: PatchEvent) => void
-}> = ({documentId, documentType, children, onChange}) => {
+}> = ({children}) => {
+  const documentMetaRef = useRef<DocumentMeta | null>(null)
   const [copyResult, setCopyResult] = useState<CopyActionResult | null>(null)
-  const [isCopyResultInClipboard, setIsCopyResultInClipboard] = useState<boolean | null>(null)
-  const toast = useToast()
-  const broadcastChannelRef = useRef<BroadcastChannel | null>(null)
 
-  // create a isValidTargetType function that checks if source and target schemaType is the same
   const isValidTargetType = useCallback(
     (target: string) => {
-      // source should be pulled from copyResult, if set
       const source = copyResult?.schemaTypeName
       return source === target
     },
     [copyResult],
   )
 
-  const refreshCopyResult = useCallback(async (isCopyResultOverride?: boolean) => {
-    if (isCopyResultOverride) {
-      setIsCopyResultInClipboard(isCopyResultOverride)
+  const setDocumentMeta = useCallback(
+    ({documentId, documentType, schemaType, onChange}: Required<DocumentMeta>) => {
+      documentMetaRef.current = {
+        documentId: getPublishedId(documentId),
+        documentType,
+        schemaType,
+        onChange,
+      }
+    },
+    [],
+  )
 
-      return
-    }
+  const getDocumentMeta = useCallback(() => documentMetaRef.current, [])
 
-    const storedCopyResult = await getClipboardItem()
-    setIsCopyResultInClipboard(!!storedCopyResult)
-  }, [])
-
-  useEffect(() => {
-    const broadcastChannel = new BroadcastChannel(BROADCAST_CHANNEL_NAME)
-    broadcastChannelRef.current = broadcastChannel
-
-    const handleMessage = (event: MessageEvent) => {
-      setCopyResult(event.data)
-      toast.push({
-        status: 'info',
-        title: 'Copy data synchronized across tabs',
-      })
-    }
-
-    broadcastChannel.addEventListener('message', handleMessage)
-
-    return () => {
-      broadcastChannel.removeEventListener('message', handleMessage)
-      broadcastChannel.close()
-    }
-  }, [toast])
-
-  const sendMessage = useCallback((message: CopyActionResult) => {
-    if (broadcastChannelRef.current) {
-      broadcastChannelRef.current.postMessage(message)
-    }
-  }, [])
-
-  useEffect(() => {
-    refreshCopyResult()
-  }, [refreshCopyResult])
-
-  useEffect(() => {
-    setIsCopyResultInClipboard(!!copyResult)
-  }, [copyResult])
-
-  const contextValue = {
-    copyResult,
-    documentId,
-    documentType,
-    setCopyResult,
-    sendMessage,
-    onChange,
-    refreshCopyResult,
-    isValidTargetType,
-    isCopyResultInClipboard,
-  }
+  const contextValue = useMemo(
+    () => ({
+      copyResult,
+      onChange: documentMetaRef?.current?.onChange,
+      getDocumentMeta,
+      setCopyResult,
+      setDocumentMeta,
+      isValidTargetType,
+    }),
+    [copyResult, getDocumentMeta, setDocumentMeta, isValidTargetType],
+  )
 
   return <CopyPasteContext.Provider value={contextValue}>{children}</CopyPasteContext.Provider>
 }
