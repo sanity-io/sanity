@@ -99,6 +99,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
       if (typeof clipboardData === 'string' || typeof clipboardData === 'number') {
         setRenderValue(clipboardData)
         // patch immediately when pasting
+        console.log('going to patch', row.original.__metadata.idPair.publishedId)
         patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, clipboardData)
       }
     },

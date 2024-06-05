@@ -1,4 +1,4 @@
-import {isDocumentSchemaType, type ObjectSchemaType} from '@sanity/types'
+import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocumentLike} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 import {
   getCoreRowModel,
@@ -103,11 +103,10 @@ function DocumentSheetListPaneInner({
 
   const meta = {
     selectedAnchor,
-    setSelectedAnchor: (...args) => {
-      console.log('set ancjhor', args)
-      setSelectedAnchor(...args)
+    setSelectedAnchor,
+    patchDocument: () => {
+      throw new Error('patchDocument not implemented')
     },
-    patchDocument: () => null,
   }
 
   const totalRows = state.result.hits.length
@@ -135,13 +134,29 @@ function DocumentSheetListPaneInner({
     documentSchemaType.name,
   )
 
-  const handlePatchDocument = (publishedDocumentId: string, fieldId: string, value: any) => {
-    const operation = rowOperations?.[publishedDocumentId]
-    console.log('go', fieldId)
-    if (!operation || operation.patch.disabled !== false) return
+  const handlePatchDocument = useCallback(
+    (publishedDocumentId: string, fieldId: string, value: any) => {
+      const operation = rowOperations?.[publishedDocumentId]
+      console.log({operation}, publishedDocumentId)
+      if (!operation || operation.patch.disabled !== false) return
+      console.log({
+        value,
+        fieldId,
+        row: rows.find((row) => row.original.__metadata.idPair.publishedId === publishedDocumentId),
+      })
 
-    operation.patch.execute(toMutationPatches([set(value, [fieldId.replace('_', '.')])]))
-  }
+      const currentDocumentValue = rows.find(
+        (row) => row.original.__metadata.idPair.publishedId === publishedDocumentId,
+      )?.original.__metadata.snapshots.published as SanityDocumentLike
+      setTimeout(() => {
+        operation.patch.execute(
+          toMutationPatches([set(value, [fieldId.replace('_', '.')])]),
+          currentDocumentValue,
+        )
+      }, 300)
+    },
+    [rowOperations, rows],
+  )
 
   if (table.options.meta) {
     table.options.meta.patchDocument = handlePatchDocument
