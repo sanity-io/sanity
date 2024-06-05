@@ -7,7 +7,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {type Path, useTranslation} from 'sanity'
+import {getSchemaTypeTitle, type Path, useTranslation} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
 
@@ -122,7 +122,15 @@ function MenuItem(props: TreeEditingMenuItemProps) {
     value: item.value,
   })
 
-  const title = value.title
+  const title = useMemo(() => {
+    // If the item is an array parent, we want to show the schema type title
+    if (isArrayParent) {
+      return getSchemaTypeTitle(item.schemaType)
+    }
+
+    // Else, we show the preview title
+    return value.title
+  }, [isArrayParent, item.schemaType, value.title])
 
   const handleClick = useCallback(() => {
     onPathSelect(item.path)
