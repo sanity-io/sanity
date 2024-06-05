@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import {hues} from '@sanity/color'
 import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
@@ -6,7 +7,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {type Path, useTranslation} from 'sanity'
+import {type Path, unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
 
@@ -105,7 +106,7 @@ interface TreeEditingMenuItemProps {
 
 function MenuItem(props: TreeEditingMenuItemProps) {
   const {item, onPathSelect, selectedPath, siblingHasChildren} = props
-  const {children, title} = item
+  const {children} = item
   const hasChildren = children && children.length > 0
   const [open, setOpen] = useState<boolean>(false)
   const {t} = useTranslation()
@@ -115,13 +116,18 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   const selected = useMemo(() => isEqual(item.path, selectedPath), [item.path, selectedPath])
   const isArrayParent = useMemo(() => !isArrayItemPath(item.path), [item.path])
 
+  const {value} = useValuePreview({
+    schemaType: item.schemaType,
+    value: item.value,
+  })
+
+  const title = value?.title || 'Untitled'
+
   const handleClick = useCallback(() => {
     onPathSelect(item.path)
   }, [item.path, onPathSelect])
 
-  const handleExpandClick = useCallback(() => {
-    setOpen((v) => !v)
-  }, [])
+  const handleExpandClick = useCallback(() => setOpen((v) => !v), [])
 
   const icon = useMemo(() => {
     if (!hasChildren) return null
@@ -209,7 +215,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
             return (
               <MenuItem
                 item={child}
-                key={child.title}
+                key={toString(child.path)}
                 onPathSelect={onPathSelect}
                 selectedPath={selectedPath}
                 siblingHasChildren={childSiblingHasChildren}

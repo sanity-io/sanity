@@ -2,10 +2,60 @@ import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
-import {CommandList, type Path, supportsTouch, useTranslation} from 'sanity'
+import {
+  CommandList,
+  type Path,
+  supportsTouch,
+  unstable_useValuePreview as useValuePreview,
+  useTranslation,
+} from 'sanity'
 
-import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
+import {type TreeEditingBreadcrumb} from '../../types'
 import {ITEM_HEIGHT} from './constants'
+
+interface BreadcrumbsItemProps {
+  item: TreeEditingBreadcrumb
+  selected: boolean
+  isFirst: boolean
+  onPathSelect: (path: Path) => void
+  renderMenuItemTitle: (title: string) => string
+}
+
+function BreadcrumbsItem(props: BreadcrumbsItemProps): JSX.Element {
+  const {item, onPathSelect, selected, isFirst, renderMenuItemTitle} = props
+
+  const {value} = useValuePreview({
+    schemaType: item.schemaType,
+    value: item.value,
+  })
+
+  const title = value?.title || 'Untitled'
+
+  return (
+    <Stack marginTop={isFirst ? undefined : 1}>
+      <Button
+        mode="bleed"
+        // eslint-disable-next-line react/jsx-no-bind
+        onClick={() => onPathSelect(item.path)}
+        selected={selected}
+      >
+        <Flex align="center" gap={2}>
+          <Box flex={1}>
+            <Text size={1} textOverflow="ellipsis">
+              {renderMenuItemTitle(title)}
+            </Text>
+          </Box>
+
+          {selected && (
+            <Text size={1}>
+              <CheckmarkIcon />
+            </Text>
+          )}
+        </Flex>
+      </Button>
+    </Stack>
+  )
+}
 
 interface TreeEditingBreadcrumbsMenuProps {
   items: TreeEditingBreadcrumb[]
@@ -38,33 +88,18 @@ export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProp
   )
 
   const renderItem = useCallback(
-    (item: TreeEditingMenuItem) => {
+    (item: TreeEditingBreadcrumb) => {
       const selected = isEqual(item.path, selectedPath)
       const isFirst = isEqual(item.path, items[0].path)
 
       return (
-        <Stack marginTop={isFirst ? undefined : 1}>
-          <Button
-            mode="bleed"
-            // eslint-disable-next-line react/jsx-no-bind
-            onClick={() => onPathSelect(item.path)}
-            selected={selected}
-          >
-            <Flex align="center" gap={2}>
-              <Box flex={1}>
-                <Text size={1} textOverflow="ellipsis">
-                  {handleRenderMenuItemTitle(item.title)}
-                </Text>
-              </Box>
-
-              {selected && (
-                <Text size={1}>
-                  <CheckmarkIcon />
-                </Text>
-              )}
-            </Flex>
-          </Button>
-        </Stack>
+        <BreadcrumbsItem
+          isFirst={isFirst}
+          item={item}
+          onPathSelect={onPathSelect}
+          renderMenuItemTitle={handleRenderMenuItemTitle}
+          selected={selected}
+        />
       )
     },
     [handleRenderMenuItemTitle, items, onPathSelect, selectedPath],

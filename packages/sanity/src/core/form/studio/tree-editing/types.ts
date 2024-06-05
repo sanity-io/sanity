@@ -1,15 +1,11 @@
-import {type Path} from 'sanity'
+import {type Path, type SchemaType} from 'sanity'
 
 export interface TreeEditingMenuItem {
-  title: string
-  parentTitle?: string
-  path: Path
   children?: TreeEditingMenuItem[]
+  parentSchemaType: SchemaType
+  path: Path
+  schemaType: SchemaType
+  value: unknown | undefined
 }
 
-export interface TreeEditingBreadcrumb {
-  title: string
-  path: Path
-  children: TreeEditingBreadcrumb[]
-  parentArrayTitle: string
-}
+export type TreeEditingBreadcrumb = TreeEditingMenuItem

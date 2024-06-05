@@ -1,7 +1,6 @@
 import {
   type ArraySchemaType,
   EMPTY_ARRAY,
-  getSchemaTypeTitle,
   getValueAtPath,
   isArrayOfPrimitivesSchemaType,
   isArraySchemaType,
@@ -12,7 +11,6 @@ import {
 } from 'sanity'
 
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
-import {getArrayItemPreview} from '../getArrayItemPreview'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
 import {getRelativePath, isSelected, shouldBeInBreadcrumb} from './utils'
@@ -46,7 +44,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     const isReference = isReferenceSchemaType(itemSchemaField)
 
-    // if the item is a reference, we don't want to add it to the menu / breadcrumbs
+    // Do not include references
     if (isReference) {
       return
     }
@@ -106,22 +104,17 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           initial: false,
         })
 
-        // Get the title of the parent item (the value)
-        const parentTitle = getArrayItemPreview({arrayItem: item, arraySchemaType}).title
-
         childrenMenuItems.push({
-          title: getSchemaTypeTitle(childField.type) as string,
-          path: childPath,
           children: childState?.menuItems || EMPTY_ARRAY,
-          parentTitle,
+          parentSchemaType: itemSchemaField,
+          path: childPath,
+          schemaType: childField as ObjectSchemaType,
+          value: childValue,
         })
       }
     })
 
     const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
-
-    const {title} = getArrayItemPreview({arrayItem: item, arraySchemaType})
-    const parentTitle = getSchemaTypeTitle(arraySchemaType) as string
 
     if (isSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
@@ -129,10 +122,11 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     if (!isPrimitive) {
       menuItems.push({
-        title,
-        path: itemPath as Path,
         children: childrenMenuItems,
-        parentTitle,
+        parentSchemaType: arraySchemaType,
+        path: itemPath as Path,
+        schemaType: itemSchemaField as ObjectSchemaType,
+        value: item,
       })
     }
   })

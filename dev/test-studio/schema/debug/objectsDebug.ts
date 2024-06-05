@@ -34,6 +34,7 @@ const animal = defineField({
                       type: 'string',
                       name: 'title',
                       title: 'Title',
+                      validation: (Rule) => Rule.required(),
                     },
                     {
                       type: 'string',
@@ -225,6 +226,19 @@ const arrayOfImages = defineField({
   ],
 })
 
+const arrayOfFiles = defineField({
+  type: 'array',
+  name: 'arrayOfFiles',
+  title: 'Array of files',
+  of: [
+    {
+      type: 'file',
+      name: 'file',
+      title: 'File',
+    },
+  ],
+})
+
 const arrayOfAnonymousObjects = defineField({
   type: 'array',
   name: 'arrayOfAnonymousObjects',
@@ -310,6 +324,29 @@ const arrayOfMixedTypes = defineField({
       title: 'Author',
       to: [{type: 'author'}],
     },
+    {
+      type: 'object',
+      name: 'mixedObject',
+      title: 'Mixed object',
+      fields: [
+        {
+          name: 'author',
+          type: 'reference',
+          title: 'Author',
+          to: [{type: 'author'}],
+        },
+      ],
+      preview: {
+        select: {
+          title: 'author.name',
+        },
+        prepare({title}) {
+          return {
+            title,
+          }
+        },
+      },
+    },
   ],
 })
 
@@ -327,5 +364,6 @@ export const objectsDebug = defineType({
     objectWithArray,
     arrayOfAnonymousObjects,
     arrayOfImages,
+    arrayOfFiles,
   ],
 })

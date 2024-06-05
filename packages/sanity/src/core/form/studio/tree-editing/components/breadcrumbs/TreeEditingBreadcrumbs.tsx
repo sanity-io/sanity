@@ -11,14 +11,14 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {type Path} from 'sanity'
+import {getSchemaTypeTitle, type Path, unstable_useValuePreview as useValuePreview} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {type TreeEditingBreadcrumb} from '../../types'
 import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'
 
-const EMPTY_ARRAY: [] = []
 const MAX_LENGTH = 5
+const EMPTY_ARRAY: [] = []
 const SEPARATOR = '/'
 
 const RootFlex = styled(Flex)`
@@ -47,6 +47,55 @@ const StyledText = styled(Text)`
 `
 
 type Item = TreeEditingBreadcrumb[] | TreeEditingBreadcrumb
+
+interface MenuButtonProps {
+  item: TreeEditingBreadcrumb
+  onPathSelect: (path: Path) => void
+  isSelected: boolean
+}
+
+const MenuButton = forwardRef(function MenuButton(
+  props: MenuButtonProps,
+  ref: ForwardedRef<HTMLButtonElement>,
+) {
+  const {item, onPathSelect, isSelected, ...rest} = props
+
+  const {value} = useValuePreview({
+    schemaType: item.schemaType,
+    value: item.value,
+  })
+
+  const title = value?.title || 'Untitled'
+
+  // We check if the length is greater than 1 as the root item
+  // is also included in the children array.
+  const hasChildren = item.children && item.children?.length > 1
+
+  return (
+    <StyledButton
+      data-active={isSelected ? 'true' : 'false'}
+      mode="bleed"
+      // eslint-disable-next-line react/jsx-no-bind
+      onClick={() => onPathSelect(item.path)}
+      padding={1}
+      space={2}
+      ref={ref}
+      {...rest}
+    >
+      <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">
+        <StyledText size={1} muted={!isSelected} weight="medium" textOverflow="ellipsis">
+          {title}
+        </StyledText>
+
+        {hasChildren && (
+          <Text size={0}>
+            <ChevronDownIcon />
+          </Text>
+        )}
+      </Flex>
+    </StyledButton>
+  )
+})
 
 const SeparatorItem = forwardRef(function SeparatorItem(
   props: PropsWithChildren,
@@ -144,32 +193,11 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
 
       // We check if the length is greater than 1 as the root item
       // is also included in the children array.
-      const hasChildren = item.children.length > 1
+      const hasChildren = item.children && item.children?.length > 1
 
       const isSelected = isEqual(item.path, selectedPath)
 
-      const button = (
-        <StyledButton
-          data-active={isSelected ? 'true' : 'false'}
-          mode="bleed"
-          // eslint-disable-next-line react/jsx-no-bind
-          onClick={() => onPathSelect(item.path)}
-          padding={1}
-          space={2}
-        >
-          <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">
-            <StyledText size={1} muted={!isSelected} weight="medium" textOverflow="ellipsis">
-              {item.title}
-            </StyledText>
-
-            {hasChildren && (
-              <Text size={0}>
-                <ChevronDownIcon />
-              </Text>
-            )}
-          </Flex>
-        </StyledButton>
-      )
+      const button = <MenuButton item={item} isSelected={isSelected} onPathSelect={onPathSelect} />
 
       return (
         <Fragment key={key}>
@@ -178,9 +206,9 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
           {hasChildren && (
             <TreeEditingBreadcrumbsMenuButton
               button={button}
-              items={item.children}
+              items={item.children || EMPTY_ARRAY}
               onPathSelect={onPathSelect}
-              parentArrayTitle={item.parentArrayTitle}
+              parentArrayTitle={getSchemaTypeTitle(item.schemaType)}
               parentElement={rootElement}
               // We don't use the `selectedPath` here as the selected path
               // since that is the current selected path and not the selected
@@ -193,7 +221,7 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
         </Fragment>
       )
     })
-  }, [items, onPathSelect, selectedPath, rootElement])
+  }, [items, selectedPath, onPathSelect, rootElement])
 
   return (
     <RootFlex align="center" forwardedAs="ol" gap={2} ref={setRootElement}>

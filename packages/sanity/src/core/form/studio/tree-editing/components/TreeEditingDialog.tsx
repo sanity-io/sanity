@@ -235,6 +235,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
         <AnimatePresence initial={false} mode="wait" onExitComplete={handleAnimationExitComplete}>
           <MotionFlex
             animate="animate"
+            data-testid="tree-editing-dialog-content"
             direction="column"
             exit="exit"
             height="fill"
@@ -245,7 +246,6 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
             sizing="border"
             transition={ANIMATION_TRANSITION}
             variants={ANIMATION_VARIANTS}
-            data-testid="tree-editing-dialog-content"
           >
             <FormInput
               {...rootInputProps}

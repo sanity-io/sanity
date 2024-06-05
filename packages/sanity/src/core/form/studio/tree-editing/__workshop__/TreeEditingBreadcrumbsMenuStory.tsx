@@ -1,3 +1,4 @@
+import {Schema} from '@sanity/schema'
 import {Container, Flex} from '@sanity/ui'
 import {useState} from 'react'
 import {type Path} from 'sanity'
@@ -5,24 +6,52 @@ import {type Path} from 'sanity'
 import {TreeEditingBreadcrumbsMenu} from '../components'
 import {type TreeEditingBreadcrumb} from '../types'
 
+const schema = Schema.compile({
+  name: 'default',
+  types: [
+    {
+      name: 'testDocument',
+      title: 'Document',
+      type: 'document',
+      fields: [
+        {
+          type: 'object',
+          name: 'testObject',
+          title: 'Object',
+          fields: [
+            {
+              type: 'string',
+              name: 'title',
+              title: 'Title',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
 const items: TreeEditingBreadcrumb[] = [
   {
-    title: 'First item',
     path: ['first-item'],
     children: [],
-    parentArrayTitle: 'Array',
+    schemaType: schema.get('testDocument').fields[0].type,
+    value: {_key: 'first-item', title: 'First item'},
+    parentSchemaType: schema.get('testDocument'),
   },
   {
-    title: 'Second item',
     path: ['second-item'],
     children: [],
-    parentArrayTitle: 'Array',
+    schemaType: schema.get('testDocument').fields[0].type,
+    value: {_key: 'second-item', title: 'Second item'},
+    parentSchemaType: schema.get('testDocument'),
   },
   {
-    title: 'Third item',
     path: ['third-item'],
     children: [],
-    parentArrayTitle: 'Array',
+    schemaType: schema.get('testDocument').fields[0].type,
+    value: {_key: 'third-item', title: 'Third item'},
+    parentSchemaType: schema.get('testDocument'),
   },
 ]
 
