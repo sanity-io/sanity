@@ -10,14 +10,9 @@ import {
 
 /** @internal */
 export const PasteDocumentAction: DocumentActionComponent = ({id, type, onComplete}) => {
-  const {onPaste} = useCopyPasteAction({
-    documentId: id,
-    documentType: type,
-    path: [],
-    schemaType: type,
-  })
+  const {onPaste} = useCopyPasteAction()
   const handle = useCallback(() => {
-    onPaste()
+    onPaste([])
     onComplete()
   }, [onPaste, onComplete])
 
