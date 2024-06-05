@@ -10,6 +10,7 @@ import {
   type Path,
 } from 'sanity'
 
+import {getItemType} from '../../../../store/utils/getItemType'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
@@ -33,11 +34,10 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
   arrayValue.forEach((item) => {
     const itemPath = [...rootPath, {_key: item._key}] as Path
-    const itemType = item?._type as string
 
-    const itemSchemaField = arraySchemaType?.of?.find(
-      (type) => type.name === itemType,
-    ) as ObjectSchemaType
+    const itemSchemaField = getItemType(arraySchemaType, item) as ObjectSchemaType
+
+    if (!itemSchemaField) return
 
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: TreeEditingMenuItem[] = []
@@ -45,9 +45,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     const isReference = isReferenceSchemaType(itemSchemaField)
 
     // Do not include references
-    if (isReference) {
-      return
-    }
+    if (isReference) return
 
     if (shouldBeInBreadcrumb(itemPath, openPath)) {
       const breadcrumbsResult = buildBreadcrumbsState({
