@@ -37,7 +37,5 @@ export interface CopyPasteContextType {
   copyResult: CopyActionResult | null
   setCopyResult: (result: CopyActionResult) => void
   setDocumentMeta: (meta: Required<DocumentMeta>) => void
-  refreshCopyResult: (isCopyResultOverride?: boolean) => Promise<void>
   isValidTargetType: (targetType: string) => boolean
-  isCopyResultInClipboard: boolean | null
 }
