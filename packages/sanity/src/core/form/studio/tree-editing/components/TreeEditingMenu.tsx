@@ -7,10 +7,11 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {type Path, unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
+import {type Path, useTranslation} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
 
+import {useValuePreviewWithFallback} from '../hooks'
 import {type TreeEditingMenuItem} from '../types'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
 
@@ -116,12 +117,12 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   const selected = useMemo(() => isEqual(item.path, selectedPath), [item.path, selectedPath])
   const isArrayParent = useMemo(() => !isArrayItemPath(item.path), [item.path])
 
-  const {value} = useValuePreview({
+  const {value} = useValuePreviewWithFallback({
     schemaType: item.schemaType,
     value: item.value,
   })
 
-  const title = value?.title || 'Untitled'
+  const title = value.title
 
   const handleClick = useCallback(() => {
     onPathSelect(item.path)
@@ -162,7 +163,14 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   )
 
   return (
-    <Stack aria-expanded={open} as="li" key={title} ref={setRootElement} role="treeitem" space={1}>
+    <Stack
+      aria-expanded={open}
+      as="li"
+      key={toString(item.path)}
+      ref={setRootElement}
+      role="treeitem"
+      space={1}
+    >
       <Card data-as="button" radius={2} tone="inherit">
         <ItemFlex align="center" data-selected={selected} data-testid="side-menu-item">
           {icon && (
