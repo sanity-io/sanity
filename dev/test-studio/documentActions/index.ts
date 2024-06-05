@@ -1,13 +1,13 @@
 import {type DocumentActionsResolver} from 'sanity'
 
+import {CopyDocumentAction} from './actions/CopyDocumentAction'
 import {createCustomPublishAction} from './actions/createCustomPublishAction'
+import {PasteDocumentAction} from './actions/PasteDocumentAction'
 import {TestConfirmDialogAction} from './actions/TestConfirmDialogAction'
 import {TestCustomComponentAction} from './actions/TestCustomComponentAction'
 import {TestCustomRestoreAction} from './actions/TestCustomRestoreAction'
 import {TestModalDialogAction} from './actions/TestModalDialogAction'
 import {TestPopoverDialogAction} from './actions/TestPopoverDialogAction'
-import {CopyDocumentAction} from './actions/CopyDocumentAction'
-import {PasteDocumentAction} from './actions/PasteDocumentAction'
 
 export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaType}) => {
   if (schemaType === 'documentActionsTest') {
