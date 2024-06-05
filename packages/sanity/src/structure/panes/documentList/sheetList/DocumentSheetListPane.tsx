@@ -148,12 +148,12 @@ function DocumentSheetListPaneInner({
       const currentDocumentValue = rows.find(
         (row) => row.original.__metadata.idPair.publishedId === publishedDocumentId,
       )?.original.__metadata.snapshots.published as SanityDocumentLike
-      setTimeout(() => {
-        operation.patch.execute(
-          toMutationPatches([set(value, [fieldId.replace('_', '.')])]),
-          currentDocumentValue,
-        )
-      }, 300)
+      operation.patch.execute(
+        toMutationPatches([set(value, [fieldId.replace('_', '.')])]),
+        currentDocumentValue,
+      )
+      // explicity commit after patch to avoid throttled autocommits
+      operation.commit.execute()
     },
     [rowOperations, rows],
   )
