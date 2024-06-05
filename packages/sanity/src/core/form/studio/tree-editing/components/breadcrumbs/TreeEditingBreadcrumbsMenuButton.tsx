@@ -52,7 +52,7 @@ interface TreeEditingBreadcrumbsMenuButtonProps {
   button: ReactElement
   items: TreeEditingBreadcrumb[]
   onPathSelect: (path: Path) => void
-  parentArrayTitle?: string
+  menuTitle?: string
   parentElement: HTMLElement | null
   renderMenuItemTitle?: (title: string) => string
   selectedPath: Path
@@ -61,15 +61,8 @@ interface TreeEditingBreadcrumbsMenuButtonProps {
 export function TreeEditingBreadcrumbsMenuButton(
   props: TreeEditingBreadcrumbsMenuButtonProps,
 ): JSX.Element {
-  const {
-    button,
-    items,
-    onPathSelect,
-    parentArrayTitle,
-    parentElement,
-    renderMenuItemTitle,
-    selectedPath,
-  } = props
+  const {button, items, onPathSelect, menuTitle, parentElement, renderMenuItemTitle, selectedPath} =
+    props
   const [open, setOpen] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -116,11 +109,11 @@ export function TreeEditingBreadcrumbsMenuButton(
         direction="column"
         overflow="hidden"
       >
-        {parentArrayTitle && (
+        {menuTitle && (
           <TitleCard borderBottom padding={3} sizing="border">
             <Box paddingX={1} sizing="border">
               <Text muted size={1} textOverflow="ellipsis" weight="semibold">
-                {parentArrayTitle}
+                {menuTitle}
               </Text>
             </Box>
           </TitleCard>
