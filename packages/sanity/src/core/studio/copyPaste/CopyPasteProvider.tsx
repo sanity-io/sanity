@@ -1,9 +1,8 @@
-import {type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {type ReactNode, useCallback, useContext, useMemo, useRef, useState} from 'react'
 import {getPublishedId} from 'sanity'
 import {CopyPasteContext} from 'sanity/_singletons'
 
 import {type CopyActionResult, type DocumentMeta} from './types'
-import {getClipboardItem} from './utils'
 
 /**
  * @beta
@@ -14,7 +13,6 @@ export const CopyPasteProvider: React.FC<{
 }> = ({children}) => {
   const documentMetaRef = useRef<DocumentMeta | null>(null)
   const [copyResult, setCopyResult] = useState<CopyActionResult | null>(null)
-  const [isCopyResultInClipboard, setIsCopyResultInClipboard] = useState<boolean | null>(null)
 
   const isValidTargetType = useCallback(
     (target: string) => {
@@ -38,21 +36,6 @@ export const CopyPasteProvider: React.FC<{
 
   const getDocumentMeta = useCallback(() => documentMetaRef.current, [])
 
-  const refreshCopyResult = useCallback(async (isCopyResultOverride?: boolean) => {
-    if (isCopyResultOverride) {
-      setIsCopyResultInClipboard(isCopyResultOverride)
-
-      return
-    }
-
-    const storedCopyResult = await getClipboardItem()
-    setIsCopyResultInClipboard(!!storedCopyResult)
-  }, [])
-
-  useEffect(() => {
-    setIsCopyResultInClipboard(!!copyResult)
-  }, [copyResult])
-
   const contextValue = useMemo(
     () => ({
       copyResult,
@@ -60,18 +43,9 @@ export const CopyPasteProvider: React.FC<{
       getDocumentMeta,
       setCopyResult,
       setDocumentMeta,
-      refreshCopyResult,
       isValidTargetType,
-      isCopyResultInClipboard,
     }),
-    [
-      copyResult,
-      getDocumentMeta,
-      setDocumentMeta,
-      refreshCopyResult,
-      isValidTargetType,
-      isCopyResultInClipboard,
-    ],
+    [copyResult, getDocumentMeta, setDocumentMeta, isValidTargetType],
   )
 
   return <CopyPasteContext.Provider value={contextValue}>{children}</CopyPasteContext.Provider>
