@@ -11,9 +11,10 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {getSchemaTypeTitle, type Path, unstable_useValuePreview as useValuePreview} from 'sanity'
+import {getSchemaTypeTitle, type Path} from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'
 
@@ -60,12 +61,12 @@ const MenuButton = forwardRef(function MenuButton(
 ) {
   const {item, onPathSelect, isSelected, ...rest} = props
 
-  const {value} = useValuePreview({
+  const {value} = useValuePreviewWithFallback({
     schemaType: item.schemaType,
     value: item.value,
   })
 
-  const title = value?.title || 'Untitled'
+  const title = value.title
 
   // We check if the length is greater than 1 as the root item
   // is also included in the children array.
