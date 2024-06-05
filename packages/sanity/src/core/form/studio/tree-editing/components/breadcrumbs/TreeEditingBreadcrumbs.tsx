@@ -15,8 +15,6 @@ import {type Path} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {type TreeEditingBreadcrumb} from '../../types'
-import {BreadcrumbOverflowList} from './BreadcrumbOverflowList'
-import {BreadcrumbSiblingsMenu} from './BreadcrumbSiblingsMenu'
 import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'
 
 const EMPTY_ARRAY: [] = []
@@ -62,6 +60,12 @@ const SeparatorItem = forwardRef(function SeparatorItem(
     </Box>
   )
 })
+
+// Render the title of the menu item in the collapsed breadcrumb
+// menu (i.e. the "..." item) with a leading slash.
+function renderMenuItemTitle(title: string): string {
+  return `/ ${title}`
+}
 
 interface TreeEditingBreadcrumbsProps {
   items: TreeEditingBreadcrumb[]
@@ -119,15 +123,18 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
             <TreeEditingBreadcrumbsMenuButton
               parentElement={rootElement}
               button={
-                <StyledButton mode="bleed" padding={1} space={2}>
-                  <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">
+                <StyledButton mode="bleed" padding={1}>
+                  <Flex overflow="hidden">
                     <StyledText size={1} weight="medium" textOverflow="ellipsis">
                       ...
                     </StyledText>
                   </Flex>
                 </StyledButton>
               }
-              popoverContent={<BreadcrumbOverflowList items={item} onPathSelect={onPathSelect} />}
+              items={item}
+              onPathSelect={onPathSelect}
+              selectedPath={selectedPath}
+              renderMenuItemTitle={renderMenuItemTitle}
             />
 
             {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
@@ -170,16 +177,15 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
 
           {hasChildren && (
             <TreeEditingBreadcrumbsMenuButton
-              parentElement={rootElement}
               button={button}
-              popoverContent={
-                <BreadcrumbSiblingsMenu
-                  items={item.children}
-                  handlePathSelect={onPathSelect}
-                  selectedPath={item.path}
-                  parentArrayTitle={item.parentArrayTitle}
-                />
-              }
+              items={item.children}
+              onPathSelect={onPathSelect}
+              parentArrayTitle={item.parentArrayTitle}
+              parentElement={rootElement}
+              // We don't use the `selectedPath` here as the selected path
+              // since that is the current selected path and not the selected
+              // path of the current breadcrumb item.
+              selectedPath={item.path}
             />
           )}
 
