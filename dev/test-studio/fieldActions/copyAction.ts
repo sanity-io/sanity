@@ -1,6 +1,12 @@
 import {CopyIcon} from '@sanity/icons'
 import {useCallback} from 'react'
-import {defineDocumentFieldAction, type Path, useCopyPasteAction} from 'sanity'
+import {
+  defineDocumentFieldAction,
+  type FormDocumentValue,
+  type Path,
+  useCopyPasteAction,
+  useGetFormValue,
+} from 'sanity'
 
 import {defineActionItem} from './define'
 
@@ -17,11 +23,13 @@ export interface CopyActionResult {
 
 export const copyAction = defineDocumentFieldAction({
   name: 'test/copy',
-  useAction({documentId, documentType, path, schemaType}) {
-    const {onCopy} = useCopyPasteAction({documentId, documentType, path, schemaType})
+  useAction({path}) {
+    const getFormValue = useGetFormValue()
+    const {onCopy} = useCopyPasteAction()
     const onAction = useCallback(() => {
-      onCopy()
-    }, [onCopy])
+      const value = getFormValue([]) as FormDocumentValue
+      onCopy(path, value)
+    }, [path, onCopy, getFormValue])
 
     return defineActionItem({
       type: 'action',
