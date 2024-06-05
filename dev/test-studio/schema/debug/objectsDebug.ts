@@ -110,6 +110,63 @@ const animal = defineField({
                       name: 'title',
                       title: 'Title',
                     },
+                    {
+                      name: 'properties_b',
+                      type: 'array',
+                      title: 'Friend properties',
+                      of: [
+                        {
+                          type: 'object',
+                          name: 'property_b',
+                          title: 'Property',
+                          fields: [
+                            {
+                              type: 'string',
+                              name: 'title',
+                              title: 'Title',
+                            },
+                            {
+                              name: 'properties_c',
+                              type: 'array',
+                              title: 'Friend properties',
+                              of: [
+                                {
+                                  type: 'object',
+                                  name: 'property_d',
+                                  title: 'Property',
+                                  fields: [
+                                    {
+                                      type: 'string',
+                                      name: 'title',
+                                      title: 'Title',
+                                    },
+                                    {
+                                      name: 'properties_d',
+                                      type: 'array',
+                                      title: 'Friend properties',
+                                      of: [
+                                        {
+                                          type: 'object',
+                                          name: 'property_b',
+                                          title: 'Property',
+                                          fields: [
+                                            {
+                                              type: 'string',
+                                              name: 'title',
+                                              title: 'Title',
+                                            },
+                                          ],
+                                        },
+                                      ],
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
                   ],
                 },
               ],
