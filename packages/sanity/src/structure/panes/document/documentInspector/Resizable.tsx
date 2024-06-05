@@ -45,8 +45,8 @@ export function Resizable(
 
   return (
     <Root as={forwardedAs} {...restProps} ref={setElement} style={style}>
-      <Resizer onResize={handleResize} onResizeStart={handleResizeStart} />
       {children}
+      <Resizer onResize={handleResize} onResizeStart={handleResizeStart} />
     </Root>
   )
 }
