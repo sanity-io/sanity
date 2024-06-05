@@ -1,5 +1,7 @@
 import {isDocumentSchemaType, type ObjectSchemaType} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -9,7 +11,7 @@ import {
 } from '@tanstack/react-table'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {SearchProvider, useSchema, useSearchState, useValidationStatus} from 'sanity'
-import {styled} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {ValidationProvider} from '../../../../core/form/studio/contexts/Validation'
 import {type BaseStructureToolPaneProps} from '../../types'
@@ -38,7 +40,6 @@ const Table = styled.table`
   border-spacing: 0;
   font-family: arial, sans-serif;
   white-space: nowrap;
-  width: 100%;
 
   thead {
     display: grid;
@@ -54,6 +55,23 @@ const Table = styled.table`
   }
 `
 
+const TableRow = styled(Box)((props) => {
+  const theme = getTheme_v2(props.theme)
+  return css`
+    display: flex;
+    width: 100%;
+
+    &[data-selected='true'] {
+      transition: box-shadow 0.2s;
+      box-shadow: inset 0px 0px 0px 1px ${theme.color.button.default.primary.enabled.bg};
+      > td {
+        transition: border-color 0.2s;
+        border-top-color: ${theme.color.button.default.primary.enabled.bg};
+        background: transparent;
+      }
+    }
+  `
+})
 const DocumentRow = ({
   row,
   docTypeName,
@@ -67,16 +85,16 @@ const DocumentRow = ({
   )
   return (
     <ValidationProvider validation={validationStatus.validation}>
-      <Box
+      <TableRow
         as="tr"
         key={row.original._id + row.id}
         paddingY={2}
-        style={{display: 'flex', width: '100%'}}
+        data-selected={row.getIsSelected()}
       >
         {row.getVisibleCells().map((cell) => (
           <SheetListCell {...cell} key={row.original._id + cell.id} />
         ))}
-      </Box>
+      </TableRow>
     </ValidationProvider>
   )
 }
