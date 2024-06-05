@@ -80,6 +80,7 @@ const MenuButton = forwardRef(function MenuButton(
       padding={1}
       space={2}
       ref={ref}
+      title={title}
       {...rest}
     >
       <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">

@@ -112,7 +112,7 @@ export function TreeEditingBreadcrumbsMenuButton(
         {menuTitle && (
           <TitleCard borderBottom padding={3} sizing="border">
             <Box paddingX={1} sizing="border">
-              <Text muted size={1} textOverflow="ellipsis" weight="semibold">
+              <Text muted size={1} textOverflow="ellipsis" weight="semibold" title={menuTitle}>
                 {menuTitle}
               </Text>
             </Box>
