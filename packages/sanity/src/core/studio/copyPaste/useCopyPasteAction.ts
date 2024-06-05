@@ -14,13 +14,7 @@ import {transferValue} from './valueTransfer'
  * @hidden
  */
 export function useCopyPasteAction() {
-  const {
-    getDocumentMeta,
-    setCopyResult,
-    refreshCopyResult,
-    isValidTargetType: _isValidTargetType,
-    isCopyResultInClipboard,
-  } = useCopyPaste()
+  const {getDocumentMeta, setCopyResult, isValidTargetType: _isValidTargetType} = useCopyPaste()
   const toast = useToast()
   const {onChange} = getDocumentMeta()! || {}
 
@@ -119,5 +113,5 @@ export function useCopyPasteAction() {
     [toast, getDocumentMeta, onChange],
   )
 
-  return {onCopy, onPaste, onChange, refreshCopyResult, isCopyResultInClipboard}
+  return {onCopy, onPaste, onChange}
 }
