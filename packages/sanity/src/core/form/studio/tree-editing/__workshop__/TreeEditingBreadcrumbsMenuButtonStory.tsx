@@ -54,10 +54,11 @@ export default function TreeEditingBreadcrumbsMenuButtonStory(): JSX.Element {
   return (
     <Flex align="center" justify="center" height="fill">
       <TreeEditingBreadcrumbsMenuButton
+        button={<button type="button">Click me</button>}
+        items={ITEM.children || []}
         onPathSelect={setSelectedPath}
         parentElement={document.body}
         selectedPath={selectedPath}
-        item={ITEM}
       />
     </Flex>
   )
