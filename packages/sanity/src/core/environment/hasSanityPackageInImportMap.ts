@@ -10,10 +10,10 @@ export const hasSanityPackageInImportMap = () => {
   }
   const importMapEntries = document.querySelectorAll('script[type="importmap"]')
   return Array.from(importMapEntries)
-    .flatMap((entry) => {
-      if (!entry.textContent) return []
-      const entryImports = JSON.parse(entry.textContent)
-      return Object.keys(entryImports.imports || {})
+    .some((entry) => {
+      if (!entry.textContent) return false
+      const importMap = JSON.parse(entry.textContent)
+      const imports = importMap.imports || {}
+      return 'sanity' in imports
     })
-    .some((key) => key === 'sanity')
 }
