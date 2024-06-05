@@ -55,7 +55,15 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
       )
       return userIds.map((id) => users[id] || null)
     },
-    {batchScheduleFn: (cb) => raf(cb)},
+    {
+      batchScheduleFn: (cb) => raf(cb),
+      /**
+       * User IDs are generally 9 bytes long, but external user IDs may be longer.
+       * In order to keep the HTTP header size below ~8KB, we limit the batch size.
+       * ~4kB for user IDs in paths should allow for plenty of headers, if need be.
+       */
+      maxBatchSize: 400,
+    },
   )
 
   const userFromCurrentUser: User | null = currentUser && {
