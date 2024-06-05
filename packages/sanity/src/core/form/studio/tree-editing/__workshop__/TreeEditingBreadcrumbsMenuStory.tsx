@@ -10,16 +10,19 @@ const items: TreeEditingBreadcrumb[] = [
     title: 'First item',
     path: ['first-item'],
     children: [],
+    parentArrayTitle: 'Array',
   },
   {
     title: 'Second item',
     path: ['second-item'],
     children: [],
+    parentArrayTitle: 'Array',
   },
   {
     title: 'Third item',
     path: ['third-item'],
     children: [],
+    parentArrayTitle: 'Array',
   },
 ]
 
@@ -33,7 +36,6 @@ export default function TreeEditingBreadcrumbsMenuStory(): JSX.Element {
           items={items}
           onPathSelect={setSelectedPath}
           selectedPath={selectedPath}
-          textInputElement={null}
         />
       </Container>
     </Flex>

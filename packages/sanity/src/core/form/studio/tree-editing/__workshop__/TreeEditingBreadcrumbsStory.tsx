@@ -12,31 +12,37 @@ const ITEMS: TreeEditingBreadcrumb[] = [
     title: 'First',
     path: ['first'],
     children: [],
+    parentArrayTitle: 'Array',
   },
   {
     title: 'Second',
     path: ['first', 'second'],
     children: [],
+    parentArrayTitle: 'Array',
   },
   {
     title: 'Third',
     path: ['first', 'second', 'third'],
     children: [],
+    parentArrayTitle: 'Array',
   },
   {
     title: 'Fourth',
     path: ['first', 'second', 'third', 'fourth'],
     children: [],
+    parentArrayTitle: 'Array',
   },
   {
     title: 'Fifth',
     path: ['first', 'second', 'third', 'fourth', 'fifth'],
     children: [],
+    parentArrayTitle: 'Array',
   },
   {
     title: 'Sixth',
     path: ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'],
     children: [],
+    parentArrayTitle: 'Array',
   },
 ]
 

@@ -10,12 +10,12 @@ import {ITEM_HEIGHT} from './constants'
 interface TreeEditingBreadcrumbsMenuProps {
   items: TreeEditingBreadcrumb[]
   onPathSelect: (path: Path) => void
+  renderMenuItemTitle?: (title: string) => string
   selectedPath: Path
-  textInputElement: HTMLInputElement | null
 }
 
 export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProps): JSX.Element {
-  const {items, onPathSelect, selectedPath, textInputElement} = props
+  const {items, onPathSelect, renderMenuItemTitle, selectedPath} = props
   const {t} = useTranslation()
 
   const getItemDisabled = useCallback(
@@ -24,6 +24,17 @@ export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProp
       return isEqual(item.path, selectedPath)
     },
     [items, selectedPath],
+  )
+
+  const handleRenderMenuItemTitle = useCallback(
+    (title: string) => {
+      if (renderMenuItemTitle) {
+        return renderMenuItemTitle(title)
+      }
+
+      return title
+    },
+    [renderMenuItemTitle],
   )
 
   const renderItem = useCallback(
@@ -42,7 +53,7 @@ export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProp
             <Flex align="center" gap={2}>
               <Box flex={1}>
                 <Text size={1} textOverflow="ellipsis">
-                  {item.title}
+                  {handleRenderMenuItemTitle(item.title)}
                 </Text>
               </Box>
 
@@ -56,7 +67,7 @@ export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProp
         </Stack>
       )
     },
-    [items, onPathSelect, selectedPath],
+    [handleRenderMenuItemTitle, items, onPathSelect, selectedPath],
   )
 
   return (
@@ -65,7 +76,6 @@ export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProp
       ariaLabel={t('tree-editing-dialog.breadcrumbs.menu')}
       autoFocus={supportsTouch ? undefined : 'input'}
       getItemDisabled={getItemDisabled}
-      inputElement={textInputElement}
       itemHeight={ITEM_HEIGHT}
       items={items}
       overscan={5}
