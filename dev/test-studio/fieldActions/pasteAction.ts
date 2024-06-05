@@ -6,11 +6,11 @@ import {defineActionItem} from './define'
 
 export const pasteAction = defineDocumentFieldAction({
   name: 'test/paste',
-  useAction({documentId, documentType, path, schemaType}) {
-    const {onPaste} = useCopyPasteAction({documentId, documentType, path, schemaType})
+  useAction({path}) {
+    const {onPaste} = useCopyPasteAction()
     const onAction = useCallback(() => {
-      onPaste()
-    }, [onPaste])
+      onPaste(path)
+    }, [path, onPaste])
 
     return defineActionItem({
       type: 'action',
