@@ -9,17 +9,23 @@ import {
 } from 'sanity'
 
 /** @internal */
-export const CopyDocumentAction: DocumentActionComponent = ({id, type, onComplete}) => {
-  const {onCopy} = useCopyPasteAction({
-    documentId: id,
-    documentType: type,
-    path: [],
-    schemaType: type,
-  })
+export const CopyDocumentAction: DocumentActionComponent = ({
+  id,
+  type,
+  onComplete,
+  published,
+  draft,
+}) => {
+  const {onCopy} = useCopyPasteAction()
   const handle = useCallback(() => {
-    onCopy()
+    const documentValue = draft ||
+      published || {
+        _id: id,
+        _type: type,
+      }
+    onCopy([], documentValue)
     onComplete()
-  }, [onCopy, onComplete])
+  }, [id, type, draft, published, onCopy, onComplete])
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
