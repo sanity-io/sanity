@@ -14,12 +14,13 @@ import {
   type DocumentInspectorMenuItem,
   FieldActionsProvider,
   FieldActionsResolver,
-  useZIndex,
   GetFormValueProvider,
+  useZIndex,
 } from 'sanity'
 import {type Path} from 'sanity-diff-patch'
 import {styled} from 'styled-components'
 
+import {useGlobalCopyPasteElementHandler} from '../../../../core/hooks/useGlobalCopyPasteElementHandler'
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {Pane, PaneFooter, usePaneLayout} from '../../../components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
@@ -65,6 +66,7 @@ export function DocumentLayout() {
     documentId,
     documentType,
     fieldActions,
+    focusPath,
     inspectOpen,
     inspector,
     inspectors,
@@ -91,6 +93,12 @@ export function DocumentLayout() {
   const [documentPanelPortalElement, setDocumentPanelPortalElement] = useState<HTMLElement | null>(
     null,
   )
+
+  useGlobalCopyPasteElementHandler({
+    element: rootElement,
+    focusPath,
+    value,
+  })
 
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
