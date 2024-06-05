@@ -1,4 +1,4 @@
-import {CopyIcon} from '@sanity/icons'
+import {ClipboardIcon} from '@sanity/icons'
 import {useCallback} from 'react'
 import {
   type DocumentActionComponent,
@@ -9,23 +9,13 @@ import {
 } from 'sanity'
 
 /** @internal */
-export const CopyDocumentAction: DocumentActionComponent = ({
-  id,
-  type,
-  onComplete,
-  published,
-  draft,
-}) => {
-  const {onCopy} = useCopyPasteAction()
+export const PasteAction: DocumentActionComponent = ({id, type, onComplete}) => {
+  const {onPaste} = useCopyPasteAction()
   const handle = useCallback(() => {
-    const documentValue = draft ||
-      published || {
-        _id: id,
-        _type: type,
-      }
-    onCopy([], documentValue)
+    onPaste([])
     onComplete()
-  }, [id, type, draft, published, onCopy, onComplete])
+  }, [onPaste, onComplete])
+
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
@@ -35,9 +25,9 @@ export const CopyDocumentAction: DocumentActionComponent = ({
 
   if (!isPermissionsLoading && !permissions?.granted) {
     return {
-      icon: CopyIcon,
-      disabled: true,
-      label: 'Copy',
+      icon: ClipboardIcon,
+      disabled: isPermissionsLoading,
+      label: 'Paste',
       title: (
         <InsufficientPermissionsMessage context="duplicate-document" currentUser={currentUser} />
       ),
@@ -45,9 +35,9 @@ export const CopyDocumentAction: DocumentActionComponent = ({
   }
 
   return {
-    icon: CopyIcon,
+    icon: ClipboardIcon,
     disabled: isPermissionsLoading,
-    label: 'Copy',
+    label: 'Paste',
     title: '',
     onHandle: handle,
   }
