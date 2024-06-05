@@ -1,11 +1,6 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {createElement, useEffect, useMemo, useRef, useState} from 'react'
-import {
-  CopyPasteProvider,
-  ScrollContainer,
-  useTimelineSelector,
-  VirtualizerScrollInstanceProvider,
-} from 'sanity'
+import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
@@ -142,68 +137,66 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const showInspector = Boolean(!collapsed && inspector)
 
   return (
-    <CopyPasteProvider documentId={documentId} documentType={documentType} onChange={onChange}>
-      <PaneContent>
-        <Flex height="fill">
-          {(features.resizablePanes || !showInspector) && (
-            <DocumentBox flex={2} overflow="hidden">
-              <PortalProvider
-                element={portalElement}
-                __unstable_elements={{documentScrollElement: documentScrollElement}}
-              >
-                <BoundaryElementProvider element={documentScrollElement}>
-                  <VirtualizerScrollInstanceProvider
-                    scrollElement={documentScrollElement}
-                    containerElement={formContainerElement}
-                  >
-                    {activeView.type === 'form' && !isPermissionsLoading && ready && (
-                      <>
-                        <PermissionCheckBanner
-                          granted={Boolean(permissions?.granted)}
-                          requiredPermission={requiredPermission}
-                        />
-                        {!isDeleting && isDeleted && (
-                          <DeletedDocumentBanner revisionId={lastNonDeletedRevId} />
-                        )}
-                        <ReferenceChangedBanner />
-                        <DeprecatedDocumentTypeBanner />
-                      </>
-                    )}
-
-                    <Scroller
-                      $disabled={layoutCollapsed || false}
-                      data-testid="document-panel-scroller"
-                      ref={setDocumentScrollElement}
-                    >
-                      <FormView
-                        hidden={formViewHidden}
-                        key={documentId + (ready ? '_ready' : '_pending')}
-                        margins={margins}
-                        ref={formContainerElement}
+    <PaneContent>
+      <Flex height="fill">
+        {(features.resizablePanes || !showInspector) && (
+          <DocumentBox flex={2} overflow="hidden">
+            <PortalProvider
+              element={portalElement}
+              __unstable_elements={{documentScrollElement: documentScrollElement}}
+            >
+              <BoundaryElementProvider element={documentScrollElement}>
+                <VirtualizerScrollInstanceProvider
+                  scrollElement={documentScrollElement}
+                  containerElement={formContainerElement}
+                >
+                  {activeView.type === 'form' && !isPermissionsLoading && ready && (
+                    <>
+                      <PermissionCheckBanner
+                        granted={Boolean(permissions?.granted)}
+                        requiredPermission={requiredPermission}
                       />
-                      {activeViewNode}
-                    </Scroller>
+                      {!isDeleting && isDeleted && (
+                        <DeletedDocumentBanner revisionId={lastNonDeletedRevId} />
+                      )}
+                      <ReferenceChangedBanner />
+                      <DeprecatedDocumentTypeBanner />
+                    </>
+                  )}
 
-                    {inspectDialog}
+                  <Scroller
+                    $disabled={layoutCollapsed || false}
+                    data-testid="document-panel-scroller"
+                    ref={setDocumentScrollElement}
+                  >
+                    <FormView
+                      hidden={formViewHidden}
+                      key={documentId + (ready ? '_ready' : '_pending')}
+                      margins={margins}
+                      ref={formContainerElement}
+                    />
+                    {activeViewNode}
+                  </Scroller>
 
-                    <div data-testid="document-panel-portal" ref={portalRef} />
-                  </VirtualizerScrollInstanceProvider>
-                </BoundaryElementProvider>
-              </PortalProvider>
-            </DocumentBox>
-          )}
+                  {inspectDialog}
 
-          {showInspector && (
-            <BoundaryElementProvider element={rootElement}>
-              <DocumentInspectorPanel
-                documentId={documentId}
-                documentType={schemaType.name}
-                flex={1}
-              />
-            </BoundaryElementProvider>
-          )}
-        </Flex>
-      </PaneContent>
-    </CopyPasteProvider>
+                  <div data-testid="document-panel-portal" ref={portalRef} />
+                </VirtualizerScrollInstanceProvider>
+              </BoundaryElementProvider>
+            </PortalProvider>
+          </DocumentBox>
+        )}
+
+        {showInspector && (
+          <BoundaryElementProvider element={rootElement}>
+            <DocumentInspectorPanel
+              documentId={documentId}
+              documentType={schemaType.name}
+              flex={1}
+            />
+          </BoundaryElementProvider>
+        )}
+      </Flex>
+    </PaneContent>
   )
 }
