@@ -38,6 +38,7 @@ function BreadcrumbsItem(props: BreadcrumbsItemProps): JSX.Element {
         // eslint-disable-next-line react/jsx-no-bind
         onClick={() => onPathSelect(item.path)}
         selected={selected}
+        title={title}
       >
         <Flex align="center" gap={2}>
           <Box flex={1}>

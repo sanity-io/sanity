@@ -188,6 +188,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
               onClick={handleClick}
               padding={2}
               paddingLeft={1}
+              title={title}
             >
               <Flex align="center" gap={2}>
                 {isArrayParent && (
