@@ -34,7 +34,7 @@ import {
 } from '../types'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormProvider} from './FormProvider'
-import {TreeEditingDialog, useTreeArrayEditingEnabled} from './tree-editing'
+import {TreeEditingDialog, useTreeArrayEditingConfig} from './tree-editing'
 
 /**
  * @alpha
@@ -99,7 +99,7 @@ export function FormBuilder(props: FormBuilderProps) {
     value,
   } = props
 
-  const {enabled: treeEditingEnabled} = useTreeArrayEditingEnabled()
+  const {enabled: treeEditingEnabled} = useTreeArrayEditingConfig()
 
   const handleCollapseField = useCallback(
     (fieldName: string) => onSetPathCollapsed([fieldName], true),

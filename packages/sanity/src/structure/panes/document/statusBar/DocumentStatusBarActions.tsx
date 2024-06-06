@@ -6,7 +6,7 @@ import {
   type DocumentActionDescription,
   shouldArrayDialogOpen,
   useTimelineSelector,
-  useTreeArrayEditingEnabled,
+  useTreeArrayEditingConfig,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
@@ -27,7 +27,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   const {__internal_tasks, schemaType, openPath} = useDocumentPane()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
-  const {enabled: isTreeArrayEditingEnabled} = useTreeArrayEditingEnabled()
+  const {enabled: isTreeArrayEditingEnabled} = useTreeArrayEditingConfig()
 
   // should only disable the main action if the new dialog is open and the feature enabled
   const isTreeArrayEditingEnabledOpen = useMemo(

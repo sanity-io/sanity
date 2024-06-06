@@ -1,2 +1,2 @@
-export * from './useTreeArrayEditingEnabled'
+export * from './useTreeArrayEditingConfig'
 export * from './useValuePreviewWithFallback'

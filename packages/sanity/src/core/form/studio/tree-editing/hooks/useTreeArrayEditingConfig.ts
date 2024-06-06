@@ -2,7 +2,7 @@ import {useContext, useMemo} from 'react'
 import {useSource} from 'sanity'
 import {PortableTextAwareContext} from 'sanity/_singletons'
 
-interface TreeArrayEditingEnabledHookValue {
+interface useTreeArrayEditingConfigHookValue {
   /**
    * A boolean indicating whether tree array editing is enabled.
    */
@@ -17,16 +17,16 @@ interface TreeArrayEditingEnabledHookValue {
 
 /**
  * @internal
- * A hook that provides information about whether tree array editing is enabled.
+ * A hook that provides information about the tree array editing config.
  * This hook needs to exist while we have the two type of solutions for array editing available
  * and the PTE is not yet fully integrated with the tree array editing feature.
  */
-export function useTreeArrayEditingEnabled(): TreeArrayEditingEnabledHookValue {
+export function useTreeArrayEditingConfig(): useTreeArrayEditingConfigHookValue {
   const {features} = useSource()
   const hasEditorParent = useContext(PortableTextAwareContext)?.hasEditorParent
 
   return useMemo(
-    (): TreeArrayEditingEnabledHookValue => ({
+    (): useTreeArrayEditingConfigHookValue => ({
       enabled: features?.beta?.treeArrayEditing?.enabled === true,
       legacyEditing: Boolean(hasEditorParent),
     }),
