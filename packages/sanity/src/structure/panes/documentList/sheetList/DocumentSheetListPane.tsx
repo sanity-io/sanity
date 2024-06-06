@@ -119,14 +119,13 @@ function DocumentSheetListPaneInner(
   })
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 
+  const totalRows = state.result.hits.length
   const meta = {
     selectedAnchor,
     setSelectedAnchor,
-    patchDocument: () => null,
     paneProps,
+    patchDocument: () => null,
   }
-
-  const totalRows = state.result.hits.length
   const table = useReactTable({
     data,
     columns,
@@ -152,7 +151,7 @@ function DocumentSheetListPaneInner(
   )
 
   const handlePatchDocument = useCallback(
-    (publishedDocumentId: string, fieldId: string, value: string) => {
+    (publishedDocumentId: string, fieldId: string, value: any) => {
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
@@ -176,15 +175,18 @@ function DocumentSheetListPaneInner(
     [rowOperations, rows],
   )
 
-  if (table.options.meta) {
-    table.setOptions({
-      ...table.options,
-      meta: {
-        ...table.options.meta,
-        patchDocument: handlePatchDocument,
-      },
-    })
-  }
+  useEffect(() => {
+    if (table.options.meta) {
+      table.setOptions({
+        ...table.options,
+        meta: {
+          // spread existing meta to reuse existing references
+          ...table.options.meta,
+          patchDocument: handlePatchDocument,
+        },
+      })
+    }
+  }, [handlePatchDocument, table])
 
   useEffect(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType: documentSchemaType})
