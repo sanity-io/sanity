@@ -187,7 +187,7 @@ test.describe('navigation - form', () => {
     await modal.getByTestId('string-input').fill('Albert, the whale')
 
     // add first child item, friends
-    await modal.getByTestId('add-single-object-button').nth(1).click()
+    await modal.getByTestId('add-single-object-button').nth(0).click()
 
     const selector = [
       '[data-testid^="field-animals[_key="]', // Match the beginning part
@@ -207,7 +207,7 @@ test.describe('navigation - form', () => {
     await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
 
     // add new child item, friends
-    await modal.getByTestId('add-single-object-button').nth(1).click()
+    await modal.getByTestId('add-single-object-button').nth(0).click()
 
     // Wait for the animation to change form to finish
     await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
