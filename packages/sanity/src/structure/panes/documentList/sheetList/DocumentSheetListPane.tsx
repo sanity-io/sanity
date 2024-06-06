@@ -57,17 +57,27 @@ const Table = styled.table`
 
 const TableRow = styled(Box)((props) => {
   const theme = getTheme_v2(props.theme)
+  const shadowColor = theme.color.button.default.primary.enabled.bg
   return css`
     display: flex;
     width: 100%;
-
     &[data-selected='true'] {
-      transition: box-shadow 0.2s;
-      box-shadow: inset 0px 0px 0px 1px ${theme.color.button.default.primary.enabled.bg};
       > td {
-        transition: border-color 0.2s;
-        border-top-color: ${theme.color.button.default.primary.enabled.bg};
-        background: transparent;
+        transition:
+          box-shadow 0.2s,
+          border-color 0.2s;
+        border-top-color: ${shadowColor};
+        box-shadow: inset 0px -1px 0px 0px ${shadowColor}; // Bottom border
+      }
+      > td:first-child {
+        box-shadow:
+          inset 0px -1px 0px 0px ${shadowColor},
+          inset 1px 0px 0px 0px ${shadowColor}; // Left and bottom border
+      }
+      > td:last-child {
+        box-shadow:
+          inset 0px -1px 0px 0px ${shadowColor},
+          inset -1px 0px 0px 0px ${shadowColor}; // Right and bottom border
       }
     }
   `
