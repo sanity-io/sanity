@@ -9,7 +9,7 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   SearchProvider,
   set,
@@ -21,6 +21,7 @@ import {
 import {css, styled} from 'styled-components'
 
 import {ValidationProvider} from '../../../../core/form/studio/contexts/Validation'
+import {LoadingPane} from '../../loading'
 import {type BaseStructureToolPaneProps} from '../../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetActions} from './DocumentSheetActions'
@@ -124,7 +125,6 @@ function DocumentSheetListPaneInner(
     selectedAnchor,
     setSelectedAnchor,
     paneProps,
-    patchDocument: () => null,
   }
   const table = useReactTable({
     data,
@@ -145,10 +145,12 @@ function DocumentSheetListPaneInner(
 
   const {rows} = table.getRowModel()
 
-  const rowOperations = useDocumentSheetListOperations(
-    rows.map((row) => row.original.__metadata.idPair.publishedId),
-    documentSchemaType.name,
+  const rowsPublishedIds = useMemo(
+    () => rows.map((row) => row.original.__metadata.idPair.publishedId),
+    [rows],
   )
+
+  const rowOperations = useDocumentSheetListOperations(rowsPublishedIds, documentSchemaType.name)
 
   const handlePatchDocument = useCallback(
     (publishedDocumentId: string, fieldId: string, value: any) => {
@@ -172,21 +174,20 @@ function DocumentSheetListPaneInner(
         documentOperations.commit.execute()
       })
     },
-    [rowOperations, rows],
+    [rows, rowOperations],
   )
 
-  useEffect(() => {
-    if (table.options.meta) {
-      table.setOptions({
-        ...table.options,
-        meta: {
-          // spread existing meta to reuse existing references
-          ...table.options.meta,
-          patchDocument: handlePatchDocument,
-        },
-      })
-    }
-  }, [handlePatchDocument, table])
+  if (table.options.meta) {
+    table.setOptions((currentOptions) => {
+      const nextOptions = {...currentOptions}
+      if (!nextOptions.meta) return currentOptions
+
+      return {
+        ...nextOptions,
+        meta: {...nextOptions.meta, patchDocument: handlePatchDocument},
+      }
+    })
+  }
 
   useEffect(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType: documentSchemaType})
@@ -202,7 +203,67 @@ function DocumentSheetListPaneInner(
     [documentSchemaType.name],
   )
 
+  const isReady = useMemo(() => {
+    if (table.options.meta?.patchDocument && rowOperations) {
+      const isSomeOperationsDisabled = Object.values(rowOperations).some(
+        (operation) => operation.patch.disabled !== false || operation.commit.disabled !== false,
+      )
+
+      return !isSomeOperationsDisabled
+    }
+    return false
+  }, [rowOperations, table.options.meta?.patchDocument])
+
   const rowsCount = `List total: ${totalRows} item${totalRows === 1 ? '' : 's'}`
+
+  const renderContent = () => {
+    if (!isReady) {
+      return <LoadingPane paneKey={paneProps.paneKey} />
+    }
+
+    return (
+      <React.Fragment>
+        <Flex direction="row" align="center" paddingY={3} paddingX={1} justify="space-between">
+          <Flex direction="row" align="center">
+            <DocumentSheetListFilter />
+            <Text size={0} muted>
+              {rowsCount}
+            </Text>
+          </Flex>
+          <ColumnsControl table={table} />
+        </Flex>
+        <TableContainer>
+          <DocumentSheetListProvider table={table}>
+            <Table>
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <Box as="tr" key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <DocumentSheetListHeader
+                        key={header.id}
+                        header={header}
+                        headerGroup={headerGroup}
+                      />
+                    ))}
+                  </Box>
+                ))}
+              </thead>
+              <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
+            </Table>
+          </DocumentSheetListProvider>
+          <DocumentSheetActions
+            table={table}
+            schemaType={documentSchemaType}
+            parentRef={paneContainerRef.current}
+          />
+        </TableContainer>
+        <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
+          <DocumentSheetListPaginator table={table} />
+        </Flex>
+      </React.Fragment>
+    )
+  }
+
   return (
     <PaneContainer
       direction="column"
@@ -210,43 +271,7 @@ function DocumentSheetListPaneInner(
       data-testid="document-sheet-list-pane"
       ref={paneContainerRef}
     >
-      <Flex direction="row" align="center" paddingY={3} paddingX={1} justify="space-between">
-        <Flex direction="row" align="center">
-          <DocumentSheetListFilter />
-          <Text size={0} muted>
-            {rowsCount}
-          </Text>
-        </Flex>
-        <ColumnsControl table={table} />
-      </Flex>
-      <TableContainer>
-        <DocumentSheetListProvider table={table}>
-          <Table>
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <Box as="tr" key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <DocumentSheetListHeader
-                      key={header.id}
-                      header={header}
-                      headerGroup={headerGroup}
-                    />
-                  ))}
-                </Box>
-              ))}
-            </thead>
-            <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
-          </Table>
-        </DocumentSheetListProvider>
-        <DocumentSheetActions
-          table={table}
-          schemaType={documentSchemaType}
-          parentRef={paneContainerRef.current}
-        />
-      </TableContainer>
-      <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
-        <DocumentSheetListPaginator table={table} />
-      </Flex>
+      {renderContent()}
     </PaneContainer>
   )
 }
