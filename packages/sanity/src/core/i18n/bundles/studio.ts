@@ -399,6 +399,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'No array item with `_key` <code>"{{key}}"</code> found at path <code>{{path}}</code>',
   /** The title above the error call stack output related to the crash */
   'form.error.unhandled-runtime-error.call-stack.title': 'Call Stack:',
+  /** The title above the error component stack provided by React's underlying ErrorBoundary component */
+  'form.error.unhandled-runtime-error.component-stack.title': 'Component Stack:',
   /** The error message for the unhandled error that crashed the Input component during render */
   'form.error.unhandled-runtime-error.error-message': 'Error: {{message}}',
   /** The title for the error card rendered inside a field in place of a crashing input */

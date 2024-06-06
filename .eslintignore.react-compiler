@@ -27,3 +27,4 @@ perf/*
 scripts/*
 test/*
 **/__workshop__/*
+packages/sanity/playwright-ct/**
