@@ -176,6 +176,48 @@ const animal = defineField({
         },
       ],
     },
+    {
+      type: 'array',
+      name: 'enemies',
+      of: [
+        {
+          type: 'object',
+          name: 'enemy',
+          fields: [
+            {
+              name: 'name',
+              type: 'string',
+              title: 'Enemy name',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'age',
+              type: 'number',
+              title: 'Enemy age',
+            },
+            {
+              name: 'properties',
+              type: 'array',
+              title: 'Enemy properties',
+              of: [
+                {
+                  type: 'object',
+                  name: 'property',
+                  title: 'Property',
+                  fields: [
+                    {
+                      type: 'string',
+                      name: 'title',
+                      title: 'Title',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ],
 })
 
