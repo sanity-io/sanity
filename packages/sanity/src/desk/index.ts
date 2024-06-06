@@ -145,14 +145,14 @@ import {
   type UnresolvedPaneNode as _UnresolvedPaneNode,
   type UnserializedListItem as _UnserializedListItem,
   type UnserializedListItemChild as _UnserializedListItemChild,
-  useDocumentPane as _useDocumentPane,
-  useDocumentTitle as _useDocumentTitle,
-  usePaneRouter as _usePaneRouter,
+  useDocumentPane as useStructureDocumentPane,
+  useDocumentTitle as useStructureDocumentTitle,
+  usePaneRouter as useStructurePaneRouter,
   type UserComponent as _UserComponent,
   type UserViewComponent as _UserViewComponent,
-  useStructureTool as _useStructureTool,
-  type View as _View,
-  type ViewBuilder as _ViewBuilder,
+  useStructureTool as useStructureStructureTool,
+  type View as StructureView,
+  type ViewBuilder as StructureViewBuilder,
 } from '../structure'
 
 /**
@@ -766,13 +766,13 @@ export type UserViewComponent = _UserViewComponent
  * @hidden
  * @beta
  */
-export type View = _View
+export type View = StructureView
 /**
  * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
-export type ViewBuilder = _ViewBuilder
+export type ViewBuilder = StructureViewBuilder
 
 /** --------- NON-TYPES FOLLOW --------- */
 
@@ -1040,22 +1040,22 @@ export const structureLocaleNamespace = _structureLocaleNamespace
  * @hidden
  * @beta
  */
-export const useDeskTool = _useStructureTool
+export const useDeskTool = useStructureStructureTool
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const useDocumentPane = _useDocumentPane
+export const useDocumentPane = useStructureDocumentPane
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const useDocumentTitle = _useDocumentTitle
+export const useDocumentTitle = useStructureDocumentTitle
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const usePaneRouter = _usePaneRouter
+export const usePaneRouter = useStructurePaneRouter
