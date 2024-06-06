@@ -1,16 +1,12 @@
-import {RefreshIcon} from '@sanity/icons'
-import {Card, Code, ErrorBoundary, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, ErrorBoundary, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
-import {Button} from '../../../ui-components'
 import {SchemaError} from '../../config'
-import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'
 import {CorsOriginError} from '../../store'
 import {isRecord} from '../../util'
 import {Alert} from '../components/Alert'
-import {Details} from '../components/Details'
 
 /**
  * @internal
@@ -68,25 +64,16 @@ function ErrorCard(props: {error: unknown; onRetry: () => void}) {
         <Text as="p" muted size={1}>
           <>{t('form.error.unhandled-runtime-error.error-message', {message})}</>
         </Text>
-        <Details open={isDev}>
-          <Stack space={4}>
+        <Box>
+          <Stack space={2}>
             <Text as="p" size={1}>
-              <>{t('form.error.unhandled-runtime-error.details.title')}</>
+              <>{t('form.error.unhandled-runtime-error.call-stack.title')}</>
             </Text>
             <Card border radius={2} overflow="auto" padding={4} tone="inherit">
               {stack && <Code size={1}>{stack}</Code>}
             </Card>
           </Stack>
-        </Details>
-        <div>
-          <Button
-            icon={RefreshIcon}
-            onClick={onRetry}
-            text={t('form.error.unhandled-runtime-error.retry-button-label')}
-            tone="caution"
-            mode="ghost"
-          />
-        </div>
+        </Box>
       </Stack>
     </Alert>
   )
