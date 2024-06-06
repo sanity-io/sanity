@@ -182,10 +182,9 @@ function DocumentSheetListPaneInner(
       const nextOptions = {...currentOptions}
       if (!nextOptions.meta) return currentOptions
 
-      return {
-        ...nextOptions,
-        meta: {...nextOptions.meta, patchDocument: handlePatchDocument},
-      }
+      nextOptions.meta.patchDocument = handlePatchDocument
+
+      return nextOptions
     })
   }
 
