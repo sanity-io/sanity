@@ -115,6 +115,7 @@ function DocumentSheetListPaneInner(
   const table = useReactTable({
     data,
     columns,
+    columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
