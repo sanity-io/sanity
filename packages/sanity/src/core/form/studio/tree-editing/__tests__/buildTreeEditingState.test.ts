@@ -146,6 +146,7 @@ describe('tree-editing: buildTreeEditingState', () => {
       documentValue,
       openPath: ['array1', {_key: '123'}],
       schemaType: schema.get('testDocument'),
+      exceptions: [],
     })
 
     expect(result).toMatchSnapshot()
@@ -171,6 +172,7 @@ describe('tree-editing: buildTreeEditingState', () => {
       documentValue,
       openPath: ['objectWithArray', 'myArray', {_key: 'key1'}],
       schemaType: schema.get('testDocument'),
+      exceptions: [],
     })
 
     // Path to a primitive field in the array item object should
@@ -179,6 +181,7 @@ describe('tree-editing: buildTreeEditingState', () => {
       documentValue,
       openPath: ['objectWithArray', 'myArray', {_key: 'key1'}, 'myString'],
       schemaType: schema.get('testDocument'),
+      exceptions: [],
     })
 
     expect(result1).toMatchSnapshot()
@@ -208,6 +211,7 @@ describe('tree-editing: buildTreeEditingState', () => {
       documentValue,
       openPath: ['mixedArray', {_key: 'key1'}],
       schemaType: schema.get('testDocument'),
+      exceptions: [],
     })
 
     expect(result).toMatchSnapshot()
