@@ -11,14 +11,12 @@ import {getBorderWidth} from './utils'
 const Header = styled.th<{width: number}>`
   margin: 16px;
   z-index: 1;
-  padding: 15px 0px;
   border-top: 1px solid var(--card-border-color);
   background-color: var(--card-badge-default-bg-color);
   box-sizing: border-box;
   text-align: left;
   width: ${({width}) => width}px;
   max-width: ${({width}) => width}px;
-  height: 59px;
 `
 
 const PinnedHeader = styled(Header)`
@@ -38,6 +36,27 @@ type DocumentSheetListHeaderProps = {
   header: HeaderType<DocumentSheetTableRow, unknown>
   headerGroup: HeaderGroup<DocumentSheetTableRow>
 }
+
+const HeaderRoot = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 59px;
+`
+
+// Creates an invisible resizer element that can be used to resize the column
+const Resizer = styled.div`
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  height: 100%;
+  width: 8px;
+  right: -4px;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+`
 
 export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
   const {header, headerGroup} = props
@@ -68,42 +87,52 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
       data-testid={`header-${header.id}`}
       width={header.getSize()}
     >
-      {header.column.columnDef.meta?.customHeader ? (
-        flexRender(header.column.columnDef.header, header.getContext())
-      ) : (
-        <Flex justify="space-between" marginX={2} align="baseline">
-          <Tooltip delay={500} content={headerTitle}>
-            <Box style={{boxSizing: 'border-box'}} marginLeft={3} marginRight={3}>
-              {headerTitle}
-            </Box>
-          </Tooltip>
-          {canShowHeaderMenu && (
-            <HoverMenu>
-              <MenuButton
-                button={
-                  <Button
-                    tooltipProps={{content: 'Open field menu'}}
-                    mode="bleed"
-                    icon={EllipsisHorizontalIcon}
-                    data-testid="field-menu-button"
+      <HeaderRoot>
+        {header.column.columnDef.meta?.customHeader ? (
+          flexRender(header.column.columnDef.header, header.getContext())
+        ) : (
+          <>
+            <Flex justify="space-between" marginX={2} align="baseline" style={{width: '100%'}}>
+              <Tooltip delay={500} content={headerTitle}>
+                <Box style={{boxSizing: 'border-box'}} marginLeft={3} marginRight={3}>
+                  {headerTitle}
+                </Box>
+              </Tooltip>
+              {canShowHeaderMenu && (
+                <HoverMenu>
+                  <MenuButton
+                    button={
+                      <Button
+                        tooltipProps={{content: 'Open field menu'}}
+                        mode="bleed"
+                        icon={EllipsisHorizontalIcon}
+                        data-testid="field-menu-button"
+                      />
+                    }
+                    id="field menu"
+                    popover={{placement: 'bottom-end'}}
+                    menu={
+                      <Menu>
+                        <MenuItem
+                          text={t('sheet-list.hide-field')}
+                          icon={CloseIcon}
+                          onClick={() => header.column.toggleVisibility()}
+                        />
+                      </Menu>
+                    }
                   />
-                }
-                id="field menu"
-                popover={{placement: 'bottom-end'}}
-                menu={
-                  <Menu>
-                    <MenuItem
-                      text={t('sheet-list.hide-field')}
-                      icon={CloseIcon}
-                      onClick={() => header.column.toggleVisibility()}
-                    />
-                  </Menu>
-                }
-              />
-            </HoverMenu>
-          )}
-        </Flex>
-      )}
+                </HoverMenu>
+              )}
+            </Flex>
+            <Resizer
+              onMouseDown={header.getResizeHandler()}
+              onTouchStart={header.getResizeHandler()}
+              // eslint-disable-next-line react/jsx-no-bind
+              onDoubleClick={() => header.column.resetSize()}
+            />
+          </>
+        )}
+      </HeaderRoot>
     </HeaderTag>
   )
 }
