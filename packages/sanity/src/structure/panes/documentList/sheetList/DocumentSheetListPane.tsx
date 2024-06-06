@@ -174,7 +174,13 @@ function DocumentSheetListPaneInner(
   )
 
   if (table.options.meta) {
-    table.options.meta.patchDocument = handlePatchDocument
+    table.setOptions({
+      ...table.options,
+      meta: {
+        ...table.options.meta,
+        patchDocument: handlePatchDocument,
+      },
+    })
   }
 
   useEffect(() => {
