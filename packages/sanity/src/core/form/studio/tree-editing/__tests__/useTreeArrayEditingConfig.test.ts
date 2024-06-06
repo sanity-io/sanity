@@ -68,5 +68,31 @@ describe('useTreeArrayEditingConfig', () => {
       exceptions: [],
       hasConflicts: false,
     })
+
+    // Reset the mock
+    jest.spyOn(React, 'useContext').mockReset()
+  })
+
+  test('should return hasConflicts as true when path is in exceptions config', () => {
+    const features = {
+      features: {
+        beta: {
+          treeArrayEditing: {
+            enabled: true,
+            exceptions: ['path'],
+          },
+        },
+      },
+    }
+    mockedUseInnerHook.mockImplementation(() => features)
+
+    const {result} = renderHook(() => useTreeArrayEditingConfig(['path']))
+
+    expect(result.current).toEqual({
+      enabled: true,
+      legacyEditing: false,
+      exceptions: ['path'],
+      hasConflicts: true,
+    })
   })
 })
