@@ -1,4 +1,4 @@
-import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocumentLike} from '@sanity/types'
+import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
@@ -160,7 +160,10 @@ function DocumentSheetListPaneInner(
 
       const currentDocumentValue = rows.find(
         (row) => row.original.__metadata.idPair.publishedId === publishedDocumentId,
-      )?.original.__metadata.snapshots.published as SanityDocumentLike
+      )?.original.__metadata.snapshots.published as SanityDocument
+
+      // force the document operations to end of current event loop
+      // so that all state updates are done before patching
       setTimeout(() => {
         documentOperations.patch.execute(
           toMutationPatches([set(value, [fieldId.replace('_', '.')])]),
