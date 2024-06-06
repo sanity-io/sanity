@@ -26,6 +26,7 @@ export interface BuildTreeEditingStateProps {
   schemaType: ObjectSchemaType | ArraySchemaType
   documentValue: unknown
   openPath: Path
+  exceptions: string[]
 }
 
 export interface TreeEditingState {
@@ -41,7 +42,7 @@ export interface RecursiveProps extends Omit<BuildTreeEditingStateProps, 'openPa
 }
 
 export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEditingState {
-  const {openPath} = props
+  const {openPath, exceptions} = props
 
   const menuItems: TreeEditingMenuItem[] = []
   const breadcrumbs: TreeEditingBreadcrumb[] = []
@@ -61,6 +62,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     schemaType: rootField,
     documentValue: props.documentValue,
     path: rootPath,
+    exceptions: exceptions,
   })
 
   function recursive(recursiveProps: RecursiveProps): TreeEditingState {
@@ -79,6 +81,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
       // to allow for recursive calls in the array items.
       recursive,
       rootPath: path,
+      exceptions,
     })
 
     if (arrayState.relativePath.length > 0) {

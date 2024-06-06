@@ -77,7 +77,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   const openPathRef = useRef<Path | undefined>(undefined)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
 
-  const {hasConflicts} = useTreeArrayEditingConfig(openPath)
+  const {hasConflicts, exceptions} = useTreeArrayEditingConfig(openPath)
 
   const handleAnimationExitComplete = useCallback(() => {
     // Scroll to the top of the layout when the animation has completed
@@ -182,6 +182,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
         schemaType,
         documentValue: value,
         openPath,
+        exceptions,
       })
 
       openPathRef.current = openPath
@@ -202,8 +203,16 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       schemaType,
       documentValue: value,
       openPath,
+      exceptions,
     })
-  }, [schemaType, value, debouncedBuildTreeEditingState, openPath, handleBuildTreeEditingState])
+  }, [
+    schemaType,
+    value,
+    debouncedBuildTreeEditingState,
+    openPath,
+    handleBuildTreeEditingState,
+    exceptions,
+  ])
 
   if (!open || relativePath.length === 0) return null
 

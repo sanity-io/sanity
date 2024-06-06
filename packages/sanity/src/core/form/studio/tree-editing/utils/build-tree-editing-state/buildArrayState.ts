@@ -12,6 +12,7 @@ import {
 
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
+import {hasException} from '../hasException'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
 import {getRelativePath, isSelected, shouldBeInBreadcrumb} from './utils'
@@ -23,10 +24,12 @@ interface BuildArrayState {
   openPath: Path
   rootPath: Path
   recursive: (props: RecursiveProps) => TreeEditingState
+  exceptions: string[]
 }
 
 export function buildArrayState(props: BuildArrayState): TreeEditingState {
-  const {arraySchemaType, arrayValue, documentValue, openPath, rootPath, recursive} = props
+  const {arraySchemaType, arrayValue, documentValue, openPath, rootPath, recursive, exceptions} =
+    props
 
   let relativePath: Path = []
   const menuItems: TreeEditingMenuItem[] = []
@@ -45,7 +48,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     const isReference = isReferenceSchemaType(itemSchemaField)
 
     // Do not include references
-    if (isReference) return
+    if (isReference || hasException(itemPath, exceptions)) return
 
     if (shouldBeInBreadcrumb(itemPath, openPath)) {
       const breadcrumbsResult = buildBreadcrumbsState({
@@ -100,6 +103,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           documentValue,
           path: childPath,
           initial: false,
+          exceptions,
         })
 
         childrenMenuItems.push({
