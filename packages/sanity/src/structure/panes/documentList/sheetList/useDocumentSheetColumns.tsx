@@ -85,7 +85,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
       return []
     }
     return [
-      columnHelper.display({
+      columnHelper.accessor('selected', {
         id: 'selected',
         enableHiding: false,
         size: 53,
@@ -93,14 +93,17 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
           customHeader: true,
           borderWidth: 0,
         },
-        header: (info) => (
-          <Flex justify="center">
-            <Checkbox
-              indeterminate={info.table.getIsSomeRowsSelected()}
-              onChange={info.table.getToggleAllPageRowsSelectedHandler()}
-            />
-          </Flex>
-        ),
+        header: (info) => {
+          if (info.header.depth > 1) return null
+          return (
+            <Flex justify="center">
+              <Checkbox
+                indeterminate={info.table.getIsSomeRowsSelected()}
+                onChange={info.table.getToggleAllPageRowsSelectedHandler()}
+              />
+            </Flex>
+          )
+        },
         cell: DocumentSheetListSelect,
       }),
       columnHelper.accessor('List preview', {
