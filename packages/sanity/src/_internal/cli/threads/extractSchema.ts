@@ -33,7 +33,7 @@ const workspaceTransformers: Record<Format, WorkspaceTransformer> = {
 
 /** @internal */
 export type ExtractSchemaWorkerResult<TargetFormat extends Format = Format> = {
-  'direct': Pick<Workspace, 'name' | 'dataset'> & {schema: SchemaTypeDefinition[]}
+  'direct': Pick<Workspace, 'name' | 'dataset'> & {schema: SchemaTypeDefinition[]} // xxx
   'groq-type-nodes': {schema: SchemaType}
 }[TargetFormat]
 
