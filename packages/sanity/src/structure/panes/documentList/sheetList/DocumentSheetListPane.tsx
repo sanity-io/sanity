@@ -189,6 +189,7 @@ function DocumentSheetListPaneInner(
                       key={header.id}
                       header={header}
                       headerGroup={headerGroup}
+                      table={table}
                     />
                   ))}
                 </Box>

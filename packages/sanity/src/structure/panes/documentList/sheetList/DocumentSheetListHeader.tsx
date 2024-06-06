@@ -1,11 +1,12 @@
 import {CloseIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuButton, Text} from '@sanity/ui'
 import {flexRender, type Header as HeaderType, type HeaderGroup} from '@tanstack/react-table'
+import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, MenuItem, Tooltip} from '../../../../ui-components'
-import {type DocumentSheetTableRow} from './types'
+import {type DocumentSheetListTable, type DocumentSheetTableRow} from './types'
 import {getBorderWidth} from './utils'
 
 const Header = styled.th<{width: number}>`
@@ -35,6 +36,7 @@ const HoverMenu = styled.div`
 type DocumentSheetListHeaderProps = {
   header: HeaderType<DocumentSheetTableRow, unknown>
   headerGroup: HeaderGroup<DocumentSheetTableRow>
+  table: DocumentSheetListTable
 }
 
 const HeaderRoot = styled.div`
@@ -59,23 +61,36 @@ const Resizer = styled.div`
 `
 
 export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
-  const {header, headerGroup} = props
+  const {header, headerGroup, table} = props
   const {t} = useTranslation()
 
   const isPinned = header.column.getIsPinned()
+  const shouldHideTitle = headerGroup.depth > 0 && !header.column.parent
 
-  const headerTitle =
-    headerGroup.depth > 0 && !header.column.parent ? null : (
-      <Text size={1} weight="semibold" textOverflow="ellipsis">
-        {flexRender(header.column.columnDef.header, header.getContext())}
-      </Text>
-    )
+  const headerTitle = shouldHideTitle ? null : (
+    <Text size={1} weight="semibold" textOverflow="ellipsis">
+      {flexRender(header.column.columnDef.header, header.getContext())}
+    </Text>
+  )
 
   const HeaderTag = isPinned ? PinnedHeader : Header
 
-  const canShowHeaderMenu =
-    header.column.getCanHide() &&
-    (headerGroup.depth === 0 ? !header.column.columns.length : header.column.parent)
+  const canShowHeaderMenu = shouldHideTitle ? false : header.column.getCanHide()
+
+  const hideColumn = useCallback(() => {
+    if (header.subHeaders.length > 0) {
+      // Hide all inner columns
+      table.setColumnVisibility((prev) => {
+        const newVisibility = {...prev}
+        for (const subHeader of header.subHeaders) {
+          newVisibility[subHeader.id] = false
+        }
+        return newVisibility
+      })
+    } else {
+      header.column.toggleVisibility()
+    }
+  }, [header.column, header.subHeaders, table])
 
   return (
     <HeaderTag
@@ -116,7 +131,7 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
                         <MenuItem
                           text={t('sheet-list.hide-field')}
                           icon={CloseIcon}
-                          onClick={() => header.column.toggleVisibility()}
+                          onClick={hideColumn}
                         />
                       </Menu>
                     }
