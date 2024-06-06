@@ -28,8 +28,6 @@ export function DocumentSheetListSelect(props: CellContext<DocumentSheetTableRow
           .flatRows.slice(lowerIndex, upperIndex + 1)
           .map(({id}) => id)
 
-        console.log({t: additionalSelectedRows})
-
         const currentSelectedRows = table.getSelectedRowModel().rows.map(({id}) => id)
         table.setRowSelection(() =>
           [...additionalSelectedRows, ...currentSelectedRows].reduce(

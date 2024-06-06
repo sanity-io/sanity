@@ -11,13 +11,14 @@ import {getBorderWidth} from './utils'
 const Header = styled.th<{width: number}>`
   margin: 16px;
   z-index: 1;
-  padding: 22px 0px;
+  padding: 15px 0px;
   border-top: 1px solid var(--card-border-color);
   background-color: var(--card-badge-default-bg-color);
   box-sizing: border-box;
   text-align: left;
   width: ${({width}) => width}px;
   max-width: ${({width}) => width}px;
+  height: 59px;
 `
 
 const PinnedHeader = styled(Header)`

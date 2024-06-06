@@ -1,5 +1,5 @@
 import {AddIcon} from '@sanity/icons'
-import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
+import {type ArraySchemaType} from '@sanity/types'
 import {Grid, Menu} from '@sanity/ui'
 import {useCallback, useId} from 'react'
 
@@ -12,6 +12,7 @@ import {
 } from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
+import {getSchemaTypeIcon} from './getSchemaTypeIcon'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
@@ -93,19 +94,12 @@ export function ArrayOfObjectsFunctions<
           menu={
             <Menu>
               {schemaType.of.map((memberDef, i) => {
-                // Use reference icon if reference is to one schemaType only
-                const referenceIcon =
-                  isReferenceSchemaType(memberDef) &&
-                  (memberDef.to || []).length === 1 &&
-                  memberDef.to[0].icon
-
-                const icon = memberDef.icon || memberDef.type?.icon || referenceIcon
                 return (
                   <MenuItem
                     key={i}
                     text={memberDef.title || memberDef.type?.name}
                     onClick={() => insertItem(memberDef)}
-                    icon={icon}
+                    icon={getSchemaTypeIcon(memberDef)}
                   />
                 )
               })}
