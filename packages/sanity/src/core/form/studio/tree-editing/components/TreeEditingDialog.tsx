@@ -88,24 +88,24 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
-      if (!hasConflicts) {
-        const nextState = buildTreeEditingState(opts)
+      if (hasConflicts) return
 
-        if (isEqual(nextState, treeState)) return
+      const nextState = buildTreeEditingState(opts)
 
-        const builtRelativePath = nextState.relativePath
-        const len = builtRelativePath.length
+      if (isEqual(nextState, treeState)) return
 
-        const hasNoRelativePath = len === 0
+      const builtRelativePath = nextState.relativePath
+      const len = builtRelativePath.length
 
-        // If there is not relative path or the path is not an array item path, we want to use the
-        // current relative path. This is to avoid changing the fields being displayed in the form
-        // when the path is not an array item path.
-        const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath(builtRelativePath)
-        const nextRelativePath = useCurrentRelativePath ? treeState.relativePath : builtRelativePath
+      const hasNoRelativePath = len === 0
 
-        setTreeState({...nextState, relativePath: nextRelativePath})
-      }
+      // If there is not relative path or the path is not an array item path, we want to use the
+      // current relative path. This is to avoid changing the fields being displayed in the form
+      // when the path is not an array item path.
+      const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath(builtRelativePath)
+      const nextRelativePath = useCurrentRelativePath ? treeState.relativePath : builtRelativePath
+
+      setTreeState({...nextState, relativePath: nextRelativePath})
     },
     [treeState, hasConflicts],
   )
