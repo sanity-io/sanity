@@ -113,6 +113,7 @@ export default function TreeMenuItemsBuildDebugStory(): JSX.Element {
       documentValue: DOCUMENT_VALUE,
       openPath: ['animals', {_key: 'baec12778efa'}, 'name'],
       schemaType: schema.get('objectsDebug') as ObjectSchemaType,
+      exceptions: [],
     })
 
     setItems(menuItems)
