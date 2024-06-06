@@ -30,6 +30,7 @@ import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {TextBlock} from './text'
+import { UploadTargetCard } from '../arrays/common/UploadTargetCard'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement>
@@ -395,29 +396,37 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const editorNode = useMemo(
     () => (
-      <Editor
-        ariaDescribedBy={ariaDescribedBy}
-        elementRef={elementRef}
-        initialSelection={initialSelection}
-        hideToolbar={hideToolbar}
-        hotkeys={editorHotkeys}
-        isActive={isActive}
-        isFullscreen={isFullscreen}
-        onItemOpen={onItemOpen}
-        onCopy={onCopy}
-        onPaste={onPaste}
-        onToggleFullscreen={handleToggleFullscreen}
-        path={path}
-        rangeDecorations={rangeDecorations}
-        readOnly={readOnly}
-        renderAnnotation={editorRenderAnnotation}
-        renderBlock={editorRenderBlock}
-        renderChild={editorRenderChild}
-        renderEditable={renderEditable}
-        setPortalElement={setPortalElement}
-        scrollElement={scrollElement}
-        setScrollElement={setScrollElement}
-      />
+      <UploadTargetCard
+        types={editor.schemaTypes.portableText.of}
+        resolveUploader={props.resolveUploader}
+        onUpload={props.onUpload}
+        {...props.elementProps}
+        tabIndex={-1}
+      >
+        <Editor
+          ariaDescribedBy={ariaDescribedBy}
+          elementRef={elementRef}
+          initialSelection={initialSelection}
+          hideToolbar={hideToolbar}
+          hotkeys={editorHotkeys}
+          isActive={isActive}
+          isFullscreen={isFullscreen}
+          onItemOpen={onItemOpen}
+          onCopy={onCopy}
+          onPaste={onPaste}
+          onToggleFullscreen={handleToggleFullscreen}
+          path={path}
+          rangeDecorations={rangeDecorations}
+          readOnly={readOnly}
+          renderAnnotation={editorRenderAnnotation}
+          renderBlock={editorRenderBlock}
+          renderChild={editorRenderChild}
+          renderEditable={renderEditable}
+          setPortalElement={setPortalElement}
+          scrollElement={scrollElement}
+          setScrollElement={setScrollElement}
+        />
+      </UploadTargetCard>
     ),
 
     // Keep only stable ones here!

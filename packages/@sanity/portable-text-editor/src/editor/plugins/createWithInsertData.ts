@@ -170,15 +170,7 @@ export function createWithInsertData(
       const html = data.getData('text/html')
       const text = data.getData('text/plain')
 
-      const {files} = data
-      const hasFiles = files && files.length > 0
-
-      if (hasFiles) {
-        const plural = files.length === 1 ? 'file' : 'files'
-        debug(`Inserting ${plural}`, data)
-      }
-
-      if (!hasFiles && (html || text)) {
+      if (html || text) {
         debug('Inserting data', data)
         let portableText: PortableTextBlock[]
         let fragment: Node[]
@@ -188,6 +180,9 @@ export function createWithInsertData(
           portableText = htmlToBlocks(html, schemaTypes.portableText, {
             unstable_whitespaceOnPasteMode: whitespaceOnPasteMode,
           }).map((block) => normalizeBlock(block, {blockTypeName})) as PortableTextBlock[]
+          if (portableText.length === 0) {
+            return false
+          }
           fragment = toSlateValue(portableText, {schemaTypes})
           insertedType = 'HTML'
         } else {

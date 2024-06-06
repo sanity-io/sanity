@@ -132,6 +132,11 @@ export function fileTarget<ComponentProps>(Component: ComponentType<ComponentPro
 
     const handleDragEnter = useCallback(
       (event: DragEvent) => {
+        if (forwardedRef.current.contains(event.target as Node)) {
+          // event.preventDefault()
+          return
+        }
+
         event.stopPropagation()
 
         if (onFilesOver && forwardedRef.current === event.currentTarget) {
