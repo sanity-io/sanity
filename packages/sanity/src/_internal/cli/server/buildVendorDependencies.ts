@@ -123,7 +123,7 @@ export async function buildVendorDependencies({
 
   // Iterate over each package and its version ranges in VENDOR_IMPORTS
   for (const [packageName, ranges] of Object.entries(VENDOR_IMPORTS)) {
-    const packageJsonPath = resolveFrom.silent(cwd, `./node_modules/${packageName}/package.json`)
+    const packageJsonPath = resolveFrom.silent(cwd, path.join(packageName, 'package.json'))
     if (!packageJsonPath) {
       throw new Error(
         `Could not find package.json for package '${packageName}' from directory '${dir}'. Is it installed?`,
@@ -184,10 +184,8 @@ export async function buildVendorDependencies({
 
     // Iterate over each subpath and its corresponding entry point
     for (const [subpath, relativeEntryPoint] of Object.entries(subpaths)) {
-      const entryPoint = resolveFrom.silent(
-        cwd,
-        `./node_modules/${path.join(packageName, relativeEntryPoint)}`,
-      )
+      const packagePath = path.dirname(packageJsonPath)
+      const entryPoint = resolveFrom.silent(packagePath, relativeEntryPoint)
 
       if (!entryPoint) {
         throw new Error(
