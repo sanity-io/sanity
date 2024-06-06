@@ -1,6 +1,7 @@
 import {type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {DocumentSheetListContext} from 'sanity/_singletons'
-import {DocumentSheetListTable} from './types'
+
+import {type DocumentSheetListTable} from './types'
 
 interface DocumentSheetListProviderProps {
   children?: ReactNode

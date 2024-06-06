@@ -135,25 +135,23 @@ function DocumentSheetListPaneInner({
   )
 
   const handlePatchDocument = useCallback(
-    (publishedDocumentId: string, fieldId: string, value: any) => {
-      const operation = rowOperations?.[publishedDocumentId]
-      console.log({operation}, publishedDocumentId)
-      if (!operation || operation.patch.disabled !== false) return
-      console.log({
-        value,
-        fieldId,
-        row: rows.find((row) => row.original.__metadata.idPair.publishedId === publishedDocumentId),
-      })
+    (publishedDocumentId: string, fieldId: string, value: string) => {
+      const documentOperations = rowOperations?.[publishedDocumentId]
+
+      if (!documentOperations || documentOperations.patch.disabled !== false)
+        throw new Error('Documents not ready for operations')
 
       const currentDocumentValue = rows.find(
         (row) => row.original.__metadata.idPair.publishedId === publishedDocumentId,
       )?.original.__metadata.snapshots.published as SanityDocumentLike
-      operation.patch.execute(
-        toMutationPatches([set(value, [fieldId.replace('_', '.')])]),
-        currentDocumentValue,
-      )
-      // explicity commit after patch to avoid throttled autocommits
-      operation.commit.execute()
+      setTimeout(() => {
+        documentOperations.patch.execute(
+          toMutationPatches([set(value, [fieldId.replace('_', '.')])]),
+          currentDocumentValue,
+        )
+        // explicity commit after patch to avoid throttled autocommits
+        documentOperations.commit.execute()
+      })
     },
     [rowOperations, rows],
   )
