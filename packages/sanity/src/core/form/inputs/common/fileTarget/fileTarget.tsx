@@ -12,7 +12,7 @@ import {
   useState,
 } from 'react'
 
-import {extractDroppedFiles, extractPastedFiles} from './utils/extractFiles'
+import {extractDroppedFiles, extractPastedFiles, isPortableTextItem} from './utils/extractFiles'
 import {imageUrlToBlob} from './utils/imageUrlToBlob'
 
 export type FileInfo = {
@@ -127,6 +127,17 @@ export function fileTarget<ComponentProps>(Component: ComponentType<ComponentPro
 
     const handleDragEnter = useCallback(
       (event: DragEvent) => {
+        const fileTypes = Array.from(event.dataTransfer.items).map((item) => ({
+          type: item.type,
+          kind: item.kind,
+        }))
+
+        // Skip items that is PTE blocks
+        const isPortableTextBlock = fileTypes.some((item) => isPortableTextItem(item))
+
+        if (isPortableTextBlock) {
+          return
+        }
         event.stopPropagation()
 
         if (onFilesOver && ref.current === event.currentTarget) {
@@ -136,10 +147,6 @@ export function fileTarget<ComponentProps>(Component: ComponentType<ComponentPro
         */
           enteredElements.current = [...new Set(enteredElements.current), event.currentTarget]
 
-          const fileTypes = Array.from(event.dataTransfer.items).map((item) => ({
-            type: item.type,
-            kind: item.kind,
-          }))
           onFilesOver(fileTypes)
         }
       },
@@ -181,6 +188,7 @@ export function fileTarget<ComponentProps>(Component: ComponentType<ComponentPro
           onDragEnter={disabled ? undefined : handleDragEnter}
           onDragLeave={disabled ? undefined : handleDragLeave}
           onDrop={disabled ? undefined : handleDrop}
+          data-test-id="file-target"
         />
         {!disabled && showPasteInput && (
           <div contentEditable onPaste={handlePaste} ref={pasteInput} style={PASTE_INPUT_STYLE} />
