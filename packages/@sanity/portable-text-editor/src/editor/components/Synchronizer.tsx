@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {type PortableTextBlock} from '@sanity/types'
 import {throttle} from 'lodash'
 import {
@@ -52,6 +53,7 @@ export function Synchronizer(props: SynchronizerProps) {
   const [selection, setSelection] = useState<EditorSelection>(null)
   const pendingPatches = useRef<Patch[]>([])
 
+  // is this hook ok?
   const syncValue = useSyncValue({
     keyGenerator,
     onChange,
@@ -160,6 +162,7 @@ export function Synchronizer(props: SynchronizerProps) {
     }
   })
 
+  // Should we track if the value actually changed since last sync?
   // This hook must be set up after setting up the subscription above, or it will not pick up validation errors from the useSyncValue hook.
   // This will cause the editor to not be able to signal a validation error and offer invalid value resolution of the initial value.
   const isInitialValueFromProps = useRef(true)

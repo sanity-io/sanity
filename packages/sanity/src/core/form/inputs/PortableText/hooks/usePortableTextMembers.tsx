@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {isEqual, pathFor} from '@sanity/util/paths'
 import {createRef, type MutableRefObject, type ReactNode, useContext, useMemo, useRef} from 'react'
 import {type FormPatch, type Path, set} from 'sanity'

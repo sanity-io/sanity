@@ -5,6 +5,7 @@ import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
 import {useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
+import {StudioErrorBoundary} from '../../../core/studio/StudioErrorBoundary'
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, StructureToolPane} from '../../panes'
 import {useResolvedPanes} from '../../structureResolvers'
@@ -111,20 +112,22 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
               {pane === LOADING_PANE ? (
                 <LoadingPane paneKey={paneKey} path={path} selected={selected} />
               ) : (
-                <StructureToolPane
-                  active={active}
-                  groupIndex={groupIndex}
-                  index={paneIndex}
-                  pane={pane}
-                  childItemId={childItemId}
-                  itemId={itemId}
-                  paneKey={paneKey}
-                  params={paneParams}
-                  payload={payload}
-                  path={path}
-                  selected={selected}
-                  siblingIndex={siblingIndex}
-                />
+                <StudioErrorBoundary key={paneKey}>
+                  <StructureToolPane
+                    active={active}
+                    groupIndex={groupIndex}
+                    index={paneIndex}
+                    pane={pane}
+                    childItemId={childItemId}
+                    itemId={itemId}
+                    paneKey={paneKey}
+                    params={paneParams}
+                    payload={payload}
+                    path={path}
+                    selected={selected}
+                    siblingIndex={siblingIndex}
+                  />
+                </StudioErrorBoundary>
               )}
             </Fragment>
           ),

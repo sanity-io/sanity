@@ -1,5 +1,5 @@
 import {type HotkeyOptions, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 
 // This hook will create final hotkeys for the editor from on those from props.
 export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
@@ -8,11 +8,15 @@ export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
   // Guard that hotkeys from props will be a stable object.
   // If this props is defined inline and is always a new object, there will be issues with key handling and cursor!
   const [initialHotkeys] = useState(() => hotkeys)
-  if (initialHotkeys !== hotkeys) {
-    console.warn(
-      'Make sure that hotkeys are a stable object across renders, or there will be issues with key handling in the Portable Text Editor.',
-    )
-  }
+
+  useEffect(() => {
+    if (initialHotkeys !== hotkeys) {
+      console.warn(
+        'Make sure that hotkeys are a stable object across renders, or there will be issues with key handling in the Portable Text Editor.',
+      )
+    }
+  }, [hotkeys, initialHotkeys])
+
   return useMemo(() => {
     const defaultHotkeys: {marks: Record<string, string>} = {marks: {}}
     editor.schemaTypes.decorators.forEach((dec) => {

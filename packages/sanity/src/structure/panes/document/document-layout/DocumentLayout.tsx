@@ -19,6 +19,7 @@ import {
 import {type Path} from 'sanity-diff-patch'
 import {styled} from 'styled-components'
 
+import {StudioErrorBoundary} from '../../../../core/studio/StudioErrorBoundary'
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {Pane, PaneFooter, usePaneLayout} from '../../../components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
@@ -161,6 +162,7 @@ export function DocumentLayout() {
 
   return (
     <>
+      {/* Error Boundary for inspectors */}
       {inspectors.length > 0 && (
         <DocumentInspectorMenuItemsResolver
           documentId={documentId}
@@ -170,6 +172,7 @@ export function DocumentLayout() {
         />
       )}
 
+      {/* Error Boundary for field actions */}
       {fieldActions.length > 0 && schemaType && (
         <FieldActionsResolver
           actions={fieldActions}
@@ -193,6 +196,7 @@ export function DocumentLayout() {
           onKeyUp={handleKeyUp}
           rootRef={setRootElement}
         >
+          {/* Boundary for menu items */}
           <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
 
           <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
@@ -203,17 +207,18 @@ export function DocumentLayout() {
                 onOpenReviewChanges={onHistoryOpen}
                 onSetFocus={onConnectorSetFocus}
               >
-                <DocumentPanel
-                  footerHeight={footerHeight || null}
-                  headerHeight={headerHeight || null}
-                  isInspectOpen={inspectOpen}
-                  rootElement={rootElement}
-                  setDocumentPanelPortalElement={setDocumentPanelPortalElement}
-                />
+                <StudioErrorBoundary>
+                  <DocumentPanel
+                    footerHeight={footerHeight || null}
+                    headerHeight={headerHeight || null}
+                    isInspectOpen={inspectOpen}
+                    rootElement={rootElement}
+                    setDocumentPanelPortalElement={setDocumentPanelPortalElement}
+                  />
+                </StudioErrorBoundary>
               </StyledChangeConnectorRoot>
             </Flex>
           </DialogProvider>
-
           {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
           {/* The portal element comes from `DocumentPanel`. */}
           <PortalProvider

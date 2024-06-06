@@ -3,6 +3,7 @@ import {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {StudioErrorBoundary} from '../../../../core/studio/StudioErrorBoundary'
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
@@ -167,12 +168,14 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                     data-testid="document-panel-scroller"
                     ref={setDocumentScrollElement}
                   >
-                    <FormView
-                      hidden={formViewHidden}
-                      key={documentId + (ready ? '_ready' : '_pending')}
-                      margins={margins}
-                      ref={formContainerElement}
-                    />
+                    <StudioErrorBoundary>
+                      <FormView
+                        hidden={formViewHidden}
+                        key={documentId + (ready ? '_ready' : '_pending')}
+                        margins={margins}
+                        ref={formContainerElement}
+                      />
+                    </StudioErrorBoundary>
                     {activeViewNode}
                   </Scroller>
 
@@ -187,6 +190,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
         {showInspector && (
           <BoundaryElementProvider element={rootElement}>
+            {/* Boundary for inspector */}
             <DocumentInspectorPanel
               documentId={documentId}
               documentType={schemaType.name}

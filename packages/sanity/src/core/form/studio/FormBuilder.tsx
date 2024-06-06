@@ -137,8 +137,11 @@ export function FormBuilder(props: FormBuilderProps) {
     [onSetFieldSetCollapsed],
   )
   // These hooks may be stored in context as an perf optimization
+  // wrap input in error boundary
   const Input = useInputComponent()
+  // wrap field in error boundary
   const Field = useFieldComponent()
+  // wrap preview in error boundary
   const Preview = usePreviewComponent()
   const Item = useItemComponent()
   const Block = useBlockComponent()
