@@ -59,6 +59,12 @@ jest.mock('sanity', () => ({
   }),
 }))
 
+jest.mock('../../../../components/paneRouter', () => ({
+  usePaneRouter: jest.fn().mockReturnValue({
+    ChildLink: jest.fn().mockReturnValue(null),
+  }),
+}))
+
 const renderTest = async () => {
   const config = defineConfig({
     projectId: 'test',
