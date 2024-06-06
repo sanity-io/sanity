@@ -30,27 +30,29 @@ test.describe('basic - open and close', () => {
   })
 })
 
-test(`actions - blocked main document action when modal is open`, async ({
-  page,
-  createDraftDocument,
-}) => {
-  await createDraftDocument('/test/content/input-debug;objectsDebug')
+test.describe('actions', () => {
+  test(`actions - blocked main document action when modal is open`, async ({
+    page,
+    createDraftDocument,
+  }) => {
+    await createDraftDocument('/test/content/input-debug;objectsDebug')
 
-  await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
 
-  await expect(page.getByTestId('action-Publish')).toBeDisabled()
-})
+    await expect(page.getByTestId('action-Publish')).toBeDisabled()
+  })
 
-test(`actions - main document action when modal is closed will be enabled`, async ({
-  page,
-  createDraftDocument,
-}) => {
-  await createDraftDocument('/test/content/input-debug;objectsDebug')
+  test(`actions - main document action when modal is closed will be enabled`, async ({
+    page,
+    createDraftDocument,
+  }) => {
+    await createDraftDocument('/test/content/input-debug;objectsDebug')
 
-  await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-  await page.getByTestId('tree-editing-done').click()
+    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.getByTestId('tree-editing-done').click()
 
-  await expect(page.getByTestId('action-Publish')).not.toBeDisabled()
+    await expect(page.getByTestId('action-Publish')).not.toBeDisabled()
+  })
 })
 
 test.describe('navigation - tree sidebar', () => {
