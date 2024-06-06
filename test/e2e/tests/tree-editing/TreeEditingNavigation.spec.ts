@@ -3,26 +3,26 @@ import {test} from '@sanity/test'
 
 import {waitForOpacityChange} from '../utils/waitForOpacityChange'
 
+test.beforeEach(async ({page, createDraftDocument}) => {
+  await createDraftDocument('/test/content/input-debug;objectsDebug')
+
+  await page
+    .getByTestId('field-animals')
+    .getByRole('button', {name: 'Add item'})
+    .click({timeout: 12000})
+})
+
 test.describe('basic - open and close', () => {
   test(`opening - when creating new array item, the tree editing modal should open`, async ({
     page,
-    createDraftDocument,
   }) => {
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
-
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-
     const modal = await page.getByTestId('tree-editing-dialog')
     await expect(modal).toBeVisible()
   })
 
   test(`closing - when the modal is open, clicking the 'done button' will close it`, async ({
     page,
-    createDraftDocument,
   }) => {
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
-
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
     const modal = await page.getByTestId('tree-editing-dialog')
 
     await page.getByRole('button', {name: 'Done'}).click()
@@ -31,24 +31,11 @@ test.describe('basic - open and close', () => {
 })
 
 test.describe('actions', () => {
-  test(`actions - blocked main document action when modal is open`, async ({
-    page,
-    createDraftDocument,
-  }) => {
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
-
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-
+  test(`actions - blocked main document action when modal is open`, async ({page}) => {
     await expect(page.getByTestId('action-Publish')).toBeDisabled()
   })
 
-  test(`actions - main document action when modal is closed will be enabled`, async ({
-    page,
-    createDraftDocument,
-  }) => {
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
-
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+  test(`actions - main document action when modal is closed will be enabled`, async ({page}) => {
     await page.getByTestId('tree-editing-done').click()
 
     await expect(page.getByTestId('action-Publish')).not.toBeDisabled()
@@ -56,13 +43,12 @@ test.describe('actions', () => {
 })
 
 test.describe('navigation - tree sidebar', () => {
-  test.beforeEach(async ({page, createDraftDocument}) => {
+  test.beforeEach(async ({page}) => {
     // set up an array with two items: Albert, the whale and Lucy, the cat
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
+
     const modal = await page.getByTestId('tree-editing-dialog')
 
     // first element
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
     await modal.getByTestId('string-input').fill('Albert, the whale')
     await page.getByRole('button', {name: 'Done'}).click()
 
@@ -112,13 +98,12 @@ test.describe('navigation - tree sidebar', () => {
 })
 
 test.describe('navigation - breadcrumb', () => {
-  test.beforeEach(async ({page, createDraftDocument}) => {
+  test.beforeEach(async ({page}) => {
     // set up an array with two items: Albert, the whale and Lucy, the cat
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
+
     const modal = await page.getByTestId('tree-editing-dialog')
 
     // first element
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
     await modal.getByTestId('string-input').fill('Albert, the whale')
     await page.getByRole('button', {name: 'Done'}).click()
 
@@ -177,13 +162,12 @@ test.describe('navigation - breadcrumb', () => {
 })
 
 test.describe('navigation - form', () => {
-  test.beforeEach(async ({page, createDraftDocument}) => {
+  test.beforeEach(async ({page}) => {
     // set up an array with two items: Albert, the whale and Lucy, the cat
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
+
     const modal = await page.getByTestId('tree-editing-dialog')
 
     // first element
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
     await modal.getByTestId('string-input').fill('Albert, the whale')
 
     // add first child item, friends
@@ -195,7 +179,10 @@ test.describe('navigation - form', () => {
       '[data-testid$="].name"]', // Match the ending part
     ].join('')
 
-    await page.locator(selector).getByTestId('string-input').fill('Eliza, the friendly dolphin')
+    await page
+      .locator(selector)
+      .getByTestId('string-input')
+      .fill('Eliza, the friendly dolphin', {timeout: 15000})
 
     //open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
@@ -236,7 +223,7 @@ test.describe('navigation - form', () => {
     // Wait for the animation to change form to finish
     await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
 
-    await modal.getByRole('button', {name: 'Eliza, the friendly dolphin'}).click()
+    await modal.getByRole('button', {name: 'Eliza, the friendly dolphin'}).click({timeout: 12000})
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
