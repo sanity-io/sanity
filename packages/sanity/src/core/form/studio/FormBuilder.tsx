@@ -99,7 +99,7 @@ export function FormBuilder(props: FormBuilderProps) {
     value,
   } = props
 
-  const {enabled: treeEditingEnabled} = useTreeArrayEditingConfig()
+  const {enabled: treeEditingEnabled} = useTreeArrayEditingConfig(openPath)
 
   const handleCollapseField = useCallback(
     (fieldName: string) => onSetPathCollapsed([fieldName], true),

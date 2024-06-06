@@ -910,6 +910,10 @@ interface Features {
        * Enables the tree array editing feature.
        */
       enabled: boolean
+      /**
+       * Allows for a list of array names where the array (and its children won't be editable with this approach)
+       */
+      exceptions?: string[]
     }
   }
 }

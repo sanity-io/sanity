@@ -27,7 +27,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   const {__internal_tasks, schemaType, openPath} = useDocumentPane()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
-  const {enabled: isTreeArrayEditingEnabled} = useTreeArrayEditingConfig()
+  const {enabled: isTreeArrayEditingEnabled} = useTreeArrayEditingConfig(openPath)
 
   // should only disable the main action if the new dialog is open and the feature enabled
   const isTreeArrayEditingEnabledOpen = useMemo(

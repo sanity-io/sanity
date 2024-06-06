@@ -13,6 +13,7 @@ import {
   type ObjectSchemaType,
   type Path,
   useTranslation,
+  useTreeArrayEditingConfig,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
@@ -76,6 +77,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   const openPathRef = useRef<Path | undefined>(undefined)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
 
+  const {hasConflicts} = useTreeArrayEditingConfig(openPath)
+
   const handleAnimationExitComplete = useCallback(() => {
     // Scroll to the top of the layout when the animation has completed
     // to avoid the layout being scrolled while the content is being
@@ -85,24 +88,26 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
-      const nextState = buildTreeEditingState(opts)
+      if (!hasConflicts) {
+        const nextState = buildTreeEditingState(opts)
 
-      if (isEqual(nextState, treeState)) return
+        if (isEqual(nextState, treeState)) return
 
-      const builtRelativePath = nextState.relativePath
-      const len = builtRelativePath.length
+        const builtRelativePath = nextState.relativePath
+        const len = builtRelativePath.length
 
-      const hasNoRelativePath = len === 0
+        const hasNoRelativePath = len === 0
 
-      // If there is not relative path or the path is not an array item path, we want to use the
-      // current relative path. This is to avoid changing the fields being displayed in the form
-      // when the path is not an array item path.
-      const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath(builtRelativePath)
-      const nextRelativePath = useCurrentRelativePath ? treeState.relativePath : builtRelativePath
+        // If there is not relative path or the path is not an array item path, we want to use the
+        // current relative path. This is to avoid changing the fields being displayed in the form
+        // when the path is not an array item path.
+        const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath(builtRelativePath)
+        const nextRelativePath = useCurrentRelativePath ? treeState.relativePath : builtRelativePath
 
-      setTreeState({...nextState, relativePath: nextRelativePath})
+        setTreeState({...nextState, relativePath: nextRelativePath})
+      }
     },
-    [treeState],
+    [treeState, hasConflicts],
   )
 
   const debouncedBuildTreeEditingState = useMemo(

@@ -629,9 +629,10 @@ function resolveSource({
     },
     features: {
       beta: {
-        treeArrayEditing: {
-          enabled: arrayEditingReducer({config, initialValue: false}),
-        },
+        treeArrayEditing: arrayEditingReducer({
+          config,
+          initialValue: {enabled: false, exceptions: []},
+        }),
       },
     },
   }

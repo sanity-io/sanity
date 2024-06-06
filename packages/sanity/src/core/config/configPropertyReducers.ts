@@ -312,21 +312,24 @@ export const documentCommentsEnabledReducer = (opts: {
 
 export const arrayEditingReducer = (opts: {
   config: PluginOptions
-  initialValue: boolean
-}): boolean => {
+  initialValue: {enabled: boolean; exceptions: string[]}
+}): {enabled: boolean; exceptions: string[]} => {
   const {config, initialValue} = opts
   const flattenedConfig = flattenConfig(config, [])
 
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver = innerConfig.features?.beta?.treeArrayEditing?.enabled
+    const enabledResolver = innerConfig.features?.beta?.treeArrayEditing?.enabled
+    const exceptionsResolver = innerConfig.features?.beta?.treeArrayEditing?.exceptions ?? []
 
-    if (!resolver && typeof resolver !== 'boolean') return acc
-    if (typeof resolver === 'boolean') return resolver
+    if (!enabledResolver && typeof enabledResolver !== 'boolean') return acc
+    if (!exceptionsResolver && !Array.isArray(exceptionsResolver)) return acc
+    if (typeof enabledResolver === 'boolean' && Array.isArray(exceptionsResolver))
+      return {enabled: enabledResolver, exceptions: exceptionsResolver}
 
     throw new Error(
-      `Expected \`features.beta.treeArrayEditing.enabled\` to be a boolean, but received ${getPrintableType(
-        resolver,
-      )}`,
+      `Expected \`features.beta.treeArrayEditing\` to be an object where property \`enabled\` is expected to be a boolean and \`exceptions\` is expected to be an array of strings, but received ${getPrintableType(
+        enabledResolver,
+      )} and ${getPrintableType(exceptionsResolver)}`,
     )
   }, initialValue)
 
