@@ -1,6 +1,7 @@
-import {describe, expect, test} from '@jest/globals'
+import {describe, expect, jest, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type SanityDocumentLike} from '@sanity/types'
+import React from 'react'
 
 import {buildTreeEditingState} from '../utils'
 
@@ -212,6 +213,42 @@ describe('tree-editing: buildTreeEditingState', () => {
       openPath: ['mixedArray', {_key: 'key1'}],
       schemaType: schema.get('testDocument'),
       exceptions: [],
+    })
+
+    expect(result).toMatchSnapshot()
+  })
+
+  test('should build tree editing state for array of objects with exception', () => {
+    const documentValue: SanityDocumentLike = {
+      _id: '123',
+      _type: 'testDocument',
+      title: 'Test document',
+      array1: [
+        {
+          _key: '123',
+          _type: 'array1Object',
+          array1Object1String: 'Test string',
+          array1Object1Array: [
+            {
+              _key: '123',
+              _type: 'array1Object1Object',
+              array1Object1ObjectString: 'Test string',
+            },
+          ],
+          arrayOfPrimitives: ['Test string'],
+        },
+      ],
+    }
+
+    const exceptions = ['array1Object1Array']
+
+    jest.spyOn(React, 'useContext').mockReturnValue(exceptions)
+
+    const result = buildTreeEditingState({
+      documentValue,
+      openPath: ['array1', {_key: '123'}],
+      schemaType: schema.get('testDocument'),
+      exceptions: ['array1Object1Array'],
     })
 
     expect(result).toMatchSnapshot()
