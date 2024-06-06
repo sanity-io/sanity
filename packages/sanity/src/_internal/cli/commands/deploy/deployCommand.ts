@@ -4,7 +4,8 @@ import {
   type CliCommandDefinition,
 } from '@sanity/cli'
 
-import {type DeployStudioActionFlags} from '../../actions/deploy/deployAction'
+// xxx tmp
+import deployAction, {type DeployStudioActionFlags} from '../../actions/deploy/deployAction'
 
 const helpText = `
 Options
@@ -25,9 +26,10 @@ const deployCommand: CliCommandDefinition = {
     args: CliCommandArguments<DeployStudioActionFlags>,
     context: CliCommandContext,
   ) => {
-    const mod = await import('../../actions/deploy/deployAction')
-
-    return mod.default(args, context)
+    // const mod = await import('../../actions/deploy/deployAction')
+    //
+    // return mod.default(args, context)
+    return deployAction(args, context)
   },
   helpText,
 }
