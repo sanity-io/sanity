@@ -1,5 +1,5 @@
 import {Workshop} from '@sanity/ui-workshop'
-import {type Tool, useColorScheme, useWorkspace} from 'sanity'
+import {type Tool, useColorSchemeSetValue, useColorSchemeValue, useWorkspace} from 'sanity'
 
 import {config} from './config'
 import {type WorkshopOptions} from './types'
@@ -9,7 +9,8 @@ export function WorkshopTool(props: {tool: Tool<WorkshopOptions>}) {
   const {tool} = props
   const toolName = tool.options?.name || 'workshop'
 
-  const {scheme, setScheme} = useColorScheme()
+  const scheme = useColorSchemeValue()
+  const setScheme = useColorSchemeSetValue()
   const {basePath} = useWorkspace()
 
   const locationStore = useLocationStore({
@@ -20,7 +21,12 @@ export function WorkshopTool(props: {tool: Tool<WorkshopOptions>}) {
     <Workshop
       config={config}
       locationStore={locationStore}
-      onSchemeChange={setScheme}
+      onSchemeChange={
+        setScheme ||
+        (() => {
+          console.warn('Unable to change theme scheme')
+        })
+      }
       scheme={scheme}
     />
   )

@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import {type PortableTextBlock} from '@sanity/types'
 import {debounce, isEqual} from 'lodash'
-import {useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 import {type Descendant, Editor, type Node, Text, Transforms} from 'slate'
 import {useSlate} from 'slate-react'
 
@@ -50,20 +50,21 @@ export function useSyncValue(
   const slateEditor = useSlate()
   const updateValueFunctionRef = useRef<(value: PortableTextBlock[] | undefined) => void>()
 
-  const updateValueDebounced = useMemo(() => {
-    const updateFromCurrentValue = () => {
-      const currentValue = CURRENT_VALUE.get(portableTextEditor)
-      if (previousValue.current === currentValue) {
-        debug('Value is the same object as previous, not need to sync')
-        return
-      }
-      if (updateValueFunctionRef.current && currentValue) {
-        debug('Updating the value debounced')
-        updateValueFunctionRef.current(currentValue)
-      }
+  const updateFromCurrentValue = useCallback(() => {
+    const currentValue = CURRENT_VALUE.get(portableTextEditor)
+    if (previousValue.current === currentValue) {
+      debug('Value is the same object as previous, not need to sync')
+      return
     }
-    return debounce(updateFromCurrentValue, 1000, {trailing: true, leading: false})
+    if (updateValueFunctionRef.current && currentValue) {
+      debug('Updating the value debounced')
+      updateValueFunctionRef.current(currentValue)
+    }
   }, [portableTextEditor])
+  const updateValueDebounced = useMemo(
+    () => debounce(updateFromCurrentValue, 1000, {trailing: true, leading: false}),
+    [updateFromCurrentValue],
+  )
 
   return useMemo(() => {
     const updateFunction = (value: PortableTextBlock[] | undefined) => {

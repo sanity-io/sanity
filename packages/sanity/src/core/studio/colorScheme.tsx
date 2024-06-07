@@ -142,7 +142,7 @@ export function ColorSchemeCustomProvider({
   scheme,
 }: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'> & {
   scheme: StudioThemeColorSchemeKey
-}) {
+}): JSX.Element {
   return (
     <ColorSchemeSetValueContext.Provider
       value={typeof onSchemeChange === 'function' ? onSchemeChange : false}
@@ -155,14 +155,16 @@ export function ColorSchemeCustomProvider({
 }
 
 /** @alpha */
-export function useColorSchemeSetValue() {
+export function useColorSchemeSetValue():
+  | false
+  | ((nextScheme: StudioThemeColorSchemeKey) => void) {
   const setValue = useContext(ColorSchemeSetValueContext)
   if (setValue === null) throw new Error('Could not find `ColorSchemeSetValueContext` context')
   return setValue
 }
 
 /** @internal */
-export function _useColorSchemeInternalValue(): StudioThemeColorSchemeKey {
+export function useColorSchemeInternalValue(): StudioThemeColorSchemeKey {
   const value = useContext(ColorSchemeValueContext)
   if (value === null) throw new Error('Could not find `ColorSchemeValueContext` context')
   return value
@@ -170,7 +172,7 @@ export function _useColorSchemeInternalValue(): StudioThemeColorSchemeKey {
 
 /** @alpha */
 export function useColorSchemeValue(): ThemeColorSchemeKey {
-  const scheme = _useColorSchemeInternalValue()
+  const scheme = useColorSchemeInternalValue()
   const systemScheme = useSystemScheme()
   return scheme === 'system' ? systemScheme : scheme
 }
@@ -180,6 +182,12 @@ export function useColorSchemeValue(): ThemeColorSchemeKey {
  * @internal
  */
 export function useColorScheme() {
+  useEffect(() => {
+    console.warn(
+      'useColorScheme() is deprecated, use useColorSchemeValue() or useColorSchemeSetValue() instead',
+    )
+  }, [])
+
   const scheme = useColorSchemeValue()
   const setScheme = useColorSchemeSetValue()
   return useMemo(() => ({scheme, setScheme}), [scheme, setScheme])
@@ -200,7 +208,7 @@ export function useColorSchemeOptions(
   setScheme: (nextScheme: StudioThemeColorSchemeKey) => void,
   t: TFunction<'studio', undefined>,
 ) {
-  const scheme = _useColorSchemeInternalValue()
+  const scheme = useColorSchemeInternalValue()
 
   return useMemo(() => {
     return [

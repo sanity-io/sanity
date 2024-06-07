@@ -3,6 +3,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {SchemaError} from '../../config'
+import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'
 import {CorsOriginError} from '../../store'
 import {isRecord} from '../../util'
@@ -22,14 +23,17 @@ export function FormBuilderInputErrorBoundary(
   props: FormBuilderInputErrorBoundaryProps,
 ): JSX.Element {
   const {children} = props
-  const [{error}, setError] = useState<{error: unknown}>({error: null})
-  const handleRetry = useCallback(() => setError({error: null}), [])
+  const [{error, info}, setError] = useState<{error: unknown; info: React.ErrorInfo}>({
+    error: null,
+    info: {},
+  })
+  const handleRetry = useCallback(() => setError({error: null, info: {}}), [])
 
   if (!error) {
     return <ErrorBoundary onCatch={setError}>{children}</ErrorBoundary>
   }
 
-  return <ErrorCard error={error} onRetry={handleRetry} />
+  return <ErrorCard error={error} info={info} onRetry={handleRetry} />
 }
 
 /**
@@ -38,8 +42,8 @@ export function FormBuilderInputErrorBoundary(
  * when there are no errors.
  * @internal
  */
-function ErrorCard(props: {error: unknown; onRetry: () => void}) {
-  const {error, onRetry} = props
+function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () => void}) {
+  const {error, info, onRetry} = props
 
   // If a CORS error, or a schema error, rethrow and let the StudioErrorBoundary handle it
   if (error instanceof CorsOriginError || error instanceof SchemaError) {
@@ -51,9 +55,13 @@ function ErrorCard(props: {error: unknown; onRetry: () => void}) {
     () => isRecord(error) && typeof error.message === 'string' && error.message,
     [error],
   )
-  const stack = useMemo(
+  const callStack = useMemo(
     () => isRecord(error) && typeof error.stack === 'string' && error.stack,
     [error],
+  )
+  const componentStack = useMemo(
+    () => typeof info?.componentStack === 'string' && info.componentStack,
+    [info?.componentStack],
   )
 
   useHotModuleReload(onRetry)
@@ -64,16 +72,38 @@ function ErrorCard(props: {error: unknown; onRetry: () => void}) {
         <Text as="p" muted size={1}>
           <>{t('form.error.unhandled-runtime-error.error-message', {message})}</>
         </Text>
-        <Box>
-          <Stack space={2}>
-            <Text as="p" size={1}>
-              <>{t('form.error.unhandled-runtime-error.call-stack.title')}</>
-            </Text>
-            <Card border radius={2} overflow="auto" padding={4} tone="inherit">
-              {stack && <Code size={1}>{stack}</Code>}
-            </Card>
-          </Stack>
-        </Box>
+        {callStack && (
+          <Box key="call-stack">
+            <Stack space={2}>
+              <Text as="p" size={1}>
+                <>{t('form.error.unhandled-runtime-error.call-stack.title')}</>
+              </Text>
+              <Card border radius={2} overflow="auto" padding={4} tone="inherit">
+                {callStack && (
+                  <Code size={1} style={{maxHeight: '40vh'}}>
+                    {callStack}
+                  </Code>
+                )}
+              </Card>
+            </Stack>
+          </Box>
+        )}
+        {isDev && componentStack && (
+          <Box key="component-stack">
+            <Stack space={2}>
+              <Text as="p" size={1}>
+                <>{t('form.error.unhandled-runtime-error.component-stack.title')}</>
+              </Text>
+              <Card border radius={2} overflow="auto" padding={4} tone="inherit">
+                {componentStack && (
+                  <Code size={1} style={{maxHeight: '40vh'}}>
+                    {componentStack}
+                  </Code>
+                )}
+              </Card>
+            </Stack>
+          </Box>
+        )}
       </Stack>
     </Alert>
   )
