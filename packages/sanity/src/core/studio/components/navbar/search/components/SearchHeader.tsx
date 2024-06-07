@@ -30,6 +30,7 @@ const FilterDiv = styled.div`
 
 interface SearchHeaderProps {
   ariaInputLabel?: string
+  placeholder?: string
   onClose?: () => void
 }
 
@@ -37,7 +38,7 @@ interface SearchHeaderProps {
  * @internal
  */
 export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(function SearchHeader(
-  {ariaInputLabel, onClose},
+  {ariaInputLabel, onClose, placeholder},
   ref,
 ) {
   const isMountedRef = useRef(false)
@@ -118,7 +119,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
             icon={loading ? AnimatedSpinnerIcon : SearchIcon}
             onChange={handleQueryChange}
             onClear={handleQueryClear}
-            placeholder={t('search.placeholder')}
+            placeholder={placeholder || t('search.placeholder')}
             radius={2}
             ref={ref}
             spellCheck={false}
