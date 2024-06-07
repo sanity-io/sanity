@@ -66,21 +66,36 @@ const Table = styled.table`
 
 const TableRow = styled(Box)((props) => {
   const theme = getTheme_v2(props.theme)
+  const shadowColor = theme.color.button.default.primary.enabled.bg
   return css`
     display: flex;
     width: 100%;
-
     &[data-selected='true'] {
-      transition: box-shadow 0.2s;
-      box-shadow: inset 0px 0px 0px 1px ${theme.color.button.default.primary.enabled.bg};
       > td {
-        transition: border-color 0.2s;
-        border-top-color: ${theme.color.button.default.primary.enabled.bg};
-        background: transparent;
+        transition:
+          box-shadow 0.2s,
+          border-color 0.2s;
+        border-top-color: ${shadowColor};
+        box-shadow: inset 0px -1px 0px 0px ${shadowColor}; // Bottom border
+      }
+      > td:first-child {
+        box-shadow:
+          inset 0px -1px 0px 0px ${shadowColor},
+          inset 1px 0px 0px 0px ${shadowColor}; // Left and bottom border
+      }
+      > td:last-child {
+        box-shadow:
+          inset 0px -1px 0px 0px ${shadowColor},
+          inset -1px 0px 0px 0px ${shadowColor}; // Right and bottom border
       }
     }
   `
 })
+
+const TableActionsWrapper = styled(Flex)`
+  flex-shrink: 0;
+`
+
 const DocumentRow = ({
   row,
   docTypeName,
@@ -129,6 +144,7 @@ function DocumentSheetListPaneInner(
   const table = useReactTable({
     data,
     columns,
+    columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -222,7 +238,13 @@ function DocumentSheetListPaneInner(
 
     return (
       <React.Fragment>
-        <Flex direction="row" align="center" paddingY={3} paddingX={1} justify="space-between">
+        <TableActionsWrapper
+          direction="row"
+          align="center"
+          paddingY={3}
+          paddingX={1}
+          justify="space-between"
+        >
           <Flex direction="row" align="center">
             <DocumentSheetListFilter />
             <Text size={0} muted>
@@ -230,7 +252,7 @@ function DocumentSheetListPaneInner(
             </Text>
           </Flex>
           <ColumnsControl table={table} />
-        </Flex>
+        </TableActionsWrapper>
         <TableContainer>
           <DocumentSheetListProvider table={table}>
             <Table>
@@ -242,6 +264,7 @@ function DocumentSheetListPaneInner(
                         key={header.id}
                         header={header}
                         headerGroup={headerGroup}
+                        table={table}
                       />
                     ))}
                   </Box>
