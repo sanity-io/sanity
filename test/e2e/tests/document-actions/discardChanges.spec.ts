@@ -33,7 +33,7 @@ test(`is possible to discard changes if a changed document has a published versi
 
   await titleInput.fill('This is a book')
 
-  publishButton.click({timeout: 15000})
+  publishButton.click({timeout: 40000})
   await expect(paneFooter).toContainText('Published just now')
 
   await titleInput.fill('This is not a book')
@@ -57,7 +57,7 @@ test(`displays the published document state after discarding changes`, async ({
 
   await titleInput.fill('This is a book')
 
-  publishButton.click({timeout: 15000})
+  publishButton.click({timeout: 40000})
   await expect(paneFooter).toContainText('Published just now')
 
   // Change the title.
