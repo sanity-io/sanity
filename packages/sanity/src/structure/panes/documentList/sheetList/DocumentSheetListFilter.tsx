@@ -13,7 +13,8 @@ export function DocumentSheetListFilter() {
 
   return (
     <SearchContainer>
-      <SearchHeader />
+      {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */}
+      <SearchHeader placeholder="Search list" />
       {filtersVisible && <Filters showTypeFilter={false} />}
     </SearchContainer>
   )
