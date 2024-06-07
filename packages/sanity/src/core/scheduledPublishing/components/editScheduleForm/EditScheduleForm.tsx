@@ -9,6 +9,9 @@ interface Props {
   value?: ScheduleFormData | null
 }
 
+/**
+ * Form for editing a schedule for a document when scheduled publishing is enabled.
+ */
 export function EditScheduleForm(props: PropsWithChildren<Props>) {
   const {onChange, value} = props
 
