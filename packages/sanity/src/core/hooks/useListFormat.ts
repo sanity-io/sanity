@@ -1,4 +1,6 @@
-import {useCurrentLocale} from '../i18n/hooks/useLocale'
+import {useContext} from 'react'
+import {LocaleContext} from 'sanity/_singletons'
+
 import {intlCache} from '../i18n/intlCache'
 
 /**
@@ -39,10 +41,8 @@ export function useListFormat(options: UseListFormatOptions = {}): Intl.ListForm
    * may not have access to the LocaleProvider that lets us use useCurrentLocale.
    * In that case, we fall back to a default, unobstrusive list format.
    */
-  try {
-    const currentLocale = useCurrentLocale().id
-    return intlCache.listFormat(currentLocale, options)
-  } catch {
-    return intlCache.listFormat('en-US', {...options, style: 'narrow'})
-  }
+  const currentLocale = useContext(LocaleContext)?.currentLocale.id
+  return currentLocale
+    ? intlCache.listFormat(currentLocale, options)
+    : intlCache.listFormat('en-US', {...options, style: 'narrow'})
 }
