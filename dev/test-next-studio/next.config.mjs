@@ -14,6 +14,10 @@ const config = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  env: {
+    // Support the ability to debug log the studio, for example `DEBUG="sanity:pte:* pnpm dev:next-studio"`
+    DEBUG: process.env.DEBUG,
+  },
   transpilePackages: [
     '@sanity/block-tools',
     '@sanity/cli',

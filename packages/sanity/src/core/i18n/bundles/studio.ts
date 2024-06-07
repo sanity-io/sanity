@@ -397,6 +397,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Error text shown when form is unable to find an array item at a given keyed path */
   'form.error.no-array-item-at-key':
     'No array item with `_key` <code>"{{key}}"</code> found at path <code>{{path}}</code>',
+  /** The title above the error call stack output related to the crash */
+  'form.error.unhandled-runtime-error.call-stack.title': 'Call Stack:',
+  /** The error message for the unhandled error that crashed the Input component during render */
+  'form.error.unhandled-runtime-error.error-message': 'Error: {{message}}',
+  /** The title for the error card rendered inside a field in place of a crashing input */
+  'form.error.unhandled-runtime-error.title': 'Unhandled Runtime Error',
   /** Form field deprecated label */
   'form.field.deprecated-label': 'deprecated',
   /** Fallback title shown above field if it has no defined title */
