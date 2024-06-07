@@ -4,7 +4,7 @@ import {type BaseStructureToolPaneProps} from '../src/structure/panes/types'
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
-    patchDocument: (documentId: string, fieldId: string, value: any) => void
+    patchDocument?: (documentId: string, fieldId: string, value: any) => void
     selectedAnchor: number | null
     setSelectedAnchor: (anchorRowIndex: number | null) => void
     paneProps: BaseStructureToolPaneProps<'documentList'>

@@ -85,7 +85,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
       return []
     }
     return [
-      columnHelper.accessor('selected', {
+      columnHelper.display({
         id: 'selected',
         enableHiding: false,
         size: 53,
