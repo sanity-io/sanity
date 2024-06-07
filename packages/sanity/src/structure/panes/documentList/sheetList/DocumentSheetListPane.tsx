@@ -82,6 +82,11 @@ const TableRow = styled(Box)((props) => {
     }
   `
 })
+
+const TableActionsWrapper = styled(Flex)`
+  flex-shrink: 0;
+`
+
 const DocumentRow = ({
   row,
   docTypeName,
@@ -169,7 +174,13 @@ function DocumentSheetListPaneInner(
       data-testid="document-sheet-list-pane"
       ref={paneContainerRef}
     >
-      <Flex direction="row" align="center" paddingY={3} paddingX={1} justify="space-between">
+      <TableActionsWrapper
+        direction="row"
+        align="center"
+        paddingY={3}
+        paddingX={1}
+        justify="space-between"
+      >
         <Flex direction="row" align="center">
           <DocumentSheetListFilter />
           <Text size={0} muted>
@@ -177,7 +188,7 @@ function DocumentSheetListPaneInner(
           </Text>
         </Flex>
         <ColumnsControl table={table} />
-      </Flex>
+      </TableActionsWrapper>
       <TableContainer>
         <DocumentSheetListProvider table={table}>
           <Table>
