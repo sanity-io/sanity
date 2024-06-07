@@ -1,13 +1,14 @@
-import {describe, expect, it, jest} from '@jest/globals'
-import {fireEvent, render, screen, within} from '@testing-library/react'
+import {beforeEach, describe, expect, it, jest} from '@jest/globals'
+import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {act} from 'react'
-import {defineConfig} from 'sanity'
+import {defineConfig, type OperationsAPI} from 'sanity'
 import {type DocumentListPaneNode} from 'sanity/structure'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {DocumentSheetListPane} from '../DocumentSheetListPane'
+import {useDocumentSheetListOperations} from '../useDocumentSheetListOperations'
 
 jest.mock('../useDocumentSheetList', () => ({
   useDocumentSheetList: jest.fn().mockReturnValue({
@@ -15,12 +16,26 @@ jest.mock('../useDocumentSheetList', () => ({
       {
         _id: '123',
         _type: 'author',
+        __metadata: {
+          idPair: {
+            publishedId: 'pub-123',
+            draftId: 'draft-123',
+          },
+          snapshots: {published: {}},
+        },
         name: 'John Doe',
         age: 42,
       },
       {
         _id: '456',
         _type: 'author',
+        __metadata: {
+          idPair: {
+            publishedId: 'pub-456',
+            draftId: 'draft-456',
+          },
+          snapshots: {published: {}},
+        },
         name: 'Bill Bob',
         age: 17,
       },
@@ -29,10 +44,24 @@ jest.mock('../useDocumentSheetList', () => ({
   }),
 }))
 
+jest.mock('../useDocumentSheetListOperations', () => ({
+  useDocumentSheetListOperations: jest.fn(),
+}))
+
+const mockUseDocumentSheetList = useDocumentSheetListOperations as jest.Mock<
+  typeof useDocumentSheetListOperations
+>
+
 jest.mock('sanity', () => ({
   ...(jest.requireActual('sanity') || {}),
   useDocumentPreviewStore: jest.fn().mockReturnValue({
     observeForPreview: jest.fn().mockReturnValue([]),
+  }),
+}))
+
+jest.mock('../../../../components/paneRouter', () => ({
+  usePaneRouter: jest.fn().mockReturnValue({
+    ChildLink: jest.fn().mockReturnValue(null),
   }),
 }))
 
@@ -83,7 +112,23 @@ Object.assign(navigator, {
 })
 
 describe('DocumentSheetListPane', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('Keyboard navigation', () => {
+    const mockDocumentOperations = {
+      patch: {disabled: false, execute: jest.fn()},
+      commit: {disabled: false, execute: jest.fn()},
+    } as unknown as OperationsAPI
+
+    beforeEach(() => {
+      mockUseDocumentSheetList.mockReturnValue({
+        'pub-123': mockDocumentOperations,
+        'pub-456': mockDocumentOperations,
+      })
+    })
+
     describe('to edit single value', () => {
       it('should not edit cell when only single clicked', async () => {
         await renderTest()
@@ -99,14 +144,30 @@ describe('DocumentSheetListPane', () => {
       it('should update cell when double clicked', async () => {
         await renderTest()
 
-        act(() => {
+        await act(async () => {
           expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
-          userEvent.dblClick(screen.getByTestId('cell-name-0'))
-          userEvent.clear(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), 'Jane Doe')
+          await userEvent.dblClick(screen.getByTestId('cell-name-0'))
+        })
 
+        await act(async () => {
+          userEvent.keyboard('Jane Doe')
+        })
+
+        await waitFor(() => {
           expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
         })
+
+        // enter to persist the update
+        await act(async () => {
+          await userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
+        })
+
+        // assert that update is made to server
+        expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+          [{set: {name: 'Jane Doe'}}],
+          {},
+        )
+        expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
       })
 
       it('should update cell when selected and enter key pressed', async () => {
@@ -115,13 +176,25 @@ describe('DocumentSheetListPane', () => {
         act(() => {
           userEvent.click(screen.getByTestId('cell-name-0'))
         })
+
         // separate act to allow for initial state flush before clicking enter
         act(() => {
           userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
-          userEvent.clear(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), 'Jane Doe')
+          userEvent.keyboard('Jane Doe')
 
           expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
+
+          // escape to persist the update
+          userEvent.type(screen.getByTestId('cell-name-0'), '{Escape}')
+        })
+
+        // assert that update is made to server
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+            [{set: {name: 'Jane Doe'}}],
+            {},
+          )
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
         })
       })
     })
@@ -160,6 +233,14 @@ describe('DocumentSheetListPane', () => {
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
+
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+            [{set: {name: 'Joe Blogs'}}],
+            {},
+          )
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+        })
       })
 
       it('pastes when cell is focused', async () => {
@@ -179,6 +260,14 @@ describe('DocumentSheetListPane', () => {
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
+
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+            [{set: {name: 'Joe Blogs'}}],
+            {},
+          )
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+        })
       })
 
       it('pastes to all selected cells when anchor is selected', async () => {
@@ -227,6 +316,20 @@ describe('DocumentSheetListPane', () => {
         })
 
         expect(screen.getByTestId('cell-name-1')).toHaveValue('Joe Blogs')
+
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenNthCalledWith(
+            1,
+            [{set: {name: 'Joe Blogs'}}],
+            {},
+          )
+          expect(mockDocumentOperations.patch.execute).toHaveBeenNthCalledWith(
+            2,
+            [{set: {name: 'Joe Blogs'}}],
+            {},
+          )
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalledTimes(2)
+        })
       })
 
       it('does not paste when pasting across columns', async () => {
@@ -273,6 +376,15 @@ describe('DocumentSheetListPane', () => {
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
         expect(screen.getByTestId('cell-name-1')).toHaveValue('Bill Bob')
+
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+            [{set: {name: 'Joe Blogs'}}],
+            {},
+          )
+
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+        })
       })
 
       it('does not paste when escaped before pasting', async () => {
@@ -290,6 +402,9 @@ describe('DocumentSheetListPane', () => {
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
+
+        expect(mockDocumentOperations.patch.execute).not.toHaveBeenCalled()
+        expect(mockDocumentOperations.commit.execute).not.toHaveBeenCalled()
       })
     })
   })
@@ -298,7 +413,7 @@ describe('DocumentSheetListPane', () => {
     it('should render column headers', async () => {
       await renderTest()
 
-      screen.getByText('Preview')
+      screen.getByText('List preview')
       screen.getByText('Name')
       screen.getByText('Age')
     })
@@ -306,7 +421,7 @@ describe('DocumentSheetListPane', () => {
     it('should not allow for hiding preview column', async () => {
       await renderTest()
 
-      fireEvent.mouseMove(screen.getByText('Preview'))
+      fireEvent.mouseMove(screen.getByText('List preview'))
       expect(
         within(screen.getByTestId('header-Preview')).queryByTestId('field-menu-button'),
       ).toBeNull()
