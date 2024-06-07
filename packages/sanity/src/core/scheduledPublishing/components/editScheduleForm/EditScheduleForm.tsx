@@ -10,6 +10,7 @@ interface Props {
 }
 
 /**
+ * @internal
  * Form for editing a schedule for a document when scheduled publishing is enabled.
  */
 export function EditScheduleForm(props: PropsWithChildren<Props>) {
