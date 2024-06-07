@@ -174,9 +174,9 @@ test.describe('navigation - form', () => {
     await modal.getByTestId('add-single-object-button').nth(0).click()
 
     const selector = [
-      '[data-testid^="field-animals[_key="]', // Match the beginning part
-      '[data-testid*="].friends[_key="]', // Ensure it contains the middle part
-      '[data-testid$="].name"]', // Match the ending part
+      '[data-testid^="field-animals[_key="]',
+      '[data-testid*="].friends[_key="]',
+      '[data-testid$="].name"]',
     ].join('')
 
     await page
@@ -247,5 +247,76 @@ test.describe('navigation - form', () => {
     await expect(await modal.locator('#tree-breadcrumb-menu-button').textContent()).toBe(
       'Eliza, the friendly dolphin',
     )
+  })
+
+  test('opening an item of array with exceptions in a nested array with new solution', async ({
+    page,
+  }) => {
+    /* travelling from Albert, the Whale (parent) -> Eliza, the friendly dolphin (first item) -> properties -> exceptionArray */
+    const modal = await page.getByTestId('tree-editing-dialog')
+
+    const modalMadness = await page.getByLabel('Edit Exception array')
+
+    // navigation
+    await page.getByRole('button', {name: 'Albert, the whale'}).click()
+
+    // Wait for the animation to change form to finish
+    await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
+
+    await modal.getByRole('button', {name: 'Eliza, the friendly dolphin'}).click()
+
+    // Wait for the animation to change form to finish
+    await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
+
+    // navigate to properties
+    const selector = [
+      '[data-testid^="field-animals[_key="]',
+      '[data-testid*="].friends[_key="]',
+      '[data-testid$="].properties"]',
+    ].join('')
+
+    await modal.locator(selector).getByTestId('add-single-object-button').click({timeout: 20000})
+
+    // Wait for the animation to change form to finish
+    await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 10000)
+
+    await modal.getByRole('button', {name: 'Untitled'}).click()
+
+    // Wait for the animation to change form to finish
+    await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
+
+    // navigate to properties (with exceptions)
+    const selectorExceptionArray =
+      '[data-testid^="field-animals"][data-testid*=".friends"][data-testid*=".properties"][data-testid$=".exceptionArray"]'
+
+    await page.locator(selectorExceptionArray).getByTestId('add-single-object-button').click()
+
+    // the new solution is attached
+    await expect(modal).toBeAttached()
+    // old modal is attached
+    await expect(modalMadness).toBeAttached()
+  })
+})
+
+test.describe('navigation - with exceptions', () => {
+  test('opening an item of array with exceptions should open old modal madness solution', async ({
+    page,
+  }) => {
+    await page.getByRole('button', {name: 'Done'}).click()
+
+    // create array item
+    await page
+      .getByTestId('field-arrayOfObjectException')
+      .getByTestId('add-single-object-button')
+      .click({timeout: 12000})
+
+    // old modal
+    const modalMadness = page
+      .getByTestId('document-panel-portal')
+      .locator('div')
+      .filter({hasText: 'Edit My ObjectString'})
+      .nth(1)
+
+    await expect(modalMadness).toBeAttached()
   })
 })
