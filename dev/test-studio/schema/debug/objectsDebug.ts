@@ -112,14 +112,14 @@ const animal = defineField({
                       title: 'Title',
                     },
                     {
-                      name: 'properties_b',
+                      name: 'exceptionArray',
+                      title: 'Exception array',
                       type: 'array',
-                      title: 'Friend properties',
                       of: [
                         {
                           type: 'object',
-                          name: 'property_b',
-                          title: 'Property',
+                          name: 'exceptionArray',
+                          title: 'Exception array',
                           fields: [
                             {
                               type: 'string',
@@ -392,6 +392,25 @@ const arrayOfMixedTypes = defineField({
   ],
 })
 
+const arrayOfObjectException = defineField({
+  type: 'array',
+  name: 'arrayOfObjectException',
+  title: 'Array of object exception',
+  of: [
+    {
+      type: 'object',
+      name: 'myObject',
+      fields: [
+        {
+          name: 'string',
+          type: 'string',
+          title: 'String',
+        },
+      ],
+    },
+  ],
+})
+
 export const objectsDebug = defineType({
   type: 'document',
   name: 'objectsDebug',
@@ -407,5 +426,6 @@ export const objectsDebug = defineType({
     arrayOfAnonymousObjects,
     arrayOfImages,
     arrayOfFiles,
+    arrayOfObjectException,
   ],
 })

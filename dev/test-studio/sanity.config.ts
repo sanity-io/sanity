@@ -76,6 +76,7 @@ const sharedSettings = definePlugin({
     beta: {
       treeArrayEditing: {
         enabled: true,
+        exceptions: ['arrayOfObjectException', 'exceptionArray'],
       },
     },
   },
