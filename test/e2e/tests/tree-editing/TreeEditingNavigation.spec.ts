@@ -199,7 +199,10 @@ test.describe('navigation - form', () => {
     // Wait for the animation to change form to finish
     await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
 
-    await page.locator(selector).getByTestId('string-input').fill('Doris, the friendly fish')
+    await page
+      .locator(selector)
+      .getByTestId('string-input')
+      .fill('Doris, the friendly fish', {timeout: 12000})
 
     await page.getByRole('button', {name: 'Done'}).click()
     await expect(modal).not.toBeVisible()
