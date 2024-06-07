@@ -12,7 +12,7 @@ import {
   useClient,
   type ValidationStatus,
 } from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {useValidationStatusList} from '../../../../core/hooks/useValidationStatusList'
 import {Button} from '../../../../ui-components'
