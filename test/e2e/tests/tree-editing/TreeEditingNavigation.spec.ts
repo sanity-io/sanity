@@ -296,14 +296,45 @@ test.describe('navigation - form', () => {
     // old modal is attached
     await expect(modalMadness).toBeAttached()
   })
+
+  test('add a new item in an inline preview (will not open any modals)', async ({page}) => {
+    /* travelling from Albert, the Whale (parent) -> Eliza, the friendly dolphin (first item) -> properties -> exceptionArray */
+    const modal = await page.getByTestId('tree-editing-dialog')
+
+    const modalMadness = await page.getByLabel('Edit Exception array')
+
+    // navigation
+    await page.getByRole('button', {name: 'Albert, the whale'}).click()
+
+    // Wait for the animation to change form to finish
+    await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
+
+    // navigate to physical attributes
+    const selector = '[data-testid^="field-animals"][data-testid$="arrayInlineObject"]'
+
+    await modal.locator(selector).getByTestId('add-single-object-button').click()
+
+    const selectorTitle = '[data-testid^="field-animals"][data-testid$="title"]'
+
+    await modal.locator(selectorTitle).getByTestId('string-input').fill('My title')
+
+    // you can still edit the field
+    await expect(modal.locator(selectorTitle).getByTestId('string-input')).toHaveValue('My title')
+    // the new solution is attached
+    await expect(modal).toBeAttached()
+    // old modal is attached
+    await expect(modalMadness).not.toBeAttached()
+  })
 })
 
 test.describe('navigation - with exceptions', () => {
+  test.beforeEach(async ({page}) => {
+    await page.getByRole('button', {name: 'Done'}).click()
+  })
+
   test('opening an item of array with exceptions should open old modal madness solution', async ({
     page,
   }) => {
-    await page.getByRole('button', {name: 'Done'}).click()
-
     // create array item
     await page
       .getByTestId('field-arrayOfObjectException')
@@ -318,5 +349,32 @@ test.describe('navigation - with exceptions', () => {
       .nth(1)
 
     await expect(modalMadness).toBeAttached()
+  })
+
+  test('opening an item of array with exceptions (with inline preview) will not open the new solution', async ({
+    page,
+  }) => {
+    const modal = await page.getByTestId('tree-editing-dialog')
+
+    // create array item
+    await page
+      .getByTestId('field-arrayInlineObject')
+      .getByTestId('add-single-object-button')
+      .click({timeout: 12000})
+
+    // old modal
+    const modalMadness = await page
+      .getByTestId('document-panel-portal')
+      .locator('div')
+      .filter({hasText: 'Edit My ObjectString'})
+      .nth(1)
+
+    const selectorTitle = '[data-testid^="field-arrayInlineObject"] [data-testid$=".title"]'
+
+    await page.locator(selectorTitle).getByTestId('string-input').fill('My title')
+
+    await expect(page.locator(selectorTitle).getByTestId('string-input')).toHaveValue('My title')
+    await expect(modal).not.toBeAttached()
+    await expect(modalMadness).not.toBeAttached()
   })
 })

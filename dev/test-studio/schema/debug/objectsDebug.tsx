@@ -1,4 +1,31 @@
-import {defineField, defineType} from 'sanity'
+import {defineField, defineType, type ItemProps} from 'sanity'
+
+const inlineObject = defineField({
+  type: 'array',
+  name: 'arrayInlineObject',
+  title: 'List of Physical Attributes',
+  of: [
+    {
+      type: 'object',
+      name: 'myObject',
+      title: 'My object',
+      components: {
+        item: (props: ItemProps) => (
+          <div style={{border: '1px solid orange', padding: 4, boxSizing: 'border-box'}}>
+            {props.children}
+          </div>
+        ),
+      },
+      fields: [
+        {
+          name: 'title',
+          type: 'string',
+          title: 'Title',
+        },
+      ],
+    },
+  ],
+})
 
 const animal = defineField({
   type: 'object',
@@ -218,6 +245,7 @@ const animal = defineField({
         },
       ],
     },
+    inlineObject,
   ],
 })
 
@@ -427,5 +455,6 @@ export const objectsDebug = defineType({
     arrayOfImages,
     arrayOfFiles,
     arrayOfObjectException,
+    inlineObject,
   ],
 })
