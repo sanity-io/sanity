@@ -1,35 +1,24 @@
+/* eslint-disable no-nested-ternary, react/jsx-no-bind */
 import {AddIcon} from '@sanity/icons'
-import {type ArraySchemaType} from '@sanity/types'
-import {Grid, Menu} from '@sanity/ui'
-import {useCallback, useId} from 'react'
+import {InsertMenu, type InsertMenuOptions} from '@sanity/insert-menu'
+import {type ArraySchemaType, type SchemaType} from '@sanity/types'
+import {Grid, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {useCallback, useReducer, useState} from 'react'
 
-import {
-  Button,
-  MenuButton,
-  type MenuButtonProps,
-  MenuItem,
-  Tooltip,
-} from '../../../../../ui-components'
+import {Button, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
-import {getSchemaTypeIcon} from './getSchemaTypeIcon'
-
-const POPOVER_PROPS: MenuButtonProps['popover'] = {
-  constrainSize: true,
-  portal: true,
-  fallbackPlacements: ['top', 'bottom'],
-}
 
 /**
  * @hidden
  * @beta */
 export function ArrayOfObjectsFunctions<
   Item extends ObjectItem,
-  SchemaType extends ArraySchemaType,
->(props: ArrayInputFunctionsProps<Item, SchemaType>) {
+  TSchemaType extends ArraySchemaType,
+>(props: ArrayInputFunctionsProps<Item, TSchemaType>) {
   const {schemaType, readOnly, children, onValueCreate, onItemAppend} = props
-  const menuButtonId = useId()
   const {t} = useTranslation()
+  const [gridElement, setGridElement] = useState<HTMLDivElement | null>(null)
 
   const insertItem = useCallback(
     (itemType: any) => {
@@ -51,65 +40,137 @@ export function ArrayOfObjectsFunctions<
       ? 'inputs.array.action.add-item-select-type'
       : 'inputs.array.action.add-item'
 
+  const insertButtonProps: React.ComponentProps<typeof Button> = {
+    icon: AddIcon,
+    mode: 'ghost',
+    size: 'large',
+    text: t(addItemI18nKey),
+  }
+
   if (readOnly) {
     return (
       <Tooltip portal content={t('inputs.array.read-only-label')}>
         <Grid>
-          <Button
-            icon={AddIcon}
-            mode="ghost"
-            disabled
-            size="large"
-            data-testid="add-read-object-button"
-            text={t(addItemI18nKey)}
-          />
+          <Button {...insertButtonProps} data-testid="add-read-object-button" disabled />
         </Grid>
       </Tooltip>
     )
   }
 
   return (
-    <Grid gap={1} style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}>
+    <Grid
+      ref={setGridElement}
+      gap={1}
+      style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
+    >
       {schemaType.of.length === 1 ? (
         <Button
-          icon={AddIcon}
-          mode="ghost"
+          {...insertButtonProps}
           onClick={handleAddBtnClick}
-          size="large"
           data-testid="add-single-object-button"
-          text={t(addItemI18nKey)}
         />
       ) : (
-        <MenuButton
-          button={
-            <Button
-              icon={AddIcon}
-              mode="ghost"
-              size="large"
-              data-testid="add-multiple-object-button"
-              text={t(addItemI18nKey)}
-            />
-          }
-          id={menuButtonId || ''}
-          menu={
-            <Menu>
-              {schemaType.of.map((memberDef, i) => {
-                return (
-                  <MenuItem
-                    key={i}
-                    text={memberDef.title || memberDef.type?.name}
-                    onClick={() => insertItem(memberDef)}
-                    icon={getSchemaTypeIcon(memberDef)}
-                  />
-                )
-              })}
-            </Menu>
-          }
-          popover={POPOVER_PROPS}
+        <AddMultipleButton
+          insertButtonProps={{...insertButtonProps, 'data-testid': 'add-multiple-object-button'}}
+          insertMenuOptions={props.schemaType.options?.insertMenu}
+          schemaTypes={props.schemaType.of}
+          onSelect={insertItem}
+          referenceBoundary={gridElement}
         />
       )}
-
       {children}
     </Grid>
+  )
+}
+
+type AddMultipleState = {
+  open: boolean
+}
+
+type AddMultipleEvent = {type: 'toggle'} | {type: 'close'}
+
+function addMultipleReducer(state: AddMultipleState, event: AddMultipleEvent) {
+  return {
+    open: event.type === 'toggle' ? !state.open : event.type === 'close' ? false : state.open,
+  }
+}
+
+type AddMultipleButtonProps = {
+  schemaTypes: Array<SchemaType>
+  onSelect: (schemaType: SchemaType) => void
+  insertButtonProps: React.ComponentProps<typeof Button> & {'data-testid': string}
+  insertMenuOptions?: InsertMenuOptions
+  referenceBoundary?: HTMLElement | null
+}
+
+function AddMultipleButton(props: AddMultipleButtonProps) {
+  const {t} = useTranslation()
+  const [state, send] = useReducer(addMultipleReducer, {open: false})
+  const [button, setButton] = useState<HTMLButtonElement | null>(null)
+  const [popover, setPopover] = useState<HTMLDivElement | null>(null)
+
+  useClickOutside(
+    useCallback(() => {
+      send({type: 'close'})
+    }, []),
+    [button, popover],
+  )
+
+  useGlobalKeyDown(
+    useCallback(
+      (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          send({type: 'close'})
+          button?.focus()
+        }
+      },
+      [button],
+    ),
+  )
+
+  const {onSelect} = props
+  const handleOnSelect = useCallback(
+    (schemaType: SchemaType) => {
+      onSelect(schemaType)
+      send({type: 'close'})
+    },
+    [onSelect],
+  )
+
+  return (
+    <Popover
+      constrainSize
+      content={
+        <InsertMenu
+          {...props.insertMenuOptions}
+          onSelect={handleOnSelect}
+          schemaTypes={props.schemaTypes}
+          labels={{
+            'insert-menu.filter.all-items': t('insert-menu.filter.all-items'),
+            'insert-menu.search.no-results': t('insert-menu.search.no-results'),
+            'insert-menu.search.placeholder': t('insert-menu.search.placeholder'),
+            'insert-menu.toggle-grid-view.tooltip': t('insert-menu.toggle-grid-view.tooltip'),
+            'insert-menu.toggle-list-view.tooltip': t('insert-menu.toggle-list-view.tooltip'),
+          }}
+        />
+      }
+      fallbackPlacements={['top']}
+      matchReferenceWidth={props.insertMenuOptions?.filter}
+      open={state.open}
+      overflow="hidden"
+      placement="bottom"
+      portal
+      ref={setPopover}
+      referenceBoundary={props.referenceBoundary}
+    >
+      <Button
+        {...props.insertButtonProps}
+        ref={setButton}
+        selected={state.open}
+        onClick={() => {
+          send({type: 'toggle'})
+        }}
+      />
+    </Popover>
   )
 }

@@ -999,6 +999,17 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unset value */
   'inputs.untyped-value.unset-item-button.text': 'Unset value',
 
+  /** Label for the insert menu all items filter  */
+  'insert-menu.filter.all-items': 'All',
+  /** Label for when the insert menu search shows no items */
+  'insert-menu.search.no-results': 'No items found',
+  /** Placeholder for the insert menu search field */
+  'insert-menu.search.placeholder': 'Search',
+  /** Tooltip for the insert menu grid view toggle */
+  'insert-menu.toggle-grid-view.tooltip': 'Toggle grid view',
+  /** Tooltip for the insert menu list view toggle */
+  'insert-menu.toggle-list-view.tooltip': 'Toggle list view',
+
   /** The fallback explanation if no context is provided */
   'insufficient-permissions-message.not-authorized-explanation':
     'You do not have permission to access this feature.',
