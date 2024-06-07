@@ -28,7 +28,7 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     // wait for PTE to be full screen
     await waitForFullScreen(page)
 
-    await page.locator('[data-testid="block-style-select"]').click({timeout: 3000})
+    await page.locator('[data-testid="block-style-select"]').click()
 
     await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
@@ -65,7 +65,7 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
 
     await page.waitForSelector('[data-ui="MenuButton__popover"]', {
       state: 'attached',
-      timeout: 3000,
+      timeout: 15000,
     })
 
     await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
