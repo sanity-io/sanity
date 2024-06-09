@@ -1,4 +1,5 @@
-import {useMemoObservable} from 'react-rx'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {debounce, merge, share, skip, take, timer} from 'rxjs'
 
 import {type EditStateFor, useDocumentStore} from '../store'
@@ -11,7 +12,7 @@ export function useEditState(
 ): EditStateFor {
   const documentStore = useDocumentStore()
 
-  return useMemoObservable(() => {
+  const observable = useMemo(() => {
     if (priority === 'low') {
       const base = documentStore.pair.editState(publishedDocId, docTypeName).pipe(share())
 
@@ -25,5 +26,10 @@ export function useEditState(
     }
 
     return documentStore.pair.editState(publishedDocId, docTypeName)
-  }, [documentStore.pair, publishedDocId, docTypeName, priority]) as EditStateFor
+  }, [docTypeName, documentStore.pair, priority, publishedDocId])
+  /**
+   * We know that since the observable has a startWith operator, it will always emit a value
+   * and that's why the non-null assertion is used here
+   */
+  return useObservable(observable)!
 }

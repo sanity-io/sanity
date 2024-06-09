@@ -1,7 +1,7 @@
 import {type Schema} from '@sanity/types'
 import {isEqual} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
-import {useObservableCallback} from 'react-rx'
+import {useObservableEvent} from 'react-rx'
 import {concat, EMPTY, iif, type Observable, of, timer} from 'rxjs'
 import {
   catchError,
@@ -95,65 +95,61 @@ export function useSearch({
     [client, maxFieldDepth, schema, enableLegacySearch],
   )
 
-  const handleQueryChange = useObservableCallback(
-    (inputValue$: Observable<SearchRequest | null>) => {
-      return inputValue$.pipe(
-        // Ignore null values
-        filter(nonNullable),
-        // Sanitize request (trim query and filter)
-        map(sanitizeRequest),
-        // Only emit when values have changed
-        distinctUntilChanged(isEqual),
-        // Debounce requests
-        debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
-        // Trigger `onStart` callback
-        tap(onStart),
-        switchMap((request) => {
-          return concat(
-            // Emit loading start
-            of({
-              ...INITIAL_SEARCH_STATE,
-              loading: true,
-              options: request.options,
-              terms: request.terms,
-            }),
-            // Conditionally trigger search ONLY if we have valid searchable terms.
-            // Typically, search terms are valid if either query, filter or selected types is non-empty.
-            // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
-            // which is what `allowEmptyQueries` is used for.
-            iif(
-              () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
-              // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
-              search(request.terms, request.options).pipe(
-                tap(({hits, nextCursor}) => onComplete?.({hits, nextCursor})),
-                catchError((error) => {
-                  onError?.(error)
-                  return of({
-                    ...INITIAL_SEARCH_STATE,
-                    error,
-                    loading: false,
-                    options: request.options,
-                    terms: request.terms,
-                  })
-                }),
-              ),
-              // If there is no valid search, emit an empty observable and trigger `onComplete` event
-              of(EMPTY).pipe(tap(() => onComplete?.({hits: [], nextCursor: undefined}))),
+  const handleQueryChange = useObservableEvent((inputValue$: Observable<SearchRequest | null>) => {
+    return inputValue$.pipe(
+      // Ignore null values
+      filter(nonNullable),
+      // Sanitize request (trim query and filter)
+      map(sanitizeRequest),
+      // Only emit when values have changed
+      distinctUntilChanged(isEqual),
+      // Debounce requests
+      debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
+      // Trigger `onStart` callback
+      tap(onStart),
+      switchMap((request) => {
+        return concat(
+          // Emit loading start
+          of({
+            ...INITIAL_SEARCH_STATE,
+            loading: true,
+            options: request.options,
+            terms: request.terms,
+          }),
+          // Conditionally trigger search ONLY if we have valid searchable terms.
+          // Typically, search terms are valid if either query, filter or selected types is non-empty.
+          // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
+          // which is what `allowEmptyQueries` is used for.
+          iif(
+            () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
+            // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
+            search(request.terms, request.options).pipe(
+              tap(({hits, nextCursor}) => onComplete?.({hits, nextCursor})),
+              catchError((error) => {
+                onError?.(error)
+                return of({
+                  ...INITIAL_SEARCH_STATE,
+                  error,
+                  loading: false,
+                  options: request.options,
+                  terms: request.terms,
+                })
+              }),
             ),
-            // Emit loading completed
-            of({loading: false}),
-          )
-        }),
-        scan((prevState, nextState): SearchState => {
-          return {...prevState, ...nextState}
-        }, INITIAL_SEARCH_STATE),
-        // Update local search state
-        tap(setSearchState),
-      )
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- @todo: add onComplete, onError and onStart to the deps list when it's verified that it's safe to do so
-    [allowEmptyQueries, search],
-  )
+            // If there is no valid search, emit an empty observable and trigger `onComplete` event
+            of(EMPTY).pipe(tap(() => onComplete?.({hits: [], nextCursor: undefined}))),
+          ),
+          // Emit loading completed
+          of({loading: false}),
+        )
+      }),
+      scan((prevState, nextState): SearchState => {
+        return {...prevState, ...nextState}
+      }, INITIAL_SEARCH_STATE),
+      // Update local search state
+      tap(setSearchState),
+    )
+  })
 
   const handleSearch = useCallback(
     (searchRequest: SearchRequest) => handleQueryChange(searchRequest),

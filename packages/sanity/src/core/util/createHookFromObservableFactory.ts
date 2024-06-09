@@ -1,4 +1,5 @@
-import {useMemoObservable} from 'react-rx'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 
@@ -45,7 +46,7 @@ export function createHookFromObservableFactory<T, TArg = void>(
   return function useLoadableFromCreateLoadable(_arg: TArg) {
     // @todo refactor callsites to make use of useMemo so that this hook can be removed
     const memoArg = useUnique(_arg)
-    const result = useMemoObservable(
+    const observable = useMemo(
       () =>
         of(memoArg).pipe(
           switchMap((arg) =>
@@ -67,8 +68,8 @@ export function createHookFromObservableFactory<T, TArg = void>(
           catchError((error) => of({type: 'error', error} as const)),
         ),
       [memoArg],
-      initialResult,
     )
+    const result = useObservable(observable, initialResult)
 
     if (result.type === 'error') throw result.error
 

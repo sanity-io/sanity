@@ -1758,8 +1758,8 @@ importers:
         specifier: ^2.1.6
         version: 2.2.0(react@18.3.1)
       react-rx:
-        specifier: ^2.1.3
-        version: 2.1.3(react@18.3.1)(rxjs@7.8.1)
+        specifier: ^3.0.0
+        version: 3.0.0(react@18.3.1)(rxjs@7.8.1)
       read-pkg-up:
         specifier: ^7.0.1
         version: 7.0.1
@@ -17834,6 +17834,17 @@ packages:
       react: 18.3.1
       rxjs: 7.8.1
       use-sync-external-store: 1.2.2(react@18.3.1)
+    dev: false
+
+  /react-rx@3.0.0(react@18.3.1)(rxjs@7.8.1):
+    resolution: {integrity: sha512-hu2h9ggCAOHkM/Xs+AcsF4nCp95+TyLMSiwXbQjrqitGFuNiZ4PeAC1Y9Fc1YiZrSIF+l6HKi5xuE8Sn384EoQ==}
+    peerDependencies:
+      react: '*'
+      rxjs: ^7
+    dependencies:
+      observable-callback: 1.0.3(rxjs@7.8.1)
+      react: 18.3.1
+      rxjs: 7.8.1
     dev: false
 
   /react-style-proptype@3.2.2:
