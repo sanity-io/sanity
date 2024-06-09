@@ -7,7 +7,7 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table'
 import {useMemo} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {useObservable} from 'react-rx'
 import {
   type DocumentPreviewStore,
   DocumentStatusIndicator,
@@ -17,7 +17,6 @@ import {
   useDocumentPreviewStore,
 } from 'sanity'
 
-import {type PaneItemPreviewState} from '../../../components/paneItem/types'
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {SheetListCellInner} from './SheetListCell'
 
@@ -32,11 +31,11 @@ const PreviewCell = (props: {
 }) => {
   const {documentPreviewStore, row, schemaType} = props
   const title = 'Document title'
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const {draft, published, isLoading} = useMemoObservable<PaneItemPreviewState>(
+  const previewStateObservable = useMemo(
     () => getPreviewStateObservable(documentPreviewStore, schemaType, row.original._id, title),
-    [documentPreviewStore, schemaType, row.original._id],
-  )!
+    [documentPreviewStore, row.original._id, schemaType],
+  )
+  const {draft, published, isLoading} = useObservable(previewStateObservable)
   if (isLoading) {
     return (
       <Text size={1} muted>

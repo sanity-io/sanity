@@ -1,5 +1,5 @@
 import {useCallback, useMemo, useState} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
 
@@ -44,7 +44,7 @@ export function useReferenceInfo(
   }, [])
 
   const docInfo = useMemo(() => ({_id: doc._id, _type: doc._type}), [doc._id, doc._type])
-  const referenceInfo = useMemoObservable(
+  const referenceInfoObservable = useMemo(
     () =>
       docInfo._id
         ? getReferenceInfo(docInfo).pipe(
@@ -72,8 +72,8 @@ export function useReferenceInfo(
           )
         : of(EMPTY_STATE),
     [docInfo, getReferenceInfo, retry, retryAttempt],
-    INITIAL_LOADING_STATE,
   )
+  const referenceInfo = useObservable(referenceInfoObservable, INITIAL_LOADING_STATE)
 
   // workaround for a "bug" with useMemoObservable that doesn't
   // return the initial value upon resubscription

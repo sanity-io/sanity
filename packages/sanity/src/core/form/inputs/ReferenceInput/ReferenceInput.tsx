@@ -1,7 +1,7 @@
 import {Stack, Text, useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {useObservableCallback} from 'react-rx'
+import {useObservableEvent} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 
@@ -147,40 +147,37 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const {push} = useToast()
   const {t} = useTranslation()
 
-  const handleQueryChange = useObservableCallback(
-    (inputValue$: Observable<string | null>) => {
-      return inputValue$.pipe(
-        filter(nonNullable),
-        switchMap((searchString) =>
-          concat(
-            of({isLoading: true}),
-            onSearch(searchString).pipe(
-              map((hits) => ({hits, searchString, isLoading: false})),
-              catchError((error) => {
-                push({
-                  title: t('inputs.reference.error.search-failed-title'),
-                  description: error.message,
-                  status: 'error',
-                  id: `reference-search-fail-${id}`,
-                })
+  const handleQueryChange = useObservableEvent((inputValue$: Observable<string | null>) => {
+    return inputValue$.pipe(
+      filter(nonNullable),
+      switchMap((searchString) =>
+        concat(
+          of({isLoading: true}),
+          onSearch(searchString).pipe(
+            map((hits) => ({hits, searchString, isLoading: false})),
+            catchError((error) => {
+              push({
+                title: t('inputs.reference.error.search-failed-title'),
+                description: error.message,
+                status: 'error',
+                id: `reference-search-fail-${id}`,
+              })
 
-                console.error(error)
-                return of({hits: []})
-              }),
-            ),
+              console.error(error)
+              return of({hits: []})
+            }),
           ),
         ),
+      ),
 
-        scan(
-          (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
-          INITIAL_SEARCH_STATE,
-        ),
+      scan(
+        (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
+        INITIAL_SEARCH_STATE,
+      ),
 
-        tap(setSearchState),
-      )
-    },
-    [id, onSearch, push, t],
-  )
+      tap(setSearchState),
+    )
+  })
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')
