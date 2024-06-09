@@ -64,6 +64,7 @@ const config = {
     'tsdoc/syntax': 'error',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'error',
+    // Set react-compiler to `error` once existing issues are fixed
     /**
      * Once all react-compiler warnings are fixed then this rule should be changed to 'error' and:
      * - the `.eslintignore.react-compiler` file should be deleted
