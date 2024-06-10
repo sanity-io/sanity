@@ -1,8 +1,6 @@
-import {defineField, defineType, type Schema} from '@sanity/types'
+import {defineType, type Schema} from '@sanity/types'
 
 import {createSchema} from '../../../schema'
-
-const Icon = () => null
 
 const linkType = defineType({
   type: 'object',
@@ -17,242 +15,172 @@ const linkType = defineType({
   validation: (Rule) => Rule.required(),
 })
 
-const myStringType = defineType({
+const myStringObjectType = defineType({
   type: 'object',
-  name: 'test',
-  fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
+  name: 'myStringObject',
+  fields: [{type: 'string', name: 'myString', validation: (Rule) => Rule.required()}],
+})
+
+const nestedObjectType = defineType({
+  type: 'object',
+  name: 'nestedObject',
+  fields: [
+    {
+      name: 'title',
+      type: 'string',
+    },
+    {
+      type: 'array',
+      name: 'objectList',
+      of: [{type: 'nestedObject'}],
+    },
+  ],
 })
 
 export const schema = createSchema({
   name: 'default',
   types: [
     linkType,
-    myStringType,
-    // {
-    //   name: 'customNamedBlock',
-    //   type: 'block',
-    //   title: 'A named custom block',
-    //   marks: {
-    //     annotations: [linkType, myStringType],
-    //   },
-    //   of: [
-    //     {type: 'image'},
-    //     {
-    //       type: 'object',
-    //       name: 'test',
-    //       fields: [myStringType],
-    //     },
-    //     {
-    //       type: 'reference',
-    //       name: 'strongAuthorRef',
-    //       title: 'A strong author ref',
-    //       to: {type: 'author'},
-    //     },
-    //   ],
-    // },
-    defineType({
+    myStringObjectType,
+    nestedObjectType,
+    {
+      name: 'customNamedBlock',
+      type: 'block',
+      title: 'A named custom block',
+      marks: {
+        annotations: [linkType, myStringObjectType],
+      },
+      of: [
+        {
+          type: 'object',
+          name: 'test',
+          fields: [myStringObjectType],
+        },
+        {
+          type: 'reference',
+          name: 'strongAuthorRef',
+          title: 'A strong author ref',
+          to: {type: 'author'},
+        },
+      ],
+    },
+    {
       name: 'author',
       title: 'Author',
       type: 'document',
-      //icon: Icon,
       fields: [
         {
           name: 'name',
           type: 'string',
         },
         {
-          name: 'role',
-          type: 'string',
+          name: 'born',
+          type: 'number',
         },
-        // {
-        //   name: 'bio',
-        //   type: 'array',
-        //   of: [{type: 'customNamedBlock'}],
-        // },
-        defineField({
+        {
+          name: 'favoriteNumbers',
+          type: 'array',
+          of: [{type: 'number'}],
+        },
+        {type: 'image', name: 'profileImage'},
+        {
+          type: 'object',
+          name: 'socialLinks',
+          fields: [
+            {type: 'string', name: 'twitter'},
+            {type: 'string', name: 'linkedin'},
+          ],
+        },
+        {
+          name: 'nestedTest',
+          type: 'nestedObject',
+        },
+        {
+          name: 'bio',
+          type: 'array',
+          of: [{type: 'customNamedBlock'}, {type: 'myStringObject'}],
+        },
+        {
+          name: 'friends',
+          type: 'array',
+          of: [{type: 'reference', to: [{type: 'author'}]}],
+        },
+        {
           name: 'bestFriend',
           type: 'reference',
           to: [{type: 'author'}],
-        }),
-      ],
-      initialValue: () => ({
-        role: 'Developer',
-      }),
-    }),
-    defineType({
-      name: 'address',
-      title: 'Address',
-      type: 'object',
-      fields: [
-        {
-          name: 'street',
-          type: 'string',
-          initialValue: 'one old street',
-        },
-        {
-          name: 'streetNo',
-          type: 'string',
-          initialValue: '123',
-        },
-      ],
-    }),
-    {
-      name: 'contact',
-      title: 'Contact',
-      type: 'object',
-      fields: [
-        {
-          name: 'email',
-          type: 'string',
-        },
-        {
-          name: 'phone',
-          type: 'string',
         },
       ],
     },
     {
-      name: 'person',
-      title: 'Person',
+      name: 'editor',
+      title: 'Editor',
       type: 'document',
-      icon: Icon,
       fields: [
         {
-          name: 'address',
-          type: 'address',
+          name: 'name',
+          type: 'string',
         },
         {
-          name: 'contact',
-          type: 'contact',
+          name: 'born',
+          type: 'number',
+        },
+        {type: 'image', name: 'profileImage'},
+        {
+          name: 'bio',
+          type: 'array',
+          of: [{type: 'customNamedBlock'}],
+        },
+        {
+          name: 'favoriteNumbers',
+          type: 'array',
+          of: [{type: 'number'}],
+        },
+        {
+          name: 'nestedTest',
+          type: 'nestedObject',
+        },
+        {
+          name: 'profile',
+          type: 'object',
+          fields: [
+            {type: 'string', name: 'email'},
+            {type: 'image', name: 'avatar'},
+            {
+              type: 'object',
+              name: 'social',
+              fields: [
+                {type: 'string', name: 'twitter'},
+                {type: 'string', name: 'linkedin'},
+              ],
+            },
+          ],
+        },
+        {
+          name: 'friends',
+          type: 'array',
+          of: [{type: 'reference', to: [{type: 'editor'}, {type: 'author'}]}],
         },
       ],
     },
-
     {
       name: 'post',
       title: 'Post',
       type: 'document',
-      icon: Icon,
       fields: [
         {
           name: 'title',
           type: 'string',
         },
-        // {
-        //   name: 'body',
-        //   type: 'array',
-        //   of: [{type: 'customNamedBlock'}],
-        // },
+        {
+          name: 'body',
+          type: 'array',
+          of: [{type: 'customNamedBlock'}],
+        },
         {
           name: 'author',
           type: 'reference',
           to: [{type: 'author'}],
-        },
-      ],
-    },
-
-    {
-      name: 'captionedImage',
-      type: 'object',
-      fields: [
-        // {
-        //   // This doesn't have a default value, so shouldn't be present,
-        //   // not even with a `_type` stub
-        //   name: 'asset',
-        //   type: 'reference',
-        //   to: [{type: 'sanity.imageAsset'}],
-        // },
-        {
-          name: 'caption',
-          type: 'string',
-        },
-      ],
-      initialValue: {caption: 'Default caption!'},
-    },
-
-    {
-      name: 'recursiveObject',
-      type: 'object',
-      fields: [
-        {
-          name: 'name',
-          type: 'string',
-        },
-        {
-          name: 'child',
-          type: 'recursiveObject',
-        },
-      ],
-      initialValue: {
-        name: '∞ recursion is ∞',
-      },
-    },
-
-    {
-      name: 'developer',
-      type: 'document',
-      initialValue: () => ({
-        name: 'A default name!',
-
-        // Should clear the default value below (but ideally not actually be part
-        // of the value, eg no `undefined` in the resolved value)
-        numberOfCats: undefined,
-      }),
-      fields: [
-        {
-          name: 'name',
-          type: 'string',
-        },
-        {
-          name: 'hasPet',
-          type: 'boolean',
-          initialValue: false,
-        },
-        {
-          name: 'age',
-          type: 'number',
-          initialValue: 30,
-        },
-        {
-          name: 'numberOfCats',
-          type: 'number',
-          initialValue: 3,
-        },
-        {
-          name: 'heroImage',
-          type: 'captionedImage',
-        },
-        {
-          name: 'awards',
-          type: 'array',
-          of: [{type: 'string'}],
-          initialValue: () => ['TypeScript Wizard of the Year'],
-        },
-        {
-          name: 'tasks',
-          type: 'array',
-          of: [
-            {
-              name: 'task',
-              type: 'object',
-              fields: [
-                {name: 'description', type: 'string'},
-                {name: 'isDone', type: 'boolean', initialValue: false},
-              ],
-            },
-          ],
-          initialValue: () => [
-            {
-              _type: 'task',
-              description: 'Mark as done',
-              isDone: false,
-            },
-          ],
-        },
-        {
-          name: 'recursive',
-          type: 'recursiveObject',
-          // Initial value set on it's actual type
         },
       ],
     },
