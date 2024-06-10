@@ -11,7 +11,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {getSchemaTypeTitle, type Path} from 'sanity'
+import {getSchemaTypeTitle, type Path, SanityDefaultPreview} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {useValuePreviewWithFallback} from '../../hooks'
@@ -85,9 +85,7 @@ const MenuButton = forwardRef(function MenuButton(
       {...rest}
     >
       <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">
-        <StyledText size={1} muted={!isSelected} weight="medium" textOverflow="ellipsis">
-          {title}
-        </StyledText>
+        <SanityDefaultPreview title={title} media={value.media} layout="inline" />
 
         {hasChildren && (
           <Text size={0}>
@@ -111,12 +109,6 @@ const SeparatorItem = forwardRef(function SeparatorItem(
     </Box>
   )
 })
-
-// Render the title of the menu item in the collapsed breadcrumb
-// menu (i.e. the "..." item) with a leading slash.
-function renderMenuItemTitle(title: string): string {
-  return `/ ${title}`
-}
 
 interface TreeEditingBreadcrumbsProps {
   items: TreeEditingBreadcrumb[]
@@ -172,7 +164,6 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
         return (
           <Fragment key={key}>
             <TreeEditingBreadcrumbsMenuButton
-              parentElement={rootElement}
               button={
                 <StyledButton mode="bleed" padding={1}>
                   <Flex overflow="hidden">
@@ -182,10 +173,11 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
                   </Flex>
                 </StyledButton>
               }
+              collapsed
               items={item}
               onPathSelect={onPathSelect}
+              parentElement={rootElement}
               selectedPath={selectedPath}
-              renderMenuItemTitle={renderMenuItemTitle}
             />
 
             {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}

@@ -1,7 +1,14 @@
 import {Box, Button, Stack, Text} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
-import {CommandList, getSchemaTypeTitle, type Path, supportsTouch, useTranslation} from 'sanity'
+import {
+  CommandList,
+  getSchemaTypeTitle,
+  type Path,
+  SanityDefaultPreview,
+  supportsTouch,
+  useTranslation,
+} from 'sanity'
 
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingMenuItem} from '../../types'
@@ -31,11 +38,7 @@ function ResultItem(props: ResultItemProps): JSX.Element {
         onClick={() => onPathSelect(item.path)}
       >
         <Stack space={2} flex={1}>
-          <Box>
-            <Text size={1} textOverflow="ellipsis">
-              <b>{title}</b>
-            </Text>
-          </Box>
+          <SanityDefaultPreview title={title} media={value.media} layout="inline" />
 
           <Box>
             <Text muted size={0} textOverflow="ellipsis">
