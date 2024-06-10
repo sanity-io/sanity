@@ -7,10 +7,8 @@ import {readPackageJson} from '../readPackageJson'
 jest.mock('resolve-from')
 jest.mock('../readPackageJson')
 
-global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mockedFetch = global.fetch as jest.MockedFunction<any>
+const mockedFetch = jest.fn() as jest.MockedFunction<any>
 const mockedResolveFrom = resolveFrom as jest.MockedFunction<typeof resolveFrom>
 const mockedReadPackageJson = readPackageJson as jest.MockedFunction<typeof readPackageJson>
 
@@ -54,7 +52,11 @@ describe('compareStudioDependencyVersions', () => {
         version: '3.40.0',
       })
 
-    const result = await compareStudioDependencyVersions(autoUpdatesImports, '/test/workdir')
+    const result = await compareStudioDependencyVersions(
+      autoUpdatesImports,
+      '/test/workdir',
+      mockedFetch,
+    )
 
     expect(result).toEqual([])
   })
@@ -87,7 +89,11 @@ describe('compareStudioDependencyVersions', () => {
         version: '3.40.0',
       })
 
-    const result = await compareStudioDependencyVersions(autoUpdatesImports, '/test/workdir')
+    const result = await compareStudioDependencyVersions(
+      autoUpdatesImports,
+      '/test/workdir',
+      mockedFetch,
+    )
 
     expect(result).toEqual([
       {
@@ -125,7 +131,11 @@ describe('compareStudioDependencyVersions', () => {
         version: '3.30.0',
       })
 
-    const result = await compareStudioDependencyVersions(autoUpdatesImports, '/test/workdir')
+    const result = await compareStudioDependencyVersions(
+      autoUpdatesImports,
+      '/test/workdir',
+      mockedFetch,
+    )
 
     expect(result).toEqual([
       {
@@ -136,6 +146,49 @@ describe('compareStudioDependencyVersions', () => {
       {
         pkg: '@sanity/vision',
         installed: '3.30.0',
+        remote: '3.40.0',
+      },
+    ])
+  })
+
+  it("should warn if the user's package.json version is greater then remote", async () => {
+    mockedFetch.mockResolvedValue({
+      headers: {
+        get: jest.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
+      },
+    })
+    mockedResolveFrom.silent
+      .mockReturnValueOnce('/test/workdir/node_modules/sanity/package.json')
+      .mockReturnValueOnce('/test/workdir/node_modules/@sanity/vision/package.json')
+    mockedReadPackageJson
+      .mockReturnValueOnce({
+        dependencies: {
+          'sanity': '^3.40.0',
+          '@sanity/vision': '^3.40.0',
+        },
+        devDependencies: {},
+        name: 'test-package',
+        version: '0.0.0',
+      })
+      .mockReturnValueOnce({
+        name: 'sanity',
+        version: '3.50.0',
+      })
+      .mockReturnValueOnce({
+        name: '@sanity/vision',
+        version: '3.40.0',
+      })
+
+    const result = await compareStudioDependencyVersions(
+      autoUpdatesImports,
+      '/test/workdir',
+      mockedFetch,
+    )
+
+    expect(result).toEqual([
+      {
+        pkg: 'sanity',
+        installed: '3.50.0',
         remote: '3.40.0',
       },
     ])
@@ -157,7 +210,11 @@ describe('compareStudioDependencyVersions', () => {
       version: '0.0.0',
     })
 
-    const result = await compareStudioDependencyVersions(autoUpdatesImports, '/test/workdir')
+    const result = await compareStudioDependencyVersions(
+      autoUpdatesImports,
+      '/test/workdir',
+      mockedFetch,
+    )
 
     expect(readPackageJson).toHaveBeenCalledTimes(1)
 
