@@ -59,7 +59,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       </Flex>
     </TooltipDelayGroupProvider>
   )
-  const previewTitle = (title || draft?.title || published?.title) as string | null
+  const previewTitle = (draft?.title || published?.title || title) as string | null
   const tooltip = <DocumentStatus draft={draft} published={published} />
 
   return (
