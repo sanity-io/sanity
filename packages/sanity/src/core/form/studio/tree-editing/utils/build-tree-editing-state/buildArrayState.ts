@@ -32,6 +32,15 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   const menuItems: TreeEditingMenuItem[] = []
   const breadcrumbs: TreeEditingBreadcrumb[] = []
 
+  if (arraySchemaType.options?.treeEditing === false) {
+    return {
+      breadcrumbs,
+      menuItems,
+      relativePath,
+      rootTitle: '',
+    }
+  }
+
   arrayValue.forEach((item) => {
     const itemPath = [...rootPath, {_key: item._key}] as Path
 
