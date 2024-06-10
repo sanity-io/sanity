@@ -23,16 +23,18 @@ import {
 } from '@sentry/react'
 
 import {isDev} from '../../environment'
+import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
 import {globalScope} from '../../util/globalScope'
+import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'
 import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
 
-const SANITY_DSN =
-  'https://8914c8dde7e1ebce191f15af8bf6b7b9@o131006.ingest.us.sentry.io/4507342122123264'
+const SANITY_DSN = 'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
 
 const IS_EMBEDDED_STUDIO = !('__sanityErrorChannel' in globalScope)
 
-const DEBUG_ERROR_REPORTING = Boolean(process.env.SANITY_STUDIO_DEBUG_ERROR_REPORTING)
+const DEBUG_ERROR_REPORTING =
+  supportsLocalStorage && Boolean(localStorage.getItem('SANITY_DEBUG_ERROR_REPORTING'))
 
 const IS_BROWSER = typeof window !== 'undefined'
 
@@ -71,6 +73,18 @@ export function getSentryErrorReporter(): ErrorReporter {
       return
     }
 
+    // For now, we only want to run error reporting for auto-updating studios in production.
+    // This may change in the future, but for now this will help us control the amount of errors.
+    if (!DEBUG_ERROR_REPORTING && !hasSanityPackageInImportMap()) {
+      return
+    }
+
+    // For now, we also want to avoid running error reporting in embedded studios,
+    // even if it has a Sanity package in the import map (eg. is auto updating).
+    if (!DEBUG_ERROR_REPORTING && IS_EMBEDDED_STUDIO) {
+      return
+    }
+
     // This normally shouldn't happen, but if we're initialized and already using the Sanity DSN,
     // then assume we can reuse the global client
     const isSentryInitialized = sentryIsInitialized()
@@ -99,12 +113,6 @@ export function getSentryErrorReporter(): ErrorReporter {
       // Initializing has to be done after setting the client on the scope
       client.init()
       return
-    }
-
-    if (IS_EMBEDDED_STUDIO) {
-      // We may or may not want to initialize Sentry in embedded studios,
-      // And if we do, we may want to use a scoped client - same as the `hasThirdPartySentry` case.
-      // For now, we're leaving this branch _intentionally_ empty -  we _will_ register Sentry.
     }
 
     // There is no active client on the page, so assume we can take ownership of the
