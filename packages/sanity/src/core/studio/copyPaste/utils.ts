@@ -1,5 +1,6 @@
+import {isIndexSegment, isKeySegment, isReferenceSchemaType} from '@sanity/types'
 import {isFinite} from 'lodash'
-import {isString} from 'sanity'
+import {isString, type ObjectField, type ObjectFieldType, type Path, type SchemaType} from 'sanity'
 
 import {type CopyActionResult} from './types'
 
@@ -25,22 +26,27 @@ export function isCopyPasteResult(value: any): value is CopyActionResult {
   return typeof normalized === 'object' && normalized?._type === 'copyResult'
 }
 
-export function transformValueToPrimitive(value: CopyActionResult | null): string | number {
-  const {docValue} = value || {}
+export function transformValueToPrimitive(
+  copyActionResult: CopyActionResult | null,
+): string | number {
+  if (!copyActionResult) {
+    return ''
+  }
+  const {value} = copyActionResult
 
-  if (isString(docValue)) {
-    return docValue
+  if (isString(value)) {
+    return value
   }
 
-  if (isFinite(docValue)) {
-    return Number(docValue)
+  if (isFinite(value)) {
+    return Number(value)
   }
 
-  if (isString(docValue) && isFinite(parseFloat(docValue))) {
-    return parseFloat(docValue)
+  if (isString(value) && isFinite(parseFloat(value))) {
+    return parseFloat(value)
   }
 
-  return docValue || ''
+  return value?.toString() || ''
 }
 
 export function parseCopyResult(value: any): CopyActionResult | null {
@@ -101,4 +107,88 @@ function getNativeInputValueSetter() {
   }
 
   return Object.getOwnPropertyDescriptor(window?.HTMLInputElement?.prototype, 'value')?.set
+}
+
+export function tryResolveSchemaTypeForPath(
+  baseType: SchemaType,
+  pathSegments: Path,
+): SchemaType | undefined {
+  let current: SchemaType | undefined = baseType
+  for (const segment of pathSegments) {
+    if (!current) {
+      return undefined
+    }
+
+    if (typeof segment === 'string') {
+      current = getFieldTypeByName(current, segment)
+      continue
+    }
+
+    const isArrayAccessor = isKeySegment(segment) || isIndexSegment(segment)
+    if (!isArrayAccessor || current.jsonType !== 'array') {
+      return undefined
+    }
+
+    const [memberType, otherType] = current.of || []
+    if (otherType || !memberType) {
+      // Can't figure out the type without knowing the value
+      return undefined
+    }
+
+    if (!isReferenceSchemaType(memberType)) {
+      current = memberType
+      continue
+    }
+
+    const [refType, otherRefType] = memberType.to || []
+    if (otherRefType || !refType) {
+      // Can't figure out the type without knowing the value
+      return undefined
+    }
+
+    current = refType
+  }
+
+  return current
+}
+
+function getFieldTypeByName(type: SchemaType, fieldName: string): SchemaType | undefined {
+  if (!('fields' in type)) {
+    return undefined
+  }
+
+  const fieldType = type.fields.find((field) => field.name === fieldName)
+  return fieldType ? fieldType.type : undefined
+}
+
+export function fieldExtendsType(field: ObjectField | ObjectFieldType, ofType: string): boolean {
+  let current: SchemaType | undefined = field.type
+  while (current) {
+    if (current.name === ofType) {
+      return true
+    }
+
+    if (!current.type && current.jsonType === ofType) {
+      return true
+    }
+
+    current = current.type
+  }
+
+  return false
+}
+
+export function isEmptyValue(value: unknown): boolean {
+  if (value === null || value === undefined) return true
+  if (typeof value === 'string' && value.trim() === '') return true
+  if (typeof value === 'number' && isNaN(value)) return true
+  if (typeof value === 'object' && Object.keys(value).length === 0) return true
+  if (
+    typeof value === 'object' &&
+    Object.keys(value).length === 1 &&
+    Object.keys(value)[0] === '_type'
+  )
+    return true
+  if (Array.isArray(value) && value.length === 0) return true
+  return false
 }
