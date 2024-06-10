@@ -23,6 +23,8 @@ describe('deriveSearchWeightsFromType', () => {
           preview: {select: {}},
           fields: [
             defineField({name: 'simpleStringField', type: 'string'}),
+            defineField({name: 'descriptionTextField', type: 'text'}),
+            defineField({name: 'markdownField', type: 'markdown'}),
             defineField({
               name: 'simplePtField',
               type: 'array',
@@ -83,6 +85,10 @@ describe('deriveSearchWeightsFromType', () => {
             }),
           ],
         }),
+        defineType({
+          name: 'markdown',
+          type: 'text',
+        }),
       ],
     })
 
@@ -97,6 +103,8 @@ describe('deriveSearchWeightsFromType', () => {
         {path: '_id', weight: 1},
         {path: '_type', weight: 1},
         {path: 'simpleStringField', weight: 1},
+        {path: 'descriptionTextField', weight: 1},
+        {path: 'markdownField', weight: 1},
         {path: 'simplePtField', weight: 1, mapWith: 'pt::text'},
         {path: 'simpleObject.nestedStringField', weight: 1},
         {path: 'simpleObject.nestedPtField', weight: 1, mapWith: 'pt::text'},
