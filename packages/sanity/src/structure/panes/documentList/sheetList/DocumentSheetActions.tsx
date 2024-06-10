@@ -154,10 +154,9 @@ const PopoverPlaceholder = styled.div`
 export function DocumentSheetActions({table, schemaType, parentRef}: DocumentSheetActionsProps) {
   const selectedRows = table.getSelectedRowModel().rows
   const items = useMemo(() => selectedRows.map((row) => row.original.__metadata), [selectedRows])
-  const validationStatus = useValidationStatusList(
-    items.map((item) => item.idPair.publishedId),
-    schemaType.name,
-  )
+  const itemsId = useMemo(() => items.map((item) => item.idPair.publishedId), [items])
+  const validationStatus = useValidationStatusList(itemsId, schemaType.name)
+
   const popoverWidth = parentRef ? Math.max(parentRef.offsetWidth - 240, 400) : 600
 
   return (

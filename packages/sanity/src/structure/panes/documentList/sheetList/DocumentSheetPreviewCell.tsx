@@ -8,8 +8,6 @@ import {PaneItem} from '../../../components'
 import {ValidationCard} from '../../document/inspectors/validation/ValidationInspector'
 import {type DocumentSheetTableRow} from './types'
 
-export const VISIBLE_COLUMN_LIMIT = 5
-
 const RowValidation = ({
   value,
   schemaType,
