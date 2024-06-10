@@ -1,4 +1,4 @@
-import {type ObjectSchemaType, type PatchEvent} from 'sanity'
+import {type ObjectSchemaType, type PatchEvent, type Path} from 'sanity'
 
 /**
  * @beta
@@ -19,13 +19,13 @@ export interface CopyActionResult {
   _type: 'copyResult'
   documentId?: string
   documentType?: string
+  documentPath: Path
+  value: unknown
+  isArray: boolean
+  isDocument: boolean
+  isObject: boolean
   schemaTypeName: string
   schemaTypeTitle?: string
-  path: any[]
-  docValue: any // Adjust the type based on your actual data structure
-  isDocument: boolean
-  isArray: boolean
-  isObject: boolean
 }
 
 /**
@@ -37,5 +37,4 @@ export interface CopyPasteContextType {
   copyResult: CopyActionResult | null
   setCopyResult: (result: CopyActionResult) => void
   setDocumentMeta: (meta: Required<DocumentMeta>) => void
-  isValidTargetType: (targetType: string) => boolean
 }

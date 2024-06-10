@@ -14,14 +14,6 @@ export const CopyPasteProvider: React.FC<{
   const documentMetaRef = useRef<DocumentMeta | null>(null)
   const [copyResult, setCopyResult] = useState<CopyActionResult | null>(null)
 
-  const isValidTargetType = useCallback(
-    (target: string) => {
-      const source = copyResult?.schemaTypeName
-      return source === target
-    },
-    [copyResult],
-  )
-
   const setDocumentMeta = useCallback(
     ({documentId, documentType, schemaType, onChange}: Required<DocumentMeta>) => {
       documentMetaRef.current = {
@@ -43,9 +35,8 @@ export const CopyPasteProvider: React.FC<{
       getDocumentMeta,
       setCopyResult,
       setDocumentMeta,
-      isValidTargetType,
     }),
-    [copyResult, getDocumentMeta, setDocumentMeta, isValidTargetType],
+    [copyResult, getDocumentMeta, setDocumentMeta],
   )
 
   return <CopyPasteContext.Provider value={contextValue}>{children}</CopyPasteContext.Provider>
