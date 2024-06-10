@@ -17,10 +17,10 @@ import {
   useSchema,
   useSearchState,
   useValidationStatus,
+  ValidationProvider,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {ValidationProvider} from '../../../../core/form/studio/contexts/Validation'
 import {LoadingPane} from '../../loading'
 import {type BaseStructureToolPaneProps} from '../../types'
 import {ColumnsControl} from './ColumnsControl'
