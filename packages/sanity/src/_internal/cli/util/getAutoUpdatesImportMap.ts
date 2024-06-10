@@ -8,7 +8,10 @@ export interface AutoUpdatesImportMap {
   '@sanity/vision/': string
 }
 
-const MODULES_HOST = 'https://sanity-cdn.work'
+const MODULES_HOST =
+  process.env.SANITY_INTERNAL_ENV === 'staging'
+    ? 'https://sanity-cdn.work'
+    : 'https://sanity-cdn.com'
 
 /**
  * @internal
