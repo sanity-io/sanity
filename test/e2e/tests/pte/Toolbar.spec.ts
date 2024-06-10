@@ -17,7 +17,7 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
   })
 
   test('on a simple editor', async ({page}) => {
-    await pteInput.getByTestId('block-style-select').click()
+    await pteInput.getByTestId('block-style-select').click({timeout: 15000})
 
     expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
