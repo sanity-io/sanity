@@ -32,7 +32,8 @@ export function transformValueToPrimitive(
   if (!copyActionResult) {
     return ''
   }
-  const {value} = copyActionResult
+
+  const {value} = copyActionResult.items[0]
 
   if (isString(value)) {
     return value
