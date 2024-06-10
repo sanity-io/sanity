@@ -1,5 +1,5 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
+import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
 import {
@@ -10,6 +10,8 @@ import {
   type KeyboardEvent,
   useCallback,
   useEffect,
+  useImperativeHandle,
+  useRef,
 } from 'react'
 
 import {Button} from '../../../../../../ui-components'
@@ -120,7 +122,9 @@ export const Calendar = forwardRef(function Calendar(
     [onSelect, selectedDate],
   )
 
-  const ref = useForwardedRef(forwardedRef)
+  const ref = useRef<HTMLDivElement | null>(null)
+
+  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
 
   const focusCurrentWeekDay = useCallback(() => {
     ref.current?.querySelector<HTMLElement>(`[data-focused="true"]`)?.focus()

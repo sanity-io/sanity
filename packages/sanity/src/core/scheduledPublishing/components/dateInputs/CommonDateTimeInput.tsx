@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import {TextInput, useForwardedRef} from '@sanity/ui'
+import {TextInput} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -7,7 +7,9 @@ import {
   useCallback,
   useEffect,
   useId,
+  useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
@@ -93,7 +95,12 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
     [serialize, onChange],
   )
 
-  const inputRef = useForwardedRef(forwardedRef)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
+  useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
+    forwardedRef,
+    () => inputRef.current,
+  )
 
   const id = useId()
 
