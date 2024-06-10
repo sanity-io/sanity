@@ -34,8 +34,8 @@ type InputRef = CellInputElement | null
 export function SheetListCellInner(props: SheetListCellInnerProps) {
   const {getValue, column, row, fieldType} = props
   const cellId = `cell-${column.id}-${row.index}`
+  const valueRef = useRef(getValue())
   const [renderValue, setRenderValue] = useState<string>(getValue() as string)
-  const [isDirty, setIsDirty] = useState(false)
   const inputRef = useRef<InputRef>(null)
   const {
     focusAnchorCell,
@@ -69,26 +69,31 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     }
   }
 
-  const handleOnEnterDown = useCallback(
+  const handleOnKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const {key} = event
       if (key === 'Enter') {
         if (cellState === 'selectedAnchor') handleProgrammaticFocus()
         if (cellState === 'focused') submitFocusedCell()
       }
+
+      if (cellState === 'focused' && key === 'Escape') {
+        setRenderValue(valueRef.current as string)
+
+        // wait for state to settle before blurring
+        setTimeout(() => setSelectedAnchorCell(column.id, row.index))
+      }
     },
-    [cellState, submitFocusedCell],
+    [cellState, column.id, row.index, setSelectedAnchorCell, submitFocusedCell],
   )
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsDirty(true)
     setRenderValue(event.target.value)
   }
 
   const handleOnBlur = () => {
-    if (isDirty) {
+    if (renderValue !== valueRef.current) {
       patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, renderValue)
-      setIsDirty(false)
     }
     resetFocusSelection()
   }
@@ -112,8 +117,8 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
 
   useEffect(() => {
     if (cellState === 'selectedAnchor' || cellState === 'focused')
-      // only listen for enter key when cell is focused or anchor
-      document.addEventListener('keydown', handleOnEnterDown)
+      // only listen for key when cell is focused or anchor
+      document.addEventListener('keydown', handleOnKeyDown)
     if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
       // if cell is selected, paste events should be handled
       document.addEventListener('paste', handlePaste)
@@ -124,7 +129,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
 
     return () => {
       if (cellState === 'selectedAnchor' || cellState === 'focused')
-        document.removeEventListener('keydown', handleOnEnterDown)
+        document.removeEventListener('keydown', handleOnKeyDown)
       if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
         document.removeEventListener('paste', handlePaste)
       if (cellState === 'selectedAnchor') document.removeEventListener('copy', handleCopy)
@@ -135,10 +140,20 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     column.id,
     getStateByCellId,
     handleCopy,
-    handleOnEnterDown,
+    handleOnKeyDown,
     handlePaste,
     row.index,
   ])
+
+  // Keep value of cell up to date with external changes
+  useEffect(() => {
+    if (valueRef.current && valueRef.current !== getValue()) {
+      if (valueRef.current === renderValue) {
+        setRenderValue(getValue() as string)
+      }
+      valueRef.current = getValue()
+    }
+  }, [getValue, renderValue])
 
   const getBorderStyle = () => {
     if (cellState === 'focused') return '2px solid blue'

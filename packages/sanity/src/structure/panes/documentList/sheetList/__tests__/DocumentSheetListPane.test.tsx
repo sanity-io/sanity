@@ -184,8 +184,8 @@ describe('DocumentSheetListPane', () => {
 
           expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
 
-          // escape to persist the update
-          userEvent.type(screen.getByTestId('cell-name-0'), '{Escape}')
+          // enter to persist the update
+          userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
         })
 
         // assert that update is made to server
@@ -196,6 +196,35 @@ describe('DocumentSheetListPane', () => {
           )
           expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
         })
+      })
+
+      it('should not update cell when escape pressed after change', async () => {
+        await renderTest()
+
+        act(() => {
+          userEvent.click(screen.getByTestId('cell-name-0'))
+        })
+
+        // separate act to allow for initial state flush before clicking enter
+        act(() => {
+          userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
+          userEvent.keyboard('Jane Doe')
+
+          // value has been updated locally
+          expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
+
+          // escape to cancel the update
+          userEvent.type(screen.getByTestId('cell-name-0'), '{Escape}')
+        })
+
+        // assert NO update request is made to server
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).not.toHaveBeenCalled()
+          expect(mockDocumentOperations.commit.execute).not.toHaveBeenCalled()
+        })
+
+        // value should be reverted to original
+        expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
       })
     })
     describe('to copy a value', () => {
