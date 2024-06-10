@@ -9,7 +9,7 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   SearchProvider,
   set,
@@ -128,7 +128,6 @@ function DocumentSheetListPaneInner(
   const {documentSchemaType, ...paneProps} = props
   const {dispatch, state} = useSearchState()
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
-  const paneContainerRef = useRef<HTMLDivElement | null>(null)
 
   const {data} = useDocumentSheetList({
     typeName: documentSchemaType.name,
@@ -273,11 +272,7 @@ function DocumentSheetListPaneInner(
               <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
             </Table>
           </DocumentSheetListProvider>
-          <DocumentSheetActions
-            table={table}
-            schemaType={documentSchemaType}
-            parentRef={paneContainerRef.current}
-          />
+          <DocumentSheetActions table={table} schemaType={documentSchemaType} />
         </TableContainer>
         <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
           <DocumentSheetListPaginator table={table} />
@@ -287,12 +282,7 @@ function DocumentSheetListPaneInner(
   }
 
   return (
-    <PaneContainer
-      direction="column"
-      paddingX={3}
-      data-testid="document-sheet-list-pane"
-      ref={paneContainerRef}
-    >
+    <PaneContainer direction="column" paddingX={3} data-testid="document-sheet-list-pane">
       {renderContent()}
     </PaneContainer>
   )

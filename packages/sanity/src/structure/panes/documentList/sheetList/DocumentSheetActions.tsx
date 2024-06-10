@@ -22,7 +22,6 @@ import {type DocumentSheetListTable, type DocumentSheetTableRow} from './types'
 interface DocumentSheetActionsProps {
   table: DocumentSheetListTable
   schemaType: ObjectSchemaType
-  parentRef: HTMLDivElement | null
 }
 
 function BatchPublishAction({
@@ -148,16 +147,17 @@ const Divider = styled(Box)(() => {
 
 const PopoverPlaceholder = styled.div`
   position: sticky;
+  margin-left: auto;
+  margin-right: auto;
   bottom: 0;
+  width: 80%;
 `
 
-export function DocumentSheetActions({table, schemaType, parentRef}: DocumentSheetActionsProps) {
+export function DocumentSheetActions({table, schemaType}: DocumentSheetActionsProps) {
   const selectedRows = table.getSelectedRowModel().rows
   const items = useMemo(() => selectedRows.map((row) => row.original.__metadata), [selectedRows])
   const itemsId = useMemo(() => items.map((item) => item.idPair.publishedId), [items])
   const validationStatus = useValidationStatusList(itemsId, schemaType.name)
-
-  const popoverWidth = parentRef ? Math.max(parentRef.offsetWidth - 240, 400) : 600
 
   return (
     <Popover
@@ -166,14 +166,9 @@ export function DocumentSheetActions({table, schemaType, parentRef}: DocumentShe
       animate
       radius={5}
       placement="bottom"
+      matchReferenceWidth
       content={
-        <ActionsRoot
-          radius={5}
-          paddingX={4}
-          paddingY={3}
-          style={{width: `${popoverWidth}px`}}
-          scheme="light"
-        >
+        <ActionsRoot radius={5} paddingX={4} paddingY={3} scheme="light">
           <Stack>
             <Flex align="center" justify="space-between">
               <Text size={1} weight="medium">
