@@ -66,7 +66,7 @@ const config = {
     'react-hooks/exhaustive-deps': [
       'error',
       {
-        additionalHooks: '(useMemoObservable|useObservableCallback|useAsync)',
+        additionalHooks: '(useMemoObservable|useObservableCallback)',
       },
     ],
     // Set react-compiler to `error` once existing issues are fixed
