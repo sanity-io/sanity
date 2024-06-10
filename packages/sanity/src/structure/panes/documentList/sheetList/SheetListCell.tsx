@@ -34,7 +34,7 @@ type InputRef = CellInputElement | null
 export function SheetListCellInner(props: SheetListCellInnerProps) {
   const {getValue, column, row, fieldType} = props
   const cellId = `cell-${column.id}-${row.index}`
-  const valueRef = useRef(getValue())
+  const providedValueRef = useRef(getValue())
   const [renderValue, setRenderValue] = useState<string>(getValue() as string)
   const inputRef = useRef<InputRef>(null)
   const {
@@ -70,7 +70,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
   }
 
   const handleOnBlur = useCallback(() => {
-    if (renderValue !== valueRef.current) {
+    if (renderValue !== providedValueRef.current) {
       patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, renderValue)
     }
     resetFocusSelection()
@@ -94,7 +94,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
         }
         case 'Escape': {
           if (cellState === 'focused') {
-            setRenderValue(valueRef.current as string)
+            setRenderValue(providedValueRef.current as string)
 
             // wait for state to settle before blurring
             setTimeout(() => setSelectedAnchorCell(column.id, row.index))
@@ -178,11 +178,12 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
 
   // Keep value of cell up to date with external changes
   useEffect(() => {
-    if (valueRef.current && valueRef.current !== getValue()) {
-      if (valueRef.current === renderValue) {
+    if (providedValueRef.current && providedValueRef.current !== getValue()) {
+      if (providedValueRef.current === renderValue) {
+        // do not update the value if it's currently being edited
         setRenderValue(getValue() as string)
       }
-      valueRef.current = getValue()
+      providedValueRef.current = getValue()
     }
   }, [getValue, renderValue])
 
