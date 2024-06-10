@@ -1,7 +1,15 @@
 import {type Path} from '@sanity/types'
 import {useToast} from '@sanity/ui'
+import {flatten} from 'lodash'
 import {useCallback} from 'react'
-import {type FormDocumentValue, getValueAtPath, PatchEvent, set, useSchema} from 'sanity'
+import {
+  type FormDocumentValue,
+  type FormPatch,
+  getValueAtPath,
+  PatchEvent,
+  set,
+  useSchema,
+} from 'sanity'
 
 import {useCopyPaste} from './CopyPasteProvider'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
@@ -73,13 +81,17 @@ export function useCopyPasteAction() {
         _type: 'copyResult',
         documentId,
         documentType,
-        schemaTypeName: schemaTypeAtPath?.name || 'unknown',
-        schemaTypeTitle: schemaTypeAtPath?.title || schemaType?.name || 'unknown',
-        documentPath: path,
-        value: valueAtPath,
         isDocument,
         isArray,
         isObject,
+        items: [
+          {
+            schemaTypeName: schemaTypeAtPath?.name || 'unknown',
+            schemaTypeTitle: schemaTypeAtPath?.title || schemaType?.name || 'unknown',
+            documentPath: path,
+            value: valueAtPath,
+          },
+        ],
       }
 
       setCopyResult(payloadValue)
@@ -87,7 +99,7 @@ export function useCopyPasteAction() {
 
       toast.push({
         status: 'success',
-        title: `${isDocument ? 'Document' : 'Field'} ${payloadValue.schemaTypeTitle} copied`,
+        title: `${isDocument ? 'Document' : 'Field'} ${payloadValue.items.map((item) => item.schemaTypeName).join(', ')} copied`,
       })
     },
     [getDocumentMeta, setCopyResult, toast],
@@ -127,71 +139,78 @@ export function useCopyPasteAction() {
         return
       }
 
-      const sourceSchemaType = resolveSchemaTypeForPath(
-        sourceDocumentSchemaType,
-        clipboardItem.documentPath,
-      )
+      const updateItems: {patches: FormPatch[]; targetSchemaTypeTitle: string}[] = []
 
-      if (!sourceSchemaType) {
-        toast.push({
-          status: 'error',
-          title: `Failed to resolve schema type for path ${clipboardItem.documentPath.join('.')}`,
-        })
-        return
-      }
-
-      if (!targetDocumentSchemaType) {
-        toast.push({
-          status: 'error',
-          title: `Failed to resolve schema type for path ${targetPath.join('.')}`,
-        })
-        return
-      }
-
-      const targetSchemaTypeTitle = targetSchemaType?.title || targetSchemaType?.name
-
-      const transferValueOptions = {
-        sourceRootSchemaType: sourceSchemaType,
-        sourcePath: [],
-        sourceValue: clipboardItem.value,
-        targetRootSchemaType: targetSchemaType,
-        targetPath: [],
-      }
-
-      try {
-        const {targetValue, errors} = transferValue(transferValueOptions)
-
-        if (isEmptyValue(targetValue)) {
-          toast.push({
-            status: 'warning',
-            title: 'Nothing from the clipboard could be pasted here',
-          })
-          return
-        }
-        const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
-        if (nonWarningErrors.length > 0) {
+      for (const item of clipboardItem.items) {
+        const sourceSchemaType = resolveSchemaTypeForPath(
+          sourceDocumentSchemaType,
+          item.documentPath,
+        )
+        if (!sourceSchemaType) {
           toast.push({
             status: 'error',
-            title: 'Could not paste',
-            description: nonWarningErrors[0].message,
+            title: `Failed to resolve schema type for path ${item.documentPath.join('.')}`,
           })
           return
-        } else if (errors.length > 0) {
-          toast.push({
-            status: 'warning',
-            title: 'Could not paste all values',
-            description: errors.map((error) => error.message).join(', '),
-          })
         }
-        onChange?.(PatchEvent.from(set(targetValue, targetPath)))
+        if (!targetDocumentSchemaType) {
+          toast.push({
+            status: 'error',
+            title: `Failed to resolve schema type for path ${targetPath.join('.')}`,
+          })
+          return
+        }
+        const targetSchemaTypeTitle = targetSchemaType?.title || targetSchemaType?.name
+        const transferValueOptions = {
+          sourceRootSchemaType: sourceSchemaType,
+          sourcePath: [],
+          sourceValue: item.value,
+          targetRootSchemaType: targetSchemaType,
+          targetPath: [],
+        }
+        try {
+          const {targetValue, errors} = transferValue(transferValueOptions)
+          if (isEmptyValue(targetValue)) {
+            toast.push({
+              status: 'warning',
+              title: 'Nothing from the clipboard could be pasted here',
+            })
+            return
+          }
+          const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
+          if (nonWarningErrors.length > 0) {
+            toast.push({
+              status: 'error',
+              title: 'Could not paste',
+              description: nonWarningErrors[0].message,
+            })
+            return
+          } else if (errors.length > 0) {
+            toast.push({
+              status: 'warning',
+              title: 'Could not paste all values',
+              description: errors.map((error) => error.message).join(', '),
+            })
+          }
+          updateItems.push({patches: [set(targetValue, targetPath)], targetSchemaTypeTitle})
+        } catch (error) {
+          toast.push({
+            status: 'error',
+            title: error.message,
+          })
+          return
+        }
+      }
+
+      if (updateItems.length) {
+        const allPatches = flatten(updateItems.map(({patches}) => patches))
+        const allTargetNames = updateItems
+          .map(({targetSchemaTypeTitle}) => targetSchemaTypeTitle)
+          .join(', ')
+        onChange?.(PatchEvent.from(allPatches))
         toast.push({
           status: 'success',
-          title: `${clipboardItem.isDocument ? 'Document' : 'Field'} ${targetSchemaTypeTitle} updated`,
-        })
-      } catch (error) {
-        toast.push({
-          status: 'error',
-          title: error.message,
+          title: `${clipboardItem.isDocument ? 'Document' : 'Field'} ${allTargetNames} updated`,
         })
       }
     },

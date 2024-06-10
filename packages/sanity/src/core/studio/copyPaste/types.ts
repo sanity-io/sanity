@@ -19,13 +19,17 @@ export interface CopyActionResult {
   _type: 'copyResult'
   documentId?: string
   documentType?: string
-  documentPath: Path
-  value: unknown
   isArray: boolean
   isDocument: boolean
   isObject: boolean
-  schemaTypeName: string
-  schemaTypeTitle?: string
+  items: [
+    {
+      documentPath: Path
+      schemaTypeName: string
+      schemaTypeTitle?: string
+      value: unknown
+    },
+  ]
 }
 
 /**
