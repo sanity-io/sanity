@@ -3,9 +3,8 @@ import {useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../i18n'
 import {supportsTouch} from '../../../../util'
-import {useColorScheme} from '../../../colorScheme'
+import {useColorSchemeValue} from '../../../colorScheme'
 import {SearchWrapper} from './components/common/SearchWrapper'
 import {Filters} from './components/filters/Filters'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
@@ -45,8 +44,7 @@ const SearchDialogBox = styled(Box)`
  */
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
-  const {scheme} = useColorScheme()
-  const {t} = useTranslation()
+  const scheme = useColorSchemeValue()
 
   const {
     state: {filtersVisible, terms},

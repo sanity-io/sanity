@@ -253,6 +253,19 @@ const config = {
         'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
       },
     },
+
+    // Don't lint React Compiler rules on test code
+    {
+      files: [
+        `**/*/test/**/*`,
+        '**/*/__tests__/**/*',
+        '**/*.test.{js,ts,tsx}',
+        'packages/sanity/playwright-ct/**',
+      ],
+      rules: {
+        'react-compiler/react-compiler': 'off',
+      },
+    },
   ],
 }
 

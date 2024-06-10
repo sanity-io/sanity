@@ -33,6 +33,7 @@ import {
   type RenderPreviewCallbackProps,
 } from '../types'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
+import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
 
 /**
@@ -145,7 +146,11 @@ export function FormBuilder(props: FormBuilderProps) {
   const Annotation = useAnnotationComponent()
 
   const renderInput = useCallback(
-    (inputProps: Omit<InputProps, 'renderDefault'>) => <Input {...inputProps} />,
+    (inputProps: Omit<InputProps, 'renderDefault'>) => (
+      <FormBuilderInputErrorBoundary>
+        <Input {...inputProps} />
+      </FormBuilderInputErrorBoundary>
+    ),
     [Input],
   )
   const renderField = useCallback(

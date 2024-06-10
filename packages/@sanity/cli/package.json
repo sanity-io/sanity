@@ -70,7 +70,7 @@
     "groq-js": "^1.9.0",
     "node-machine-id": "^1.1.12",
     "pkg-dir": "^5.0.0",
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.0",
     "semver": "^7.3.5",
     "silver-fleece": "1.1.0",
     "validate-npm-package-name": "^3.0.0"

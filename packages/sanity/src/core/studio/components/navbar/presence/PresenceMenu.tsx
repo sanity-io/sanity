@@ -7,7 +7,7 @@ import {MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-comp
 import {StatusButton} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
 import {useGlobalPresence} from '../../../../store'
-import {useColorScheme} from '../../../colorScheme'
+import {useColorSchemeValue} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {PresenceMenuItem} from './PresenceMenuItem'
 
@@ -24,7 +24,7 @@ const FooterStack = styled(Stack)`
 export function PresenceMenu() {
   const presence = useGlobalPresence()
   const {projectId} = useWorkspace()
-  const {scheme} = useColorScheme()
+  const scheme = useColorSchemeValue()
   const {t} = useTranslation()
   const hasPresence = presence.length > 0
 

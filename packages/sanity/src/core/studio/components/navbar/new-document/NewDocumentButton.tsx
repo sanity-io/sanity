@@ -9,7 +9,7 @@ import {InsufficientPermissionsMessage} from '../../../../components'
 import {useSchema} from '../../../../hooks'
 import {useGetI18nText, useTranslation} from '../../../../i18n'
 import {useCurrentUser} from '../../../../store'
-import {useColorScheme} from '../../../colorScheme'
+import {useColorSchemeValue} from '../../../colorScheme'
 import {filterOptions} from './filter'
 import {
   DialogHeaderCard,
@@ -47,7 +47,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const {t} = useTranslation()
   const getI18nText = useGetI18nText(options)
 
-  const {scheme} = useColorScheme()
+  const scheme = useColorSchemeValue()
   const currentUser = useCurrentUser()
   const schema = useSchema()
 

@@ -6,7 +6,7 @@ import {Button} from '../../../../../ui-components'
 import {useRovingFocus} from '../../../../components'
 import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTabList'
 import {type Tool} from '../../../../config'
-import {useColorScheme} from '../../../colorScheme'
+import {useColorSchemeValue} from '../../../colorScheme'
 import {ToolLink, type ToolLinkProps} from './ToolLink'
 
 interface ToolCollapseMenuProps {
@@ -16,7 +16,7 @@ interface ToolCollapseMenuProps {
 
 export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   const {activeToolName, tools} = props
-  const {scheme} = useColorScheme()
+  const scheme = useColorSchemeValue()
   const [collapseMenuEl, setCollapseMenuEl] = useState<HTMLDivElement | null>(null)
 
   useRovingFocus({

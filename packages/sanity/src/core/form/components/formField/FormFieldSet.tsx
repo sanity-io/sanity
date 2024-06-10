@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text, type Theme, useForwardedRef} from '@sanity/ui'
+import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -8,7 +8,9 @@ import {
   type HTMLProps,
   type ReactNode,
   useCallback,
+  useImperativeHandle,
   useMemo,
+  useRef,
 } from 'react'
 import {css, styled} from 'styled-components'
 
@@ -107,7 +109,7 @@ const EMPTY_ARRAY: never[] = []
 /** @internal */
 export const FormFieldSet = forwardRef(function FormFieldSet(
   props: FormFieldSetProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-  ref: ForwardedRef<HTMLDivElement>,
+  forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {
     __internal_comments: comments,
@@ -134,18 +136,20 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
 
   const hasValidationMarkers = validation.length > 0
-  const forwardedRef = useForwardedRef(ref)
+  const ref = useRef<HTMLDivElement | null>(null)
   const {t} = useTranslation()
+
+  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
 
   const handleFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
-      const element = forwardedRef.current
+      const element = ref.current
 
       if (element === event.target) {
         if (onFocus) onFocus(event)
       }
     },
-    [forwardedRef, onFocus],
+    [onFocus],
   )
 
   const handleToggle = useCallback(
@@ -224,7 +228,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         hidden={collapsed}
         paddingLeft={level === 0 ? 0 : 3}
         onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
-        ref={forwardedRef}
+        ref={ref}
         tabIndex={tabIndex}
       >
         {!collapsed && content}

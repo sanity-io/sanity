@@ -1,5 +1,5 @@
 import {Box, Button, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
-import {type Column, type Table} from '@tanstack/react-table'
+import {type Column} from '@tanstack/react-table'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
 
