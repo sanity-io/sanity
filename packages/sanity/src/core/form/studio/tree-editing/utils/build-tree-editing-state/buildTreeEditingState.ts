@@ -56,6 +56,10 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     return EMPTY_TREE_STATE
   }
 
+  if (rootField?.options?.treeEditing === false) {
+    return EMPTY_TREE_STATE
+  }
+
   recursive({
     initial: true,
     schemaType: rootField,

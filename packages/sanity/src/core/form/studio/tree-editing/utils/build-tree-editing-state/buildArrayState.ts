@@ -47,6 +47,8 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Do not include references
     if (isReference) return
 
+    if (itemSchemaField?.options?.treeEditing === false) return
+
     if (shouldBeInBreadcrumb(itemPath, openPath)) {
       const breadcrumbsResult = buildBreadcrumbsState({
         arraySchemaType,
@@ -65,6 +67,8 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       const isPrimitive = isPrimitiveSchemaType(childField?.type)
       const isPortableText =
         isArraySchemaType(childField.type) && childField.type.of.some((t) => t.name === 'block')
+
+      if (childField?.type?.options?.treeEditing === false) return
 
       if (isSelected(childPath, openPath)) {
         relativePath = getRelativePath(childPath)

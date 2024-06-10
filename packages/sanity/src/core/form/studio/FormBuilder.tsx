@@ -34,7 +34,7 @@ import {
 } from '../types'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormProvider} from './FormProvider'
-import {TreeEditingDialog, useTreeArrayEditingEnabled} from './tree-editing'
+import {TreeEditingDialog, TreeEditingEnabledProvider, useTreeEditingEnabled} from './tree-editing'
 
 /**
  * @alpha
@@ -98,8 +98,6 @@ export function FormBuilder(props: FormBuilderProps) {
     validation,
     value,
   } = props
-
-  const {enabled: treeEditingEnabled} = useTreeArrayEditingEnabled()
 
   const handleCollapseField = useCallback(
     (fieldName: string) => onSetPathCollapsed([fieldName], true),
@@ -183,7 +181,7 @@ export function FormBuilder(props: FormBuilderProps) {
   )
 
   const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = useMemo(() => {
-    const inputProps: Omit<ObjectInputProps, 'renderDefault'> = {
+    return {
       focusPath,
       elementProps: {
         'ref': focusRef,
@@ -221,28 +219,6 @@ export function FormBuilder(props: FormBuilderProps) {
       validation: EMPTY_ARRAY,
       value,
     }
-
-    const isRootInput = id === 'root'
-
-    const arrayEditingModal = treeEditingEnabled && isRootInput && (
-      <TreeEditingDialog
-        onPathFocus={onPathFocus}
-        onPathOpen={onPathOpen}
-        openPath={openPath}
-        rootInputProps={inputProps}
-        schemaType={schemaType}
-      />
-    )
-
-    return {
-      ...inputProps,
-
-      // The array editing modal must be rendered as a child of the root input.
-      // This is crucial because the root input might be wrapped in a React context using the
-      // Components API, which is consumed by inputs in the form. If the array editing modal is
-      // rendered outside of the root input, it will not have access to the context.
-      __internal_arrayEditingModal: arrayEditingModal,
-    }
   }, [
     focusPath,
     focused,
@@ -260,8 +236,6 @@ export function FormBuilder(props: FormBuilderProps) {
     id,
     members,
     onPathFocus,
-    onPathOpen,
-    openPath,
     readOnly,
     renderAnnotation,
     renderBlock,
@@ -271,7 +245,6 @@ export function FormBuilder(props: FormBuilderProps) {
     renderItem,
     renderPreview,
     schemaType,
-    treeEditingEnabled,
     value,
   ])
 
@@ -302,10 +275,46 @@ export function FormBuilder(props: FormBuilderProps) {
       <GetFormValueProvider value={value}>
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
-            {renderInput(rootInputProps)}
+            <TreeEditingEnabledProvider>
+              <RootInput
+                rootInputProps={rootInputProps}
+                onPathOpen={onPathOpen}
+                openPath={openPath}
+                renderInput={renderInput}
+              />
+            </TreeEditingEnabledProvider>
           </DocumentFieldActionsProvider>
         </FormValueProvider>
       </GetFormValueProvider>
     </FormProvider>
   )
+}
+
+interface RootInputProps {
+  rootInputProps: Omit<ObjectInputProps, 'renderDefault'>
+  onPathOpen: (path: Path) => void
+  openPath: Path
+  renderInput: (props: Omit<ObjectInputProps, 'renderDefault'>) => JSX.Element
+}
+
+function RootInput(props: RootInputProps) {
+  const {rootInputProps, onPathOpen, openPath, renderInput} = props
+  const treeEditing = useTreeEditingEnabled()
+
+  const isRoot = rootInputProps.id === 'root'
+
+  const arrayEditingModal = treeEditing.enabled && isRoot && (
+    <TreeEditingDialog
+      onPathFocus={rootInputProps.onPathFocus}
+      onPathOpen={onPathOpen}
+      openPath={openPath}
+      rootInputProps={rootInputProps}
+      schemaType={rootInputProps.schemaType}
+    />
+  )
+
+  return renderInput({
+    ...rootInputProps,
+    __internal_arrayEditingModal: arrayEditingModal,
+  })
 }
