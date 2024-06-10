@@ -79,9 +79,9 @@ export default async function buildSanityStudio(
           type: 'confirm',
           message: chalk.yellow(
             `The following local package versions are different from the versions currently served at runtime.\n` +
-              `When using auto updates, we recommend that you test locally with the most recent versions before deploying. \n\n` +
+              `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
               `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
-              `Deploy anyway?`,
+              `Continue anyway?`,
           ),
           default: false,
         })
