@@ -5,6 +5,9 @@ import {isEqual, startsWith} from '@sanity/util/paths'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {ValidationContext} from 'sanity/_singletons'
 
+/**
+ * @internal
+ */
 export function ValidationProvider(props: {validation: ValidationMarker[]; children: ReactNode}) {
   return (
     <ValidationContext.Provider value={props.validation}>
@@ -13,6 +16,9 @@ export function ValidationProvider(props: {validation: ValidationMarker[]; child
   )
 }
 
+/**
+ * @internal
+ */
 export function useValidationMarkers(): ValidationMarker[] {
   const ctx = useContext(ValidationContext)
   if (!ctx) {

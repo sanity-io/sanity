@@ -3,6 +3,10 @@ import {combineLatest, map} from 'rxjs'
 
 import {useDocumentStore, type ValidationStatus} from '../store'
 
+/**
+ * @internal
+ * Takes a list of ids and type and returns the validation status of each document.
+ */
 export function useValidationStatusList(
   publishedDocIds: string[],
   docTypeName: string,

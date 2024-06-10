@@ -10,11 +10,11 @@ import {
   isValidationErrorMarker,
   type ObjectSchemaType,
   useClient,
+  useValidationStatusList,
   type ValidationStatus,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {useValidationStatusList} from '../../../../core/hooks/useValidationStatusList'
 import {Button} from '../../../../ui-components'
 import {batchPublish} from './batchPublish'
 import {type DocumentSheetListTable, type DocumentSheetTableRow} from './types'
