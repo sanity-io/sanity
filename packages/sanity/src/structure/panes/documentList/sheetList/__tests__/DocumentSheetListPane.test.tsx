@@ -25,6 +25,10 @@ jest.mock('../useDocumentSheetList', () => ({
         },
         name: 'John Doe',
         age: 42,
+        address: {
+          city: 'Oslo',
+          country: 'Norway',
+        },
       },
       {
         _id: '456',
@@ -38,6 +42,10 @@ jest.mock('../useDocumentSheetList', () => ({
         },
         name: 'Bill Bob',
         age: 17,
+        address: {
+          city: 'Oslo',
+          country: 'Norway',
+        },
       },
     ],
     isLoading: false,
@@ -78,6 +86,14 @@ const renderTest = async () => {
           fields: [
             {type: 'string', name: 'name'},
             {type: 'number', name: 'age'},
+            {
+              name: 'address',
+              type: 'object',
+              fields: [
+                {name: 'city', type: 'string'},
+                {name: 'country', type: 'string'},
+              ],
+            },
           ],
         },
       ],
@@ -433,13 +449,38 @@ describe('DocumentSheetListPane', () => {
       fireEvent.mouseMove(screen.getByText('Name'))
 
       expect(
-        within(screen.getByTestId('header-name')).getByTestId('field-menu-button'),
+        within(screen.getByTestId('header-1_name_name')).getByTestId('field-menu-button'),
       ).toBeVisible()
 
-      fireEvent.click(within(screen.getByTestId('header-name')).getByTestId('field-menu-button'))
+      fireEvent.click(
+        within(screen.getByTestId('header-1_name_name')).getByTestId('field-menu-button'),
+      )
       fireEvent.click(screen.getByText('Remove from table'))
 
       expect(screen.queryByText('Name')).toBeNull()
+    })
+    it('should hide the children columns if the parent is removed', async () => {
+      await renderTest()
+
+      fireEvent.mouseMove(screen.getByText('address'))
+      expect(screen.queryByText('City')).toBeVisible()
+      expect(screen.queryByText('Country')).toBeVisible()
+
+      expect(
+        within(screen.getByTestId('header-1_address_address_city')).getByTestId(
+          'field-menu-button',
+        ),
+      ).toBeVisible()
+
+      fireEvent.click(
+        within(screen.getByTestId('header-1_address_address_city')).getByTestId(
+          'field-menu-button',
+        ),
+      )
+      fireEvent.click(screen.getByText('Remove from table'))
+
+      expect(screen.queryByText('City')).toBeNull()
+      expect(screen.queryByText('Country')).toBeNull()
     })
   })
 })
