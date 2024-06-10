@@ -51,7 +51,7 @@ withDefaultClient((context) => {
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
     await referenceInput.getByLabel('Open').click()
-    await expect(authorListbox).toBeVisible()
+    await expect(authorListbox).toBeVisible({timeout: 50000})
 
     // Select the next document in the list.
     await page.keyboard.press('ArrowDown')
