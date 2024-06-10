@@ -69,33 +69,65 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     }
   }
 
-  const handleOnKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const {key} = event
-      if (key === 'Enter') {
-        if (cellState === 'selectedAnchor') handleProgrammaticFocus()
-        if (cellState === 'focused') submitFocusedCell()
-      }
-
-      if (cellState === 'focused' && key === 'Escape') {
-        setRenderValue(valueRef.current as string)
-
-        // wait for state to settle before blurring
-        setTimeout(() => setSelectedAnchorCell(column.id, row.index))
-      }
-    },
-    [cellState, column.id, row.index, setSelectedAnchorCell, submitFocusedCell],
-  )
-
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRenderValue(event.target.value)
-  }
-
-  const handleOnBlur = () => {
+  const handleOnBlur = useCallback(() => {
     if (renderValue !== valueRef.current) {
       patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, renderValue)
     }
     resetFocusSelection()
+  }, [
+    column.id,
+    patchDocument,
+    renderValue,
+    resetFocusSelection,
+    row.original.__metadata.idPair.publishedId,
+  ])
+
+  const handleOnKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const {key} = event
+
+      switch (key) {
+        case 'Enter': {
+          if (cellState === 'selectedAnchor') handleProgrammaticFocus()
+          if (cellState === 'focused') submitFocusedCell()
+          break
+        }
+        case 'Escape': {
+          if (cellState === 'focused') {
+            setRenderValue(valueRef.current as string)
+
+            // wait for state to settle before blurring
+            setTimeout(() => setSelectedAnchorCell(column.id, row.index))
+          }
+          break
+        }
+
+        case 'Delete':
+        case 'Backspace': {
+          if (cellState !== 'focused') {
+            setRenderValue('')
+            patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, '')
+          }
+          break
+        }
+
+        default:
+          break
+      }
+    },
+    [
+      cellState,
+      column.id,
+      patchDocument,
+      row.index,
+      row.original.__metadata.idPair.publishedId,
+      setSelectedAnchorCell,
+      submitFocusedCell,
+    ],
+  )
+
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRenderValue(event.target.value)
   }
 
   const handlePaste = useCallback(
@@ -116,8 +148,8 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
   }, [renderValue])
 
   useEffect(() => {
-    if (cellState === 'selectedAnchor' || cellState === 'focused')
-      // only listen for key when cell is focused or anchor
+    if (cellState)
+      // only listen for key when cell is selected or focused
       document.addEventListener('keydown', handleOnKeyDown)
     if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
       // if cell is selected, paste events should be handled
@@ -128,8 +160,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
       document.addEventListener('copy', handleCopy)
 
     return () => {
-      if (cellState === 'selectedAnchor' || cellState === 'focused')
-        document.removeEventListener('keydown', handleOnKeyDown)
+      if (cellState) document.removeEventListener('keydown', handleOnKeyDown)
       if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
         document.removeEventListener('paste', handlePaste)
       if (cellState === 'selectedAnchor') document.removeEventListener('copy', handleCopy)
