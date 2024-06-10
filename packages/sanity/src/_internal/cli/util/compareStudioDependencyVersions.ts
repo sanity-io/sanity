@@ -6,9 +6,9 @@ import semver from 'semver'
 import {type AutoUpdatesImportMap} from './getAutoUpdatesImportMap'
 import {readPackageJson} from './readPackageJson'
 
-async function getRemoteResolvedVersion(url: string) {
+async function getRemoteResolvedVersion(fetchFn: typeof fetch, url: string) {
   try {
-    const res = await fetch(url, {method: 'HEAD', redirect: 'manual'})
+    const res = await fetchFn(url, {method: 'HEAD', redirect: 'manual'})
     return res.headers.get('x-resolved-version')
   } catch (err) {
     throw new Error(`Failed to fetch remote version for ${url}: ${err.message}`)
@@ -21,9 +21,29 @@ interface CompareStudioDependencyVersions {
   remote: string
 }
 
+/**
+ * Compares the versions of dependencies in the studio with their remote versions.
+ *
+ * This function reads the package.json file in the provided working directory, and compares the versions of the dependencies
+ * specified in the `autoUpdatesImports` parameter with their remote versions. If the versions do not match, the dependency is
+ * added to a list of failed dependencies, which is returned by the function.
+ *
+ * The failed dependencies are anything that does not strictly match the remote version.
+ * This means that if a version is lower or greater by even a patch it will be marked as failed.
+ *
+ * @param AutoUpdatesImportMap - An object mapping package names to their remote import URLs.
+ * @param string - The path to the working directory containing the package.json file.
+ *
+ * @returns Promise\<Array\<CompareStudioDependencyVersions\>\> - A promise that resolves to an array of objects, each containing
+ * the name of a package whose local and remote versions do not match, along with the local and remote versions.
+ *
+ * @throws Error - Throws an error if the remote version of a package cannot be fetched, or if the local version of a package
+ * cannot be parsed.
+ */
 export async function compareStudioDependencyVersions(
   autoUpdatesImports: AutoUpdatesImportMap,
   workDir: string,
+  fetchFn = globalThis.fetch,
 ): Promise<Array<CompareStudioDependencyVersions>> {
   const manifest = readPackageJson(path.join(workDir, 'package.json'))
   const dependencies = {...manifest.dependencies, ...manifest.devDependencies}
@@ -36,7 +56,7 @@ export async function compareStudioDependencyVersions(
   ) as Array<[string, string]>
 
   for (const [pkg, value] of filteredAutoUpdatesImports) {
-    const resolvedVersion = await getRemoteResolvedVersion(value)
+    const resolvedVersion = await getRemoteResolvedVersion(fetchFn, value)
 
     if (!resolvedVersion) {
       throw new Error(`Failed to fetch remote version for ${value}`)
