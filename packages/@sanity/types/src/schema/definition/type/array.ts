@@ -18,6 +18,7 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration {
   direction?: 'horizontal' | 'vertical'
   sortable?: boolean
   modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
+  treeEditing?: boolean
 }
 
 /** @public */
