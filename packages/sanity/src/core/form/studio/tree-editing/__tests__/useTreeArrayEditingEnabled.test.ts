@@ -1,14 +1,14 @@
 import {describe, expect, jest, test} from '@jest/globals'
 import {renderHook} from '@testing-library/react'
 import React from 'react'
-import {useSource, useTreeArrayEditingEnabled} from 'sanity'
+import {useSource, useTreeEditingEnabled} from 'sanity'
 
 // Mock the entire module
 jest.mock('../../../../studio/source')
 
 const mockedUseInnerHook = useSource as jest.Mock
 
-describe('useTreeArrayEditingEnabled', () => {
+describe('useTreeEditingEnabled', () => {
   test('should return enabled: false when config is not enabled', () => {
     const features = {
       features: {
@@ -21,7 +21,7 @@ describe('useTreeArrayEditingEnabled', () => {
     }
     mockedUseInnerHook.mockImplementation(() => features)
 
-    const {result} = renderHook(() => useTreeArrayEditingEnabled())
+    const {result} = renderHook(() => useTreeEditingEnabled())
 
     expect(result.current).toEqual({enabled: false, legacyEditing: false})
   })
@@ -38,7 +38,7 @@ describe('useTreeArrayEditingEnabled', () => {
     }
     mockedUseInnerHook.mockImplementation(() => features)
 
-    const {result} = renderHook(() => useTreeArrayEditingEnabled())
+    const {result} = renderHook(() => useTreeEditingEnabled())
 
     expect(result.current).toEqual({enabled: true, legacyEditing: false})
   })
@@ -48,7 +48,7 @@ describe('useTreeArrayEditingEnabled', () => {
     // Set the mock return value of useContext
     jest.spyOn(React, 'useContext').mockReturnValue({hasEditorParent: true})
 
-    const {result} = renderHook(() => useTreeArrayEditingEnabled())
+    const {result} = renderHook(() => useTreeEditingEnabled())
 
     expect(result.current).toEqual({enabled: true, legacyEditing: true})
   })
