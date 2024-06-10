@@ -1,83 +1,68 @@
-import {useEffect, useState, type ReactNode} from 'react'
-import {SANITY_VERSION} from '../../version'
-import { useToast } from '@sanity/ui'
-import { checkForLatestVersions } from './checkForLatestVersions'
+import {Box, Button, Stack, useToast} from '@sanity/ui'
+import {type ReactNode, useEffect, useState} from 'react'
+import {SANITY_VERSION} from 'sanity'
+import semver from 'semver'
 
-interface VersionMap {
-  [key: string]: string
-}
+import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
+import {useTranslation} from '../../i18n'
+import {checkForLatestVersions} from './checkForLatestVersions'
 
 /*
- * The presence of the sanity module in the importmap script 
- * indicates that the studio was probably built with an auto-updates flag.
- */ 
-const hasSanityPackageInImportMap = () => { 
-  if (typeof document === 'undefined' || !('querySelectorAll' in document)) {
-    return false
-  }
-  const importMapEntries = document.querySelectorAll('script[type="importmap"]')
-  return Array.from(importMapEntries).flatMap((entry) => {
-    if (!entry.textContent) return []
-    const entryImports = JSON.parse(entry.textContent)
-    return Object.keys(entryImports.imports || {})
-  }).some((key) => key === 'sanity')
+ * We are currently only checking to see if the sanity module has a new version available.
+ * We can add more packages to this list (e.g., @sanity/vision) if we want to check for more.
+ */
+const currentPackageVersions: Record<string, string> = {
+  sanity: SANITY_VERSION,
 }
 
 export function PackageVersionStatusProvider({children}: {children: ReactNode}) {
-  const [latestVersions, setLatestVersions] = useState<VersionMap | null>(null)
+  const [hasNewVersion, setHasNewVersion] = useState<boolean>(false)
   const toast = useToast()
-  /*
-  * We are currently only checking to see if the sanity module has a new version available.
-  * We can add more packages to this list (e.g., @sanity/vision) if we want to check for more.
-  */
-  const currentPackages = {
-    sanity: SANITY_VERSION,
-  }
+  const {t} = useTranslation()
+
   const autoUpdatingPackages = hasSanityPackageInImportMap()
-
-  console.log('hi from version status provider')
-
 
   const onClick = () => {
     window.location.reload()
   }
 
   useEffect(() => {
-    if (!autoUpdatingPackages) return
-    const sub = checkForLatestVersions(currentPackages)
-      .subscribe({
-        next: setLatestVersions as any,
-      })
-
+    const sub = checkForLatestVersions(currentPackageVersions).subscribe({
+      next: (latestPackageVersions) => {
+        const foundNewVersion = Object.entries(latestPackageVersions).some(([pkg, version]) => {
+          if (!version) return false
+          return semver.gt(version, currentPackageVersions[pkg])
+        })
+        setHasNewVersion(foundNewVersion)
+      },
+    })
     return () => sub?.unsubscribe()
-  }, [setLatestVersions])
-
+  }, [setHasNewVersion, autoUpdatingPackages])
 
   useEffect(() => {
-    if (!latestVersions) return
-
-    const latestSanityVersion = latestVersions.sanity
-
-    if (latestSanityVersion && latestSanityVersion !== SANITY_VERSION) {
+    if (autoUpdatingPackages && hasNewVersion) {
       toast.push({
-        closable: true,
+        id: 'new-package-available',
+        title: t('package-version.new-package-available.title'),
         description: (
-          <>
-          <>
-            A new version of Sanity Studio is available. Please refresh to see everything cool!
-          </>
-          <br />
-          <span onClick={onClick}>
-            Reload
-          </span>
-          </>
+          <Stack space={2} paddingBottom={2}>
+            <Box>{t('package-version.new-package-available.description')}</Box>
+            <Box>
+              <Button
+                onClick={onClick}
+                aria-label={t('package-version.new-package-available.reload-button')}
+                tone={'primary'}
+                text={t('package-version.new-package-available.reload-button')}
+              />
+            </Box>
+          </Stack>
         ),
-        status: 'info',
-        title: 'New version available',
+        closable: true,
         duration: 10000,
+        status: 'info',
       })
     }
-  }, [latestVersions, toast])
+  }, [hasNewVersion, toast, t, autoUpdatingPackages])
 
   return <>{children}</>
 }

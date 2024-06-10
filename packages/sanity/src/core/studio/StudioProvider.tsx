@@ -17,6 +17,7 @@ import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
+import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
 import {
   AuthenticateScreen,
   ConfigErrorsScreen,
@@ -29,7 +30,6 @@ import {StudioTelemetryProvider} from './StudioTelemetryProvider'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
-import { PackageVersionStatusProvider } from './packageVersionStatus/PackageVersionStatusProvider'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
@@ -56,11 +56,14 @@ export function StudioProvider({
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
 }: StudioProviderProps) {
+<<<<<<< HEAD
   // We initialize the error reporter as early as possible in order to catch anything that could
   // occur during configuration loading, React rendering etc. StudioProvider is often the highest
   // mounted React component that is shared across embedded and standalone studios.
   errorReporter.initialize()
 
+=======
+>>>>>>> 8acd0e4a28 (feat: notify AUS users of new packages)
   const _children = (
     <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       <StudioTelemetryProvider config={config}>
