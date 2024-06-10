@@ -54,15 +54,22 @@ interface TreeEditingBreadcrumbsMenuButtonProps {
   onPathSelect: (path: Path) => void
   menuTitle?: string
   parentElement: HTMLElement | null
-  renderMenuItemTitle?: (title: string) => string
   selectedPath: Path
+  renderOverflow?: boolean
 }
 
 export function TreeEditingBreadcrumbsMenuButton(
   props: TreeEditingBreadcrumbsMenuButtonProps,
 ): JSX.Element {
-  const {button, items, onPathSelect, menuTitle, parentElement, renderMenuItemTitle, selectedPath} =
-    props
+  const {
+    button,
+    items,
+    onPathSelect,
+    menuTitle,
+    parentElement,
+    selectedPath,
+    renderOverflow = false,
+  } = props
   const [open, setOpen] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -122,7 +129,7 @@ export function TreeEditingBreadcrumbsMenuButton(
         <TreeEditingBreadcrumbsMenu
           items={items}
           onPathSelect={handlePathSelect}
-          renderMenuItemTitle={renderMenuItemTitle}
+          renderOverflow={renderOverflow}
           selectedPath={selectedPath}
         />
       </PopoverListFlex>

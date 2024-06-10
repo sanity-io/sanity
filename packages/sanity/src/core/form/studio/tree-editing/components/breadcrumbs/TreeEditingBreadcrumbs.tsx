@@ -11,7 +11,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {getSchemaTypeTitle, type Path} from 'sanity'
+import {getSchemaTypeTitle, type Path, SanityDefaultPreview} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {useValuePreviewWithFallback} from '../../hooks'
@@ -85,9 +85,7 @@ const MenuButton = forwardRef(function MenuButton(
       {...rest}
     >
       <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">
-        <StyledText size={1} muted={!isSelected} weight="medium" textOverflow="ellipsis">
-          {title}
-        </StyledText>
+        <SanityDefaultPreview title={title} media={value.media} layout="inline" />
 
         {hasChildren && (
           <Text size={0}>
@@ -185,7 +183,7 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
               items={item}
               onPathSelect={onPathSelect}
               selectedPath={selectedPath}
-              renderMenuItemTitle={renderMenuItemTitle}
+              renderOverflow
             />
 
             {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
