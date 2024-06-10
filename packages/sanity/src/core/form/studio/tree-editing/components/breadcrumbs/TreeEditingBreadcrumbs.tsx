@@ -110,12 +110,6 @@ const SeparatorItem = forwardRef(function SeparatorItem(
   )
 })
 
-// Render the title of the menu item in the collapsed breadcrumb
-// menu (i.e. the "..." item) with a leading slash.
-function renderMenuItemTitle(title: string): string {
-  return `/ ${title}`
-}
-
 interface TreeEditingBreadcrumbsProps {
   items: TreeEditingBreadcrumb[]
   onPathSelect: (path: Path) => void
@@ -170,7 +164,6 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
         return (
           <Fragment key={key}>
             <TreeEditingBreadcrumbsMenuButton
-              parentElement={rootElement}
               button={
                 <StyledButton mode="bleed" padding={1}>
                   <Flex overflow="hidden">
@@ -180,10 +173,11 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
                   </Flex>
                 </StyledButton>
               }
+              collapsed
               items={item}
               onPathSelect={onPathSelect}
+              parentElement={rootElement}
               selectedPath={selectedPath}
-              renderOverflow
             />
 
             {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}

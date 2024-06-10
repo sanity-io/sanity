@@ -41,9 +41,10 @@ function BreadcrumbsItem(props: BreadcrumbsItemProps): JSX.Element {
         onClick={() => onPathSelect(item.path)}
         selected={selected}
         title={title}
+        padding={2}
       >
-        <Flex align="center" gap={2} justify="space-between">
-          <Flex align="center">{renderMenuItemTitle(value)}</Flex>
+        <Flex align="center" gap={3} justify="space-between">
+          <Flex flex={1}>{renderMenuItemTitle(value)}</Flex>
 
           {selected && (
             <Text size={1}>
@@ -57,14 +58,14 @@ function BreadcrumbsItem(props: BreadcrumbsItemProps): JSX.Element {
 }
 
 interface TreeEditingBreadcrumbsMenuProps {
+  collapsed?: boolean
   items: TreeEditingBreadcrumb[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
-  renderOverflow?: boolean
 }
 
 export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProps): JSX.Element {
-  const {items, onPathSelect, selectedPath, renderOverflow = false} = props
+  const {items, onPathSelect, selectedPath, collapsed = false} = props
   const {t} = useTranslation()
 
   const getItemDisabled = useCallback(
@@ -81,10 +82,13 @@ export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProp
 
       // Render the title of the menu item in the collapsed breadcrumb
       // menu (i.e. the "..." item) with a leading slash.
-      if (renderOverflow) {
+      if (collapsed) {
         return (
-          <Flex align="center">
-            /
+          <Flex align="center" gap={1}>
+            <Text size={1} muted>
+              /
+            </Text>
+
             <SanityDefaultPreview title={title} media={media} layout="inline" />
           </Flex>
         )
@@ -92,7 +96,7 @@ export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProp
 
       return <SanityDefaultPreview title={title} media={media} layout="inline" />
     },
-    [renderOverflow],
+    [collapsed],
   )
 
   const renderItem = useCallback(

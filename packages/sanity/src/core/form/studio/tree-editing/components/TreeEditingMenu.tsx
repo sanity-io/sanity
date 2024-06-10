@@ -192,10 +192,9 @@ function MenuItem(props: TreeEditingMenuItemProps) {
               mode="bleed"
               onClick={handleClick}
               padding={1}
-              paddingLeft={1}
               title={title}
             >
-              <Flex align="center" gap={2}>
+              <Flex align="center">
                 <SanityDefaultPreview
                   title={title}
                   media={isArrayParent ? <StackCompactIcon /> : value.media}
