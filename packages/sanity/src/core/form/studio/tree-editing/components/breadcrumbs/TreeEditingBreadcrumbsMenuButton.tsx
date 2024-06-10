@@ -50,19 +50,26 @@ const StyledPopover = styled(Popover)(() => {
 
 interface TreeEditingBreadcrumbsMenuButtonProps {
   button: ReactElement
+  collapsed?: boolean
   items: TreeEditingBreadcrumb[]
-  onPathSelect: (path: Path) => void
   menuTitle?: string
+  onPathSelect: (path: Path) => void
   parentElement: HTMLElement | null
-  renderMenuItemTitle?: (title: string) => string
   selectedPath: Path
 }
 
 export function TreeEditingBreadcrumbsMenuButton(
   props: TreeEditingBreadcrumbsMenuButtonProps,
 ): JSX.Element {
-  const {button, items, onPathSelect, menuTitle, parentElement, renderMenuItemTitle, selectedPath} =
-    props
+  const {
+    button,
+    collapsed = false,
+    items,
+    menuTitle,
+    onPathSelect,
+    parentElement,
+    selectedPath,
+  } = props
   const [open, setOpen] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -120,9 +127,9 @@ export function TreeEditingBreadcrumbsMenuButton(
         )}
 
         <TreeEditingBreadcrumbsMenu
+          collapsed={collapsed}
           items={items}
           onPathSelect={handlePathSelect}
-          renderMenuItemTitle={renderMenuItemTitle}
           selectedPath={selectedPath}
         />
       </PopoverListFlex>

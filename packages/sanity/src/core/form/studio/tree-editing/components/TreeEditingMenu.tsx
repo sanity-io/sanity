@@ -1,13 +1,13 @@
 /* eslint-disable max-nested-callbacks */
 import {hues} from '@sanity/color'
 import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {getSchemaTypeTitle, type Path, useTranslation} from 'sanity'
+import {getSchemaTypeTitle, type Path, SanityDefaultPreview, useTranslation} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
 
@@ -159,17 +159,6 @@ function MenuItem(props: TreeEditingMenuItemProps) {
     scrollIntoViewIfNeeded(rootElement, SCROLL_BEHAVIOR_OPTIONS)
   }, [rootElement, selected])
 
-  const titleNode = useMemo(
-    () => (
-      <Box flex={1}>
-        <Text size={1} textOverflow="ellipsis" weight={selected ? 'medium' : undefined}>
-          {title}
-        </Text>
-      </Box>
-    ),
-    [title, selected],
-  )
-
   return (
     <Stack
       aria-expanded={open}
@@ -202,20 +191,15 @@ function MenuItem(props: TreeEditingMenuItemProps) {
               data-ui="NavigateButton"
               mode="bleed"
               onClick={handleClick}
-              padding={2}
-              paddingLeft={1}
+              padding={1}
               title={title}
             >
-              <Flex align="center" gap={2}>
-                {isArrayParent && (
-                  <Box marginLeft={1}>
-                    <Text size={1}>
-                      <StackCompactIcon />
-                    </Text>
-                  </Box>
-                )}
-
-                {titleNode}
+              <Flex align="center">
+                <SanityDefaultPreview
+                  title={title}
+                  media={isArrayParent ? <StackCompactIcon /> : value.media}
+                  layout="inline"
+                />
               </Flex>
             </Button>
           </Stack>
