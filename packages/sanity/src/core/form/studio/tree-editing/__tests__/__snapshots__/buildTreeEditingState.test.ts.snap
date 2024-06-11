@@ -4287,6 +4287,14 @@ Object {
                         ],
                         "weight": 1,
                       },
+                      Object {
+                        "path": Array [
+                          "legacyArrayEditingArray",
+                          Array [],
+                          "title",
+                        ],
+                        "weight": 1,
+                      },
                     ],
                     "fields": Array [
                       Object {
@@ -4910,6 +4918,108 @@ Object {
                         "group": undefined,
                         "name": "mixedArray",
                         "type": [Circular],
+                      },
+                      Object {
+                        "fieldset": undefined,
+                        "group": undefined,
+                        "name": "legacyArrayEditingArray",
+                        "type": Object {
+                          "jsonType": "array",
+                          "name": "array",
+                          "of": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldset": undefined,
+                                  "group": undefined,
+                                  "name": "title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "preview": Object {
+                                      "prepare": [Function],
+                                    },
+                                    "title": "Title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                    },
+                                  },
+                                },
+                              ],
+                              "fieldsets": Array [
+                                Object {
+                                  "field": Object {
+                                    "fieldset": undefined,
+                                    "group": undefined,
+                                    "name": "title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "preview": Object {
+                                        "prepare": [Function],
+                                      },
+                                      "title": "Title",
+                                      "type": Object {
+                                        "jsonType": "string",
+                                        "name": "string",
+                                        "title": "String",
+                                        "type": null,
+                                      },
+                                    },
+                                  },
+                                  "single": true,
+                                },
+                              ],
+                              "groups": Array [],
+                              "jsonType": "object",
+                              "name": "legacyArrayEditingObject",
+                              "options": Object {},
+                              "orderings": Array [
+                                Object {
+                                  "by": Array [
+                                    Object {
+                                      "direction": "asc",
+                                      "field": "title",
+                                    },
+                                  ],
+                                  "i18n": Object {
+                                    "title": Object {
+                                      "key": "default-orderings.title",
+                                      "ns": "studio",
+                                    },
+                                  },
+                                  "name": "title",
+                                  "title": "Title",
+                                },
+                              ],
+                              "preview": Object {
+                                "select": Object {
+                                  "title": "title",
+                                },
+                              },
+                              "title": "Legacy array editing object",
+                              "type": Object {
+                                "jsonType": "object",
+                                "name": "object",
+                                "title": "Object",
+                                "type": null,
+                              },
+                            },
+                          ],
+                          "options": Object {
+                            "treeEditing": false,
+                          },
+                          "title": "Legacy array editing array",
+                          "type": Object {
+                            "jsonType": "array",
+                            "name": "array",
+                            "of": Array [],
+                            "type": null,
+                          },
+                        },
                       },
                     ],
                     "fieldsets": Array [
@@ -5544,6 +5654,111 @@ Object {
                           "group": undefined,
                           "name": "mixedArray",
                           "type": [Circular],
+                        },
+                        "single": true,
+                      },
+                      Object {
+                        "field": Object {
+                          "fieldset": undefined,
+                          "group": undefined,
+                          "name": "legacyArrayEditingArray",
+                          "type": Object {
+                            "jsonType": "array",
+                            "name": "array",
+                            "of": Array [
+                              Object {
+                                "fields": Array [
+                                  Object {
+                                    "fieldset": undefined,
+                                    "group": undefined,
+                                    "name": "title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "preview": Object {
+                                        "prepare": [Function],
+                                      },
+                                      "title": "Title",
+                                      "type": Object {
+                                        "jsonType": "string",
+                                        "name": "string",
+                                        "title": "String",
+                                        "type": null,
+                                      },
+                                    },
+                                  },
+                                ],
+                                "fieldsets": Array [
+                                  Object {
+                                    "field": Object {
+                                      "fieldset": undefined,
+                                      "group": undefined,
+                                      "name": "title",
+                                      "type": Object {
+                                        "jsonType": "string",
+                                        "name": "string",
+                                        "preview": Object {
+                                          "prepare": [Function],
+                                        },
+                                        "title": "Title",
+                                        "type": Object {
+                                          "jsonType": "string",
+                                          "name": "string",
+                                          "title": "String",
+                                          "type": null,
+                                        },
+                                      },
+                                    },
+                                    "single": true,
+                                  },
+                                ],
+                                "groups": Array [],
+                                "jsonType": "object",
+                                "name": "legacyArrayEditingObject",
+                                "options": Object {},
+                                "orderings": Array [
+                                  Object {
+                                    "by": Array [
+                                      Object {
+                                        "direction": "asc",
+                                        "field": "title",
+                                      },
+                                    ],
+                                    "i18n": Object {
+                                      "title": Object {
+                                        "key": "default-orderings.title",
+                                        "ns": "studio",
+                                      },
+                                    },
+                                    "name": "title",
+                                    "title": "Title",
+                                  },
+                                ],
+                                "preview": Object {
+                                  "select": Object {
+                                    "title": "title",
+                                  },
+                                },
+                                "title": "Legacy array editing object",
+                                "type": Object {
+                                  "jsonType": "object",
+                                  "name": "object",
+                                  "title": "Object",
+                                  "type": null,
+                                },
+                              },
+                            ],
+                            "options": Object {
+                              "treeEditing": false,
+                            },
+                            "title": "Legacy array editing array",
+                            "type": Object {
+                              "jsonType": "array",
+                              "name": "array",
+                              "of": Array [],
+                              "type": null,
+                            },
+                          },
                         },
                         "single": true,
                       },
@@ -6200,6 +6415,108 @@ Object {
                           "name": "mixedArray",
                           "type": [Circular],
                         },
+                        Object {
+                          "fieldset": undefined,
+                          "group": undefined,
+                          "name": "legacyArrayEditingArray",
+                          "type": Object {
+                            "jsonType": "array",
+                            "name": "array",
+                            "of": Array [
+                              Object {
+                                "fields": Array [
+                                  Object {
+                                    "fieldset": undefined,
+                                    "group": undefined,
+                                    "name": "title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "preview": Object {
+                                        "prepare": [Function],
+                                      },
+                                      "title": "Title",
+                                      "type": Object {
+                                        "jsonType": "string",
+                                        "name": "string",
+                                        "title": "String",
+                                        "type": null,
+                                      },
+                                    },
+                                  },
+                                ],
+                                "fieldsets": Array [
+                                  Object {
+                                    "field": Object {
+                                      "fieldset": undefined,
+                                      "group": undefined,
+                                      "name": "title",
+                                      "type": Object {
+                                        "jsonType": "string",
+                                        "name": "string",
+                                        "preview": Object {
+                                          "prepare": [Function],
+                                        },
+                                        "title": "Title",
+                                        "type": Object {
+                                          "jsonType": "string",
+                                          "name": "string",
+                                          "title": "String",
+                                          "type": null,
+                                        },
+                                      },
+                                    },
+                                    "single": true,
+                                  },
+                                ],
+                                "groups": Array [],
+                                "jsonType": "object",
+                                "name": "legacyArrayEditingObject",
+                                "options": Object {},
+                                "orderings": Array [
+                                  Object {
+                                    "by": Array [
+                                      Object {
+                                        "direction": "asc",
+                                        "field": "title",
+                                      },
+                                    ],
+                                    "i18n": Object {
+                                      "title": Object {
+                                        "key": "default-orderings.title",
+                                        "ns": "studio",
+                                      },
+                                    },
+                                    "name": "title",
+                                    "title": "Title",
+                                  },
+                                ],
+                                "preview": Object {
+                                  "select": Object {
+                                    "title": "title",
+                                  },
+                                },
+                                "title": "Legacy array editing object",
+                                "type": Object {
+                                  "jsonType": "object",
+                                  "name": "object",
+                                  "title": "Object",
+                                  "type": null,
+                                },
+                              },
+                            ],
+                            "options": Object {
+                              "treeEditing": false,
+                            },
+                            "title": "Legacy array editing array",
+                            "type": Object {
+                              "jsonType": "array",
+                              "name": "array",
+                              "of": Array [],
+                              "type": null,
+                            },
+                          },
+                        },
                       ],
                       "fieldsets": Array [
                         Object {
@@ -6836,6 +7153,111 @@ Object {
                           },
                           "single": true,
                         },
+                        Object {
+                          "field": Object {
+                            "fieldset": undefined,
+                            "group": undefined,
+                            "name": "legacyArrayEditingArray",
+                            "type": Object {
+                              "jsonType": "array",
+                              "name": "array",
+                              "of": Array [
+                                Object {
+                                  "fields": Array [
+                                    Object {
+                                      "fieldset": undefined,
+                                      "group": undefined,
+                                      "name": "title",
+                                      "type": Object {
+                                        "jsonType": "string",
+                                        "name": "string",
+                                        "preview": Object {
+                                          "prepare": [Function],
+                                        },
+                                        "title": "Title",
+                                        "type": Object {
+                                          "jsonType": "string",
+                                          "name": "string",
+                                          "title": "String",
+                                          "type": null,
+                                        },
+                                      },
+                                    },
+                                  ],
+                                  "fieldsets": Array [
+                                    Object {
+                                      "field": Object {
+                                        "fieldset": undefined,
+                                        "group": undefined,
+                                        "name": "title",
+                                        "type": Object {
+                                          "jsonType": "string",
+                                          "name": "string",
+                                          "preview": Object {
+                                            "prepare": [Function],
+                                          },
+                                          "title": "Title",
+                                          "type": Object {
+                                            "jsonType": "string",
+                                            "name": "string",
+                                            "title": "String",
+                                            "type": null,
+                                          },
+                                        },
+                                      },
+                                      "single": true,
+                                    },
+                                  ],
+                                  "groups": Array [],
+                                  "jsonType": "object",
+                                  "name": "legacyArrayEditingObject",
+                                  "options": Object {},
+                                  "orderings": Array [
+                                    Object {
+                                      "by": Array [
+                                        Object {
+                                          "direction": "asc",
+                                          "field": "title",
+                                        },
+                                      ],
+                                      "i18n": Object {
+                                        "title": Object {
+                                          "key": "default-orderings.title",
+                                          "ns": "studio",
+                                        },
+                                      },
+                                      "name": "title",
+                                      "title": "Title",
+                                    },
+                                  ],
+                                  "preview": Object {
+                                    "select": Object {
+                                      "title": "title",
+                                    },
+                                  },
+                                  "title": "Legacy array editing object",
+                                  "type": Object {
+                                    "jsonType": "object",
+                                    "name": "object",
+                                    "title": "Object",
+                                    "type": null,
+                                  },
+                                },
+                              ],
+                              "options": Object {
+                                "treeEditing": false,
+                              },
+                              "title": "Legacy array editing array",
+                              "type": Object {
+                                "jsonType": "array",
+                                "name": "array",
+                                "of": Array [],
+                                "type": null,
+                              },
+                            },
+                          },
+                          "single": true,
+                        },
                       ],
                       "groups": Array [],
                       "jsonType": "object",
@@ -6919,6 +7341,14 @@ Object {
                         Object {
                           "path": Array [
                             "mixedArray",
+                            Array [],
+                            "title",
+                          ],
+                          "weight": 1,
+                        },
+                        Object {
+                          "path": Array [
+                            "legacyArrayEditingArray",
                             Array [],
                             "title",
                           ],
@@ -7255,6 +7685,14 @@ Object {
                   Object {
                     "path": Array [
                       "mixedArray",
+                      Array [],
+                      "title",
+                    ],
+                    "weight": 1,
+                  },
+                  Object {
+                    "path": Array [
+                      "legacyArrayEditingArray",
                       Array [],
                       "title",
                     ],
@@ -7883,6 +8321,108 @@ Object {
                     "group": undefined,
                     "name": "mixedArray",
                     "type": [Circular],
+                  },
+                  Object {
+                    "fieldset": undefined,
+                    "group": undefined,
+                    "name": "legacyArrayEditingArray",
+                    "type": Object {
+                      "jsonType": "array",
+                      "name": "array",
+                      "of": Array [
+                        Object {
+                          "fields": Array [
+                            Object {
+                              "fieldset": undefined,
+                              "group": undefined,
+                              "name": "title",
+                              "type": Object {
+                                "jsonType": "string",
+                                "name": "string",
+                                "preview": Object {
+                                  "prepare": [Function],
+                                },
+                                "title": "Title",
+                                "type": Object {
+                                  "jsonType": "string",
+                                  "name": "string",
+                                  "title": "String",
+                                  "type": null,
+                                },
+                              },
+                            },
+                          ],
+                          "fieldsets": Array [
+                            Object {
+                              "field": Object {
+                                "fieldset": undefined,
+                                "group": undefined,
+                                "name": "title",
+                                "type": Object {
+                                  "jsonType": "string",
+                                  "name": "string",
+                                  "preview": Object {
+                                    "prepare": [Function],
+                                  },
+                                  "title": "Title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                  },
+                                },
+                              },
+                              "single": true,
+                            },
+                          ],
+                          "groups": Array [],
+                          "jsonType": "object",
+                          "name": "legacyArrayEditingObject",
+                          "options": Object {},
+                          "orderings": Array [
+                            Object {
+                              "by": Array [
+                                Object {
+                                  "direction": "asc",
+                                  "field": "title",
+                                },
+                              ],
+                              "i18n": Object {
+                                "title": Object {
+                                  "key": "default-orderings.title",
+                                  "ns": "studio",
+                                },
+                              },
+                              "name": "title",
+                              "title": "Title",
+                            },
+                          ],
+                          "preview": Object {
+                            "select": Object {
+                              "title": "title",
+                            },
+                          },
+                          "title": "Legacy array editing object",
+                          "type": Object {
+                            "jsonType": "object",
+                            "name": "object",
+                            "title": "Object",
+                            "type": null,
+                          },
+                        },
+                      ],
+                      "options": Object {
+                        "treeEditing": false,
+                      },
+                      "title": "Legacy array editing array",
+                      "type": Object {
+                        "jsonType": "array",
+                        "name": "array",
+                        "of": Array [],
+                        "type": null,
+                      },
+                    },
                   },
                 ],
                 "fieldsets": Array [
@@ -8517,6 +9057,111 @@ Object {
                       "group": undefined,
                       "name": "mixedArray",
                       "type": [Circular],
+                    },
+                    "single": true,
+                  },
+                  Object {
+                    "field": Object {
+                      "fieldset": undefined,
+                      "group": undefined,
+                      "name": "legacyArrayEditingArray",
+                      "type": Object {
+                        "jsonType": "array",
+                        "name": "array",
+                        "of": Array [
+                          Object {
+                            "fields": Array [
+                              Object {
+                                "fieldset": undefined,
+                                "group": undefined,
+                                "name": "title",
+                                "type": Object {
+                                  "jsonType": "string",
+                                  "name": "string",
+                                  "preview": Object {
+                                    "prepare": [Function],
+                                  },
+                                  "title": "Title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                  },
+                                },
+                              },
+                            ],
+                            "fieldsets": Array [
+                              Object {
+                                "field": Object {
+                                  "fieldset": undefined,
+                                  "group": undefined,
+                                  "name": "title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "preview": Object {
+                                      "prepare": [Function],
+                                    },
+                                    "title": "Title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                    },
+                                  },
+                                },
+                                "single": true,
+                              },
+                            ],
+                            "groups": Array [],
+                            "jsonType": "object",
+                            "name": "legacyArrayEditingObject",
+                            "options": Object {},
+                            "orderings": Array [
+                              Object {
+                                "by": Array [
+                                  Object {
+                                    "direction": "asc",
+                                    "field": "title",
+                                  },
+                                ],
+                                "i18n": Object {
+                                  "title": Object {
+                                    "key": "default-orderings.title",
+                                    "ns": "studio",
+                                  },
+                                },
+                                "name": "title",
+                                "title": "Title",
+                              },
+                            ],
+                            "preview": Object {
+                              "select": Object {
+                                "title": "title",
+                              },
+                            },
+                            "title": "Legacy array editing object",
+                            "type": Object {
+                              "jsonType": "object",
+                              "name": "object",
+                              "title": "Object",
+                              "type": null,
+                            },
+                          },
+                        ],
+                        "options": Object {
+                          "treeEditing": false,
+                        },
+                        "title": "Legacy array editing array",
+                        "type": Object {
+                          "jsonType": "array",
+                          "name": "array",
+                          "of": Array [],
+                          "type": null,
+                        },
+                      },
                     },
                     "single": true,
                   },
@@ -9173,6 +9818,108 @@ Object {
                       "name": "mixedArray",
                       "type": [Circular],
                     },
+                    Object {
+                      "fieldset": undefined,
+                      "group": undefined,
+                      "name": "legacyArrayEditingArray",
+                      "type": Object {
+                        "jsonType": "array",
+                        "name": "array",
+                        "of": Array [
+                          Object {
+                            "fields": Array [
+                              Object {
+                                "fieldset": undefined,
+                                "group": undefined,
+                                "name": "title",
+                                "type": Object {
+                                  "jsonType": "string",
+                                  "name": "string",
+                                  "preview": Object {
+                                    "prepare": [Function],
+                                  },
+                                  "title": "Title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                  },
+                                },
+                              },
+                            ],
+                            "fieldsets": Array [
+                              Object {
+                                "field": Object {
+                                  "fieldset": undefined,
+                                  "group": undefined,
+                                  "name": "title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "preview": Object {
+                                      "prepare": [Function],
+                                    },
+                                    "title": "Title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                    },
+                                  },
+                                },
+                                "single": true,
+                              },
+                            ],
+                            "groups": Array [],
+                            "jsonType": "object",
+                            "name": "legacyArrayEditingObject",
+                            "options": Object {},
+                            "orderings": Array [
+                              Object {
+                                "by": Array [
+                                  Object {
+                                    "direction": "asc",
+                                    "field": "title",
+                                  },
+                                ],
+                                "i18n": Object {
+                                  "title": Object {
+                                    "key": "default-orderings.title",
+                                    "ns": "studio",
+                                  },
+                                },
+                                "name": "title",
+                                "title": "Title",
+                              },
+                            ],
+                            "preview": Object {
+                              "select": Object {
+                                "title": "title",
+                              },
+                            },
+                            "title": "Legacy array editing object",
+                            "type": Object {
+                              "jsonType": "object",
+                              "name": "object",
+                              "title": "Object",
+                              "type": null,
+                            },
+                          },
+                        ],
+                        "options": Object {
+                          "treeEditing": false,
+                        },
+                        "title": "Legacy array editing array",
+                        "type": Object {
+                          "jsonType": "array",
+                          "name": "array",
+                          "of": Array [],
+                          "type": null,
+                        },
+                      },
+                    },
                   ],
                   "fieldsets": Array [
                     Object {
@@ -9809,6 +10556,111 @@ Object {
                       },
                       "single": true,
                     },
+                    Object {
+                      "field": Object {
+                        "fieldset": undefined,
+                        "group": undefined,
+                        "name": "legacyArrayEditingArray",
+                        "type": Object {
+                          "jsonType": "array",
+                          "name": "array",
+                          "of": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldset": undefined,
+                                  "group": undefined,
+                                  "name": "title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "preview": Object {
+                                      "prepare": [Function],
+                                    },
+                                    "title": "Title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                    },
+                                  },
+                                },
+                              ],
+                              "fieldsets": Array [
+                                Object {
+                                  "field": Object {
+                                    "fieldset": undefined,
+                                    "group": undefined,
+                                    "name": "title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "preview": Object {
+                                        "prepare": [Function],
+                                      },
+                                      "title": "Title",
+                                      "type": Object {
+                                        "jsonType": "string",
+                                        "name": "string",
+                                        "title": "String",
+                                        "type": null,
+                                      },
+                                    },
+                                  },
+                                  "single": true,
+                                },
+                              ],
+                              "groups": Array [],
+                              "jsonType": "object",
+                              "name": "legacyArrayEditingObject",
+                              "options": Object {},
+                              "orderings": Array [
+                                Object {
+                                  "by": Array [
+                                    Object {
+                                      "direction": "asc",
+                                      "field": "title",
+                                    },
+                                  ],
+                                  "i18n": Object {
+                                    "title": Object {
+                                      "key": "default-orderings.title",
+                                      "ns": "studio",
+                                    },
+                                  },
+                                  "name": "title",
+                                  "title": "Title",
+                                },
+                              ],
+                              "preview": Object {
+                                "select": Object {
+                                  "title": "title",
+                                },
+                              },
+                              "title": "Legacy array editing object",
+                              "type": Object {
+                                "jsonType": "object",
+                                "name": "object",
+                                "title": "Object",
+                                "type": null,
+                              },
+                            },
+                          ],
+                          "options": Object {
+                            "treeEditing": false,
+                          },
+                          "title": "Legacy array editing array",
+                          "type": Object {
+                            "jsonType": "array",
+                            "name": "array",
+                            "of": Array [],
+                            "type": null,
+                          },
+                        },
+                      },
+                      "single": true,
+                    },
                   ],
                   "groups": Array [],
                   "jsonType": "object",
@@ -9892,6 +10744,14 @@ Object {
                     Object {
                       "path": Array [
                         "mixedArray",
+                        Array [],
+                        "title",
+                      ],
+                      "weight": 1,
+                    },
+                    Object {
+                      "path": Array [
+                        "legacyArrayEditingArray",
                         Array [],
                         "title",
                       ],
@@ -10236,6 +11096,14 @@ Object {
                     ],
                     "weight": 1,
                   },
+                  Object {
+                    "path": Array [
+                      "legacyArrayEditingArray",
+                      Array [],
+                      "title",
+                    ],
+                    "weight": 1,
+                  },
                 ],
                 "fields": Array [
                   Object {
@@ -10859,6 +11727,108 @@ Object {
                     "group": undefined,
                     "name": "mixedArray",
                     "type": [Circular],
+                  },
+                  Object {
+                    "fieldset": undefined,
+                    "group": undefined,
+                    "name": "legacyArrayEditingArray",
+                    "type": Object {
+                      "jsonType": "array",
+                      "name": "array",
+                      "of": Array [
+                        Object {
+                          "fields": Array [
+                            Object {
+                              "fieldset": undefined,
+                              "group": undefined,
+                              "name": "title",
+                              "type": Object {
+                                "jsonType": "string",
+                                "name": "string",
+                                "preview": Object {
+                                  "prepare": [Function],
+                                },
+                                "title": "Title",
+                                "type": Object {
+                                  "jsonType": "string",
+                                  "name": "string",
+                                  "title": "String",
+                                  "type": null,
+                                },
+                              },
+                            },
+                          ],
+                          "fieldsets": Array [
+                            Object {
+                              "field": Object {
+                                "fieldset": undefined,
+                                "group": undefined,
+                                "name": "title",
+                                "type": Object {
+                                  "jsonType": "string",
+                                  "name": "string",
+                                  "preview": Object {
+                                    "prepare": [Function],
+                                  },
+                                  "title": "Title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                  },
+                                },
+                              },
+                              "single": true,
+                            },
+                          ],
+                          "groups": Array [],
+                          "jsonType": "object",
+                          "name": "legacyArrayEditingObject",
+                          "options": Object {},
+                          "orderings": Array [
+                            Object {
+                              "by": Array [
+                                Object {
+                                  "direction": "asc",
+                                  "field": "title",
+                                },
+                              ],
+                              "i18n": Object {
+                                "title": Object {
+                                  "key": "default-orderings.title",
+                                  "ns": "studio",
+                                },
+                              },
+                              "name": "title",
+                              "title": "Title",
+                            },
+                          ],
+                          "preview": Object {
+                            "select": Object {
+                              "title": "title",
+                            },
+                          },
+                          "title": "Legacy array editing object",
+                          "type": Object {
+                            "jsonType": "object",
+                            "name": "object",
+                            "title": "Object",
+                            "type": null,
+                          },
+                        },
+                      ],
+                      "options": Object {
+                        "treeEditing": false,
+                      },
+                      "title": "Legacy array editing array",
+                      "type": Object {
+                        "jsonType": "array",
+                        "name": "array",
+                        "of": Array [],
+                        "type": null,
+                      },
+                    },
                   },
                 ],
                 "fieldsets": Array [
@@ -11493,6 +12463,111 @@ Object {
                       "group": undefined,
                       "name": "mixedArray",
                       "type": [Circular],
+                    },
+                    "single": true,
+                  },
+                  Object {
+                    "field": Object {
+                      "fieldset": undefined,
+                      "group": undefined,
+                      "name": "legacyArrayEditingArray",
+                      "type": Object {
+                        "jsonType": "array",
+                        "name": "array",
+                        "of": Array [
+                          Object {
+                            "fields": Array [
+                              Object {
+                                "fieldset": undefined,
+                                "group": undefined,
+                                "name": "title",
+                                "type": Object {
+                                  "jsonType": "string",
+                                  "name": "string",
+                                  "preview": Object {
+                                    "prepare": [Function],
+                                  },
+                                  "title": "Title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                  },
+                                },
+                              },
+                            ],
+                            "fieldsets": Array [
+                              Object {
+                                "field": Object {
+                                  "fieldset": undefined,
+                                  "group": undefined,
+                                  "name": "title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "preview": Object {
+                                      "prepare": [Function],
+                                    },
+                                    "title": "Title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                    },
+                                  },
+                                },
+                                "single": true,
+                              },
+                            ],
+                            "groups": Array [],
+                            "jsonType": "object",
+                            "name": "legacyArrayEditingObject",
+                            "options": Object {},
+                            "orderings": Array [
+                              Object {
+                                "by": Array [
+                                  Object {
+                                    "direction": "asc",
+                                    "field": "title",
+                                  },
+                                ],
+                                "i18n": Object {
+                                  "title": Object {
+                                    "key": "default-orderings.title",
+                                    "ns": "studio",
+                                  },
+                                },
+                                "name": "title",
+                                "title": "Title",
+                              },
+                            ],
+                            "preview": Object {
+                              "select": Object {
+                                "title": "title",
+                              },
+                            },
+                            "title": "Legacy array editing object",
+                            "type": Object {
+                              "jsonType": "object",
+                              "name": "object",
+                              "title": "Object",
+                              "type": null,
+                            },
+                          },
+                        ],
+                        "options": Object {
+                          "treeEditing": false,
+                        },
+                        "title": "Legacy array editing array",
+                        "type": Object {
+                          "jsonType": "array",
+                          "name": "array",
+                          "of": Array [],
+                          "type": null,
+                        },
+                      },
                     },
                     "single": true,
                   },
@@ -12149,6 +13224,108 @@ Object {
                       "name": "mixedArray",
                       "type": [Circular],
                     },
+                    Object {
+                      "fieldset": undefined,
+                      "group": undefined,
+                      "name": "legacyArrayEditingArray",
+                      "type": Object {
+                        "jsonType": "array",
+                        "name": "array",
+                        "of": Array [
+                          Object {
+                            "fields": Array [
+                              Object {
+                                "fieldset": undefined,
+                                "group": undefined,
+                                "name": "title",
+                                "type": Object {
+                                  "jsonType": "string",
+                                  "name": "string",
+                                  "preview": Object {
+                                    "prepare": [Function],
+                                  },
+                                  "title": "Title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "title": "String",
+                                    "type": null,
+                                  },
+                                },
+                              },
+                            ],
+                            "fieldsets": Array [
+                              Object {
+                                "field": Object {
+                                  "fieldset": undefined,
+                                  "group": undefined,
+                                  "name": "title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "preview": Object {
+                                      "prepare": [Function],
+                                    },
+                                    "title": "Title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                    },
+                                  },
+                                },
+                                "single": true,
+                              },
+                            ],
+                            "groups": Array [],
+                            "jsonType": "object",
+                            "name": "legacyArrayEditingObject",
+                            "options": Object {},
+                            "orderings": Array [
+                              Object {
+                                "by": Array [
+                                  Object {
+                                    "direction": "asc",
+                                    "field": "title",
+                                  },
+                                ],
+                                "i18n": Object {
+                                  "title": Object {
+                                    "key": "default-orderings.title",
+                                    "ns": "studio",
+                                  },
+                                },
+                                "name": "title",
+                                "title": "Title",
+                              },
+                            ],
+                            "preview": Object {
+                              "select": Object {
+                                "title": "title",
+                              },
+                            },
+                            "title": "Legacy array editing object",
+                            "type": Object {
+                              "jsonType": "object",
+                              "name": "object",
+                              "title": "Object",
+                              "type": null,
+                            },
+                          },
+                        ],
+                        "options": Object {
+                          "treeEditing": false,
+                        },
+                        "title": "Legacy array editing array",
+                        "type": Object {
+                          "jsonType": "array",
+                          "name": "array",
+                          "of": Array [],
+                          "type": null,
+                        },
+                      },
+                    },
                   ],
                   "fieldsets": Array [
                     Object {
@@ -12785,6 +13962,111 @@ Object {
                       },
                       "single": true,
                     },
+                    Object {
+                      "field": Object {
+                        "fieldset": undefined,
+                        "group": undefined,
+                        "name": "legacyArrayEditingArray",
+                        "type": Object {
+                          "jsonType": "array",
+                          "name": "array",
+                          "of": Array [
+                            Object {
+                              "fields": Array [
+                                Object {
+                                  "fieldset": undefined,
+                                  "group": undefined,
+                                  "name": "title",
+                                  "type": Object {
+                                    "jsonType": "string",
+                                    "name": "string",
+                                    "preview": Object {
+                                      "prepare": [Function],
+                                    },
+                                    "title": "Title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "title": "String",
+                                      "type": null,
+                                    },
+                                  },
+                                },
+                              ],
+                              "fieldsets": Array [
+                                Object {
+                                  "field": Object {
+                                    "fieldset": undefined,
+                                    "group": undefined,
+                                    "name": "title",
+                                    "type": Object {
+                                      "jsonType": "string",
+                                      "name": "string",
+                                      "preview": Object {
+                                        "prepare": [Function],
+                                      },
+                                      "title": "Title",
+                                      "type": Object {
+                                        "jsonType": "string",
+                                        "name": "string",
+                                        "title": "String",
+                                        "type": null,
+                                      },
+                                    },
+                                  },
+                                  "single": true,
+                                },
+                              ],
+                              "groups": Array [],
+                              "jsonType": "object",
+                              "name": "legacyArrayEditingObject",
+                              "options": Object {},
+                              "orderings": Array [
+                                Object {
+                                  "by": Array [
+                                    Object {
+                                      "direction": "asc",
+                                      "field": "title",
+                                    },
+                                  ],
+                                  "i18n": Object {
+                                    "title": Object {
+                                      "key": "default-orderings.title",
+                                      "ns": "studio",
+                                    },
+                                  },
+                                  "name": "title",
+                                  "title": "Title",
+                                },
+                              ],
+                              "preview": Object {
+                                "select": Object {
+                                  "title": "title",
+                                },
+                              },
+                              "title": "Legacy array editing object",
+                              "type": Object {
+                                "jsonType": "object",
+                                "name": "object",
+                                "title": "Object",
+                                "type": null,
+                              },
+                            },
+                          ],
+                          "options": Object {
+                            "treeEditing": false,
+                          },
+                          "title": "Legacy array editing array",
+                          "type": Object {
+                            "jsonType": "array",
+                            "name": "array",
+                            "of": Array [],
+                            "type": null,
+                          },
+                        },
+                      },
+                      "single": true,
+                    },
                   ],
                   "groups": Array [],
                   "jsonType": "object",
@@ -12868,6 +14150,14 @@ Object {
                     Object {
                       "path": Array [
                         "mixedArray",
+                        Array [],
+                        "title",
+                      ],
+                      "weight": 1,
+                    },
+                    Object {
+                      "path": Array [
+                        "legacyArrayEditingArray",
                         Array [],
                         "title",
                       ],
