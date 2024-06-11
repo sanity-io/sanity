@@ -42,6 +42,9 @@ export default async function buildSanityStudio(
     ...args.extOptions,
   }
 
+  /**
+   * Unattended mode means that if there are any prompts it will use `YES` for them but will no change anything that doesn't have a prompt
+   */
   const unattendedMode = Boolean(flags.yes || flags.y)
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
@@ -74,7 +77,8 @@ export default async function buildSanityStudio(
     try {
       const result = await compareStudioDependencyVersions(autoUpdatesImports, workDir)
 
-      if (result?.length) {
+      // If it is in unattended mode, we don't want to prompt
+      if (result?.length && !unattendedMode) {
         const shouldContinue = await prompt.single({
           type: 'confirm',
           message: chalk.yellow(
