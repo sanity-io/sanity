@@ -32,6 +32,15 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   const menuItems: TreeEditingMenuItem[] = []
   const breadcrumbs: TreeEditingBreadcrumb[] = []
 
+  if (arraySchemaType.options?.treeEditing === false) {
+    return {
+      breadcrumbs,
+      menuItems,
+      relativePath,
+      rootTitle: '',
+    }
+  }
+
   arrayValue.forEach((item) => {
     const itemPath = [...rootPath, {_key: item._key}] as Path
 
@@ -46,6 +55,8 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     // Do not include references
     if (isReference) return
+
+    if (itemSchemaField?.options?.treeEditing === false) return
 
     if (shouldBeInBreadcrumb(itemPath, openPath)) {
       const breadcrumbsResult = buildBreadcrumbsState({
@@ -65,6 +76,8 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       const isPrimitive = isPrimitiveSchemaType(childField?.type)
       const isPortableText =
         isArraySchemaType(childField.type) && childField.type.of.some((t) => t.name === 'block')
+
+      if (childField?.type?.options?.treeEditing === false) return
 
       if (isSelected(childPath, openPath)) {
         relativePath = getRelativePath(childPath)

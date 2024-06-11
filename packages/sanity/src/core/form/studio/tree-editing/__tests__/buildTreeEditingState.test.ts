@@ -112,6 +112,28 @@ const schema = Schema.compile({
             },
           ],
         },
+        {
+          type: 'array',
+          name: 'legacyArrayEditingArray',
+          title: 'Legacy array editing array',
+          options: {
+            treeEditing: false,
+          },
+          of: [
+            {
+              type: 'object',
+              name: 'legacyArrayEditingObject',
+              title: 'Legacy array editing object',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ],
@@ -211,5 +233,33 @@ describe('tree-editing: buildTreeEditingState', () => {
     })
 
     expect(result).toMatchSnapshot()
+  })
+
+  test('should not include items that have treeEditing set to false in the schema type options', () => {
+    const documentValue: SanityDocumentLike = {
+      _id: 'testDocument',
+      _type: 'testDocument',
+      title: 'Test document',
+      legacyArrayEditingArray: [
+        {
+          _key: '123',
+          _type: 'legacyArrayEditingObject',
+          title: 'Test string',
+        },
+      ],
+    }
+
+    const result = buildTreeEditingState({
+      documentValue,
+      openPath: ['legacyArrayEditingArray', {_key: '123'}],
+      schemaType: schema.get('testDocument'),
+    })
+
+    expect(result).toEqual({
+      breadcrumbs: [],
+      menuItems: [],
+      relativePath: [],
+      rootTitle: 'Legacy array editing array',
+    })
   })
 })
