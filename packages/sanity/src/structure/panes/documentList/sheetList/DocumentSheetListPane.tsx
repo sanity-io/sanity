@@ -110,12 +110,7 @@ const DocumentRow = ({
   )
   return (
     <ValidationProvider validation={validationStatus.validation}>
-      <TableRow
-        as="tr"
-        key={row.original._id + row.id}
-        paddingY={2}
-        data-selected={row.getIsSelected()}
-      >
+      <TableRow as="tr" key={row.original._id + row.id} data-selected={row.getIsSelected()}>
         {row.getVisibleCells().map((cell) => (
           <SheetListCell {...cell} key={row.original._id + cell.id} />
         ))}

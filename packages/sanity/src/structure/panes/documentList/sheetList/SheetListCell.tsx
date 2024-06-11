@@ -1,3 +1,10 @@
+import {
+  type BooleanSchemaType,
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  type NumberSchemaType,
+  type StringSchemaType,
+} from '@sanity/types'
 import {type Cell, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
@@ -19,10 +26,25 @@ const PinnedDataCell = styled(DataCell)`
   z-index: 2;
 `
 
+const getFieldValueAsFieldType = (
+  providedValue: any,
+  fieldType: BooleanSchemaType | StringSchemaType | NumberSchemaType,
+) => {
+  if (isBooleanSchemaType(fieldType)) {
+    return providedValue === 'true'
+  }
+  if (isNumberSchemaType(fieldType)) {
+    return parseFloat(providedValue)
+  }
+
+  return String(providedValue)
+}
+
 /** @internal */
 export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const isPinned = cell.column.getIsPinned()
   const {column, row, getValue, getContext} = cell
+  const {fieldType} = column.columnDef.meta || {}
   const cellContext = getContext()
   const cellId = `cell-${column.id}-${row.index}`
   const providedValueRef = useRef(getValue())
@@ -39,6 +61,17 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
 
   const cellState = getStateByCellId(cell.column.id, cell.row.index)
   const {patchDocument, unsetDocumentValue} = cellContext.table.options.meta || {}
+
+  const _patchDocument = useCallback(
+    (value: any) => {
+      if (!fieldType) return
+
+      const typedValue = getFieldValueAsFieldType(value, fieldType)
+
+      patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, typedValue)
+    },
+    [column.id, fieldType, patchDocument, row.original.__metadata.idPair.publishedId],
+  )
 
   const getStateStyles = () => {
     if (cellState) {
@@ -117,16 +150,10 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
 
   const handleOnBlur = useCallback(() => {
     if (cellValue !== providedValueRef.current) {
-      patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, cellValue)
+      _patchDocument(cellValue)
     }
     resetFocusSelection()
-  }, [
-    column.id,
-    patchDocument,
-    cellValue,
-    resetFocusSelection,
-    row.original.__metadata.idPair.publishedId,
-  ])
+  }, [_patchDocument, cellValue, resetFocusSelection])
 
   const handleOnMouseDown: MouseEventHandler<HTMLTableCellElement> = (event) => {
     if (event.detail === 2) {
@@ -140,14 +167,14 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const handlePaste = useCallback(
     (event: ClipboardEvent) => {
       const clipboardData = event.clipboardData?.getData('Text')
+      if (!clipboardData || !fieldType) return
 
-      if (typeof clipboardData === 'string' || typeof clipboardData === 'number') {
-        setCellValue(clipboardData)
-        // patch immediately when pasting
-        patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, clipboardData)
-      }
+      const typedValue = getFieldValueAsFieldType(clipboardData, fieldType)
+      setCellValue(clipboardData)
+      // patch immediately when pasting
+      _patchDocument(typedValue)
     },
-    [column.id, patchDocument, row.original.__metadata.idPair.publishedId],
+    [_patchDocument, fieldType],
   )
 
   const handleCopy = useCallback(() => {
@@ -172,16 +199,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
         document.removeEventListener('paste', handlePaste)
       if (cellState === 'selectedAnchor') document.removeEventListener('copy', handleCopy)
     }
-  }, [
-    cellId,
-    cellState,
-    column.id,
-    getStateByCellId,
-    handleCopy,
-    handleOnKeyDown,
-    handlePaste,
-    row.index,
-  ])
+  }, [cellState, handleCopy, handleOnKeyDown, handlePaste])
 
   // Keep value of cell up to date with external changes
   useEffect(() => {

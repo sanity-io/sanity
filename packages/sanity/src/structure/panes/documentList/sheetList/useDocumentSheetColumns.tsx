@@ -40,6 +40,9 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
           id: parentalField ? `${parentalField}_${field.name}` : field.name,
           header: field.type.title,
           enableHiding: true,
+          meta: {
+            fieldType,
+          },
           cell: (info) => {
             if (isNumberSchemaType(fieldType) || isStringSchemaType(fieldType)) {
               if (

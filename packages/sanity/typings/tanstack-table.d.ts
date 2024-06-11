@@ -1,3 +1,4 @@
+import {type BooleanSchemaType, type NumberSchemaType, type StringSchemaType} from '@sanity/types'
 import {type RowData} from '@tanstack/react-table'
 
 import {type BaseStructureToolPaneProps} from '../src/structure/panes/types'
@@ -17,6 +18,7 @@ declare module '@tanstack/react-table' {
      */
     customHeader?: boolean
     borderWidth?: number
+    fieldType?: StringSchemaType | NumberSchemaType | BooleanSchemaType
   }
   interface CellContext<TData extends RowData, TValue> {
     'cellValue': number | string
