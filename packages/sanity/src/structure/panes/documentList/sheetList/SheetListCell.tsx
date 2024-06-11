@@ -154,17 +154,16 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
       <Select
         {...inputProps}
         onChange={() => null}
-          radius={0}
-          style={{
-            boxShadow: 'none',
-          border: getBorderStyle(),
+        radius={0}
+        style={{
+          boxShadow: 'none',
           padding: 0,
         }}
         value={JSON.stringify(renderValue)}
-        >
+      >
         <option value="True">True</option>
         <option value="False">False</option>
-        </Select>
+      </Select>
     )
   }
 
