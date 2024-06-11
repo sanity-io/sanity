@@ -1,10 +1,10 @@
-import fs from 'node:fs'
 import path from 'node:path'
 
-import {type PackageJson} from '@sanity/cli'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
+
+import {readPackageJson} from './readPackageJson'
 
 interface PackageInfo {
   name: string
@@ -173,13 +173,4 @@ function getDowngradeInstructions(pkgs: PackageInfo[]) {
   or
 
   pnpm install ${inst}`
-}
-
-function readPackageJson(filePath: string): PackageJson {
-  try {
-    // eslint-disable-next-line no-sync
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'))
-  } catch (err) {
-    throw new Error(`Failed to read "${filePath}": ${err.message}`)
-  }
 }

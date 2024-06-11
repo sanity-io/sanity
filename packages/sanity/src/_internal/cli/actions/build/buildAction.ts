@@ -3,10 +3,9 @@ import {promisify} from 'node:util'
 
 import chalk from 'chalk'
 import {info} from 'log-symbols'
+import semver from 'semver'
 import {noopLogger} from '@sanity/telemetry'
 import rimrafCallback from 'rimraf'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore This may not yet be built.
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
 import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
@@ -15,6 +14,8 @@ import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
+import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
+import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 
 const rimraf = promisify(rimrafCallback)
 
@@ -58,8 +59,40 @@ export default async function buildSanityStudio(
     flags['auto-updates'] ||
     (cliConfig && 'autoUpdates' in cliConfig && cliConfig.autoUpdates === true)
 
+  // Get the version without any tags if any
+  const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
+  if (autoUpdatesEnabled && !coercedSanityVersion) {
+    throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
+  }
+  const version = encodeURIComponent(`^${coercedSanityVersion}`)
+  const autoUpdatesImports = getAutoUpdateImportMap(version)
+
   if (autoUpdatesEnabled) {
     output.print(`${info} Building with auto-updates enabled`)
+
+    // Check the versions
+    try {
+      const result = await compareStudioDependencyVersions(autoUpdatesImports, workDir)
+
+      if (result?.length) {
+        const shouldContinue = await prompt.single({
+          type: 'confirm',
+          message: chalk.yellow(
+            `The following local package versions are different from the versions currently served at runtime.\n` +
+              `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
+              `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
+              `Continue anyway?`,
+          ),
+          default: false,
+        })
+
+        if (!shouldContinue) {
+          return process.exit(0)
+        }
+      }
+    } catch (err) {
+      throw err
+    }
   }
 
   const envVarKeys = getSanityEnvVars()
@@ -121,14 +154,6 @@ export default async function buildSanityStudio(
   let importMap
 
   if (autoUpdatesEnabled) {
-    const version = encodeURIComponent(`^${installedSanityVersion}`)
-    const autoUpdatesImports = {
-      'sanity': `https://api.sanity.work/v1/modules/sanity/default/${version}`,
-      'sanity/': `https://api.sanity.work/v1/modules/sanity/default/${version}/`,
-      '@sanity/vision': `https://api.sanity.work/v1/modules/@sanity__vision/default/${version}`,
-      '@sanity/vision/': `https://api.sanity.work/v1/modules/@sanity__vision/default/${version}/`,
-    }
-
     importMap = {
       imports: {
         ...(await buildVendorDependencies({cwd: workDir, outputDir})),
