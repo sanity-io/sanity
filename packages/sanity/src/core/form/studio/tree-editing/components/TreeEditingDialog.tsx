@@ -172,7 +172,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     // updated immediately when the openPath changes.
     // We only want to debounce the state building when the value changes
     // as that might happen frequently when the user is editing the document.
-    if (isInitialRender || (openPathChanged && !valueChanged)) {
+    if (isInitialRender || openPathChanged) {
       handleBuildTreeEditingState({
         schemaType,
         documentValue: value,
