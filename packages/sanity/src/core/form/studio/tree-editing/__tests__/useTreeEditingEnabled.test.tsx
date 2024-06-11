@@ -18,6 +18,12 @@ const legacyEditingWrapper = ({children}: PropsWithChildren) => (
   <TreeEditingEnabledProvider legacyEditing>{children}</TreeEditingEnabledProvider>
 )
 
+const nestedWrapper = ({children}: PropsWithChildren) => (
+  <TreeEditingEnabledProvider legacyEditing>
+    <TreeEditingEnabledProvider>{children}</TreeEditingEnabledProvider>
+  </TreeEditingEnabledProvider>
+)
+
 describe('useTreeEditingEnabled', () => {
   test('should return enabled: false when config is not enabled', () => {
     const features = {
@@ -55,6 +61,12 @@ describe('useTreeEditingEnabled', () => {
 
   test('should return legacyEditing: true when legacyEditing is true', () => {
     const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper: legacyEditingWrapper})
+
+    expect(result.current).toEqual({enabled: true, legacyEditing: true})
+  })
+
+  test('should return legacyEditing: true when parent has legacyEditing enabled', () => {
+    const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper: nestedWrapper})
 
     expect(result.current).toEqual({enabled: true, legacyEditing: true})
   })
