@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {type ArraySchemaType, useSource} from 'sanity'
+import {type ArraySchemaType} from 'sanity'
 
 import {usePortableTextAware} from '../../../../hooks/usePortableTextAware'
 import {TreeEditingEnabledContext} from './TreeEditingEnabledContext'
@@ -14,7 +14,6 @@ interface TreeEditingEnabledProviderProps {
 export function TreeEditingEnabledProvider(props: TreeEditingEnabledProviderProps): JSX.Element {
   const {children, parentSchemaType} = props
 
-  const {features} = useSource()
   const parentContextValue = useTreeEditingEnabled()
   const hasEditorParent = usePortableTextAware()?.hasEditorParent
 
@@ -31,12 +30,12 @@ export function TreeEditingEnabledProvider(props: TreeEditingEnabledProviderProp
       parentSchemaType?.options?.treeEditing === false
 
     return {
-      enabled: features?.beta?.treeArrayEditing?.enabled === true,
+      enabled: parentContextValue.enabled,
       legacyEditing: Boolean(legacyEditing),
     }
   }, [
-    features?.beta?.treeArrayEditing?.enabled,
     hasEditorParent,
+    parentContextValue.enabled,
     parentContextValue.legacyEditing,
     parentSchemaType?.options?.treeEditing,
   ])
