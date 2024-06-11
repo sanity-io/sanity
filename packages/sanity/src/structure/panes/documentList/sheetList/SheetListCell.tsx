@@ -6,7 +6,7 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 import {type Cell, flexRender} from '@tanstack/react-table'
-import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {useDocumentSheetListContext} from './DocumentSheetListProvider'
@@ -155,14 +155,18 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     resetFocusSelection()
   }, [_patchDocument, cellValue, resetFocusSelection])
 
-  const handleOnMouseDown: MouseEventHandler<HTMLTableCellElement> = (event) => {
-    if (event.detail === 2) {
-      handleProgrammaticFocus()
-    } else {
-      event.preventDefault()
-      setSelectedAnchorCell(column.id, row.index)
-    }
-  }
+  // child field inputs can control whether default behavior is stopped or preserved
+  const getOnMouseDownHandler = useCallback(
+    (shouldStopDefault: boolean) => (event: React.MouseEvent<HTMLElement>) => {
+      if (event.detail === 2) {
+        handleProgrammaticFocus()
+      } else {
+        if (shouldStopDefault) event.preventDefault()
+        setSelectedAnchorCell(column.id, row.index)
+      }
+    },
+    [column.id, row.index, setSelectedAnchorCell],
+  )
 
   const handlePaste = useCallback(
     (event: ClipboardEvent) => {
@@ -217,7 +221,6 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const cellProps = {
     'onFocus': handleOnFocus,
     'onBlur': handleOnBlur,
-    'onMouseDown': handleOnMouseDown,
     'aria-selected': !!cellState,
     'id': cellId,
     'data-testid': cellId,
@@ -227,6 +230,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     ...cellContext,
     cellValue,
     setCellValue,
+    getOnMouseDownHandler,
     fieldRef,
     'data-testid': `${cellId}-input-field`,
   }

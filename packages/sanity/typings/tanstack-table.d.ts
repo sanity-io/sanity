@@ -24,6 +24,7 @@ declare module '@tanstack/react-table' {
     'cellValue': number | string
     'setCellValue': (value: number | string) => void
     'fieldRef': MutableRefObject<HTMLElement>
+    'getOnMouseDownHandler': (isString: boolean) => (event: React.MouseEvent<HTMLElement>) => void
     'data-testid': string
   }
 }
