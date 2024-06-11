@@ -7,14 +7,13 @@ import {styled} from 'styled-components'
 
 import {useDocumentSheetListContext} from './DocumentSheetListProvider'
 import {type DocumentSheetTableRow} from './types'
-import {getBorderWidth} from './utils'
 
 const DataCell = styled.td<{width: number}>`
   display: flex;
+  align-items: center;
   overflow: hidden;
   box-sizing: border-box;
   width: ${({width}) => width}px;
-  border-top: 1px solid var(--card-border-color);
   background-color: var(--card-bg-color);
 `
 
@@ -140,14 +139,6 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     row.index,
   ])
 
-  const getBorderStyle = () => {
-    if (cellState === 'focused') return '2px solid blue'
-    if (cellState === 'selectedRange') return '1px solid green'
-    if (cellState === 'selectedAnchor') return '1px solid blue'
-
-    return '1px solid transparent'
-  }
-
   const inputProps = {
     'onFocus': handleOnFocus,
     'onBlur': handleOnBlur,
@@ -163,17 +154,17 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
       <Select
         {...inputProps}
         onChange={() => null}
-        radius={0}
-        style={{
-          boxShadow: 'none',
+          radius={0}
+          style={{
+            boxShadow: 'none',
           border: getBorderStyle(),
           padding: 0,
         }}
         value={JSON.stringify(renderValue)}
-      >
+        >
         <option value="True">True</option>
         <option value="False">False</option>
-      </Select>
+        </Select>
     )
   }
 
@@ -183,8 +174,8 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
       size={0}
       radius={0}
       border={false}
+      __unstable_disableFocusRing
       style={{
-        border: getBorderStyle(),
         padding: '22px 16px',
       }}
       value={
@@ -202,12 +193,34 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const isPinned = cell.column.getIsPinned()
   const Cell = isPinned ? PinnedDataCell : DataCell
 
+  const {getStateByCellId} = useDocumentSheetListContext()
+  const cellState = getStateByCellId(cell.column.id, cell.row.index)
+
+  const getStateStyles = () => {
+    if (cellState) {
+      return {
+        // backgroundColor: 'var(--card-focus-ring-color)',
+        border: '1px solid var(--card-focus-ring-color)',
+        boxShadow:
+          cellState === 'focused'
+            ? 'inset 0px 0px 0px 1px var(--card-focus-ring-color)'
+            : undefined,
+      }
+    }
+
+    return {
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: 'var(--card-border-color) var(--card-border-color) transparent transparent',
+    }
+  }
+
   return (
     <Cell
       key={cell.row.original._id + cell.id}
       style={{
         left: cell.column.getStart('left') ?? undefined,
-        borderRight: `${getBorderWidth(cell)}px solid var(--card-border-color)`,
+        ...getStateStyles(),
       }}
       width={cell.column.getSize()}
     >
