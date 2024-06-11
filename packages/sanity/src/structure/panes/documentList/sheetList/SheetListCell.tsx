@@ -51,7 +51,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     setSelectedAnchorCell(column.id, row.index)
     focusAnchorCell()
   }, [column.id, focusAnchorCell, row.index, setSelectedAnchorCell])
-  const {patchDocument} = props.table.options.meta || {}
+  const {patchDocument, unsetDocumentValue} = props.table.options.meta || {}
 
   const handleProgrammaticFocus = () => {
     inputRef.current?.focus()
@@ -106,7 +106,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
         case 'Backspace': {
           if (cellState !== 'focused') {
             setRenderValue('')
-            patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, '')
+            unsetDocumentValue?.(row.original.__metadata.idPair.publishedId, column.id)
           }
           break
         }
@@ -118,11 +118,11 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     [
       cellState,
       column.id,
-      patchDocument,
       row.index,
       row.original.__metadata.idPair.publishedId,
       setSelectedAnchorCell,
       submitFocusedCell,
+      unsetDocumentValue,
     ],
   )
 

@@ -229,7 +229,7 @@ describe('DocumentSheetListPane', () => {
     })
 
     describe.each(['Backspace', 'Delete'])('to delete a value', (key) => {
-      it.only('deletes when cell is selected', async () => {
+      it('deletes when cell is selected', async () => {
         await renderTest()
 
         await act(async () => {
@@ -242,7 +242,7 @@ describe('DocumentSheetListPane', () => {
 
         // assert that update is made to server
         await waitFor(() => {
-          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith([{set: {name: ''}}], {})
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith([{unset: ['name']}], {})
           expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
         })
 
@@ -293,12 +293,12 @@ describe('DocumentSheetListPane', () => {
         await waitFor(() => {
           expect(mockDocumentOperations.patch.execute).toHaveBeenNthCalledWith(
             1,
-            [{set: {name: ''}}],
+            [{unset: ['name']}],
             {},
           )
           expect(mockDocumentOperations.patch.execute).toHaveBeenNthCalledWith(
             2,
-            [{set: {name: ''}}],
+            [{unset: ['name']}],
             {},
           )
           expect(mockDocumentOperations.commit.execute).toHaveBeenCalledTimes(2)
