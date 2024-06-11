@@ -1,12 +1,25 @@
 import {describe, expect, jest, test} from '@jest/globals'
 import {renderHook} from '@testing-library/react'
-import React from 'react'
+import {type PropsWithChildren} from 'react'
 import {useSource, useTreeEditingEnabled} from 'sanity'
+import {PortableTextAwareContext} from 'sanity/_singletons'
+
+import {TreeEditingEnabledProvider} from '../context'
 
 // Mock the entire module
 jest.mock('../../../../studio/source')
 
 const mockedUseInnerHook = useSource as jest.Mock
+
+const wrapper = ({children}: PropsWithChildren) => (
+  <TreeEditingEnabledProvider>{children}</TreeEditingEnabledProvider>
+)
+
+const pteWrapper = ({children}: PropsWithChildren) => (
+  <PortableTextAwareContext.Provider value={{hasEditorParent: true}}>
+    <TreeEditingEnabledProvider>{children}</TreeEditingEnabledProvider>
+  </PortableTextAwareContext.Provider>
+)
 
 describe('useTreeEditingEnabled', () => {
   test('should return enabled: false when config is not enabled', () => {
@@ -21,7 +34,7 @@ describe('useTreeEditingEnabled', () => {
     }
     mockedUseInnerHook.mockImplementation(() => features)
 
-    const {result} = renderHook(() => useTreeEditingEnabled())
+    const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper})
 
     expect(result.current).toEqual({enabled: false, legacyEditing: false})
   })
@@ -38,17 +51,13 @@ describe('useTreeEditingEnabled', () => {
     }
     mockedUseInnerHook.mockImplementation(() => features)
 
-    const {result} = renderHook(() => useTreeEditingEnabled())
+    const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper})
 
     expect(result.current).toEqual({enabled: true, legacyEditing: false})
   })
 
-  // cover for legacy and PTE remaining with legacy editing
-  test('should return legacyEditing: false when the PTE context has Editor Parent', () => {
-    // Set the mock return value of useContext
-    jest.spyOn(React, 'useContext').mockReturnValue({hasEditorParent: true})
-
-    const {result} = renderHook(() => useTreeEditingEnabled())
+  test('should return legacyEditing: true when the PTE context has Editor Parent', () => {
+    const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper: pteWrapper})
 
     expect(result.current).toEqual({enabled: true, legacyEditing: true})
   })
