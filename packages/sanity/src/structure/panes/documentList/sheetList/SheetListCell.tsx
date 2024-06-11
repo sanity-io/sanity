@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import {type Cell, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
