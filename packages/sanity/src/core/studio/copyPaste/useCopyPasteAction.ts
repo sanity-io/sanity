@@ -86,8 +86,8 @@ export function useCopyPasteAction() {
         isObject,
         items: [
           {
-            schemaTypeName: schemaTypeAtPath?.name || 'unknown',
-            schemaTypeTitle: schemaTypeAtPath?.title || schemaType?.name || 'unknown',
+            schemaTypeName: schemaTypeAtPath.name || 'unknown',
+            schemaTypeTitle: schemaTypeAtPath.title || schemaType.name || 'unknown',
             documentPath: path,
             value: valueAtPath,
           },
@@ -99,7 +99,7 @@ export function useCopyPasteAction() {
 
       toast.push({
         status: 'success',
-        title: `${isDocument ? 'Document' : 'Field'} ${payloadValue.items.map((item) => item.schemaTypeName).join(', ')} copied`,
+        title: `${isDocument ? 'Document' : 'Field'} ${payloadValue.items.map((item) => item.schemaTypeTitle).join(', ')} copied`,
       })
     },
     [getDocumentMeta, setCopyResult, toast],
@@ -160,7 +160,7 @@ export function useCopyPasteAction() {
           })
           return
         }
-        const targetSchemaTypeTitle = targetSchemaType?.title || targetSchemaType?.name
+        const targetSchemaTypeTitle = targetSchemaType.title || targetSchemaType.name
         const transferValueOptions = {
           sourceRootSchemaType: sourceSchemaType,
           sourcePath: [],
