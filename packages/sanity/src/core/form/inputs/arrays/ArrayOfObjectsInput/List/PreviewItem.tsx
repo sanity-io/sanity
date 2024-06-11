@@ -1,7 +1,6 @@
 import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
-// eslint-disable-next-line no-restricted-imports
 import {useCallback, useMemo, useRef} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
