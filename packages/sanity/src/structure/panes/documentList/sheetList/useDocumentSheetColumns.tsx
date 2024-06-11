@@ -2,6 +2,7 @@ import {
   isBooleanSchemaType,
   isNumberSchemaType,
   isObjectSchemaType,
+  isPrimitiveSchemaType,
   isStringSchemaType,
   type ObjectSchemaType,
 } from '@sanity/types'
@@ -18,7 +19,6 @@ import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {PreviewCell} from './DocumentSheetPreviewCell'
 import {CellInput} from './fields/CellInput'
 import {type DocumentSheetTableRow} from './types'
-import {isSupportedSheetListField} from './utils'
 
 export const VISIBLE_COLUMN_LIMIT = 5
 
@@ -32,7 +32,7 @@ type Columns = (
 const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: string): Columns => {
   return schemaType.fields.reduce<Columns>((tableColumns: Columns, field) => {
     const {type: fieldType, name} = field
-    if (isSupportedSheetListField(fieldType)) {
+    if (isPrimitiveSchemaType(fieldType)) {
       const nextCol = columnHelper.accessor(
         // accessor must use dot notation for internal tanstack method of reading cell data
         parentalField ? `${parentalField}.${field.name}` : field.name,
