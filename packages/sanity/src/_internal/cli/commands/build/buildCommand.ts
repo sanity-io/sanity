@@ -5,7 +5,7 @@ const helpText = `
 Options
   --source-maps Enable source maps for built bundles (increases size of bundle)
   --no-minify Skip minifying built JavaScript (speeds up build, increases size of bundle)
-  -y, --yes Unattended mode, use 'y' for prompts and use only flags for choices
+  -y, --yes Unattended mode, answers "yes" to any "yes/no" prompt and otherwise uses defaults
 
 Examples
   sanity build
