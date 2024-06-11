@@ -3,6 +3,7 @@ import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 import {
   type ComponentProps,
+  type FocusEvent,
   type ForwardedRef,
   forwardRef,
   useCallback,
@@ -222,6 +223,12 @@ export function ReferenceField(props: ReferenceFieldProps) {
     [handleClear, handleReplace, inputId, OpenLink, readOnly, t, value?._ref],
   )
 
+  const handleFocus = useCallback(() => inputProps.onPathFocus([]), [inputProps])
+  const handleBlur = useCallback(
+    (event: FocusEvent) => inputProps.elementProps.onBlur(event),
+    [inputProps.elementProps],
+  )
+
   return (
     <>
       {documentId && props.actions && props.actions.length > 0 && (
@@ -271,6 +278,8 @@ export function ReferenceField(props: ReferenceFieldProps) {
                       ref={elementRef}
                       selected={selected}
                       tone="inherit"
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
                     >
                       <PreviewReferenceValue
                         value={value}
