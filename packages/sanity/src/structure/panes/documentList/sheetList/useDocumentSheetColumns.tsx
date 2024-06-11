@@ -1,4 +1,10 @@
-import {type IntrinsicTypeName, isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
+import {
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  isObjectSchemaType,
+  isStringSchemaType,
+  type ObjectSchemaType,
+} from '@sanity/types'
 import {Checkbox, Flex} from '@sanity/ui'
 import {
   type AccessorKeyColumnDef,
@@ -16,7 +22,6 @@ import {type DocumentSheetTableRow} from './types'
 export const VISIBLE_COLUMN_LIMIT = 5
 
 const columnHelper = createColumnHelper<DocumentSheetTableRow>()
-const SUPPORTED_FIELDS: IntrinsicTypeName[] = ['string', 'number', 'boolean']
 
 type Columns = (
   | AccessorKeyColumnDef<DocumentSheetTableRow, unknown>
@@ -26,8 +31,8 @@ type Columns = (
 const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: string): Columns => {
   return schemaType.fields.reduce<Columns>((tableColumns: Columns, field) => {
     const {type, name} = field
-    const typeName = type.name as IntrinsicTypeName
-    if (SUPPORTED_FIELDS.includes(typeName)) {
+    const typeName = name
+    if (isBooleanSchemaType(type) || isNumberSchemaType(type) || isStringSchemaType(type)) {
       const nextCol = columnHelper.accessor(
         // accessor must use dot notation for internal tanstack method of reading cell data
         parentalField ? `${parentalField}.${field.name}` : field.name,

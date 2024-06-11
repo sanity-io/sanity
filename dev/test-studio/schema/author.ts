@@ -52,9 +52,12 @@ export default defineType({
     {
       name: 'role',
       title: 'Role',
-      type: 'string',
+      type: 'number',
       options: {
-        list: AUTHOR_ROLES,
+        list: [
+          {value: 1, title: '1'},
+          {value: 2, title: '2'},
+        ],
       },
     },
     {

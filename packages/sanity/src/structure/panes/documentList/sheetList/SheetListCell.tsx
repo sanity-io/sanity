@@ -1,12 +1,63 @@
 /* eslint-disable i18next/no-literal-string */
-import {type ObjectFieldType} from '@sanity/types'
-import {Select, TextInput} from '@sanity/ui'
+import {
+  type BooleanSchemaType,
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  isStringSchemaType,
+  type NumberSchemaType,
+  type StringSchemaType,
+} from '@sanity/types'
+import {Box, TextInput} from '@sanity/ui'
 import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {useDocumentSheetListContext} from './DocumentSheetListProvider'
+import CellSelect from './cellFields/CellSelect'
+import {type CellState, useDocumentSheetListContext} from './DocumentSheetListProvider'
 import {type DocumentSheetTableRow} from './types'
+
+export const useSheetListCell = (
+  cellState: CellState,
+  cellValue: any,
+  setCellValue: (cellValue: any) => void,
+  _patchDocument: (value: string) => void,
+  parsePasteValue: (clipboardData: string | undefined) => string | number | boolean,
+) => {
+  const handlePaste = useCallback(
+    (event: ClipboardEvent) => {
+      const clipboardData = event.clipboardData?.getData('Text')
+      const pasteData = parsePasteValue(clipboardData)
+      console.log({clipboardData, pasteData})
+
+      // if (typeof clipboardData === 'string' || typeof clipboardData === 'number') {
+      setCellValue(pasteData)
+      // patch immediately when pasting
+      _patchDocument(pasteData)
+      // }
+    },
+    [_patchDocument, parsePasteValue, setCellValue],
+  )
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(cellValue.toString())
+  }, [cellValue])
+
+  useEffect(() => {
+    if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
+      // if cell is selected, paste events should be handled
+      document.addEventListener('paste', handlePaste)
+
+    if (cellState === 'selectedAnchor')
+      // only allow copying when cell is selected anchor
+      document.addEventListener('copy', handleCopy)
+
+    return () => {
+      if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
+        document.removeEventListener('paste', handlePaste)
+      if (cellState === 'selectedAnchor') document.removeEventListener('copy', handleCopy)
+    }
+  }, [cellState, handleCopy, handlePaste])
+}
 
 const DataCell = styled.td<{width: number}>`
   display: flex;
@@ -23,7 +74,7 @@ const PinnedDataCell = styled(DataCell)`
 `
 
 interface SheetListCellInnerProps extends CellContext<DocumentSheetTableRow, unknown> {
-  fieldType: ObjectFieldType
+  fieldType: BooleanSchemaType | StringSchemaType | NumberSchemaType
 }
 
 type CellInputElement = HTMLInputElement | HTMLSelectElement
@@ -52,6 +103,11 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
   }, [column.id, focusAnchorCell, row.index, setSelectedAnchorCell])
   const {patchDocument} = props.table.options.meta || {}
 
+  const _patchDocument = useCallback(
+    (value: any) => patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, value),
+    [column.id, patchDocument, row.original.__metadata.idPair.publishedId],
+  )
+
   const handleProgrammaticFocus = () => {
     inputRef.current?.focus()
     if (inputRef.current instanceof HTMLInputElement) {
@@ -63,6 +119,10 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     if (event.detail === 2) {
       handleProgrammaticFocus()
     } else {
+      if (cellState === 'selectedAnchor') {
+        return handleProgrammaticFocus()
+      }
+
       event.preventDefault()
       setSelectedAnchorCell(column.id, row.index)
     }
@@ -79,14 +139,14 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     [cellState, submitFocusedCell],
   )
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setIsDirty(true)
     setRenderValue(event.target.value)
   }
 
   const handleOnBlur = () => {
     if (isDirty) {
-      patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, renderValue)
+      _patchDocument(renderValue)
       setIsDirty(false)
     }
     resetFocusSelection()
@@ -99,10 +159,10 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
       if (typeof clipboardData === 'string' || typeof clipboardData === 'number') {
         setRenderValue(clipboardData)
         // patch immediately when pasting
-        patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, clipboardData)
+        _patchDocument(clipboardData)
       }
     },
-    [column.id, patchDocument, row.original.__metadata.idPair.publishedId],
+    [_patchDocument],
   )
 
   const handleCopy = useCallback(() => {
@@ -113,31 +173,22 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     if (cellState === 'selectedAnchor' || cellState === 'focused')
       // only listen for enter key when cell is focused or anchor
       document.addEventListener('keydown', handleOnEnterDown)
-    if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
-      // if cell is selected, paste events should be handled
-      document.addEventListener('paste', handlePaste)
+    // if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
+    //   // if cell is selected, paste events should be handled
+    //   document.addEventListener('paste', handlePaste)
 
-    if (cellState === 'selectedAnchor')
-      // only allow copying when cell is selected anchor
-      document.addEventListener('copy', handleCopy)
+    // if (cellState === 'selectedAnchor')
+    //   // only allow copying when cell is selected anchor
+    //   document.addEventListener('copy', handleCopy)
 
     return () => {
       if (cellState === 'selectedAnchor' || cellState === 'focused')
         document.removeEventListener('keydown', handleOnEnterDown)
-      if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
-        document.removeEventListener('paste', handlePaste)
-      if (cellState === 'selectedAnchor') document.removeEventListener('copy', handleCopy)
+      // if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
+      //   document.removeEventListener('paste', handlePaste)
+      // if (cellState === 'selectedAnchor') document.removeEventListener('copy', handleCopy)
     }
-  }, [
-    cellId,
-    cellState,
-    column.id,
-    getStateByCellId,
-    handleCopy,
-    handleOnEnterDown,
-    handlePaste,
-    row.index,
-  ])
+  }, [cellState, handleCopy, handleOnEnterDown, handlePaste])
 
   const inputProps = {
     'onFocus': handleOnFocus,
@@ -149,22 +200,34 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     'ref': (ref: InputRef) => (inputRef.current = ref),
   }
 
-  if (fieldType.name === 'boolean') {
+  if (
+    !(
+      isBooleanSchemaType(fieldType) ||
+      isNumberSchemaType(fieldType) ||
+      isStringSchemaType(fieldType)
+    )
+  )
+    return null
+
+  if (
+    isBooleanSchemaType(fieldType) ||
+    fieldType.options?.list ||
+    fieldType.options?.layout === 'radio' ||
+    fieldType.options?.layout === 'dropdown'
+  ) {
     return (
-      <Select
+      <Box
         {...inputProps}
-        onChange={() => null}
-          radius={0}
-          style={{
-            boxShadow: 'none',
-          border: getBorderStyle(),
-          padding: 0,
-        }}
-        value={JSON.stringify(renderValue)}
-        >
-        <option value="True">True</option>
-        <option value="False">False</option>
-        </Select>
+        style={{flexGrow: 1, height: '100%', display: 'flex', alignItems: 'center'}}
+      >
+        <CellSelect
+          fieldType={fieldType}
+          onCellValueChange={setRenderValue}
+          cellValue={renderValue}
+          patchDocument={_patchDocument}
+          cellState={cellState}
+        />
+      </Box>
     )
   }
 
@@ -199,7 +262,6 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const getStateStyles = () => {
     if (cellState) {
       return {
-        // backgroundColor: 'var(--card-focus-ring-color)',
         border: '1px solid var(--card-focus-ring-color)',
         boxShadow:
           cellState === 'focused'

@@ -15,7 +15,10 @@ import {ChangeIndicator} from '../../changeIndicators'
 import {PatchEvent, set, unset} from '../patch'
 import {type StringInputProps} from '../types'
 
-function toSelectItem(
+/**
+ * @internal
+ */
+export function toSelectItem(
   option: TitledListValue<string | number> | string | number,
 ): TitledListValue<string | number> {
   return isTitledListValue(option) ? option : {title: capitalize(`${option}`), value: option}

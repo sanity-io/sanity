@@ -170,6 +170,7 @@ function DocumentSheetListPaneInner(
 
   const handlePatchDocument = useCallback(
     (publishedDocumentId: string, fieldId: string, value: any) => {
+      console.log({value})
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
