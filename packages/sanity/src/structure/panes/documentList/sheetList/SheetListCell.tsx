@@ -7,19 +7,38 @@ import {
 } from '@sanity/types'
 import {type Cell, flexRender} from '@tanstack/react-table'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {styled} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {useDocumentSheetListContext} from './DocumentSheetListProvider'
 import {type DocumentSheetTableRow} from './types'
+import {getBorderWidth} from './utils'
 
-const DataCell = styled.td<{width: number}>`
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  box-sizing: border-box;
-  width: ${({width}) => width}px;
-  background-color: var(--card-bg-color);
-`
+interface DataCellProps {
+  width: number
+  $cellState: 'focused' | 'selectedAnchor' | 'selectedRange' | null
+  $rightBorderWidth: number
+}
+
+const DataCell = styled.td<DataCellProps>((props) => {
+  const {width, $cellState, $rightBorderWidth} = props
+  return css`
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: ${width}px;
+    padding: 2px; // Allow space for the box shadow outline to show
+    background-color: var(--card-bg-color);
+    border-top: 1px solid var(--card-border-color);
+    border-right: ${$rightBorderWidth}px solid var(--card-border-color);
+
+    &[aria-selected='true'] {
+      transition: box-shadow 0.1s;
+      box-shadow: inset 0px 0px 0px ${$cellState === 'focused' ? 2 : 1}px
+        var(--card-focus-ring-color);
+    }
+  `
+})
 
 const PinnedDataCell = styled(DataCell)`
   position: sticky;
@@ -44,7 +63,7 @@ const getFieldValueAsFieldType = (
 export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const isPinned = cell.column.getIsPinned()
   const {column, row, getValue, getContext} = cell
-  const {fieldType} = column.columnDef.meta || {}
+  const {fieldType, disableCellFocus} = column.columnDef.meta || {}
   const cellContext = getContext()
   const cellId = `cell-${column.id}-${row.index}`
   const providedValueRef = useRef(getValue())
@@ -72,24 +91,6 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     },
     [column.id, fieldType, patchDocument, row.original.__metadata.idPair.publishedId],
   )
-
-  const getStateStyles = () => {
-    if (cellState) {
-      return {
-        border: '1px solid var(--card-focus-ring-color)',
-        boxShadow:
-          cellState === 'focused'
-            ? 'inset 0px 0px 0px 1px var(--card-focus-ring-color)'
-            : undefined,
-      }
-    }
-
-    return {
-      borderWidth: 1,
-      borderStyle: 'solid',
-      borderColor: 'var(--card-border-color) var(--card-border-color) transparent transparent',
-    }
-  }
 
   const handleOnKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -219,7 +220,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   }, [getValue, cellValue])
 
   const cellProps = {
-    'onFocus': handleOnFocus,
+    'onFocus': disableCellFocus ? undefined : handleOnFocus,
     'onBlur': handleOnBlur,
     'aria-selected': !!cellState,
     'id': cellId,
@@ -237,10 +238,11 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
 
   return (
     <Cell
+      $cellState={cellState}
+      $rightBorderWidth={getBorderWidth(cell)}
       key={cell.row.original._id + cell.id}
       style={{
         left: cell.column.getStart('left') ?? undefined,
-        ...getStateStyles(),
       }}
       width={cell.column.getSize()}
       {...cellProps}

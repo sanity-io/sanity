@@ -19,6 +19,7 @@ declare module '@tanstack/react-table' {
     customHeader?: boolean
     borderWidth?: number
     fieldType?: StringSchemaType | NumberSchemaType | BooleanSchemaType
+    disableCellFocus?: boolean
   }
   interface CellContext<TData extends RowData, TValue> {
     'cellValue': number | string

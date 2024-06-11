@@ -119,6 +119,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         meta: {
           customHeader: true,
           borderWidth: 0,
+          disableCellFocus: true,
         },
         header: (info) => {
           if (info.header.depth > 1) return null
@@ -137,6 +138,9 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         enableHiding: false,
         size: 320,
         id: 'Preview',
+        meta: {
+          disableCellFocus: true,
+        },
         cell: (info) => {
           return <PreviewCell {...info} schemaType={documentSchemaType} />
         },
