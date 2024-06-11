@@ -217,7 +217,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
   return (
-    <TreeEditingEnabledProvider legacyEditingEnabled={treeEditingDisabledByOption}>
+    <TreeEditingEnabledProvider legacyEditing={treeEditingDisabledByOption}>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         {item}
       </ChangeIndicator>

@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export interface TreeEditingEnabledContextValue {
   /**
    * A boolean indicating whether tree editing is enabled

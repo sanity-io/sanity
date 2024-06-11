@@ -1,17 +1,18 @@
 import {useMemo} from 'react'
+import {TreeEditingEnabledContext, type TreeEditingEnabledContextValue} from 'sanity/_singletons'
 
-import {TreeEditingEnabledContext} from './TreeEditingEnabledContext'
-import {type TreeEditingEnabledContextValue} from './types'
+import {useSource} from '../../../../../studio/source'
 import {useTreeEditingEnabled} from './useTreeEditingEnabled'
 
 interface TreeEditingEnabledProviderProps {
   children: React.ReactNode
-  legacyEditingEnabled?: boolean
+  legacyEditing?: boolean
 }
 
 export function TreeEditingEnabledProvider(props: TreeEditingEnabledProviderProps): JSX.Element {
-  const {children, legacyEditingEnabled} = props
+  const {children, legacyEditing: legacyEditingProp} = props
 
+  const {features} = useSource()
   const parentContextValue = useTreeEditingEnabled()
 
   const value = useMemo((): TreeEditingEnabledContextValue => {
@@ -20,15 +21,19 @@ export function TreeEditingEnabledProvider(props: TreeEditingEnabledProviderProp
       // legacy array editing for any child array items by passing down the
       // parent context value
       parentContextValue.legacyEditing ||
-      // Else, we should enable legacy array editing if the `legacyEditingEnabled`
+      // Else, we should enable legacy array editing if the `legacyEditing`
       // prop is set.
-      legacyEditingEnabled
+      legacyEditingProp
 
     return {
-      enabled: parentContextValue.enabled,
+      enabled: features?.beta?.treeArrayEditing?.enabled === true,
       legacyEditing: Boolean(legacyEditing),
     }
-  }, [legacyEditingEnabled, parentContextValue.enabled, parentContextValue.legacyEditing])
+  }, [
+    features?.beta?.treeArrayEditing?.enabled,
+    legacyEditingProp,
+    parentContextValue.legacyEditing,
+  ])
 
   return (
     <TreeEditingEnabledContext.Provider value={value}>

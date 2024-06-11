@@ -1,9 +1,10 @@
-// todo: move to _singletons
-// eslint-disable-next-line no-restricted-imports
 import {createContext} from 'react'
 
-import {type TreeEditingEnabledContextValue} from './types'
+import type {TreeEditingEnabledContextValue} from './types'
 
+/**
+ * @internal
+ */
 export const TreeEditingEnabledContext = createContext<TreeEditingEnabledContextValue>({
   enabled: false,
   legacyEditing: false,

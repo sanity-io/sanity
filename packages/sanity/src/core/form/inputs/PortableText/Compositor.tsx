@@ -470,7 +470,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <TreeEditingEnabledProvider legacyEditingEnabled>
+    <TreeEditingEnabledProvider legacyEditing>
       <PortalProvider __unstable_elements={portalElements} element={portal.element}>
         <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
           <ChangeIndicator

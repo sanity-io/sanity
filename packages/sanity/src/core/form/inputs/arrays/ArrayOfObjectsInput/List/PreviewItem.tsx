@@ -197,7 +197,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
 
   return (
-    <TreeEditingEnabledProvider legacyEditingEnabled={treeEditingDisabledByOption}>
+    <TreeEditingEnabledProvider legacyEditing={treeEditingDisabledByOption}>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>
       </ChangeIndicator>

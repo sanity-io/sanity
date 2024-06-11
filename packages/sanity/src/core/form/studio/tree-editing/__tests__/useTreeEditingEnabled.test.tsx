@@ -15,7 +15,7 @@ const wrapper = ({children}: PropsWithChildren) => (
 )
 
 const legacyEditingWrapper = ({children}: PropsWithChildren) => (
-  <TreeEditingEnabledProvider legacyEditingEnabled>{children}</TreeEditingEnabledProvider>
+  <TreeEditingEnabledProvider legacyEditing>{children}</TreeEditingEnabledProvider>
 )
 
 describe('useTreeEditingEnabled', () => {
@@ -53,7 +53,7 @@ describe('useTreeEditingEnabled', () => {
     expect(result.current).toEqual({enabled: true, legacyEditing: false})
   })
 
-  test('should return legacyEditing: true when legacyEditingEnabled is true', () => {
+  test('should return legacyEditing: true when legacyEditing is true', () => {
     const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper: legacyEditingWrapper})
 
     expect(result.current).toEqual({enabled: true, legacyEditing: true})
