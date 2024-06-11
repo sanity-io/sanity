@@ -203,12 +203,14 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
 
   // Keep value of cell up to date with external changes
   useEffect(() => {
-    if (providedValueRef.current && providedValueRef.current !== getValue()) {
+    const realTimeValue = getValue()
+
+    if (providedValueRef?.current !== realTimeValue) {
       if (providedValueRef.current === cellValue) {
         // do not update the value if it's currently being edited
-        setCellValue(getValue() as string)
+        setCellValue(realTimeValue as string)
       }
-      providedValueRef.current = getValue()
+      providedValueRef.current = realTimeValue
     }
   }, [getValue, cellValue])
 
