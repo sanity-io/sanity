@@ -1,11 +1,21 @@
 import {Stack} from '@sanity/ui'
-import {Fragment, memo, useCallback, useMemo} from 'react'
+import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
+import {useFormCallbacks} from 'sanity'
+import styled from 'styled-components'
 
 import {ObjectInputMembers} from '../../members'
 import {type ObjectInputProps} from '../../types'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {UnknownFields} from './UnknownFields'
+
+const RootStack = styled(Stack)`
+  &:-moz-focusring,
+  &:focus-visible {
+    outline: 0px !important;
+    box-shadow: 0 0 0 1em var(--card-focus-ring-color);
+  }
+`
 
 /**
  * @hidden
@@ -23,12 +33,14 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     renderField,
     renderItem,
     renderPreview,
+    path,
     level,
     value,
     id,
     onFieldGroupSelect,
   } = props
 
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const {columns} = schemaType.options || {}
 
   const renderedUnknownFields = useMemo(() => {
@@ -49,6 +61,36 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   }, [onChange, schemaType.fields, value])
 
   const selectedGroup = useMemo(() => groups.find(({selected}) => selected), [groups])
+
+  const {onPathBlur, onPathFocus} = useFormCallbacks()
+
+  const handleBlur = useCallback(
+    (event: FocusEvent) => {
+      if (id === 'root') {
+        return
+      }
+
+      // Since the blur event will bubble up to the wrapper, we need to check if the object input is the actual target
+      if (event.target === wrapperRef.current) {
+        onPathBlur(path)
+      }
+    },
+    [id, path, onPathBlur],
+  )
+
+  const handleFocus = useCallback(
+    (event: FocusEvent) => {
+      if (id === 'root') {
+        return
+      }
+
+      // Since the focus event will bubble up to the wrapper, we need to check if the object input is the actual target
+      if (event.target === wrapperRef.current) {
+        onPathFocus(path)
+      }
+    },
+    [id, path, onPathFocus],
+  )
 
   const renderObjectMembers = useCallback(
     () => (
@@ -78,8 +120,15 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   if (members.length === 0) {
     return null
   }
+
   return (
-    <Stack space={6}>
+    <RootStack
+      space={6}
+      tabIndex={id === 'root' ? undefined : 0}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      ref={wrapperRef}
+    >
       {groups.length > 0 ? (
         <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
           <FieldGroupTabs
@@ -107,6 +156,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       </Fragment>
 
       {renderedUnknownFields}
-    </Stack>
+    </RootStack>
   )
 })
