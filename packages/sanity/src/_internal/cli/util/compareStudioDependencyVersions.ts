@@ -31,13 +31,14 @@ interface CompareStudioDependencyVersions {
  * The failed dependencies are anything that does not strictly match the remote version.
  * This means that if a version is lower or greater by even a patch it will be marked as failed.
  *
- * @param AutoUpdatesImportMap - An object mapping package names to their remote import URLs.
- * @param string - The path to the working directory containing the package.json file.
+ * @param autoUpdatesImports - An object mapping package names to their remote import URLs.
+ * @param workDir - The path to the working directory containing the package.json file.
+ * @param fetchFn - Optional {@link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API | Fetch}-compatible function to use for requesting the current remote version of a module
  *
- * @returns Promise\<Array\<CompareStudioDependencyVersions\>\> - A promise that resolves to an array of objects, each containing
+ * @returns A promise that resolves to an array of objects, each containing
  * the name of a package whose local and remote versions do not match, along with the local and remote versions.
  *
- * @throws Error - Throws an error if the remote version of a package cannot be fetched, or if the local version of a package
+ * @throws Throws an error if the remote version of a package cannot be fetched, or if the local version of a package
  * cannot be parsed.
  */
 export async function compareStudioDependencyVersions(
