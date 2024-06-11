@@ -1,7 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
-import {type ObjectFieldType} from '@sanity/types'
-import {Select, TextInput} from '@sanity/ui'
-import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
+import {type Cell, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -22,20 +20,16 @@ const PinnedDataCell = styled(DataCell)`
   z-index: 2;
 `
 
-interface SheetListCellInnerProps extends CellContext<DocumentSheetTableRow, unknown> {
-  fieldType: ObjectFieldType
-}
-
-type CellInputElement = HTMLInputElement | HTMLSelectElement
-type InputRef = CellInputElement | null
-
 /** @internal */
-export function SheetListCellInner(props: SheetListCellInnerProps) {
-  const {getValue, column, row, fieldType} = props
+export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
+  const isPinned = cell.column.getIsPinned()
+  const {column, row, getValue, getContext} = cell
+  const cellContext = getContext()
   const cellId = `cell-${column.id}-${row.index}`
   const providedValueRef = useRef(getValue())
-  const [renderValue, setRenderValue] = useState<string>(getValue() as string)
-  const inputRef = useRef<InputRef>(null)
+  const [cellValue, setCellValue] = useState<string | number>(getValue() as string)
+  const fieldRef = useRef<HTMLElement | null>(null)
+  const Cell = isPinned ? PinnedDataCell : DataCell
   const {
     focusAnchorCell,
     resetFocusSelection,
@@ -43,43 +37,27 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     getStateByCellId,
     submitFocusedCell,
   } = useDocumentSheetListContext()
-  const cellState = getStateByCellId(column.id, row.index)
 
-  const handleOnFocus = useCallback(() => {
-    // reselect in cases where focus achieved without initial mousedown
-    setSelectedAnchorCell(column.id, row.index)
-    focusAnchorCell()
-  }, [column.id, focusAnchorCell, row.index, setSelectedAnchorCell])
-  const {patchDocument, unsetDocumentValue} = props.table.options.meta || {}
+  const cellState = getStateByCellId(cell.column.id, cell.row.index)
+  const {patchDocument, unsetDocumentValue} = cellContext.table.options.meta || {}
 
-  const handleProgrammaticFocus = () => {
-    inputRef.current?.focus()
-    if (inputRef.current instanceof HTMLInputElement) {
-      inputRef.current.select()
+  const getStateStyles = () => {
+    if (cellState) {
+      return {
+        border: '1px solid var(--card-focus-ring-color)',
+        boxShadow:
+          cellState === 'focused'
+            ? 'inset 0px 0px 0px 1px var(--card-focus-ring-color)'
+            : undefined,
+      }
+    }
+
+    return {
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: 'var(--card-border-color) var(--card-border-color) transparent transparent',
     }
   }
-
-  const handleOnMouseDown: MouseEventHandler<CellInputElement> = (event) => {
-    if (event.detail === 2) {
-      handleProgrammaticFocus()
-    } else {
-      event.preventDefault()
-      setSelectedAnchorCell(column.id, row.index)
-    }
-  }
-
-  const handleOnBlur = useCallback(() => {
-    if (renderValue !== providedValueRef.current) {
-      patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, renderValue)
-    }
-    resetFocusSelection()
-  }, [
-    column.id,
-    patchDocument,
-    renderValue,
-    resetFocusSelection,
-    row.original.__metadata.idPair.publishedId,
-  ])
 
   const handleOnKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -93,7 +71,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
         }
         case 'Escape': {
           if (cellState === 'focused') {
-            setRenderValue(providedValueRef.current as string)
+            setCellValue(providedValueRef.current as string)
 
             // wait for state to settle before blurring
             setTimeout(() => setSelectedAnchorCell(column.id, row.index))
@@ -104,7 +82,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
         case 'Delete':
         case 'Backspace': {
           if (cellState !== 'focused') {
-            setRenderValue('')
+            setCellValue('')
             unsetDocumentValue?.(row.original.__metadata.idPair.publishedId, column.id)
           }
           break
@@ -125,8 +103,39 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     ],
   )
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRenderValue(event.target.value)
+  const handleProgrammaticFocus = () => {
+    fieldRef.current?.focus()
+    if (fieldRef.current instanceof HTMLInputElement) {
+      fieldRef.current.select()
+    }
+  }
+
+  const handleOnFocus = useCallback(() => {
+    // reselect in cases where focus achieved without initial mousedown
+    setSelectedAnchorCell(column.id, row.index)
+    focusAnchorCell()
+  }, [column.id, focusAnchorCell, row.index, setSelectedAnchorCell])
+
+  const handleOnBlur = useCallback(() => {
+    if (cellValue !== providedValueRef.current) {
+      patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, cellValue)
+    }
+    resetFocusSelection()
+  }, [
+    column.id,
+    patchDocument,
+    cellValue,
+    resetFocusSelection,
+    row.original.__metadata.idPair.publishedId,
+  ])
+
+  const handleOnMouseDown: MouseEventHandler<HTMLTableCellElement> = (event) => {
+    if (event.detail === 2) {
+      handleProgrammaticFocus()
+    } else {
+      event.preventDefault()
+      setSelectedAnchorCell(column.id, row.index)
+    }
   }
 
   const handlePaste = useCallback(
@@ -134,7 +143,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
       const clipboardData = event.clipboardData?.getData('Text')
 
       if (typeof clipboardData === 'string' || typeof clipboardData === 'number') {
-        setRenderValue(clipboardData)
+        setCellValue(clipboardData)
         // patch immediately when pasting
         patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, clipboardData)
       }
@@ -143,8 +152,8 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
   )
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(renderValue.toString())
-  }, [renderValue])
+    navigator.clipboard.writeText(cellValue.toString())
+  }, [cellValue])
 
   useEffect(() => {
     if (cellState)
@@ -178,87 +187,29 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
   // Keep value of cell up to date with external changes
   useEffect(() => {
     if (providedValueRef.current && providedValueRef.current !== getValue()) {
-      if (providedValueRef.current === renderValue) {
+      if (providedValueRef.current === cellValue) {
         // do not update the value if it's currently being edited
-        setRenderValue(getValue() as string)
+        setCellValue(getValue() as string)
       }
       providedValueRef.current = getValue()
     }
-  }, [getValue, renderValue])
+  }, [getValue, cellValue])
 
-  const inputProps = {
+  const cellProps = {
     'onFocus': handleOnFocus,
     'onBlur': handleOnBlur,
     'onMouseDown': handleOnMouseDown,
     'aria-selected': !!cellState,
-    'data-testid': cellId,
     'id': cellId,
-    'ref': (ref: InputRef) => (inputRef.current = ref),
+    'data-testid': cellId,
   }
 
-  if (fieldType.name === 'boolean') {
-    return (
-      <Select
-        {...inputProps}
-        onChange={() => null}
-        radius={0}
-        style={{
-          boxShadow: 'none',
-          padding: 0,
-        }}
-        value={JSON.stringify(renderValue)}
-      >
-        <option value="True">True</option>
-        <option value="False">False</option>
-      </Select>
-    )
-  }
-
-  return (
-    <TextInput
-      {...inputProps}
-      size={0}
-      radius={0}
-      border={false}
-      __unstable_disableFocusRing
-      style={{
-        padding: '22px 16px',
-      }}
-      value={
-        typeof renderValue === 'string' || typeof renderValue === 'number'
-          ? renderValue
-          : JSON.stringify(renderValue)
-      }
-      onChange={handleOnChange}
-    />
-  )
-}
-
-/** @internal */
-export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
-  const isPinned = cell.column.getIsPinned()
-  const Cell = isPinned ? PinnedDataCell : DataCell
-
-  const {getStateByCellId} = useDocumentSheetListContext()
-  const cellState = getStateByCellId(cell.column.id, cell.row.index)
-
-  const getStateStyles = () => {
-    if (cellState) {
-      return {
-        // backgroundColor: 'var(--card-focus-ring-color)',
-        border: '1px solid var(--card-focus-ring-color)',
-        boxShadow:
-          cellState === 'focused'
-            ? 'inset 0px 0px 0px 1px var(--card-focus-ring-color)'
-            : undefined,
-      }
-    }
-
-    return {
-      borderWidth: 1,
-      borderStyle: 'solid',
-      borderColor: 'var(--card-border-color) var(--card-border-color) transparent transparent',
-    }
+  const inputProps = {
+    ...cellContext,
+    cellValue,
+    setCellValue,
+    fieldRef,
+    'data-testid': `${cellId}-input-field`,
   }
 
   return (
@@ -269,8 +220,9 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
         ...getStateStyles(),
       }}
       width={cell.column.getSize()}
+      {...cellProps}
     >
-      {flexRender(cell.column.columnDef.cell, cell.getContext?.())}
+      {flexRender(cell.column.columnDef.cell, inputProps)}
     </Cell>
   )
 }

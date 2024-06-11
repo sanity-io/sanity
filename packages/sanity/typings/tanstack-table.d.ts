@@ -18,4 +18,10 @@ declare module '@tanstack/react-table' {
     customHeader?: boolean
     borderWidth?: number
   }
+  interface CellContext<TData extends RowData, TValue> {
+    'cellValue': number | string
+    'setCellValue': (value: number | string) => void
+    'fieldRef': MutableRefObject<HTMLElement>
+    'data-testid': string
+  }
 }

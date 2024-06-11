@@ -1,3 +1,11 @@
+import {
+  type BooleanDefinition,
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  isStringSchemaType,
+  type NumberDefinition,
+  type StringDefinition,
+} from '@sanity/types'
 import {type Cell, type Header} from '@tanstack/react-table'
 
 import {type DocumentSheetTableRow} from './types'
@@ -16,4 +24,12 @@ export function getBorderWidth(
   return typeof element.column.columnDef.meta?.borderWidth === 'undefined'
     ? 1
     : element.column.columnDef.meta.borderWidth
+}
+
+export function isSupportedSheetListField(
+  fieldType: unknown,
+): fieldType is BooleanDefinition | StringDefinition | NumberDefinition {
+  return (
+    isBooleanSchemaType(fieldType) || isNumberSchemaType(fieldType) || isStringSchemaType(fieldType)
+  )
 }

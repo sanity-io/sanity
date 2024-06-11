@@ -153,7 +153,7 @@ describe('DocumentSheetListPane', () => {
           userEvent.click(screen.getByTestId('cell-name-0'))
           userEvent.type(screen.getByTestId('cell-name-0'), 'addition text')
 
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
         })
       })
 
@@ -161,7 +161,7 @@ describe('DocumentSheetListPane', () => {
         await renderTest()
 
         await act(async () => {
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
           await userEvent.dblClick(screen.getByTestId('cell-name-0'))
         })
 
@@ -170,7 +170,7 @@ describe('DocumentSheetListPane', () => {
         })
 
         await waitFor(() => {
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('Jane Doe')
         })
 
         // enter to persist the update
@@ -198,7 +198,7 @@ describe('DocumentSheetListPane', () => {
           userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
           userEvent.keyboard('Jane Doe')
 
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('Jane Doe')
 
           // enter to persist the update
           userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
@@ -227,7 +227,7 @@ describe('DocumentSheetListPane', () => {
           userEvent.keyboard('Jane Doe')
 
           // value has been updated locally
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('Jane Doe')
 
           // escape to cancel the update
           userEvent.type(screen.getByTestId('cell-name-0'), '{Escape}')
@@ -240,7 +240,7 @@ describe('DocumentSheetListPane', () => {
         })
 
         // value should be reverted to original
-        expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
       })
     })
 
@@ -263,7 +263,7 @@ describe('DocumentSheetListPane', () => {
         })
 
         await waitFor(() => {
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('')
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('')
         })
       })
 
@@ -271,7 +271,7 @@ describe('DocumentSheetListPane', () => {
         await renderTest()
 
         await act(async () => {
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
           await userEvent.dblClick(screen.getByTestId('cell-name-0'))
         })
 
@@ -286,7 +286,7 @@ describe('DocumentSheetListPane', () => {
         })
 
         await waitFor(() => {
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
         })
       })
 
@@ -321,8 +321,8 @@ describe('DocumentSheetListPane', () => {
         })
 
         await waitFor(() => {
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('')
-          expect(screen.getByTestId('cell-name-1')).toHaveValue('')
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('')
+          expect(screen.getByTestId('cell-name-1-input-field')).toHaveValue('')
         })
       })
     })
@@ -361,7 +361,7 @@ describe('DocumentSheetListPane', () => {
           })
         })
 
-        expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('Joe Blogs')
 
         await waitFor(() => {
           expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
@@ -376,8 +376,8 @@ describe('DocumentSheetListPane', () => {
         await renderTest()
 
         await act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
+          userEvent.click(screen.getByTestId('cell-name-0-input-field'))
+          userEvent.type(screen.getByTestId('cell-name-0-input-field'), '{Enter}')
         })
 
         act(() => {
@@ -388,7 +388,7 @@ describe('DocumentSheetListPane', () => {
           })
         })
 
-        expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('Joe Blogs')
 
         await waitFor(() => {
           expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
@@ -418,8 +418,8 @@ describe('DocumentSheetListPane', () => {
           })
         })
 
-        expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
-        expect(screen.getByTestId('cell-name-1')).toHaveValue('Joe Blogs')
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('Joe Blogs')
+        expect(screen.getByTestId('cell-name-1-input-field')).toHaveValue('Joe Blogs')
       })
 
       it('pastes to all selected cells when anchor is focused', async () => {
@@ -444,7 +444,7 @@ describe('DocumentSheetListPane', () => {
           })
         })
 
-        expect(screen.getByTestId('cell-name-1')).toHaveValue('Joe Blogs')
+        expect(screen.getByTestId('cell-name-1-input-field')).toHaveValue('Joe Blogs')
 
         await waitFor(() => {
           expect(mockDocumentOperations.patch.execute).toHaveBeenNthCalledWith(
@@ -482,8 +482,8 @@ describe('DocumentSheetListPane', () => {
           })
         })
 
-        expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
-        expect(screen.getByTestId('cell-age-0')).toHaveValue('Joe Blogs')
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
+        expect(screen.getByTestId('cell-age-0-input-field')).toHaveValue('Joe Blogs')
       })
 
       it('pastes only to focused anchor when escaped before pasting', async () => {
@@ -503,8 +503,8 @@ describe('DocumentSheetListPane', () => {
           })
         })
 
-        expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
-        expect(screen.getByTestId('cell-name-1')).toHaveValue('Bill Bob')
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('Joe Blogs')
+        expect(screen.getByTestId('cell-name-1-input-field')).toHaveValue('Bill Bob')
 
         await waitFor(() => {
           expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
@@ -530,7 +530,7 @@ describe('DocumentSheetListPane', () => {
           })
         })
 
-        expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
 
         expect(mockDocumentOperations.patch.execute).not.toHaveBeenCalled()
         expect(mockDocumentOperations.commit.execute).not.toHaveBeenCalled()

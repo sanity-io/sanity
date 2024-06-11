@@ -1,4 +1,10 @@
-import {type IntrinsicTypeName, isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
+import {
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  isObjectSchemaType,
+  isStringSchemaType,
+  type ObjectSchemaType,
+} from '@sanity/types'
 import {Checkbox, Flex} from '@sanity/ui'
 import {
   type AccessorKeyColumnDef,
@@ -10,13 +16,13 @@ import {useMemo} from 'react'
 
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {PreviewCell} from './DocumentSheetPreviewCell'
-import {SheetListCellInner} from './SheetListCell'
+import {CellInput} from './fields/CellInput'
 import {type DocumentSheetTableRow} from './types'
+import {isSupportedSheetListField} from './utils'
 
 export const VISIBLE_COLUMN_LIMIT = 5
 
 const columnHelper = createColumnHelper<DocumentSheetTableRow>()
-const SUPPORTED_FIELDS: IntrinsicTypeName[] = ['string', 'number', 'boolean']
 
 type Columns = (
   | AccessorKeyColumnDef<DocumentSheetTableRow, unknown>
@@ -25,9 +31,8 @@ type Columns = (
 
 const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: string): Columns => {
   return schemaType.fields.reduce<Columns>((tableColumns: Columns, field) => {
-    const {type, name} = field
-    const typeName = type.name as IntrinsicTypeName
-    if (SUPPORTED_FIELDS.includes(typeName)) {
+    const {type: fieldType, name} = field
+    if (isSupportedSheetListField(fieldType)) {
       const nextCol = columnHelper.accessor(
         // accessor must use dot notation for internal tanstack method of reading cell data
         parentalField ? `${parentalField}.${field.name}` : field.name,
@@ -35,7 +40,25 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
           id: parentalField ? `${parentalField}_${field.name}` : field.name,
           header: field.type.title,
           enableHiding: true,
-          cell: (info) => <SheetListCellInner {...info} fieldType={type} />,
+          cell: (info) => {
+            if (isNumberSchemaType(fieldType) || isStringSchemaType(fieldType)) {
+              if (
+                fieldType.options?.list ||
+                fieldType.options?.layout === 'radio' ||
+                fieldType.options?.layout === 'dropdown'
+              )
+                // eslint-disable-next-line i18next/no-literal-string
+                return <div>Select</div>
+
+              return <CellInput {...info} />
+            }
+
+            if (isBooleanSchemaType(fieldType)) {
+              return <div>{fieldType.options?.layout || 'boolean'}</div>
+            }
+
+            return null
+          },
         },
       )
 
@@ -43,10 +66,10 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
     }
 
     // if first layer nested object
-    if (typeName === 'object' && isObjectSchemaType(type) && !parentalField) {
+    if (fieldType.name === 'object' && isObjectSchemaType(fieldType) && !parentalField) {
       return [
         ...tableColumns,
-        columnHelper.group({header: name, columns: getColsFromSchemaType(type, field.name)}),
+        columnHelper.group({header: name, columns: getColsFromSchemaType(fieldType, field.name)}),
       ]
     }
 
