@@ -51,6 +51,13 @@ export function useGlobalCopyPasteElementHandler({
         return
       }
 
+      if (!isInputElement(targetElement)) {
+        const selection = window.getSelection()
+        if (selection && selection?.toString().length > 0) {
+          return
+        }
+      }
+
       onCopy(focusPathRef.current, valueRef.current)
     },
     [onCopy, focusPathRef],
@@ -64,6 +71,13 @@ export function useGlobalCopyPasteElementHandler({
         // Prevent event propogation if we have a selection within an input element
         if (isSelectionWithinInputElement(targetElement as HTMLElement)) {
           return
+        }
+
+        if (!isInputElement(targetElement)) {
+          const selection = window.getSelection()
+          if (selection && selection?.toString().length > 0) {
+            return
+          }
         }
 
         event.preventDefault()
