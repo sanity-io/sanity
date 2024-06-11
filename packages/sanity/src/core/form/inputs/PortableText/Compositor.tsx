@@ -12,11 +12,11 @@ import {
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {PortableTextAwareContext, type PortableTextAwareContextValue} from 'sanity/_singletons'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
+import {TreeEditingEnabledProvider} from '../../studio/tree-editing'
 import {
   type ArrayOfObjectsInputProps,
   type PortableTextInputProps,
@@ -31,8 +31,6 @@ import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {TextBlock} from './text'
-
-const PORTABLE_TEXT_AWARE_CONTEXT_VALUE: PortableTextAwareContextValue = {hasEditorParent: true}
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement>
@@ -472,7 +470,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <PortableTextAwareContext.Provider value={PORTABLE_TEXT_AWARE_CONTEXT_VALUE}>
+    <TreeEditingEnabledProvider legacyEditingEnabled>
       <PortalProvider __unstable_elements={portalElements} element={portal.element}>
         <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
           <ChangeIndicator
@@ -495,6 +493,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           </ChangeIndicator>
         </ActivateOnFocus>
       </PortalProvider>
-    </PortableTextAwareContext.Provider>
+    </TreeEditingEnabledProvider>
   )
 }

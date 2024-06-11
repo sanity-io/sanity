@@ -2,7 +2,6 @@ import {describe, expect, jest, test} from '@jest/globals'
 import {renderHook} from '@testing-library/react'
 import {type PropsWithChildren} from 'react'
 import {useSource, useTreeEditingEnabled} from 'sanity'
-import {PortableTextAwareContext} from 'sanity/_singletons'
 
 import {TreeEditingEnabledProvider} from '../context'
 
@@ -15,10 +14,8 @@ const wrapper = ({children}: PropsWithChildren) => (
   <TreeEditingEnabledProvider>{children}</TreeEditingEnabledProvider>
 )
 
-const pteWrapper = ({children}: PropsWithChildren) => (
-  <PortableTextAwareContext.Provider value={{hasEditorParent: true}}>
-    <TreeEditingEnabledProvider>{children}</TreeEditingEnabledProvider>
-  </PortableTextAwareContext.Provider>
+const legacyEditingWrapper = ({children}: PropsWithChildren) => (
+  <TreeEditingEnabledProvider legacyEditingEnabled>{children}</TreeEditingEnabledProvider>
 )
 
 describe('useTreeEditingEnabled', () => {
@@ -56,8 +53,8 @@ describe('useTreeEditingEnabled', () => {
     expect(result.current).toEqual({enabled: true, legacyEditing: false})
   })
 
-  test('should return legacyEditing: true when the PTE context has Editor Parent', () => {
-    const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper: pteWrapper})
+  test('should return legacyEditing: true when legacyEditingEnabled is true', () => {
+    const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper: legacyEditingWrapper})
 
     expect(result.current).toEqual({enabled: true, legacyEditing: true})
   })

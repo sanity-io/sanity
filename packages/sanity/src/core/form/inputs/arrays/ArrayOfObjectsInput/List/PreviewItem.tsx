@@ -68,8 +68,8 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const {t} = useTranslation()
 
   const treeEditing = useTreeEditingEnabled()
-  const treeEditingOption = parentSchemaType?.options?.treeEditing === false
-  const legacyEditing = treeEditingOption || treeEditing.legacyEditing
+  const treeEditingDisabledByOption = parentSchemaType?.options?.treeEditing === false
+  const legacyEditing = treeEditingDisabledByOption || treeEditing.legacyEditing
 
   // The modal should open if the item is open and:
   // - tree array editing is disabled
@@ -197,7 +197,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
 
   return (
-    <TreeEditingEnabledProvider parentSchemaType={parentSchemaType}>
+    <TreeEditingEnabledProvider legacyEditingEnabled={treeEditingDisabledByOption}>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>
       </ChangeIndicator>
