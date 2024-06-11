@@ -18,6 +18,10 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration {
   direction?: 'horizontal' | 'vertical'
   sortable?: boolean
   modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
+  /**
+   * A boolean flag to enable or disable tree editing for the array.
+   * If there are any nested arrays, they will inherit this value.
+   */
   treeEditing?: boolean
 }
 
