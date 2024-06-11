@@ -8,3 +8,4 @@ packages:
   - 'packages/create-sanity'
   - 'packages/groq'
   - 'packages/sanity'
+  - 'packages/sanity/fixtures/examples/*'
