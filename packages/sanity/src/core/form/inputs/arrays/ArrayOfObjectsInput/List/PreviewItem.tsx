@@ -16,7 +16,7 @@ import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
-import {useTreeArrayEditingEnabled} from '../../../../studio/tree-editing'
+import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../../../../studio/tree-editing'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {RowLayout} from '../../layouts/RowLayout'
@@ -66,12 +66,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   } = props
   const {t} = useTranslation()
 
-  const treeEditing = useTreeArrayEditingEnabled()
+  const treeEditing = useTreeEditingEnabled()
+  const treeEditingDisabledByOption = parentSchemaType?.options?.treeEditing === false
+  const legacyEditing = treeEditingDisabledByOption || treeEditing.legacyEditing
 
   // The modal should open if the item is open and:
   // - tree array editing is disabled
   // - legacy array editing is enabled (e.g. in a Portable Text editor)
-  const openPortal = open && (!treeEditing.enabled || treeEditing.legacyEditing)
+  const openPortal = open && (!treeEditing.enabled || legacyEditing)
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -194,7 +196,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
 
   return (
-    <>
+    <TreeEditingEnabledProvider legacyEditing={treeEditingDisabledByOption}>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>
       </ChangeIndicator>
@@ -216,6 +218,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           {children}
         </EditPortal>
       )}
-    </>
+    </TreeEditingEnabledProvider>
   )
 }

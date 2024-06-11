@@ -13,7 +13,7 @@ import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
 import {type FormDocumentValue} from '../types'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
-import {useTreeArrayEditingEnabled} from './tree-editing/hooks/useTreeArrayEditingEnabled'
+import {useTreeEditingEnabled} from './tree-editing'
 
 const schemaTypes = [
   defineType({
@@ -30,10 +30,10 @@ const schemaTypes = [
   }),
 ]
 
-jest.mock('./tree-editing/hooks/useTreeArrayEditingEnabled')
+jest.mock('./tree-editing/context/enabled/useTreeEditingEnabled')
 
 describe('FormBuilder', () => {
-  const mockedUseTreeArrayEditingEnabled = useTreeArrayEditingEnabled as jest.Mock
+  const mockedUseTreeEditingEnabled = useTreeEditingEnabled as jest.Mock
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -50,7 +50,7 @@ describe('FormBuilder', () => {
         schema: {types: schemaTypes},
       },
     })
-    mockedUseTreeArrayEditingEnabled.mockImplementation(() => ({enabled: false}))
+    mockedUseTreeEditingEnabled.mockImplementation(() => ({enabled: false}))
 
     const focusPath: Path = []
     const openPath: Path = []
@@ -146,7 +146,7 @@ describe('FormBuilder', () => {
         schema: {types: schemaTypes},
       },
     })
-    mockedUseTreeArrayEditingEnabled.mockImplementation(() => ({enabled: true}))
+    mockedUseTreeEditingEnabled.mockImplementation(() => ({enabled: true}))
 
     const focusPath: Path = []
     const openPath: Path = []
