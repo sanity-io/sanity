@@ -1,31 +1,15 @@
 /* eslint-disable react/jsx-handler-names */
 import {isImageSource} from '@sanity/asset-utils'
-import {type SanityClient} from '@sanity/client'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
-import {
-  type AssetFromSource,
-  type AssetSource,
-  type ImageAsset,
-  type ImageSchemaType,
-  type Path,
-  type UploadState,
-} from '@sanity/types'
+import {type AssetFromSource, type AssetSource, type Path, type UploadState} from '@sanity/types'
 import {Box, Card, Menu, Stack, type ToastParams} from '@sanity/ui'
 import {get, startCase} from 'lodash'
 import {type FocusEvent, PureComponent, type ReactNode} from 'react'
-import {type Observable, type Subscription} from 'rxjs'
+import {type Subscription} from 'rxjs'
 
-import {
-  Button,
-  Dialog,
-  MenuButton,
-  type MenuButtonProps,
-  MenuItem,
-} from '../../../../../ui-components'
+import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {ImperativeToast} from '../../../../components'
-import {type FIXME} from '../../../../FIXME'
-import {PresenceOverlay} from '../../../../presence'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {type PatchEvent, setIfMissing, unset} from '../../../patch'
@@ -33,10 +17,9 @@ import {type FieldMember} from '../../../store'
 import {
   type ResolvedUploader,
   type Uploader,
-  type UploaderResolver,
   type UploadOptions,
 } from '../../../studio/uploads/types'
-import {type InputProps, type ObjectInputProps} from '../../../types'
+import {type InputProps} from '../../../types'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {handleSelectAssetFromSource} from '../common/assetSource'
@@ -44,28 +27,13 @@ import {FileTarget} from '../common/styles'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadProgress} from '../common/UploadProgress'
 import {UploadWarning} from '../common/UploadWarning'
-import {ImageToolInput} from '../ImageToolInput'
-import {type ImageUrlBuilder} from '../types'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
+import {ImageInputHotspotInput} from './ImageInputHotspotInput'
 import {ImageInputPreview} from './ImageInputPreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
-import {type BaseImageInputValue, type FileInfo} from './types'
+import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from './types'
 
-export {BaseImageInputValue}
-
-/**
- * @hidden
- * @beta */
-export interface BaseImageInputProps
-  extends ObjectInputProps<BaseImageInputValue, ImageSchemaType> {
-  assetSources: AssetSource[]
-  directUploads?: boolean
-  imageUrlBuilder: ImageUrlBuilder
-  observeAsset: (documentId: string) => Observable<ImageAsset>
-  resolveUploader: UploaderResolver
-  client: SanityClient
-  t: (key: string, values?: Record<string, string>) => string
-}
+export {BaseImageInputProps, BaseImageInputValue}
 
 interface BaseImageInputState {
   isUploading: boolean
@@ -371,34 +339,14 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
     this.state.menuButtonElement?.focus()
   }
 
-  renderHotspotInput = (hotspotInputProps: Omit<InputProps, 'renderDefault'>) => {
-    const {value, changed, id, imageUrlBuilder, t} = this.props
-
-    const withImageTool = this.isImageToolEnabled() && value && value.asset
-
+  renderHotspotInput = (inputProps: Omit<InputProps, 'renderDefault'>) => {
     return (
-      <Dialog
-        __unstable_autoFocus={false}
-        header={t('inputs.image.hotspot-dialog.title')}
-        id={`${id}_dialog`}
-        onClickOutside={this.handleCloseDialog}
-        onClose={this.handleCloseDialog}
-        width={1}
-      >
-        <PresenceOverlay>
-          <Stack space={5}>
-            {withImageTool && value?.asset && (
-              <ImageToolInput
-                {...this.props}
-                imageUrl={imageUrlBuilder.image(value.asset).url()}
-                value={value as FIXME}
-                presence={hotspotInputProps.presence}
-                changed={changed}
-              />
-            )}
-          </Stack>
-        </PresenceOverlay>
-      </Dialog>
+      <ImageInputHotspotInput
+        isImageToolEnabled={this.isImageToolEnabled()}
+        handleCloseDialog={this.handleCloseDialog}
+        imageInputProps={this.props}
+        inputProps={inputProps}
+      />
     )
   }
 
