@@ -4,28 +4,37 @@ import {test} from '@sanity/test'
 import {waitForOpacityChange} from '../utils/waitForOpacityChange'
 
 test.describe('basic - open and close', () => {
-  test(`opening - when creating new array item, the tree editing modal should open`, async ({
-    page,
-    createDraftDocument,
-  }) => {
+  test.beforeEach(async ({page, createDraftDocument}) => {
+    // wait for form to be attached
     await createDraftDocument('/test/content/input-debug;objectsDebug')
 
+    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
+      state: 'attached',
+      timeout: 40000,
+    })
+  })
+
+  test(`opening - when creating new array item, the tree editing modal should open`, async ({
+    page,
+  }) => {
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
 
     const modal = await page.getByTestId('tree-editing-dialog')
+    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
     await expect(modal).toBeVisible()
   })
 
   test(`closing - when the modal is open, clicking the 'done button' will close it`, async ({
     page,
-    createDraftDocument,
   }) => {
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
-
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
     const modal = await page.getByTestId('tree-editing-dialog')
 
+    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
     await page.getByRole('button', {name: 'Done'}).click()
+
+    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'detached'})
+
     await expect(modal).not.toBeVisible()
   })
 })
@@ -34,10 +43,16 @@ test(`actions - blocked main document action when modal is open`, async ({
   page,
   createDraftDocument,
 }) => {
+  // wait for form to be attached
   await createDraftDocument('/test/content/input-debug;objectsDebug')
+  await page.waitForSelector('[data-testid="document-panel-scroller"]', {
+    state: 'attached',
+    timeout: 40000,
+  })
 
   await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
 
+  await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
   await expect(page.getByTestId('action-Publish')).toBeDisabled()
 })
 
@@ -46,8 +61,13 @@ test(`actions - main document action when modal is closed will be enabled`, asyn
   createDraftDocument,
 }) => {
   await createDraftDocument('/test/content/input-debug;objectsDebug')
+  await page.waitForSelector('[data-testid="document-panel-scroller"]', {
+    state: 'attached',
+    timeout: 40000,
+  })
 
   await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+  await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
   await page.getByTestId('tree-editing-done').click()
 
   await expect(page.getByTestId('action-Publish')).not.toBeDisabled()
@@ -57,10 +77,16 @@ test.describe('navigation - tree sidebar', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // set up an array with two items: Albert, the whale and Lucy, the cat
     await createDraftDocument('/test/content/input-debug;objectsDebug')
+    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
+      state: 'attached',
+      timeout: 40000,
+    })
     const modal = await page.getByTestId('tree-editing-dialog')
 
     // first element
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+
     await modal.getByTestId('string-input').fill('Albert, the whale')
     await page.getByRole('button', {name: 'Done'}).click()
 
@@ -68,6 +94,7 @@ test.describe('navigation - tree sidebar', () => {
 
     // second element
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
     await modal.getByTestId('string-input').fill('Lucy, the cat')
     await page.getByRole('button', {name: 'Done'}).click()
 
@@ -86,13 +113,20 @@ test.describe('navigation - tree sidebar', () => {
     const modal = await page.getByTestId('tree-editing-dialog')
 
     await page.getByRole('button', {name: 'Albert, the whale'}).click()
+    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
     await page.getByTestId('tree-editing-sidebar-toggle').click()
+    await page.waitForSelector('[data-testid="tree-editing-sidebar"]', {state: 'visible'})
 
     // click on second array item
     await modal.getByRole('button', {name: 'Lucy, the cat'}).click()
 
     // Wait for the animation to change form to finish
-    await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
+    await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 50000)
+    const selector = [
+      '[data-testid^="field-animals[_key="]', // Match the beginning part
+      '[data-testid$="].name"]', // Match the ending part
+    ].join('')
+    await page.waitForSelector(selector, {state: 'visible'})
 
     // make sure that item is selected on nav tree
     await expect(
@@ -113,17 +147,27 @@ test.describe('navigation - breadcrumb', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // set up an array with two items: Albert, the whale and Lucy, the cat
     await createDraftDocument('/test/content/input-debug;objectsDebug')
+    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
+      state: 'attached',
+      timeout: 40000,
+    })
     const modal = await page.getByTestId('tree-editing-dialog')
 
     // first element
+    await page.waitForSelector('[data-testid="field-animals"]', {state: 'visible'})
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+
     await modal.getByTestId('string-input').fill('Albert, the whale')
     await page.getByRole('button', {name: 'Done'}).click()
 
     await expect(modal).not.toBeVisible()
 
     // second element
+    await page.waitForSelector('[data-testid="field-animals"]', {state: 'visible'})
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+
     await modal.getByTestId('string-input').fill('Lucy, the cat')
     await page.getByRole('button', {name: 'Done'}).click()
 
@@ -143,6 +187,7 @@ test.describe('navigation - breadcrumb', () => {
     const modal = await page.getByTestId('tree-editing-dialog')
 
     await page.getByRole('button', {name: 'Albert, the whale'}).click()
+    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
 
     // click the breacrumb
     await page.locator('#tree-breadcrumb-menu-button').click()
@@ -155,11 +200,19 @@ test.describe('navigation - breadcrumb', () => {
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
+    await page.waitForSelector('[data-testid="tree-editing-sidebar"]', {state: 'visible'})
 
     // Wait for the animation to change form to finish
     await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
 
     // make sure that item is selected on nav tree
+
+    const selector = [
+      '[data-testid^="field-animals[_key="]', // Match the beginning part
+      '[data-testid$="].name"]', // Match the ending part
+    ].join('')
+    await page.waitForSelector(selector, {state: 'visible'})
+
     await expect(
       await page.getByRole('treeitem', {name: 'Lucy, the cat'}).getByTestId('side-menu-item'),
     ).toHaveAttribute('data-selected')
@@ -178,6 +231,10 @@ test.describe('navigation - form', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // set up an array with two items: Albert, the whale and Lucy, the cat
     await createDraftDocument('/test/content/input-debug;objectsDebug')
+    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
+      state: 'attached',
+      timeout: 40000,
+    })
     const modal = await page.getByTestId('tree-editing-dialog')
 
     // first element
@@ -197,6 +254,7 @@ test.describe('navigation - form', () => {
 
     //open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
+    await page.waitForSelector(`[data-testid="tree-editing-sidebar"]`, {state: 'visible'})
 
     // return to parent item
     await page.getByRole('list').getByRole('button', {name: 'Albert, the whale'}).click()
@@ -210,6 +268,7 @@ test.describe('navigation - form', () => {
     // Wait for the animation to change form to finish
     await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
 
+    await page.waitForSelector(`${selector} [data-testid="string-input"]`, {state: 'visible'})
     await page.locator(selector).getByTestId('string-input').fill('Doris, the friendly fish')
 
     await page.getByRole('button', {name: 'Done'}).click()
@@ -233,14 +292,19 @@ test.describe('navigation - form', () => {
 
     // Wait for the animation to change form to finish
     await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
+    const selector = [
+      '[data-testid^="field-animals[_key="]', // Match the beginning part
+      '[data-testid$="].name"]', // Match the ending part
+    ].join('')
+    await page.waitForSelector(selector, {state: 'visible'})
+    await modal.getByRole('button', {name: 'Eliza, the friendly dolphin'}).click({timeout: 5000})
 
-    await modal.getByRole('button', {name: 'Eliza, the friendly dolphin'}).click()
+    // Wait for the animation to change form to finish
+    await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 50000)
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
-
-    // Wait for the animation to change form to finish
-    await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
+    await page.waitForSelector(`[data-testid="tree-editing-sidebar"]`, {state: 'visible'})
 
     // make sure that item is selected on nav tree
     await expect(
