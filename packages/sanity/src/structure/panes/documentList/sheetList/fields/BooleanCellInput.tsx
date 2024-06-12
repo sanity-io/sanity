@@ -27,13 +27,13 @@ export function BooleanCellInput(
   const layout = fieldType?.options?.layout || 'switch'
 
   const indeterminate = typeof cellValue !== 'boolean'
-  const checked = cellValue || false
+  const checked = typeof cellValue === 'boolean' ? cellValue : false
 
   const LayoutSpecificInput = layout === 'checkbox' ? Checkbox : Switch
 
   const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
 
-  const handleOnMouseDown = useMemo(() => getOnMouseDownHandler(true), [getOnMouseDownHandler])
+  const handleOnMouseDown = useMemo(() => getOnMouseDownHandler(false), [getOnMouseDownHandler])
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

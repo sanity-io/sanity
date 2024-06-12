@@ -1,6 +1,6 @@
 import {TextInput, type TextInputType} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
-import {useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {type DocumentSheetTableRow} from '../types'
 
@@ -13,15 +13,22 @@ export const CellInput = ({
   'data-testid': dataTestId,
 }: CellContext<DocumentSheetTableRow, unknown>) => {
   const {fieldType} = column.columnDef.meta || {}
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCellValue(event.target.value)
-  }
+  const value = cellValue as string
+  const handleOnChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setCellValue(event.target.value)
+    },
+    [setCellValue],
+  )
 
-  const setRef = (element: HTMLInputElement) => {
-    if (fieldRef) {
-      fieldRef.current = element
-    }
-  }
+  const setRef = useCallback(
+    (element: HTMLInputElement) => {
+      if (fieldRef) {
+        fieldRef.current = element
+      }
+    },
+    [fieldRef],
+  )
 
   const handleOnMouseDown = useMemo(
     () => getOnMouseDownHandler(fieldType?.name !== 'number'),
@@ -42,7 +49,7 @@ export const CellInput = ({
       style={{
         padding: '22px 16px',
       }}
-      value={cellValue}
+      value={value}
       data-testid={dataTestId}
       onChange={handleOnChange}
     />
