@@ -35,7 +35,7 @@ export const copyAction = defineDocumentFieldAction({
       type: 'action',
       icon: CopyIcon,
       onAction,
-      title: 'Copy',
+      title: 'Copy field',
       hidden: path.length === 0,
     })
   },

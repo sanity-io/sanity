@@ -16,7 +16,7 @@ export const pasteAction = defineDocumentFieldAction({
       type: 'action',
       icon: ClipboardIcon,
       onAction,
-      title: 'Paste',
+      title: 'Paste field',
       hidden: path.length === 0,
     })
   },
