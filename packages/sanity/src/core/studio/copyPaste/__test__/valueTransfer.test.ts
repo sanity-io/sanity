@@ -1,4 +1,5 @@
 import {beforeEach, describe, expect, jest, test} from '@jest/globals'
+import {type TypedObject} from '@sanity/types'
 import {omit} from 'lodash'
 
 import {resolveSchemaTypeForPath} from '../resolveSchemaTypeForPath'
@@ -56,10 +57,23 @@ describe('transferValue', () => {
         targetRootSchemaType: schema.get('editor')!,
         targetPath: [],
       })
-      expect(transferValueResult?.targetValue).toEqual({
+      const targetValue = transferValueResult?.targetValue as {
+        bio: (TypedObject & {children: TypedObject[]})[]
+      }
+      expect(targetValue).toMatchObject({
         ...omit(sourceValue, ['_id']),
+        bio: [
+          {
+            _key: expect.any(String),
+            _type: 'customNamedBlock',
+            children: [{_key: expect.any(String), _type: 'span', text: 'Hello'}],
+          },
+        ],
         _type: 'editor',
       })
+      // Test that the keys are not the same
+      expect(targetValue.bio[0]._key).not.toEqual('someKey')
+      expect(targetValue.bio[0].children[0]._key).not.toEqual('someOtherKey')
     })
 
     test('can copy array of numbers', () => {
@@ -88,7 +102,11 @@ describe('transferValue', () => {
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['nestedTest'],
       })
-      expect(transferValueResult?.targetValue).toEqual({_type: 'nestedObject', title: 'item'})
+      expect(transferValueResult?.targetValue).toMatchObject({
+        _type: 'nestedObject',
+        title: 'item',
+        _key: expect.any(String),
+      })
     })
 
     test('can copy image objects', () => {
