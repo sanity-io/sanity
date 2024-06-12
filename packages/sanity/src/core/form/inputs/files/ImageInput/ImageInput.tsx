@@ -1,13 +1,10 @@
-/* eslint-disable react/jsx-no-bind */
-/* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
-
+/* eslint-disable react/jsx-handler-names */
 import {isImageSource} from '@sanity/asset-utils'
 import {type SanityClient} from '@sanity/client'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {
   type AssetFromSource,
   type AssetSource,
-  type Image as BaseImage,
   type ImageAsset,
   type ImageSchemaType,
   type Path,
@@ -50,15 +47,11 @@ import {UploadWarning} from '../common/UploadWarning'
 import {ImageToolInput} from '../ImageToolInput'
 import {type ImageUrlBuilder} from '../types'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
-import {ImagePreview} from './ImagePreview'
+import {ImageInputPreview} from './ImageInputPreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
+import {type BaseImageInputValue, type FileInfo} from './types'
 
-/**
- * @hidden
- * @beta */
-export interface BaseImageInputValue extends Partial<BaseImage> {
-  _upload?: UploadState
-}
+export {BaseImageInputValue}
 
 /**
  * @hidden
@@ -72,18 +65,6 @@ export interface BaseImageInputProps
   resolveUploader: UploaderResolver
   client: SanityClient
   t: (key: string, values?: Record<string, string>) => string
-}
-
-const getDevicePixelRatio = () => {
-  if (typeof window === 'undefined' || !window.devicePixelRatio) {
-    return 1
-  }
-  return Math.round(Math.max(1, window.devicePixelRatio))
-}
-
-type FileInfo = {
-  type: string // mime type
-  kind: string // 'file' or 'string'
 }
 
 interface BaseImageInputState {
@@ -101,7 +82,7 @@ function passThrough({children}: {children?: ReactNode}) {
   return children
 }
 
-const ASSET_FIELD_PATH = ['asset']
+const ASSET_FIELD_PATH = ['asset'] as const
 
 const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true}
 
@@ -422,34 +403,21 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
   }
 
   renderPreview = () => {
-    const {value, schemaType, readOnly, directUploads, imageUrlBuilder, t, resolveUploader} =
+    const {value, schemaType, readOnly, directUploads, imageUrlBuilder, resolveUploader} =
       this.props
-
-    if (!value || !isImageSource(value)) {
-      return null
-    }
-
     const {hoveringFiles} = this.state
-
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
-
-    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
-    const imageUrl = imageUrlBuilder
-      .width(2000)
-      .fit('max')
-      .image(value)
-      .dpr(getDevicePixelRatio())
-      .auto('format')
-      .url()
+    const {handleOpenDialog} = this
 
     return (
-      <ImagePreview
-        onDoubleClick={this.handleOpenDialog}
-        drag={!value?._upload && hoveringFiles.length > 0}
-        isRejected={rejectedFilesCount > 0 || !directUploads}
+      <ImageInputPreview
+        directUploads={directUploads}
+        handleOpenDialog={handleOpenDialog}
+        hoveringFiles={hoveringFiles}
+        imageUrlBuilder={imageUrlBuilder}
         readOnly={readOnly}
-        src={imageUrl}
-        alt={t('inputs.image.preview-uploaded-image')}
+        resolveUploader={resolveUploader}
+        schemaType={schemaType}
+        value={value}
       />
     )
   }
