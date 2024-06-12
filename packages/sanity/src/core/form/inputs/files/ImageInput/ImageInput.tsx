@@ -1,14 +1,16 @@
+/* eslint-disable react/jsx-no-bind */
+/* eslint-disable react/no-this-in-sfc */
+/* eslint-disable react/display-name */
 /* eslint-disable react/jsx-handler-names */
 import {isImageSource} from '@sanity/asset-utils'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetFromSource, type AssetSource, type Path, type UploadState} from '@sanity/types'
-import {Box, Card, Menu, Stack, type ToastParams} from '@sanity/ui'
+import {Card, Menu, Stack, type ToastParams} from '@sanity/ui'
 import {get, startCase} from 'lodash'
 import {type FocusEvent, PureComponent, type ReactNode} from 'react'
 import {type Subscription} from 'rxjs'
 
-import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
 import {ImperativeToast} from '../../../../components'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
@@ -23,11 +25,11 @@ import {type InputProps} from '../../../types'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {handleSelectAssetFromSource} from '../common/assetSource'
-import {FileTarget} from '../common/styles'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadProgress} from '../common/UploadProgress'
-import {UploadWarning} from '../common/UploadWarning'
+import {ASSET_FIELD_PATH, ASSET_IMAGE_MENU_POPOVER} from './constants'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
+import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputHotspotInput} from './ImageInputHotspotInput'
 import {ImageInputPreview} from './ImageInputPreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
@@ -49,10 +51,6 @@ interface BaseImageInputState {
 function passThrough({children}: {children?: ReactNode}) {
   return children
 }
-
-const ASSET_FIELD_PATH = ['asset'] as const
-
-const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true}
 
 /** @internal */
 export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImageInputState> {
@@ -343,7 +341,7 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
     return (
       <ImageInputHotspotInput
         isImageToolEnabled={this.isImageToolEnabled()}
-        handleCloseDialog={this.handleCloseDialog}
+        handleCloseDialog={this.handleCloseDialog.bind(this)}
         imageInputProps={this.props}
         inputProps={inputProps}
       />
@@ -354,12 +352,11 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
     const {value, schemaType, readOnly, directUploads, imageUrlBuilder, resolveUploader} =
       this.props
     const {hoveringFiles} = this.state
-    const {handleOpenDialog} = this
 
     return (
       <ImageInputPreview
         directUploads={directUploads}
-        handleOpenDialog={handleOpenDialog}
+        handleOpenDialog={this.handleOpenDialog.bind(this)}
         hoveringFiles={hoveringFiles}
         imageUrlBuilder={imageUrlBuilder}
         readOnly={readOnly}
@@ -648,57 +645,32 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
 
   renderAsset() {
     const {value, readOnly, elementProps} = this.props
-
     const {hoveringFiles, isStale} = this.state
-
-    const hasValueOrUpload = Boolean(value?._upload || value?.asset)
 
     if (value && typeof value.asset !== 'undefined' && !value?._upload && !isImageSource(value)) {
       return () => <InvalidImageWarning onClearValue={this.handleClearField} />
     }
 
-    // todo: convert this to a functional component and use this with useCallback
-    //  it currently has to return a new function on every render in order to pick up state from this component
     return (inputProps: Omit<InputProps, 'renderDefault'>) => (
-      <>
-        {isStale && (
-          <Box marginBottom={2}>
-            <UploadWarning onClearStale={this.handleClearUploadState} />
-          </Box>
-        )}
-
-        <ChangeIndicator
-          path={inputProps.path.concat(ASSET_FIELD_PATH)}
-          hasFocus={!!inputProps.focused}
-          isChanged={inputProps.changed}
-        >
-          {value?._upload ? (
-            this.renderUploadState(value._upload)
-          ) : (
-            <FileTarget
-              {...elementProps}
-              onFocus={this.handleFileTargetFocus}
-              tabIndex={0}
-              disabled={Boolean(readOnly)}
-              onFiles={this.handleSelectFiles}
-              onFilesOver={this.handleFilesOver}
-              onFilesOut={this.handleFilesOut}
-              tone={this.getFileTone()}
-              $border={hasValueOrUpload || hoveringFiles.length > 0}
-              sizing="border"
-              radius={2}
-            >
-              {!value?.asset && this.renderUploadPlaceholder()}
-              {!value?._upload && value?.asset && (
-                <div style={{position: 'relative'}} ref={this.setPreviewElement}>
-                  {this.renderPreview()}
-                  {this.renderAssetMenu()}
-                </div>
-              )}
-            </FileTarget>
-          )}
-        </ChangeIndicator>
-      </>
+      <ImageInputAsset
+        ref={this.setPreviewElement}
+        elementProps={elementProps}
+        handleClearUploadState={this.handleClearUploadState.bind(this)}
+        handleFilesOut={this.handleFilesOut.bind(this)}
+        handleFilesOver={this.handleFilesOver.bind(this)}
+        handleFileTargetFocus={this.handleFileTargetFocus.bind(this)}
+        handleSelectFiles={this.handleSelectFiles.bind(this)}
+        hoveringFiles={hoveringFiles}
+        inputProps={inputProps}
+        isStale={isStale}
+        readOnly={readOnly}
+        renderAssetMenu={this.renderAssetMenu.bind(this)}
+        renderPreview={this.renderPreview.bind(this)}
+        renderUploadPlaceholder={this.renderUploadPlaceholder.bind(this)}
+        renderUploadState={this.renderUploadState.bind(this)}
+        tone={this.getFileTone()}
+        value={value}
+      />
     )
   }
 

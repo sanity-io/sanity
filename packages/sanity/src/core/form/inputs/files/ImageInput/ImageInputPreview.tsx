@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import {isImageSource} from '@sanity/asset-utils'
 import {type ImageSchemaType} from '@sanity/types'
 import {memo, useMemo} from 'react'
