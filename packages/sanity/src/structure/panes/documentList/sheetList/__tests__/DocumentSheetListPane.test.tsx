@@ -276,6 +276,7 @@ describe('DocumentSheetListPane', () => {
 
         await act(async () => {
           expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
+          expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
           await userEvent.dblClick(screen.getByTestId('cell-name-0'))
         })
 
