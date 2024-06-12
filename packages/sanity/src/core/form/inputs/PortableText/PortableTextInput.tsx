@@ -385,7 +385,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 onChange={handleEditorChange}
                 maxBlocks={undefined} // TODO: from schema?
                 ref={editorRef}
-                readOnly={isOffline || readOnly}
+                readOnly={isOffline || isActive === false || readOnly}
                 schemaType={schemaType}
                 value={value}
               >
