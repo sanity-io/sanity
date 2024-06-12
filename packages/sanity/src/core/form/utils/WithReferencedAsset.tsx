@@ -1,6 +1,6 @@
 import {type Reference} from '@sanity/types'
-import {type ReactNode} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {type ReactNode, useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 interface Props<AssetDoc> {
@@ -13,6 +13,7 @@ interface Props<AssetDoc> {
 export function WithReferencedAsset<Asset>(props: Props<Asset>) {
   const {reference, children, observeAsset, waitPlaceholder} = props
   const documentId = reference?._ref
-  const asset = useMemoObservable(() => observeAsset(documentId), [documentId, observeAsset])
+  const observable = useMemo(() => observeAsset(documentId), [documentId, observeAsset])
+  const asset = useObservable(observable)
   return <>{documentId && asset ? children(asset) : waitPlaceholder}</>
 }

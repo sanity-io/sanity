@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {isFinite} from 'lodash'
 import {useMemo} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
@@ -68,7 +68,7 @@ export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number {
     cachedSettings.set(dataset, fetchMaxDepth({client}).pipe(shareReplay()))
   }
 
-  const indexSettings = useMemoObservable(
+  const indexSettingsObservable = useMemo(
     () =>
       cachedSettings.get(dataset)!.pipe(
         map((settings) => ({
@@ -86,8 +86,8 @@ export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number {
         }),
       ),
     [dataset],
-    INITIAL_LOADING_STATE,
   )
+  const indexSettings = useObservable(indexSettingsObservable, INITIAL_LOADING_STATE)
 
   const maxFieldDepth = indexSettings?.settings?.partialIndexSettings?.maxFieldDepth
 
