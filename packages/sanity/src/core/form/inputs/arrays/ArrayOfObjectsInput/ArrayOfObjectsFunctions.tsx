@@ -1,13 +1,13 @@
-/* eslint-disable no-nested-ternary, react/jsx-no-bind */
+/* eslint-disable react/jsx-no-bind */
 import {AddIcon} from '@sanity/icons'
-import {InsertMenu, type InsertMenuOptions} from '@sanity/insert-menu'
-import {type ArraySchemaType, type SchemaType} from '@sanity/types'
-import {Grid, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
-import {useCallback, useReducer, useState} from 'react'
+import {type ArraySchemaType} from '@sanity/types'
+import {Grid} from '@sanity/ui'
+import {useCallback, useState} from 'react'
 
 import {Button, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
+import {InsertMenuPopover} from './InsertMenuPopover'
 
 /**
  * @hidden
@@ -70,107 +70,32 @@ export function ArrayOfObjectsFunctions<
           data-testid="add-single-object-button"
         />
       ) : (
-        <AddMultipleButton
-          insertButtonProps={{...insertButtonProps, 'data-testid': 'add-multiple-object-button'}}
-          insertMenuOptions={props.schemaType.options?.insertMenu}
-          schemaTypes={props.schemaType.of}
-          onSelect={insertItem}
-          referenceBoundary={gridElement}
+        <InsertMenuPopover
+          insertMenuProps={{
+            ...props.schemaType.options?.insertMenu,
+            schemaTypes: props.schemaType.of,
+            onSelect: insertItem,
+          }}
+          popoverProps={{
+            placement: 'bottom',
+            fallbackPlacements: ['top'],
+            matchReferenceWidth: props.schemaType.options?.insertMenu?.filter,
+            referenceBoundary: gridElement,
+          }}
+          renderToggle={({state, send, setToggleElement}) => (
+            <Button
+              {...insertButtonProps}
+              data-testid="add-multiple-object-button"
+              selected={state.open}
+              onClick={() => {
+                send({type: 'toggle'})
+              }}
+              ref={setToggleElement}
+            />
+          )}
         />
       )}
       {children}
     </Grid>
-  )
-}
-
-type AddMultipleState = {
-  open: boolean
-}
-
-type AddMultipleEvent = {type: 'toggle'} | {type: 'close'}
-
-function addMultipleReducer(state: AddMultipleState, event: AddMultipleEvent) {
-  return {
-    open: event.type === 'toggle' ? !state.open : event.type === 'close' ? false : state.open,
-  }
-}
-
-type AddMultipleButtonProps = {
-  schemaTypes: Array<SchemaType>
-  onSelect: (schemaType: SchemaType) => void
-  insertButtonProps: React.ComponentProps<typeof Button> & {'data-testid': string}
-  insertMenuOptions?: InsertMenuOptions
-  referenceBoundary?: HTMLElement | null
-}
-
-function AddMultipleButton(props: AddMultipleButtonProps) {
-  const {t} = useTranslation()
-  const [state, send] = useReducer(addMultipleReducer, {open: false})
-  const [button, setButton] = useState<HTMLButtonElement | null>(null)
-  const [popover, setPopover] = useState<HTMLDivElement | null>(null)
-
-  useClickOutside(
-    useCallback(() => {
-      send({type: 'close'})
-    }, []),
-    [button, popover],
-  )
-
-  useGlobalKeyDown(
-    useCallback(
-      (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-          send({type: 'close'})
-          button?.focus()
-        }
-      },
-      [button],
-    ),
-  )
-
-  const {onSelect} = props
-  const handleOnSelect = useCallback(
-    (schemaType: SchemaType) => {
-      onSelect(schemaType)
-      send({type: 'close'})
-    },
-    [onSelect],
-  )
-
-  return (
-    <Popover
-      constrainSize
-      content={
-        <InsertMenu
-          {...props.insertMenuOptions}
-          onSelect={handleOnSelect}
-          schemaTypes={props.schemaTypes}
-          labels={{
-            'insert-menu.filter.all-items': t('insert-menu.filter.all-items'),
-            'insert-menu.search.no-results': t('insert-menu.search.no-results'),
-            'insert-menu.search.placeholder': t('insert-menu.search.placeholder'),
-            'insert-menu.toggle-grid-view.tooltip': t('insert-menu.toggle-grid-view.tooltip'),
-            'insert-menu.toggle-list-view.tooltip': t('insert-menu.toggle-list-view.tooltip'),
-          }}
-        />
-      }
-      fallbackPlacements={['top']}
-      matchReferenceWidth={props.insertMenuOptions?.filter}
-      open={state.open}
-      overflow="hidden"
-      placement="bottom"
-      portal
-      ref={setPopover}
-      referenceBoundary={props.referenceBoundary}
-    >
-      <Button
-        {...props.insertButtonProps}
-        ref={setButton}
-        selected={state.open}
-        onClick={() => {
-          send({type: 'toggle'})
-        }}
-      />
-    </Popover>
   )
 }
