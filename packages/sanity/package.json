@@ -259,7 +259,7 @@
     "@repo/package.config": "workspace:*",
     "@sanity/codegen": "3.45.0",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/pkg-utils": "6.9.0",
+    "@sanity/pkg-utils": "6.9.3",
     "@sanity/tsdoc": "1.0.70",
     "@sanity/ui-workshop": "^1.2.11",
     "@testing-library/jest-dom": "^6.2.0",
