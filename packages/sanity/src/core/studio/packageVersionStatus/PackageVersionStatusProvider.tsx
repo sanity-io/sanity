@@ -27,6 +27,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
   }
 
   useEffect(() => {
+    if (!autoUpdatingPackages) return undefined
     const sub = checkForLatestVersions(currentPackageVersions).subscribe({
       next: (latestPackageVersions) => {
         const foundNewVersion = Object.entries(latestPackageVersions).some(([pkg, version]) => {
