@@ -24,11 +24,12 @@ import {
 import {type InputProps} from '../../../types'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {ActionsMenu} from '../common/ActionsMenu'
-import {handleSelectAssetFromSource} from '../common/assetSource'
+import {handleSelectAssetFromSource as _handleSelectAssetFromSource} from '../common/assetSource'
 import {UploadProgress} from '../common/UploadProgress'
 import {ASSET_FIELD_PATH, ASSET_IMAGE_MENU_POPOVER} from './constants'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {ImageInputAsset} from './ImageInputAsset'
+import {ImageInputAssetSource} from './ImageInputAssetSource'
 import {ImageInputHotspotInput} from './ImageInputHotspotInput'
 import {ImageInputPreview} from './ImageInputPreview'
 import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
@@ -263,7 +264,7 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
     const {onChange, schemaType, resolveUploader} = this.props
-    handleSelectAssetFromSource({
+    _handleSelectAssetFromSource({
       assetFromSource,
       onChange,
       type: schemaType,
@@ -560,37 +561,15 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
   renderAssetSource() {
     const {selectedAssetSource} = this.state
     const {value, schemaType, observeAsset} = this.props
-    const accept = get(schemaType, 'options.accept', 'image/*')
 
-    if (!selectedAssetSource) {
-      return null
-    }
-    const Component = selectedAssetSource.component
-
-    if (value && value.asset) {
-      return (
-        <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
-          {(imageAsset) => (
-            <Component
-              selectedAssets={[imageAsset]}
-              assetType="image"
-              accept={accept}
-              selectionType="single"
-              onClose={this.handleAssetSourceClosed}
-              onSelect={this.handleSelectAssetFromSource}
-            />
-          )}
-        </WithReferencedAsset>
-      )
-    }
     return (
-      <Component
-        selectedAssets={[]}
-        selectionType="single"
-        assetType="image"
-        accept={accept}
-        onClose={this.handleAssetSourceClosed}
-        onSelect={this.handleSelectAssetFromSource}
+      <ImageInputAssetSource
+        handleAssetSourceClosed={this.handleAssetSourceClosed.bind(this)}
+        handleSelectAssetFromSource={this.handleSelectAssetFromSource.bind(this)}
+        observeAsset={observeAsset}
+        schemaType={schemaType}
+        selectedAssetSource={selectedAssetSource}
+        value={value}
       />
     )
   }
