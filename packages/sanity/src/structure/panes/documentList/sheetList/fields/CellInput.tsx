@@ -1,18 +1,8 @@
 import {TextInput, type TextInputType} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
-import {type MutableRefObject, useMemo} from 'react'
+import {useMemo} from 'react'
 
 import {type DocumentSheetTableRow} from '../types'
-
-type Props = CellContext<DocumentSheetTableRow, unknown> & {
-  'cellValue': number | string
-  'setCellValue': (value: number | string) => void
-  'fieldRef': MutableRefObject<HTMLInputElement>
-  'getOnMouseDownHandler': (
-    suppressDefaultBehavior: boolean,
-  ) => (event: React.MouseEvent<HTMLElement>) => void
-  'data-testid': string
-}
 
 export const CellInput = ({
   cellValue,
@@ -21,7 +11,7 @@ export const CellInput = ({
   column,
   getOnMouseDownHandler,
   'data-testid': dataTestId,
-}: Props) => {
+}: CellContext<DocumentSheetTableRow, unknown>) => {
   const {fieldType} = column.columnDef.meta || {}
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCellValue(event.target.value)

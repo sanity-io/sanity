@@ -22,12 +22,20 @@ declare module '@tanstack/react-table' {
     disableCellFocus?: boolean
   }
   interface CellContext<TData extends RowData, TValue> {
-    'cellValue': number | string
-    'setCellValue': (value: number | string) => void
+    'cellValue': number | string | boolean
+    /**
+     * Changes the cell value but not the underlying data, the data will be changed when the user blurs the cell.
+     * For immediate change use `handlePatchField` from cell context
+     */
+    'setCellValue': (value: number | string | boolean) => void
     'fieldRef': MutableRefObject<HTMLElement>
     'getOnMouseDownHandler': (
       suppressDefaultBehavior: boolean,
     ) => (event: React.MouseEvent<HTMLElement>) => void
     'data-testid': string
+    /**
+     * Immediate change of the cell value, doing a server patch action.
+     */
+    'handlePatchField': (value: any) => void
   }
 }
