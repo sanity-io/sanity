@@ -95,8 +95,8 @@ importers:
         specifier: ^7.11.0
         version: 7.11.0(eslint@8.57.0)(typescript@5.4.5)
       '@vitejs/plugin-react':
-        specifier: ^4.3.0
-        version: 4.3.0(vite@4.5.3)
+        specifier: ^4.3.1
+        version: 4.3.1(vite@4.5.3)
       cac:
         specifier: ^6.7.12
         version: 6.7.14
@@ -279,7 +279,7 @@ importers:
         version: 18.3.0
       '@vitejs/plugin-react':
         specifier: ^4.3.0
-        version: 4.3.0(vite@4.5.3)
+        version: 4.3.1(vite@4.5.3)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -1208,8 +1208,8 @@ importers:
         specifier: ~8.5.3
         version: 8.5.10
       '@vitejs/plugin-react':
-        specifier: ^4.3.0
-        version: 4.3.0(vite@4.5.3)
+        specifier: ^4.3.1
+        version: 4.3.1(vite@4.5.3)
       express:
         specifier: ^4.18.3
         version: 4.19.2
@@ -1597,7 +1597,7 @@ importers:
         version: 0.0.6
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.3.0(vite@4.5.3)
+        version: 4.3.1(vite@4.5.3)
       archiver:
         specifier: ^7.0.0
         version: 7.0.1
@@ -5822,7 +5822,7 @@ packages:
     hasBin: true
     dependencies:
       '@playwright/experimental-ct-core': 1.41.2(@types/node@18.19.31)
-      '@vitejs/plugin-react': 4.3.0(vite@4.5.3)
+      '@vitejs/plugin-react': 4.3.1(vite@4.5.3)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -7404,7 +7404,7 @@ packages:
       '@sanity/pkg-utils': 6.8.18(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
       '@sanity/ui': 2.3.1(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.0(vite@5.2.12)
+      '@vitejs/plugin-react': 4.3.1(vite@5.2.12)
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 3.6.0
@@ -7465,7 +7465,7 @@ packages:
       '@sanity/pkg-utils': 6.8.18(@types/node@18.19.31)(typescript@5.4.5)
       '@sanity/ui': 2.3.1(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.0(vite@5.2.12)
+      '@vitejs/plugin-react': 4.3.1(vite@5.2.12)
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 3.6.0
@@ -7533,7 +7533,7 @@ packages:
     dependencies:
       '@sanity/icons': 3.2.0(react@18.3.1)
       '@sanity/ui': 2.3.1(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
-      '@vitejs/plugin-react': 4.3.0(vite@4.5.3)
+      '@vitejs/plugin-react': 4.3.1(vite@4.5.3)
       axe-core: 4.9.0
       cac: 6.7.14
       chokidar: 3.6.0
@@ -8707,8 +8707,8 @@ packages:
   /@vercel/stega@0.1.2:
     resolution: {integrity: sha512-P7mafQXjkrsoyTRppnt0N21udKS9wUmLXHRyP9saLXLHw32j/FgUJ3FscSWgvSqRs4cj7wKZtwqJEvWJ2jbGmA==}
 
-  /@vitejs/plugin-react@4.3.0(vite@4.5.3):
-    resolution: {integrity: sha512-KcEbMsn4Dpk+LIbHMj7gDPRKaTMStxxWRkRmxsg/jVdFdJCZWt1SchZcf0M4t8lIKdwwMsEyzhrcOXRrDPtOBw==}
+  /@vitejs/plugin-react@4.3.1(vite@4.5.3):
+    resolution: {integrity: sha512-m/V2syj5CuVnaxcUJOQRel/Wr31FFXRFlnOoq1TVtkCxsY5veGMTEmpWHndrhB2U8ScHtCQB1e+4hWYExQc6Lg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0
@@ -8722,8 +8722,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@vitejs/plugin-react@4.3.0(vite@5.2.12):
-    resolution: {integrity: sha512-KcEbMsn4Dpk+LIbHMj7gDPRKaTMStxxWRkRmxsg/jVdFdJCZWt1SchZcf0M4t8lIKdwwMsEyzhrcOXRrDPtOBw==}
+  /@vitejs/plugin-react@4.3.1(vite@5.2.12):
+    resolution: {integrity: sha512-m/V2syj5CuVnaxcUJOQRel/Wr31FFXRFlnOoq1TVtkCxsY5veGMTEmpWHndrhB2U8ScHtCQB1e+4hWYExQc6Lg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0
