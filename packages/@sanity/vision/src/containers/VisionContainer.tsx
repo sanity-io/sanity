@@ -1,4 +1,4 @@
-import {useToast} from '@sanity/ui'
+import {Flex, useToast} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 
 import {DelayedSpinner} from '../components/DelayedSpinner'
@@ -13,7 +13,11 @@ export function VisionContainer(props: VisionProps) {
   const {t} = useTranslation(visionLocaleNamespace)
 
   if (!loadedDatasets) {
-    return <DelayedSpinner />
+    return (
+      <Flex align="center" height="fill" justify="center">
+        <DelayedSpinner />
+      </Flex>
+    )
   }
 
   const datasets =
