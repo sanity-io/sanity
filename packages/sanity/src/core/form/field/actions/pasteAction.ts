@@ -5,7 +5,7 @@ import {defineDocumentFieldAction, useCopyPasteAction} from 'sanity'
 import {defineActionItem} from './define'
 
 export const pasteAction = defineDocumentFieldAction({
-  name: 'test/paste',
+  name: 'pasteField',
   useAction({path}) {
     const {onPaste} = useCopyPasteAction()
     const onAction = useCallback(() => {
@@ -16,7 +16,7 @@ export const pasteAction = defineDocumentFieldAction({
       type: 'action',
       icon: ClipboardIcon,
       onAction,
-      title: 'Paste',
+      title: 'Paste field',
       hidden: path.length === 0,
     })
   },
