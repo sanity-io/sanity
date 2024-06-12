@@ -50,7 +50,10 @@ const getFieldValueAsFieldType = (
   fieldType: BooleanSchemaType | StringSchemaType | NumberSchemaType,
 ) => {
   if (isBooleanSchemaType(fieldType)) {
-    return providedValue === 'true'
+    if (typeof providedValue === 'string') {
+      return providedValue === 'true'
+    }
+    return providedValue
   }
   if (isNumberSchemaType(fieldType)) {
     return parseFloat(providedValue)
@@ -67,7 +70,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const cellContext = getContext()
   const cellId = `cell-${column.id}-${row.index}`
   const providedValueRef = useRef(getValue())
-  const [cellValue, setCellValue] = useState<string | number>(getValue() as string)
+  const [cellValue, setCellValue] = useState<string | number | boolean>(getValue() as string)
   const fieldRef = useRef<HTMLElement | null>(null)
   const Cell = isPinned ? PinnedDataCell : DataCell
   const {
@@ -81,12 +84,13 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const cellState = getStateByCellId(cell.column.id, cell.row.index)
   const {patchDocument, unsetDocumentValue} = cellContext.table.options.meta || {}
 
-  const _patchDocument = useCallback(
+  const handlePatchField = useCallback(
     (value: any) => {
       if (!fieldType) return
 
       const typedValue = getFieldValueAsFieldType(value, fieldType)
 
+      setCellValue(typedValue)
       patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, typedValue)
     },
     [column.id, fieldType, patchDocument, row.original.__metadata.idPair.publishedId],
@@ -151,10 +155,10 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
 
   const handleOnBlur = useCallback(() => {
     if (cellValue !== providedValueRef.current) {
-      _patchDocument(cellValue)
+      handlePatchField(cellValue)
     }
     resetFocusSelection()
-  }, [_patchDocument, cellValue, resetFocusSelection])
+  }, [handlePatchField, cellValue, resetFocusSelection])
 
   // child field inputs can control whether default behavior is stopped or preserved
   const getOnMouseDownHandler = useCallback(
@@ -173,16 +177,22 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     (event: ClipboardEvent) => {
       const clipboardData = event.clipboardData?.getData('Text')
       if (!clipboardData || !fieldType) return
+      if (
+        isBooleanSchemaType(fieldType) &&
+        typeof clipboardData !== 'boolean' &&
+        !['true', 'false'].includes(clipboardData)
+      ) {
+        return
+      }
 
       const typedValue = getFieldValueAsFieldType(clipboardData, fieldType)
-      setCellValue(clipboardData)
-      // patch immediately when pasting
-      _patchDocument(typedValue)
+      handlePatchField(typedValue)
     },
-    [_patchDocument, fieldType],
+    [handlePatchField, fieldType],
   )
 
   const handleCopy = useCallback(() => {
+    if (typeof cellValue === 'undefined') return
     navigator.clipboard.writeText(cellValue.toString())
   }, [cellValue])
 
@@ -207,9 +217,8 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   }, [cellState, handleCopy, handleOnKeyDown, handlePaste])
 
   // Keep value of cell up to date with external changes
+  const realTimeValue = getValue()
   useEffect(() => {
-    const realTimeValue = getValue()
-
     if (providedValueRef?.current !== realTimeValue) {
       if (providedValueRef.current === cellValue) {
         // do not update the value if it's currently being edited
@@ -217,7 +226,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
       }
       providedValueRef.current = realTimeValue
     }
-  }, [getValue, cellValue])
+  }, [realTimeValue, cellValue])
 
   const cellProps = {
     'onFocus': disableCellFocus ? undefined : handleOnFocus,
@@ -229,6 +238,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
 
   const inputProps = {
     ...cellContext,
+    handlePatchField,
     cellValue,
     setCellValue,
     getOnMouseDownHandler,

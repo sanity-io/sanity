@@ -17,6 +17,7 @@ import {useMemo} from 'react'
 
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {PreviewCell} from './DocumentSheetPreviewCell'
+import {BooleanCellInput} from './fields/BooleanCellInput'
 import {CellInput} from './fields/CellInput'
 import {type DocumentSheetTableRow} from './types'
 
@@ -57,7 +58,7 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
             }
 
             if (isBooleanSchemaType(fieldType)) {
-              return <div>{fieldType.options?.layout || 'boolean'}</div>
+              return <BooleanCellInput {...info} fieldType={fieldType} />
             }
 
             return null

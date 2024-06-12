@@ -1,18 +1,8 @@
 import {TextInput, type TextInputType} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
-import {type MutableRefObject, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {type DocumentSheetTableRow} from '../types'
-
-type Props = CellContext<DocumentSheetTableRow, unknown> & {
-  'cellValue': number | string
-  'setCellValue': (value: number | string) => void
-  'fieldRef': MutableRefObject<HTMLInputElement>
-  'getOnMouseDownHandler': (
-    suppressDefaultBehavior: boolean,
-  ) => (event: React.MouseEvent<HTMLElement>) => void
-  'data-testid': string
-}
 
 export const CellInput = ({
   cellValue,
@@ -21,17 +11,24 @@ export const CellInput = ({
   column,
   getOnMouseDownHandler,
   'data-testid': dataTestId,
-}: Props) => {
+}: CellContext<DocumentSheetTableRow, unknown>) => {
   const {fieldType} = column.columnDef.meta || {}
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCellValue(event.target.value)
-  }
+  const value = cellValue as string
+  const handleOnChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setCellValue(event.target.value)
+    },
+    [setCellValue],
+  )
 
-  const setRef = (element: HTMLInputElement) => {
-    if (fieldRef) {
-      fieldRef.current = element
-    }
-  }
+  const setRef = useCallback(
+    (element: HTMLInputElement) => {
+      if (fieldRef) {
+        fieldRef.current = element
+      }
+    },
+    [fieldRef],
+  )
 
   const handleOnMouseDown = useMemo(
     () => getOnMouseDownHandler(fieldType?.name !== 'number'),
@@ -52,7 +49,7 @@ export const CellInput = ({
       style={{
         padding: '22px 16px',
       }}
-      value={cellValue}
+      value={value}
       data-testid={dataTestId}
       onChange={handleOnChange}
     />
