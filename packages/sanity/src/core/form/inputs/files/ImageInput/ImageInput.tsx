@@ -5,7 +5,7 @@
 import {isImageSource} from '@sanity/asset-utils'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetFromSource, type AssetSource, type Path, type UploadState} from '@sanity/types'
-import {Card, Menu, Stack, type ToastParams} from '@sanity/ui'
+import {Menu, Stack, type ToastParams} from '@sanity/ui'
 import {get, startCase} from 'lodash'
 import {type FocusEvent, PureComponent, type ReactNode} from 'react'
 import {type Subscription} from 'rxjs'
@@ -25,13 +25,13 @@ import {type InputProps} from '../../../types'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {handleSelectAssetFromSource} from '../common/assetSource'
-import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadProgress} from '../common/UploadProgress'
 import {ASSET_FIELD_PATH, ASSET_IMAGE_MENU_POPOVER} from './constants'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputHotspotInput} from './ImageInputHotspotInput'
 import {ImageInputPreview} from './ImageInputPreview'
+import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
 import {InvalidImageWarning} from './InvalidImageWarning'
 import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from './types'
 
@@ -527,37 +527,18 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
 
   renderUploadPlaceholder() {
     const {schemaType, readOnly, directUploads, resolveUploader} = this.props
-
     const {hoveringFiles} = this.state
 
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
-    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
-
-    const accept = get(schemaType, 'options.accept', 'image/*')
-
     return (
-      <div style={{padding: 1}}>
-        <Card
-          tone={readOnly ? 'transparent' : 'inherit'}
-          border
-          paddingX={3}
-          paddingY={2}
-          radius={2}
-          style={hoveringFiles.length === 0 ? {} : {borderColor: 'transparent'}}
-        >
-          <UploadPlaceholder
-            browse={this.renderBrowser()}
-            onUpload={this.handleSelectFiles}
-            readOnly={readOnly}
-            hoveringFiles={hoveringFiles}
-            acceptedFiles={acceptedFiles}
-            rejectedFilesCount={rejectedFilesCount}
-            type="image"
-            accept={accept}
-            directUploads={directUploads}
-          />
-        </Card>
-      </div>
+      <ImageInputUploadPlaceholder
+        directUploads={directUploads}
+        handleSelectFiles={this.handleSelectFiles.bind(this)}
+        hoveringFiles={hoveringFiles}
+        readOnly={readOnly}
+        renderBrowser={this.renderBrowser.bind(this)}
+        resolveUploader={resolveUploader}
+        schemaType={schemaType}
+      />
     )
   }
 
