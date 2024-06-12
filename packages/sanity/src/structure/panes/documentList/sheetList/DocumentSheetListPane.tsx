@@ -14,6 +14,7 @@ import {
   SearchProvider,
   set,
   toMutationPatches,
+  Translate,
   unset,
   useSchema,
   useSearchState,
@@ -317,11 +318,21 @@ function DocumentSheetListPaneInner(
 export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
   const schema = useSchema()
   const typeName = props.pane.schemaTypeName
+  const {t} = useTranslation(SheetListLocaleNamespace)
 
   const schemaType = schema.get(typeName)
   if (!schemaType || !isDocumentSchemaType(schemaType)) {
-    throw new Error(`Schema type "${typeName}" not found or not a document schema`)
+    console.error(`Schema type "${typeName}" not found`)
+
+    return (
+      <Box padding={4}>
+        <Text>
+          <Translate t={t} i18nKey="not-supported.no-schema-type" />
+        </Text>
+      </Box>
+    )
   }
+
   return (
     <SearchProvider>
       <DocumentSheetListPaneInner {...props} documentSchemaType={schemaType} />
