@@ -29,7 +29,7 @@
     "@jest/globals": "^29.7.0",
     "@types/lodash": "^4.14.149",
     "@types/node": "^18.15.3",
-    "esbuild": "^0.21.2",
+    "esbuild": "^0.21.5",
     "ts-node": "^10.9.1",
     "typescript": "5.4.5"
   }

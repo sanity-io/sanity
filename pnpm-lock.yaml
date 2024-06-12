@@ -113,7 +113,7 @@ importers:
         specifier: ^3.2.0
         version: 3.3.0
       esbuild:
-        specifier: ^0.21.2
+        specifier: ^0.21.5
         version: 0.21.5
       esbuild-register:
         specifier: ^3.5.0
@@ -2015,7 +2015,7 @@ importers:
         specifier: ^18.15.3
         version: 18.19.31
       esbuild:
-        specifier: ^0.21.2
+        specifier: ^0.21.5
         version: 0.21.5
       ts-node:
         specifier: ^10.9.1
