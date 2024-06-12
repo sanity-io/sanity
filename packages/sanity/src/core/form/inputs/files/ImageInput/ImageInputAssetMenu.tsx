@@ -1,13 +1,12 @@
 import {isImageSource} from '@sanity/asset-utils'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
+import {type AssetSource} from '@sanity/types'
 import {get, startCase} from 'lodash'
 import {memo, type ReactNode, useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {type Observable} from 'rxjs'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {type BaseImageInputProps} from './types'
@@ -100,105 +99,44 @@ function ImageInputAssetMenuComponent(
   }
 
   return (
-    <ImageInputAssetMenuWithReferenceAsset
-      accept={accept}
-      browseMenuItem={browseMenuItem}
-      directUploads={directUploads}
-      handleOpenDialog={handleOpenDialog}
-      handleRemoveButtonClick={handleRemoveButtonClick}
-      handleSelectFiles={handleSelectFiles}
-      imageUrlBuilder={imageUrlBuilder}
-      isMenuOpen={isMenuOpen}
+    <WithReferencedAsset
       observeAsset={observeAsset}
-      readOnly={readOnly}
       reference={asset}
-      schemaType={schemaType}
-      setHotspotButtonElement={setHotspotButtonElement}
-      setMenuButtonElement={setMenuButtonElement}
-      setMenuOpen={setMenuOpen}
-      showAdvancedEditButton={!!showAdvancedEditButton}
-      value={value}
-    />
+      waitPlaceholder={<ImageActionsMenuWaitPlaceholder />}
+    >
+      {({_id, originalFilename, extension}) => {
+        let copyUrl: string | undefined
+        let downloadUrl: string | undefined
+
+        if (isImageSource(value)) {
+          const filename = originalFilename || `download.${extension}`
+          downloadUrl = imageUrlBuilder.image(_id).forceDownload(filename).url()
+          copyUrl = imageUrlBuilder.image(_id).url()
+        }
+
+        return (
+          <ImageActionsMenu
+            isMenuOpen={isMenuOpen}
+            onEdit={handleOpenDialog}
+            onMenuOpen={setMenuOpen}
+            setHotspotButtonElement={setHotspotButtonElement}
+            setMenuButtonElement={setMenuButtonElement}
+            showEdit={!!showAdvancedEditButton}
+          >
+            <ActionsMenu
+              onUpload={handleSelectFiles}
+              browse={browseMenuItem}
+              onReset={handleRemoveButtonClick}
+              downloadUrl={downloadUrl}
+              copyUrl={copyUrl}
+              readOnly={readOnly}
+              directUploads={directUploads}
+              accept={accept}
+            />
+          </ImageActionsMenu>
+        )
+      }}
+    </WithReferencedAsset>
   )
 }
 export const ImageInputAssetMenu = memo(ImageInputAssetMenuComponent)
-
-function ImageInputAssetMenuWithReferenceAssetComponent(
-  props: Pick<
-    BaseImageInputProps,
-    'directUploads' | 'imageUrlBuilder' | 'observeAsset' | 'readOnly' | 'schemaType' | 'value'
-  > & {
-    accept: string
-    browseMenuItem: ReactNode
-    handleOpenDialog: () => void
-    handleRemoveButtonClick: () => void
-    handleSelectFiles: (files: File[]) => void
-    isMenuOpen: boolean
-    observeAsset: (assetId: string) => Observable<ImageAsset>
-    reference: Reference
-    setHotspotButtonElement: (el: HTMLButtonElement | null) => void
-    setMenuButtonElement: (el: HTMLButtonElement | null) => void
-    setMenuOpen: (isOpen: boolean) => void
-    showAdvancedEditButton: boolean
-  },
-) {
-  const {
-    accept,
-    browseMenuItem,
-    directUploads,
-    handleOpenDialog,
-    handleRemoveButtonClick,
-    handleSelectFiles,
-    imageUrlBuilder,
-    isMenuOpen,
-    observeAsset,
-    readOnly,
-    reference,
-    setHotspotButtonElement,
-    setMenuButtonElement,
-    setMenuOpen,
-    showAdvancedEditButton,
-    value,
-  } = props
-
-  const documentId = reference?._ref
-  const observable = useMemo(() => observeAsset(documentId), [documentId, observeAsset])
-  const asset = useObservable(observable)
-
-  if (!documentId || !asset) {
-    return <ImageActionsMenuWaitPlaceholder />
-  }
-
-  const {_id, originalFilename, extension} = asset
-  let copyUrl: string | undefined
-  let downloadUrl: string | undefined
-
-  if (isImageSource(value)) {
-    const filename = originalFilename || `download.${extension}`
-    downloadUrl = imageUrlBuilder.image(_id).forceDownload(filename).url()
-    copyUrl = imageUrlBuilder.image(_id).url()
-  }
-
-  return (
-    <ImageActionsMenu
-      isMenuOpen={isMenuOpen}
-      onEdit={handleOpenDialog}
-      onMenuOpen={setMenuOpen}
-      setHotspotButtonElement={setHotspotButtonElement}
-      setMenuButtonElement={setMenuButtonElement}
-      showEdit={!!showAdvancedEditButton}
-    >
-      <ActionsMenu
-        onUpload={handleSelectFiles}
-        browse={browseMenuItem}
-        onReset={handleRemoveButtonClick}
-        downloadUrl={downloadUrl}
-        copyUrl={copyUrl}
-        readOnly={readOnly}
-        directUploads={directUploads}
-        accept={accept}
-      />
-    </ImageActionsMenu>
-  )
-}
-const ImageInputAssetMenuWithReferenceAsset = memo(ImageInputAssetMenuWithReferenceAssetComponent)
