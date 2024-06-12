@@ -182,6 +182,8 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     [elementProps.ref, onPathFocus],
   )
 
+  const handleBlur = useCallback((event: FocusEvent) => elementProps.onBlur(event), [elementProps])
+
   const handleAutocompleteFocus = useCallback(
     (event: FocusEvent<HTMLInputElement>) => {
       if (event.currentTarget === elementProps.ref.current) {
@@ -345,6 +347,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       __unstable_focusRing
                       tabIndex={0}
                       onFocus={handleFocus}
+                      onBlur={handleBlur}
                       ref={elementProps.ref}
                     >
                       <PreviewReferenceValue
@@ -365,6 +368,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       __unstable_focusRing
                       tabIndex={0}
                       onFocus={handleFocus}
+                      onBlur={handleBlur}
                       ref={elementProps.ref}
                     >
                       <PreviewReferenceValue
