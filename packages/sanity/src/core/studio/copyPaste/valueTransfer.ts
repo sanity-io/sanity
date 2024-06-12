@@ -15,6 +15,7 @@ import {
 import {type Path, type SchemaType} from 'sanity'
 
 import {getValueAtPath} from '../../field/paths/helpers'
+import {randomKey} from '../../form/utils/randomKey'
 import {isEmptyValue, tryResolveSchemaTypeForPath} from './utils'
 
 export interface TransferValueError {
@@ -23,18 +24,22 @@ export interface TransferValueError {
   sourceValue: unknown
 }
 
+const defaultKeyGenerator = () => randomKey(12)
+
 export function transferValue({
   sourceRootSchemaType,
   sourcePath,
   sourceValue,
   targetRootSchemaType,
   targetPath,
+  keyGenerator = defaultKeyGenerator,
 }: {
   sourceRootSchemaType: SchemaType
   sourcePath: Path
   sourceValue: unknown
   targetRootSchemaType: SchemaType
   targetPath: Path
+  keyGenerator?: () => string
 }): {
   targetValue: unknown
   errors: TransferValueError[]
@@ -102,6 +107,7 @@ export function transferValue({
       targetSchemaType: targetSchemaTypeAtPath as ObjectSchemaType,
       targetPath: [],
       errors,
+      keyGenerator,
     })
   }
 
@@ -111,6 +117,7 @@ export function transferValue({
       sourceValue: sourceValueAtPath as unknown[],
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
       errors,
+      keyGenerator,
     })
   }
 
@@ -132,13 +139,20 @@ function collateObjectValue({
   targetSchemaType,
   targetPath,
   errors,
+  keyGenerator,
 }: {
   sourceValue: unknown
   targetSchemaType: ObjectSchemaType
   targetPath: Path
   errors: TransferValueError[]
+  keyGenerator: () => string
 }) {
-  const targetValue = {_type: targetSchemaType.name} as TypedObject
+  const targetValue = {
+    _type: targetSchemaType.name,
+    ...(sourceValue && typeof sourceValue === 'object' && '_key' in sourceValue
+      ? {_key: keyGenerator()}
+      : {}),
+  } as TypedObject
   const objectMembers = targetSchemaType.fields
 
   objectMembers.forEach((member) => {
@@ -169,9 +183,10 @@ function collateObjectValue({
         targetPath: [],
         targetSchemaType: memberSchemaType,
         errors,
+        keyGenerator,
       })
       if (!isEmptyValue(collated.targetValue)) {
-        targetValue[member.name] = collated.targetValue
+        targetValue[member.name] = cleanObjectKeys(collated.targetValue as TypedObject)
       }
       // Array field
     } else if (memberIsArray) {
@@ -182,6 +197,7 @@ function collateObjectValue({
         sourceValue: genericValue,
         targetSchemaType: memberSchemaType as ArraySchemaType,
         errors,
+        keyGenerator,
       })
       if (!isEmptyValue(collated.targetValue)) {
         targetValue[member.name] = collated.targetValue
@@ -190,7 +206,7 @@ function collateObjectValue({
   })
   const valueAtTargetPath = getValueAtPath(targetValue, targetPath)
   return {
-    targetValue: valueAtTargetPath,
+    targetValue: cleanObjectKeys(valueAtTargetPath as TypedObject),
     errors,
   }
 }
@@ -199,10 +215,12 @@ function collateArrayValue({
   sourceValue,
   targetSchemaType,
   errors,
+  keyGenerator,
 }: {
   sourceValue: unknown
   targetSchemaType: ArraySchemaType
   errors: TransferValueError[]
+  keyGenerator: () => string
 }): {
   targetValue: unknown
   errors: TransferValueError[]
@@ -263,7 +281,18 @@ function collateArrayValue({
     )
     targetValue =
       transferredItems.length > 0
-        ? transferredItems.map((item) => cleanObjectKeys(item))
+        ? transferredItems.map((item) => {
+            const collated = collateObjectValue({
+              sourceValue: item,
+              targetSchemaType: targetSchemaType.of.find(
+                (type) => type.name === item._type,
+              )! as ObjectSchemaType,
+              targetPath: [],
+              errors,
+              keyGenerator,
+            })
+            return collated.targetValue
+          })
         : undefined
     if (nonTransferredItems.length > 0) {
       nonTransferredItems.forEach((item) => {
@@ -275,7 +304,6 @@ function collateArrayValue({
       })
     }
   }
-
   return {
     targetValue,
     errors,
@@ -318,12 +346,12 @@ function collatePrimitiveValue({
   }
 }
 
-function cleanObjectKeys(obj: TypedObject) {
+function cleanObjectKeys(obj: TypedObject): TypedObject {
   const disallowedKeys = ['_id', '_createdAt', '_updatedAt', '_rev']
   return Object.keys(obj).reduce((acc, key) => {
     if (disallowedKeys.includes(key)) {
       return acc
     }
     return {...acc, [key]: obj[key]}
-  }, {})
+  }, {}) as TypedObject
 }
