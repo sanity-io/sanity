@@ -1,5 +1,5 @@
 import {Box, Button, Stack, useToast} from '@sanity/ui'
-import {type ReactNode, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useEffect} from 'react'
 import {SANITY_VERSION} from 'sanity'
 import semver from 'semver'
 
@@ -16,15 +16,37 @@ const currentPackageVersions: Record<string, string> = {
 }
 
 export function PackageVersionStatusProvider({children}: {children: ReactNode}) {
-  const [hasNewVersion, setHasNewVersion] = useState<boolean>(false)
   const toast = useToast()
   const {t} = useTranslation()
 
   const autoUpdatingPackages = hasSanityPackageInImportMap()
 
-  const onClick = () => {
-    window.location.reload()
-  }
+  const showNewPackageAvailableToast = useCallback(() => {
+    const onClick = () => {
+      window.location.reload()
+    }
+
+    toast.push({
+      id: 'new-package-available',
+      title: t('package-version.new-package-available.title'),
+      description: (
+        <Stack space={2} paddingBottom={2}>
+          <Box>{t('package-version.new-package-available.description')}</Box>
+          <Box>
+            <Button
+              onClick={onClick}
+              aria-label={t('package-version.new-package-available.reload-button')}
+              tone={'primary'}
+              text={t('package-version.new-package-available.reload-button')}
+            />
+          </Box>
+        </Stack>
+      ),
+      closable: true,
+      duration: 10000,
+      status: 'info',
+    })
+  }, [toast, t])
 
   useEffect(() => {
     if (!autoUpdatingPackages) return undefined
@@ -34,36 +56,13 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
           if (!version) return false
           return semver.gt(version, currentPackageVersions[pkg])
         })
-        setHasNewVersion(foundNewVersion)
+        if (foundNewVersion) {
+          showNewPackageAvailableToast()
+        }
       },
     })
     return () => sub?.unsubscribe()
-  }, [setHasNewVersion, autoUpdatingPackages])
-
-  useEffect(() => {
-    if (autoUpdatingPackages && hasNewVersion) {
-      toast.push({
-        id: 'new-package-available',
-        title: t('package-version.new-package-available.title'),
-        description: (
-          <Stack space={2} paddingBottom={2}>
-            <Box>{t('package-version.new-package-available.description')}</Box>
-            <Box>
-              <Button
-                onClick={onClick}
-                aria-label={t('package-version.new-package-available.reload-button')}
-                tone={'primary'}
-                text={t('package-version.new-package-available.reload-button')}
-              />
-            </Box>
-          </Stack>
-        ),
-        closable: true,
-        duration: 10000,
-        status: 'info',
-      })
-    }
-  }, [hasNewVersion, toast, t, autoUpdatingPackages])
+  }, [showNewPackageAvailableToast, autoUpdatingPackages])
 
   return <>{children}</>
 }
