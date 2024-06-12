@@ -211,6 +211,7 @@ export function TestForm(props: TestFormProps) {
       schemaType: formState?.schemaType || schemaType,
       validation,
       value: formState?.value as FormDocumentValue,
+      openPath,
     }),
     [
       formState?.focusPath,
@@ -232,6 +233,7 @@ export function TestForm(props: TestFormProps) {
       schemaType,
       setOpenPath,
       validation,
+      openPath,
     ],
   )
   return (
