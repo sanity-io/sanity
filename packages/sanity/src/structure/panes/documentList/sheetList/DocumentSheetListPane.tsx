@@ -8,9 +8,10 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import {useCallback, useEffect, useState} from 'react'
-import {SearchProvider, useSchema, useSearchState} from 'sanity'
+import {SearchProvider, Translate, useSchema, useSearchState, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
+import {structureLocaleNamespace} from '../../../i18n'
 import {type BaseStructureToolPaneProps} from '../../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
@@ -150,10 +151,19 @@ function DocumentSheetListPaneInner({
 export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
   const schema = useSchema()
   const typeName = props.pane.schemaTypeName
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const schemaType = schema.get(typeName)
   if (!schemaType || !isDocumentSchemaType(schemaType)) {
-    throw new Error(`Schema type "${typeName}" not found or not a document schema`)
+    console.error(`Schema type "${typeName}" not found`)
+
+    return (
+      <Box padding={4}>
+        <Text>
+          <Translate t={t} i18nKey="sheet-list.not-supported.no-schema-type" />
+        </Text>
+      </Box>
+    )
   }
   return (
     <SearchProvider>

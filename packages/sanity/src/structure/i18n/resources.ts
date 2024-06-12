@@ -403,6 +403,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the "Open preview" action for a document */
   'production-preview.menu-item.title': 'Open preview',
 
+  /** The message that will be shown to users when the table view is not supported the list has no schema type */
+  'sheet-list.not-supported.no-schema-type':
+    'Table view is only supported using the <code>S.documentTypeListItems</code> builder',
+
   /** Label for button when status is saved */
   'status-bar.document-status-pulse.status.saved.text': 'Saved',
   /** Label for button when status is syncing */
