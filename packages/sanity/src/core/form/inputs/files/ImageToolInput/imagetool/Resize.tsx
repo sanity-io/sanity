@@ -4,12 +4,14 @@ export interface ResizeProps {
   image: HTMLImageElement
   maxHeight: number
   maxWidth: number
-  children: (canvas: HTMLCanvasElement) => ReactNode
+  children: (props: {canvas: HTMLCanvasElement; width: number; height: number}) => ReactNode
 }
 
-export function Resize(props: ResizeProps): any {
+export function Resize(props: ResizeProps): ReturnType<ResizeProps['children']> | null {
   const {image, maxHeight, maxWidth, children} = props
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const widthRef = useRef(0)
+  const heightRef = useRef(0)
   const [ready, setReady] = useState(false)
 
   /**
@@ -42,8 +44,10 @@ export function Resize(props: ResizeProps): any {
     const targetWidth = landscape ? width : height * ratio
     const targetHeight = landscape ? width / ratio : height
 
-    canvasRef.current.width = targetWidth
-    canvasRef.current.height = targetHeight
+    // eslint-disable-next-line no-multi-assign
+    canvasRef.current.width = widthRef.current = targetWidth
+    // eslint-disable-next-line no-multi-assign
+    canvasRef.current.height = heightRef.current = targetHeight
 
     const ctx = canvasRef.current.getContext('2d')
     if (ctx) {
@@ -61,5 +65,8 @@ export function Resize(props: ResizeProps): any {
     return null
   }
 
-  return children(canvasRef.current)
+  const {current: canvas} = canvasRef
+  const {current: width} = widthRef
+  const {current: height} = heightRef
+  return children({canvas, width, height})
 }

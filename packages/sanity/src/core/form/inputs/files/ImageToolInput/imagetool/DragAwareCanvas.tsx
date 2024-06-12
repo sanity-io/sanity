@@ -148,17 +148,7 @@ type PositionableEvent = globalThis.PointerEvent | React.PointerEvent<HTMLElemen
 
 const debug = Debug('sanity-imagetool')
 
-const StyledCanvas = styled.canvas`
-  display: block;
-  position: relative;
-  max-width: calc(100% - 0.5em); /* to prevent overlap with change bar */
-  max-height: calc(100% + 1em);
-  user-select: none;
-  // Enable only multi-finger panning and zooming within this element.
-  // This prevents single finger panning when manipulating drag handles,
-  // which can cause unwanted scrolling in the underlying document body.
-  touch-action: pinch-zoom;
-`
+const StyledCanvas = styled.canvas``
 
 function getPositionRelativeToRect(x: number, y: number, rect: {left: number; top: number}) {
   return {

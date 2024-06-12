@@ -1,4 +1,16 @@
-import {memo, type PointerEvent, PureComponent, useMemo} from 'react'
+import {motion} from 'framer-motion'
+import {
+  type ForwardedRef,
+  forwardRef,
+  memo,
+  type PointerEvent,
+  PureComponent,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from 'react'
+import styled from 'styled-components'
 import {useDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Rect} from './2d/shapes'
@@ -19,6 +31,20 @@ import {
   type ToolCanvasProps,
 } from './types'
 import {useActualCanvasSizeObserver} from './useActualCanvasSizeObserver'
+
+const RootCanvasContainer = styled(RootContainer)`
+  canvas {
+    display: block;
+    position: relative;
+    max-width: calc(100% - 0.5em); /* to prevent overlap with change bar */
+    max-height: calc(100% + 1em);
+    user-select: none;
+    // Enable only multi-finger panning and zooming within this element.
+    // This prevents single finger panning when manipulating drag handles,
+    // which can cause unwanted scrolling in the underlying document body.
+    touch-action: pinch-zoom;
+  }
+`
 
 interface ToolCanvasState {
   cropping: keyof CropHandles | false
@@ -105,7 +131,7 @@ function getCropCursorForHandle(handle: keyof CropHandles | boolean) {
 }
 
 function ToolCanvasComponent(props: ToolCanvasProps) {
-  const {image, readOnly, onChange, onChangeEnd, value} = props
+  const {image, height, width, readOnly, onChange, onChangeEnd, value} = props
 
   const ratio = useDevicePixelRatio()
   const [actualSize, setCanvasObserver] = useActualCanvasSizeObserver()
@@ -185,6 +211,8 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
 
   return (
     <ToolCanvasLegacy
+      height={height}
+      width={width}
       actualSize={actualSize}
       hotspotRect={hotspotRect}
       cropRect={cropRect}
@@ -471,10 +499,11 @@ class ToolCanvasLegacy extends PureComponent<
   }
 
   render() {
-    const {image, readOnly, ratio} = this.props
+    const {image, height, width, readOnly, ratio} = this.props
     return (
-      <RootContainer>
-        <DragAwareCanvas
+      <RootCanvasContainer>
+        <CanvasWithDragControls ratio={ratio} height={height} width={width} ref={this.setCanvas} />
+        {/* <DragAwareCanvas
           readOnly={readOnly}
           ref={this.setCanvas}
           onDrag={this.handleDrag}
@@ -484,11 +513,32 @@ class ToolCanvasLegacy extends PureComponent<
           onPointerOut={this.handlePointerOut}
           height={image.height * ratio}
           width={image.width * ratio}
-        />
-      </RootContainer>
+        /> */}
+      </RootCanvasContainer>
     )
   }
 }
+
+function CanvasWithDragControlsComponent(
+  props: {height: number; width: number; ratio: number},
+  forwardedRef: ForwardedRef<HTMLCanvasElement>,
+) {
+  const height = useMemo(() => props.height * props.ratio, [props.height, props.ratio])
+  const width = useMemo(() => props.width * props.ratio, [props.width, props.ratio])
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+
+  useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(
+    forwardedRef,
+    () => canvasRef.current,
+  )
+
+  useEffect(() => {
+    console.log({canvasRef})
+  }, [])
+
+  return <motion.canvas height={height} width={width} ref={canvasRef} />
+}
+const CanvasWithDragControls = memo(forwardRef(CanvasWithDragControlsComponent))
 
 function applyHotspotMoveBy(value: Partial<CropAndHotspot>, delta: Coordinate): {hotspot: Hotspot} {
   const currentHotspot = (value && value.hotspot) || DEFAULT_HOTSPOT

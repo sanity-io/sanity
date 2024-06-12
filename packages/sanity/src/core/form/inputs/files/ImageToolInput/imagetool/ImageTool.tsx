@@ -4,7 +4,7 @@ import {Resize} from './Resize'
 import {ToolCanvas} from './ToolCanvas'
 import {type ToolCanvasProps} from './types'
 
-export interface ImageToolProps extends Omit<ToolCanvasProps, 'image'> {
+export interface ImageToolProps extends Omit<ToolCanvasProps, 'image' | 'width' | 'height'> {
   image?: HTMLCanvasElement
   src: string
 }
@@ -22,7 +22,9 @@ export function ImageTool(props: ImageToolProps) {
         if (image) {
           return (
             <Resize image={image} maxHeight={ImageTool.maxHeight} maxWidth={ImageTool.maxWidth}>
-              {(canvas) => <ToolCanvas image={canvas} {...props} />}
+              {({canvas, height, width}) => (
+                <ToolCanvas {...props} image={canvas} height={height} width={width} />
+              )}
             </Resize>
           )
         }
