@@ -44,6 +44,9 @@ const sheetListLocaleStrings = {
   'search.placeholder': 'Search list',
   /** Title for the edit columns menu */
   'select-fields': 'Select up to 5 field types',
+  /** The message that will be shown to users when the table view is not supported the list has no schema type */
+  'not-supported.no-schema-type':
+    'Table view is only supported using the <code>S.documentTypeListItems</code> builder',
   /** Text for listing the reason items cannot be published in sheet list */
   'validation-error.reason': 'Item with ID {{id}} cannot be published:',
   /** Button tooltip for publish all action button in sheet list when selections have validation errors */
