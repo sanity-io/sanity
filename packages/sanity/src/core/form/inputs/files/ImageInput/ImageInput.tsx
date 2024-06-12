@@ -22,13 +22,11 @@ import {
   type UploadOptions,
 } from '../../../studio/uploads/types'
 import {type InputProps} from '../../../types'
-import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
-import {ActionsMenu} from '../common/ActionsMenu'
 import {handleSelectAssetFromSource as _handleSelectAssetFromSource} from '../common/assetSource'
 import {UploadProgress} from '../common/UploadProgress'
 import {ASSET_FIELD_PATH, ASSET_IMAGE_MENU_POPOVER} from './constants'
-import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {ImageInputAsset} from './ImageInputAsset'
+import {ImageInputAssetMenu} from './ImageInputAssetMenu'
 import {ImageInputAssetSource} from './ImageInputAssetSource'
 import {ImageInputHotspotInput} from './ImageInputHotspotInput'
 import {ImageInputPreview} from './ImageInputPreview'
@@ -370,98 +368,34 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
 
   renderAssetMenu() {
     const {
-      value,
       assetSources,
-      schemaType,
-      readOnly,
       directUploads,
       imageUrlBuilder,
       observeAsset,
-      t,
+      readOnly,
+      schemaType,
+      value,
     } = this.props
 
-    const asset = value?.asset
-    if (!asset) {
-      return null
-    }
-
-    const accept = get(schemaType, 'options.accept', 'image/*')
-
-    const showAdvancedEditButton = value && asset && this.isImageToolEnabled()
-
-    let browseMenuItem: ReactNode =
-      assetSources && assetSources.length === 0 ? null : (
-        <MenuItem
-          icon={SearchIcon}
-          text={t('inputs.image.browse-menu.text')}
-          onClick={() => {
-            this.setState({isMenuOpen: false})
-            this.handleSelectImageFromAssetSource(assetSources[0])
-          }}
-          disabled={readOnly}
-          data-testid="file-input-browse-button"
-        />
-      )
-    if (assetSources && assetSources.length > 1) {
-      browseMenuItem = assetSources.map((assetSource) => {
-        return (
-          <MenuItem
-            key={assetSource.name}
-            text={
-              (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-              startCase(assetSource.name)
-            }
-            onClick={() => {
-              this.setState({isMenuOpen: false})
-              this.handleSelectImageFromAssetSource(assetSource)
-            }}
-            icon={assetSource.icon || ImageIcon}
-            data-testid={`file-input-browse-button-${assetSource.name}`}
-            disabled={readOnly}
-          />
-        )
-      })
-    }
-
     return (
-      <WithReferencedAsset
+      <ImageInputAssetMenu
+        assetSources={assetSources}
+        directUploads={directUploads}
+        handleOpenDialog={this.handleOpenDialog.bind(this)}
+        handleRemoveButtonClick={this.handleRemoveButtonClick.bind(this)}
+        handleSelectFiles={this.handleSelectFiles.bind(this)}
+        handleSelectImageFromAssetSource={this.handleSelectImageFromAssetSource.bind(this)}
+        imageUrlBuilder={imageUrlBuilder}
+        isImageToolEnabled={this.isImageToolEnabled()}
+        isMenuOpen={this.state.isMenuOpen}
         observeAsset={observeAsset}
-        reference={asset}
-        waitPlaceholder={<ImageActionsMenuWaitPlaceholder />}
-      >
-        {({_id, originalFilename, extension}) => {
-          let copyUrl: string | undefined
-          let downloadUrl: string | undefined
-
-          if (isImageSource(value)) {
-            const filename = originalFilename || `download.${extension}`
-            downloadUrl = imageUrlBuilder.image(_id).forceDownload(filename).url()
-            copyUrl = imageUrlBuilder.image(_id).url()
-          }
-
-          return (
-            <ImageActionsMenu
-              isMenuOpen={this.state.isMenuOpen}
-              onEdit={this.handleOpenDialog}
-              onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
-              setHotspotButtonElement={this.setHotspotButtonElement}
-              setMenuButtonElement={this.setMenuButtonElement}
-              showEdit={showAdvancedEditButton}
-            >
-              <ActionsMenu
-                onUpload={this.handleSelectFiles}
-                browse={browseMenuItem}
-                onReset={this.handleRemoveButtonClick}
-                downloadUrl={downloadUrl}
-                copyUrl={copyUrl}
-                readOnly={readOnly}
-                directUploads={directUploads}
-                accept={accept}
-              />
-            </ImageActionsMenu>
-          )
-        }}
-      </WithReferencedAsset>
+        readOnly={readOnly}
+        schemaType={schemaType}
+        setHotspotButtonElement={this.setHotspotButtonElement.bind(this)}
+        setMenuButtonElement={this.setMenuButtonElement.bind(this)}
+        setMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+        value={value}
+      />
     )
   }
 

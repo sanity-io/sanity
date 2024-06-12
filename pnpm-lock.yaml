@@ -406,6 +406,9 @@ importers:
       react-dom:
         specifier: 19.0.0-rc-38e3b23483-20240529
         version: 19.0.0-rc-38e3b23483-20240529(react@19.0.0-rc-38e3b23483-20240529)
+      react-is:
+        specifier: 19.0.0-rc-38e3b23483-20240529
+        version: 19.0.0-rc-38e3b23483-20240529
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
@@ -7358,7 +7361,7 @@ packages:
     peerDependencies:
       react: '*'
       react-dom: '*'
-      react-is: ^18
+      react-is: '*'
       styled-components: ^5.2 || ^6
     dependencies:
       '@floating-ui/react-dom': 2.1.0(react-dom@18.3.1)(react@18.3.1)
@@ -17650,6 +17653,10 @@ packages:
   /react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
 
+  /react-is@19.0.0-rc-38e3b23483-20240529:
+    resolution: {integrity: sha512-lbE0KBiS81mr3nIozqDEWqIXcBOKfdaLFoi76Fyj1Dp5WLhzD4Vd7xQpmlsU1iFPSQ70zU5Frz5Gf3z3WB6fAg==}
+    dev: false
+
   /react-lifecycles-compat@3.0.4:
     resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
     dev: false
@@ -18344,7 +18351,7 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       react: '*'
-      react-is: ^18
+      react-is: '*'
       sanity: ^3.42.0
       styled-components: ^5 || ^6
     dependencies:
@@ -19207,7 +19214,7 @@ packages:
     peerDependencies:
       react: '*'
       react-dom: '*'
-      react-is: '>= 16.8.0'
+      react-is: '*'
     dependencies:
       '@babel/helper-module-imports': 7.24.7(supports-color@5.5.0)
       '@babel/traverse': 7.24.7(supports-color@5.5.0)
