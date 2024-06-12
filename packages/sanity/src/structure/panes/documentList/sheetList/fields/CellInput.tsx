@@ -8,7 +8,9 @@ type Props = CellContext<DocumentSheetTableRow, unknown> & {
   'cellValue': number | string
   'setCellValue': (value: number | string) => void
   'fieldRef': MutableRefObject<HTMLInputElement>
-  'getOnMouseDownHandler': (isString: boolean) => (event: React.MouseEvent<HTMLElement>) => void
+  'getOnMouseDownHandler': (
+    suppressDefaultBehavior: boolean,
+  ) => (event: React.MouseEvent<HTMLElement>) => void
   'data-testid': string
 }
 

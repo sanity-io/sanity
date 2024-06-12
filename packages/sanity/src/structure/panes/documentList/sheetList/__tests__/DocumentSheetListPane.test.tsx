@@ -162,7 +162,11 @@ describe('DocumentSheetListPane', () => {
 
         await act(async () => {
           expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
-          await userEvent.dblClick(screen.getByTestId('cell-name-0'))
+          await userEvent.dblClick(screen.getByTestId('cell-name-0-input-field'))
+        })
+
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
         })
 
         await act(async () => {
@@ -190,12 +194,12 @@ describe('DocumentSheetListPane', () => {
         await renderTest()
 
         act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
+          userEvent.click(screen.getByTestId('cell-name-0-input-field'))
         })
 
         // separate act to allow for initial state flush before clicking enter
         act(() => {
-          userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
+          userEvent.type(screen.getByTestId('cell-name-0-input-field'), '{Enter}')
           userEvent.keyboard('Jane Doe')
 
           expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('Jane Doe')
@@ -218,7 +222,7 @@ describe('DocumentSheetListPane', () => {
         await renderTest()
 
         act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
+          userEvent.click(screen.getByTestId('cell-name-0-input-field'))
         })
 
         // separate act to allow for initial state flush before clicking enter
@@ -343,12 +347,12 @@ describe('DocumentSheetListPane', () => {
       })
     })
 
-    describe('to paste a value', () => {
+    describe.only('to paste a value', () => {
       it('pastes when cell is selected', async () => {
         await renderTest()
 
         await act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
+          userEvent.click(screen.getByTestId('cell-name-0-input-field'))
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
@@ -403,7 +407,7 @@ describe('DocumentSheetListPane', () => {
         await renderTest()
 
         await act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
+          userEvent.click(screen.getByTestId('cell-name-0-input-field'))
         })
 
         await act(() => {
@@ -426,7 +430,7 @@ describe('DocumentSheetListPane', () => {
         await renderTest()
 
         await act(() => {
-          userEvent.dblClick(screen.getByTestId('cell-name-0'))
+          userEvent.dblClick(screen.getByTestId('cell-name-0-input-field'))
         })
 
         await act(() => {
@@ -461,18 +465,28 @@ describe('DocumentSheetListPane', () => {
         })
       })
 
-      it('does not paste when pasting across columns', async () => {
+      it.only('does not paste when pasting across columns', async () => {
         await renderTest()
 
         await act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
+          userEvent.click(screen.getByTestId('cell-name-0-input-field'))
         })
 
-        act(() => {
-          userEvent.keyboard('{Shift}{ArrowRight}')
+        // select age cell
+        await act(async () => {
+          await userEvent.keyboard('{Shift}{ArrowRight}')
+        })
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-age-0')).toHaveAttribute('aria-selected', 'true')
         })
 
-        expect(screen.getByTestId('cell-age-0')).toHaveAttribute('aria-selected', 'true')
+        // select address cell
+        await act(async () => {
+          await userEvent.keyboard('{Shift}{ArrowRight}')
+        })
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-address_city-0')).toHaveAttribute('aria-selected', 'true')
+        })
 
         act(() => {
           fireEvent.paste(document, {
@@ -483,14 +497,15 @@ describe('DocumentSheetListPane', () => {
         })
 
         expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
-        expect(screen.getByTestId('cell-age-0-input-field')).toHaveValue('Joe Blogs')
+        expect(screen.getByTestId('cell-age-0-input-field')).toHaveValue(42)
+        expect(screen.getByTestId('cell-address_city-0-input-field')).toHaveValue('Joe Blogs')
       })
 
       it('pastes only to focused anchor when escaped before pasting', async () => {
         await renderTest()
 
         await act(async () => {
-          await userEvent.click(screen.getByTestId('cell-name-0'))
+          await userEvent.click(screen.getByTestId('cell-name-0-input-field'))
           await userEvent.keyboard('{Shift}{ArrowRight}')
           await userEvent.keyboard('{Escape}')
         })

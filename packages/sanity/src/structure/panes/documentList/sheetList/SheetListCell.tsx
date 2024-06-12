@@ -158,11 +158,11 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
 
   // child field inputs can control whether default behavior is stopped or preserved
   const getOnMouseDownHandler = useCallback(
-    (shouldStopDefault: boolean) => (event: React.MouseEvent<HTMLElement>) => {
+    (suppressDefaultBehavior: boolean) => (event: React.MouseEvent<HTMLElement>) => {
       if (event.detail === 2) {
         handleProgrammaticFocus()
       } else {
-        if (shouldStopDefault) event.preventDefault()
+        if (suppressDefaultBehavior) event.preventDefault()
         setSelectedAnchorCell(column.id, row.index)
       }
     },
