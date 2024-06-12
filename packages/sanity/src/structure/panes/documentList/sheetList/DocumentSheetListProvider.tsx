@@ -139,7 +139,12 @@ export function DocumentSheetListProvider({
               ...selectedAnchorCellDetails,
               state: 'selected',
             }
-      clearAndSetFocusSelection(nextAnchorCellDetails)
+      if (selectedAnchorCellDetails.state !== 'focused') {
+        // escaping when anchor is focused should reset the cell value
+        // so the SheetListCell should manage this process
+        // - therefore only clear when not focused
+        clearAndSetFocusSelection(nextAnchorCellDetails)
+      }
     }
   }, [clearAndSetFocusSelection, selectedAnchorCellDetails, selectedRangeCellIndexes.length])
 
