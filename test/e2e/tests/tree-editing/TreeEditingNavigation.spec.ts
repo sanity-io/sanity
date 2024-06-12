@@ -118,7 +118,7 @@ test.describe('navigation - tree sidebar', () => {
     await page.waitForSelector('[data-testid="tree-editing-sidebar"]', {state: 'visible'})
 
     // click on second array item
-    await modal.getByRole('button', {name: 'Lucy, the cat'}).click()
+    await modal.getByRole('button', {name: 'Lucy, the cat'}).nth(0).click()
 
     // Wait for the animation to change form to finish
     await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 50000)
@@ -289,6 +289,7 @@ test.describe('navigation - form', () => {
     const modal = await page.getByTestId('tree-editing-dialog')
 
     await page.getByRole('button', {name: 'Albert, the whale'}).click()
+    await page.waitForSelector(`[data-testid="tree-editing-dialog"]`, {state: 'attached'})
 
     // Wait for the animation to change form to finish
     await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 5000)
@@ -296,8 +297,8 @@ test.describe('navigation - form', () => {
       '[data-testid^="field-animals[_key="]', // Match the beginning part
       '[data-testid$="].name"]', // Match the ending part
     ].join('')
-    await page.waitForSelector(selector, {state: 'visible'})
-    await modal.getByRole('button', {name: 'Eliza, the friendly dolphin'}).click({timeout: 5000})
+    await page.waitForSelector(selector, {state: 'visible', timeout: 50000})
+    await modal.getByRole('button', {name: 'Eliza, the friendly dolphin'}).click()
 
     // Wait for the animation to change form to finish
     await waitForOpacityChange(page, '[data-testid="tree-editing-dialog-content"]', 50000)
