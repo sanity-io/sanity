@@ -37,7 +37,6 @@ import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
 import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types'
-import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
 import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
 import {Compositor, type PortableTextEditorElement} from './Compositor'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
@@ -369,49 +368,41 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 
   return (
     <Box>
-      <UploadTargetCard
-        types={schemaType.of}
-        resolveUploader={props.resolveUploader}
-        onUpload={props.onUpload}
-        {...elementProps}
-        tabIndex={-1}
-      >
-        {!ignoreValidationError && respondToInvalidContent}
-        {(!invalidValue || ignoreValidationError) && (
-          <PortableTextMarkersProvider markers={markers}>
-            <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
-              <PortableTextEditor
-                patches$={patches$}
-                onChange={handleEditorChange}
-                maxBlocks={undefined} // TODO: from schema?
-                ref={editorRef}
-                readOnly={isOffline || readOnly}
-                schemaType={schemaType}
-                value={value}
-              >
-                <Compositor
-                  {...props}
-                  elementRef={elementRef}
-                  hasFocusWithin={hasFocusWithin}
-                  hotkeys={hotkeys}
-                  isActive={isActive}
-                  isFullscreen={isFullscreen}
-                  onActivate={handleActivate}
-                  onItemRemove={onItemRemove}
-                  onCopy={onCopy}
-                  onInsert={onInsert}
-                  onPaste={handlePaste}
-                  onToggleFullscreen={handleToggleFullscreen}
-                  rangeDecorations={rangeDecorations}
-                  renderBlockActions={renderBlockActions}
-                  renderCustomMarkers={renderCustomMarkers}
-                  renderEditable={renderEditable}
-                />
-              </PortableTextEditor>
-            </PortableTextMemberItemsProvider>
-          </PortableTextMarkersProvider>
-        )}
-      </UploadTargetCard>
+      {!ignoreValidationError && respondToInvalidContent}
+      {(!invalidValue || ignoreValidationError) && (
+        <PortableTextMarkersProvider markers={markers}>
+          <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
+            <PortableTextEditor
+              patches$={patches$}
+              onChange={handleEditorChange}
+              maxBlocks={undefined} // TODO: from schema?
+              ref={editorRef}
+              readOnly={isOffline || readOnly}
+              schemaType={schemaType}
+              value={value}
+            >
+              <Compositor
+                {...props}
+                elementRef={elementRef}
+                hasFocusWithin={hasFocusWithin}
+                hotkeys={hotkeys}
+                isActive={isActive}
+                isFullscreen={isFullscreen}
+                onActivate={handleActivate}
+                onItemRemove={onItemRemove}
+                onCopy={onCopy}
+                onInsert={onInsert}
+                onPaste={handlePaste}
+                onToggleFullscreen={handleToggleFullscreen}
+                rangeDecorations={rangeDecorations}
+                renderBlockActions={renderBlockActions}
+                renderCustomMarkers={renderCustomMarkers}
+                renderEditable={renderEditable}
+              />
+            </PortableTextEditor>
+          </PortableTextMemberItemsProvider>
+        </PortableTextMarkersProvider>
+      )}
     </Box>
   )
 }
