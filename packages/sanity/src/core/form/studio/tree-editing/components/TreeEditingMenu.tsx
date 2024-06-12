@@ -63,7 +63,7 @@ const ItemFlex = styled(Flex)(({theme}) => {
   const selectedBg = getTheme_v2(theme)?.color.button.bleed.default.selected.bg
 
   return css`
-    padding: 2px 3px;
+    padding: 2px;
     padding-right: 3px;
     box-sizing: border-box;
     transition: inherit;
@@ -83,7 +83,7 @@ const ItemFlex = styled(Flex)(({theme}) => {
       &:hover {
         &[data-selected='false'] {
           background-color: ${defaultHoverBg};
-          border-radius: ${theme.sanity.radius[2]}px;
+          border-radius: ${getTheme_v2(theme).radius[2]}px;
 
           [data-ui='ExpandButton']:hover {
             background-color: ${selectedHoverBg};
