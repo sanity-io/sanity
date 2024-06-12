@@ -1,9 +1,8 @@
 import {useCallback, useMemo} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {useObservable} from 'react-rx'
 import {concat, type Observable, of, Subject} from 'rxjs'
 import {catchError, concatMap, map, startWith} from 'rxjs/operators'
 
-import {usePrevious} from '../../hooks/usePrevious'
 import {type ReferenceInfo} from './types'
 
 const noop = () => undefined
@@ -41,7 +40,7 @@ export function useReferenceInfo(
     msgSubject.next({type: 'retry'})
   }, [msgSubject])
 
-  const referenceInfo = useMemoObservable(
+  const referenceInfoObservable = useMemo(
     () =>
       concat(of(null), msg$).pipe(
         map(() => id),
@@ -66,15 +65,6 @@ export function useReferenceInfo(
         ),
       ),
     [getReferenceInfo, id, msg$, retry],
-    INITIAL_LOADING_STATE,
   )
-
-  // @todo test and see if this were fixed in `react-rx@2.1.x`
-  // workaround for a "bug" with useMemoObservable that doesn't
-  // return the initial value upon resubscription
-  const previousId = usePrevious(id, id)
-  if (id && previousId !== id) {
-    return INITIAL_LOADING_STATE
-  }
-  return referenceInfo
+  return useObservable(referenceInfoObservable, INITIAL_LOADING_STATE)
 }

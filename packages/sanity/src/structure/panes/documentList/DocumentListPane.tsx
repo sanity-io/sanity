@@ -1,7 +1,7 @@
 import {SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, TextInput} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useObservableCallback} from 'react-rx'
+import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
   type GeneralPreviewLayoutKey,
@@ -97,7 +97,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     sortOrder,
   })
 
-  const handleQueryChange = useObservableCallback(
+  const handleQueryChange = useObservableEvent(
     (event$: Observable<React.ChangeEvent<HTMLInputElement>>) => {
       return event$.pipe(
         map((event) => event.target.value),
@@ -106,7 +106,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         tap(setSearchQuery),
       )
     },
-    [],
   )
 
   const handleClearSearch = useCallback(() => {

@@ -12,7 +12,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useObservableCallback} from 'react-rx'
+import {useObservableEvent} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 
@@ -197,41 +197,38 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
   const inputId = useId()
 
-  const handleQueryChange = useObservableCallback(
-    (inputValue$: Observable<string | null>) => {
-      return inputValue$.pipe(
-        filter(isNonNullable),
-        distinctUntilChanged(),
-        switchMap((searchString) =>
-          concat(
-            of({isLoading: true}),
-            onSearch(searchString).pipe(
-              map((hits) => ({hits, searchString, isLoading: false})),
-              catchError((error) => {
-                push({
-                  title: 'Reference search failed',
-                  description: error.message,
-                  status: 'error',
-                  id: `reference-search-fail-${inputId}`,
-                })
+  const handleQueryChange = useObservableEvent((inputValue$: Observable<string | null>) => {
+    return inputValue$.pipe(
+      filter(isNonNullable),
+      distinctUntilChanged(),
+      switchMap((searchString) =>
+        concat(
+          of({isLoading: true}),
+          onSearch(searchString).pipe(
+            map((hits) => ({hits, searchString, isLoading: false})),
+            catchError((error) => {
+              push({
+                title: 'Reference search failed',
+                description: error.message,
+                status: 'error',
+                id: `reference-search-fail-${inputId}`,
+              })
 
-                console.error(error)
-                return of({hits: []})
-              }),
-            ),
+              console.error(error)
+              return of({hits: []})
+            }),
           ),
         ),
+      ),
 
-        scan(
-          (prevState, nextState): SearchState => ({...prevState, ...nextState}),
-          INITIAL_SEARCH_STATE,
-        ),
+      scan(
+        (prevState, nextState): SearchState => ({...prevState, ...nextState}),
+        INITIAL_SEARCH_STATE,
+      ),
 
-        tap(setSearchState),
-      )
-    },
-    [inputId, onSearch, push],
-  )
+      tap(setSearchState),
+    )
+  })
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')
