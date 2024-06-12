@@ -14,6 +14,7 @@ import {
   SearchProvider,
   set,
   toMutationPatches,
+  unset,
   useSchema,
   useSearchState,
   useValidationStatus,
@@ -192,12 +193,38 @@ function DocumentSheetListPaneInner(
     [rows, rowOperations],
   )
 
+  const handleUnsetDocumentValue = useCallback(
+    (publishedDocumentId: string, fieldId: string) => {
+      const documentOperations = rowOperations?.[publishedDocumentId]
+
+      if (!documentOperations || documentOperations.patch.disabled !== false)
+        throw new Error('Documents not ready for operations')
+
+      const currentDocumentValue = rows.find(
+        (row) => row.original.__metadata.idPair.publishedId === publishedDocumentId,
+      )?.original.__metadata.snapshots.published as SanityDocument
+
+      // force the document operations to end of current event loop
+      // so that all state updates are done before patching
+      setTimeout(() => {
+        documentOperations.patch.execute(
+          toMutationPatches([unset([fieldId.replace('_', '.')])]),
+          currentDocumentValue,
+        )
+        // explicity commit after patch to avoid throttled autocommits
+        documentOperations.commit.execute()
+      })
+    },
+    [rows, rowOperations],
+  )
+
   if (table.options.meta) {
     table.setOptions((currentOptions) => {
       const nextOptions = {...currentOptions}
       if (!nextOptions.meta) return currentOptions
 
       nextOptions.meta.patchDocument = handlePatchDocument
+      nextOptions.meta.unsetDocumentValue = handleUnsetDocumentValue
 
       return nextOptions
     })

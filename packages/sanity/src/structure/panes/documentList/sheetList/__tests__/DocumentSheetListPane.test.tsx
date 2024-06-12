@@ -200,8 +200,8 @@ describe('DocumentSheetListPane', () => {
 
           expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
 
-          // escape to persist the update
-          userEvent.type(screen.getByTestId('cell-name-0'), '{Escape}')
+          // enter to persist the update
+          userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
         })
 
         // assert that update is made to server
@@ -213,7 +213,120 @@ describe('DocumentSheetListPane', () => {
           expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
         })
       })
+
+      it('should not update cell when escape pressed after change', async () => {
+        await renderTest()
+
+        act(() => {
+          userEvent.click(screen.getByTestId('cell-name-0'))
+        })
+
+        // separate act to allow for initial state flush before clicking enter
+        act(() => {
+          userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
+          userEvent.keyboard('Jane Doe')
+
+          // value has been updated locally
+          expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
+
+          // escape to cancel the update
+          userEvent.type(screen.getByTestId('cell-name-0'), '{Escape}')
+        })
+
+        // assert NO update request is made to server
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).not.toHaveBeenCalled()
+          expect(mockDocumentOperations.commit.execute).not.toHaveBeenCalled()
+        })
+
+        // value should be reverted to original
+        expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
+      })
     })
+
+    describe.each(['Backspace', 'Delete'])('to delete a value', (key) => {
+      it('deletes when cell is selected', async () => {
+        await renderTest()
+
+        await act(async () => {
+          userEvent.click(screen.getByTestId('cell-name-0'))
+        })
+
+        await act(async () => {
+          await userEvent.type(screen.getByTestId('cell-name-0'), `{${key}}`)
+        })
+
+        // assert that update is made to server
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith([{unset: ['name']}], {})
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+        })
+
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-name-0')).toHaveValue('')
+        })
+      })
+
+      it('does not delete when cell is focused', async () => {
+        await renderTest()
+
+        await act(async () => {
+          expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
+          await userEvent.dblClick(screen.getByTestId('cell-name-0'))
+        })
+
+        await act(async () => {
+          await userEvent.type(screen.getByTestId('cell-name-0'), `{${key}}`)
+        })
+
+        // assert that update is made to server
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).not.toHaveBeenCalled()
+          expect(mockDocumentOperations.commit.execute).not.toHaveBeenCalled()
+        })
+
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
+        })
+      })
+
+      it('deletes all values when cells are selected', async () => {
+        await renderTest()
+
+        await act(() => {
+          userEvent.click(screen.getByTestId('cell-name-0'))
+        })
+
+        await act(() => {
+          userEvent.keyboard('{Shift}{ArrowDown}')
+        })
+
+        await act(() => {
+          userEvent.type(document.activeElement!, `{${key}}`)
+        })
+
+        // assert that update is made to server
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenNthCalledWith(
+            1,
+            [{unset: ['name']}],
+            {},
+          )
+          expect(mockDocumentOperations.patch.execute).toHaveBeenNthCalledWith(
+            2,
+            [{unset: ['name']}],
+            {},
+          )
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalledTimes(2)
+        })
+
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-name-0')).toHaveValue('')
+          expect(screen.getByTestId('cell-name-1')).toHaveValue('')
+        })
+      })
+    })
+
     describe('to copy a value', () => {
       it('copies when cell is selected', async () => {
         await renderTest()
