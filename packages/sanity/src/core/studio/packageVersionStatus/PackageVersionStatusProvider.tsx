@@ -1,11 +1,15 @@
 import {Box, Button, Stack, useToast} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect} from 'react'
+import {type ReactNode, useCallback, useEffect, useRef} from 'react'
 import {SANITY_VERSION} from 'sanity'
 import semver from 'semver'
 
 import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../i18n'
 import {checkForLatestVersions} from './checkForLatestVersions'
+
+// How often to run logic to check last timestamp and fetch new version
+const REFRESH_INTERVAL = 1000 * 60 * 5 // every 5 minutes
+const SHOW_TOAST_FREQUENCY = 1000 * 60 * 30 //half hour
 
 /*
  * We are currently only checking to see if the sanity module has a new version available.
@@ -18,6 +22,7 @@ const currentPackageVersions: Record<string, string> = {
 export function PackageVersionStatusProvider({children}: {children: ReactNode}) {
   const toast = useToast()
   const {t} = useTranslation()
+  const lastCheckedTimeRef = useRef<number | null>(null)
 
   const autoUpdatingPackages = hasSanityPackageInImportMap()
 
@@ -44,26 +49,47 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         </Stack>
       ),
       closable: true,
-      duration: 10000,
       status: 'info',
+      duration: SHOW_TOAST_FREQUENCY + 10000, //covering for some delays, etc.
     })
   }, [toast, t])
 
   useEffect(() => {
     if (!autoUpdatingPackages) return undefined
-    const sub = checkForLatestVersions(currentPackageVersions).subscribe({
-      next: (latestPackageVersions) => {
+
+    const fetchLatestVersions = () => {
+      if (
+        lastCheckedTimeRef.current &&
+        lastCheckedTimeRef.current + SHOW_TOAST_FREQUENCY > Date.now()
+      ) {
+        return
+      }
+
+      checkForLatestVersions(currentPackageVersions).then((latestPackageVersions) => {
+        if (!latestPackageVersions) return
+
+        const currentTime = Date.now()
+        lastCheckedTimeRef.current = currentTime
+
         const foundNewVersion = Object.entries(latestPackageVersions).some(([pkg, version]) => {
           if (!version) return false
           return semver.gt(version, currentPackageVersions[pkg])
         })
+
         if (foundNewVersion) {
           showNewPackageAvailableToast()
         }
-      },
-    })
-    return () => sub?.unsubscribe()
-  }, [showNewPackageAvailableToast, autoUpdatingPackages])
+      })
+    }
+
+    // Run on first render
+    fetchLatestVersions()
+
+    // Set interval for subsequent runs
+    const intervalId = setInterval(fetchLatestVersions, REFRESH_INTERVAL)
+
+    return () => clearInterval(intervalId)
+  }, [autoUpdatingPackages, showNewPackageAvailableToast])
 
   return <>{children}</>
 }
