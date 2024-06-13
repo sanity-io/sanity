@@ -6,6 +6,7 @@ settings:
 
 overrides:
   '@sanity/ui': 2.3.6-canary.0
+  '@sanity/icons': 3.2.1-canary.0
   react: 19.0.0-rc-dfd30974ab-20240613
   react-dom: 19.0.0-rc-dfd30974ab-20240613
   react-is: 19.0.0-rc-dfd30974ab-20240613
@@ -240,8 +241,8 @@ importers:
   dev/design-studio:
     dependencies:
       '@sanity/icons':
-        specifier: ^3.0.0
-        version: 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+        specifier: 3.2.1-canary.0
+        version: 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/ui':
         specifier: 2.3.6-canary.0
         version: 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@18.3.1)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
@@ -367,8 +368,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.1(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@18.3.1)(react@19.0.0-rc-dfd30974ab-20240613)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/icons':
-        specifier: ^3.0.0
-        version: 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+        specifier: 3.2.1-canary.0
+        version: 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/ui':
         specifier: 2.3.6-canary.0
         version: 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@18.3.1)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
@@ -457,8 +458,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.1(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/icons':
-        specifier: ^3.0.0
-        version: 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+        specifier: 3.2.1-canary.0
+        version: 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/image-url':
         specifier: ^1.0.2
         version: 1.0.2
@@ -503,7 +504,7 @@ importers:
         version: 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@sanity/ui-workshop':
         specifier: ^1.0.0
-        version: 1.2.11(@sanity/icons@3.2.0)(@sanity/ui@2.3.6-canary.0)(@types/node@18.19.31)(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
+        version: 1.2.11(@sanity/icons@3.2.1-canary.0)(@sanity/ui@2.3.6-canary.0)(@types/node@18.19.31)(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@sanity/util':
         specifier: workspace:*
         version: link:../../packages/@sanity/util
@@ -1301,8 +1302,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/package.config
       '@sanity/icons':
-        specifier: ^3.2.0
-        version: 3.2.0(react@18.3.1)
+        specifier: 3.2.1-canary.0
+        version: 3.2.1-canary.0(react@18.3.1)
       '@types/arrify':
         specifier: ^1.0.4
         version: 1.0.4
@@ -1405,8 +1406,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.6
       '@sanity/icons':
-        specifier: ^3.0.0
-        version: 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+        specifier: 3.2.1-canary.0
+        version: 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/ui':
         specifier: 2.3.6-canary.0
         version: 2.3.6-canary.0(react-dom@18.3.1)(react-is@18.3.1)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
@@ -1547,8 +1548,8 @@ importers:
         specifier: ^3.37.4
         version: 3.38.1
       '@sanity/icons':
-        specifier: ^3.0.0
-        version: 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+        specifier: 3.2.1-canary.0
+        version: 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/image-url':
         specifier: ^1.0.2
         version: 1.0.2
@@ -1864,7 +1865,7 @@ importers:
         version: 1.0.72(@types/node@18.19.31)(debug@4.3.5)(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
-        version: 1.2.11(@sanity/icons@3.2.0)(@sanity/ui@2.3.6-canary.0)(@types/node@18.19.31)(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
+        version: 1.2.11(@sanity/icons@3.2.1-canary.0)(@sanity/ui@2.3.6-canary.0)(@types/node@18.19.31)(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@testing-library/jest-dom':
         specifier: ^6.2.0
         version: 6.4.2(@jest/globals@29.7.0)(jest@29.7.0)
@@ -6738,7 +6739,7 @@ packages:
       sanity: ^3.36.4
       styled-components: ^6.1
     dependencies:
-      '@sanity/icons': 2.11.8(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/mutator': link:packages/@sanity/mutator
       '@sanity/ui': 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
@@ -6879,7 +6880,7 @@ packages:
       sanity: ^3.19.0
       styled-components: ^6.1
     dependencies:
-      '@sanity/icons': 2.11.8(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/ui': 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@18.3.1)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       lodash: 4.17.21
@@ -6899,7 +6900,7 @@ packages:
       sanity: ^3.19.0
       styled-components: ^6.1
     dependencies:
-      '@sanity/icons': 2.11.8(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/ui': 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       lodash: 4.17.21
@@ -6911,25 +6912,8 @@ packages:
       - react-is
     dev: false
 
-  /@sanity/icons@1.3.10(react@19.0.0-rc-dfd30974ab-20240613):
-    resolution: {integrity: sha512-5wVG/vIiGuGrSmq+Bl3PY7XDgQrGv0fyHdJI64FSulnr2wH3NMqZ6C59UFxnrZ93sr7kOt0zQFoNv2lkPBi0Cg==}
-    peerDependencies:
-      react: '*'
-    dependencies:
-      react: 19.0.0-rc-dfd30974ab-20240613
-    dev: false
-
-  /@sanity/icons@2.11.8(react@19.0.0-rc-dfd30974ab-20240613):
-    resolution: {integrity: sha512-C4ViXtk6eyiNTQ5OmxpfmcK6Jw+LLTi9zg9XBUD15DzC4xTHaGW9SVfUa43YtPGs3WC3M0t0K59r0GDjh52HIg==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      react: '*'
-    dependencies:
-      react: 19.0.0-rc-dfd30974ab-20240613
-    dev: false
-
-  /@sanity/icons@3.2.0(react@18.3.1):
-    resolution: {integrity: sha512-550sRrW0Y99mt9NrVmpzk8FjR3/i2ZhJjjoGY1GUu33Mp+v98tNtBU32BXb4/caV+M1/f0dMXbNpnagdkbXo5Q==}
+  /@sanity/icons@3.2.1-canary.0(react@18.3.1):
+    resolution: {integrity: sha512-Mw7BiaDtuqwc3s6QZ/kSFk8H5OxqNGupvLqq+uIcJ8mq6roKbx1gR8SM2k0PiRQ3sBIyIrVUEPs9PapSaV4PDw==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '*'
@@ -6937,8 +6921,8 @@ packages:
       react: 18.3.1
     dev: true
 
-  /@sanity/icons@3.2.0(react@19.0.0-rc-dfd30974ab-20240613):
-    resolution: {integrity: sha512-550sRrW0Y99mt9NrVmpzk8FjR3/i2ZhJjjoGY1GUu33Mp+v98tNtBU32BXb4/caV+M1/f0dMXbNpnagdkbXo5Q==}
+  /@sanity/icons@3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613):
+    resolution: {integrity: sha512-Mw7BiaDtuqwc3s6QZ/kSFk8H5OxqNGupvLqq+uIcJ8mq6roKbx1gR8SM2k0PiRQ3sBIyIrVUEPs9PapSaV4PDw==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '*'
@@ -6986,7 +6970,7 @@ packages:
       react: '*'
       react-dom: '*'
     dependencies:
-      '@sanity/icons': 1.3.10(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       react: 19.0.0-rc-dfd30974ab-20240613
       react-copy-to-clipboard: 5.1.0(react@19.0.0-rc-dfd30974ab-20240613)
       react-dom: 19.0.0-rc-dfd30974ab-20240613(react@19.0.0-rc-dfd30974ab-20240613)
@@ -7174,7 +7158,7 @@ packages:
       '@sanity/client': ^6.19.1
     dependencies:
       '@sanity/client': 6.20.0(debug@4.3.5)
-      '@sanity/icons': 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/preview-url-secret': 1.6.17(@sanity/client@6.20.0)
       '@sanity/ui': 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@sanity/uuid': 3.0.2
@@ -7280,7 +7264,7 @@ packages:
       '@portabletext/toolkit': 2.0.15
       '@sanity/client': 6.20.0(debug@4.3.5)
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/pkg-utils': 6.9.3(@types/node@18.19.31)(debug@4.3.5)(typescript@5.4.5)
       '@sanity/ui': 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@types/cpx': 1.5.5
@@ -7341,7 +7325,7 @@ packages:
       '@portabletext/toolkit': 2.0.15
       '@sanity/client': 6.20.0
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.2.0(react@18.3.1)
+      '@sanity/icons': 3.2.1-canary.0(react@18.3.1)
       '@sanity/pkg-utils': 6.9.3(@types/node@18.19.31)(typescript@5.4.5)
       '@sanity/ui': 2.3.6-canary.0(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@types/cpx': 1.5.5
@@ -7402,7 +7386,7 @@ packages:
       '@portabletext/toolkit': 2.0.15
       '@sanity/client': 6.20.0
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/pkg-utils': 6.9.3(@types/node@18.19.31)(typescript@5.4.5)
       '@sanity/ui': 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@types/cpx': 1.5.5
@@ -7463,17 +7447,17 @@ packages:
       - debug
     dev: false
 
-  /@sanity/ui-workshop@1.2.11(@sanity/icons@3.2.0)(@sanity/ui@2.3.6-canary.0)(@types/node@18.19.31)(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11):
+  /@sanity/ui-workshop@1.2.11(@sanity/icons@3.2.1-canary.0)(@sanity/ui@2.3.6-canary.0)(@types/node@18.19.31)(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11):
     resolution: {integrity: sha512-vzj7upIF7wq2W1HEA0D5VSkR8axaH4Rt07yNTAaas7CLgjSE9r2d+Gnkrq4FIbIuN1GYhhCD+D3/s60GaZrpQw==}
     hasBin: true
     peerDependencies:
-      '@sanity/icons': ^2
+      '@sanity/icons': 3.2.1-canary.0
       '@sanity/ui': 2.3.6-canary.0
       react: '*'
       react-dom: '*'
       styled-components: ^5.2 || ^6
     dependencies:
-      '@sanity/icons': 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/ui': 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@vitejs/plugin-react': 4.3.1(vite@4.5.3)
       axe-core: 4.9.0
@@ -7513,7 +7497,7 @@ packages:
     dependencies:
       '@floating-ui/react-dom': 2.1.0(react-dom@18.3.1)(react@18.3.1)
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.2.0(react@18.3.1)
+      '@sanity/icons': 3.2.1-canary.0(react@18.3.1)
       csstype: 3.1.3
       framer-motion: 11.0.8(react-dom@18.3.1)(react@18.3.1)
       react: 18.3.1
@@ -7534,7 +7518,7 @@ packages:
     dependencies:
       '@floating-ui/react-dom': 2.1.0(react-dom@18.3.1)(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       csstype: 3.1.3
       framer-motion: 11.0.8(react-dom@18.3.1)(react@19.0.0-rc-dfd30974ab-20240613)
       react: 19.0.0-rc-dfd30974ab-20240613
@@ -7555,7 +7539,7 @@ packages:
     dependencies:
       '@floating-ui/react-dom': 2.1.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       csstype: 3.1.3
       framer-motion: 11.0.8(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       react: 19.0.0-rc-dfd30974ab-20240613
@@ -7575,7 +7559,7 @@ packages:
     dependencies:
       '@floating-ui/react-dom': 2.1.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/color': 3.0.6
-      '@sanity/icons': 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       csstype: 3.1.3
       framer-motion: 11.0.8(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       react: 19.0.0-rc-dfd30974ab-20240613
@@ -18565,7 +18549,7 @@ packages:
     dependencies:
       '@mux/mux-player-react': 2.7.0(@types/react@18.3.3)(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       '@mux/upchunk': 3.4.0
-      '@sanity/icons': 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/ui': 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@18.3.1)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@sanity/uuid': 3.0.2
@@ -18574,7 +18558,7 @@ packages:
       lodash: 4.17.21
       react: 19.0.0-rc-dfd30974ab-20240613
       react-is: 18.3.1
-      react-rx: 3.0.0(react@19.0.0-rc-dfd30974ab-20240613)(rxjs@7.8.1)
+      react-rx: 3.0.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)(rxjs@7.8.1)
       rxjs: 7.8.1
       sanity: link:packages/sanity
       scroll-into-view-if-needed: 3.1.0
@@ -18600,7 +18584,7 @@ packages:
     dependencies:
       '@mux/mux-player-react': 2.7.0(@types/react@18.3.3)(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       '@mux/upchunk': 3.4.0
-      '@sanity/icons': 3.2.0(react@19.0.0-rc-dfd30974ab-20240613)
+      '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)
       '@sanity/ui': 2.3.6-canary.0(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@sanity/uuid': 3.0.2
