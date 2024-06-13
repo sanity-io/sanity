@@ -4,10 +4,11 @@ import {Menu} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {type ForwardedRef, forwardRef, memo} from 'react'
 
-import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
+import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {ASSET_IMAGE_MENU_POPOVER} from './constants'
 import {type BaseImageInputProps} from './types'
+
+const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true} as const
 
 function ImageInputBrowserComponent(
   props: Pick<BaseImageInputProps, 'assetSources' | 'readOnly' | 'directUploads' | 'id'> & {
