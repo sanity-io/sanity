@@ -1,9 +1,7 @@
-import {expect, type Locator, type Page} from '@playwright/test'
+import {expect, type Page} from '@playwright/test'
 import {test} from '@sanity/test'
 
 test.describe('Portable Text Input - Open Block Style Select', () => {
-  let pteInput: Locator
-
   test.beforeEach(async ({page, createDraftDocument}) => {
     await createDraftDocument(
       '/test/content/input-standard;portable-text;pt_allTheBellsAndWhistles',
@@ -15,37 +13,34 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
       timeout: 40000,
     })
 
-    pteInput = page.getByTestId('field-content')
-
     // set up the portable text editor
-    await pteInput.focus()
-    await pteInput.click()
+    await page.getByTestId('field-content').focus()
+    await page.getByTestId('field-content').click()
   })
 
   test('on a simple editor', async ({page}) => {
-    await pteInput.getByTestId('block-style-select').click()
+    await page.getByTestId('field-content').getByTestId('block-style-select').click()
 
-    // wait for popover to attach
-    await page.waitForSelector('[data-ui="MenuButton__popover"]', {
-      state: 'attached',
-      timeout: 40000,
+    page.on('dialog', async () => {
+      expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
     })
-    expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
 
   test('on a full screen simple editor', async ({page}) => {
-    await pteInput.getByLabel('Expand editor').click()
+    await page.getByTestId('field-content').getByLabel('Expand editor').click()
 
     // wait for PTE to be full screen
     await waitForFullScreen(page)
 
     await page.locator('[data-testid="block-style-select"]').click()
 
-    await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
+    page.on('dialog', async () => {
+      await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
+    })
   })
 
   test('on a full screen multi nested PTE', async ({page}) => {
-    await pteInput.getByLabel('Expand editor').click()
+    await page.getByTestId('field-content').getByLabel('Expand editor').click()
 
     // wait for PTE to be full screen
     await waitForFullScreen(page)
@@ -74,12 +69,9 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     // click the block style select
     await page.locator('[data-testid="block-style-select"]').nth(1).click()
 
-    await page.waitForSelector('[data-ui="MenuButton__popover"]', {
-      state: 'attached',
-      timeout: 15000,
+    page.on('dialog', async () => {
+      await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
     })
-
-    await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
 })
 
