@@ -34,10 +34,11 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
           <Box>{t('package-version.new-package-available.description')}</Box>
           <Box>
             <Button
-              onClick={onClick}
               aria-label={t('package-version.new-package-available.reload-button')}
-              tone={'primary'}
+              onClick={onClick}
               text={t('package-version.new-package-available.reload-button')}
+              tone={'primary'}
+              data-testid="new-package-version-reload-button"
             />
           </Box>
         </Stack>
