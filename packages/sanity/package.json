@@ -133,7 +133,7 @@
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "test": "pkg-utils --strict && jest",
-    "test:ct": "playwright test -c playwright-ct.config.ts",
+    "test:ct": "rimraf playwright-ct/template/.cache && playwright test -c playwright-ct.config.ts",
     "watch": "pkg-utils watch",
     "write:playwright-report-as-pr-comment": "node -r esbuild-register playwright-ct/scripts/parsePlaywrightReportJson.ts"
   },
