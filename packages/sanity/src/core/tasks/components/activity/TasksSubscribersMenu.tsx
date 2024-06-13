@@ -90,6 +90,7 @@ export function TasksSubscribersMenu(props: TasksSubscriberMenuProps) {
     },
     [subscribersList, onSelect],
   )
+  const resetSubscribersList = useCallback(() => setSubscribersList(value), [value])
 
   const renderItem = useCallback(
     (user: UserWithPermission) => {
@@ -112,6 +113,7 @@ export function TasksSubscribersMenu(props: TasksSubscriberMenuProps) {
 
   return (
     <MenuButton
+      onClose={resetSubscribersList}
       button={
         <UIButton type="button" mode="bleed" padding={1}>
           {value.length > 0 ? (
