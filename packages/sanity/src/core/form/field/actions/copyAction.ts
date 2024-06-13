@@ -26,7 +26,9 @@ export const copyAction = defineDocumentFieldAction({
     const {onCopy} = useCopyPasteAction()
     const onAction = useCallback(() => {
       const value = getFormValue([]) as FormDocumentValue
-      onCopy(path, value)
+      onCopy(path, value, {
+        context: {source: 'fieldAction'},
+      })
     }, [path, onCopy, getFormValue])
 
     return defineActionItem({
