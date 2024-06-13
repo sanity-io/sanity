@@ -10,7 +10,9 @@ export const pasteAction = defineDocumentFieldAction({
   useAction({path}) {
     const {onPaste} = useCopyPasteAction()
     const onAction = useCallback(() => {
-      onPaste(path)
+      onPaste(path, {
+        context: {source: 'fieldAction'},
+      })
     }, [path, onPaste])
 
     return defineActionItem({
