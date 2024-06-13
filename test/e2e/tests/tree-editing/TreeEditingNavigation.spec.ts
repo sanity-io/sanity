@@ -40,16 +40,6 @@ test.describe('navigation - tree sidebar', () => {
       } */
   })
 
-  test.afterEach(async ({page, browserName}) => {
-    // For now, only test in Chromium due to flakiness in Firefox and WebKit
-    test.skip(browserName !== 'chromium')
-
-    const modal = await page.getByTestId('tree-editing-dialog')
-
-    await page.getByRole('button', {name: 'Done'}).click()
-    await expect(modal).not.toBeVisible()
-  })
-
   // first level array item test
   test(`opening the first item, you should be able to navigate to the second array item`, async ({
     page,
@@ -111,6 +101,11 @@ test.describe('navigation - tree sidebar', () => {
     await expect(await page.locator('#tree-breadcrumb-menu-button').textContent()).toBe(
       'Lucy, the cat',
     )
+
+    const modal = await page.getByTestId('tree-editing-dialog')
+
+    await page.getByRole('button', {name: 'Done'}).click()
+    await expect(modal).not.toBeVisible()
   })
 })
 
@@ -243,16 +238,6 @@ test.describe('navigation - form', () => {
     } */
   })
 
-  test.afterEach(async ({page, browserName}) => {
-    // For now, only test in Chromium due to flakiness in Firefox and WebKit
-    test.skip(browserName !== 'chromium')
-
-    const modal = await page.getByTestId('tree-editing-dialog')
-
-    await page.getByRole('button', {name: 'Done'}).click()
-    await expect(modal).not.toBeVisible()
-  })
-
   test(`opening the first item, when you have an array with two objects in an object you should be able to navigate on the form side`, async ({
     page,
     browserName,
@@ -298,5 +283,10 @@ test.describe('navigation - form', () => {
     await expect(
       await page.getByRole('list').getByRole('button', {name: 'Eliza, the friendly dolphin'}),
     ).toBeVisible()
+
+    const modal = await page.getByTestId('tree-editing-dialog')
+
+    await page.getByRole('button', {name: 'Done'}).click()
+    await expect(modal).not.toBeVisible()
   })
 })
