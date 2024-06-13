@@ -4,7 +4,7 @@ import {
 } from '@sanity/insert-menu'
 import {type SchemaType} from '@sanity/types'
 import {useClickOutside, useGlobalKeyDown} from '@sanity/ui'
-import {useCallback, useReducer, useState} from 'react'
+import {useCallback, useMemo, useReducer, useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'
@@ -30,31 +30,19 @@ function popoverReducer(state: PopoverState, event: PopoverEvent): PopoverState 
 /**
  * @internal
  */
-export type InsertMenuPopoverProps = {
+export function useInsertMenuPopover(props: {
   insertMenuProps: InsertMenuProps
   popoverProps: Omit<PopoverProps, 'content' | 'open'>
-  renderToggle: (props: {
-    state: PopoverState
-    send: React.Dispatch<PopoverEvent>
-    setToggleElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
-  }) => JSX.Element
-}
-
-/**
- * Popover for rendering an `InsertMenu`
- * @internal
- */
-export function InsertMenuPopover(props: InsertMenuPopoverProps): JSX.Element {
+}) {
   const [state, send] = useReducer(popoverReducer, {open: false})
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
-  const [toggleElement, setToggleElement] = useState<HTMLElement | null>(null)
-  const {onSelect, ...insertMenuProps} = props.insertMenuProps
+  const referenceElement = props.popoverProps.referenceElement ?? null
 
   useClickOutside(
     useCallback(() => {
       send({type: 'close'})
     }, []),
-    [popoverElement, toggleElement],
+    [popoverElement, referenceElement],
   )
 
   useGlobalKeyDown(
@@ -62,13 +50,14 @@ export function InsertMenuPopover(props: InsertMenuPopoverProps): JSX.Element {
       (event: KeyboardEvent) => {
         if (event.key === 'Escape' && state.open) {
           send({type: 'close'})
-          toggleElement?.focus()
+          referenceElement?.focus()
         }
       },
-      [state, toggleElement],
+      [state, referenceElement],
     ),
   )
 
+  const {onSelect, ...insertMenuProps} = props.insertMenuProps
   const handleOnSelect = useCallback(
     (schemaType: SchemaType) => {
       onSelect(schemaType)
@@ -76,20 +65,26 @@ export function InsertMenuPopover(props: InsertMenuPopoverProps): JSX.Element {
     },
     [onSelect],
   )
-
-  return (
-    <Popover
-      ref={setPopoverElement}
-      open={state.open}
-      constrainSize
-      overflow="hidden"
-      portal
-      content={<InsertMenu {...insertMenuProps} onSelect={handleOnSelect} />}
-      {...props.popoverProps}
-    >
-      {props.renderToggle({state, send, setToggleElement})}
-    </Popover>
+  const popover = useMemo(
+    () => (
+      <Popover
+        ref={setPopoverElement}
+        open={state.open}
+        constrainSize
+        overflow="hidden"
+        portal
+        content={<InsertMenu {...insertMenuProps} onSelect={handleOnSelect} />}
+        {...props.popoverProps}
+      />
+    ),
+    [handleOnSelect, insertMenuProps, props.popoverProps, state],
   )
+
+  return {
+    popover,
+    state,
+    send,
+  }
 }
 
 /**

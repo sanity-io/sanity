@@ -7,7 +7,7 @@ import {useCallback, useState} from 'react'
 import {Button, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
-import {InsertMenuPopover} from './InsertMenuPopover'
+import {useInsertMenuPopover} from './InsertMenuPopover'
 
 /**
  * @hidden
@@ -19,6 +19,7 @@ export function ArrayOfObjectsFunctions<
   const {schemaType, readOnly, children, onValueCreate, onItemAppend} = props
   const {t} = useTranslation()
   const [gridElement, setGridElement] = useState<HTMLDivElement | null>(null)
+  const [popoverToggleElement, setPopoverToggleElement] = useState<HTMLButtonElement | null>(null)
 
   const insertItem = useCallback(
     (itemType: any) => {
@@ -47,6 +48,21 @@ export function ArrayOfObjectsFunctions<
     text: t(addItemI18nKey),
   }
 
+  const insertMenu = useInsertMenuPopover({
+    insertMenuProps: {
+      ...props.schemaType.options?.insertMenu,
+      schemaTypes: props.schemaType.of,
+      onSelect: insertItem,
+    },
+    popoverProps: {
+      placement: 'bottom',
+      fallbackPlacements: ['top'],
+      matchReferenceWidth: props.schemaType.options?.insertMenu?.filter,
+      referenceBoundary: gridElement,
+      referenceElement: popoverToggleElement,
+    },
+  })
+
   if (readOnly) {
     return (
       <Tooltip portal content={t('inputs.array.read-only-label')}>
@@ -70,30 +86,18 @@ export function ArrayOfObjectsFunctions<
           data-testid="add-single-object-button"
         />
       ) : (
-        <InsertMenuPopover
-          insertMenuProps={{
-            ...props.schemaType.options?.insertMenu,
-            schemaTypes: props.schemaType.of,
-            onSelect: insertItem,
-          }}
-          popoverProps={{
-            placement: 'bottom',
-            fallbackPlacements: ['top'],
-            matchReferenceWidth: props.schemaType.options?.insertMenu?.filter,
-            referenceBoundary: gridElement,
-          }}
-          renderToggle={({state, send, setToggleElement}) => (
-            <Button
-              {...insertButtonProps}
-              data-testid="add-multiple-object-button"
-              selected={state.open}
-              onClick={() => {
-                send({type: 'toggle'})
-              }}
-              ref={setToggleElement}
-            />
-          )}
-        />
+        <>
+          <Button
+            {...insertButtonProps}
+            data-testid="add-multiple-object-button"
+            selected={insertMenu.state.open}
+            onClick={() => {
+              insertMenu.send({type: 'toggle'})
+            }}
+            ref={setPopoverToggleElement}
+          />
+          {insertMenu.popover}
+        </>
       )}
       {children}
     </Grid>
