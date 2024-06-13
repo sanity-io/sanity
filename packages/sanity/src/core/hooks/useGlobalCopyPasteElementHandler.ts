@@ -58,7 +58,9 @@ export function useGlobalCopyPasteElementHandler({
         }
       }
 
-      onCopy(focusPathRef.current, valueRef.current)
+      onCopy(focusPathRef.current, valueRef.current, {
+        context: {source: 'keyboardShortcut'},
+      })
     },
     [onCopy, focusPathRef],
   )
@@ -82,7 +84,9 @@ export function useGlobalCopyPasteElementHandler({
 
         event.preventDefault()
         event.stopPropagation()
-        onCopy(focusPathRef.current, valueRef.current)
+        onCopy(focusPathRef.current, valueRef.current, {
+          context: {source: 'keyboardShortcut'},
+        })
       }
 
       if (isPasteHotKey(event)) {
@@ -92,7 +96,9 @@ export function useGlobalCopyPasteElementHandler({
         }
 
         event.preventDefault()
-        onPaste(focusPathRef.current)
+        onPaste(focusPathRef.current, {
+          context: {source: 'keyboardShortcut'},
+        })
       }
     },
     [onCopy, onPaste, focusPathRef, valueRef],
@@ -118,7 +124,9 @@ export function useGlobalCopyPasteElementHandler({
             // We insert the value here instead of natively because we need to transform the value above
             insertTextAtCursor(targetElement, `${targetValue}`)
           } else {
-            onPaste(focusPathRef.current)
+            onPaste(focusPathRef.current, {
+              context: {source: 'keyboardShortcut'},
+            })
           }
         } else {
           // If we don't have a copy/paste result in clipboard, pass through the event

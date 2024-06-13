@@ -42,3 +42,25 @@ export interface CopyPasteContextType {
   setCopyResult: (result: CopyActionResult) => void
   setDocumentMeta: (meta: Required<DocumentMeta>) => void
 }
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface BaseOptions {
+  context?: {
+    source: 'fieldAction' | 'keyboardShortcut' | 'unknown'
+  }
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface CopyOptions extends BaseOptions {}
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface PasteOptions extends BaseOptions {}
