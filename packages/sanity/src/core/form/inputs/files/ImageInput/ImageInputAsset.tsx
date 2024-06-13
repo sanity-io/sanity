@@ -6,8 +6,9 @@ import {ChangeIndicator} from '../../../../changeIndicators'
 import {type InputProps} from '../../../types'
 import {FileTarget} from '../common/styles'
 import {UploadWarning} from '../common/UploadWarning'
-import {ASSET_FIELD_PATH} from './constants'
 import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from './types'
+
+const ASSET_FIELD_PATH = ['asset'] as const
 
 function ImageInputAssetComponent(
   props: {
