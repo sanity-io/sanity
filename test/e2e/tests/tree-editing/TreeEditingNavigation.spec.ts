@@ -101,6 +101,11 @@ test.describe('navigation - tree sidebar', () => {
     await expect(await page.locator('#tree-breadcrumb-menu-button').textContent()).toBe(
       'Lucy, the cat',
     )
+
+    const modal = await page.getByTestId('tree-editing-dialog')
+
+    await page.getByRole('button', {name: 'Done'}).click()
+    await expect(modal).not.toBeVisible()
   })
 })
 
@@ -207,21 +212,6 @@ test.describe('navigation - form', () => {
     await modal.getByTestId('add-single-object-button').click()
 
     // Wait for the animation to change form to finish
-    const elementSelector = '[data-testid="tree-editing-dialog-content"]' // element that is animated
-
-    // Wait for opacity to turn 0
-    await page.waitForFunction((selector) => {
-      const element = document.querySelector(selector) as HTMLInputElement
-      return element && getComputedStyle(element).opacity !== '1'
-    }, elementSelector)
-
-    // Wait for opacity to turn 1
-    await page.waitForFunction((selector) => {
-      const element = document.querySelector(selector)
-      return element && getComputedStyle(element).opacity === '1'
-    }, elementSelector)
-
-    // Wait for input not to be albert
     await page.waitForFunction((selector) => {
       const element = document.querySelectorAll(selector)[1] as HTMLInputElement // first input in modal
       return element && element.value !== 'Albert, the whale'
@@ -286,5 +276,10 @@ test.describe('navigation - form', () => {
     await expect(
       await page.getByRole('list').getByRole('button', {name: 'Eliza, the friendly dolphin'}),
     ).toBeVisible()
+
+    const modal = await page.getByTestId('tree-editing-dialog')
+
+    await page.getByRole('button', {name: 'Done'}).click()
+    await expect(modal).not.toBeVisible()
   })
 })
