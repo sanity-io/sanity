@@ -368,8 +368,8 @@ importers:
         specifier: ^2.3.3
         version: 2.3.3(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/vision':
-        specifier: 3.46.1
-        version: link:../../packages/@sanity/vision
+        specifier: 3.46.0
+        version: 3.46.0(@babel/runtime@7.24.7)(@codemirror/lint@6.8.0)(@codemirror/theme-one-dark@6.1.2)(@lezer/common@1.2.1)(codemirror@6.0.1)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -437,8 +437,8 @@ importers:
         specifier: ^3.0.2
         version: 3.0.4(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/block-tools':
-        specifier: 3.46.1
-        version: link:../../packages/@sanity/block-tools
+        specifier: 3.46.0
+        version: 3.46.0
       '@sanity/client':
         specifier: ^6.20.0
         version: 6.20.0
@@ -6710,6 +6710,13 @@ packages:
       rxjs: 7.8.1
     dev: false
 
+  /@sanity/block-tools@3.46.0:
+    resolution: {integrity: sha512-C/l4atjRhOrrL/kwjNU7S5G2GPo8TLDhJuVUGOHjeV5Xc74g4blcJ50L0xYrBIhE2auXL2nsglv2GpRuIJZO6w==}
+    dependencies:
+      get-random-values-esm: 1.0.2
+      lodash: 4.17.21
+    dev: false
+
   /@sanity/browserslist-config@1.0.3:
     resolution: {integrity: sha512-UkJuiTyROgPcxbvpHYyXwr+T88Np4eLzu3h05gMgeZ2hv3EM7g/4VMyng5HuA1JdPQPEdq8bmmfQDR+u4KC+TA==}
 
@@ -7297,8 +7304,8 @@ packages:
       - debug
     dev: false
 
-  /@sanity/types@3.46.0:
-    resolution: {integrity: sha512-KauLrC6duYFl3RQ+Z89SPJhNXd215P3QTMCFgTAcalKFkgtz5Tmba2QUlWX0TTKqm56jPW5MhH4UXeqd/6RW8A==}
+  /@sanity/types@3.46.1:
+    resolution: {integrity: sha512-MfRuDUq3Y3mWgPiGNDfnZ4syhgsTlLvdeOE/TiefA6i0Ka1Z4Ob+6NUZPL51Wsv9k7iUrGsfj6UpWh+9kKANZQ==}
     dependencies:
       '@sanity/client': 6.20.0
       '@types/react': 18.3.3
@@ -7378,12 +7385,12 @@ packages:
       - debug
     dev: false
 
-  /@sanity/util@3.46.0:
-    resolution: {integrity: sha512-0aJXzNm0nMnzd9aHms5mrU00S8/tNp0M9cfd1l1eUDT8zJ+0r/fnThq2CkDk8ebqREpdv/Oc+gLX8Vploasvew==}
+  /@sanity/util@3.46.1:
+    resolution: {integrity: sha512-Ef0LB8cePz/iGl+zprHmQFy/rwBFF5UPkh5txxX6pp/EstRsj0Bu9hls6RlKd1rzKzTHgzdQFb1WYnaH6qIlnQ==}
     engines: {node: '>=18'}
     dependencies:
       '@sanity/client': 6.20.0
-      '@sanity/types': 3.46.0
+      '@sanity/types': 3.46.1
       get-random-values-esm: 1.0.2
       moment: 2.30.1
       rxjs: 7.8.1
@@ -7396,6 +7403,44 @@ packages:
     dependencies:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
+
+  /@sanity/vision@3.46.0(@babel/runtime@7.24.7)(@codemirror/lint@6.8.0)(@codemirror/theme-one-dark@6.1.2)(@lezer/common@1.2.1)(codemirror@6.0.1)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
+    resolution: {integrity: sha512-7odK9eNozi2EXJtqZ/Q25bqWOFveO7bzlPaXcxNMBOB5Qr1SbxxTKlG807LKE87LIX17dzMIpBHjFezgXzigyQ==}
+    peerDependencies:
+      react: '*'
+      styled-components: ^6.1
+    dependencies:
+      '@codemirror/autocomplete': 6.16.2(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.28.0)(@lezer/common@1.2.1)
+      '@codemirror/commands': 6.6.0
+      '@codemirror/lang-javascript': 6.2.2
+      '@codemirror/language': 6.10.2
+      '@codemirror/search': 6.5.6
+      '@codemirror/state': 6.4.1
+      '@codemirror/view': 6.28.0
+      '@juggle/resize-observer': 3.4.0
+      '@lezer/highlight': 1.2.0
+      '@rexxars/react-json-inspector': 8.0.1(react@18.3.1)
+      '@rexxars/react-split-pane': 0.1.93(react-dom@18.3.1)(react@18.3.1)
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 3.2.0(react@18.3.1)
+      '@sanity/ui': 2.3.3(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+      '@uiw/react-codemirror': 4.21.25(@babel/runtime@7.24.7)(@codemirror/autocomplete@6.16.2)(@codemirror/language@6.10.2)(@codemirror/lint@6.8.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.28.0)(codemirror@6.0.1)(react-dom@18.3.1)(react@18.3.1)
+      is-hotkey-esm: 1.0.0
+      json-2-csv: 5.5.1
+      json5: 2.2.3
+      lodash: 4.17.21
+      quick-lru: 5.1.1
+      react: 18.3.1
+      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
+    transitivePeerDependencies:
+      - '@babel/runtime'
+      - '@codemirror/lint'
+      - '@codemirror/theme-one-dark'
+      - '@lezer/common'
+      - codemirror
+      - react-dom
+      - react-is
+    dev: false
 
   /@sanity/visual-editing@2.1.4(@sanity/client@6.20.0)(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-wHmINywcXSCMsc4JmbLVbsX7FX5JA4aKdOoTgZBDnbgdcIpIHvcpMTNqS8L1jfYsOQNBVswPt4wh7/Wu6io+TA==}
@@ -18282,7 +18327,7 @@ packages:
       '@sanity/image-url': 1.0.2
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1)(react@18.3.1)
       '@sanity/ui': 2.3.3(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
-      '@sanity/util': 3.46.0
+      '@sanity/util': 3.46.1
       '@types/lodash-es': 4.17.12
       framer-motion: 11.0.8(react-dom@18.3.1)(react@18.3.1)
       lodash-es: 4.17.21
