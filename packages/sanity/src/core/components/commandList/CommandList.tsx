@@ -2,7 +2,6 @@ import {Box, rem, Stack} from '@sanity/ui'
 import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
 import {throttle} from 'lodash'
 import {
-  cloneElement,
   forwardRef,
   type ReactElement,
   useCallback,
@@ -125,7 +124,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
 ) {
   const isMountedRef = useRef(false)
   const commandListId = useRef(useId())
-  const activeIndexRef = useRef(initialIndex ?? 0)
+  // const activeIndexRef = useRef(initialIndex ?? 0)
+  const [activeIndex, _setActiveIndex] = useState(initialIndex ?? 0)
 
   const [childContainerElement, setChildContainerElement] = useState<HTMLElement | null>(null)
   const [hovered, setHovered] = useState(false)
@@ -234,9 +234,10 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       const targetIndex = itemIndices[virtualIndex]?.activeIndex
       child
         .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
-        ?.toggleAttribute(activeItemDataAttr, targetIndex === activeIndexRef.current)
+        ?.toggleAttribute(activeItemDataAttr, targetIndex === activeIndex)
     })
   }, [
+    activeIndex,
     activeItemDataAttr,
     childContainerElement?.children,
     hovered,
@@ -269,7 +270,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    * Assign active descendant on input element (if present)
    */
   const handleUpdateActiveDescendant = useCallback(() => {
-    const activeIndex = activeIndexRef?.current
     if (items.length > 0) {
       inputElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
       virtualListElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
@@ -277,7 +277,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       inputElement?.removeAttribute('aria-activedescendant')
       virtualListElement?.removeAttribute('aria-activedescendant')
     }
-  }, [getChildDescendantId, inputElement, items.length, virtualListElement])
+  }, [activeIndex, getChildDescendantId, inputElement, items.length, virtualListElement])
 
   /**
    * Obtain index of the top most visible element
@@ -306,7 +306,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       scrollAlign?: ScrollToOptions['align']
       scrollIntoView?: boolean
     }) => {
-      activeIndexRef.current = index
+      _setActiveIndex(index)
       handleUpdateActiveDescendant()
       showChildrenActiveState()
 
@@ -330,19 +330,16 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
 
       if (direction === 'next') {
         const wrapAroundIndex = wrapAround ? 0 : lastIndex
-        nextIndex =
-          activeIndexRef.current < activeItemCount - 1
-            ? activeIndexRef.current + 1
-            : wrapAroundIndex
+        nextIndex = activeIndex < activeItemCount - 1 ? activeIndex + 1 : wrapAroundIndex
       }
       if (direction === 'previous') {
         const wrapAroundIndex = wrapAround ? lastIndex : 0
-        nextIndex = activeIndexRef.current > 0 ? activeIndexRef.current - 1 : wrapAroundIndex
+        nextIndex = activeIndex > 0 ? activeIndex - 1 : wrapAroundIndex
       }
       setActiveIndex({index: nextIndex, scrollIntoView: true})
       enableChildContainerPointerEvents(false)
     },
-    [activeItemCount, enableChildContainerPointerEvents, setActiveIndex, wrapAround],
+    [activeIndex, activeItemCount, enableChildContainerPointerEvents, setActiveIndex, wrapAround],
   )
 
   const focusElement = useCallback(
@@ -412,7 +409,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
         const currentElement = childElements.find(
           (el) =>
             Number(el.dataset.index) ===
-            itemIndices.findIndex((i) => i.activeIndex === activeIndexRef.current),
+            itemIndices.findIndex((i) => i.activeIndex === activeIndex),
         )
 
         if (currentElement) {
@@ -423,7 +420,13 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
         }
       }
     },
-    [childContainerElement?.children, focusElement, itemIndices, selectAdjacentItemIndex],
+    [
+      activeIndex,
+      childContainerElement?.children,
+      focusElement,
+      itemIndices,
+      selectAdjacentItemIndex,
+    ],
   )
   const handleKeyDownInput = useCallback(
     (event: KeyboardEvent) => handleKeyDown('input')(event),
@@ -603,28 +606,24 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
         >
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const virtualIndex = virtualRow.index // visible index in the DOM
-            const {activeIndex, disabled, selected} = itemIndices[virtualIndex]
+            const {activeIndex: itemActiveIndex, disabled, selected} = itemIndices[virtualIndex]
 
             const itemToRender = renderItem(items[virtualIndex], {
-              activeIndex,
+              activeIndex: itemActiveIndex,
               disabled,
               selected,
               virtualIndex,
             }) as ReactElement
 
-            const clonedItem = cloneElement(itemToRender, {
-              tabIndex: -1,
-            })
-
             const activeAriaAttributes =
-              typeof activeIndex === 'number' && !disabled
+              typeof itemActiveIndex === 'number' && !disabled
                 ? {
-                    'aria-posinset': activeIndex + 1,
+                    'aria-posinset': itemActiveIndex + 1,
                     ...(ariaMultiselectable ? {'aria-selected': selected.toString()} : {}),
                     'aria-setsize': activeItemCount,
-                    'id': getChildDescendantId(activeIndex),
+                    'id': getChildDescendantId(itemActiveIndex),
                     'role': 'option',
-                    'onMouseEnter': handleChildMouseEnter(activeIndex),
+                    'onMouseEnter': handleChildMouseEnter(itemActiveIndex),
                   }
                 : {}
 
@@ -646,7 +645,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
                 tabIndex={-1}
                 {...activeAriaAttributes}
               >
-                {clonedItem}
+                {itemToRender}
               </Stack>
             )
           })}
