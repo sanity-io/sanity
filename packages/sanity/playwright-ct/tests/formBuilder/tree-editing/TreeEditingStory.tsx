@@ -1,4 +1,4 @@
-import {defineField, defineType} from '@sanity/types'
+import {defineField, defineType, type Path, type SanityDocument} from '@sanity/types'
 import {VirtualizerScrollInstanceProvider, type WorkspaceOptions} from 'sanity'
 
 import {TestForm} from '../utils/TestForm'
@@ -55,10 +55,12 @@ const FEATURES: WorkspaceOptions['features'] = {
 
 interface TreeEditingStoryProps {
   legacyEditing?: boolean
+  openPath?: Path
+  value?: SanityDocument
 }
 
 export function TreeEditingStory(props: TreeEditingStoryProps): JSX.Element {
-  const {legacyEditing} = props
+  const {legacyEditing, openPath, value} = props
 
   const types = getSchemaTypes({legacyEditing})
 
@@ -68,7 +70,7 @@ export function TreeEditingStory(props: TreeEditingStoryProps): JSX.Element {
         containerElement={{current: document.body}}
         scrollElement={document.body}
       >
-        <TestForm />
+        <TestForm document={value} openPath={openPath} />
       </VirtualizerScrollInstanceProvider>
     </TestWrapper>
   )
