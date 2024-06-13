@@ -204,15 +204,16 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
       // if cell is selected, paste events should be handled
       document.addEventListener('paste', handlePaste)
 
-    if (cellState === 'selectedAnchor')
-      // only allow copying when cell is selected anchor
+    if (cellState === 'selectedAnchor' || cellState === 'focused')
+      // only allow copying when cell is selected anchor or focused
       document.addEventListener('copy', handleCopy)
 
     return () => {
       if (cellState) document.removeEventListener('keydown', handleOnKeyDown)
       if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
         document.removeEventListener('paste', handlePaste)
-      if (cellState === 'selectedAnchor') document.removeEventListener('copy', handleCopy)
+      if (cellState === 'selectedAnchor' || cellState === 'focused')
+        document.removeEventListener('copy', handleCopy)
     }
   }, [cellState, handleCopy, handleOnKeyDown, handlePaste])
 
