@@ -139,6 +139,7 @@ export function TreeEditingBreadcrumbsMenuButton(
   const clonedButton = cloneElement(button, {
     'aria-expanded': open,
     'aria-haspopup': 'true',
+    'data-testid': 'tree-editing-breadcrumb-menu-button',
     'id': 'tree-breadcrumb-menu-button',
     'onClick': handleButtonClick,
     'ref': setButtonElement,
@@ -149,14 +150,15 @@ export function TreeEditingBreadcrumbsMenuButton(
     <StyledPopover
       animate
       constrainSize
-      referenceBoundary={parentElement}
       content={content}
+      data-testid="tree-editing-breadcrumbs-menu-popover"
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       onKeyDown={handlePopoverKeyDown}
       open={open}
       placement="bottom-start"
       portal
       ref={setRootElement}
+      referenceBoundary={parentElement}
     >
       {clonedButton}
     </StyledPopover>

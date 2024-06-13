@@ -122,6 +122,7 @@ export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProp
       activeItemDataAttr="data-hovered"
       ariaLabel={t('tree-editing-dialog.breadcrumbs.menu')}
       autoFocus={supportsTouch ? undefined : 'input'}
+      data-testid="tree-editing-breadcrumbs-menu"
       getItemDisabled={getItemDisabled}
       itemHeight={ITEM_HEIGHT}
       items={items}
