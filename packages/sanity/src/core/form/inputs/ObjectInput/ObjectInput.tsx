@@ -1,6 +1,7 @@
 import {Stack} from '@sanity/ui'
+import {last} from 'lodash'
 import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
-import {useFormCallbacks} from 'sanity'
+import {isKeySegment, useFormCallbacks} from 'sanity'
 import styled from 'styled-components'
 
 import {ObjectInputMembers} from '../../members'
@@ -25,7 +26,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     __internal_arrayEditingModal: arrayEditingModal = null,
     groups,
     id,
-    level,
     members,
     onChange,
     onFieldGroupSelect,
@@ -44,6 +44,12 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
 
   const wrapperRef = useRef<HTMLDivElement>(null)
   const {columns} = schemaType.options || {}
+
+  // Object inputs should only be focusable if they are not the root object input
+  // This includes if they are in the root of a array block
+  const isFocusable = useMemo(() => {
+    return id !== 'root' && !(path.length > 0 && isKeySegment(last(path)!))
+  }, [id, path])
 
   const renderedUnknownFields = useMemo(() => {
     if (!schemaType.fields) {
@@ -68,7 +74,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
 
   const handleBlur = useCallback(
     (event: FocusEvent) => {
-      if (id === 'root') {
+      if (!isFocusable) {
         return
       }
 
@@ -77,12 +83,12 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         onPathBlur(path)
       }
     },
-    [id, path, onPathBlur],
+    [isFocusable, onPathBlur, path],
   )
 
   const handleFocus = useCallback(
     (event: FocusEvent) => {
-      if (id === 'root') {
+      if (!isFocusable) {
         return
       }
 
@@ -91,7 +97,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         onPathFocus(path)
       }
     },
-    [id, path, onPathFocus],
+    [isFocusable, onPathFocus, path],
   )
 
   const renderObjectMembers = useCallback(
