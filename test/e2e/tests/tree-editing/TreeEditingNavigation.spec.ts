@@ -40,6 +40,16 @@ test.describe('navigation - tree sidebar', () => {
       } */
   })
 
+  test.afterEach(async ({page, browserName}) => {
+    // For now, only test in Chromium due to flakiness in Firefox and WebKit
+    test.skip(browserName !== 'chromium')
+
+    const modal = await page.getByTestId('tree-editing-dialog')
+
+    await page.getByRole('button', {name: 'Done'}).click()
+    await expect(modal).not.toBeVisible()
+  })
+
   // first level array item test
   test(`opening the first item, you should be able to navigate to the second array item`, async ({
     page,
@@ -139,6 +149,12 @@ test.describe('navigation - breadcrumb', () => {
     } */
   })
 
+  test.afterEach(async ({page}) => {
+    const modal = await page.getByTestId('tree-editing-dialog')
+    await page.getByRole('button', {name: 'Done'}).click()
+    await expect(modal).not.toBeVisible()
+  })
+
   // first level array item test
   test(`opening the first item, you should be able to navigate to the second array item`, async ({
     page,
@@ -190,6 +206,7 @@ test.describe('navigation - form', () => {
     test.skip(browserName !== 'chromium')
     // set up an array with two items: Albert, the whale and Lucy, the cat
     await createDraftDocument('/test/content/input-debug;objectsDebug')
+
     await page.waitForSelector('[data-testid="document-panel-scroller"]', {
       state: 'attached',
       timeout: 40000,
@@ -207,21 +224,6 @@ test.describe('navigation - form', () => {
     await modal.getByTestId('add-single-object-button').click()
 
     // Wait for the animation to change form to finish
-    const elementSelector = '[data-testid="tree-editing-dialog-content"]' // element that is animated
-
-    // Wait for opacity to turn 0
-    await page.waitForFunction((selector) => {
-      const element = document.querySelector(selector) as HTMLInputElement
-      return element && getComputedStyle(element).opacity !== '1'
-    }, elementSelector)
-
-    // Wait for opacity to turn 1
-    await page.waitForFunction((selector) => {
-      const element = document.querySelector(selector)
-      return element && getComputedStyle(element).opacity === '1'
-    }, elementSelector)
-
-    // Wait for input not to be albert
     await page.waitForFunction((selector) => {
       const element = document.querySelectorAll(selector)[1] as HTMLInputElement // first input in modal
       return element && element.value !== 'Albert, the whale'
@@ -239,6 +241,16 @@ test.describe('navigation - form', () => {
       Albert, the whale
         - Eliza, the friendly dolphin
     } */
+  })
+
+  test.afterEach(async ({page, browserName}) => {
+    // For now, only test in Chromium due to flakiness in Firefox and WebKit
+    test.skip(browserName !== 'chromium')
+
+    const modal = await page.getByTestId('tree-editing-dialog')
+
+    await page.getByRole('button', {name: 'Done'}).click()
+    await expect(modal).not.toBeVisible()
   })
 
   test(`opening the first item, when you have an array with two objects in an object you should be able to navigate on the form side`, async ({
