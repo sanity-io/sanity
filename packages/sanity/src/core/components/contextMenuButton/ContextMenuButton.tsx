@@ -4,7 +4,10 @@ import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {Button, type ButtonProps} from '../../../ui-components'
 import {useTranslation} from '../..'
 
-type ContextMenuButtonProps = Pick<ButtonProps, 'mode' | 'size' | 'tone' | 'tooltipProps'>
+type ContextMenuButtonProps = Pick<
+  ButtonProps,
+  'mode' | 'selected' | 'size' | 'tone' | 'tooltipProps'
+>
 
 /**
  * Simple context menu button (with horizontal ellipsis icon) with shared localization.
