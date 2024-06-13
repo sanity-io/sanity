@@ -201,6 +201,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
 
   const handleClearField = useCallback(() => {
     onChange([unset(['asset']), unset(['crop']), unset(['hotspot'])])
+
+    previewElementRef.current.el = null
+    previewElementRef.current.height = 0
   }, [onChange])
   const handleRemoveButtonClick = useCallback(() => {
     // When removing the image, we should also remove any crop and hotspot
@@ -221,6 +224,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
       .map((key) => unset([key]))
 
     onChange(isEmpty && !valueIsArrayElement() ? unset() : removeKeys)
+
+    previewElementRef.current.el = null
+    previewElementRef.current.height = 0
   }, [onChange, value, valueIsArrayElement])
   const handleOpenDialog = useCallback(() => {
     onPathFocus(['hotspot'])
@@ -304,6 +310,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
         handleOpenDialog={handleOpenDialog}
         hoveringFiles={hoveringFiles}
         imageUrlBuilder={imageUrlBuilder}
+        // if there previously was a preview image, preserve the height to avoid jumps
+        initialHeight={previewElementRef.current.height}
         readOnly={readOnly}
         resolveUploader={resolveUploader}
         schemaType={schemaType}
@@ -396,7 +404,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
           uploadState={uploadState}
           onCancel={isUploading ? handleCancelUpload : undefined}
           onStale={handleStaleUpload}
-          // if there's a preview image already, preserve the height to avoid jumps
+          // if there previously was a preview image, preserve the height to avoid jumps
           height={previewElementRef.current.height}
         />
       )

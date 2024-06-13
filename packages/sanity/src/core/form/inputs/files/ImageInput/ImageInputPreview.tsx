@@ -14,6 +14,7 @@ export const ImageInputPreview = memo(function ImageInputPreviewComponent(props:
   handleOpenDialog: () => void
   hoveringFiles: FileInfo[]
   imageUrlBuilder: ImageUrlBuilder
+  initialHeight: number | undefined
   readOnly: boolean | undefined
   resolveUploader: UploaderResolver
   schemaType: ImageSchemaType
@@ -24,6 +25,7 @@ export const ImageInputPreview = memo(function ImageInputPreviewComponent(props:
     handleOpenDialog,
     hoveringFiles,
     imageUrlBuilder,
+    initialHeight,
     readOnly,
     resolveUploader,
     schemaType,
@@ -41,6 +43,7 @@ export const ImageInputPreview = memo(function ImageInputPreviewComponent(props:
       handleOpenDialog={handleOpenDialog}
       hoveringFiles={hoveringFiles}
       imageUrlBuilder={imageUrlBuilder}
+      initialHeight={initialHeight}
       readOnly={readOnly}
       resolveUploader={resolveUploader}
       schemaType={schemaType}
@@ -54,6 +57,7 @@ function RenderImageInputPreview(props: {
   handleOpenDialog: () => void
   hoveringFiles: FileInfo[]
   imageUrlBuilder: ImageUrlBuilder
+  initialHeight: number | undefined
   readOnly: boolean | undefined
   resolveUploader: UploaderResolver
   schemaType: ImageSchemaType
@@ -64,6 +68,7 @@ function RenderImageInputPreview(props: {
     handleOpenDialog,
     hoveringFiles,
     imageUrlBuilder,
+    initialHeight,
     readOnly,
     resolveUploader,
     schemaType,
@@ -86,12 +91,13 @@ function RenderImageInputPreview(props: {
   )
   return (
     <ImagePreview
-      onDoubleClick={handleOpenDialog}
+      alt={t('inputs.image.preview-uploaded-image')}
       drag={!value?._upload && hoveringFiles.length > 0}
+      initialHeight={initialHeight}
       isRejected={rejectedFilesCount > 0 || !directUploads}
+      onDoubleClick={handleOpenDialog}
       readOnly={readOnly}
       src={imageUrl}
-      alt={t('inputs.image.preview-uploaded-image')}
     />
   )
 }
