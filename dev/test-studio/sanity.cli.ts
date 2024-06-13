@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import react from '@vitejs/plugin-react'
+// import react from '@vitejs/plugin-react'
 import {defineCliConfig} from 'sanity/cli'
 import {type UserConfig} from 'vite'
 
@@ -21,10 +21,10 @@ export default defineCliConfig({
         ...viteConfig.resolve,
         conditions: ['react-compiler', ...(viteConfig.resolve?.conditions || [])],
       },
-      plugins: [
-        react({babel: {plugins: [['babel-plugin-react-compiler', {}]]}}),
-        ...(viteConfig.plugins || []),
-      ],
+      // plugins: [
+      //   react({babel: {plugins: [['babel-plugin-react-compiler', {}]]}}),
+      //   ...(viteConfig.plugins || []),
+      // ],
       optimizeDeps: {
         ...viteConfig.optimizeDeps,
         include: ['react/jsx-runtime'],

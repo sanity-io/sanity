@@ -1612,7 +1612,7 @@ importers:
         specifier: ^0.0.6
         version: 0.0.6
       '@vitejs/plugin-react':
-        specifier: ^4.2.1
+        specifier: ^4.3.1
         version: 4.3.1(vite@4.5.3)
       archiver:
         specifier: ^7.0.0
@@ -1623,6 +1623,9 @@ importers:
       async-mutex:
         specifier: ^0.4.1
         version: 0.4.1
+      babel-plugin-react-compiler:
+        specifier: 0.0.0-experimental-938cd9a-20240601
+        version: 0.0.0-experimental-938cd9a-20240601
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
