@@ -1,29 +1,20 @@
 import {type BooleanSchemaType} from '@sanity/types'
 import {Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
-import {type CellContext} from '@tanstack/react-table'
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {type DocumentSheetTableRow} from '../types'
+import {type CellInputType} from '../SheetListCell'
 
 const Root = styled(Card)`
   width: 100%;
 `
 
 export function BooleanCellInput(
-  props: CellContext<DocumentSheetTableRow, unknown> & {
-    fieldType: BooleanSchemaType
+  props: CellInputType<BooleanSchemaType> & {
     readOnly?: boolean
   },
 ) {
-  const {
-    cellValue,
-    fieldType,
-    readOnly = false,
-    getOnMouseDownHandler,
-    setCellValue,
-    handlePatchField,
-  } = props
+  const {cellValue, fieldType, readOnly = false, setCellValue, handlePatchField} = props
   const layout = fieldType?.options?.layout || 'switch'
 
   const indeterminate = typeof cellValue !== 'boolean'
@@ -33,25 +24,17 @@ export function BooleanCellInput(
 
   const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
 
-  const handleOnMouseDown = useMemo(() => getOnMouseDownHandler(false), [getOnMouseDownHandler])
-
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.checked
       setCellValue(value)
-      handlePatchField?.(value)
+      handlePatchField(value)
     },
     [setCellValue, handlePatchField],
   )
 
   return (
-    <Root
-      data-testid="boolean-input"
-      tone={tone}
-      onMouseDown={handleOnMouseDown}
-      height="fill"
-      width="full"
-    >
+    <Root data-testid="boolean-input" tone={tone} height="fill" width="full">
       <Flex height="fill" justify="center" align="center">
         <LayoutSpecificInput
           label={fieldType?.title}

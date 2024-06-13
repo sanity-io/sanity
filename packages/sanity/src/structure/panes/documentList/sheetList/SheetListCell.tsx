@@ -5,17 +5,25 @@ import {
   type NumberSchemaType,
   type StringSchemaType,
 } from '@sanity/types'
-import {type Cell, flexRender} from '@tanstack/react-table'
+import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {useDocumentSheetListContext} from './DocumentSheetListProvider'
-import {type DocumentSheetTableRow} from './types'
+import {type CellState, useDocumentSheetListContext} from './DocumentSheetListProvider'
+import {type DocumentSheetListSchemaTypes, type DocumentSheetTableRow} from './types'
+import {useOnMouseDownCell} from './useOnMouseDownCell'
 import {getBorderWidth} from './utils'
+
+export type CellInputType<TFieldType = DocumentSheetListSchemaTypes> = CellContext<
+  DocumentSheetTableRow,
+  unknown
+> & {
+  fieldType: TFieldType
+}
 
 interface DataCellProps {
   width: number
-  $cellState: 'focused' | 'selectedAnchor' | 'selectedRange' | null
+  $cellState: CellState
   $rightBorderWidth: number
 }
 
@@ -80,9 +88,22 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     getStateByCellId,
     submitFocusedCell,
   } = useDocumentSheetListContext()
-
+  const setCellAsSelectedAnchor = useCallback(() => {
+    setSelectedAnchorCell(column.id, row.index)
+  }, [column.id, row.index, setSelectedAnchorCell])
   const cellState = getStateByCellId(cell.column.id, cell.row.index)
   const {patchDocument, unsetDocumentValue} = cellContext.table.options.meta || {}
+
+  const handleProgrammaticFocus = () => {
+    fieldRef.current?.focus()
+    if (fieldRef.current instanceof HTMLInputElement) {
+      fieldRef.current.select()
+    }
+  }
+  const {setShouldPreventDefaultMouseDown, handleOnMouseDown} = useOnMouseDownCell(
+    handleProgrammaticFocus,
+    setCellAsSelectedAnchor,
+  )
 
   const handlePatchField = useCallback(
     (value: any) => {
@@ -111,7 +132,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
             setCellValue(providedValueRef.current as string)
 
             // wait for state to settle before blurring
-            setTimeout(() => setSelectedAnchorCell(column.id, row.index))
+            setTimeout(() => setCellAsSelectedAnchor())
           }
           break
         }
@@ -132,26 +153,18 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     [
       cellState,
       column.id,
-      row.index,
       row.original.__metadata.idPair.publishedId,
-      setSelectedAnchorCell,
+      setCellAsSelectedAnchor,
       submitFocusedCell,
       unsetDocumentValue,
     ],
   )
 
-  const handleProgrammaticFocus = () => {
-    fieldRef.current?.focus()
-    if (fieldRef.current instanceof HTMLInputElement) {
-      fieldRef.current.select()
-    }
-  }
-
   const handleOnFocus = useCallback(() => {
     // reselect in cases where focus achieved without initial mousedown
-    setSelectedAnchorCell(column.id, row.index)
+    setCellAsSelectedAnchor()
     focusAnchorCell()
-  }, [column.id, focusAnchorCell, row.index, setSelectedAnchorCell])
+  }, [focusAnchorCell, setCellAsSelectedAnchor])
 
   const handleOnBlur = useCallback(() => {
     if (cellValue !== providedValueRef.current) {
@@ -159,19 +172,6 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     }
     resetFocusSelection()
   }, [handlePatchField, cellValue, resetFocusSelection])
-
-  // child field inputs can control whether default behavior is stopped or preserved
-  const getOnMouseDownHandler = useCallback(
-    (suppressDefaultBehavior: boolean) => (event: React.MouseEvent<HTMLElement>) => {
-      if (suppressDefaultBehavior && event.detail === 2) {
-        handleProgrammaticFocus()
-      } else {
-        if (suppressDefaultBehavior) event.preventDefault()
-        setSelectedAnchorCell(column.id, row.index)
-      }
-    },
-    [column.id, row.index, setSelectedAnchorCell],
-  )
 
   const handlePaste = useCallback(
     (event: ClipboardEvent) => {
@@ -234,6 +234,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     'aria-selected': !!cellState,
     'id': cellId,
     'data-testid': cellId,
+    'onMouseDown': handleOnMouseDown,
   }
 
   const inputProps = {
@@ -241,7 +242,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     handlePatchField,
     cellValue,
     setCellValue,
-    getOnMouseDownHandler,
+    setShouldPreventDefaultMouseDown,
     fieldRef,
     'data-testid': `${cellId}-input-field`,
   }

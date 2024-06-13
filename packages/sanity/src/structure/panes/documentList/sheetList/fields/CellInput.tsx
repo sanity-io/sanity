@@ -1,17 +1,17 @@
+import {type NumberSchemaType, type StringSchemaType} from '@sanity/types'
 import {TextInput, type TextInputType} from '@sanity/ui'
-import {type CellContext} from '@tanstack/react-table'
-import {useCallback, useMemo} from 'react'
+import {useCallback, useEffect} from 'react'
 
-import {type DocumentSheetTableRow} from '../types'
+import {type CellInputType} from '../SheetListCell'
 
 export const CellInput = ({
   cellValue,
   setCellValue,
   fieldRef,
   column,
-  getOnMouseDownHandler,
+  setShouldPreventDefaultMouseDown,
   'data-testid': dataTestId,
-}: CellContext<DocumentSheetTableRow, unknown>) => {
+}: CellInputType<StringSchemaType | NumberSchemaType>) => {
   const {fieldType} = column.columnDef.meta || {}
   const value = cellValue as string
   const handleOnChange = useCallback(
@@ -21,10 +21,9 @@ export const CellInput = ({
     [setCellValue],
   )
 
-  const handleOnMouseDown = useMemo(
-    () => getOnMouseDownHandler(fieldType?.name !== 'number'),
-    [fieldType?.name, getOnMouseDownHandler],
-  )
+  useEffect(() => {
+    if (fieldType?.name !== 'number') setShouldPreventDefaultMouseDown(true)
+  }, [fieldType?.name, setShouldPreventDefaultMouseDown])
 
   const inputType = (fieldType?.name !== 'string' && (fieldType?.name as TextInputType)) || 'text'
 
@@ -34,7 +33,6 @@ export const CellInput = ({
       radius={0}
       border={false}
       type={inputType}
-      onMouseDown={handleOnMouseDown}
       ref={fieldRef}
       __unstable_disableFocusRing
       style={{

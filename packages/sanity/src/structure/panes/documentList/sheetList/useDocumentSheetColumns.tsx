@@ -19,6 +19,7 @@ import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {PreviewCell} from './DocumentSheetPreviewCell'
 import {BooleanCellInput} from './fields/BooleanCellInput'
 import {CellInput} from './fields/CellInput'
+import {DropdownCellInput, shouldDropdownRender} from './fields/DropdownCellInput'
 import {type DocumentSheetTableRow} from './types'
 
 export const VISIBLE_COLUMN_LIMIT = 5
@@ -46,15 +47,10 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
           },
           cell: (info) => {
             if (isNumberSchemaType(fieldType) || isStringSchemaType(fieldType)) {
-              if (
-                fieldType.options?.list ||
-                fieldType.options?.layout === 'radio' ||
-                fieldType.options?.layout === 'dropdown'
-              )
-                // eslint-disable-next-line i18next/no-literal-string
-                return <div>Select</div>
+              if (shouldDropdownRender(fieldType))
+                return <DropdownCellInput {...info} fieldType={fieldType} />
 
-              return <CellInput {...info} />
+              return <CellInput {...info} fieldType={fieldType} />
             }
 
             if (isBooleanSchemaType(fieldType)) {

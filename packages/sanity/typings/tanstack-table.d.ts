@@ -1,4 +1,3 @@
-import {type BooleanSchemaType, type NumberSchemaType, type StringSchemaType} from '@sanity/types'
 import {type RowData} from '@tanstack/react-table'
 
 import {type BaseStructureToolPaneProps} from '../src/structure/panes/types'
@@ -18,20 +17,18 @@ declare module '@tanstack/react-table' {
      */
     customHeader?: boolean
     borderWidth?: number
-    fieldType?: StringSchemaType | NumberSchemaType | BooleanSchemaType
+    fieldType?: DocumentSheetListSchemaTypes
     disableCellFocus?: boolean
   }
   interface CellContext<TData extends RowData, TValue> {
-    'cellValue': number | string | boolean
+    'cellValue': DocumentSheetListValueTypes
     /**
      * Changes the cell value but not the underlying data, the data will be changed when the user blurs the cell.
      * For immediate change use `handlePatchField` from cell context
      */
-    'setCellValue': (value: number | string | boolean) => void
+    'setCellValue': (value: DocumentSheetListValueTypes) => void
     'fieldRef': MutableRefObject<HTMLElement>
-    'getOnMouseDownHandler': (
-      suppressDefaultBehavior: boolean,
-    ) => (event: React.MouseEvent<HTMLElement>) => void
+    'setShouldPreventDefaultMouseDown': (shouldSuppressDefaultMouseDown: boolean) => void
     'data-testid': string
     /**
      * Immediate change of the cell value, doing a server patch action.
