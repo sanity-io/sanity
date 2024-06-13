@@ -3,6 +3,9 @@
   "include": ["./src"],
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "paths": {
+      "styled-components": ["./node_modules/styled-components"],
+    }
   }
 }
