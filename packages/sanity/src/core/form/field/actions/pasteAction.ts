@@ -6,7 +6,7 @@ import {useCopyPasteAction} from '../../../studio/copyPaste/useCopyPasteAction'
 import {defineActionItem} from './define'
 
 export const pasteAction = defineDocumentFieldAction({
-  name: 'test/paste',
+  name: 'pasteField',
   useAction({path}) {
     const {onPaste} = useCopyPasteAction()
     const onAction = useCallback(() => {
