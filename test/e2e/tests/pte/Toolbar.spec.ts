@@ -9,6 +9,12 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
       '/test/content/input-standard;portable-text;pt_allTheBellsAndWhistles',
     )
 
+    // wait for form to be ready
+    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
+      state: 'attached',
+      timeout: 40000,
+    })
+
     pteInput = page.getByTestId('field-content')
 
     // set up the portable text editor
@@ -17,8 +23,13 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
   })
 
   test('on a simple editor', async ({page}) => {
-    await pteInput.getByTestId('block-style-select').click({timeout: 15000})
+    await pteInput.getByTestId('block-style-select').click()
 
+    // wait for popover to attach
+    await page.waitForSelector('[data-ui="MenuButton__popover"]', {
+      state: 'attached',
+      timeout: 40000,
+    })
     expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
 
