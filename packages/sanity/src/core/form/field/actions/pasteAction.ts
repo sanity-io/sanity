@@ -1,7 +1,8 @@
 import {ClipboardIcon} from '@sanity/icons'
 import {useCallback} from 'react'
-import {defineDocumentFieldAction, useCopyPasteAction} from 'sanity'
 
+import {defineDocumentFieldAction} from '../../../config/document/fieldActions/define'
+import {useCopyPasteAction} from '../../../studio/copyPaste/useCopyPasteAction'
 import {defineActionItem} from './define'
 
 export const pasteAction = defineDocumentFieldAction({
