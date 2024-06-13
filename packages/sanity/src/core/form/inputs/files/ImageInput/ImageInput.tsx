@@ -3,14 +3,12 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/jsx-handler-names */
 import {isImageSource} from '@sanity/asset-utils'
-import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetFromSource, type AssetSource, type Path, type UploadState} from '@sanity/types'
-import {Menu, Stack, type ToastParams} from '@sanity/ui'
-import {get, startCase} from 'lodash'
+import {Stack, type ToastParams} from '@sanity/ui'
+import {get} from 'lodash'
 import {type FocusEvent, PureComponent, type ReactNode} from 'react'
 import {type Subscription} from 'rxjs'
 
-import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
 import {ImperativeToast} from '../../../../components'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
@@ -24,10 +22,11 @@ import {
 import {type InputProps} from '../../../types'
 import {handleSelectAssetFromSource as _handleSelectAssetFromSource} from '../common/assetSource'
 import {UploadProgress} from '../common/UploadProgress'
-import {ASSET_FIELD_PATH, ASSET_IMAGE_MENU_POPOVER} from './constants'
+import {ASSET_FIELD_PATH} from './constants'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
 import {ImageInputAssetSource} from './ImageInputAssetSource'
+import {ImageInputBrowser} from './ImageInputBrowser'
 import {ImageInputHotspotInput} from './ImageInputHotspotInput'
 import {ImageInputPreview} from './ImageInputPreview'
 import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
@@ -400,62 +399,16 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
   }
 
   renderBrowser() {
-    const {assetSources, readOnly, directUploads, id, t} = this.props
-
-    if (assetSources && assetSources.length === 0) return null
-
-    if (assetSources && assetSources.length > 1 && !readOnly && directUploads) {
-      return (
-        <MenuButton
-          id={`${id}_assetImageButton`}
-          ref={this.setMenuButtonElement}
-          button={
-            <Button
-              data-testid="file-input-multi-browse-button"
-              icon={SearchIcon}
-              iconRight={ChevronDownIcon}
-              mode="bleed"
-              text={t('inputs.image.browse-menu.text')}
-            />
-          }
-          menu={
-            <Menu>
-              {assetSources.map((assetSource) => {
-                return (
-                  <MenuItem
-                    key={assetSource.name}
-                    text={
-                      (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-                      startCase(assetSource.name)
-                    }
-                    onClick={() => {
-                      this.setState({isMenuOpen: false})
-                      this.handleSelectImageFromAssetSource(assetSource)
-                    }}
-                    icon={assetSource.icon || ImageIcon}
-                    disabled={readOnly}
-                    data-testid={`file-input-browse-button-${assetSource.name}`}
-                  />
-                )
-              })}
-            </Menu>
-          }
-          popover={ASSET_IMAGE_MENU_POPOVER}
-        />
-      )
-    }
+    const {assetSources, readOnly, directUploads, id} = this.props
 
     return (
-      <Button
-        text={t('inputs.image.browse-menu.text')}
-        icon={SearchIcon}
-        mode="bleed"
-        onClick={() => {
-          this.setState({isMenuOpen: false})
-          this.handleSelectImageFromAssetSource(assetSources[0])
-        }}
-        data-testid="file-input-browse-button"
-        disabled={readOnly}
+      <ImageInputBrowser
+        assetSources={assetSources}
+        readOnly={readOnly}
+        directUploads={directUploads}
+        id={id}
+        setMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
+        handleSelectImageFromAssetSource={this.handleSelectImageFromAssetSource.bind(this)}
       />
     )
   }

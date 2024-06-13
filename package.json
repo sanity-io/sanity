@@ -181,8 +181,7 @@
     },
     "overrides": {
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
-      "@typescript-eslint/parser": "$@typescript-eslint/parser",
-      "@sanity/ui": "2.3.4-canary.0"
+      "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }
   },
   "isSanityMonorepo": true
