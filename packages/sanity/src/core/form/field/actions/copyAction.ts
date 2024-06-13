@@ -1,13 +1,11 @@
 import {CopyIcon} from '@sanity/icons'
+import {type Path} from '@sanity/types'
 import {useCallback} from 'react'
-import {
-  defineDocumentFieldAction,
-  type FormDocumentValue,
-  type Path,
-  useCopyPasteAction,
-  useGetFormValue,
-} from 'sanity'
 
+import {defineDocumentFieldAction} from '../../../config/document/fieldActions/define'
+import {useCopyPasteAction} from '../../../studio/copyPaste/useCopyPasteAction'
+import {useGetFormValue} from '../../contexts/GetFormValue'
+import {type FormDocumentValue} from '../../types/formDocumentValue'
 import {defineActionItem} from './define'
 
 export interface CopyActionResult {
