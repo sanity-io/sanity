@@ -1,7 +1,7 @@
 import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
-import {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
@@ -22,7 +22,7 @@ import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {CellLayout} from '../../layouts/CellLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
-import {InsertMenuGroups} from '../InsertMenuGroups'
+import {useInsertMenuMenuItems} from '../InsertMenuMenuItems'
 
 type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
 
@@ -134,33 +134,55 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const hasErrors = childValidation.some((v) => v.level === 'error')
   const hasWarnings = childValidation.some((v) => v.level === 'warning')
+  const [contextMenuButtonElement, setContextMenuButtonElement] =
+    useState<HTMLButtonElement | null>(null)
+  const {insertBefore, insertAfter} = useInsertMenuMenuItems({
+    schemaTypes: insertableTypes,
+    insertMenuOptions: parentSchemaType.options?.insertMenu,
+    onInsert: handleInsert,
+    referenceElement: contextMenuButtonElement,
+  })
 
   const menu = useMemo(
     () =>
       readOnly ? null : (
-        <MenuButton
-          button={<ContextMenuButton />}
-          id={`${props.inputId}-menuButton`}
-          menu={
-            <Menu>
-              <MenuItem
-                text={t('inputs.array.action.remove')}
-                tone="critical"
-                icon={TrashIcon}
-                onClick={onRemove}
+        <>
+          <MenuButton
+            ref={setContextMenuButtonElement}
+            onOpen={() => {
+              insertBefore.send({type: 'close'})
+              insertAfter.send({type: 'close'})
+            }}
+            button={
+              <ContextMenuButton
+                selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
               />
-              <MenuItem
-                text={t('inputs.array.action.duplicate')}
-                icon={DuplicateIcon}
-                onClick={handleDuplicate}
-              />
-              <InsertMenuGroups types={insertableTypes} onInsert={handleInsert} />
-            </Menu>
-          }
-          popover={MENU_POPOVER_PROPS}
-        />
+            }
+            id={`${props.inputId}-menuButton`}
+            menu={
+              <Menu>
+                <MenuItem
+                  text={t('inputs.array.action.remove')}
+                  tone="critical"
+                  icon={TrashIcon}
+                  onClick={onRemove}
+                />
+                <MenuItem
+                  text={t('inputs.array.action.duplicate')}
+                  icon={DuplicateIcon}
+                  onClick={handleDuplicate}
+                />
+                {insertBefore.menuItem}
+                {insertAfter.menuItem}
+              </Menu>
+            }
+            popover={MENU_POPOVER_PROPS}
+          />
+          {insertBefore.popover}
+          {insertAfter.popover}
+        </>
       ),
-    [handleDuplicate, handleInsert, onRemove, insertableTypes, props.inputId, readOnly, t],
+    [insertBefore, insertAfter, handleDuplicate, onRemove, props.inputId, readOnly, t],
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
