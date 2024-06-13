@@ -77,6 +77,7 @@ const ItemFlex = styled(Flex)(({theme}) => {
     [data-ui='NavigateButton'] {
       transition: inherit;
       background-color: inherit;
+      box-shadow: unset;
     }
 
     @media (hover: hover) {
