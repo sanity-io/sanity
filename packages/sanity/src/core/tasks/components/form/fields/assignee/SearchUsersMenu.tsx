@@ -2,8 +2,10 @@ import {UserIcon} from '@sanity/icons'
 import {Box, Container, MenuDivider, Text, TextInput} from '@sanity/ui'
 import {deburr} from 'lodash'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {LoadingBlock, type UserWithPermission, useTranslation} from 'sanity'
 
+import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
+import {type UserWithPermission} from '../../../../../hooks'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {tasksLocaleNamespace} from '../../../../i18n'
 
 const IGNORED_KEYS = [

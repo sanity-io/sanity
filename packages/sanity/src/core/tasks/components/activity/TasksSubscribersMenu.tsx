@@ -12,10 +12,11 @@ import {
 } from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEvent, useCallback, useMemo, useState} from 'react'
-import {type UserWithPermission, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../ui-components'
+import {type UserWithPermission} from '../../../hooks'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useMentionUser} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {SearchUsersMenu} from '../form/fields/assignee/SearchUsersMenu'
