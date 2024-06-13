@@ -137,11 +137,13 @@ function regionsWithComputedRects(
   regions: ReportedPresenceData[],
   parent: HTMLElement,
 ): ReportedRegionWithRect<FieldPresenceData>[] {
-  return regions.map(([id, region]) => ({
-    ...region,
-    id,
-    rect: getRelativeRect(region.element, parent),
-  }))
+  return return regions
+    .filter(([, region]) => region.element)
+    .map(([id, region]) => ({
+      ...region,
+      id,
+      rect: getRelativeRect(region.element, parent),
+    })
 }
 
 type Props = {margins: Margins; children: ReactNode}
