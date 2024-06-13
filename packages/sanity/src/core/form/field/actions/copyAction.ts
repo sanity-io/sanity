@@ -20,7 +20,7 @@ export interface CopyActionResult {
 }
 
 export const copyAction = defineDocumentFieldAction({
-  name: 'test/copy',
+  name: 'copyField',
   useAction({path}) {
     const getFormValue = useGetFormValue()
     const {onCopy} = useCopyPasteAction()
