@@ -180,6 +180,10 @@
       ]
     },
     "overrides": {
+      "@sanity/ui": "2.3.6-canary.0",
+      "react": "19.0.0-rc-dfd30974ab-20240613",
+      "react-dom": "19.0.0-rc-dfd30974ab-20240613",
+      "react-is": "19.0.0-rc-dfd30974ab-20240613",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }
