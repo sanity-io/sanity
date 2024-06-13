@@ -7,8 +7,6 @@ import {muxInput} from 'sanity-plugin-mux-input'
 import {imageAssetSource} from 'sanity-test-studio/assetSources'
 import {resolveDocumentActions as documentActions} from 'sanity-test-studio/documentActions'
 import {assistFieldActionGroup} from 'sanity-test-studio/fieldActions/assistFieldActionGroup'
-import {copyAction} from 'sanity-test-studio/fieldActions/copyAction'
-import {pasteAction} from 'sanity-test-studio/fieldActions/pasteAction'
 import {resolveInitialValueTemplates} from 'sanity-test-studio/initialValueTemplates'
 import {customInspector} from 'sanity-test-studio/inspectors/custom'
 import {languageFilter} from 'sanity-test-studio/plugins/language-filter'
@@ -41,7 +39,7 @@ const sharedSettings = definePlugin({
     },
     unstable_fieldActions: (prev, ctx) => {
       if (['fieldActionsTest', 'stringsTest'].includes(ctx.documentType)) {
-        return [...prev, assistFieldActionGroup, copyAction, pasteAction]
+        return [...prev, assistFieldActionGroup]
       }
 
       return prev
