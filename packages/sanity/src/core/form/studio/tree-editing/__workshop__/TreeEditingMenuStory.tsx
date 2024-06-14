@@ -1,10 +1,10 @@
 import {Schema} from '@sanity/schema'
 import {Container} from '@sanity/ui'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {type Path} from 'sanity'
 
 import {TreeEditingMenu} from '../components'
-import {type TreeEditingMenuItem} from '../types'
+import {buildTreeEditingState, type TreeEditingState} from '../utils'
 
 const schema = Schema.compile({
   name: 'default',
@@ -15,14 +15,56 @@ const schema = Schema.compile({
       type: 'document',
       fields: [
         {
-          type: 'object',
-          name: 'testObject',
-          title: 'Object',
-          fields: [
+          type: 'array',
+          name: 'myArrayOfObjects',
+          title: 'My array of objects',
+          of: [
             {
-              type: 'string',
-              name: 'title',
-              title: 'Title',
+              type: 'object',
+              name: 'myObject',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+                {
+                  type: 'array',
+                  name: 'nestedArray',
+                  title: 'Nested array 1',
+                  of: [
+                    {
+                      type: 'object',
+                      name: 'nestedObject',
+                      fields: [
+                        {
+                          type: 'string',
+                          name: 'title',
+                          title: 'Title',
+                        },
+                        {
+                          type: 'array',
+                          name: 'nestedArray',
+                          title: 'Nested array 2',
+                          of: [
+                            {
+                              type: 'object',
+                              name: 'nestedObject',
+                              fields: [
+                                {
+                                  type: 'string',
+                                  name: 'title',
+                                  title: 'Title',
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
@@ -31,33 +73,69 @@ const schema = Schema.compile({
   ],
 })
 
-function buildStructure(depth: number, start: number): TreeEditingMenuItem[] {
-  function createItem(level: number): TreeEditingMenuItem {
-    const path = Array.from({length: level}, (_, i) => `level-${i + 1 + start}`)
-    const children = level < depth ? [createItem(level + 1)] : []
-    const schemaType = schema.get('testDocument').fields[0].type
-    const value = {_key: `level-${level + start}`, title: `Level ${level + start}`}
+const DOCUMENT_VALUE = {
+  _id: 'test',
+  _type: 'testDocument',
+  myArrayOfObjects: [
+    {
+      _key: 'item-1',
+      _type: 'myObject',
+      title: 'Item 1',
+      nestedArray: [
+        {_key: 'nested-1-1', _type: 'nestedObject', title: 'Nested 1.1'},
+        {_key: 'nested-1-2', _type: 'nestedObject', title: 'Nested 1.2'},
+        {
+          _key: 'nested-1-3',
+          _type: 'nestedObject',
+          title: 'Nested 1.3',
 
-    return {path, children, schemaType, value}
-  }
-
-  return [createItem(1)]
+          nestedArray: [
+            {
+              _key: 'nested-1-3-1',
+              _type: 'nestedObject',
+              title: 'Nested 1.3.1',
+            },
+            {
+              _key: 'nested-1-3-2',
+              _type: 'nestedObject',
+              title: 'Nested 1.3.2',
+            },
+          ],
+        },
+      ],
+    },
+    {_key: 'item-2', _type: 'myObject', title: 'Item 2'},
+    {_key: 'item-3', _type: 'myObject', title: 'Item 3'},
+    {
+      _key: 'item-4',
+      _type: 'myObject',
+      title: 'Item 4',
+      nestedArray: [
+        {_key: 'nested-4-1', _type: 'nestedObject', title: 'Nested 4.1'},
+        {_key: 'nested-4-2', _type: 'nestedObject', title: 'Nested 4.2'},
+      ],
+    },
+  ],
 }
 
-const ITEMS: TreeEditingMenuItem[] = [
-  ...buildStructure(5, 0),
-  ...buildStructure(5, 1),
-  ...buildStructure(0, 2),
-  ...buildStructure(10, 3),
-  ...buildStructure(5, 4),
-]
-
 export default function TreeEditingMenuStory(): JSX.Element {
-  const [selectedPath, setSelectedPath] = useState<Path | null>(null)
+  const [selectedPath, setSelectedPath] = useState<Path>(['myArrayOfObjects', {_key: 'first-item'}])
+
+  const {menuItems} = useMemo((): TreeEditingState => {
+    return buildTreeEditingState({
+      schemaType: schema.get('testDocument'),
+      documentValue: DOCUMENT_VALUE,
+      openPath: selectedPath,
+    })
+  }, [selectedPath])
 
   return (
     <Container width={0} padding={3} sizing="border">
-      <TreeEditingMenu items={ITEMS} onPathSelect={setSelectedPath} selectedPath={selectedPath} />
+      <TreeEditingMenu
+        items={menuItems}
+        onPathSelect={setSelectedPath}
+        selectedPath={selectedPath}
+      />
     </Container>
   )
 }

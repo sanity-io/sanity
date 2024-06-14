@@ -35,10 +35,5 @@ export default defineScope({
       title: 'TreeEditingBreadcrumbsMenuButtonStory',
       component: lazy(() => import('./TreeEditingBreadcrumbsMenuButtonStory')),
     },
-    {
-      name: 'tree-menu-items-build-debug',
-      title: 'Tree menu items build debug',
-      component: lazy(() => import('./TreeMenuItemsBuildDebugStory')),
-    },
   ],
 })

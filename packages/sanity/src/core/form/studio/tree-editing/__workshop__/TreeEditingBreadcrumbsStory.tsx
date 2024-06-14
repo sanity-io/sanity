@@ -1,10 +1,10 @@
 import {Schema} from '@sanity/schema'
 import {Card, Flex} from '@sanity/ui'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {type Path} from 'sanity'
 
 import {TreeEditingBreadcrumbs} from '../components'
-import {type TreeEditingBreadcrumb} from '../types'
+import {buildTreeEditingState, type TreeEditingState} from '../utils'
 
 const schema = Schema.compile({
   name: 'default',
@@ -15,14 +15,56 @@ const schema = Schema.compile({
       type: 'document',
       fields: [
         {
-          type: 'object',
-          name: 'testObject',
-          title: 'Object',
-          fields: [
+          type: 'array',
+          name: 'myArrayOfObjects',
+          title: 'My array of objects',
+          of: [
             {
-              type: 'string',
-              name: 'title',
-              title: 'Title',
+              type: 'object',
+              name: 'myObject',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+                {
+                  type: 'array',
+                  name: 'nestedArray',
+                  title: 'Nested array 1',
+                  of: [
+                    {
+                      type: 'object',
+                      name: 'nestedObject',
+                      fields: [
+                        {
+                          type: 'string',
+                          name: 'title',
+                          title: 'Title',
+                        },
+                        {
+                          type: 'array',
+                          name: 'nestedArray',
+                          title: 'Nested array 2',
+                          of: [
+                            {
+                              type: 'object',
+                              name: 'nestedObject',
+                              fields: [
+                                {
+                                  type: 'string',
+                                  name: 'title',
+                                  title: 'Title',
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
@@ -31,67 +73,67 @@ const schema = Schema.compile({
   ],
 })
 
-const ITEMS: TreeEditingBreadcrumb[] = [
-  {
-    path: ['first-item', 'first-child'],
-    schemaType: schema.get('testDocument').fields[0].type,
-    value: {_key: 'first-item', title: 'First item'},
-    parentSchemaType: schema.get('testDocument'),
-    children: [
-      {
-        path: ['first-item', 'first-child'],
-        schemaType: schema.get('testDocument').fields[0].type,
-        value: {_key: 'first-item', title: 'First item'},
-        parentSchemaType: schema.get('testDocument'),
-      },
-      {
-        path: ['second-item', 'first-child', 'first-grandchild'],
-        schemaType: schema.get('testDocument').fields[0].type,
-        value: {_key: 'first-grandchild', title: 'First grandchild'},
-        parentSchemaType: schema.get('testDocument'),
-      },
-      {
-        path: ['second-item', 'first-child', 'second-grandchild'],
-        schemaType: schema.get('testDocument').fields[0].type,
-        value: {_key: 'second-grandchild', title: 'Second grandchild'},
-        parentSchemaType: schema.get('testDocument'),
-      },
-    ],
-  },
-  {
-    path: ['second-item'],
-    schemaType: schema.get('testDocument').fields[0].type,
-    value: {_key: 'second-item', title: 'Second item'},
-    parentSchemaType: schema.get('testDocument'),
-  },
-  {
-    path: ['third-item'],
-    schemaType: schema.get('testDocument').fields[0].type,
-    value: {_key: 'third-item', title: 'Third item'},
-    parentSchemaType: schema.get('testDocument'),
-  },
-  {
-    path: ['fourth-item'],
-    schemaType: schema.get('testDocument').fields[0].type,
-    value: {_key: 'fourth-item', title: 'Fourth item'},
-    parentSchemaType: schema.get('testDocument'),
-  },
-  {
-    path: ['fifth-item'],
-    schemaType: schema.get('testDocument').fields[0].type,
-    value: {_key: 'fifth-item', title: 'Fifth item'},
-    parentSchemaType: schema.get('testDocument'),
-  },
-]
+const DOCUMENT_VALUE = {
+  _id: 'test',
+  _type: 'testDocument',
+  myArrayOfObjects: [
+    {
+      _key: 'item-1',
+      _type: 'myObject',
+      title: 'Item 1',
+      nestedArray: [
+        {_key: 'nested-1-1', _type: 'nestedObject', title: 'Nested 1.1'},
+        {_key: 'nested-1-2', _type: 'nestedObject', title: 'Nested 1.2'},
+        {
+          _key: 'nested-1-3',
+          _type: 'nestedObject',
+          title: 'Nested 1.3',
+
+          nestedArray: [
+            {
+              _key: 'nested-1-3-1',
+              _type: 'nestedObject',
+              title: 'Nested 1.3.1',
+            },
+            {
+              _key: 'nested-1-3-2',
+              _type: 'nestedObject',
+              title: 'Nested 1.3.2',
+            },
+          ],
+        },
+      ],
+    },
+    {_key: 'item-2', _type: 'myObject', title: 'Item 2'},
+    {_key: 'item-3', _type: 'myObject', title: 'Item 3'},
+    {
+      _key: 'item-4',
+      _type: 'myObject',
+      title: 'Item 4',
+      nestedArray: [
+        {_key: 'nested-4-1', _type: 'nestedObject', title: 'Nested 4.1'},
+        {_key: 'nested-4-2', _type: 'nestedObject', title: 'Nested 4.2'},
+      ],
+    },
+  ],
+}
 
 export default function TreeEditingBreadcrumbsStory(): JSX.Element {
-  const [selectedPath, setSelectedPath] = useState<Path>(['second-item'])
+  const [selectedPath, setSelectedPath] = useState<Path>(['myArrayOfObjects', {_key: 'item-1'}])
+
+  const {menuItems} = useMemo((): TreeEditingState => {
+    return buildTreeEditingState({
+      schemaType: schema.get('testDocument'),
+      documentValue: DOCUMENT_VALUE,
+      openPath: selectedPath,
+    })
+  }, [selectedPath])
 
   return (
     <Flex align="center" justify="center" height="fill">
       <Card>
         <TreeEditingBreadcrumbs
-          items={ITEMS}
+          items={menuItems}
           onPathSelect={setSelectedPath}
           selectedPath={selectedPath}
         />

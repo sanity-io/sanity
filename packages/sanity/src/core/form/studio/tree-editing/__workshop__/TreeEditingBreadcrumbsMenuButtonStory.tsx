@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
 import {Schema} from '@sanity/schema'
 import {Flex} from '@sanity/ui'
 import {useState} from 'react'
