@@ -7,14 +7,14 @@ import {
   memo,
   type MouseEvent,
   useCallback,
-  useRef,
+  useMemo,
   useState,
 } from 'react'
 import deepCompare from 'react-fast-compare'
 
 import {EMPTY_ARRAY} from '../util'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
-import {useReporter} from './tracker'
+import {useChangeIndicatorsReporter} from './tracker'
 
 const ChangeBarWrapper = memo(function ChangeBarWrapper(
   props: Omit<ComponentProps<'div'>, 'onChange'> & {
@@ -52,22 +52,31 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     },
     [onMouseLeaveProp],
   )
-  const ref = useRef<HTMLDivElement | null>(null)
-  useReporter(
-    disabled ? null : `field-${PathUtils.toString(path)}`,
+
+  const [element, setElement] = useState<HTMLDivElement | null>(null)
+  const reporterId = useMemo(
+    () => (disabled || !element ? null : `field-${PathUtils.toString(path)}`),
+    [disabled, element, path],
+  )
+  const reporterGetSnapshot = useCallback(
     () => ({
-      element: ref.current!,
+      element,
       path: path,
       isChanged: isChanged,
       hasFocus: hasFocus,
       hasHover: hasHover,
       zIndex: layer.zIndex,
     }),
+    [element, hasFocus, hasHover, isChanged, layer.zIndex, path],
+  )
+  useChangeIndicatorsReporter(
+    reporterId,
+    reporterGetSnapshot,
     deepCompare, // note: deepCompare should be ok here since we're not comparing deep values
   )
 
   return (
-    <div {...restProps} ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <div {...restProps} ref={setElement} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <ElementWithChangeBar
         hasFocus={hasFocus}
         isChanged={isChanged}

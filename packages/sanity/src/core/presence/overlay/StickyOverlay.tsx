@@ -9,7 +9,7 @@ import {
   type ReactNode,
   useCallback,
   useMemo,
-  useRef,
+  useState,
 } from 'react'
 
 import {
@@ -29,7 +29,7 @@ import {
   type ReportedRegionWithRect,
 } from '../types'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
-import {type ReportedPresenceData, useReportedValues} from './tracker'
+import {type ReportedPresenceData, usePresenceReportedValues} from './tracker'
 
 const ITEM_TRANSITION: CSSProperties = {
   transitionProperty: 'transform',
@@ -137,27 +137,27 @@ function regionsWithComputedRects(
   regions: ReportedPresenceData[],
   parent: HTMLElement,
 ): ReportedRegionWithRect<FieldPresenceData>[] {
-  return (
-    regions
-      // Note: This filter shouldn't be necessary, but some developers have experienced regions
-      // being passed to the function with a `null` element.
-      .filter(([, region]) => Boolean(region.element))
-      .map(([id, region]) => ({
-        ...region,
-        id,
-        rect: getRelativeRect(region.element, parent),
-      }))
-  )
+  return regions
+    .map(([id, region]) =>
+      region.element
+        ? {
+            ...region,
+            id,
+            rect: getRelativeRect(region.element, parent),
+          }
+        : null,
+    )
+    .filter(Boolean) as ReportedRegionWithRect<FieldPresenceData>[]
 }
 
 type Props = {margins: Margins; children: ReactNode}
 export function StickyOverlay(props: Props) {
   const {children, margins = DEFAULT_MARGINS} = props
-  const reportedValues = useReportedValues()
-  const ref = useRef<HTMLDivElement | null>(null)
+  const reportedValues = usePresenceReportedValues()
+  const [element, setElement] = useState<HTMLDivElement | null>(null)
   const regions = useMemo(
-    () => (ref.current ? regionsWithComputedRects(reportedValues, ref.current) : EMPTY_ARRAY),
-    [reportedValues],
+    () => (element ? regionsWithComputedRects(reportedValues, element) : EMPTY_ARRAY),
+    [element, reportedValues],
   )
 
   const renderCallback = useCallback(
@@ -213,7 +213,12 @@ export function StickyOverlay(props: Props) {
   )
 
   return (
-    <RegionsWithIntersections ref={ref} margins={margins} regions={regions} render={renderCallback}>
+    <RegionsWithIntersections
+      ref={setElement}
+      margins={margins}
+      regions={regions}
+      render={renderCallback}
+    >
       {children}
     </RegionsWithIntersections>
   )

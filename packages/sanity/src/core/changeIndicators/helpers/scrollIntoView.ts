@@ -3,8 +3,14 @@ import {isScrollable} from './scrollUtils'
 
 const SCROLL_INTO_VIEW_TOP_PADDING = -15
 
-export function scrollIntoView(field: {element: HTMLElement; rect: Rect; bounds: Rect}): void {
+// @TODO refactor this to use `compute-scroll-into-view`
+export function scrollIntoView(field: {
+  element: HTMLElement | null
+  rect: Rect
+  bounds: Rect
+}): void {
   const element = field.element
+  if (!element) return
 
   /*
    * Start at current element and check the parent for a scroll

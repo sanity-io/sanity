@@ -1,6 +1,3 @@
-// Toggle tracking of change indicator DOM positions and connectors overlay rendering
-export const ENABLED = true
-
 export const CORNER_RADIUS = 4
 
 export const INTERACTIVE_STROKE_WIDTH = 16

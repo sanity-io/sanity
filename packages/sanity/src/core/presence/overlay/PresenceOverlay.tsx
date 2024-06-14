@@ -1,8 +1,7 @@
 import {type ReactNode} from 'react'
 
-import {DISABLE_OVERLAY} from '../constants'
 import {StickyOverlay} from './StickyOverlay'
-import {Tracker} from './tracker'
+import {PresenceTracker} from './tracker'
 
 /** @internal */
 export interface PresenceOverlayProps {
@@ -12,18 +11,11 @@ export interface PresenceOverlayProps {
 
 const DEFAULT_MARGINS: [number, number, number, number] = [0, 0, 0, 0]
 
-function OverlayEnabled({children, margins}: PresenceOverlayProps) {
+/** @internal */
+export function PresenceOverlay({children, margins}: PresenceOverlayProps) {
   return (
-    <Tracker>
+    <PresenceTracker>
       <StickyOverlay margins={margins || DEFAULT_MARGINS}>{children}</StickyOverlay>
-    </Tracker>
+    </PresenceTracker>
   )
 }
-
-/** @internal */
-export function OverlayDisabled(props: PresenceOverlayProps) {
-  return props.children as JSX.Element
-}
-
-/** @internal */
-export const PresenceOverlay = DISABLE_OVERLAY ? OverlayDisabled : OverlayEnabled

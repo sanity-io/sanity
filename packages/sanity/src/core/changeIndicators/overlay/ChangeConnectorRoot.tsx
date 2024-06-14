@@ -3,12 +3,11 @@ import {type ReactNode, useMemo, useState} from 'react'
 import {ConnectorContext} from 'sanity/_singletons'
 
 import {ScrollContainer} from '../../components/scroll'
-import {ENABLED} from '../constants'
-import {Tracker} from '../tracker'
+import {ChangeIndicatorsTracker} from '../tracker'
 import {ConnectorsOverlay} from './ConnectorsOverlay'
 
 /** @internal */
-export interface EnabledChangeConnectorRootProps {
+export interface ChangeConnectorRootProps {
   children: ReactNode
   className?: string
   isReviewChangesOpen: boolean
@@ -17,14 +16,14 @@ export interface EnabledChangeConnectorRootProps {
 }
 
 /** @internal */
-export function EnabledChangeConnectorRoot({
+export function ChangeConnectorRoot({
   children,
   className,
   isReviewChangesOpen,
   onOpenReviewChanges,
   onSetFocus,
   ...restProps
-}: EnabledChangeConnectorRootProps) {
+}: ChangeConnectorRootProps) {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>()
 
   const contextValue = useMemo(
@@ -38,31 +37,12 @@ export function EnabledChangeConnectorRoot({
 
   return (
     <ConnectorContext.Provider value={contextValue}>
-      <Tracker>
+      <ChangeIndicatorsTracker>
         <ScrollContainer {...restProps} ref={setRootElement} className={className}>
           {children}
           {rootElement && <ConnectorsOverlay rootElement={rootElement} onSetFocus={onSetFocus} />}
         </ScrollContainer>
-      </Tracker>
+      </ChangeIndicatorsTracker>
     </ConnectorContext.Provider>
   )
 }
-
-/** @internal */
-export interface DisabledChangeConnectorRootProps {
-  className?: string
-  children: ReactNode
-}
-
-/** @internal */
-export function DisabledChangeConnectorRoot({
-  children,
-  className,
-}: DisabledChangeConnectorRootProps) {
-  return <ScrollContainer className={className}>{children}</ScrollContainer>
-}
-
-/** @internal */
-export const ChangeConnectorRoot = ENABLED
-  ? EnabledChangeConnectorRoot
-  : DisabledChangeConnectorRoot

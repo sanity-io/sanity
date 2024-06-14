@@ -13,7 +13,7 @@ import {ConnectorContext, DiffContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
-import {useReportedValues} from '../../../../../changeIndicators'
+import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
 import {useTranslation} from '../../../../../i18n'
 import {Preview} from '../../../../../preview/components/Preview'
 import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
@@ -99,7 +99,7 @@ function InlineObjectWithDiff({
   )
   const myPath = prefix.concat(path)
   const myValue = `field-${toString(myPath)}`
-  const values = useReportedValues()
+  const values = useChangeIndicatorsReportedValues()
   const isEditing = values.filter(([p]) => p.startsWith(myValue)).length > 0
 
   const focusPath = fullPath.slice(0, -1).concat(path).concat([FOCUS_TERMINATOR])
