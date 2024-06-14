@@ -38,7 +38,7 @@ export const CellInput = ({
       style={{
         padding: '22px 16px',
       }}
-      value={value}
+      value={value ?? ''}
       data-testid={dataTestId}
       onChange={handleOnChange}
     />

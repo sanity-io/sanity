@@ -42,6 +42,7 @@ export function DropdownCellInput({
       }}
       value={cellValue}
     >
+      <option value={undefined} selected={!cellValue} />
       {options.map(toSelectItem).map((option) => (
         <option key={option.title} value={option.value}>
           {option.title}
