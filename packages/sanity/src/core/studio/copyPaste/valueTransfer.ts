@@ -364,6 +364,20 @@ function collatePrimitiveValue({
   }
   const isSamePrimitiveType = targetSchemaType.jsonType === typeof primitiveValue
   if (isSamePrimitiveType) {
+    // Test that the primitive value is allowed if this is a string list schema type
+    if (targetSchemaType.jsonType === 'string' && typeof primitiveValue === 'string') {
+      const allowedStrings =
+        targetSchemaType.options?.list?.map((item) =>
+          typeof item === 'string' ? item : item.value,
+        ) || []
+      if (allowedStrings.length > 0 && !allowedStrings.includes(primitiveValue)) {
+        errors.push({
+          level: 'error',
+          message: `Value '${primitiveValue}' is not allowed in ${targetSchemaType.title || targetSchemaType.name}`,
+          sourceValue: primitiveValue,
+        })
+      }
+    }
     targetValue = primitiveValue
   } else {
     errors.push({
