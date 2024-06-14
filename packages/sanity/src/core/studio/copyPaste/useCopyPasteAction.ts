@@ -194,14 +194,8 @@ export function useCopyPasteAction(): {
 
         try {
           const {targetValue, errors} = transferValue(transferValueOptions)
-          if (isEmptyValue(targetValue)) {
-            toast.push({
-              status: 'warning',
-              title: 'Nothing from the clipboard could be pasted here',
-            })
-            return
-          }
           const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
+          const _isEmptyValue = isEmptyValue(targetValue)
           if (nonWarningErrors.length > 0) {
             toast.push({
               status: 'error',
@@ -209,12 +203,19 @@ export function useCopyPasteAction(): {
               description: nonWarningErrors[0].message,
             })
             return
-          } else if (errors.length > 0) {
+          } else if (errors.length > 0 && !_isEmptyValue) {
             toast.push({
               status: 'warning',
               title: 'Could not paste all values',
               description: errors.map((error) => error.message).join(', '),
             })
+          }
+          if (_isEmptyValue) {
+            toast.push({
+              status: 'warning',
+              title: 'Nothing from the clipboard could be pasted here',
+            })
+            return
           }
           updateItems.push({patches: [set(targetValue, targetPath)], targetSchemaTypeTitle})
         } catch (error) {
