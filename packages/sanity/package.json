@@ -162,7 +162,7 @@
     "@sanity/migrate": "3.46.1",
     "@sanity/mutator": "3.46.1",
     "@sanity/portable-text-editor": "3.46.1",
-    "@sanity/presentation": "1.15.13",
+    "@sanity/presentation": "1.16.0",
     "@sanity/schema": "3.46.1",
     "@sanity/telemetry": "^0.7.7",
     "@sanity/types": "3.46.1",
