@@ -56,6 +56,19 @@ export function transferValue({
     throw new Error('Could not find target schema type at path')
   }
 
+  if (targetRootSchemaType.readOnly || targetSchemaTypeAtPath.readOnly) {
+    return {
+      targetValue: undefined,
+      errors: [
+        {
+          level: 'error',
+          message: `The target is read-only`,
+          sourceValue,
+        },
+      ],
+    }
+  }
+
   // Test that the target schematypes are compatible
   if (
     sourceSchemaTypeAtPath &&
@@ -147,6 +160,12 @@ function collateObjectValue({
   errors: TransferValueError[]
   keyGenerator: () => string
 }) {
+  if (targetSchemaType.readOnly) {
+    return {
+      targetValue: undefined,
+      errors,
+    }
+  }
   const targetValue = {
     _type: targetSchemaType.name,
     ...(sourceValue && typeof sourceValue === 'object' && '_key' in sourceValue
@@ -225,6 +244,13 @@ function collateArrayValue({
   targetValue: unknown
   errors: TransferValueError[]
 } {
+  if (targetSchemaType.readOnly) {
+    return {
+      targetValue: undefined,
+      errors,
+    }
+  }
+
   let targetValue: unknown[] | undefined = undefined
 
   const genericValue = sourceValue as unknown[]
@@ -322,6 +348,12 @@ function collatePrimitiveValue({
   targetValue: unknown
   errors: TransferValueError[]
 } {
+  if (targetSchemaType.readOnly) {
+    return {
+      targetValue: undefined,
+      errors,
+    }
+  }
   let targetValue: unknown
   const primitiveValue = sourceValue as unknown
   if (typeof primitiveValue === 'undefined') {
