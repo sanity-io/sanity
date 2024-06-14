@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type Action, type SanityClient} from '@sanity/client'
 import {
   isReference,
   type Reference,
@@ -40,6 +40,7 @@ export interface HistoryStore {
 }
 
 interface RestoreOptions {
+  fromDeleted: boolean
   useServerDocumentActions?: boolean
 }
 
@@ -209,19 +210,25 @@ function restore(
     }),
     mergeMap((restoredDraft) => {
       if (options?.useServerDocumentActions) {
-        return client.observable.action([
-          {
-            actionType: 'sanity.action.document.create',
-            publishedId: documentId,
-            attributes: restoredDraft,
-            ifExists: 'ignore',
-          },
-          {
-            actionType: 'sanity.action.document.replaceDraft',
-            publishedId: documentId,
-            attributes: restoredDraft,
-          },
-        ])
+        const replaceDraftAction: Action = {
+          actionType: 'sanity.action.document.replaceDraft',
+          publishedId: documentId,
+          attributes: restoredDraft,
+        }
+        return client.observable.action(
+          options.fromDeleted
+            ? [
+                {
+                  actionType: 'sanity.action.document.create',
+                  publishedId: documentId,
+                  attributes: restoredDraft,
+                  // This will guard against a race where someone else restores a deleted document at the same time
+                  ifExists: 'fail',
+                },
+                replaceDraftAction,
+              ]
+            : replaceDraftAction,
+        )
       }
 
       return client.observable.createOrReplace(restoredDraft, {visibility: 'async'})
