@@ -158,7 +158,7 @@
     "@sanity/icons": "^3.0.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/import": "^3.37.3",
-    "@sanity/insert-menu": "1.0.1",
+    "@sanity/insert-menu": "1.0.3",
     "@sanity/logos": "^2.1.4",
     "@sanity/migrate": "3.46.1",
     "@sanity/mutator": "3.46.1",
