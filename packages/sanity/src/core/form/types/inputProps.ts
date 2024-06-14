@@ -176,10 +176,11 @@ export interface ObjectInputProps<
   /**
    * @deprecated – DO NOT USE
    *
-   * The node of the array editing modal.
-   * This is used to render the array editing modal as a child of the root input.
-   * The array editing dialog needs to be a child of the root input since the root input might be
-   * wrapped in a React context using the Components API, which is consumed by inputs in the form.
+   * The node for the array editing modal.
+   * This node renders the array editing modal as a child of the root input.
+   * It is necessary for the array editing dialog to be a child of the root input
+   * because the root input may be wrapped in a React context using the Components API,
+   * which is utilized by inputs in the form.
    */
   __internal_arrayEditingModal?: ReactNode
 }

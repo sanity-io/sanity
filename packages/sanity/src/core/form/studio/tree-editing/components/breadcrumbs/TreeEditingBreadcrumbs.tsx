@@ -22,10 +22,6 @@ const MAX_LENGTH = 5
 const EMPTY_ARRAY: [] = []
 const SEPARATOR = '/'
 
-const RootFlex = styled(Flex)`
-  width: 100%;
-`
-
 const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
   const {bold} = getTheme_v2(theme)?.font.text?.weights || {}
 
@@ -79,8 +75,8 @@ const MenuButton = forwardRef(function MenuButton(
       // eslint-disable-next-line react/jsx-no-bind
       onClick={() => onPathSelect(item.path)}
       padding={1}
-      space={2}
       ref={ref}
+      space={2}
       title={title}
       {...rest}
     >
@@ -122,10 +118,10 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const size = useElementSize(rootElement)
 
-  // a dropdown will show the "overflow items" when there are too many
-  // levels in the breadcrumbs. This will return how many
-  // items the breadcrumb allows before it starts to overflow into a new "..." item
-  // which keeps the rest
+  // Dynamically calculate the max length of the breadcrumbs
+  // based on the width of the container. If the length of the items
+  // is greater than the max length, the items will be grouped in an array
+  // and shown in the same breadcrumbs menu button (i.e. the "..." button).
   const maxLength = useMemo(() => {
     const w = size?.border.width
 
@@ -157,9 +153,8 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
       const key = `${item}-${index}`
       const showSeparator = index < items.length - 1
 
-      // in instances where we have to show the "..." item
-      // which means we have too many items in breadcrumb
-      // and so there's an overflow
+      // If items are grouped in an array, those items are "collapsed" and should
+      // be grouped in the same breadcrumbs menu button (i.e. the "..." button).
       if (Array.isArray(item)) {
         return (
           <Fragment key={key}>
@@ -204,9 +199,9 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
               onPathSelect={onPathSelect}
               menuTitle={getSchemaTypeTitle(item.schemaType)}
               parentElement={rootElement}
-              // We don't use the `selectedPath` here as the selected path
-              // since that is the current selected path and not the selected
-              // path of the current breadcrumb item.
+              // The selected path in the current menu is the path of the parent item.
+              // Therefore, we pass the parent item path as the selected path and
+              // not the selected path from the props.
               selectedPath={item.path}
             />
           )}
@@ -218,8 +213,8 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
   }, [items, selectedPath, onPathSelect, rootElement])
 
   return (
-    <RootFlex align="center" forwardedAs="ol" gap={2} ref={setRootElement}>
+    <Flex align="center" as="ol" gap={2} ref={setRootElement}>
       {nodes}
-    </RootFlex>
+    </Flex>
   )
 }

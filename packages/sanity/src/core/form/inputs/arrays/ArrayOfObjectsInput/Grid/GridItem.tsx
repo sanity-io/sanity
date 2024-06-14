@@ -92,7 +92,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const treeEditingDisabledByOption = parentSchemaType?.options?.treeEditing === false
   const legacyEditing = treeEditingDisabledByOption || treeEditing.legacyEditing
 
-  // The modal should open if the item is open and:
+  // The edit portal should open if the item is open and:
   // - tree array editing is disabled
   // - legacy array editing is enabled (e.g. in a Portable Text editor)
   const openPortal = open && (!treeEditing.enabled || legacyEditing)

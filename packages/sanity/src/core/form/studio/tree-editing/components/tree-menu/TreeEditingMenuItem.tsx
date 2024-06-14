@@ -14,6 +14,7 @@ import styled, {css} from 'styled-components'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
 import {isArrayItemPath} from '../../utils/build-tree-editing-state/utils'
+import {getSiblingHasChildren} from './utils'
 
 function hasOpenChild(item: TreeEditingMenuItemType, selectedPath: Path | null): boolean {
   return (
@@ -125,17 +126,13 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Elemen
 
   const title = useMemo(() => {
     // If the item is an array parent, we want to show the schema type title
-    if (isArrayParent) {
-      return getSchemaTypeTitle(item.schemaType)
-    }
+    if (isArrayParent) return getSchemaTypeTitle(item.schemaType)
 
     // Else, we show the preview title
     return value.title
   }, [isArrayParent, item.schemaType, value.title])
 
-  const handleClick = useCallback(() => {
-    onPathSelect(item.path)
-  }, [item.path, onPathSelect])
+  const handleClick = useCallback(() => onPathSelect(item.path), [item.path, onPathSelect])
 
   const handleExpandClick = useCallback(() => setOpen((v) => !v), [])
 
@@ -197,9 +194,9 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Elemen
             >
               <Flex align="center">
                 <SanityDefaultPreview
-                  title={title}
-                  media={isArrayParent ? <StackCompactIcon /> : value.media}
                   layout="inline"
+                  media={isArrayParent ? <StackCompactIcon /> : value.media}
+                  title={title}
                 />
               </Flex>
             </Button>
@@ -210,9 +207,7 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Elemen
       {open && hasChildren && (
         <ChildStack flex={1} forwardedAs="ul" paddingLeft={1} role="group" space={1}>
           {children.map((child) => {
-            const childSiblingHasChildren = children.some(
-              (sibling) => sibling.children && sibling.children.length > 0,
-            )
+            const childSiblingHasChildren = getSiblingHasChildren(children)
 
             return (
               <TreeEditingMenuItem

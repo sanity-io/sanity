@@ -47,6 +47,7 @@ const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
       padding: ${spacing}px;
       box-sizing: border-box;
 
+      // Make the dialog full height
       & > [data-ui='Card']:first-child {
         flex: 1;
       }
@@ -128,20 +129,14 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     openPathRef.current = undefined
   }, [debouncedBuildTreeEditingState, onPathOpen])
 
-  const {menuItems, relativePath, rootTitle, breadcrumbs} = treeState
-
   const open = useMemo(
-    () => shouldArrayDialogOpen(schemaType, relativePath),
-    [relativePath, schemaType],
+    () => shouldArrayDialogOpen(schemaType, treeState.relativePath),
+    [treeState.relativePath, schemaType],
   )
 
   const onHandlePathSelect = useCallback(
     (path: Path) => {
       // Cancel any debounced state building when navigating.
-      // This is done to allow for immediate navigation to the selected path
-      // and not wait for the debounced state to be built.
-      // The debounced state is primarily used to avoid building the state
-      // on every document value or focus path change.
       debouncedBuildTreeEditingState.cancel()
 
       onPathOpen(path)
@@ -199,7 +194,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     })
   }, [schemaType, value, debouncedBuildTreeEditingState, openPath, handleBuildTreeEditingState])
 
-  if (!open || relativePath.length === 0) return null
+  if (!open || treeState.relativePath.length === 0) return null
 
   return (
     <StyledDialog
@@ -213,11 +208,11 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       width={3}
     >
       <TreeEditingLayout
-        breadcrumbs={breadcrumbs}
-        items={menuItems}
+        breadcrumbs={treeState.breadcrumbs}
+        items={treeState.menuItems}
         onPathSelect={onHandlePathSelect}
-        selectedPath={relativePath}
-        title={rootTitle}
+        selectedPath={treeState.relativePath}
+        title={treeState.rootTitle}
         setScrollElement={setLayoutScrollElement}
         footer={
           <Card borderTop>
@@ -239,7 +234,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
             exit="exit"
             height="fill"
             initial="initial"
-            key={toString(relativePath)}
+            key={toString(treeState.relativePath)}
             overflow="hidden"
             padding={1}
             sizing="border"
@@ -248,7 +243,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
           >
             <FormInput
               {...rootInputProps}
-              relativePath={relativePath}
+              relativePath={treeState.relativePath}
               renderDefault={renderDefault}
             />
           </MotionFlex>

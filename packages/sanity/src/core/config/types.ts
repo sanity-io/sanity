@@ -388,7 +388,7 @@ export interface PluginOptions {
      */
     enableLegacySearch?: boolean
   }
-  /** allows for in studio feature toggles
+  /** Configuration for studio features.
    * @internal
    */
   features?: Features
@@ -777,7 +777,7 @@ export interface Source {
 
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
-  /** allows for in studio feature toggles
+  /** Configuration for studio features.
    * @internal
    */
   features?: Features
@@ -894,8 +894,9 @@ export type DefaultPluginsWorkspaceOptions = {
   scheduledPublishing: ScheduledPublishingPluginOptions
 }
 
-/** allows for in studio feature toggles
- */
+/**
+ * Configuration for studio features.
+ * */
 interface Features {
   /**
    * Configuration for beta features.
