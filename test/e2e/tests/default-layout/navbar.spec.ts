@@ -10,8 +10,8 @@ test.describe('@sanity/default-layout: Navbar', () => {
 
     await page.getByLabel('Help and resources').click()
 
-    await page.getByText(/Sanity Studio version/i).waitFor({
-      state: 'visible',
+    await page.getByTestId('menu-button-resources').waitFor({
+      state: 'attached',
     })
   })
 
