@@ -1,4 +1,3 @@
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
 import {Button, Card, Dialog, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
