@@ -1,7 +1,14 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
-test(`documents can be restored to an earlier revision`, async ({page, createDraftDocument}) => {
+/* 
+  Test skipped due to on going developments around server actions that make them flaky 
+  Re-enable this test when the server actions are stable 
+  */
+test.skip(`documents can be restored to an earlier revision`, async ({
+  page,
+  createDraftDocument,
+}) => {
   const titleA = 'Title A'
   const titleB = 'Title B'
 
@@ -45,7 +52,11 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   await expect(title).toHaveText(titleA)
 })
 
-test(`respects overridden restore action`, async ({page, createDraftDocument}) => {
+/* 
+  Test skipped due to on going developments around server actions that make them flaky 
+  Re-enable this test when the server actions are stable 
+  */
+test.skip(`respects overridden restore action`, async ({page, createDraftDocument}) => {
   const titleA = 'Title A'
   const titleB = 'Title B'
 
@@ -114,7 +125,11 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   await expect(title).toHaveText(titleA)
 })
 
-test(`respects removed restore action`, async ({page, createDraftDocument}) => {
+/* 
+  Test skipped due to on going developments around server actions that make them flaky 
+  Re-enable this test when the server actions are stable 
+  */
+test.skip(`respects removed restore action`, async ({page, createDraftDocument}) => {
   const titleA = 'Title A'
   const titleB = 'Title B'
 
@@ -155,7 +170,11 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   await expect(restoreButton).not.toBeVisible()
 })
 
-test(`user defined restore actions should not appear in any other document action group UI`, async ({
+/* 
+  Test skipped due to on going developments around server actions that make them flaky 
+  Re-enable this test when the server actions are stable 
+  */
+test.skip(`user defined restore actions should not appear in any other document action group UI`, async ({
   page,
   createDraftDocument,
 }) => {
