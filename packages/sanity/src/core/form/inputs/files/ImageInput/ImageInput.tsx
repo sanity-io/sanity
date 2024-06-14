@@ -1,715 +1,95 @@
-/* eslint-disable react/jsx-no-bind */
-/* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
-
 import {isImageSource} from '@sanity/asset-utils'
-import {type SanityClient} from '@sanity/client'
-import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
-import {
-  type AssetFromSource,
-  type AssetSource,
-  type Image as BaseImage,
-  type ImageAsset,
-  type ImageSchemaType,
-  type Path,
-  type UploadState,
-} from '@sanity/types'
-import {Box, Card, Menu, Stack, type ToastParams} from '@sanity/ui'
-import {get, startCase} from 'lodash'
-import {type FocusEvent, PureComponent, type ReactNode} from 'react'
-import {type Observable, type Subscription} from 'rxjs'
+import {type AssetFromSource, type AssetSource, type UploadState} from '@sanity/types'
+import {Stack, useToast} from '@sanity/ui'
+import {get} from 'lodash'
+import {type FocusEvent, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+import {type Subscription} from 'rxjs'
 
-import {
-  Button,
-  Dialog,
-  MenuButton,
-  type MenuButtonProps,
-  MenuItem,
-} from '../../../../../ui-components'
-import {ChangeIndicator} from '../../../../changeIndicators'
-import {ImperativeToast} from '../../../../components'
-import {type FIXME} from '../../../../FIXME'
-import {PresenceOverlay} from '../../../../presence'
+import {useTranslation} from '../../../../i18n'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
-import {type PatchEvent, setIfMissing, unset} from '../../../patch'
+import {setIfMissing, unset} from '../../../patch'
 import {type FieldMember} from '../../../store'
-import {
-  type ResolvedUploader,
-  type Uploader,
-  type UploaderResolver,
-  type UploadOptions,
-} from '../../../studio/uploads/types'
-import {type InputProps, type ObjectInputProps} from '../../../types'
-import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
-import {ActionsMenu} from '../common/ActionsMenu'
-import {handleSelectAssetFromSource} from '../common/assetSource'
-import {FileTarget} from '../common/styles'
-import {UploadPlaceholder} from '../common/UploadPlaceholder'
+import {type Uploader, type UploadOptions} from '../../../studio/uploads/types'
+import {type InputProps} from '../../../types'
+import {handleSelectAssetFromSource as _handleSelectAssetFromSource} from '../common/assetSource'
 import {UploadProgress} from '../common/UploadProgress'
-import {UploadWarning} from '../common/UploadWarning'
-import {ImageToolInput} from '../ImageToolInput'
-import {type ImageUrlBuilder} from '../types'
-import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
-import {ImagePreview} from './ImagePreview'
+import {ImageInputAsset} from './ImageInputAsset'
+import {ImageInputAssetMenu} from './ImageInputAssetMenu'
+import {ImageInputAssetSource} from './ImageInputAssetSource'
+import {ImageInputBrowser} from './ImageInputBrowser'
+import {ImageInputHotspotInput} from './ImageInputHotspotInput'
+import {ImageInputPreview} from './ImageInputPreview'
+import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
 import {InvalidImageWarning} from './InvalidImageWarning'
+import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from './types'
 
-/**
- * @hidden
- * @beta */
-export interface BaseImageInputValue extends Partial<BaseImage> {
-  _upload?: UploadState
-}
+export {BaseImageInputProps, BaseImageInputValue}
 
-/**
- * @hidden
- * @beta */
-export interface BaseImageInputProps
-  extends ObjectInputProps<BaseImageInputValue, ImageSchemaType> {
-  assetSources: AssetSource[]
-  directUploads?: boolean
-  imageUrlBuilder: ImageUrlBuilder
-  observeAsset: (documentId: string) => Observable<ImageAsset>
-  resolveUploader: UploaderResolver
-  client: SanityClient
-  t: (key: string, values?: Record<string, string>) => string
-}
+function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
+  const {
+    assetSources,
+    client,
+    directUploads,
+    elementProps,
+    focusPath,
+    id,
+    imageUrlBuilder,
+    members,
+    observeAsset,
+    onChange,
+    onPathFocus,
+    path,
+    readOnly,
+    renderAnnotation,
+    renderBlock,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview: renderPreviewProp,
+    resolveUploader,
+    schemaType,
+    value,
+  } = props
+  const {push} = useToast()
+  const {t} = useTranslation()
 
-const getDevicePixelRatio = () => {
-  if (typeof window === 'undefined' || !window.devicePixelRatio) {
-    return 1
-  }
-  return Math.round(Math.max(1, window.devicePixelRatio))
-}
-
-type FileInfo = {
-  type: string // mime type
-  kind: string // 'file' or 'string'
-}
-
-interface BaseImageInputState {
-  isUploading: boolean
-  selectedAssetSource: AssetSource | null
-  // Metadata about files currently over the drop area
-  hoveringFiles: FileInfo[]
-  isStale: boolean
-  hotspotButtonElement: HTMLButtonElement | null
-  menuButtonElement: HTMLButtonElement | null
-  isMenuOpen: boolean
-}
-
-function passThrough({children}: {children?: ReactNode}) {
-  return children
-}
-
-const ASSET_FIELD_PATH = ['asset']
-
-const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true}
-
-/** @internal */
-export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImageInputState> {
-  _previewElement: HTMLDivElement | null = null
-  _assetPath: Path
-  uploadSubscription: null | Subscription = null
-
-  state: BaseImageInputState = {
-    isUploading: false,
-    selectedAssetSource: null,
-    hoveringFiles: [],
-    isStale: false,
-    hotspotButtonElement: null,
-    menuButtonElement: null,
-    isMenuOpen: false,
-  }
-
-  constructor(props: BaseImageInputProps) {
-    super(props)
-    this._assetPath = props.path.concat(ASSET_FIELD_PATH)
-  }
-
-  toast: {push: (params: ToastParams) => void} | null = null
-
-  setPreviewElement = (el: HTMLDivElement | null) => {
-    this._previewElement = el
-  }
-
-  setHotspotButtonElement = (el: HTMLButtonElement | null) => {
-    this.setState({hotspotButtonElement: el})
-  }
-
+  const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
+  const [isStale, setIsStale] = useState(false)
+  const [hotspotButtonElement, setHotspotButtonElement] = useState<HTMLButtonElement | null>(null)
   // Get the menu button element in `ImageActionsMenu` so that focus can be restored to
   // it when closing the dialog (see `handleAssetSourceClosed`)
-  setMenuButtonElement = (el: HTMLButtonElement | null) => {
-    this.setState({menuButtonElement: el})
-  }
+  const [menuButtonElement, setMenuButtonElement] = useState<HTMLButtonElement | null>(null)
+  const [isMenuOpen, setMenuOpen] = useState(false)
 
-  isImageToolEnabled() {
-    return get(this.props.schemaType, 'options.hotspot') === true
-  }
+  const uploadSubscription = useRef<null | Subscription>(null)
 
-  clearUploadStatus() {
-    if (this.props.value?._upload) {
-      this.props.onChange(unset(['_upload']))
+  /**
+   * The upload progress state wants to use the same height as any previous image
+   * to avoid layout shifts and jumps
+   */
+  const previewElementRef = useRef<{el: HTMLDivElement | null; height: number}>({
+    el: null,
+    height: 0,
+  })
+  const setPreviewElementHeight = useCallback((node: HTMLDivElement | null) => {
+    if (node) {
+      previewElementRef.current.el = node
+      previewElementRef.current.height = node.offsetHeight
+    } else {
+      /**
+       * If `node` is `null` then it means the `FileTarget` in `ImageInputAsset` is being unmounted and we want to
+       * capture its height before it's removed from the DOM.
+       */
+
+      previewElementRef.current.height = previewElementRef.current.el?.offsetHeight || 0
+      previewElementRef.current.el = null
     }
-  }
-
-  cancelUpload() {
-    if (this.uploadSubscription) {
-      this.uploadSubscription.unsubscribe()
-      this.clearUploadStatus()
-    }
-  }
-
-  getUploadOptions = (file: File): ResolvedUploader[] => {
-    const {schemaType, resolveUploader} = this.props
-    const uploader = resolveUploader && resolveUploader(schemaType, file)
-    return uploader ? [{type: schemaType, uploader}] : []
-  }
-
-  uploadFirstAccepted(files: File[]) {
-    const {schemaType, resolveUploader} = this.props
-
-    const match = files
-      .map((file) => ({file, uploader: resolveUploader(schemaType, file)}))
-      .find((result) => result.uploader)
-
-    if (match) {
-      this.uploadWith(match.uploader!, match.file)
-    }
-
-    this.setState({isMenuOpen: false})
-  }
-
-  uploadWith = (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
-    const {schemaType, onChange, client, t} = this.props
-    const {label, title, description, creditLine, source} = assetDocumentProps
-    const options = {
-      metadata: get(schemaType, 'options.metadata'),
-      storeOriginalFilename: get(schemaType, 'options.storeOriginalFilename'),
-      label,
-      title,
-      description,
-      creditLine,
-      source,
-    }
-
-    this.cancelUpload()
-    this.setState({isUploading: true})
-    onChange(setIfMissing({_type: schemaType.name}))
-    this.uploadSubscription = uploader.upload(client, file, schemaType, options).subscribe({
-      next: (uploadEvent) => {
-        if (uploadEvent.patches) {
-          onChange(uploadEvent.patches)
-        }
-      },
-      error: (err) => {
-        // eslint-disable-next-line no-console
-        console.error(err)
-        this.toast?.push({
-          status: 'error',
-          description: t('inputs.image.upload-error.description'),
-          title: t('inputs.image.upload-error.title'),
-        })
-
-        this.clearUploadStatus()
-      },
-      complete: () => {
-        onChange([unset(['hotspot']), unset(['crop'])])
-        this.setState({isUploading: false})
-        // this.toast.push({
-        //   status: 'success',
-        //   title: 'Upload completed',
-        // })
-      },
-    })
-  }
-
-  handleRemoveButtonClick = () => {
-    const {value} = this.props
-
-    // When removing the image, we should also remove any crop and hotspot
-    // _type and _key are "meta"-properties and are not significant unless
-    // other properties are present. Thus, we want to remove the entire
-    // "container" object if these are the only properties present, BUT
-    // only if we're not an array element, as removing the array element
-    // will close the selection dialog. Instead, when closing the dialog,
-    // the array logic will check for an "empty" value and remove it for us
-    const allKeys = Object.keys(value || {})
-    const remainingKeys = allKeys.filter(
-      (key) => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot'].includes(key),
-    )
-
-    const isEmpty = remainingKeys.length === 0
-    const removeKeys = ['asset']
-      .concat(allKeys.filter((key) => ['crop', 'hotspot', '_upload'].includes(key)))
-      .map((key) => unset([key]))
-
-    this.props.onChange(isEmpty && !this.valueIsArrayElement() ? unset() : removeKeys)
-  }
-
-  handleFieldChange = (event: PatchEvent) => {
-    const {onChange, schemaType} = this.props
-
-    // When editing a metadata field for an image (eg `altText`), and no asset
-    // is currently selected, we want to unset the entire image field if the
-    // field we are currently editing goes blank and gets unset.
-    //
-    // For instance:
-    // An image field with an `altText` and a `title` subfield, where the image
-    // `asset` and the `title` field is empty, and we are erasing the `alt` field.
-    // We do _not_ however want to clear the field if any content is present in
-    // the other fields - but we do not consider `crop` and `hotspot`.
-    //
-    // Also, we don't want to use this logic for array items, since the parent will
-    // take care of it when closing the array dialog
-    if (!this.valueIsArrayElement() && this.eventIsUnsettingLastFilledField(event)) {
-      onChange(unset())
-      return
-    }
-
-    onChange(
-      event.prepend(
-        setIfMissing({
-          _type: schemaType.name,
-        }),
-      ).patches,
-    )
-  }
-
-  eventIsUnsettingLastFilledField = (event: PatchEvent): boolean => {
-    const patch = event.patches[0]
-    if (event.patches.length !== 1 || patch.type !== 'unset') {
-      return false
-    }
-
-    const allKeys = Object.keys(this.props.value || {})
-    const remainingKeys = allKeys.filter(
-      (key) => !['_type', '_key', 'crop', 'hotspot'].includes(key),
-    )
-
-    const isEmpty =
-      event.patches[0].path.length === 1 &&
-      remainingKeys.length === 1 &&
-      remainingKeys[0] === event.patches[0].path[0]
-
-    return isEmpty
-  }
-
-  valueIsArrayElement = () => {
-    const {path} = this.props
-    const parentPathSegment = path.slice(-1)[0]
-
-    // String path segment mean an object path, while a number or a
-    // keyed segment means we're a direct child of an array
-    return typeof parentPathSegment !== 'string'
-  }
-
-  handleOpenDialog = () => {
-    this.props.onPathFocus(['hotspot'])
-  }
-
-  handleCloseDialog = () => {
-    this.props.onPathFocus([])
-
-    // Set focus on hotspot button in `ImageActionsMenu` when closing the dialog
-    this.state.hotspotButtonElement?.focus()
-  }
-
-  handleSelectAssetFromSource = (assetFromSource: AssetFromSource[]) => {
-    const {onChange, schemaType, resolveUploader} = this.props
-    handleSelectAssetFromSource({
-      assetFromSource,
-      onChange,
-      type: schemaType,
-      resolveUploader,
-      uploadWith: this.uploadWith,
-      isImage: true,
-    })
-
-    this.setState({selectedAssetSource: null})
-  }
-
-  handleFileTargetFocus = (event: FocusEvent) => {
-    // We want to handle focus when the file target element *itself* receives
-    // focus, not when an interactive child element receives focus. Since React has decided
-    // to let focus bubble, so this workaround is needed
-    // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
-    if (
-      event.currentTarget === event.target &&
-      event.currentTarget === this.props.elementProps.ref?.current
-    ) {
-      this.props.elementProps.onFocus(event)
-    }
-  }
-
-  handleFilesOver = (hoveringFiles: FileInfo[]) => {
-    this.setState({
-      hoveringFiles: hoveringFiles.filter((file) => file.kind !== 'string'),
-    })
-  }
-  handleFilesOut = () => {
-    this.setState({
-      hoveringFiles: [],
-    })
-  }
-
-  handleCancelUpload = () => {
-    this.cancelUpload()
-  }
-
-  handleClearUploadState = () => {
-    this.setState({isStale: false})
-    this.clearUploadStatus()
-  }
-
-  handleStaleUpload = () => {
-    this.setState({isStale: true})
-  }
-
-  handleClearField = () => {
-    this.props.onChange([unset(['asset']), unset(['crop']), unset(['hotspot'])])
-  }
-
-  handleSelectFiles = (files: File[]) => {
-    const {directUploads, readOnly} = this.props
-    const {hoveringFiles} = this.state
-    if (directUploads && !readOnly) {
-      this.uploadFirstAccepted(files)
-    } else if (hoveringFiles.length > 0) {
-      this.handleFilesOut()
-    }
-  }
-
-  handleSelectImageFromAssetSource = (source: AssetSource) => {
-    this.setState({selectedAssetSource: source})
-  }
-
-  handleAssetSourceClosed = () => {
-    this.setState({selectedAssetSource: null})
-
-    // Set focus on menu button in `ImageActionsMenu` when closing the dialog
-    this.state.menuButtonElement?.focus()
-  }
-
-  renderHotspotInput = (hotspotInputProps: Omit<InputProps, 'renderDefault'>) => {
-    const {value, changed, id, imageUrlBuilder, t} = this.props
-
-    const withImageTool = this.isImageToolEnabled() && value && value.asset
-
-    return (
-      <Dialog
-        __unstable_autoFocus={false}
-        header={t('inputs.image.hotspot-dialog.title')}
-        id={`${id}_dialog`}
-        onClickOutside={this.handleCloseDialog}
-        onClose={this.handleCloseDialog}
-        width={1}
-      >
-        <PresenceOverlay>
-          <Stack space={5}>
-            {withImageTool && value?.asset && (
-              <ImageToolInput
-                {...this.props}
-                imageUrl={imageUrlBuilder.image(value.asset).url()}
-                value={value as FIXME}
-                presence={hotspotInputProps.presence}
-                changed={changed}
-              />
-            )}
-          </Stack>
-        </PresenceOverlay>
-      </Dialog>
-    )
-  }
-
-  renderPreview = () => {
-    const {value, schemaType, readOnly, directUploads, imageUrlBuilder, t, resolveUploader} =
-      this.props
-
-    if (!value || !isImageSource(value)) {
-      return null
-    }
-
-    const {hoveringFiles} = this.state
-
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
-
-    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
-    const imageUrl = imageUrlBuilder
-      .width(2000)
-      .fit('max')
-      .image(value)
-      .dpr(getDevicePixelRatio())
-      .auto('format')
-      .url()
-
-    return (
-      <ImagePreview
-        onDoubleClick={this.handleOpenDialog}
-        drag={!value?._upload && hoveringFiles.length > 0}
-        isRejected={rejectedFilesCount > 0 || !directUploads}
-        readOnly={readOnly}
-        src={imageUrl}
-        alt={t('inputs.image.preview-uploaded-image')}
-      />
-    )
-  }
-
-  renderAssetMenu() {
-    const {
-      value,
-      assetSources,
-      schemaType,
-      readOnly,
-      directUploads,
-      imageUrlBuilder,
-      observeAsset,
-      t,
-    } = this.props
-
-    const asset = value?.asset
-    if (!asset) {
-      return null
-    }
-
-    const accept = get(schemaType, 'options.accept', 'image/*')
-
-    const showAdvancedEditButton = value && asset && this.isImageToolEnabled()
-
-    let browseMenuItem: ReactNode =
-      assetSources && assetSources.length === 0 ? null : (
-        <MenuItem
-          icon={SearchIcon}
-          text={t('inputs.image.browse-menu.text')}
-          onClick={() => {
-            this.setState({isMenuOpen: false})
-            this.handleSelectImageFromAssetSource(assetSources[0])
-          }}
-          disabled={readOnly}
-          data-testid="file-input-browse-button"
-        />
-      )
-    if (assetSources && assetSources.length > 1) {
-      browseMenuItem = assetSources.map((assetSource) => {
-        return (
-          <MenuItem
-            key={assetSource.name}
-            text={
-              (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-              startCase(assetSource.name)
-            }
-            onClick={() => {
-              this.setState({isMenuOpen: false})
-              this.handleSelectImageFromAssetSource(assetSource)
-            }}
-            icon={assetSource.icon || ImageIcon}
-            data-testid={`file-input-browse-button-${assetSource.name}`}
-            disabled={readOnly}
-          />
-        )
-      })
-    }
-
-    return (
-      <WithReferencedAsset
-        observeAsset={observeAsset}
-        reference={asset}
-        waitPlaceholder={<ImageActionsMenuWaitPlaceholder />}
-      >
-        {({_id, originalFilename, extension}) => {
-          let copyUrl: string | undefined
-          let downloadUrl: string | undefined
-
-          if (isImageSource(value)) {
-            const filename = originalFilename || `download.${extension}`
-            downloadUrl = imageUrlBuilder.image(_id).forceDownload(filename).url()
-            copyUrl = imageUrlBuilder.image(_id).url()
-          }
-
-          return (
-            <ImageActionsMenu
-              isMenuOpen={this.state.isMenuOpen}
-              onEdit={this.handleOpenDialog}
-              onMenuOpen={(isOpen) => this.setState({isMenuOpen: isOpen})}
-              setHotspotButtonElement={this.setHotspotButtonElement}
-              setMenuButtonElement={this.setMenuButtonElement}
-              showEdit={showAdvancedEditButton}
-            >
-              <ActionsMenu
-                onUpload={this.handleSelectFiles}
-                browse={browseMenuItem}
-                onReset={this.handleRemoveButtonClick}
-                downloadUrl={downloadUrl}
-                copyUrl={copyUrl}
-                readOnly={readOnly}
-                directUploads={directUploads}
-                accept={accept}
-              />
-            </ImageActionsMenu>
-          )
-        }}
-      </WithReferencedAsset>
-    )
-  }
-
-  renderBrowser() {
-    const {assetSources, readOnly, directUploads, id, t} = this.props
-
-    if (assetSources && assetSources.length === 0) return null
-
-    if (assetSources && assetSources.length > 1 && !readOnly && directUploads) {
-      return (
-        <MenuButton
-          id={`${id}_assetImageButton`}
-          ref={this.setMenuButtonElement}
-          button={
-            <Button
-              data-testid="file-input-multi-browse-button"
-              icon={SearchIcon}
-              iconRight={ChevronDownIcon}
-              mode="bleed"
-              text={t('inputs.image.browse-menu.text')}
-            />
-          }
-          menu={
-            <Menu>
-              {assetSources.map((assetSource) => {
-                return (
-                  <MenuItem
-                    key={assetSource.name}
-                    text={
-                      (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-                      startCase(assetSource.name)
-                    }
-                    onClick={() => {
-                      this.setState({isMenuOpen: false})
-                      this.handleSelectImageFromAssetSource(assetSource)
-                    }}
-                    icon={assetSource.icon || ImageIcon}
-                    disabled={readOnly}
-                    data-testid={`file-input-browse-button-${assetSource.name}`}
-                  />
-                )
-              })}
-            </Menu>
-          }
-          popover={ASSET_IMAGE_MENU_POPOVER}
-        />
-      )
-    }
-
-    return (
-      <Button
-        text={t('inputs.image.browse-menu.text')}
-        icon={SearchIcon}
-        mode="bleed"
-        onClick={() => {
-          this.setState({isMenuOpen: false})
-          this.handleSelectImageFromAssetSource(assetSources[0])
-        }}
-        data-testid="file-input-browse-button"
-        disabled={readOnly}
-      />
-    )
-  }
-
-  renderUploadPlaceholder() {
-    const {schemaType, readOnly, directUploads, resolveUploader} = this.props
-
-    const {hoveringFiles} = this.state
-
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
-    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
-
-    const accept = get(schemaType, 'options.accept', 'image/*')
-
-    return (
-      <div style={{padding: 1}}>
-        <Card
-          tone={readOnly ? 'transparent' : 'inherit'}
-          border
-          paddingX={3}
-          paddingY={2}
-          radius={2}
-          style={hoveringFiles.length === 0 ? {} : {borderColor: 'transparent'}}
-        >
-          <UploadPlaceholder
-            browse={this.renderBrowser()}
-            onUpload={this.handleSelectFiles}
-            readOnly={readOnly}
-            hoveringFiles={hoveringFiles}
-            acceptedFiles={acceptedFiles}
-            rejectedFilesCount={rejectedFilesCount}
-            type="image"
-            accept={accept}
-            directUploads={directUploads}
-          />
-        </Card>
-      </div>
-    )
-  }
-
-  renderUploadState(uploadState: UploadState) {
-    const {isUploading} = this.state
-
-    // if there's a preview image already, preserve the height to avoid jumps
-    const height = this._previewElement?.offsetHeight
-    return (
-      <UploadProgress
-        uploadState={uploadState}
-        onCancel={isUploading ? this.handleCancelUpload : undefined}
-        onStale={this.handleStaleUpload}
-        height={height}
-      />
-    )
-  }
-
-  renderAssetSource() {
-    const {selectedAssetSource} = this.state
-    const {value, schemaType, observeAsset} = this.props
-    const accept = get(schemaType, 'options.accept', 'image/*')
-
-    if (!selectedAssetSource) {
-      return null
-    }
-    const Component = selectedAssetSource.component
-
-    if (value && value.asset) {
-      return (
-        <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
-          {(imageAsset) => (
-            <Component
-              selectedAssets={[imageAsset]}
-              assetType="image"
-              accept={accept}
-              selectionType="single"
-              onClose={this.handleAssetSourceClosed}
-              onSelect={this.handleSelectAssetFromSource}
-            />
-          )}
-        </WithReferencedAsset>
-      )
-    }
-    return (
-      <Component
-        selectedAssets={[]}
-        selectionType="single"
-        assetType="image"
-        accept={accept}
-        onClose={this.handleAssetSourceClosed}
-        onSelect={this.handleSelectAssetFromSource}
-      />
-    )
-  }
-
-  setToast = (toast: {push: (params: ToastParams) => void}) => {
-    this.toast = toast
-  }
-
-  getFileTone() {
-    const {schemaType, value, readOnly, directUploads, resolveUploader} = this.props
-
-    const {hoveringFiles} = this.state
-
+  }, [])
+  const getFileTone = useCallback(() => {
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
@@ -728,141 +108,460 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
     }
 
     return value?._upload && value?.asset ? 'transparent' : 'default'
-  }
+  }, [
+    directUploads,
+    hoveringFiles,
+    readOnly,
+    resolveUploader,
+    schemaType,
+    value?._upload,
+    value?.asset,
+  ])
+  const isImageToolEnabled = useCallback(
+    () => get(schemaType, 'options.hotspot') === true,
+    [schemaType],
+  )
+  const valueIsArrayElement = useCallback(() => {
+    const parentPathSegment = path.slice(-1)[0]
 
-  renderAsset() {
-    const {value, readOnly, elementProps} = this.props
+    // String path segment mean an object path, while a number or a
+    // keyed segment means we're a direct child of an array
+    return typeof parentPathSegment !== 'string'
+  }, [path])
 
-    const {hoveringFiles, isStale} = this.state
+  const clearUploadStatus = useCallback(() => {
+    if (value?._upload) {
+      onChange(unset(['_upload']))
+    }
+  }, [onChange, value?._upload])
+  const cancelUpload = useCallback(() => {
+    if (uploadSubscription.current) {
+      uploadSubscription.current.unsubscribe()
+      clearUploadStatus()
+    }
+  }, [clearUploadStatus])
+  const uploadWith = useCallback(
+    (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
+      const {label, title, description, creditLine, source} = assetDocumentProps
+      const options = {
+        metadata: get(schemaType, 'options.metadata'),
+        storeOriginalFilename: get(schemaType, 'options.storeOriginalFilename'),
+        label,
+        title,
+        description,
+        creditLine,
+        source,
+      }
 
-    const hasValueOrUpload = Boolean(value?._upload || value?.asset)
+      cancelUpload()
+      setIsUploading(true)
+      onChange(setIfMissing({_type: schemaType.name}))
+      uploadSubscription.current = uploader.upload(client, file, schemaType, options).subscribe({
+        next: (uploadEvent) => {
+          if (uploadEvent.patches) {
+            onChange(uploadEvent.patches)
+          }
+        },
+        error: (err) => {
+          // eslint-disable-next-line no-console
+          console.error(err)
+          push({
+            status: 'error',
+            description: t('inputs.image.upload-error.description'),
+            title: t('inputs.image.upload-error.title'),
+          })
 
+          clearUploadStatus()
+        },
+        complete: () => {
+          onChange([unset(['hotspot']), unset(['crop'])])
+          setIsUploading(false)
+          // push({
+          //   status: 'success',
+          //   title: 'Upload completed',
+          // })
+        },
+      })
+    },
+    [cancelUpload, clearUploadStatus, client, onChange, push, schemaType, t],
+  )
+  const uploadFirstAccepted = useCallback(
+    (files: File[]) => {
+      const match = files
+        .map((file) => ({file, uploader: resolveUploader(schemaType, file)}))
+        .find((result) => result.uploader)
+
+      if (match) {
+        uploadWith(match.uploader!, match.file)
+      }
+      setMenuOpen(false)
+    },
+    [resolveUploader, schemaType, uploadWith],
+  )
+
+  const handleClearField = useCallback(() => {
+    onChange([unset(['asset']), unset(['crop']), unset(['hotspot'])])
+
+    previewElementRef.current.el = null
+    previewElementRef.current.height = 0
+  }, [onChange])
+  const handleRemoveButtonClick = useCallback(() => {
+    // When removing the image, we should also remove any crop and hotspot
+    // _type and _key are "meta"-properties and are not significant unless
+    // other properties are present. Thus, we want to remove the entire
+    // "container" object if these are the only properties present, BUT
+    // only if we're not an array element, as removing the array element
+    // will close the selection dialog. Instead, when closing the dialog,
+    // the array logic will check for an "empty" value and remove it for us
+    const allKeys = Object.keys(value || {})
+    const remainingKeys = allKeys.filter(
+      (key) => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot'].includes(key),
+    )
+
+    const isEmpty = remainingKeys.length === 0
+    const removeKeys = ['asset']
+      .concat(allKeys.filter((key) => ['crop', 'hotspot', '_upload'].includes(key)))
+      .map((key) => unset([key]))
+
+    onChange(isEmpty && !valueIsArrayElement() ? unset() : removeKeys)
+
+    previewElementRef.current.el = null
+    previewElementRef.current.height = 0
+  }, [onChange, value, valueIsArrayElement])
+  const handleOpenDialog = useCallback(() => {
+    onPathFocus(['hotspot'])
+  }, [onPathFocus])
+  const handleCloseDialog = useCallback(() => {
+    onPathFocus([])
+
+    // Set focus on hotspot button in `ImageActionsMenu` when closing the dialog
+    hotspotButtonElement?.focus()
+  }, [hotspotButtonElement, onPathFocus])
+  const handleSelectAssetFromSource = useCallback(
+    (assetFromSource: AssetFromSource[]) => {
+      _handleSelectAssetFromSource({
+        assetFromSource,
+        onChange,
+        type: schemaType,
+        resolveUploader,
+        uploadWith,
+        isImage: true,
+      })
+
+      setSelectedAssetSource(null)
+    },
+    [onChange, resolveUploader, schemaType, uploadWith],
+  )
+  const handleFileTargetFocus = useCallback(
+    (event: FocusEvent) => {
+      // We want to handle focus when the file target element *itself* receives
+      // focus, not when an interactive child element receives focus. Since React has decided
+      // to let focus bubble, so this workaround is needed
+      // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+      if (
+        event.currentTarget === event.target &&
+        event.currentTarget === elementProps.ref?.current
+      ) {
+        elementProps.onFocus(event)
+      }
+    },
+    [elementProps],
+  )
+  const handleFilesOver = useCallback((nextHoveringFiles: FileInfo[]) => {
+    setHoveringFiles(nextHoveringFiles.filter((file) => file.kind !== 'string'))
+  }, [])
+  const handleFilesOut = useCallback(() => {
+    setHoveringFiles([])
+  }, [])
+  const handleCancelUpload = useCallback(() => {
+    cancelUpload()
+  }, [cancelUpload])
+  const handleClearUploadState = useCallback(() => {
+    setIsStale(false)
+    clearUploadStatus()
+  }, [clearUploadStatus])
+  const handleStaleUpload = useCallback(() => {
+    setIsStale(true)
+  }, [])
+  const handleSelectFiles = useCallback(
+    (files: File[]) => {
+      if (directUploads && !readOnly) {
+        uploadFirstAccepted(files)
+      } else if (hoveringFiles.length > 0) {
+        handleFilesOut()
+      }
+    },
+    [directUploads, handleFilesOut, hoveringFiles.length, readOnly, uploadFirstAccepted],
+  )
+  const handleSelectImageFromAssetSource = useCallback((source: AssetSource) => {
+    setSelectedAssetSource(source)
+  }, [])
+  const handleAssetSourceClosed = useCallback(() => {
+    setSelectedAssetSource(null)
+
+    // Set focus on menu button in `ImageActionsMenu` when closing the dialog
+    menuButtonElement?.focus()
+  }, [menuButtonElement])
+
+  const renderPreview = useCallback(() => {
+    return (
+      <ImageInputPreview
+        directUploads={directUploads}
+        handleOpenDialog={handleOpenDialog}
+        hoveringFiles={hoveringFiles}
+        imageUrlBuilder={imageUrlBuilder}
+        // if there previously was a preview image, preserve the height to avoid jumps
+        initialHeight={previewElementRef.current.height}
+        readOnly={readOnly}
+        resolveUploader={resolveUploader}
+        schemaType={schemaType}
+        value={value}
+      />
+    )
+  }, [
+    directUploads,
+    handleOpenDialog,
+    hoveringFiles,
+    imageUrlBuilder,
+    readOnly,
+    resolveUploader,
+    schemaType,
+    value,
+  ])
+  const renderAssetMenu = useCallback(() => {
+    return (
+      <ImageInputAssetMenu
+        assetSources={assetSources}
+        directUploads={directUploads}
+        handleOpenDialog={handleOpenDialog}
+        handleRemoveButtonClick={handleRemoveButtonClick}
+        handleSelectFiles={handleSelectFiles}
+        handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
+        imageUrlBuilder={imageUrlBuilder}
+        isImageToolEnabled={isImageToolEnabled()}
+        isMenuOpen={isMenuOpen}
+        observeAsset={observeAsset}
+        readOnly={readOnly}
+        schemaType={schemaType}
+        setHotspotButtonElement={setHotspotButtonElement}
+        setMenuButtonElement={setMenuButtonElement}
+        setMenuOpen={setMenuOpen}
+        value={value}
+      />
+    )
+  }, [
+    assetSources,
+    directUploads,
+    handleOpenDialog,
+    handleRemoveButtonClick,
+    handleSelectFiles,
+    handleSelectImageFromAssetSource,
+    imageUrlBuilder,
+    isImageToolEnabled,
+    isMenuOpen,
+    observeAsset,
+    readOnly,
+    schemaType,
+    value,
+  ])
+  const renderBrowser = useCallback(() => {
+    return (
+      <ImageInputBrowser
+        assetSources={assetSources}
+        readOnly={readOnly}
+        directUploads={directUploads}
+        id={id}
+        setMenuOpen={setMenuOpen}
+        handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
+      />
+    )
+  }, [assetSources, directUploads, handleSelectImageFromAssetSource, id, readOnly])
+  const renderUploadPlaceholder = useCallback(() => {
+    return (
+      <ImageInputUploadPlaceholder
+        directUploads={directUploads}
+        handleSelectFiles={handleSelectFiles}
+        hoveringFiles={hoveringFiles}
+        readOnly={readOnly}
+        renderBrowser={renderBrowser}
+        resolveUploader={resolveUploader}
+        schemaType={schemaType}
+      />
+    )
+  }, [
+    directUploads,
+    handleSelectFiles,
+    hoveringFiles,
+    readOnly,
+    renderBrowser,
+    resolveUploader,
+    schemaType,
+  ])
+  const renderUploadState = useCallback(
+    (uploadState: UploadState) => {
+      return (
+        <UploadProgress
+          uploadState={uploadState}
+          onCancel={isUploading ? handleCancelUpload : undefined}
+          onStale={handleStaleUpload}
+          // if there previously was a preview image, preserve the height to avoid jumps
+          height={previewElementRef.current.height}
+        />
+      )
+    },
+    [handleCancelUpload, handleStaleUpload, isUploading],
+  )
+  const renderAsset = useCallback(() => {
     if (value && typeof value.asset !== 'undefined' && !value?._upload && !isImageSource(value)) {
-      return () => <InvalidImageWarning onClearValue={this.handleClearField} />
+      // eslint-disable-next-line react/display-name
+      return () => <InvalidImageWarning onClearValue={handleClearField} />
     }
 
-    // todo: convert this to a functional component and use this with useCallback
-    //  it currently has to return a new function on every render in order to pick up state from this component
+    // eslint-disable-next-line react/display-name
     return (inputProps: Omit<InputProps, 'renderDefault'>) => (
-      <>
-        {isStale && (
-          <Box marginBottom={2}>
-            <UploadWarning onClearStale={this.handleClearUploadState} />
-          </Box>
-        )}
-
-        <ChangeIndicator
-          path={inputProps.path.concat(ASSET_FIELD_PATH)}
-          hasFocus={!!inputProps.focused}
-          isChanged={inputProps.changed}
-        >
-          {value?._upload ? (
-            this.renderUploadState(value._upload)
-          ) : (
-            <FileTarget
-              {...elementProps}
-              onFocus={this.handleFileTargetFocus}
-              tabIndex={0}
-              disabled={Boolean(readOnly)}
-              onFiles={this.handleSelectFiles}
-              onFilesOver={this.handleFilesOver}
-              onFilesOut={this.handleFilesOut}
-              tone={this.getFileTone()}
-              $border={hasValueOrUpload || hoveringFiles.length > 0}
-              sizing="border"
-              radius={2}
-            >
-              {!value?.asset && this.renderUploadPlaceholder()}
-              {!value?._upload && value?.asset && (
-                <div style={{position: 'relative'}} ref={this.setPreviewElement}>
-                  {this.renderPreview()}
-                  {this.renderAssetMenu()}
-                </div>
-              )}
-            </FileTarget>
-          )}
-        </ChangeIndicator>
-      </>
+      <ImageInputAsset
+        ref={setPreviewElementHeight}
+        elementProps={elementProps}
+        handleClearUploadState={handleClearUploadState}
+        handleFilesOut={handleFilesOut}
+        handleFilesOver={handleFilesOver}
+        handleFileTargetFocus={handleFileTargetFocus}
+        handleSelectFiles={handleSelectFiles}
+        hoveringFiles={hoveringFiles}
+        inputProps={inputProps}
+        isStale={isStale}
+        readOnly={readOnly}
+        renderAssetMenu={renderAssetMenu}
+        renderPreview={renderPreview}
+        renderUploadPlaceholder={renderUploadPlaceholder}
+        renderUploadState={renderUploadState}
+        tone={getFileTone()}
+        value={value}
+      />
     )
-  }
-
-  render() {
-    const {
-      focusPath,
-      members,
-      renderAnnotation,
-      renderBlock,
-      renderField,
-      renderInlineBlock,
-      renderInput,
-      renderItem,
-      renderPreview,
-    } = this.props
-
-    const {selectedAssetSource} = this.state
-
-    // we use the hotspot field as the "owner" of both hotspot and crop
-    const hotspotField = members.find(
-      (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot',
-    )
-
+  }, [
+    elementProps,
+    getFileTone,
+    handleClearField,
+    handleClearUploadState,
+    handleFileTargetFocus,
+    handleFilesOut,
+    handleFilesOver,
+    handleSelectFiles,
+    hoveringFiles,
+    isStale,
+    readOnly,
+    renderAssetMenu,
+    renderPreview,
+    renderUploadPlaceholder,
+    renderUploadState,
+    setPreviewElementHeight,
+    value,
+  ])
+  const renderHotspotInput = useCallback(
+    (inputProps: Omit<InputProps, 'renderDefault'>) => {
+      return (
+        <ImageInputHotspotInput
+          isImageToolEnabled={isImageToolEnabled()}
+          handleCloseDialog={handleCloseDialog}
+          imageInputProps={props}
+          inputProps={inputProps}
+        />
+      )
+    },
+    [handleCloseDialog, isImageToolEnabled, props],
+  )
+  const renderAssetSource = useCallback(() => {
     return (
-      // The Stack space should match the space in ObjectInput
-      <Stack space={5} data-testid="image-input">
-        <ImperativeToast ref={this.setToast} />
-        {members.map((member) => {
-          if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
-            // we're rendering these separately
-            return null
-          }
-
-          if (member.kind === 'field') {
-            return (
-              <MemberField
-                key={member.key}
-                member={member}
-                renderAnnotation={renderAnnotation}
-                renderBlock={renderBlock}
-                renderInlineBlock={renderInlineBlock}
-                renderInput={member.name === 'asset' ? this.renderAsset() : renderInput}
-                renderField={member.name === 'asset' ? passThrough : renderField}
-                renderItem={renderItem}
-                renderPreview={renderPreview}
-              />
-            )
-          }
-
-          if (member.kind === 'fieldSet') {
-            return (
-              <MemberFieldSet
-                key={member.key}
-                member={member}
-                renderAnnotation={renderAnnotation}
-                renderBlock={renderBlock}
-                renderField={renderField}
-                renderInlineBlock={renderInlineBlock}
-                renderInput={renderInput}
-                renderItem={renderItem}
-                renderPreview={renderPreview}
-              />
-            )
-          }
-          if (member.kind === 'error') {
-            return <MemberFieldError key={member.key} member={member} />
-          }
-          //@ts-expect-error all possible cases should be covered
-          return <>{t('inputs.image.error.unknown-member-kind', {kind: member.kind})}</>
-        })}
-
-        {hotspotField && focusPath[0] === 'hotspot' && (
-          <FormInput
-            {...this.props}
-            absolutePath={hotspotField.field.path}
-            renderInput={this.renderHotspotInput}
-          />
-        )}
-        {selectedAssetSource && this.renderAssetSource()}
-      </Stack>
+      <ImageInputAssetSource
+        handleAssetSourceClosed={handleAssetSourceClosed}
+        handleSelectAssetFromSource={handleSelectAssetFromSource}
+        observeAsset={observeAsset}
+        schemaType={schemaType}
+        selectedAssetSource={selectedAssetSource}
+        value={value}
+      />
     )
-  }
+  }, [
+    handleAssetSourceClosed,
+    handleSelectAssetFromSource,
+    observeAsset,
+    schemaType,
+    selectedAssetSource,
+    value,
+  ])
+
+  // we use the hotspot field as the "owner" of both hotspot and crop
+  const hotspotField = useMemo(
+    () =>
+      members.find(
+        (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot',
+      ),
+    [members],
+  )
+
+  return (
+    // The Stack space should match the space in ObjectInput
+    <Stack space={5} data-testid="image-input">
+      {members.map((member) => {
+        if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
+          // we're rendering these separately
+          return null
+        }
+
+        if (member.kind === 'field') {
+          return (
+            <MemberField
+              key={member.key}
+              member={member}
+              renderAnnotation={renderAnnotation}
+              renderBlock={renderBlock}
+              renderInlineBlock={renderInlineBlock}
+              renderInput={member.name === 'asset' ? renderAsset() : renderInput}
+              renderField={member.name === 'asset' ? passThrough : renderField}
+              renderItem={renderItem}
+              renderPreview={renderPreviewProp}
+            />
+          )
+        }
+
+        if (member.kind === 'fieldSet') {
+          return (
+            <MemberFieldSet
+              key={member.key}
+              member={member}
+              renderAnnotation={renderAnnotation}
+              renderBlock={renderBlock}
+              renderField={renderField}
+              renderInlineBlock={renderInlineBlock}
+              renderInput={renderInput}
+              renderItem={renderItem}
+              renderPreview={renderPreviewProp}
+            />
+          )
+        }
+        if (member.kind === 'error') {
+          return <MemberFieldError key={member.key} member={member} />
+        }
+        //@ts-expect-error all possible cases should be covered
+        return <>{t('inputs.image.error.unknown-member-kind', {kind: member.kind})}</>
+      })}
+
+      {hotspotField && focusPath[0] === 'hotspot' && (
+        <FormInput
+          {...props}
+          absolutePath={hotspotField.field.path}
+          renderInput={renderHotspotInput}
+        />
+      )}
+      {selectedAssetSource && renderAssetSource()}
+    </Stack>
+  )
+}
+
+/** @internal */
+export const BaseImageInput = memo(BaseImageInputComponent)
+
+function passThrough({children}: {children?: ReactNode}) {
+  return children
 }
