@@ -60,6 +60,12 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
   await createDraftDocument('/test/content/input-debug;documentActionsTest')
+
+  // waits for the top most form layer to finish loading
+  await page.waitForSelector('[data-testid="document-panel-scroller"]', {
+    state: 'visible',
+  })
+
   const title = page.getByTestId('document-panel-document-title')
   await titleInput.fill(titleA)
 
@@ -95,6 +101,16 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   // Ensure the custom restore action can invoke the system restore action.
   await customRestoreButton.click()
   await confirmButton.click()
+
+  // Wait for input not to be the previous value.
+  await page.waitForFunction(
+    ({selector, testTitle}) => {
+      const element = document.querySelector(selector) as HTMLElement
+      return element && element.textContent !== testTitle
+    },
+    {selector: '[data-testid="document-panel-document-title"]', testTitle: titleB},
+  )
+
   await expect(title).toHaveText(titleA)
 })
 
