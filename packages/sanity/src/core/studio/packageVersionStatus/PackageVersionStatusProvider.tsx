@@ -7,7 +7,7 @@ import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInI
 import {useTranslation} from '../../i18n'
 import {checkForLatestVersions} from './checkForLatestVersions'
 
-// How often to run logic to check last timestamp and fetch new version
+// How often to to check last timestamp. at 30 min, should fetch new version
 const REFRESH_INTERVAL = 1000 * 60 * 5 // every 5 minutes
 const SHOW_TOAST_FREQUENCY = 1000 * 60 * 30 //half hour
 
@@ -49,7 +49,8 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
       ),
       closable: true,
       status: 'info',
-      duration: SHOW_TOAST_FREQUENCY + 10000, //covering for some delays, etc.
+      //covering for some delays, etc. because of the toast ID, we should never see this twice
+      duration: SHOW_TOAST_FREQUENCY * 2,
     })
   }, [toast, t])
 
@@ -65,10 +66,9 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
       }
 
       checkForLatestVersions(currentPackageVersions).then((latestPackageVersions) => {
-        if (!latestPackageVersions) return
+        lastCheckedTimeRef.current = Date.now()
 
-        const currentTime = Date.now()
-        lastCheckedTimeRef.current = currentTime
+        if (!latestPackageVersions) return
 
         const foundNewVersion = Object.entries(latestPackageVersions).some(([pkg, version]) => {
           if (!version) return false
