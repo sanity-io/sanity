@@ -185,7 +185,7 @@
       "react": "19.0.0-rc-dfd30974ab-20240613",
       "react-dom": "19.0.0-rc-dfd30974ab-20240613",
       "react-is": "19.0.0-rc-dfd30974ab-20240613",
-      "react-rx": "3.0.1-canary.0",
+      "react-rx": "3.0.1-canary.1",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }

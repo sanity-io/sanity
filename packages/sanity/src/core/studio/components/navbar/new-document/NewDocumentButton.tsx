@@ -46,6 +46,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
   const {t} = useTranslation()
   const getI18nText = useGetI18nText(options)
+  const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
 
   const scheme = useColorSchemeValue()
   const currentUser = useCurrentUser()
@@ -229,42 +230,44 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   // Popover
   return (
-    <StyledPopover
-      constrainSize
-      onKeyDown={handlePopoverKeyDown}
-      open={open}
-      portal
-      radius={3}
-      ref={setPopoverElement}
-      scheme={scheme}
-      content={
-        <RootFlex
-          direction="column"
-          flex={1}
-          forwardedAs={ReactFocusLock}
-          height="fill"
-          returnFocus
-        >
-          <PopoverHeaderCard sizing="border">
-            <Stack>
-              <Card borderBottom padding={1}>
-                <TextInput {...sharedTextInputProps} fontSize={1} radius={1} />
-              </Card>
-            </Stack>
-          </PopoverHeaderCard>
-
-          <PopoverListFlex
-            $itemHeight={INLINE_PREVIEW_HEIGHT}
-            $maxDisplayedItems={MAX_DISPLAYED_ITEMS}
+    <>
+      <StyledPopover
+        constrainSize
+        onKeyDown={handlePopoverKeyDown}
+        open={open}
+        portal
+        radius={3}
+        ref={setPopoverElement}
+        scheme={scheme}
+        referenceElement={referenceElement}
+        content={
+          <RootFlex
             direction="column"
-            overflow="hidden"
+            flex={1}
+            forwardedAs={ReactFocusLock}
+            height="fill"
+            returnFocus
           >
-            <NewDocumentList {...sharedListProps} />
-          </PopoverListFlex>
-        </RootFlex>
-      }
-    >
-      <div>
+            <PopoverHeaderCard sizing="border">
+              <Stack>
+                <Card borderBottom padding={1}>
+                  <TextInput {...sharedTextInputProps} fontSize={1} radius={1} />
+                </Card>
+              </Stack>
+            </PopoverHeaderCard>
+
+            <PopoverListFlex
+              $itemHeight={INLINE_PREVIEW_HEIGHT}
+              $maxDisplayedItems={MAX_DISPLAYED_ITEMS}
+              direction="column"
+              overflow="hidden"
+            >
+              <NewDocumentList {...sharedListProps} />
+            </PopoverListFlex>
+          </RootFlex>
+        }
+      />
+      <div ref={setReferenceElement}>
         <Tooltip {...sharedTooltipProps}>
           <div>
             <Button
@@ -276,6 +279,6 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
           </div>
         </Tooltip>
       </div>
-    </StyledPopover>
+    </>
   )
 }
