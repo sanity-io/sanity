@@ -6,12 +6,15 @@ test.describe('@sanity/default-layout: Navbar', () => {
   })
 
   test('should show Help & Resource Menu', async ({page}) => {
+    await page.getByLabel('Help and resources').waitFor({
+      state: 'visible',
+    })
     expect(page.getByLabel('Help and resources')).toBeVisible()
 
     await page.getByLabel('Help and resources').click()
 
     await page.getByTestId('menu-button-resources').waitFor({
-      state: 'attached',
+      state: 'visible',
     })
   })
 
