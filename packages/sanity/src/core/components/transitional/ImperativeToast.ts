@@ -11,7 +11,10 @@ export interface ToastParams {
   status?: 'error' | 'warning' | 'success' | 'info'
 }
 
-/** @internal */
+/**
+ * @internal
+ * @deprecated -- Refactor the component so it can call `useToast` instead
+ */
 export const ImperativeToast = forwardRef((_, ref) => {
   const {push} = useToast()
 
