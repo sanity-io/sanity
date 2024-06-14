@@ -68,7 +68,7 @@ export const useChangeIndicatorsReporter: ReporterHook<ChangeIndicatorTrackerCon
     // eslint-disable-next-line no-console
     console.warn(
       new Error(
-        'No context provided for reporter. Make sure that the component calling "usePresenceReporter()", is wrapped inside a <ChangeIndicatorsTracker> element',
+        'No context provided for reporter. Make sure that the component calling "useChangeIndicatorsReporter()", is wrapped inside a <ChangeIndicatorsTracker> element',
       ),
     )
   }

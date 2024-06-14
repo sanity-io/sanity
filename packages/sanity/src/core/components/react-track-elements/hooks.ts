@@ -1,6 +1,5 @@
-/* eslint-disable no-console */
 import {debounce} from 'lodash'
-import {useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react'
 
 import {type IsEqualFunction} from './types'
 
@@ -12,6 +11,14 @@ export interface TrackerContextStore<Value> {
 }
 
 function createStore<Value>(reportedValues: Map<string, Value>, publish: () => void) {
+  /**
+   * This implementation is over 4 years old, and is part of tackling a hard problem:
+   * tracking the position of DOM nodes efficiently, so that Presence Sticky Overlays can render correctly and respond to scroll,
+   * and so that Change Indicator connectors can draw paths that traces a document change to its form input field no matter how they layout shifts.
+   * 4 years ago we didn't have a lot of options when solving this problem.
+   * But today we have great success with using `@floating-ui/react` in `@sanity/ui` with a very similar problem: positioning tooltips and popovers correctly no matter how the page scrolls or the layout shifts.
+   * We should consider migrating to `@floating-ui/react` for this problem as well.
+   */
   function add(id: string, value: Value) {
     if (reportedValues.has(id)) {
       // eslint-disable-next-line no-console
@@ -64,10 +71,6 @@ export function useTrackerStore<Value>(): {
     [debouncedUpdateSnapshot, reportedValues],
   )
 
-  useEffect(() => {
-    console.log('useTrackerStore.useEffect')
-  }, [])
-
   return {store, snapshot}
 }
 
@@ -86,20 +89,13 @@ export function useTrackerStoreReporter<Value>(
      * Setup and teardown, only runs if `id`, `store` or the `value` getter changes
      */
     if (id === null || store === null) {
-      console.log('useTrackerStoreReporter.add', 'id is null')
       return undefined
     }
-    console.groupCollapsed(`useTrackerStoreReporter.add(${id})`)
-    console.count(id)
     const nextValue = value()
-    console.log({current: nextValue})
-    console.log('previous.current', previousRef.current)
     store.add(id, nextValue)
     idRef.current = id
     previousRef.current = nextValue
-    console.groupEnd()
     return () => {
-      console.count(`useTrackerStoreReporter.remove(${id})`)
       store.remove(id)
       idRef.current = null
       previousRef.current = null
@@ -113,38 +109,16 @@ export function useTrackerStoreReporter<Value>(
      * @TODO This is a bit expensive, and we should migrate to using a library like `@floating-ui/react` instead of rolling our own solution.
      */
     if (id === null || idRef.current === null || store === null || id !== idRef.current) {
-      console.count(
-        `useTrackerStoreReporter.update(${idRef.current || 'null'}, ${id || 'null'}): skipped`,
-      )
       return undefined
     }
     const nextValue = value()
     if (isEqual(previousRef.current, nextValue)) {
-      console.count(
-        `useTrackerStoreReporter.update(${idRef.current || 'null'}, ${id || 'null'}): skipped, equal state`,
-      )
       return undefined
     }
 
-    console.group(`useTrackerStoreReporter.update(${id})`)
     store.update(id, nextValue)
-    console.count(`update(id: ${id}, current: ${nextValue})`)
-    console.log({'previous.current': previousRef.current, 'current': nextValue})
-    console.groupEnd()
-
     previousRef.current = nextValue
 
     return undefined
   })
-}
-
-/** @internal */
-export function useTrackerStoreReportedValues<Value>(
-  snapshot: TrackerContextGetSnapshot<Value> | null,
-): [string, Value][] {
-  useEffect(() => {
-    console.log('useTrackerStoreReportedValues.useEffect', {snapshot})
-  }, [snapshot])
-
-  return snapshot || []
 }
