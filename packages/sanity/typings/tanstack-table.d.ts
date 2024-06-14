@@ -1,6 +1,10 @@
 import {type RowData} from '@tanstack/react-table'
 
-import {type BaseStructureToolPaneProps} from '../src/structure/panes/types'
+import {type DocumentSheetListSchemaTypes} from '../src/structure/panes/documentList/sheetList/types'
+import {
+  type BaseStructureToolPaneProps,
+  type DocumentSheetListValueTypes,
+} from '../src/structure/panes/types'
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
