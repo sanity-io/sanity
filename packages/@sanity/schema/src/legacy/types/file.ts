@@ -37,7 +37,7 @@ export const FileType = {
 
     const parsed = Object.assign(pick(FILE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: FILE_CORE,
-      title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
+      title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : FILE_CORE.title),
       options: options,
       fields: subTypeDef.fields.map((fieldDef: any) => {
         const {name, fieldset, ...rest} = fieldDef
