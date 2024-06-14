@@ -22,7 +22,7 @@ export type RegionWithIntersectionDetails = {
 
 /** @internal */
 export type FieldPresenceData = {
-  element: HTMLElement
+  element: HTMLElement | null
   presence: FormNodePresence[]
   maxAvatars: number
 }

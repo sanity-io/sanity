@@ -16,7 +16,7 @@ import {ConnectorContext, DiffContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
-import {useReportedValues} from '../../../../../changeIndicators'
+import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
 import {useTranslation} from '../../../../../i18n'
 import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {type ObjectDiff} from '../../../../types'
@@ -131,7 +131,7 @@ function AnnnotationWithDiff({
   const annotationPath = useMemo(() => prefix.concat(path), [path, prefix])
   const myPath = useMemo(() => prefix.concat(markDefPath), [markDefPath, prefix])
   const myValue = `field-${toString(myPath)}`
-  const values = useReportedValues()
+  const values = useChangeIndicatorsReportedValues()
   const isEditing = useMemo(
     () => values.filter(([p]) => p.startsWith(myValue)).length > 0,
     [myValue, values],
