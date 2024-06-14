@@ -55,7 +55,7 @@ withDefaultClient((context) => {
     await page.getByRole('menuitem').getByText('Replace').click()
     await referenceInput.getByLabel('Open').click()
     await authorListbox.waitFor({
-      state: 'attached',
+      state: 'visible',
     })
     await expect(authorListbox).toBeVisible()
 
