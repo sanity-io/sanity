@@ -3,14 +3,7 @@ import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useEffect, useRef} from 'react'
 import {type FormDocumentValue, useCopyPasteAction} from 'sanity'
 
-import {
-  insertTextAtCursor,
-  isCopyPasteResult,
-  isInputElement,
-  isSelectionWithinInputElement,
-  parseCopyResult,
-  transformValueToPrimitive,
-} from '../studio/copyPaste/utils'
+import {isNativeEditableElement} from '../studio/copyPaste/utils'
 
 /** @internal */
 export interface GlobalCopyPasteElementHandler {
@@ -27,7 +20,7 @@ export function useGlobalCopyPasteElementHandler({
   value,
   element,
   focusPath,
-}: GlobalCopyPasteElementHandler) {
+}: GlobalCopyPasteElementHandler): void {
   const focusPathRef = useRef<Path>(focusPath || [])
   const valueRef = useRef(value)
   valueRef.current = value
@@ -41,21 +34,9 @@ export function useGlobalCopyPasteElementHandler({
   const handleCopy = useCallback(
     (event: ClipboardEvent) => {
       const targetElement = event.target as HTMLElement
-      // Skip if this is coming from the PTE
-      if (event.clipboardData?.getData('application/x-portable-text')) {
+      // We will skip handling this event if you have focus on an native editable element
+      if (isNativeEditableElement(targetElement)) {
         return
-      }
-
-      // We will skip handling this event if you have a selection within a input/textarea element
-      if (isSelectionWithinInputElement(targetElement)) {
-        return
-      }
-
-      if (!isInputElement(targetElement)) {
-        const selection = window.getSelection()
-        if (selection && selection?.toString().length > 0) {
-          return
-        }
       }
 
       onCopy(focusPathRef.current, valueRef.current, {
@@ -70,16 +51,9 @@ export function useGlobalCopyPasteElementHandler({
       const targetElement = event.target
 
       if (isCopyHotKey(event)) {
-        // Prevent event propogation if we have a selection within an input element
-        if (isSelectionWithinInputElement(targetElement as HTMLElement)) {
+        // We will skip handling this event if you have focus on an native editable element
+        if (isNativeEditableElement(targetElement as HTMLElement)) {
           return
-        }
-
-        if (!isInputElement(targetElement)) {
-          const selection = window.getSelection()
-          if (selection && selection?.toString().length > 0) {
-            return
-          }
         }
 
         event.preventDefault()
@@ -90,8 +64,7 @@ export function useGlobalCopyPasteElementHandler({
       }
 
       if (isPasteHotKey(event)) {
-        // We will handle this event in the paste handler below if we are working with a input/textarea element
-        if (isInputElement(targetElement) || isSelectionWithinInputElement(targetElement)) {
+        if (isNativeEditableElement(targetElement as HTMLElement)) {
           return
         }
 
@@ -108,31 +81,11 @@ export function useGlobalCopyPasteElementHandler({
     const handlePaste = async (event: ClipboardEvent) => {
       const targetElement = event.target
 
-      // We will only handle this event for input elements - otherwise we will deal with it in the keydown handler
-      if (isInputElement(targetElement)) {
-        event.preventDefault()
-
-        const clipboardValue = event.clipboardData?.getData('text')
-
-        // First we check if we have a copy/paste result in the clipboard
-        if (isCopyPasteResult(clipboardValue)) {
-          // Transform it to a primitive value so we can insert it into the input element
-          const targetValue = transformValueToPrimitive(parseCopyResult(clipboardValue))
-
-          // Lets check if we have a selection within the input element
-          if (isSelectionWithinInputElement(targetElement)) {
-            // We insert the value here instead of natively because we need to transform the value above
-            insertTextAtCursor(targetElement, `${targetValue}`)
-          } else {
-            onPaste(focusPathRef.current, {
-              context: {source: 'keyboardShortcut'},
-            })
-          }
-        } else {
-          // If we don't have a copy/paste result in clipboard, pass through the event
-          insertTextAtCursor(targetElement, `${clipboardValue}`)
-        }
+      if (isNativeEditableElement(targetElement as HTMLElement)) {
+        return
       }
+      event.preventDefault()
+      onPaste(focusPathRef.current)
     }
 
     element?.addEventListener('paste', handlePaste)
