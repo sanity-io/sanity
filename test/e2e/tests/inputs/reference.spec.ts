@@ -37,7 +37,7 @@ withDefaultClient((context) => {
 
     // Open the Author reference input.
     await referenceInput.getByLabel('Open').click()
-    await authorListbox.waitFor({
+    await page.waitForSelector('#author-listbox', {
       state: 'attached',
     })
     await expect(authorListbox).toBeVisible()
@@ -54,8 +54,8 @@ withDefaultClient((context) => {
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
     await referenceInput.getByLabel('Open').click()
-    await authorListbox.waitFor({
-      state: 'visible',
+    await page.waitForSelector('#author-listbox', {
+      state: 'attached',
     })
     await expect(authorListbox).toBeVisible()
 
