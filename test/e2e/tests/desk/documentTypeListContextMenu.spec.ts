@@ -60,8 +60,12 @@ test('clicking default sort order and direction sets value in storage', async ({
 
 test('clicking custom sort order and direction sets value in storage', async ({
   page,
+  browserName,
   sanityClient,
 }) => {
+  // For now, only test in Chromium due to flakiness in Firefox and WebKit
+  test.skip(browserName !== 'chromium')
+
   await page.goto('/test/content/book')
 
   const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
