@@ -20,6 +20,7 @@ export function DropdownCellInput({
   handlePatchField,
   cellValue,
   setCellValue,
+  fieldRef,
 }: CellInputType<StringSchemaType | NumberSchemaType>) {
   const handleOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value: boolean | string | number = e.target.value
@@ -42,6 +43,7 @@ export function DropdownCellInput({
       style={{
         boxShadow: 'none',
       }}
+      ref={fieldRef}
       value={cellValue}
     >
       {/* only allow unset open when field is NOT a radio selection */}

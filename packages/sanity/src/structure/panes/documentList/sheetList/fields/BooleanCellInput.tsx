@@ -14,7 +14,7 @@ export function BooleanCellInput(
     readOnly?: boolean
   },
 ) {
-  const {cellValue, fieldType, readOnly = false, setCellValue, handlePatchField} = props
+  const {cellValue, fieldType, readOnly = false, setCellValue, handlePatchField, fieldRef} = props
   const layout = fieldType?.options?.layout || 'switch'
 
   const indeterminate = typeof cellValue !== 'boolean'
@@ -42,6 +42,7 @@ export function BooleanCellInput(
           readOnly={readOnly}
           indeterminate={indeterminate}
           onChange={handleChange}
+          ref={fieldRef}
         />
       </Flex>
     </Root>

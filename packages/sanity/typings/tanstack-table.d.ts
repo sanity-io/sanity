@@ -27,6 +27,10 @@ declare module '@tanstack/react-table' {
      * For immediate change use `handlePatchField` from cell context
      */
     'setCellValue': (value: DocumentSheetListValueTypes) => void
+    /**
+     * `fieldRef` should be assigned as `ref` to the input element in the cell
+     * to allow for focus controls
+     */
     'fieldRef': MutableRefObject<HTMLElement>
     'setShouldPreventDefaultMouseDown': (shouldSuppressDefaultMouseDown: boolean) => void
     'data-testid': string
