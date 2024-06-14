@@ -5,6 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  '@sanity/pkg-utils': 6.9.4-canary.1
   '@sanity/ui': 2.3.6-canary.6
   '@sanity/icons': 3.2.1-canary.0
   react: 19.0.0-rc-dfd30974ab-20240613
@@ -62,8 +63,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(eslint@8.57.0)(typescript@5.4.5)
       '@sanity/pkg-utils':
-        specifier: 6.9.3
-        version: 6.9.3(@types/node@18.19.31)(typescript@5.4.5)
+        specifier: 6.9.4-canary.1
+        version: 6.9.4-canary.1(@types/node@18.19.31)(typescript@5.4.5)
       '@sanity/prettier-config':
         specifier: ^1.0.2
         version: 1.0.2(prettier@3.3.2)
@@ -1858,8 +1859,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@sanity/pkg-utils':
-        specifier: 6.9.3
-        version: 6.9.3(@types/node@18.19.31)(debug@4.3.5)(typescript@5.4.5)
+        specifier: 6.9.4-canary.1
+        version: 6.9.4-canary.1(@types/node@18.19.31)(debug@4.3.5)(typescript@5.4.5)
       '@sanity/tsdoc':
         specifier: 1.0.72
         version: 1.0.72(@types/node@18.19.31)(debug@4.3.5)(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(sanity@packages+sanity)(styled-components@6.1.11)
@@ -7038,8 +7039,8 @@ packages:
       - supports-color
     dev: false
 
-  /@sanity/pkg-utils@6.9.3(@types/node@18.19.31)(debug@4.3.5)(typescript@5.4.5):
-    resolution: {integrity: sha512-AydMp57nHCVA2AYx2czLsdIan7EN1XVI/t/EDLDT6lPJKs4JDQOc7hkc8DcYMikNr6y6ryOfLbWeHjXVddRBKQ==}
+  /@sanity/pkg-utils@6.9.4-canary.1(@types/node@18.19.31)(debug@4.3.5)(typescript@5.4.5):
+    resolution: {integrity: sha512-rY4xmVwq3McNFQQObSCaJjJ/QKzyzC9eu11zbCOYtNkoxdsDXCRORuvzTqKGhdZuyPz8zuY5rcnDXFmU54jUhw==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -7095,8 +7096,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sanity/pkg-utils@6.9.3(@types/node@18.19.31)(typescript@5.4.5):
-    resolution: {integrity: sha512-AydMp57nHCVA2AYx2czLsdIan7EN1XVI/t/EDLDT6lPJKs4JDQOc7hkc8DcYMikNr6y6ryOfLbWeHjXVddRBKQ==}
+  /@sanity/pkg-utils@6.9.4-canary.1(@types/node@18.19.31)(typescript@5.4.5):
+    resolution: {integrity: sha512-rY4xmVwq3McNFQQObSCaJjJ/QKzyzC9eu11zbCOYtNkoxdsDXCRORuvzTqKGhdZuyPz8zuY5rcnDXFmU54jUhw==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -7265,7 +7266,7 @@ packages:
       '@sanity/client': 6.20.0(debug@4.3.5)
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
-      '@sanity/pkg-utils': 6.9.3(@types/node@18.19.31)(debug@4.3.5)(typescript@5.4.5)
+      '@sanity/pkg-utils': 6.9.4-canary.1(@types/node@18.19.31)(debug@4.3.5)(typescript@5.4.5)
       '@sanity/ui': 2.3.6-canary.6(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.1(vite@5.2.13)
@@ -7326,7 +7327,7 @@ packages:
       '@sanity/client': 6.20.0
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.2.1-canary.0(react@18.3.1)
-      '@sanity/pkg-utils': 6.9.3(@types/node@18.19.31)(typescript@5.4.5)
+      '@sanity/pkg-utils': 6.9.4-canary.1(@types/node@18.19.31)(typescript@5.4.5)
       '@sanity/ui': 2.3.6-canary.6(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.1(vite@5.2.13)
@@ -7387,7 +7388,7 @@ packages:
       '@sanity/client': 6.20.0
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.2.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)
-      '@sanity/pkg-utils': 6.9.3(@types/node@18.19.31)(typescript@5.4.5)
+      '@sanity/pkg-utils': 6.9.4-canary.1(@types/node@18.19.31)(typescript@5.4.5)
       '@sanity/ui': 2.3.6-canary.6(react-dom@19.0.0-rc-dfd30974ab-20240613)(react-is@19.0.0-rc-dfd30974ab-20240613)(react@19.0.0-rc-dfd30974ab-20240613)(styled-components@6.1.11)
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.1(vite@5.2.13)
@@ -18558,7 +18559,7 @@ packages:
       lodash: 4.17.21
       react: 19.0.0-rc-dfd30974ab-20240613
       react-is: 18.3.1
-      react-rx: 3.0.1-canary.0(react@19.0.0-rc-dfd30974ab-20240613)(rxjs@7.8.1)
+      react-rx: 3.0.1-canary.1(react@19.0.0-rc-dfd30974ab-20240613)(rxjs@7.8.1)
       rxjs: 7.8.1
       sanity: link:packages/sanity
       scroll-into-view-if-needed: 3.1.0

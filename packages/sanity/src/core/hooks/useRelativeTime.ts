@@ -55,7 +55,7 @@ export function useRelativeTime(time: Date | string, options: RelativeTimeOption
   useEffect(() => {
     let timerId: number | null
 
-    function tick(interval: number) {
+    const tick = (interval: number) => {
       timerId = window.setTimeout(() => {
         forceUpdate()
         // avoid pile-up of setInterval callbacks,

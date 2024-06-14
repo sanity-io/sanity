@@ -74,7 +74,7 @@ export const FormInput = memo(function FormInput(
 /**
  * An input that takes input props for object or array and renders an input for a given sub-path
  */
-const FormInputInner = memo(function FormInputInner(
+const FormInputInner = memo(function FormInputInnerComponent(
   props: (ArrayOfObjectsInputProps | ObjectInputProps) & {
     absolutePath: Path
     includeField?: boolean

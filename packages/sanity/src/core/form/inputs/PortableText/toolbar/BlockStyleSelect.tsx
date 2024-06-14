@@ -87,6 +87,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     disabled || (focusBlock ? editor.schemaTypes.block.name !== focusBlock._type : false)
 
   // @todo: Explain what this does
+  // 😭😭😭 nobody explained what it does...
   const activeKeys = useActiveStyleKeys({items: itemsProp})
 
   const {activeItems, items} = useMemo(() => {
@@ -95,7 +96,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     let _items = itemsProp
 
     if (_activeItems.length === 0 && _items.length > 1) {
-      _items = _items.concat([emptyStyle])
+      _items = [..._items, emptyStyle]
       _activeItems.push(emptyStyle)
     }
 

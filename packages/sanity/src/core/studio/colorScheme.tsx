@@ -210,7 +210,7 @@ export function useColorSchemeOptions(
 ) {
   const scheme = useColorSchemeInternalValue()
 
-  return useMemo(() => {
+  return useMemo<ColorSchemeOption[]>(() => {
     return [
       {
         title: t('user-menu.color-scheme.system-title'),
@@ -236,6 +236,6 @@ export function useColorSchemeOptions(
         onSelect: () => setScheme('light'),
         icon: SunIcon,
       },
-    ] satisfies ColorSchemeOption[]
+    ]
   }, [scheme, setScheme, t])
 }

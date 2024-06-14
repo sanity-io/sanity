@@ -108,7 +108,7 @@
     "@sanity/client": "^6.20.0",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
-    "@sanity/pkg-utils": "6.9.3",
+    "@sanity/pkg-utils": "6.9.4-canary.1",
     "@sanity/prettier-config": "^1.0.2",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.72",
@@ -180,6 +180,7 @@
       ]
     },
     "overrides": {
+      "@sanity/pkg-utils": "6.9.4-canary.1",
       "@sanity/ui": "2.3.6-canary.6",
       "@sanity/icons": "3.2.1-canary.0",
       "react": "19.0.0-rc-dfd30974ab-20240613",

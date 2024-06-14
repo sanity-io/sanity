@@ -28,6 +28,10 @@
   "exports": {
     ".": {
       "source": "./src/index.ts",
+      "react-compiler": {
+        "source": "./src/index.ts",
+        "default": "./lib/index.compiled.mjs"
+      },
       "import": "./lib/index.mjs",
       "require": "./lib/index.js",
       "default": "./lib/index.js"
