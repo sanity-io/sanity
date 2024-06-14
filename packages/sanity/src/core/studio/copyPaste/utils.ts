@@ -1,113 +1,82 @@
 import {isIndexSegment, isKeySegment, isReferenceSchemaType} from '@sanity/types'
-import {isFinite} from 'lodash'
 import {isString, type ObjectField, type ObjectFieldType, type Path, type SchemaType} from 'sanity'
 
 import {type CopyActionResult} from './types'
 
+const SANITY_CLIPBOARD_ITEM_TYPE = 'web application/sanity-studio'
+
 export const getClipboardItem = async (): Promise<CopyActionResult | null> => {
-  const value = await window.navigator.clipboard.readText().then((text) => {
-    return parseCopyResult(text)
-  })
-
-  if (!isCopyPasteResult(value)) {
-    return null
+  const items = await window.navigator.clipboard.read()
+  const item = items.find((i) => i.types.includes(SANITY_CLIPBOARD_ITEM_TYPE))
+  const sanityItem = await item?.getType(SANITY_CLIPBOARD_ITEM_TYPE)
+  if (sanityItem) {
+    const text = await sanityItem.text()
+    return parseCopyResult(text) || null
   }
-
-  return value
+  return null
 }
 
-export const writeClipboardItem = (value: CopyActionResult): void => {
-  window.navigator.clipboard.writeText(JSON.stringify(value))
+export const writeClipboardItem = async (copyActionResult: CopyActionResult): Promise<boolean> => {
+  try {
+    const clipboardItem: Record<string, Blob> = {
+      [SANITY_CLIPBOARD_ITEM_TYPE]: new Blob([JSON.stringify(copyActionResult)], {
+        type: 'web application/sanity-studio',
+      }),
+    }
+    const text = copyActionResult.items
+      .map((item) => transformValueToText(item.value))
+      .filter(Boolean)
+      .join('\n')
+    if (text.length > 0) {
+      clipboardItem['text/plain'] = new Blob([text], {type: 'text/plain'})
+    }
+    await window.navigator.clipboard.write([new ClipboardItem(clipboardItem)])
+    return true
+  } catch (error) {
+    console.error('Failed to write to clipboard', error)
+    return false
+  }
 }
 
-export function isCopyPasteResult(value: any): value is CopyActionResult {
-  const normalized = typeof value === 'string' ? parseCopyResult(value) : value
-
-  return typeof normalized === 'object' && normalized?._type === 'copyResult'
-}
-
-export function transformValueToPrimitive(
-  copyActionResult: CopyActionResult | null,
-): string | number {
-  if (!copyActionResult) {
+export function transformValueToText(value: unknown): string | number {
+  if (!value) {
     return ''
   }
-
-  const {value} = copyActionResult.items[0]
-
   if (isString(value)) {
     return value
   }
 
-  if (isFinite(value)) {
-    return Number(value)
+  if (Number.isFinite(value)) {
+    return value.toString()
   }
 
-  if (isString(value) && isFinite(parseFloat(value))) {
-    return parseFloat(value)
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => transformValueToText(item))
+      .filter(Boolean)
+      .join(', ')
   }
 
-  return value?.toString() || ''
+  if (typeof value === 'object') {
+    const objectValue = value as Record<string, unknown>
+    return Object.keys(objectValue)
+      .map((key) =>
+        key.startsWith('_')
+          ? ''
+          : transformValueToText(typeof value === 'object' ? objectValue[key] : ''),
+      )
+      .filter(Boolean)
+      .join(', ')
+  }
+  return ''
 }
 
-export function parseCopyResult(value: any): CopyActionResult | null {
+export function parseCopyResult(value: string): CopyActionResult | null {
   try {
     return JSON.parse(value)
   } catch (_) {
     return null
   }
-}
-
-export function isSelectionWithinInputElement(element: HTMLElement | EventTarget | null): boolean {
-  const activeElement = document.activeElement as HTMLElement
-
-  // Check if the active element is a textarea or input
-  if (
-    activeElement &&
-    (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')
-  ) {
-    const inputElement = activeElement as HTMLInputElement | HTMLTextAreaElement
-
-    // Check if there is a text selection within the input/textarea element
-    if (inputElement.selectionStart !== null && inputElement.selectionEnd !== null) {
-      return inputElement.selectionStart !== inputElement.selectionEnd
-    }
-  }
-
-  return false
-}
-
-export function isInputElement(
-  element: any | HTMLElement | null,
-): element is HTMLInputElement | HTMLTextAreaElement {
-  return element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement
-}
-
-export function insertTextAtCursor(element: HTMLInputElement | HTMLTextAreaElement, text: string) {
-  const start = element.selectionStart || 0
-  const end = element.selectionEnd || 0
-  const value = element.value
-
-  // React will override the native input value setter
-  const nativeInputValueSetter = getNativeInputValueSetter()
-
-  nativeInputValueSetter?.call(element, value.slice(0, start) + text + value.slice(end))
-  element.selectionStart = start
-  element.selectionEnd = start + text.length
-
-  const changeEvent = new Event('input', {bubbles: true})
-  element.dispatchEvent(changeEvent)
-}
-
-/**
- * Get the native input value setter function
- */
-function getNativeInputValueSetter() {
-  if (!window || !window.HTMLInputElement || !Object) {
-    return null
-  }
-
-  return Object.getOwnPropertyDescriptor(window?.HTMLInputElement?.prototype, 'value')?.set
 }
 
 export function tryResolveSchemaTypeForPath(
@@ -181,15 +150,25 @@ export function fieldExtendsType(field: ObjectField | ObjectFieldType, ofType: s
 
 export function isEmptyValue(value: unknown): boolean {
   if (value === null || value === undefined) return true
-  if (typeof value === 'string' && value.trim() === '') return true
-  if (typeof value === 'number' && isNaN(value)) return true
-  if (typeof value === 'object' && Object.keys(value).length === 0) return true
+  // Test that an object is empty. An object is considered not empty if it has some
+  // key that is not prefixed with _ or has a _ref key (exception for all other _ keys)
   if (
     typeof value === 'object' &&
-    Object.keys(value).length === 1 &&
-    Object.keys(value)[0] === '_type'
+    Object.keys(value).filter((key) => key === '_ref' || !key.startsWith('_')).length === 0
   )
     return true
   if (Array.isArray(value) && value.length === 0) return true
+  return false
+}
+
+export function isNativeEditableElement(el: EventTarget): boolean {
+  if (el instanceof HTMLElement && el.isContentEditable) return true
+  if (el instanceof HTMLInputElement) {
+    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#input_types
+    if (/|text|email|number|password|search|tel|url/.test(el.type || '')) {
+      return !(el.disabled || el.readOnly)
+    }
+  }
+  if (el instanceof HTMLTextAreaElement) return !(el.disabled || el.readOnly)
   return false
 }

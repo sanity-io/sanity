@@ -23,7 +23,11 @@ import {transferValue} from './valueTransfer'
  * @internal
  * @hidden
  */
-export function useCopyPasteAction() {
+export function useCopyPasteAction(): {
+  onCopy: (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => Promise<void>
+  onPaste: (targetPath: Path, options?: PasteOptions) => Promise<void>
+  onChange: ((event: PatchEvent) => void) | undefined
+} {
   const telemetry = useTelemetry()
   const {getDocumentMeta, setCopyResult} = useCopyPaste()
   const toast = useToast()
@@ -103,11 +107,20 @@ export function useCopyPasteAction() {
       })
 
       setCopyResult(payloadValue)
-      await writeClipboardItem(payloadValue)
+      const isWrittenToClipboard = await writeClipboardItem(payloadValue)
 
+      if (isWrittenToClipboard) {
+        toast.push({
+          status: 'success',
+          title: `${isDocument ? 'Document' : 'Field'} ${payloadValue.items.map((item) => item.schemaTypeTitle).join(', ')} copied`,
+        })
+        return
+      }
+      // TODO: how should this be handled, and what is the error message?
+      // We are waiting for Firefox to release this support, as it's available in next.
       toast.push({
-        status: 'success',
-        title: `${isDocument ? 'Document' : 'Field'} ${payloadValue.items.map((item) => item.schemaTypeTitle).join(', ')} copied`,
+        status: 'error',
+        title: `Your browser doesn't support this action (yet)`,
       })
     },
     [getDocumentMeta, setCopyResult, telemetry, toast],
