@@ -43,7 +43,6 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
               onClick={onClick}
               text={t('package-version.new-package-available.reload-button')}
               tone={'primary'}
-              data-testid="new-package-version-reload-button"
             />
           </Box>
         </Stack>

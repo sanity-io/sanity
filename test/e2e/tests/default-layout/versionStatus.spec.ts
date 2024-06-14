@@ -7,13 +7,13 @@ test('should not show package version toast if not in auto-updating studio', asy
   baseURL,
 }) => {
   await page.goto(baseURL ?? '')
-  const reloadButton = page.getByTestId('new-package-version-reload-button')
-  await expect(reloadButton).not.toBeVisible()
+
+  await expect(page.getByText('New version available')).not.toBeVisible()
 })
 
 test.describe('auto-updating studio behavior', () => {
   test.beforeEach(async ({page, baseURL}) => {
-    await page.goto(baseURL ?? '')
+    await page.goto(baseURL ?? '', {waitUntil: 'networkidle'})
     // Inject a script tag with importmap into the page
     await page.evaluate(() => {
       const importMap = {
@@ -41,9 +41,7 @@ test.describe('auto-updating studio behavior', () => {
         }),
       })
     })
-
-    const reloadButton = page.getByTestId('new-package-version-reload-button')
-    await expect(reloadButton).toBeVisible()
+    await expect(page.getByText('New version available')).toBeVisible()
   })
 
   test('should show nothing if in auto-updating studio, and version is lower', async ({page}) => {
@@ -58,7 +56,6 @@ test.describe('auto-updating studio behavior', () => {
       })
     })
 
-    const reloadButton = page.getByTestId('new-package-version-reload-button')
-    await expect(reloadButton).not.toBeVisible()
+    await expect(page.getByText('New version available')).not.toBeVisible()
   })
 })
