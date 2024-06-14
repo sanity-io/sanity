@@ -4,7 +4,7 @@ import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {memo, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {type Path} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components'
 import {type TreeEditingMenuItem} from '../../types'
