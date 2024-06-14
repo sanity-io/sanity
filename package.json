@@ -181,7 +181,7 @@
     },
     "overrides": {
       "@sanity/pkg-utils": "6.9.4-canary.1",
-      "@sanity/ui": "2.3.6-canary.6",
+      "@sanity/ui": "2.3.7-canary.0",
       "@sanity/icons": "3.2.1-canary.0",
       "react": "19.0.0-rc-dfd30974ab-20240613",
       "react-dom": "19.0.0-rc-dfd30974ab-20240613",
