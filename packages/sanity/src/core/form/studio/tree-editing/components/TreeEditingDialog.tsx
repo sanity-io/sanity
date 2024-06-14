@@ -24,7 +24,7 @@ import {
   type TreeEditingState,
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
-import {TreeEditingLayout} from './TreeEditingLayout'
+import {TreeEditingLayout} from './layout'
 
 const EMPTY_ARRAY: [] = []
 

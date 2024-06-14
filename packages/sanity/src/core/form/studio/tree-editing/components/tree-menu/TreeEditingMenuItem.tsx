@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {hues} from '@sanity/color'
 import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
 import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
@@ -6,16 +5,17 @@ import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {getSchemaTypeTitle, type Path, SanityDefaultPreview, useTranslation} from 'sanity'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useTranslation} from 'react-i18next'
+import {getSchemaTypeTitle, type Path, SanityDefaultPreview} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
-import {css, styled} from 'styled-components'
+import styled, {css} from 'styled-components'
 
-import {useValuePreviewWithFallback} from '../hooks'
-import {type TreeEditingMenuItem} from '../types'
-import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
+import {useValuePreviewWithFallback} from '../../hooks'
+import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
+import {isArrayItemPath} from '../../utils/build-tree-editing-state/utils'
 
-function hasOpenChild(item: TreeEditingMenuItem, selectedPath: Path | null): boolean {
+function hasOpenChild(item: TreeEditingMenuItemType, selectedPath: Path | null): boolean {
   return (
     item.children?.some(
       (child) => isEqual(child.path, selectedPath) || hasOpenChild(child, selectedPath),
@@ -100,13 +100,13 @@ const ItemFlex = styled(Flex)(({theme}) => {
 })
 
 interface TreeEditingMenuItemProps {
-  item: TreeEditingMenuItem
+  item: TreeEditingMenuItemType
   onPathSelect: (path: Path) => void
   selectedPath: Path | null
   siblingHasChildren?: boolean
 }
 
-function MenuItem(props: TreeEditingMenuItemProps) {
+export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Element {
   const {item, onPathSelect, selectedPath, siblingHasChildren} = props
   const {children} = item
   const hasChildren = children && children.length > 0
@@ -215,7 +215,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
             )
 
             return (
-              <MenuItem
+              <TreeEditingMenuItem
                 item={child}
                 key={toString(child.path)}
                 onPathSelect={onPathSelect}
@@ -229,35 +229,3 @@ function MenuItem(props: TreeEditingMenuItemProps) {
     </Stack>
   )
 }
-
-interface TreeEditingMenuProps {
-  items: TreeEditingMenuItem[]
-  onPathSelect: (path: Path) => void
-  selectedPath: Path | null
-}
-
-export const TreeEditingMenu = memo(function TreeEditingMenu(
-  props: TreeEditingMenuProps,
-): JSX.Element {
-  const {items, onPathSelect, selectedPath} = props
-
-  return (
-    <Stack as="ul" role="tree" space={2}>
-      {items.map((item) => {
-        const siblingHasChildren = items.some(
-          (sibling) => sibling.children && sibling.children.length > 0,
-        )
-
-        return (
-          <MenuItem
-            item={item}
-            key={toString(item.path)}
-            onPathSelect={onPathSelect}
-            selectedPath={selectedPath}
-            siblingHasChildren={siblingHasChildren}
-          />
-        )
-      })}
-    </Stack>
-  )
-})

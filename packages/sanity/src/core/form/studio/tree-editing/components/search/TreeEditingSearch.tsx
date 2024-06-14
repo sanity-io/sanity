@@ -4,10 +4,10 @@ import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useState} fr
 import {type Path, useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {useSearchableList} from '../../hooks'
 import {type TreeEditingMenuItem} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
 import {TreeEditingSearchMenu} from './TreeEditingSearchMenu'
-import {useSearchableList} from './useSearchableList'
 import {treeEditingSearch} from './utils'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom-start']

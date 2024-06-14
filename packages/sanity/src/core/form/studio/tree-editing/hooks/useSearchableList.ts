@@ -3,9 +3,13 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {map} from 'rxjs'
 import {type Previewable, useDocumentPreviewStore} from 'sanity'
 
-import {type TreeEditingMenuItem} from '../../types'
-import {type SearchableTreeEditingMenuItem} from './types'
-import {flattenItems} from './utils'
+import {flattenItems} from '../components/search/utils'
+import {type TreeEditingMenuItem} from '../types'
+
+export interface SearchableTreeEditingMenuItem extends TreeEditingMenuItem {
+  title: string | undefined
+  children?: SearchableTreeEditingMenuItem[]
+}
 
 /**
  * A hook that takes a list of items and returns a flat list of
