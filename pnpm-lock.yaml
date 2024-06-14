@@ -618,7 +618,7 @@ importers:
         specifier: 3.46.1
         version: link:../../packages/@sanity/cli
       '@sanity/ui':
-        specifier: ^2.3.5
+        specifier: ^2.3.6
         version: 2.3.6(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       react:
         specifier: ^18.3.1
@@ -1178,7 +1178,7 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
       '@sanity/ui':
-        specifier: ^2.3.5
+        specifier: ^2.3.6
         version: 2.3.6(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@testing-library/react':
         specifier: ^13.4.0
@@ -1394,7 +1394,7 @@ importers:
         specifier: ^3.0.0
         version: 3.2.0(react@18.3.1)
       '@sanity/ui':
-        specifier: ^2.3.5
+        specifier: ^2.3.6
         version: 2.3.6(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@uiw/react-codemirror':
         specifier: ^4.11.4
@@ -1566,7 +1566,7 @@ importers:
         specifier: 3.46.1
         version: link:../@sanity/types
       '@sanity/ui':
-        specifier: ^2.3.5
+        specifier: ^2.3.6
         version: 2.3.6(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/util':
         specifier: 3.46.1
