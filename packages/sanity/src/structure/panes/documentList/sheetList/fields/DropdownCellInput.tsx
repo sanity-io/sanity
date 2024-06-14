@@ -33,6 +33,8 @@ export function DropdownCellInput({
 
   if (!options || typeof cellValue === 'boolean') return null
 
+  const isUnsetOptionAllowed = !cellValue || fieldType.options?.layout !== 'radio'
+
   return (
     <Select
       onChange={handleOnChange}
@@ -42,7 +44,8 @@ export function DropdownCellInput({
       }}
       value={cellValue}
     >
-      <option value={undefined} selected={!cellValue} />
+      {/* only allow unset open when field is NOT a radio selection */}
+      {isUnsetOptionAllowed && <option value={undefined} selected={!cellValue} />}
       {options.map(toSelectItem).map((option) => (
         <option key={option.title} value={option.value}>
           {option.title}
