@@ -45,6 +45,7 @@ export function DropdownCellInput({
       }}
       ref={fieldRef}
       value={cellValue}
+      readOnly={!!fieldType.readOnly}
     >
       {/* only allow unset open when field is NOT a radio selection */}
       {isUnsetOptionAllowed && <option value={undefined} selected={!cellValue} />}

@@ -8,11 +8,10 @@ export const CellInput = ({
   cellValue,
   setCellValue,
   fieldRef,
-  column,
   setShouldPreventDefaultMouseDown,
   'data-testid': dataTestId,
+  fieldType,
 }: CellInputType<StringSchemaType | NumberSchemaType>) => {
-  const {fieldType} = column.columnDef.meta || {}
   const value = cellValue as string
   const handleOnChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,9 +34,7 @@ export const CellInput = ({
       type={inputType}
       ref={fieldRef}
       __unstable_disableFocusRing
-      style={{
-        padding: '22px 16px',
-      }}
+      readOnly={!!fieldType.readOnly}
       value={value ?? ''}
       data-testid={dataTestId}
       onChange={handleOnChange}
