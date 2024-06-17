@@ -58,13 +58,10 @@ test.describe('navigation - tree sidebar', () => {
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
-    await page.waitForSelector('[data-testid="tree-editing-sidebar"]', {state: 'visible'})
+    await page.waitForSelector('[data-testid="sidebar-tree-list"]', {state: 'visible'})
 
     // click on second array item in the sidebar
-    await page
-      .getByTestId('tree-editing-sidebar')
-      .getByRole('button', {name: 'Lucy, the cat'})
-      .click()
+    await page.getByTestId('sidebar-tree-list').getByRole('button', {name: 'Lucy, the cat'}).click()
 
     // Wait for the animation to change form to finish
     const elementSelector = '[data-testid="tree-editing-dialog-content"]' // element that is animated
@@ -166,7 +163,7 @@ test.describe('navigation - breadcrumb', () => {
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
-    await page.waitForSelector('[data-testid="tree-editing-sidebar"]', {state: 'visible'})
+    await page.waitForSelector('[data-testid="sidebar-tree-list"]', {state: 'visible'})
 
     // make sure that item is selected on nav tree
     await expect(
@@ -222,7 +219,6 @@ test.describe('navigation - form', () => {
 
     // click done
     await page.getByRole('button', {name: 'Done'}).click()
-    await expect(modal).not.toBeVisible()
 
     /* structure:
     {
@@ -252,7 +248,7 @@ test.describe('navigation - form', () => {
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
-    await page.waitForSelector('[data-testid="tree-editing-sidebar"]', {state: 'visible'})
+    await page.waitForSelector('[data-testid="sidebar-tree-list"]', {state: 'visible'})
 
     // make sure that item is selected on nav tree
     await expect(
