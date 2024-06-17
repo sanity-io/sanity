@@ -24,11 +24,11 @@ export const publish: OperationImpl<[], DisabledReason> = {
         actionType: 'sanity.action.document.publish',
         draftId: idPair.draftId,
         publishedId: idPair.publishedId,
-        // The editor must be able to see the latest state of both the draft document they are
-        // publishing, and the published document they are choosing to replace. Optimistic
-        // locking using `ifDraftRevisionId` and `ifPublishedRevisionId` ensures the client and
-        // server are synchronised.
-        ifDraftRevisionId: snapshots.draft._rev,
+        // Optimistic locking using `ifPublishedRevisionId` ensures that concurrent publish action
+        // invocations do not override each other.
+        //
+        // Note: for custom publish actions, `snapshots.draft._rev` may be stale, which means the
+        // `ifDraftRevisionId` optimistic lock cannot currently be used.
         ifPublishedRevisionId: snapshots.published?._rev,
       },
       {
