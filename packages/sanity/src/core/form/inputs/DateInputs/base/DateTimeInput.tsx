@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react'
 import FocusLock from 'react-focus-lock'
+import {useTranslation} from 'react-i18next'
 
 import {Button, Popover} from '../../../../../ui-components'
 import {type CalendarLabels} from './calendar/types'
@@ -48,6 +49,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
+  const {t} = useTranslation()
 
   useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
     forwardedRef,
@@ -77,6 +79,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const suffix = (
     <Flex style={{padding: '5px'}}>
       <Button
+        aria-label={t('inputs.datetime.aria-label')}
         ref={buttonRef}
         icon={CalendarIcon}
         mode="bleed"

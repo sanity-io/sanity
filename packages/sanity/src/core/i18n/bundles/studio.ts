@@ -524,6 +524,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.resolving-initial-value': 'Resolving initial value…',
   /** Tooltip content when boolean input is disabled */
   'inputs.boolean.disabled': 'Disabled',
+  /** Accessibility label for button to open datetime input */
+  'inputs.datetime.aria-label': 'Open date picker',
   /** Placeholder value for datetime input */
   'inputs.datetime.placeholder': 'e.g. {{example}}',
   /** Acessibility label for button to open file options menu */
