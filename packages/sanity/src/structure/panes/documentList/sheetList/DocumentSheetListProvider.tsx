@@ -14,15 +14,14 @@ type SelectedCellDetails = {
   state: 'focused' | 'selected'
 } | null
 
+export type CellState = 'focused' | 'selectedAnchor' | 'selectedRange' | null
+
 /** @internal */
 export interface DocumentSheetListContextValue {
   focusAnchorCell: () => void
   resetFocusSelection: () => void
   setSelectedAnchorCell: (colId: string, rowIndex: number) => void
-  getStateByCellId: (
-    colId: string,
-    rowIndex: number,
-  ) => 'focused' | 'selectedAnchor' | 'selectedRange' | null
+  getStateByCellId: (colId: string, rowIndex: number) => CellState
   submitFocusedCell: () => void
 }
 
