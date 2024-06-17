@@ -186,6 +186,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         fieldFocused={Boolean(focused)}
         fieldHovered={hovered}
         presence={presence}
+        inputId={inputId}
         content={
           <Stack space={3}>
             <Flex align="center">
