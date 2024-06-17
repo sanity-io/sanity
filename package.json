@@ -24,7 +24,7 @@
     "chore:lint:fix": "turbo run lint -- --quiet --fix",
     "chore:normalize-versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
     "clean": "run-s build:clean clean:deps",
-    "clean:deps": "rimraf packages/@repo/*/node_modules packages/@sanity/*/node_modules packages/*/node_modules node_modules",
+    "clean:deps": "rimraf packages/@repo/*/node_modules packages/@sanity/*/node_modules packages/*/node_modules dev/*/node_modules node_modules",
     "depcheck": "pnpm check:deps",
     "deploy:movies": "pnpm build && cd examples/movies-studio && sanity deploy",
     "deploy:test": "pnpm build && cd dev/test-studio && sanity deploy",
