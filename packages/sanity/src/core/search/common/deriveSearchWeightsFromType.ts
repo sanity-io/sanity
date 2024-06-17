@@ -29,8 +29,8 @@ const isPtField = (type: SchemaType | undefined) =>
   type?.jsonType === 'array' &&
   type.of.some((arrType) => getTypeChain(arrType).some(({name}) => name === 'block'))
 
-const isStringField = (schemaType: SchemaType | undefined) =>
-  getTypeChain(schemaType).some((type) => type.name === 'string')
+const isStringField = (schemaType: SchemaType | undefined): boolean =>
+  schemaType ? schemaType?.jsonType === 'string' : false
 
 const isSearchConfiguration = (options: unknown): options is SearchConfiguration =>
   isRecord(options) && 'search' in options && isRecord(options.search)

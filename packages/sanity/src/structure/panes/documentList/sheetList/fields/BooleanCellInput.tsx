@@ -1,13 +1,8 @@
 import {type BooleanSchemaType} from '@sanity/types'
-import {Card, Checkbox, Switch} from '@sanity/ui'
+import {Checkbox, Switch} from '@sanity/ui'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
 
 import {type CellInputType} from '../SheetListCell'
-
-const Root = styled(Card)`
-  width: 100%;
-`
 
 export function BooleanCellInput(props: CellInputType<BooleanSchemaType>) {
   const {cellValue, fieldType, setCellValue, handlePatchField, fieldRef} = props

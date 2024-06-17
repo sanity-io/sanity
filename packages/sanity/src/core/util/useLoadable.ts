@@ -1,4 +1,5 @@
-import {useMemoObservable} from 'react-rx'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {type Observable, of, type OperatorFunction} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
@@ -46,7 +47,8 @@ export function useLoadable<T>(
       ? LOADING_STATE
       : {isLoading: false, value: initialValue, error: null}
 
-  return useMemoObservable(() => value$.pipe(asLoadable()), [value$], initial)
+  const loadableObservable = useMemo(() => value$.pipe(asLoadable()), [value$])
+  return useObservable(loadableObservable, initial)
 }
 
 /** @internal */
