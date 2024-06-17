@@ -3,7 +3,7 @@ import {type KeyedSegment, type Reference} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
 import {memo, useCallback, useMemo} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {useObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {debounceTime, map} from 'rxjs/operators'
 import {
@@ -50,57 +50,54 @@ export const ReferenceChangedBanner = memo(() => {
    * This is used to compare with the current pane's document ID. If the IDs
    * don't match then this banner should reveal itself
    */
-  const referenceInfo = useMemoObservable(
-    (): Observable<ParentReferenceInfo> => {
-      const parentRefPathSegment = parentRefPath?.[0] as string | undefined
+  const referenceInfoObservable = useMemo((): Observable<ParentReferenceInfo> => {
+    const parentRefPathSegment = parentRefPath?.[0] as string | undefined
 
-      // short-circuit: this document pane is not a child reference pane
-      if (!parentId || !parentRefPathSegment || !parentRefPath) {
-        return of({loading: false})
-      }
+    // short-circuit: this document pane is not a child reference pane
+    if (!parentId || !parentRefPathSegment || !parentRefPath) {
+      return of({loading: false})
+    }
 
-      const publishedId = getPublishedId(parentId)
-      const path = pathFromString(parentRefPathSegment)
+    const publishedId = getPublishedId(parentId)
+    const path = pathFromString(parentRefPathSegment)
 
-      // note: observePaths doesn't support keyed path segments, so we need to select the nearest parent
-      const keyedSegmentIndex = path.findIndex(
-        (p): p is KeyedSegment => typeof p == 'object' && '_key' in p,
-      )
+    // note: observePaths doesn't support keyed path segments, so we need to select the nearest parent
+    const keyedSegmentIndex = path.findIndex(
+      (p): p is KeyedSegment => typeof p == 'object' && '_key' in p,
+    )
 
-      return concat(
-        // emit a loading state instantly
-        of({loading: true}),
-        // then emit the values from watching the published ID's path
-        documentPreviewStore
-          .unstable_observePathsDocumentPair(
-            publishedId,
-            (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][],
-          )
-          .pipe(
-            // this debounce time is needed to prevent flashing banners due to
-            // the router state updating faster than the content-lake state. we
-            // debounce to wait for more emissions because the value pulled
-            // initially could be stale.
-            debounceTime(750),
-            map(
-              ({draft, published}): ParentReferenceInfo => ({
-                loading: false,
-                result: {
-                  availability: {
-                    draft: draft.availability,
-                    published: published.availability,
-                  },
-                  refValue: pathGet<Reference>(draft.snapshot || published.snapshot, parentRefPath)
-                    ?._ref,
+    return concat(
+      // emit a loading state instantly
+      of({loading: true}),
+      // then emit the values from watching the published ID's path
+      documentPreviewStore
+        .unstable_observePathsDocumentPair(
+          publishedId,
+          (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][],
+        )
+        .pipe(
+          // this debounce time is needed to prevent flashing banners due to
+          // the router state updating faster than the content-lake state. we
+          // debounce to wait for more emissions because the value pulled
+          // initially could be stale.
+          debounceTime(750),
+          map(
+            ({draft, published}): ParentReferenceInfo => ({
+              loading: false,
+              result: {
+                availability: {
+                  draft: draft.availability,
+                  published: published.availability,
                 },
-              }),
-            ),
+                refValue: pathGet<Reference>(draft.snapshot || published.snapshot, parentRefPath)
+                  ?._ref,
+              },
+            }),
           ),
-      )
-    },
-    [documentPreviewStore, parentId, parentRefPath],
-    {loading: true},
-  )
+        ),
+    )
+  }, [documentPreviewStore, parentId, parentRefPath])
+  const referenceInfo = useObservable(referenceInfoObservable, {loading: true})
 
   const handleReloadReference = useCallback(() => {
     if (referenceInfo.loading) return

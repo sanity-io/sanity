@@ -1,4 +1,5 @@
-import {useMemoObservable} from 'react-rx'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 
 import {useDocumentStore, type ValidationStatus} from '../store'
 
@@ -8,9 +9,9 @@ const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 export function useValidationStatus(publishedDocId: string, docTypeName: string): ValidationStatus {
   const documentStore = useDocumentStore()
 
-  return useMemoObservable(
+  const observable = useMemo(
     () => documentStore.pair.validation(publishedDocId, docTypeName),
-    [documentStore.pair, publishedDocId, docTypeName],
-    INITIAL,
+    [docTypeName, documentStore.pair, publishedDocId],
   )
+  return useObservable(observable, INITIAL)
 }

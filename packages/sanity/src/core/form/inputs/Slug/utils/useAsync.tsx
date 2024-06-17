@@ -1,4 +1,4 @@
-import {type DependencyList, useCallback, useRef, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 
 export type AsyncCompleteState<T> = {
   status: 'complete'
@@ -19,11 +19,9 @@ export type AsyncState<T> = AsyncPendingState | AsyncCompleteState<T> | AsyncErr
  * Whenever the callback is invoked, a new AsyncState is returned.
  * If the returned callback is called again before the previous callback has settled, the resolution of the previous one will be ignored, thus preventing race conditions.
  * @param fn - an async function that returns a value
- * @param dependencies - list of dependencies that will return a new [value, callback] pair
  */
 export function useAsync<T, U>(
   fn: (arg: U) => Promise<T>,
-  dependencies: DependencyList,
 ): [null | AsyncState<T>, (arg: U) => void] {
   const [state, setState] = useState<AsyncState<T> | null>(null)
 
@@ -49,8 +47,7 @@ export function useAsync<T, U>(
           },
         )
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- this is under control, and enforced by our linter setup
-    [fn, ...dependencies],
+    [fn],
   )
 
   return [state, wrappedCallback]

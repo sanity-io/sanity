@@ -7,6 +7,7 @@ import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig, mergeConfig} from 'vite'
 
 import {getAliases} from './aliases'
+import {createExternalFromImportMap} from './createExternalFromImportMap'
 import {getStudioEnvironmentVariables} from './getStudioEnvironmentVariables'
 import {normalizeBasePath} from './helpers'
 import {loadSanityMonorepo} from './sanityMonorepo'
@@ -51,6 +52,8 @@ export interface ViteOptions {
    * Mode to run vite in - eg development or production
    */
   mode: 'development' | 'production'
+
+  importMap?: {imports?: Record<string, string>}
 }
 
 /**
@@ -68,6 +71,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     server,
     minify,
     basePath: rawBasePath = '/',
+    importMap,
   } = options
 
   const monorepo = await loadSanityMonorepo(cwd)
@@ -104,7 +108,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityDotWorkaroundPlugin(),
       sanityRuntimeRewritePlugin(),
-      sanityBuildEntries({basePath, cwd, monorepo}),
+      sanityBuildEntries({basePath, cwd, monorepo, importMap}),
     ],
     envPrefix: 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
@@ -119,8 +123,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     },
   }
 
-  const addImportMap = false
-
   if (mode === 'production') {
     viteConfig.build = {
       ...viteConfig.build,
@@ -130,9 +132,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       emptyOutDir: false, // Rely on CLI to do this
 
       rollupOptions: {
-        external: addImportMap
-          ? [/^sanity(\/.*)?$/, 'react', 'react/jsx-runtime', 'styled-components']
-          : [],
+        external: createExternalFromImportMap(importMap),
         input: {
           sanity: path.join(cwd, '.sanity', 'runtime', 'app.js'),
         },
