@@ -160,6 +160,12 @@ function collateObjectValue({
   errors: TransferValueError[]
   keyGenerator: () => string
 }) {
+  if (isEmptyValue(sourceValue)) {
+    return {
+      targetValue: undefined,
+      errors,
+    }
+  }
   if (targetSchemaType.readOnly) {
     return {
       targetValue: undefined,

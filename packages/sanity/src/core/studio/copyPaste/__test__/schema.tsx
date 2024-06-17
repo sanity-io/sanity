@@ -34,6 +34,16 @@ const nestedObjectType = defineType({
       name: 'objectList',
       of: [{type: 'nestedObject'}],
     },
+    {
+      type: 'object',
+      name: 'recursiveTest',
+      fields: [
+        {
+          name: 'recursive',
+          type: 'nestedObject',
+        },
+      ],
+    },
   ],
 })
 
