@@ -208,9 +208,7 @@ export type SanityImagePaletteSwatch = {
   population?: number;
   title?: string;
   _type: \\"sanity.imagePaletteSwatch\\";
-};
-
-export type allSchemaTypes = Author | Post | Ghost | BlockContent | SanityAssetSourceData | Slug | Geopoint | SanityImageAsset | SanityFileAsset | SanityImageCrop | SanityImageHotspot | SanityImageMetadata | SanityImageDimensions | SanityImagePalette | SanityImagePaletteSwatch;"
+};"
 `;
 
 exports[`generateSchemaTypes should generate correct types for document schema with inline fields 1`] = `

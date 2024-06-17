@@ -56,9 +56,7 @@ describe('generateSchemaTypes', () => {
 "export type Author = {
   _id: string;
   name?: string;
-};
-
-export type allSchemaTypes = Author;"
+};"
 `)
   })
 
@@ -82,9 +80,7 @@ export type allSchemaTypes = Author;"
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type Product = {
   price: number;
-};
-
-export type allSchemaTypes = Product;"
+};"
 `)
   })
 
@@ -107,9 +103,7 @@ export type allSchemaTypes = Product;"
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type Task = {
   completed: boolean;
-};
-
-export type allSchemaTypes = Task;"
+};"
 `)
   })
 
@@ -148,9 +142,7 @@ export type allSchemaTypes = Task;"
     street: string;
     city: string;
   };
-};
-
-export type allSchemaTypes = User;"
+};"
 `)
   })
 
@@ -177,9 +169,7 @@ export type allSchemaTypes = User;"
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type BlogPost = {
   tags: Array<string>;
-};
-
-export type allSchemaTypes = BlogPost;"
+};"
 `)
   })
 
@@ -203,9 +193,7 @@ export type allSchemaTypes = BlogPost;"
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type DynamicData = {
   metadata: unknown;
-};
-
-export type allSchemaTypes = DynamicData;"
+};"
 `)
   })
 
@@ -229,9 +217,7 @@ export type allSchemaTypes = DynamicData;"
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type Impossible = {
   willNotHappen: null;
-};
-
-export type allSchemaTypes = Impossible;"
+};"
 `)
   })
 
@@ -273,9 +259,7 @@ export type allSchemaTypes = Impossible;"
 
 export type Author = {
   name: string;
-};
-
-export type allSchemaTypes = BlogPost | Author;"
+};"
 `)
   })
 
@@ -302,9 +286,7 @@ export type allSchemaTypes = BlogPost | Author;"
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type MixedContent = {
   content: string | number;
-};
-
-export type allSchemaTypes = MixedContent;"
+};"
 `)
   })
 
@@ -328,9 +310,7 @@ export type allSchemaTypes = MixedContent;"
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type OptionalData = {
   obsoleteField: null;
-};
-
-export type allSchemaTypes = OptionalData;"
+};"
 `)
   })
 
