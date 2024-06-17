@@ -28,7 +28,7 @@ test.describe('inputs: text', () => {
     const field = page.getByTestId('field-simple').getByRole('textbox')
 
     // Enter initial text and wait for the mutate call to be sent
-    const response = page.waitForResponse(/mutate/)
+    const response = page.waitForResponse(/sanity.studio.document.commit/)
     await field.fill(kanji)
     await response
 
