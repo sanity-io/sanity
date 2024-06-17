@@ -506,6 +506,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.error.type-is-incompatible-title': 'Why is this happening?',
   /** Error label for unexpected errors in the Array Input */
   'inputs.array.error.unexpected-error': 'Unexpected Error: {{error}}',
+  /** Label for the array insert menu all items filter  */
+  'inputs.array.insert-menu.filter.all-items': 'All',
+  /** Label for when the array insert menu search shows no items */
+  'inputs.array.insert-menu.search.no-results': 'No items found',
+  /** Placeholder for the array insert menu search field */
+  'inputs.array.insert-menu.search.placeholder': 'Search',
+  /** Tooltip for the array insert menu grid view toggle */
+  'inputs.array.insert-menu.toggle-grid-view.tooltip': 'Toggle grid view',
+  /** Tooltip for the array insert menu list view toggle */
+  'inputs.array.insert-menu.toggle-list-view.tooltip': 'Toggle list view',
   /** Label for when the array input doesn't have any items */
   'inputs.array.no-items-label': 'No items',
   /** Label for read only array fields */
