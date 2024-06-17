@@ -1,28 +1,27 @@
-import {type Locator} from '@playwright/test'
-
 import {expect, test} from '../fixtures/copyPasteFixture'
 
 test.describe('copy and pasting of fields', () => {
+  test.use({
+    permissions: ['clipboard-read', 'clipboard-write'],
+  })
+  test.beforeEach(async ({context}) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  })
   test(`its able to copy and paste an object field successfully via keyboard shortcuts`, async ({
     page,
     createDraftDocument,
-    getClipboard,
+    getClipboardItemsAsText,
   }) => {
-    let $objectWrapper: Locator
+    await createDraftDocument('/test/content/input-standard;objectsTest')
 
-    async function navigateToNewDocumentAndGetObjectWrapper() {
-      await createDraftDocument('/test/content/input-standard;objectsTest')
+    await expect(page.getByTestId(`field-objectWithColumns`)).toBeVisible()
 
-      await expect(page.getByTestId(`field-objectWithColumns`)).toBeVisible()
+    const $objectWrapper = page
+      .getByTestId('field-objectWithColumns')
+      .locator(`[tabindex="0"]`)
+      .first()
 
-      const $object = page.getByTestId('field-objectWithColumns').locator(`[tabindex="0"]`).first()
-
-      await expect($object).toBeVisible()
-
-      return $object
-    }
-
-    $objectWrapper = await navigateToNewDocumentAndGetObjectWrapper()
+    await expect($objectWrapper).toBeVisible()
 
     await page.getByTestId('field-objectWithColumns.string1').locator('input').focus()
 
@@ -39,8 +38,11 @@ test.describe('copy and pasting of fields', () => {
 
     await expect(page.getByText(`Field Object with columns copied`)).toBeVisible()
 
-    // Now lets navigate to new document and paste the copied field
-    $objectWrapper = await navigateToNewDocumentAndGetObjectWrapper()
+    await expect(await getClipboardItemsAsText()).toContain('A string to copy')
+
+    await page.getByTestId('field-objectWithColumns.string1').locator('input').focus()
+    await page.keyboard.press('Meta+A')
+    await page.keyboard.press('Delete')
 
     await $objectWrapper.focus()
 
@@ -51,30 +53,22 @@ test.describe('copy and pasting of fields', () => {
     await expect($objectWrapper).toBeVisible()
     await expect($objectWrapper).toBeFocused()
 
-    // await expect(page.getByText(`Field Object with columns updated`)).toBeVisible()
-    await expect(page.getByText(`updated`)).toBeVisible()
+    await expect(page.getByText(`Field Object with columns updated`)).toBeVisible()
   })
 
   test(`its able to copy and paste an object field successfully via field actions`, async ({
     page,
     createDraftDocument,
-    getClipboard,
+    getClipboardItemsAsText,
+    getClipboardItemByMimeTypeAsText,
   }) => {
-    let $objectWrapper: Locator
+    await createDraftDocument('/test/content/input-standard;objectsTest')
 
-    async function navigateToNewDocumentAndGetObjectWrapper() {
-      await createDraftDocument('/test/content/input-standard;objectsTest')
+    await expect(page.getByTestId(`field-objectWithColumns`)).toBeVisible()
 
-      await expect(page.getByTestId(`field-objectWithColumns`)).toBeVisible()
+    const $object = page.getByTestId('field-objectWithColumns').locator(`[tabindex="0"]`).first()
 
-      const $object = page.getByTestId('field-objectWithColumns').locator(`[tabindex="0"]`).first()
-
-      await expect($object).toBeVisible()
-
-      return $object
-    }
-
-    await navigateToNewDocumentAndGetObjectWrapper()
+    await expect($object).toBeVisible()
 
     await page.getByTestId('field-objectWithColumns.string1').locator('input').focus()
 
@@ -87,8 +81,6 @@ test.describe('copy and pasting of fields', () => {
       .getByTestId('field-actions-menu-objectWithColumns')
       .getByTestId('field-actions-trigger')
 
-    //await expect($fieldActions).toBeAttached()
-
     await $fieldActions.focus()
     await expect($fieldActions).toBeFocused()
     await $fieldActions.click()
@@ -98,8 +90,17 @@ test.describe('copy and pasting of fields', () => {
 
     await expect(page.getByText(`Field Object with columns copied`)).toBeVisible()
 
-    // Now lets navigate to new document and paste the copied field
-    await navigateToNewDocumentAndGetObjectWrapper()
+    // Check that the plain text version is set
+    await expect(await getClipboardItemsAsText()).toContain('A string to copy')
+
+    // Test the exact mimetype
+    await expect(await getClipboardItemByMimeTypeAsText('web application/sanity-studio')).toContain(
+      'A string to copy',
+    )
+
+    await page.getByTestId('field-objectWithColumns.string1').locator('input').focus()
+    await page.keyboard.press('Meta+A')
+    await page.keyboard.press('Delete')
 
     $fieldActions = page
       .getByTestId('field-actions-menu-objectWithColumns')
@@ -114,9 +115,7 @@ test.describe('copy and pasting of fields', () => {
     await expect(page.getByRole('menuitem', {name: 'Paste field'})).toBeVisible()
     await page.getByRole('menuitem', {name: 'Paste field'}).click()
 
-    // await expect(page.getByText(`Field Object with columns updated`)).toBeVisible()
-    await expect(page.getByText(`updated`)).toBeVisible()
-    await expect(getClipboard()).toContain('A string to copy')
+    await expect(page.getByText(`Field Object with columns updated`)).toBeVisible()
 
     await expect(page.getByTestId('field-objectWithColumns.string1').locator('input')).toHaveValue(
       'A string to copy',
