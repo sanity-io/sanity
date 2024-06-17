@@ -16,6 +16,9 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     // set up the portable text editor
     await page.getByTestId('field-content').focus()
     await page.getByTestId('field-content').click()
+
+    // wait for overlay to be gone
+    await page.getByTestId('activate-overlay').waitFor({state: 'hidden'})
   })
 
   test('on a simple editor', async ({page}) => {
