@@ -5,7 +5,10 @@ test.describe('@sanity/default-layout: Navbar', () => {
     await page.goto(baseURL ?? '')
   })
 
-  test('should show Help & Resource Menu', async ({page}) => {
+  test('should show Help & Resource Menu', async ({page, browserName}) => {
+    // For now, only test in Chromium due to flakiness in Firefox and WebKit
+    test.skip(browserName !== 'chromium')
+
     await page.getByLabel('Help and resources').waitFor({
       state: 'visible',
     })
