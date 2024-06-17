@@ -56,7 +56,9 @@ describe('generateSchemaTypes', () => {
 "export type Author = {
   _id: string;
   name?: string;
-};"
+};
+
+export type allSchemaTypes = Author;"
 `)
   })
 
@@ -80,7 +82,9 @@ describe('generateSchemaTypes', () => {
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type Product = {
   price: number;
-};"
+};
+
+export type allSchemaTypes = Product;"
 `)
   })
 
@@ -103,7 +107,9 @@ describe('generateSchemaTypes', () => {
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type Task = {
   completed: boolean;
-};"
+};
+
+export type allSchemaTypes = Task;"
 `)
   })
 
@@ -142,7 +148,9 @@ describe('generateSchemaTypes', () => {
     street: string;
     city: string;
   };
-};"
+};
+
+export type allSchemaTypes = User;"
 `)
   })
 
@@ -169,7 +177,9 @@ describe('generateSchemaTypes', () => {
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type BlogPost = {
   tags: Array<string>;
-};"
+};
+
+export type allSchemaTypes = BlogPost;"
 `)
   })
 
@@ -193,7 +203,9 @@ describe('generateSchemaTypes', () => {
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type DynamicData = {
   metadata: unknown;
-};"
+};
+
+export type allSchemaTypes = DynamicData;"
 `)
   })
 
@@ -217,7 +229,9 @@ describe('generateSchemaTypes', () => {
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type Impossible = {
   willNotHappen: null;
-};"
+};
+
+export type allSchemaTypes = Impossible;"
 `)
   })
 
@@ -259,7 +273,9 @@ describe('generateSchemaTypes', () => {
 
 export type Author = {
   name: string;
-};"
+};
+
+export type allSchemaTypes = BlogPost | Author;"
 `)
   })
 
@@ -286,7 +302,9 @@ export type Author = {
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type MixedContent = {
   content: string | number;
-};"
+};
+
+export type allSchemaTypes = MixedContent;"
 `)
   })
 
@@ -310,7 +328,9 @@ export type Author = {
     expect(actualOutput).toMatchInlineSnapshot(`
 "export type OptionalData = {
   obsoleteField: null;
-};"
+};
+
+export type allSchemaTypes = OptionalData;"
 `)
   })
 
