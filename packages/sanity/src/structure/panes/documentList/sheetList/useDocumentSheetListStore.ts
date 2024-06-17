@@ -1,7 +1,14 @@
 import {type ListenEvent, type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
-import {catchError, of} from 'rxjs'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, getDraftId, type SanityDocument, useClient} from 'sanity'
+import {catchError, map, of} from 'rxjs'
+import {
+  createSearch,
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  getDraftId,
+  type SanityDocument,
+  type SchemaType,
+  useClient,
+} from 'sanity'
 
 interface DocumentDeletedAction {
   id: string
@@ -131,13 +138,29 @@ export function useDocumentSheetListStore({
       return
     }
     try {
-      const res = await client.fetch(QUERY, params)
-      dispatch({type: 'DOCUMENTS_SET', documents: res})
-      setIsLoading(false)
+      const search = createSearch([filter as unknown as SchemaType], client, params || {})
+      const res = search(
+        {query: '', types: [filter as unknown as SchemaType]},
+        {
+          sort: params?.sort,
+        },
+      )
+        .pipe(
+          map((result) =>
+            // eslint-disable-next-line max-nested-callbacks
+            result.hits.map(({hit}) => hit),
+          ),
+        )
+        .subscribe((res) => {
+          console.log({res})
+          // const res = await client.fetch(QUERY, params)
+          dispatch({type: 'DOCUMENTS_SET', documents: res as SanityDocument[]})
+          setIsLoading(false)
+        })
     } catch (err) {
       setError(err)
     }
-  }, [client, params, QUERY])
+  }, [client, filter, params])
 
   const handleListenerEvent = useCallback(
     async (event: ListenEvent<Record<string, SanityDocument>>) => {

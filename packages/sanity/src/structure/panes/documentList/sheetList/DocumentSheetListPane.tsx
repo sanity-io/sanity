@@ -24,6 +24,10 @@ import {css, styled} from 'styled-components'
 
 import {LoadingPane} from '../../loading'
 import {type BaseStructureToolPaneProps} from '../../types'
+import {EMPTY_RECORD} from '../constants'
+import {applyOrderingFunctions, findStaticTypesInFilter} from '../helpers'
+import {useShallowUnique} from '../PaneContainer'
+import {type SortOrder} from '../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetActions} from './DocumentSheetActions'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
@@ -119,14 +123,36 @@ const DocumentRow = ({
   )
 }
 function DocumentSheetListPaneInner(
-  props: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType},
+  props: DocumentSheetListPaneProps & {sortOrder?: SortOrder; documentSchemaType: ObjectSchemaType},
 ) {
-  const {documentSchemaType, ...paneProps} = props
+  const {documentSchemaType, sortOrder: sortOrderRaw, ...paneProps} = props
+  const schema = useSchema()
+  const {options} = paneProps.pane
+  const {filter} = options
+  const params = useShallowUnique(options.params || EMPTY_RECORD)
+
+  const typeName = useMemo(() => {
+    const staticTypes = findStaticTypesInFilter(filter, params)
+    if (staticTypes?.length === 1) return staticTypes[0]
+    return null
+  }, [filter, params])
+
+  const sortWithOrderingFn = useMemo(
+    () =>
+      typeName && sortOrderRaw
+        ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName) as any)
+        : sortOrderRaw,
+    [schema, sortOrderRaw, typeName],
+  )
+
+  // console.log({sortOrderRaw, sortWithOrderingFn})
+
   const {dispatch, state} = useSearchState()
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
   const {data} = useDocumentSheetList({
-    typeName: documentSchemaType.name,
+    typeName: documentSchemaType,
+    sortBy: sortWithOrderingFn?.by,
   })
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 

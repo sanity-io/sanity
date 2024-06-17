@@ -9,7 +9,7 @@ interface DocumentSheetListOptions {
   typeName: string
 }
 
-export function useDocumentSheetList({typeName}: DocumentSheetListOptions): {
+export function useDocumentSheetList({typeName, sortBy}: DocumentSheetListOptions): {
   data: DocumentSheetTableRow[]
   isLoading: boolean
 } {
@@ -27,7 +27,10 @@ export function useDocumentSheetList({typeName}: DocumentSheetListOptions): {
     isLoading,
     documents: allDocuments,
   } = useDocumentSheetListStore({
-    filter: `_type == "${typeName}"`,
+    filter: typeName,
+    params: {
+      sort: sortBy,
+    },
   })
 
   // Only return the documents that match with the serverSide filter items.
