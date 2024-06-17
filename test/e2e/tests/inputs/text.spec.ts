@@ -82,10 +82,7 @@ test.describe('inputs: text', () => {
     const publishButton = page.getByTestId('action-Publish')
 
     // wait for form to be attached
-    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
-      state: 'attached',
-      timeout: 40000,
-    })
+    await expect(page.getByTestId('document-panel-scroller')).toBeAttached()
 
     await titleInput.fill('Title A')
 

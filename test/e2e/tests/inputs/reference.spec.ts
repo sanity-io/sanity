@@ -37,9 +37,7 @@ withDefaultClient((context) => {
 
     // Open the Author reference input.
     await referenceInput.getByLabel('Open').click()
-    await page.waitForSelector('#author-listbox', {
-      state: 'attached',
-    })
+    await expect(authorListbox).toBeAttached()
     await expect(authorListbox).toBeVisible()
 
     // Select the first document in the list.
@@ -54,9 +52,7 @@ withDefaultClient((context) => {
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
     await referenceInput.getByLabel('Open').click()
-    await page.waitForSelector('#author-listbox', {
-      state: 'attached',
-    })
+    await expect(authorListbox).toBeAttached()
     await expect(authorListbox).toBeVisible()
 
     // Select the next document in the list.

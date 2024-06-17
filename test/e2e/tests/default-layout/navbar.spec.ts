@@ -9,16 +9,13 @@ test.describe('@sanity/default-layout: Navbar', () => {
     // For now, only test in Chromium due to flakiness in Firefox and WebKit
     test.skip(browserName !== 'chromium')
 
-    await page.getByLabel('Help and resources').waitFor({
-      state: 'visible',
-    })
+    await expect(page.getByLabel('Help and resources')).toBeVisible()
+
     expect(page.getByLabel('Help and resources')).toBeVisible()
 
     await page.getByLabel('Help and resources').click()
 
-    await page.getByTestId('menu-button-resources').waitFor({
-      state: 'visible',
-    })
+    await expect(page.getByTestId('menu-button-resources')).toBeVisible()
   })
 
   test('render ActionModal on top of pane headers in structure tool', async ({page}) => {

@@ -8,10 +8,7 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     )
 
     // wait for form to be ready
-    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
-      state: 'attached',
-      timeout: 40000,
-    })
+    await expect(page.getByTestId('document-panel-scroller')).toBeAttached({timeout: 40000})
 
     // set up the portable text editor
     await page.getByTestId('field-content').focus()
