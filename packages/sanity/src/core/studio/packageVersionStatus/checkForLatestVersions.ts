@@ -30,12 +30,11 @@ export const checkForLatestVersions = async (
   const packageNames = Object.keys(packages)
 
   const results = await Promise.all(
-    packageNames.map((pkg) => fetchLatestVersionForPackage(pkg, packages[pkg])),
+    Object.entries(packages).map(async ([pkg, version]) => [
+      pkg,
+      await fetchLatestVersionForPackage(pkg, version),
+    ]),
   )
-
-  const packageVersions: VersionMap = {}
-  packageNames.forEach((pkg, index) => {
-    packageVersions[pkg] = results[index]
-  })
+  const packageVersions: VersionMap = Object.fromEntries(results)
   return packageVersions
 }
