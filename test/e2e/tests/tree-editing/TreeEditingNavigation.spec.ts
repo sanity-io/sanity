@@ -9,30 +9,38 @@ test.describe('navigation - tree sidebar', () => {
     test.skip(browserName !== 'chromium')
 
     await createDraftDocument('/test/content/input-debug;objectsDebug')
-    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
-      state: 'attached',
+    await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
       timeout: 40000,
     })
-    const modal = await page.getByTestId('tree-editing-dialog')
 
     // first element
-    await page.waitForSelector('[data-testid="field-animals"]', {state: 'visible'})
+    await expect(page.getByTestId('field-animals')).toBeVisible()
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
-    await modal.getByTestId('string-input').fill('Albert, the whale')
+    await page
+      .getByTestId('tree-editing-dialog')
+      .getByTestId('string-input')
+      .fill('Albert, the whale')
     await page.getByRole('button', {name: 'Done'}).click()
 
-    await expect(modal).not.toBeVisible()
+    // wait for modal to close
+    page.on('dialog', async () => {
+      await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
+    })
 
     // second element
-    await page.waitForSelector('[data-testid="field-animals"]', {state: 'visible'})
+    await expect(page.getByTestId('field-animals')).toBeVisible()
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
-    await modal.getByTestId('string-input').fill('Lucy, the cat')
+    await page.getByTestId('tree-editing-dialog').getByTestId('string-input').fill('Lucy, the cat')
     await page.getByRole('button', {name: 'Done'}).click()
 
+    // wait for modal to close
+    page.on('dialog', async () => {
+      await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
+    })
     /* structure:
       {
         Albert, the whale
@@ -54,11 +62,11 @@ test.describe('navigation - tree sidebar', () => {
     await page.getByRole('button', {name: 'Albert, the whale'}).click()
 
     // wait for the modal to open
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
-    await page.waitForSelector('[data-testid="sidebar-tree-list"]', {state: 'visible'})
+    await expect(page.getByTestId('sidebar-tree-list')).toBeVisible()
 
     // click on second array item in the sidebar
     await page.getByTestId('sidebar-tree-list').getByRole('button', {name: 'Lucy, the cat'}).click()
@@ -99,10 +107,12 @@ test.describe('navigation - tree sidebar', () => {
       'Lucy, the cat',
     )
 
-    const modal = await page.getByTestId('tree-editing-dialog')
-
     await page.getByRole('button', {name: 'Done'}).click()
-    await expect(modal).not.toBeVisible()
+
+    // wait for the modal to close
+    page.on('dialog', async () => {
+      await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
+    })
   })
 })
 
@@ -110,28 +120,32 @@ test.describe('navigation - breadcrumb', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // set up an array with two items: Albert, the whale and Lucy, the cat
     await createDraftDocument('/test/content/input-debug;objectsDebug')
-    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
-      state: 'attached',
+    await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
       timeout: 40000,
     })
-    const modal = await page.getByTestId('tree-editing-dialog')
 
     // first element
-    await page.waitForSelector('[data-testid="field-animals"]', {state: 'visible'})
+    await expect(page.getByTestId('field-animals')).toBeVisible()
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
-    await modal.getByTestId('string-input').fill('Albert, the whale')
+    await page
+      .getByTestId('tree-editing-dialog')
+      .getByTestId('string-input')
+      .fill('Albert, the whale')
     await page.getByRole('button', {name: 'Done'}).click()
 
-    await expect(modal).not.toBeVisible()
+    // wait for the modal to close
+    page.on('dialog', async () => {
+      await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
+    })
 
     // second element
-    await page.waitForSelector('[data-testid="field-animals"]', {state: 'visible'})
+    await expect(page.getByTestId('field-animals')).toBeVisible()
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
-    await modal.getByTestId('string-input').fill('Lucy, the cat')
+    await page.getByTestId('tree-editing-dialog').getByTestId('string-input').fill('Lucy, the cat')
     await page.getByRole('button', {name: 'Done'}).click()
 
     /* structure:
@@ -147,14 +161,12 @@ test.describe('navigation - breadcrumb', () => {
   }) => {
     /* travelling from Albert, the Whale -> Lucy, the cat (sister item) via breadcrumb */
 
-    const modal = await page.getByTestId('tree-editing-dialog')
-
     await page.getByRole('button', {name: 'Albert, the whale'}).click()
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
     // click the breacrumb
     await page.locator('#tree-breadcrumb-menu-button').click()
-    await page.waitForSelector('[data-ui="Popover__wrapper"]', {state: 'attached'})
+    await expect(page.locator('[data-ui="Popover__wrapper"]')).toBeAttached()
 
     // navigate on second array item in breadcrumb
     // for some reason when trying to click playwright doesn't like the dropdown menu and doesn't let me select any
@@ -163,7 +175,7 @@ test.describe('navigation - breadcrumb', () => {
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
-    await page.waitForSelector('[data-testid="sidebar-tree-list"]', {state: 'visible'})
+    await expect(page.getByTestId('sidebar-tree-list')).toBeVisible()
 
     // make sure that item is selected on nav tree
     await expect(
@@ -177,12 +189,17 @@ test.describe('navigation - breadcrumb', () => {
     }, '[data-testid="string-input"]')
 
     // make sure first input has the right data
-    await expect(await modal.getByTestId('string-input').inputValue()).toBe('Lucy, the cat')
+    await expect(
+      await page.getByTestId('tree-editing-dialog').getByTestId('string-input').inputValue(),
+    ).toBe('Lucy, the cat')
 
     // make sure breadcrumb shows the right item
-    await expect(await modal.locator('#tree-breadcrumb-menu-button').textContent()).toBe(
-      'Lucy, the cat',
-    )
+    await expect(
+      await page
+        .getByTestId('tree-editing-dialog')
+        .locator('#tree-breadcrumb-menu-button')
+        .textContent(),
+    ).toBe('Lucy, the cat')
   })
 })
 
@@ -192,21 +209,22 @@ test.describe('navigation - form', () => {
     test.skip(browserName !== 'chromium')
     // set up an array with two items: Albert, the whale and Lucy, the cat
     await createDraftDocument('/test/content/input-debug;objectsDebug')
-    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
-      state: 'attached',
+    await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
       timeout: 40000,
     })
-    const modal = await page.getByTestId('tree-editing-dialog')
 
     // first element
-    await page.waitForSelector('[data-testid="field-animals"]', {state: 'visible'})
+    await expect(page.getByTestId('field-animals')).toBeVisible()
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
-    await modal.getByTestId('string-input').fill('Albert, the whale')
+    await page
+      .getByTestId('tree-editing-dialog')
+      .getByTestId('string-input')
+      .fill('Albert, the whale')
 
     // add friend object
-    await modal.getByTestId('add-single-object-button').click()
+    await page.getByTestId('tree-editing-dialog').getByTestId('add-single-object-button').click()
 
     // Wait for the animation to change form to finish
     await page.waitForFunction((selector) => {
@@ -219,6 +237,11 @@ test.describe('navigation - form', () => {
 
     // click done
     await page.getByRole('button', {name: 'Done'}).click()
+
+    // wait for the modal to close
+    page.on('dialog', async () => {
+      await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
+    })
 
     /* structure:
     {
@@ -238,7 +261,9 @@ test.describe('navigation - form', () => {
     await page.getByRole('button', {name: 'Albert, the whale'}).click()
 
     // wait for the modal to open
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+    page.on('dialog', async () => {
+      await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
+    })
 
     // click on friend item in array in the form
     await page
@@ -248,7 +273,7 @@ test.describe('navigation - form', () => {
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
-    await page.waitForSelector('[data-testid="sidebar-tree-list"]', {state: 'visible'})
+    await expect(page.getByTestId('sidebar-tree-list')).toBeVisible()
 
     // make sure that item is selected on nav tree
     await expect(
@@ -273,9 +298,11 @@ test.describe('navigation - form', () => {
       await page.getByRole('list').getByRole('button', {name: 'Eliza, the friendly dolphin'}),
     ).toBeVisible()
 
-    const modal = await page.getByTestId('tree-editing-dialog')
-
     await page.getByRole('button', {name: 'Done'}).click()
-    await expect(modal).not.toBeVisible()
+
+    // wait for the modal to close
+    page.on('dialog', async () => {
+      await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
+    })
   })
 })

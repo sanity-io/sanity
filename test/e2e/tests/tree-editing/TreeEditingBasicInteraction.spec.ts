@@ -6,8 +6,7 @@ test.describe('basic - open and close', () => {
     // wait for form to be attached
     await createDraftDocument('/test/content/input-debug;objectsDebug')
 
-    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
-      state: 'attached',
+    await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
       timeout: 40000,
     })
   })
@@ -18,7 +17,7 @@ test.describe('basic - open and close', () => {
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
 
     const modal = await page.getByTestId('tree-editing-dialog')
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
     await expect(modal).toBeVisible()
   })
 
@@ -32,10 +31,10 @@ test.describe('basic - open and close', () => {
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
     const modal = await page.getByTestId('tree-editing-dialog')
 
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
     await page.getByRole('button', {name: 'Done'}).click()
 
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'detached'})
+    await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
 
     await expect(modal).not.toBeVisible()
   })
@@ -46,13 +45,13 @@ test.describe('basic - main document action', () => {
     // wait for form to be attached
     await createDraftDocument('/test/content/input-debug;objectsDebug')
 
-    await page.waitForSelector('[data-testid="document-panel-scroller"]', {
-      state: 'attached',
+    await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
       timeout: 40000,
     })
 
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'attached'})
+
+    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
   })
 
   test(`actions - blocked main document action when modal is open`, async ({page}) => {
@@ -68,7 +67,7 @@ test.describe('basic - main document action', () => {
 
     await page.getByTestId('tree-editing-done').click()
 
-    await page.waitForSelector('[data-testid="tree-editing-dialog"]', {state: 'detached'})
+    await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
     await expect(page.getByTestId('action-Publish')).not.toBeDisabled()
   })
 })
