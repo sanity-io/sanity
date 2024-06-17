@@ -1,52 +1,89 @@
 import {test as base} from '@sanity/test'
 
-// Define a test context extension with clipboard functionality
 export const test = base.extend<{
-  setClipboard: (content: string) => Promise<void>
-  getClipboard: () => Promise<string>
-  clipboardContent: {content: string}
+  getClipboardItemByMimeTypeAsText: (mimeType: string) => Promise<string | null>
+  setClipboardItems: (items: ClipboardItem[]) => Promise<void>
+  getClipboardItems: () => Promise<ClipboardItem[]>
+  getClipboardItemsAsText: () => Promise<string>
+  clipboardItems: {items: ClipboardItem[]}
 }>({
-  // Persistent clipboard state across navigations
-  clipboardContent: [{content: ''}, {scope: 'test'}],
+  clipboardItems: [{items: [] as ClipboardItem[]}, {scope: 'test'}],
 
-  // Extend page fixture to apply clipboard mock on new pages
-  page: async ({page, clipboardContent}, use) => {
-    // Function to set up clipboard mocks on the page
-    const setupClipboardMocks = async () => {
-      await page.addInitScript((content) => {
-        ;(navigator.clipboard as any).writeText = (text: string) => {
-          ;(window as any).__clipboardContent = text
-          return Promise.resolve()
+  page: async ({page, clipboardItems}, use) => {
+    const setupClipboardMocks = () => {
+      page.addInitScript((items) => {
+        const mockClipboard = {
+          read: () => {
+            return Promise.resolve((window as any).__clipboardItems)
+          },
+          write: (newItems: ClipboardItem[]) => {
+            ;(window as any).__clipboardItems = newItems
+
+            return Promise.resolve()
+          },
+          readText: () => {
+            const textItem = items.find((item) => item.types.includes('text/plain'))
+            return textItem
+              ? textItem.getType('text/plain').then((blob: Blob) => blob.text())
+              : Promise.resolve('')
+          },
+          writeText: (text: string) => {
+            const textBlob = new Blob([text], {type: 'text/plain'})
+            items.push(new ClipboardItem({'text/plain': textBlob}))
+            return Promise.resolve()
+          },
         }
-        ;(navigator.clipboard as any).readText = () => {
-          return Promise.resolve((window as any).__clipboardContent)
-        }
-        ;(window as any).__clipboardContent = content
-      }, clipboardContent.content)
+        Object.defineProperty(navigator, 'clipboard', {
+          value: mockClipboard,
+          writable: false,
+        })
+        ;(window as any).__clipboardItems = items
+      }, clipboardItems.items)
     }
 
-    // Initial setup of clipboard mocks
     await setupClipboardMocks()
 
-    // Reapply mocks after each navigation
     page.on('framenavigated', async () => {
       await setupClipboardMocks()
     })
 
-    // Use the modified page in the test
     await use(page)
   },
 
-  setClipboard: async ({page, clipboardContent}, use) => {
-    await use(async (content: string) => {
-      clipboardContent.content = content // Store the content in the test scope
-      await page.evaluate((value) => navigator.clipboard.writeText(value), content)
+  setClipboardItems: async ({clipboardItems}, use) => {
+    await use(async (items: ClipboardItem[]) => {
+      clipboardItems.items = items
     })
   },
 
-  getClipboard: async ({page}, use) => {
+  getClipboardItems: async ({page}, use) => {
+    await use(() => {
+      return page.evaluate(() => navigator.clipboard.read())
+    })
+  },
+
+  getClipboardItemsAsText: async ({page}, use) => {
     await use(async () => {
-      return page.evaluate(() => navigator.clipboard.readText())
+      return page.evaluate(async () => {
+        const items = await navigator.clipboard.read()
+        const textItem = items.find((item) => item.types.includes('text/plain'))
+
+        return textItem
+          ? textItem.getType('text/plain').then((blob: Blob) => blob.text())
+          : Promise.resolve('')
+      })
+    })
+  },
+
+  getClipboardItemByMimeTypeAsText: async ({page}, use) => {
+    await use(async (mimeType: string) => {
+      return page.evaluate(async (mime) => {
+        const items = await navigator.clipboard.read()
+        const textItem = items.find((item) => item.types.includes(mime))
+        const content = textItem ? textItem.getType(mime).then((blob: Blob) => blob.text()) : null
+
+        return content
+      }, mimeType)
     })
   },
 })
