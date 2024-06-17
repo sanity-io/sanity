@@ -15,11 +15,7 @@ type PopoverEvent = {type: 'toggle'} | {type: 'close'}
 
 function popoverReducer(state: PopoverState, event: PopoverEvent): PopoverState {
   if (event.type === 'toggle') {
-    if (state.open) {
-      return {open: false}
-    }
-
-    return {open: true}
+    return {open: !state.open}
   }
 
   return {
