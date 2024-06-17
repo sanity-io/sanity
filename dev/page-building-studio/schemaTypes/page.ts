@@ -27,7 +27,7 @@ export const page = defineType({
       ],
       options: {
         insertMenu: {
-          filter: true,
+          filter: 'on',
           views: [
             {name: 'grid', previewImageUrl: (name) => `/static/preview-${name}.png`},
             {name: 'list'},

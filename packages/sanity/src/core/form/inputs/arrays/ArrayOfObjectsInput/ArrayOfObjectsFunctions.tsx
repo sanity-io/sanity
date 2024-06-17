@@ -57,7 +57,7 @@ export function ArrayOfObjectsFunctions<
     popoverProps: {
       placement: 'bottom',
       fallbackPlacements: ['top'],
-      matchReferenceWidth: props.schemaType.options?.insertMenu?.filter,
+      matchReferenceWidth: props.schemaType.options?.insertMenu?.filter === 'on',
       referenceBoundary: gridElement,
       referenceElement: popoverToggleElement,
     },
