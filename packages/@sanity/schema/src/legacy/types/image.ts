@@ -34,7 +34,7 @@ export const ImageType = {
 
     const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), subTypeDef, {
       type: IMAGE_CORE,
-      title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
+      title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : IMAGE_CORE.title),
       options: options,
       fields: subTypeDef.fields.map((fieldDef: any) => {
         const {name, fieldset, ...rest} = fieldDef

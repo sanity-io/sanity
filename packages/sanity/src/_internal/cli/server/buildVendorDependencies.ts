@@ -106,6 +106,7 @@ const VENDOR_IMPORTS: VendorImports = {
 interface VendorBuildOptions {
   cwd: string
   outputDir: string
+  basePath: string
 }
 
 /**
@@ -115,6 +116,7 @@ interface VendorBuildOptions {
 export async function buildVendorDependencies({
   cwd,
   outputDir,
+  basePath,
 }: VendorBuildOptions): Promise<Record<string, string>> {
   // normalize the CWD to a relative dir for better error messages
   const dir = path.relative(process.cwd(), path.resolve(cwd))
@@ -197,7 +199,7 @@ export async function buildVendorDependencies({
       const chunkName = path.join(packageName, path.relative(packageName, specifier) || 'index')
 
       entry[chunkName] = entryPoint
-      imports[specifier] = path.join('/', VENDOR_DIR, `${chunkName}.mjs`)
+      imports[specifier] = path.join('/', basePath, VENDOR_DIR, `${chunkName}.mjs`)
     }
   }
 
