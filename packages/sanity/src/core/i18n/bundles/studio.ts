@@ -506,6 +506,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.error.type-is-incompatible-title': 'Why is this happening?',
   /** Error label for unexpected errors in the Array Input */
   'inputs.array.error.unexpected-error': 'Unexpected Error: {{error}}',
+  /** Label for the array insert menu all items filter  */
+  'inputs.array.insert-menu.filter.all-items': 'All',
+  /** Label for when the array insert menu search shows no items */
+  'inputs.array.insert-menu.search.no-results': 'No items found',
+  /** Placeholder for the array insert menu search field */
+  'inputs.array.insert-menu.search.placeholder': 'Search',
+  /** Tooltip for the array insert menu grid view toggle */
+  'inputs.array.insert-menu.toggle-grid-view.tooltip': 'Toggle grid view',
+  /** Tooltip for the array insert menu list view toggle */
+  'inputs.array.insert-menu.toggle-list-view.tooltip': 'Toggle list view',
   /** Label for when the array input doesn't have any items */
   'inputs.array.no-items-label': 'No items',
   /** Label for read only array fields */
@@ -998,17 +1008,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.untyped-value.title': 'Property value missing <code>_type</code>',
   /** Unset value */
   'inputs.untyped-value.unset-item-button.text': 'Unset value',
-
-  /** Label for the insert menu all items filter  */
-  'insert-menu.filter.all-items': 'All',
-  /** Label for when the insert menu search shows no items */
-  'insert-menu.search.no-results': 'No items found',
-  /** Placeholder for the insert menu search field */
-  'insert-menu.search.placeholder': 'Search',
-  /** Tooltip for the insert menu grid view toggle */
-  'insert-menu.toggle-grid-view.tooltip': 'Toggle grid view',
-  /** Tooltip for the insert menu list view toggle */
-  'insert-menu.toggle-list-view.tooltip': 'Toggle list view',
 
   /** The fallback explanation if no context is provided */
   'insufficient-permissions-message.not-authorized-explanation':

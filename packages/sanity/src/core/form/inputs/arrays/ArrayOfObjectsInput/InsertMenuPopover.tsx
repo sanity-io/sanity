@@ -98,11 +98,15 @@ function InsertMenu(props: InsertMenuProps) {
     <SanityInsertMenu
       {...props}
       labels={{
-        'insert-menu.filter.all-items': t('insert-menu.filter.all-items'),
-        'insert-menu.search.no-results': t('insert-menu.search.no-results'),
-        'insert-menu.search.placeholder': t('insert-menu.search.placeholder'),
-        'insert-menu.toggle-grid-view.tooltip': t('insert-menu.toggle-grid-view.tooltip'),
-        'insert-menu.toggle-list-view.tooltip': t('insert-menu.toggle-list-view.tooltip'),
+        'insert-menu.filter.all-items': t('inputs.array.insert-menu.filter.all-items'),
+        'insert-menu.search.no-results': t('inputs.array.insert-menu.search.no-results'),
+        'insert-menu.search.placeholder': t('inputs.array.insert-menu.search.placeholder'),
+        'insert-menu.toggle-grid-view.tooltip': t(
+          'inputs.array.insert-menu.toggle-grid-view.tooltip',
+        ),
+        'insert-menu.toggle-list-view.tooltip': t(
+          'inputs.array.insert-menu.toggle-list-view.tooltip',
+        ),
       }}
     />
   )
