@@ -1,12 +1,12 @@
 import {expect, test} from '../fixtures/copyPasteFixture'
 
 test.describe('copy and pasting of fields', () => {
-  test.use({
-    permissions: ['clipboard-read', 'clipboard-write'],
-  })
-  test.beforeEach(async ({context}) => {
-    await context.grantPermissions(['clipboard-read', 'clipboard-write'])
-  })
+  //   test.use({
+  //     permissions: ['clipboard-read', 'clipboard-write'],
+  //   })
+  //   test.beforeEach(async ({context}) => {
+  //     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  //   })
   test(`its able to copy and paste an object field successfully via keyboard shortcuts`, async ({
     page,
     createDraftDocument,
