@@ -90,9 +90,8 @@ export type InsertMenuProps = Omit<SanityInsertMenuProps, 'labels'>
 
 /**
  * `InsertMenu` with pre-configured `labels`
- * @internal
  */
-export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
+function InsertMenu(props: InsertMenuProps) {
   const {t} = useTranslation()
 
   return (
