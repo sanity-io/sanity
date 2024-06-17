@@ -18,7 +18,10 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     await page.getByTestId('field-content').click()
 
     // wait for overlay to be gone
-    await page.getByTestId('activate-overlay').waitFor({state: 'hidden'})
+    await page
+      .getByTestId('field-content')
+      .getByTestId('activate-overlay')
+      .waitFor({state: 'hidden'})
   })
 
   test('on a simple editor', async ({page}) => {
