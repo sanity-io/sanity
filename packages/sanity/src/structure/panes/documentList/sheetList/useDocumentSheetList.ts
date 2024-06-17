@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {getDraftId, getPublishedId, useSearchState} from 'sanity'
+import {getDraftId, getPublishedId, type SanityDocument, useSearchState} from 'sanity'
 
 import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetListStore} from './useDocumentSheetListStore'
@@ -17,7 +17,9 @@ export function useDocumentSheetList({typeName}: DocumentSheetListOptions): {
 
   const items = useMemo(() => {
     const map = new Map()
-    state.result.hits.forEach((h) => map.set(getPublishedId(h.hit._id), h.hit))
+    state.result.hits.forEach((h, resultIndex) =>
+      map.set(getPublishedId(h.hit._id), {...h.hit, resultIndex}),
+    )
     return map
   }, [state.result.hits])
 
@@ -32,6 +34,9 @@ export function useDocumentSheetList({typeName}: DocumentSheetListOptions): {
 
   // Only return the documents that match with the serverSide filter items.
   const documents: DocumentSheetTableRow[] = useMemo(() => {
+    const getSortIndexForId = (document: SanityDocument) =>
+      items.get(getPublishedId(document._id))?.resultIndex ?? Number.MAX_SAFE_INTEGER
+
     return data
       .filter((doc) => items.has(getPublishedId(doc._id)))
       .map((doc) => {
@@ -53,6 +58,7 @@ export function useDocumentSheetList({typeName}: DocumentSheetListOptions): {
           },
         }
       })
+      .sort((a, b) => getSortIndexForId(a) - getSortIndexForId(b))
   }, [data, items, allDocuments])
 
   return {data: documents, isLoading}

@@ -24,6 +24,10 @@ import {css, styled} from 'styled-components'
 
 import {LoadingPane} from '../../loading'
 import {type BaseStructureToolPaneProps} from '../../types'
+import {EMPTY_RECORD} from '../constants'
+import {applyOrderingFunctions, findStaticTypesInFilter} from '../helpers'
+import {useShallowUnique} from '../PaneContainer'
+import {type SortOrder} from '../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetActions} from './DocumentSheetActions'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
@@ -36,7 +40,9 @@ import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 import {useDocumentSheetListOperations} from './useDocumentSheetListOperations'
 
-type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'>
+type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'> & {
+  sortOrder?: SortOrder
+}
 
 const PaneContainer = styled(Flex)`
   height: 100%;
@@ -121,14 +127,54 @@ const DocumentRow = ({
 function DocumentSheetListPaneInner(
   props: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType},
 ) {
-  const {documentSchemaType, ...paneProps} = props
-  const {dispatch, state} = useSearchState()
+  const {documentSchemaType, sortOrder: sortOrderRaw, ...paneProps} = props
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
   const {data} = useDocumentSheetList({
     typeName: documentSchemaType.name,
   })
+
+  const {options} = paneProps.pane
+  const {filter} = options
+  const schema = useSchema()
+  const params = useShallowUnique(options.params || EMPTY_RECORD)
+  const typeName = useMemo(() => {
+    const staticTypes = findStaticTypesInFilter(filter, params)
+    if (staticTypes?.length === 1) return staticTypes[0]
+    return null
+  }, [filter, params])
+  const sortWithOrderingFn =
+    typeName && sortOrderRaw
+      ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName) as any)
+      : sortOrderRaw
+
+  const {dispatch, state} = useSearchState()
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
+  const nextSort = useShallowUnique(sortWithOrderingFn?.by[0])
+
+  const [hasSelection, setHasSelection] = useState(false)
+
+  useEffect(() => {
+    const canRunEffect = nextSort && !hasSelection
+
+    if (canRunEffect) {
+      dispatch({
+        type: 'ORDERING_SET',
+        ordering: {
+          sort: nextSort,
+          titleKey: `search.ordering.${nextSort.field}-label`,
+        },
+      })
+    }
+
+    return () => {
+      if (canRunEffect) {
+        dispatch({
+          type: 'ORDERING_RESET',
+        })
+      }
+    }
+  }, [dispatch, nextSort, hasSelection, data])
 
   const totalRows = state.result.hits.length
   const meta = {
@@ -275,7 +321,7 @@ function DocumentSheetListPaneInner(
           <ColumnsControl table={table} />
         </TableActionsWrapper>
         <TableContainer>
-          <DocumentSheetListProvider table={table}>
+          <DocumentSheetListProvider table={table} setHasSelection={setHasSelection}>
             <Table>
               <thead>
                 {table.getHeaderGroups().map((headerGroup) => (
