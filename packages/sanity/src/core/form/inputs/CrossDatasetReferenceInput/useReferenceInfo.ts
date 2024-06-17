@@ -1,9 +1,8 @@
 import {useCallback, useMemo, useState} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
 
-import {usePrevious} from '../../hooks/usePrevious'
 import {type CrossDatasetReferenceInfo} from './types'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -44,7 +43,7 @@ export function useReferenceInfo(
   }, [])
 
   const docInfo = useMemo(() => ({_id: doc._id, _type: doc._type}), [doc._id, doc._type])
-  const referenceInfo = useMemoObservable(
+  const referenceInfoObservable = useMemo(
     () =>
       docInfo._id
         ? getReferenceInfo(docInfo).pipe(
@@ -72,14 +71,6 @@ export function useReferenceInfo(
           )
         : of(EMPTY_STATE),
     [docInfo, getReferenceInfo, retry, retryAttempt],
-    INITIAL_LOADING_STATE,
   )
-
-  // workaround for a "bug" with useMemoObservable that doesn't
-  // return the initial value upon resubscription
-  const previousId = usePrevious(doc._id, doc._id)
-  if (doc._id && previousId !== doc._id) {
-    return INITIAL_LOADING_STATE
-  }
-  return referenceInfo
+  return useObservable(referenceInfoObservable, INITIAL_LOADING_STATE)
 }

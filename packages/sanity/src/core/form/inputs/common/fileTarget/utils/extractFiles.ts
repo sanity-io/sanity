@@ -106,3 +106,7 @@ function walk(entry: Entry): Promise<File[]> {
   }
   return Promise.resolve([])
 }
+
+export function isPortableTextItem(item: {type: string; kind: string}) {
+  return item.type === 'application/portable-text'
+}

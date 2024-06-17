@@ -1,8 +1,8 @@
 import {type SanityDocument, type SchemaType} from '@sanity/types'
 import {Flex} from '@sanity/ui'
 import {isNumber, isString} from 'lodash'
-import {type ComponentType, isValidElement} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {type ComponentType, isValidElement, useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {
   type DocumentPresence,
   DocumentPreviewPresence,
@@ -17,7 +17,6 @@ import {
 } from 'sanity'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components'
-import {type PaneItemPreviewState} from './types'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -44,12 +43,15 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       ? value.title
       : null
 
-  // NOTE: this emits sync so can never be null
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const {draft, published, isLoading} = useMemoObservable<PaneItemPreviewState>(
+  const previewStateObservable = useMemo(
     () => getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title),
-    [props.documentPreviewStore, schemaType, value._id, title],
-  )!
+    [props.documentPreviewStore, schemaType, title, value._id],
+  )
+  const {draft, published, isLoading} = useObservable(previewStateObservable, {
+    draft: null,
+    isLoading: true,
+    published: null,
+  })
 
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>

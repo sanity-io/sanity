@@ -16,6 +16,53 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
   }
   return {
     /**
+     * Drags and drops the source element to the target element position
+     *
+     * @param testId The data-testid attribute of the Portable Text Input
+     * @returns The Portable Text Input element
+     */
+    dragAndDrop: async (sourceSelector: string, targetSelector: string) => {
+      const source = await page.locator(sourceSelector)
+      const target = await page.locator(targetSelector)
+
+      const box = await source.boundingBox()
+      if (box) {
+        const {x, y, width, height} = box
+        await page.mouse.move(x + width / 2, y + height / 2)
+        await page.mouse.down()
+      }
+
+      const targetBox = await target.boundingBox()
+      if (targetBox) {
+        const {x, y, width, height} = targetBox
+        await page.mouse.move(x + width / 2, y + height / 2)
+        await page.mouse.up()
+      }
+    },
+    /**
+     * Drags the source element to the target element position without dropping
+     *
+     * @param testId The data-testid attribute of the Portable Text Input
+     * @returns The Portable Text Input element
+     */
+    dragWithoutDrop: async (sourceSelector: string, targetSelector: string) => {
+      const source = await page.locator(sourceSelector)
+      const target = await page.locator(targetSelector)
+
+      const box = await source.boundingBox()
+      if (box) {
+        const {x, y, width, height} = box
+        await page.mouse.move(x + width / 2, y + height / 2)
+        await page.mouse.down()
+      }
+
+      const targetBox = await target.boundingBox()
+      if (targetBox) {
+        const {x, y, width, height} = targetBox
+        await page.mouse.move(x + width / 2, y + height / 2)
+      }
+    },
+    /**
      * Returns the DOM element of a focused Portable Text Input ready to typed into
      *
      * @param testId The data-testid attribute of the Portable Text Input
