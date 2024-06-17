@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
    // All environment variables that should invalidate a cached build needs to be declared here
-  "globalEnv": ["OS", "RUNNER_OS", "PKG_FILE_PATH", "PKG_FORMAT", "PKG_RUNTIME", "PKG_VERSION"],
+  "globalEnv": ["OS", "RUNNER_OS", "PKG_FILE_PATH", "PKG_FORMAT", "PKG_RUNTIME", "PKG_VERSION", "DEBUG"],
   // These root workspace files are reused in workspaces and may affect their build output
   "globalDependencies": [
     ".eslintrc.cjs",

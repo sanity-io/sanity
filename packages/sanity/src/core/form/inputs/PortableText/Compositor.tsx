@@ -22,6 +22,7 @@ import {
   type RenderCustomMarkers,
 } from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
+import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {Editor} from './Editor'
 import {useHotkeys} from './hooks/useHotKeys'
@@ -59,6 +60,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     elementRef,
     focused,
     focusPath = EMPTY_ARRAY,
+    elementProps,
     hasFocusWithin,
     hideToolbar,
     hotkeys,
@@ -72,6 +74,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onPaste,
     onPathFocus,
     onToggleFullscreen,
+    onUpload,
     path,
     rangeDecorations,
     readOnly,
@@ -85,6 +88,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     renderInput,
     renderItem,
     renderPreview,
+    resolveUploader,
     value,
   } = props
 
@@ -366,7 +370,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderPreview,
     ],
   )
-  const ariaDescribedBy = props.elementProps['aria-describedby']
+  const ariaDescribedBy = elementProps['aria-describedby']
 
   // Create an initial editor selection based on the focusPath
   // at the time that the editor mounts. Any updates to the
@@ -395,34 +399,42 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const editorNode = useMemo(
     () => (
-      <Editor
-        ariaDescribedBy={ariaDescribedBy}
-        elementRef={elementRef}
-        initialSelection={initialSelection}
-        hideToolbar={hideToolbar}
-        hotkeys={editorHotkeys}
-        isActive={isActive}
-        isFullscreen={isFullscreen}
-        onItemOpen={onItemOpen}
-        onCopy={onCopy}
-        onPaste={onPaste}
-        onToggleFullscreen={handleToggleFullscreen}
-        path={path}
-        rangeDecorations={rangeDecorations}
-        readOnly={readOnly}
-        renderAnnotation={editorRenderAnnotation}
-        renderBlock={editorRenderBlock}
-        renderChild={editorRenderChild}
-        renderEditable={renderEditable}
-        setPortalElement={setPortalElement}
-        scrollElement={scrollElement}
-        setScrollElement={setScrollElement}
-      />
+      <UploadTargetCard
+        types={editor.schemaTypes.portableText.of}
+        resolveUploader={resolveUploader}
+        onUpload={onUpload}
+        tabIndex={-1}
+      >
+        <Editor
+          ariaDescribedBy={ariaDescribedBy}
+          elementRef={elementRef}
+          initialSelection={initialSelection}
+          hideToolbar={hideToolbar}
+          hotkeys={editorHotkeys}
+          isActive={isActive}
+          isFullscreen={isFullscreen}
+          onItemOpen={onItemOpen}
+          onCopy={onCopy}
+          onPaste={onPaste}
+          onToggleFullscreen={handleToggleFullscreen}
+          path={path}
+          rangeDecorations={rangeDecorations}
+          readOnly={readOnly}
+          renderAnnotation={editorRenderAnnotation}
+          renderBlock={editorRenderBlock}
+          renderChild={editorRenderChild}
+          renderEditable={renderEditable}
+          setPortalElement={setPortalElement}
+          scrollElement={scrollElement}
+          setScrollElement={setScrollElement}
+        />
+      </UploadTargetCard>
     ),
 
     // Keep only stable ones here!
     [
       ariaDescribedBy,
+      editor.schemaTypes.portableText.of,
       editorHotkeys,
       editorRenderAnnotation,
       editorRenderBlock,
@@ -437,6 +449,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       onItemOpen,
       onPaste,
       path,
+      onUpload,
+      resolveUploader,
       rangeDecorations,
       readOnly,
       renderEditable,

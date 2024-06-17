@@ -77,7 +77,7 @@ export function SlugInput(props: SlugInputProps) {
     [onChange, schemaType.name],
   )
 
-  const [generateState, handleGenerateSlug] = useAsync(() => {
+  const handleAsyncGenerateSlug = useCallback(() => {
     if (!sourceField) {
       return Promise.reject(
         new Error(t('inputs.slug.error.missing-source', {schemaType: schemaType.name})),
@@ -90,6 +90,7 @@ export function SlugInput(props: SlugInputProps) {
       .then((newFromSource) => slugify(newFromSource || '', schemaType, sourceContext))
       .then((newSlug) => updateSlug(newSlug))
   }, [sourceField, getFormValue, schemaType, path, slugContext, updateSlug, t])
+  const [generateState, handleGenerateSlug] = useAsync(handleAsyncGenerateSlug)
 
   const isUpdating = generateState?.status === 'pending'
 

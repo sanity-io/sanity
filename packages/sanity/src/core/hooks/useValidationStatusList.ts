@@ -1,5 +1,6 @@
-import {useMemoObservable} from 'react-rx'
-import {combineLatest, map} from 'rxjs'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {combineLatest, map, type Observable} from 'rxjs'
 
 import {useDocumentStore, type ValidationStatus} from '../store'
 
@@ -15,18 +16,24 @@ export function useValidationStatusList(
 })[] {
   const documentStore = useDocumentStore()
 
-  return useMemoObservable(() => {
-    return combineLatest(
-      publishedDocIds.map((publishedDocId) =>
-        documentStore.pair.validation(publishedDocId, docTypeName).pipe(
-          map((status) => ({
-            ...status,
-            publishedDocId,
-          })),
+  const observable = useMemo(
+    () =>
+      combineLatest(
+        publishedDocIds.map((publishedDocId) =>
+          documentStore.pair.validation(publishedDocId, docTypeName).pipe(
+            map((status) => ({
+              ...status,
+              publishedDocId,
+            })),
+          ),
         ),
       ),
-    )
-  }, [documentStore.pair, publishedDocIds, docTypeName]) as (ValidationStatus & {
-    publishedDocId: string
-  })[]
+    [docTypeName, documentStore.pair, publishedDocIds],
+  ) as Observable<
+    (ValidationStatus & {
+      publishedDocId: string
+    })[]
+  >
+
+  return useObservable(observable, [])
 }

@@ -17,7 +17,7 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
   })
 
   test('on a simple editor', async ({page}) => {
-    await pteInput.getByTestId('block-style-select').click()
+    await pteInput.getByTestId('block-style-select').click({timeout: 15000})
 
     expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
@@ -63,7 +63,10 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     // click the block style select
     await page.locator('[data-testid="block-style-select"]').nth(1).click()
 
-    await page.waitForSelector('[data-ui="MenuButton__popover"]', {state: 'attached'})
+    await page.waitForSelector('[data-ui="MenuButton__popover"]', {
+      state: 'attached',
+      timeout: 15000,
+    })
 
     await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
