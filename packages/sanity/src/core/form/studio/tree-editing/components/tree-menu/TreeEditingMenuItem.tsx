@@ -9,7 +9,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {getSchemaTypeTitle, type Path, SanityDefaultPreview} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
