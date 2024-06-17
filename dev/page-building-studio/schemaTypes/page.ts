@@ -29,7 +29,7 @@ export const page = defineType({
         insertMenu: {
           filter: true,
           views: [
-            {name: 'grid', previewUrl: (name) => `/static/preview-${name}.png`},
+            {name: 'grid', previewImageUrl: (name) => `/static/preview-${name}.png`},
             {name: 'list'},
           ],
           groups: [
@@ -75,7 +75,7 @@ export const pageOneBlockType = defineType({
       options: {
         insertMenu: {
           views: [
-            {name: 'grid', previewUrl: (name) => `/static/preview-${name}.png`},
+            {name: 'grid', previewImageUrl: (name) => `/static/preview-${name}.png`},
             {name: 'list'},
           ],
         },
