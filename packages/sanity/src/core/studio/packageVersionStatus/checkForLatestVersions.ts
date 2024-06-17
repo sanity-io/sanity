@@ -5,7 +5,12 @@ interface VersionMap {
 
 const MODULES_URL_VERSION = 'v1'
 
-const MODULES_URL = `https://sanity-cdn.com/${MODULES_URL_VERSION}/modules/`
+const MODULES_HOST =
+  process.env.SANITY_INTERNAL_ENV === 'staging'
+    ? 'https://sanity-cdn.work'
+    : 'https://sanity-cdn.com'
+
+const MODULES_URL = `${MODULES_HOST}/${MODULES_URL_VERSION}/modules/`
 
 const fetchLatestVersionForPackage = async (pkg: string, version: string) => {
   try {
