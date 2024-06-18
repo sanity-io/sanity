@@ -1,7 +1,7 @@
 import {Stack} from '@sanity/ui'
 import {last} from 'lodash'
 import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
-import {isKeySegment, useFormCallbacks} from 'sanity'
+import {EMPTY_ARRAY, isKeySegment} from 'sanity'
 import styled from 'styled-components'
 
 import {ObjectInputMembers} from '../../members'
@@ -39,6 +39,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     value,
     id,
     onFieldGroupSelect,
+    onPathFocus,
   } = props
 
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -69,22 +70,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
 
   const selectedGroup = useMemo(() => groups.find(({selected}) => selected), [groups])
 
-  const {onPathBlur, onPathFocus} = useFormCallbacks()
-
-  const handleBlur = useCallback(
-    (event: FocusEvent) => {
-      if (!isFocusable) {
-        return
-      }
-
-      // Since the blur event will bubble up to the wrapper, we need to check if the object input is the actual target
-      if (event.target === wrapperRef.current) {
-        onPathBlur(path)
-      }
-    },
-    [isFocusable, onPathBlur, path],
-  )
-
   const handleFocus = useCallback(
     (event: FocusEvent) => {
       if (!isFocusable) {
@@ -93,10 +78,10 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
 
       // Since the focus event will bubble up to the wrapper, we need to check if the object input is the actual target
       if (event.target === wrapperRef.current) {
-        onPathFocus(path)
+        onPathFocus(EMPTY_ARRAY)
       }
     },
-    [isFocusable, onPathFocus, path],
+    [isFocusable, onPathFocus],
   )
 
   const renderObjectMembers = useCallback(
@@ -133,7 +118,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       space={6}
       tabIndex={isFocusable ? 0 : undefined}
       onFocus={handleFocus}
-      onBlur={handleBlur}
       ref={wrapperRef}
     >
       {groups.length > 0 ? (
