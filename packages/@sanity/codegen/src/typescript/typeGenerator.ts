@@ -12,6 +12,7 @@ import {
 } from 'groq-js'
 
 const REFERENCE_SYMBOL_NAME = 'internalGroqTypeReferenceTo'
+const ALL_SCHEMA_TYPES = 'AllSanitySchemaTypes'
 
 /**
  * A class used to generate TypeScript types from a given schema
@@ -48,6 +49,26 @@ export class TypeGenerator {
 
       typeDeclarations.push(t.exportNamedDeclaration(typeAlias))
     })
+
+    typeDeclarations.push(
+      t.exportNamedDeclaration(
+        t.tsTypeAliasDeclaration(
+          t.identifier(this.getTypeName(ALL_SCHEMA_TYPES)),
+          null,
+          t.tsUnionType(
+            this.schema.map(({name}) => {
+              const typeName = this.typeNameMap.get(name)
+              if (!typeName) {
+                // this is a type guard since maps return undefined if the key is not found, however this map should
+                // be set inside the loop above by `this.getTypeName(...)`
+                throw new Error(`Unexpected error: Could not find type name for schema ${name}`)
+              }
+              return t.tsTypeReference(t.identifier(typeName))
+            }),
+          ),
+        ),
+      ),
+    )
 
     // Generate TypeScript code from the AST nodes
     return typeDeclarations.map((decl) => new CodeGenerator(decl).generate().code).join('\n\n')
