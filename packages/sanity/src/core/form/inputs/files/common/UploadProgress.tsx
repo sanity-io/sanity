@@ -27,7 +27,12 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
 
   const {t} = useTranslation()
   return (
-    <CardWrapper tone="primary" padding={4} border style={{height: `${height}px`}}>
+    <CardWrapper
+      tone="primary"
+      padding={4}
+      border
+      style={{height: height ? `${height}px` : undefined}}
+    >
       <FlexWrapper align="center" justify="space-between" height="fill" direction="row" gap={2}>
         <LeftSection>
           <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>

@@ -38,7 +38,7 @@ export const ObjectType = {
     const options = {...(subTypeDef.options || {})}
     const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), subTypeDef, {
       type: this.get(),
-      title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
+      title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : 'Object'),
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),
       fields: subTypeDef.fields.map((fieldDef: any) => {
@@ -104,7 +104,7 @@ export const ObjectType = {
             title:
               extensionDef.title ||
               subTypeDef.title ||
-              (subTypeDef.name ? startCase(subTypeDef.name) : ''),
+              (subTypeDef.name ? startCase(subTypeDef.name) : 'Object'),
             type: parent,
           })
           lazyGetter(current, '__experimental_search', () => parent.__experimental_search)

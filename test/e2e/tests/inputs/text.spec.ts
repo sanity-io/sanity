@@ -28,7 +28,7 @@ test.describe('inputs: text', () => {
     const field = page.getByTestId('field-simple').getByRole('textbox')
 
     // Enter initial text and wait for the mutate call to be sent
-    const response = page.waitForResponse(/mutate/)
+    const response = page.waitForResponse(/sanity.studio.document.commit/)
     await field.fill(kanji)
     await response
 
@@ -80,6 +80,9 @@ test.describe('inputs: text', () => {
     const titleInput = page.getByTestId('field-title').getByTestId('string-input')
     const paneFooter = page.getByTestId('pane-footer-document-status')
     const publishButton = page.getByTestId('action-Publish')
+
+    // wait for form to be attached
+    await expect(page.getByTestId('document-panel-scroller')).toBeAttached()
 
     await titleInput.fill('Title A')
 
