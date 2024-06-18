@@ -347,7 +347,7 @@ describe('DocumentSheetListPane', () => {
       })
     })
 
-    describe('to paste a value', () => {
+    describe.only('to paste a value', () => {
       it('does not paste when cell is read only', async () => {
         const providedConfig = cloneDeep(DEFAULT_TEST_CONFIG)
         providedConfig.schema.types[0].fields[0].readOnly = true
@@ -674,9 +674,19 @@ describe('DocumentSheetListPane', () => {
 
         expect(screen.getByTestId('cell-name-0-input-field')).toHaveAttribute('readOnly')
       })
+
+      it.each(['email', 'number', 'url', 'date'])(
+        'it should render %s input type',
+        async (type) => {
+          const providedConfig = DEFAULT_TEST_CONFIG
+          providedConfig.schema.types[0].fields[0].type = type
+          await renderTest(providedConfig)
+
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveAttribute('type', type)
+        },
+      )
     })
 
-    describe('number inputs', () => {})
     describe('booleans', () => {})
     describe('selects', () => {})
   })
