@@ -86,8 +86,7 @@ test(`Scenario: Adding a new type from multiple options`, async ({page, createDr
   await expect(titleInput).toHaveValue('Book title')
 
   // And the dialog is closed
-  const closeDialogButton = insertDialog.getByLabel('Close dialog')
-  await closeDialogButton.click()
+  await page.keyboard.press('Escape')
   await expect(insertDialog).not.toBeVisible()
 
   // Then a new item is inserted in the array
