@@ -1,27 +1,44 @@
 {
   "$schema": "https://turbo.build/schema.json",
-   // All environment variables that should invalidate a cached build needs to be declared here
-  "globalEnv": ["OS", "RUNNER_OS", "PKG_FILE_PATH", "PKG_FORMAT", "PKG_RUNTIME", "PKG_VERSION", "DEBUG"],
-  // These root workspace files are reused in workspaces and may affect their build output
+  "globalEnv": [
+    "OS",
+    "RUNNER_OS",
+    "PKG_FILE_PATH",
+    "PKG_FORMAT",
+    "PKG_RUNTIME",
+    "PKG_VERSION",
+    "DEBUG"
+  ],
   "globalDependencies": [
     ".eslintrc.cjs",
     ".prettierrc",
-    "lerna.json" // some tools, like babel, reads from this file to identify other roots
+    "lerna.json"
   ],
   "pipeline": {
     "build": {
-      "outputs": ["lib/**", "*.js"],
-      "dependsOn": ["^build"],
+      "outputs": [
+        "lib/**",
+        "*.js"
+      ],
+      "dependsOn": [
+        "^build"
+      ],
       "outputMode": "new-only"
     },
     "build:bundle": {
-      "outputs": ["dist/**"],
-      "dependsOn": ["build"],
+      "outputs": [
+        "dist/**"
+      ],
+      "dependsOn": [
+        "build"
+      ],
       "outputMode": "new-only"
     },
     "check:types": {
       "outputs": [],
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "outputMode": "errors-only"
     },
     "lint": {
