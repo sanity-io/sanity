@@ -17,6 +17,7 @@ import {
   unset,
   useSchema,
   useSearchState,
+  useTranslation,
   useValidationStatus,
   ValidationProvider,
 } from 'sanity'
@@ -121,6 +122,7 @@ const DocumentRow = ({
 function DocumentSheetListPaneInner(
   props: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType},
 ) {
+  const {t} = useTranslation()
   const {documentSchemaType, ...paneProps} = props
   const {dispatch, state} = useSearchState()
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
@@ -250,8 +252,6 @@ function DocumentSheetListPaneInner(
     return false
   }, [rowOperations, table.options.meta?.patchDocument])
 
-  const rowsCount = `List total: ${totalRows} item${totalRows === 1 ? '' : 's'}`
-
   const renderContent = () => {
     if (!isReady) {
       return <LoadingPane paneKey={paneProps.paneKey} />
@@ -269,7 +269,10 @@ function DocumentSheetListPaneInner(
           <Flex direction="row" align="center">
             <DocumentSheetListFilter />
             <Text size={0} muted>
-              {rowsCount}
+              {t('sheet-list.row-count.label', {
+                totalRows,
+                itemPlural: `item${totalRows === 1 ? '' : 's'}`,
+              })}
             </Text>
           </Flex>
           <ColumnsControl table={table} />

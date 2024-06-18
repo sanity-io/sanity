@@ -1563,14 +1563,41 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'sheet-list.actions.publish-all-label': 'Publish all',
   /** Label listing count of all selected items in sheet list */
   'sheet-list.actions.selected-count-label': '{{count}} {{itemPlural}} selected',
+  /** Toast description when error occurs whilst publishing selected items */
+  'sheet-list.actions.toast.publishing-failed-description':
+    'An error occurred whilst publishing items',
+  /** Toast description whilst pending publish of selected items */
+  'sheet-list.actions.toast.publishing-pending-description': 'Publishing {{itemPlural}}…',
+  /** Toast title whilst pending publish of selected items */
+  'sheet-list.actions.toast.publishing-pending-title': 'Publishing…',
+  /** Toast description when publishing of selected items has succeeded */
+  'sheet-list.actions.toast.publishing-success-description': 'The item have been published',
+  /** Toast title when publishing of selected items has succeeded */
+  'sheet-list.actions.toast.publishing-success-title': 'Published',
   /** Button label for the unselect all selected action in sheet list */
   'sheet-list.actions.unselect-all-label': 'Unselect all',
   /** Label for the edit columns button to change field visibility in sheet list */
   'sheet-list.edit-columns': 'Edit columns',
   /** Label for the header menu option to hide a field from the sheet list */
   'sheet-list.hide-field': 'Remove from table',
+  /** Tooltip for button to navigate to first sheet list page */
+  'sheet-list.pagination.first-page.tooltip': 'Go to first page',
+  /** Tooltip for button to navigate to last sheet list page */
+  'sheet-list.pagination.last-page.tooltip': 'Go to last page',
+  /** Tooltip for button to navigate to next sheet list page */
+  'sheet-list.pagination.next-page.tooltip': 'Go to next page',
+  /** Label listing the current page in relation to the total number of sheet list pages */
+  'sheet-list.pagination.page-count-label': '{{currentPage}} of {{pageCount}}',
+  /** Tooltip for button to navigate to previous sheet list page */
+  'sheet-list.pagination.previous-page.tooltip': 'Go to previous page',
+  /** Header title for list preview column */
+  'sheet-list.preview-header': 'List preview',
   /** Label for reset column visibilities button */
   'sheet-list.reset-columns': 'Reset columns',
+  /** Label listing the total number of visible rows in sheet list */
+  'sheet-list.row-count.label': 'List total: {{totalRows}} {{itemPlural}}',
+  /** Placeholder for search input on sheet list  */
+  'sheet-list.search.placeholder': 'Search list',
   /** Title for the edit columns menu */
   'sheet-list.select-fields': 'Select up to 5 field types',
   /** Text for listing the reason items cannot be published in sheet list */

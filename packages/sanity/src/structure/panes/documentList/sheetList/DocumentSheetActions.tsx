@@ -54,8 +54,10 @@ function BatchPublishAction({
       duration: 60000,
       id: 'publishing-toast',
       status: 'info',
-      title: 'Publishing',
-      description: 'Publishing documents...',
+      title: t('sheet-list.actions.toast.publishing-pending-title'),
+      description: t('sheet-list.actions.toast.publishing-pending-description', {
+        itemPlural: `item${items.length > 1 ? 's' : ''}`,
+      }),
     })
     action
       .execute()
@@ -66,7 +68,7 @@ function BatchPublishAction({
             closable: true,
             id: 'publishing-toast',
             status: 'error',
-            title: 'An error occurred',
+            title: t('sheet-list.actions.toast.publishing-failed-description'),
             description: err.message,
           })
           return of(null)
@@ -79,12 +81,12 @@ function BatchPublishAction({
             closable: true,
             id: 'publishing-toast',
             status: 'success',
-            title: 'Published',
-            description: 'The documents have been published',
+            title: t('sheet-list.actions.toast.publishing-success-title'),
+            description: t('sheet-list.actions.toast.publishing-success-description'),
           })
         }
       })
-  }, [action, toast])
+  }, [action, items.length, t, toast])
   const actionDisabled = action.disabled()
 
   const disabled =
