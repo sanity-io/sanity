@@ -2,7 +2,7 @@
 import {type ReactElement, type ReactNode, useCallback, useMemo, useRef} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
-import {type RouterContextValue, type RouterState} from './types'
+import {type NavigateOptions, type RouterContextValue, type RouterState} from './types'
 import {useRouter} from './useRouter'
 
 function addScope(
@@ -94,7 +94,8 @@ export function RouteScope(props: RouteScopeProps): ReactElement {
   )
 
   const navigate = useCallback(
-    (nextState: RouterState) => parent_navigate(resolveNextParentState(nextState)),
+    (nextState: RouterState, options?: NavigateOptions) =>
+      parent_navigate(resolveNextParentState(nextState), options),
     [parent_navigate, resolveNextParentState],
   )
 

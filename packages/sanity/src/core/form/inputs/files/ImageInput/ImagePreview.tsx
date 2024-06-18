@@ -7,11 +7,12 @@ import {useTranslation} from '../../../../i18n'
 import {FlexOverlay, MAX_DEFAULT_HEIGHT, Overlay, RatioBox} from './ImagePreview.styled'
 
 interface Props {
-  readOnly?: boolean | null
-  drag: boolean
-  isRejected: boolean
-  src: string
   alt: string
+  drag: boolean
+  initialHeight: number | undefined
+  isRejected: boolean
+  readOnly?: boolean | null
+  src: string
 }
 
 /*
@@ -30,7 +31,7 @@ const getImageSize = (src: string): number[] => {
 }
 
 export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
-  const {drag, readOnly, isRejected, src, ...rest} = props
+  const {drag, readOnly, isRejected, src, initialHeight, ...rest} = props
   const [isLoaded, setLoaded] = useState(false)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rootRect = useElementRect(rootElement)
@@ -65,7 +66,12 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
 
   const {t} = useTranslation()
   return (
-    <RatioBox {...rest} ref={setRootElement} style={{height: rootHeight}} tone="transparent">
+    <RatioBox
+      {...rest}
+      ref={setRootElement}
+      style={{height: initialHeight && !isLoaded ? initialHeight : rootHeight}}
+      tone="transparent"
+    >
       <Card data-container tone="inherit">
         {!isLoaded && (
           <OverlayComponent cardTone="transparent" drag content={<LoadingBlock showText />} />

@@ -354,6 +354,17 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const handlePaste: OnPasteFn = useCallback(
     (input) => {
       const {event} = input
+
+      // Some applications may put both text and files on the clipboard when content is copied.
+      // If we have both text and html on the clipboard, just ignore the files if this is a paste event.
+      // Drop events will most probably be files so skip this test for those.
+      const eventType = event.type === 'paste' ? 'paste' : 'drop'
+      const hasHtml = !!event.clipboardData.getData('text/html')
+      const hasText = !!event.clipboardData.getData('text/plain')
+      if (eventType === 'paste' && hasHtml && hasText) {
+        return onPaste?.(input)
+      }
+
       extractPastedFiles(event.clipboardData)
         .then((files) => {
           return files.length > 0 ? files : []

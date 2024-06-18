@@ -52,6 +52,15 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
     [isOverlayActive, onActivate],
   )
 
+  const handleDragEnter = useCallback(() => {
+    if (!isOverlayActive) {
+      return
+    }
+    if (onActivate) {
+      onActivate()
+    }
+  }, [isOverlayActive, onActivate])
+
   const handleOnFocus = useCallback(() => {
     setFocused(true)
   }, [])
@@ -86,6 +95,7 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
       onClick={handleClick}
       onFocus={handleOnFocus}
       onKeyDown={handleKeyDown}
+      onDragEnter={handleDragEnter}
     >
       {isOverlayActive && (
         <FlexContainer data-testid="activate-overlay" tabIndex={0} align="center" justify="center">

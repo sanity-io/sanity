@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.46.0",
+  "version": "3.46.1",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -55,6 +55,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
+    "@sanity/insert-menu": "1.0.6",
     "rimraf": "^3.0.2"
   }
 }
