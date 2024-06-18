@@ -1089,7 +1089,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'package-version.new-package-available.description':
     'Simply reload to use the new version.',
   /** Label for button that will make the browser reload when users' studio version is out-of-date */
-  'package-version.new-package-available.reload-button': 'Reload now',
+  'package-version.new-package-available.reload-button': 'Reload',
   /** Title of the alert for studio users when packages in their studio are out-of-date */
   'package-version.new-package-available.title': 'New version available',
   /** Label for action to manage members of the current studio project */
