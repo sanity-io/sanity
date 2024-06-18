@@ -8,6 +8,7 @@ test.describe('copy and pasting of fields', () => {
   //     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
   //   })
   test(`its able to copy and paste an object field successfully via keyboard shortcuts`, async ({
+    browserName,
     page,
     createDraftDocument,
     getClipboardItemsAsText,
@@ -36,6 +37,13 @@ test.describe('copy and pasting of fields', () => {
     // await page.keyboard.press('ControlOrMeta+C')
     await page.keyboard.press('Meta+C')
 
+    // Firefox does not support the clipboard API yet
+    if (browserName === 'firefox') {
+      await expect(page.getByText(`Your browser doesn't support this action (yet)`)).toBeVisible()
+
+      return
+    }
+
     await expect(page.getByText(`Field Object with columns copied`)).toBeVisible()
 
     await expect(await getClipboardItemsAsText()).toContain('A string to copy')
@@ -57,6 +65,7 @@ test.describe('copy and pasting of fields', () => {
   })
 
   test(`its able to copy and paste an object field successfully via field actions`, async ({
+    browserName,
     page,
     createDraftDocument,
     getClipboardItemsAsText,
@@ -87,6 +96,12 @@ test.describe('copy and pasting of fields', () => {
 
     await expect(page.getByRole('menuitem', {name: 'Copy field'})).toBeVisible()
     await page.getByRole('menuitem', {name: 'Copy field'}).click()
+
+    if (browserName === 'firefox') {
+      await expect(page.getByText(`Your browser doesn't support this action (yet)`)).toBeVisible()
+
+      return
+    }
 
     await expect(page.getByText(`Field Object with columns copied`)).toBeVisible()
 
