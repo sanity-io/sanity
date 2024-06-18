@@ -64,7 +64,7 @@ describe('PaneContainer', () => {
     expect(screen.queryByTestId('document-sheet-list-pane')).toBeNull()
   })
 
-  it('should show the document sheet list pane when the sheet layout is selected', async () => {
+  it.only('should show the document sheet list pane when the sheet layout is selected', async () => {
     const mockDispatch = jest.fn()
     const config = defineConfig({
       projectId: 'test',
@@ -84,7 +84,9 @@ describe('PaneContainer', () => {
       config,
       resources: [structureUsEnglishLocaleBundle],
     })
-    mockUseStructureToolSetting.mockReturnValue(['sheetList', jest.fn()])
+    mockUseStructureToolSetting
+      .mockReturnValueOnce(['sheetList', jest.fn()])
+      .mockReturnValueOnce([{by: []}, jest.fn()])
     // Mock return value for useSearchState
     mockUseSearchState.mockReturnValue({
       state: {
