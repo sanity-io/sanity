@@ -35,6 +35,9 @@ export const CellInput = ({
       ref={fieldRef}
       __unstable_disableFocusRing
       readOnly={!!fieldType.readOnly}
+      style={{
+        padding: '22px 16px',
+      }}
       value={value ?? ''}
       data-testid={dataTestId}
       onChange={handleOnChange}

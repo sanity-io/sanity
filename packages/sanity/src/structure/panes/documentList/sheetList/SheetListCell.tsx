@@ -273,7 +273,6 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
       key={cell.row.original._id + cell.id}
       style={{
         left: cell.column.getStart('left') ?? undefined,
-        height: 60,
       }}
       width={cell.column.getSize()}
       {...cellProps}
