@@ -258,7 +258,7 @@ test.describe('navigation - form', () => {
     test.skip(browserName !== 'chromium')
 
     /* travelling from Albert, the Whale (parent) -> Eliza, the friendly dolphin (first item) via form */
-    await page.getByRole('button', {name: 'Albert, the whale'}).click()
+    await page.getByRole('button', {name: 'Albert, the whale'}).nth(0).click()
 
     // wait for the modal to open
     page.on('dialog', async () => {
