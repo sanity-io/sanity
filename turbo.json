@@ -23,7 +23,7 @@
       "dependsOn": [
         "^build"
       ],
-      "outputMode": "new-only"
+      "outputLogs": "new-only"
     },
     "build:bundle": {
       "outputs": [
@@ -32,17 +32,17 @@
       "dependsOn": [
         "build"
       ],
-      "outputMode": "new-only"
+      "outputLogs": "new-only"
     },
     "check:types": {
       "outputs": [],
       "dependsOn": [
         "^build"
       ],
-      "outputMode": "errors-only"
+      "outputLogs": "errors-only"
     },
     "lint": {
-      "outputMode": "errors-only"
+      "outputLogs": "errors-only"
     },
     "//#check:format": {}
   }
