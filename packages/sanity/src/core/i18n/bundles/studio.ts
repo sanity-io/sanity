@@ -1087,7 +1087,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'new-document.title': 'Create new document',
   /** More detailed alert text letting user know they have an out-of-date version and should reload */
   'package-version.new-package-available.description':
-    'A new version of Sanity Studio is available. Please reload this window to update.',
+    'Simply reload to use the new version.',
   /** Label for button that will make the browser reload when users' studio version is out-of-date */
   'package-version.new-package-available.reload-button': 'Reload now',
   /** Title of the alert for studio users when packages in their studio are out-of-date */
