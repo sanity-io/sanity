@@ -1580,7 +1580,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.latest-revision': 'Latest revision',
   /**
    * Label for latest revision for timeline menu dropdown
-   * @deprecated use `timeline.latest-revision` instead
+   * @deprecated as of `v3.47.0` `timeline.latest-revision` should be used instead. Note: _usage_ of this key is deprecated, but Studios on `< v3.47.0` still require this key to be _defined_
    * */
   'timeline.latest-version': 'Latest revision',
   /** The aria-label for the list of revisions in the timeline */
