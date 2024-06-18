@@ -42,3 +42,22 @@ test('server responds with 5xx and no json response', () => {
     message: 'HTTP Error 500: Internal Server Error',
   })
 })
+
+test('server responds with 5xx and json response', () => {
+  const mockResponse = {
+    status: 500,
+    statusText: 'Internal Server Error',
+    json: () =>
+      Promise.resolve({
+        error: {
+          type: 'validationError',
+          description: 'Document is not of valid type',
+        },
+        status: 500,
+      }),
+  }
+  expect(assert2xx(mockResponse as unknown as Response)).rejects.toThrowError({
+    statusCode: 500,
+    message: 'validationError: Document is not of valid type',
+  })
+})
