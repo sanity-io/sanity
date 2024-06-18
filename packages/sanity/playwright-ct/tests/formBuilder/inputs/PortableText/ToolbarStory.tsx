@@ -61,6 +61,39 @@ export function ToolbarStory(props: InputStoryProps) {
                   },
                 },
               }),
+              defineArrayMember({
+                name: 'nested',
+                type: 'object',
+                fields: [
+                  defineField({
+                    name: 'items',
+                    type: 'array',
+                    of: [
+                      defineArrayMember({
+                        name: 'item',
+                        type: 'object',
+                        fields: [
+                          defineField({
+                            name: 'deep',
+                            type: 'array',
+                            of: [
+                              defineArrayMember({
+                                type: 'block',
+                                styles: [
+                                  {title: 'Normal', value: 'normal'},
+                                  {title: 'H2', value: 'h2'},
+                                  {title: 'H3', value: 'h3'},
+                                  {title: 'H4', value: 'h4'},
+                                ],
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
             ],
 
             components: {

@@ -104,5 +104,96 @@ test.describe('Portable Text Input', () => {
         await expect($toolbarCard).not.toBeAttached()
       })
     })
+
+    test.describe('Opening block style', () => {
+      test('on a simple editor', async ({mount, page}) => {
+        const {getFocusedPortableTextInput} = testHelpers({page})
+        await mount(<ToolbarStory />)
+        const $portableTextInput = await getFocusedPortableTextInput('field-body')
+
+        const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
+
+        // Assertion: all auto collapsing menu buttons should be visible
+        await expect($toolbarCard).toBeVisible()
+
+        // click the block style select
+        await page.getByTestId('block-style-select').click()
+
+        // Assertion: block style dropdown should be visible
+        await expect(page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
+      })
+
+      test('on a full screen simple editor', async ({mount, page}) => {
+        const {getFocusedPortableTextInput} = testHelpers({page})
+        await mount(<ToolbarStory />)
+        const $portableTextInput = await getFocusedPortableTextInput('field-body')
+
+        const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
+
+        // Assertion: all auto collapsing menu buttons should be visible
+        await expect($toolbarCard).toBeVisible()
+
+        // open the editor in full screen
+        await $toolbarCard.getByLabel('Expand editor').click()
+
+        // click the block style select
+        await page.getByTestId('block-style-select').click()
+
+        // Assertion: block style dropdown should be visible
+        await expect(page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
+      })
+
+      test('on a full screen multi nested PTE', async ({mount, page}) => {
+        const {getFocusedPortableTextInput} = testHelpers({page})
+        await mount(<ToolbarStory />)
+        const $portableTextInput = await getFocusedPortableTextInput('field-body')
+
+        const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
+
+        // Assertion: all auto collapsing menu buttons should be visible
+        await expect($toolbarCard).toBeVisible()
+
+        // open the editor in full screen
+        await $toolbarCard.getByLabel('Expand editor').click()
+
+        // prepare the nested PTE
+        await page.getByRole('button', {name: 'Insert Nested (block)'}).click()
+
+        await expect(
+          page
+            .locator('div')
+            .filter({hasText: /^Edit Nested$/})
+            .first(),
+        ).toBeVisible()
+        await page.getByTestId('add-single-object-button').click()
+
+        // nested PTE object item
+        await expect(
+          page
+            .locator('div')
+            .filter({hasText: /^Edit Item$/})
+            .first(),
+        ).toBeVisible()
+
+        // get the nested PTE
+        const $overlay = await page.getByTestId('activate-overlay')
+
+        $overlay.focus()
+        $overlay.click()
+
+        // click the block
+
+        await expect(await page.getByTestId('pt-editor__toolbar-card')).toBeVisible()
+
+        // click the nested PTE expand
+        await page.getByLabel('Expand editor').nth(1).click()
+
+        // click the block style select
+        await page.getByTestId('block-style-select').nth(1).click()
+
+        // Assertion: block style dropdown should be visible
+        await expect(page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
+      })
+    })
   })
 })
