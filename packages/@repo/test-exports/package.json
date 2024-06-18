@@ -7,7 +7,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "test": "node --test || node ./test/exports.test.cjs && node ./test/exports.test.mjs"
+    "test": "node --test"
   },
   "dependencies": {
     "@sanity/block-tools": "workspace:*",
