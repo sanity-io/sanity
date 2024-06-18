@@ -14,7 +14,7 @@
     ".prettierrc",
     "lerna.json"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "outputs": [
         "lib/**",
