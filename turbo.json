@@ -1,13 +1,27 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  // All environment variables that should invalidate a cached build needs to be declared here
   "globalEnv": [
-    "OS",
-    "RUNNER_OS",
-    "PKG_FILE_PATH",
+    "CI",
+    "DEBUG",
+    "NODE_ENV",
     "PKG_FORMAT",
     "PKG_RUNTIME",
     "PKG_VERSION",
-    "DEBUG"
+    "SANITY_STUDIO_DATASET",
+    "SANITY_STUDIO_DEBUG_I18N",
+    "SANITY_STUDIO_MODE",
+    "SANITY_STUDIO_PROJECT_ID",
+    "EXTRACT_SANITY_PROJECT_ID",
+    "EXTRACT_SANITY_DATASET",
+    "EXTRACT_SANITY_API_TOKEN"
+  ],
+  // Variables that should be passed through but not invalidate the cache
+  "globalPassThroughEnv": [
+    "PKG_FILE_PATH",
+    "RUNNER_OS",
+    "SANITY_BASE_PATH",
+    "TZ"
   ],
   "globalDependencies": [
     ".eslintrc.cjs",

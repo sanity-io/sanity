@@ -1,15 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "extends": [
-    "//"
-  ],
+  "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": [
-        "lib/**",
-        "index.js",
-        "_internal.js"
-      ]
+      "outputs": ["lib/**", "index.js", "_internal.js"]
     }
   }
 }

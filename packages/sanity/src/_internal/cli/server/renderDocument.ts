@@ -24,7 +24,7 @@ import {type SanityMonorepo} from './sanityMonorepo'
 const debug = serverDebug.extend('renderDocument')
 
 // Don't use threads in the jest world
-// eslint-disable-next-line no-process-env
+// eslint-disable-next-line no-process-env, turbo/no-undeclared-env-vars
 const useThreads = typeof process.env.JEST_WORKER_ID === 'undefined'
 const hasWarnedAbout = new Set<string>()
 
