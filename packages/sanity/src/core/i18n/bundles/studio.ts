@@ -1585,8 +1585,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.error.unable-to-load-revision': 'Unable to load revision',
   /** Label for when the timeline item is the latest in the history */
   'timeline.latest': 'Latest',
-  /** Label for latest version for timeline menu dropdown */
-  'timeline.latest-version': 'Latest version',
+
+  /** Label for latest revision for timeline menu dropdown */
+  'timeline.latest-revision': 'Latest revision',
+  /**
+   * Label for latest revision for timeline menu dropdown
+   * @deprecated as of `v3.47.0` `timeline.latest-revision` should be used instead. Note: _usage_ of this key is deprecated, but Studios on `< v3.47.0` still require this key to be _defined_
+   * */
+  'timeline.latest-version': 'Latest revision',
   /** The aria-label for the list of revisions in the timeline */
   'timeline.list.aria-label': 'Document revisions',
   /** Label for loading history */
