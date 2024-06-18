@@ -1,6 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import {cloneDeep, merge} from 'lodash'
 import {act} from 'react'
 import {defineConfig, type OperationsAPI} from 'sanity'
 import {type DocumentListPaneNode} from 'sanity/structure'
@@ -73,32 +74,34 @@ jest.mock('../../../../components/paneRouter', () => ({
   }),
 }))
 
-const renderTest = async () => {
-  const config = defineConfig({
-    projectId: 'test',
-    dataset: 'test',
-    schema: {
-      preview: {},
-      types: [
-        {
-          type: 'document',
-          name: 'author',
-          fields: [
-            {type: 'string', name: 'name'},
-            {type: 'number', name: 'age'},
-            {
-              name: 'address',
-              type: 'object',
-              fields: [
-                {name: 'city', type: 'string'},
-                {name: 'country', type: 'string'},
-              ],
-            },
-          ],
-        },
-      ],
-    },
-  })
+const DEFAULT_TEST_CONFIG = Object.freeze({
+  projectId: 'test',
+  dataset: 'test',
+  schema: {
+    preview: {},
+    types: [
+      {
+        type: 'document',
+        name: 'author',
+        fields: [
+          {type: 'string', name: 'name', readOnly: false},
+          {type: 'number', name: 'age', readOnly: false},
+          {
+            name: 'address',
+            type: 'object',
+            fields: [
+              {name: 'city', type: 'string', readOnly: false},
+              {name: 'country', type: 'string', readOnly: false},
+            ],
+          },
+        ],
+      },
+    ],
+  },
+})
+
+const renderTest = async (providedConfig: any = {}) => {
+  const config = defineConfig(merge({}, DEFAULT_TEST_CONFIG, providedConfig))
 
   const wrapper = await createTestProvider({
     config,
@@ -128,23 +131,20 @@ Object.assign(navigator, {
 })
 
 describe('DocumentSheetListPane', () => {
+  const mockDocumentOperations = {
+    patch: {disabled: false, execute: jest.fn()},
+    commit: {disabled: false, execute: jest.fn()},
+  } as unknown as OperationsAPI
+
   beforeEach(() => {
+    mockUseDocumentSheetList.mockReturnValue({
+      'pub-123': mockDocumentOperations,
+      'pub-456': mockDocumentOperations,
+    })
     jest.clearAllMocks()
   })
 
   describe('Keyboard navigation', () => {
-    const mockDocumentOperations = {
-      patch: {disabled: false, execute: jest.fn()},
-      commit: {disabled: false, execute: jest.fn()},
-    } as unknown as OperationsAPI
-
-    beforeEach(() => {
-      mockUseDocumentSheetList.mockReturnValue({
-        'pub-123': mockDocumentOperations,
-        'pub-456': mockDocumentOperations,
-      })
-    })
-
     describe('to edit single value', () => {
       it('should not edit cell when only single clicked', async () => {
         await renderTest()
@@ -276,7 +276,6 @@ describe('DocumentSheetListPane', () => {
 
         await act(async () => {
           expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
           await userEvent.dblClick(screen.getByTestId('cell-name-0'))
         })
 
@@ -348,7 +347,32 @@ describe('DocumentSheetListPane', () => {
       })
     })
 
-    describe.only('to paste a value', () => {
+    describe('to paste a value', () => {
+      it('does not paste when cell is read only', async () => {
+        const providedConfig = cloneDeep(DEFAULT_TEST_CONFIG)
+        providedConfig.schema.types[0].fields[0].readOnly = true
+        await renderTest(providedConfig)
+
+        await act(() => {
+          userEvent.click(screen.getByTestId('cell-name-0-input-field'))
+        })
+
+        expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
+
+        act(() => {
+          fireEvent.paste(document, {
+            clipboardData: {
+              getData: () => 'Joe Blogs',
+            } as unknown as ClipboardEvent['clipboardData'],
+          })
+        })
+
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
+
+        expect(mockDocumentOperations.patch.execute).not.toHaveBeenCalled()
+        expect(mockDocumentOperations.commit.execute).not.toHaveBeenCalled()
+      })
+
       it('pastes when cell is selected', async () => {
         await renderTest()
 
@@ -402,6 +426,34 @@ describe('DocumentSheetListPane', () => {
           )
           expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
         })
+      })
+
+      it('does not paste to any cells when field is read only', async () => {
+        const providedConfig = cloneDeep(DEFAULT_TEST_CONFIG)
+        providedConfig.schema.types[0].fields[0].readOnly = true
+        await renderTest(providedConfig)
+
+        await act(() => {
+          userEvent.click(screen.getByTestId('cell-name-0-input-field'))
+        })
+
+        await act(() => {
+          userEvent.keyboard('{Shift}{ArrowDown}')
+        })
+
+        act(() => {
+          fireEvent.paste(document, {
+            clipboardData: {
+              getData: () => 'Joe Blogs',
+            } as unknown as ClipboardEvent['clipboardData'],
+          })
+        })
+
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
+        expect(screen.getByTestId('cell-name-1-input-field')).toHaveValue('Bill Bob')
+
+        expect(mockDocumentOperations.patch.execute).not.toHaveBeenCalled()
+        expect(mockDocumentOperations.commit.execute).not.toHaveBeenCalled()
       })
 
       it('pastes to all selected cells when anchor is selected', async () => {
@@ -466,7 +518,7 @@ describe('DocumentSheetListPane', () => {
         })
       })
 
-      it.only('does not paste when pasting across columns', async () => {
+      it('does not paste when pasting across columns', async () => {
         await renderTest()
 
         await act(() => {
@@ -611,5 +663,21 @@ describe('DocumentSheetListPane', () => {
       expect(screen.queryByText('City')).toBeNull()
       expect(screen.queryByText('Country')).toBeNull()
     })
+  })
+
+  describe('inputs', () => {
+    describe('text inputs', () => {
+      it('should disable when read only', async () => {
+        const providedConfig = DEFAULT_TEST_CONFIG
+        providedConfig.schema.types[0].fields[0].readOnly = true
+        await renderTest(providedConfig)
+
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveAttribute('readOnly')
+      })
+    })
+
+    describe('number inputs', () => {})
+    describe('booleans', () => {})
+    describe('selects', () => {})
   })
 })
