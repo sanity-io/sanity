@@ -1318,8 +1318,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/package.config
       '@sanity/insert-menu':
-        specifier: 1.0.5
-        version: 1.0.5(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+        specifier: 1.0.6
+        version: 1.0.6(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -1545,8 +1545,8 @@ importers:
         specifier: ^3.37.3
         version: 3.37.5
       '@sanity/insert-menu':
-        specifier: 1.0.5
-        version: 1.0.5(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+        specifier: 1.0.6
+        version: 1.0.6(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/logos':
         specifier: ^2.1.4
         version: 2.1.12(@sanity/color@3.0.6)(react@18.3.1)
@@ -6919,8 +6919,8 @@ packages:
       react-dom: 18.3.1(react@18.3.1)
     dev: false
 
-  /@sanity/insert-menu@1.0.5(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
-    resolution: {integrity: sha512-vPqg4Ki5PC1ALPccwYCqP4QW/b1FhN3xXfOvN4+eR1P3MXZ04N17YXVhhA3U/fyBdX+1o1XQPfK8xvXyuOeESw==}
+  /@sanity/insert-menu@1.0.6(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
+    resolution: {integrity: sha512-qvDj/hX2bLulgkD8ksXRwJa/xxtck7UKTBwIVqmWS2jq5bLdG+1D5K8pIEb24KI6VFkgPCrIkygX/pU+2HatWA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@sanity/types': ^3.45.0
@@ -6931,6 +6931,7 @@ packages:
       '@sanity/icons': 3.2.0(react@18.3.1)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 2.4.0(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+      lodash.startcase: 4.4.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-is: 18.3.1
@@ -15322,6 +15323,9 @@ packages:
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
     dev: true
+
+  /lodash.startcase@4.4.0:
+    resolution: {integrity: sha512-+WKqsK294HMSc2jEbNgpHpd0JfIBhp7rEV4aqXWqFr6AlXov+SlcgB1Fv01y2kGe3Gc8nMW7VA0SrGuSkRfIEg==}
 
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
