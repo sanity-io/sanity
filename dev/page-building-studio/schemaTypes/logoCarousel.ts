@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import {FaArrowsRotate} from 'react-icons/fa6'
 import {defineField, defineType} from 'sanity'
 
