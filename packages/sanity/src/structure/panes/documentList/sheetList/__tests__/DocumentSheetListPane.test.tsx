@@ -30,6 +30,7 @@ jest.mock('../useDocumentSheetList', () => ({
           city: 'Oslo',
           country: 'Norway',
         },
+        isAdult: true,
       },
       {
         _id: '456',
@@ -47,6 +48,7 @@ jest.mock('../useDocumentSheetList', () => ({
           city: 'Oslo',
           country: 'Norway',
         },
+        isAdult: false,
       },
     ],
     isLoading: false,
@@ -347,7 +349,7 @@ describe('DocumentSheetListPane', () => {
       })
     })
 
-    describe.only('to paste a value', () => {
+    describe('to paste a value', () => {
       it('does not paste when cell is read only', async () => {
         const providedConfig = cloneDeep(DEFAULT_TEST_CONFIG)
         providedConfig.schema.types[0].fields[0].readOnly = true
@@ -687,7 +689,86 @@ describe('DocumentSheetListPane', () => {
       )
     })
 
-    describe('booleans', () => {})
+    describe('booleans', () => {
+      describe.each(['checkbox', 'switch', undefined])('as a %s', (layout) => {
+        let providedConfig: any
+        beforeEach(() => {
+          providedConfig = DEFAULT_TEST_CONFIG
+          providedConfig.schema.types[0].fields[0] = {
+            type: 'boolean',
+            name: 'isAdult',
+            readOnly: false,
+            ...(layout ? {options: {layout}} : {}),
+          }
+        })
+
+        it('should disable checkbox if field is ready only', async () => {
+          providedConfig.schema.types[0].fields[0].readOnly = true
+          await renderTest(providedConfig)
+
+          expect(screen.getByTestId('cell-isAdult-0-input-field')).toBeDisabled()
+        })
+
+        it('should render as checkbox', async () => {
+          await renderTest(providedConfig)
+
+          expect(screen.getByTestId('cell-isAdult-0-input-field')).toHaveAttribute(
+            'type',
+            'checkbox',
+          )
+        })
+
+        it('should update value when clicked', async () => {
+          await renderTest(providedConfig)
+
+          // initially checked field to be unchecked
+          expect(screen.getByTestId('cell-isAdult-0-input-field')).toBeChecked()
+          fireEvent.click(screen.getByTestId('cell-isAdult-0-input-field'))
+
+          await waitFor(() => {
+            expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+              [{set: {isAdult: false}}],
+              {},
+            )
+            expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+          })
+
+          // initially unchecked field to be checked
+          expect(screen.getByTestId('cell-isAdult-1-input-field')).not.toBeChecked()
+          fireEvent.click(screen.getByTestId('cell-isAdult-1-input-field'))
+
+          await waitFor(() => {
+            expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+              [{set: {isAdult: true}}],
+              {},
+            )
+            expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+          })
+        })
+
+        it('should unset value to indeterminate when deleted', async () => {
+          await renderTest(providedConfig)
+          await act(() => {
+            userEvent.click(screen.getByTestId('cell-isAdult-0'))
+          })
+
+          await waitFor(() => {
+            expect(screen.getByTestId('cell-isAdult-0')).toHaveAttribute('aria-selected', 'true')
+          })
+
+          await userEvent.type(screen.getByTestId('cell-isAdult-0'), `{Backspace}`)
+
+          await waitFor(() => {
+            expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+              [{unset: ['isAdult']}],
+              {},
+            )
+            expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+          })
+        })
+      })
+    })
+
     describe('selects', () => {})
   })
 })

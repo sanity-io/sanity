@@ -5,7 +5,14 @@ import {useCallback} from 'react'
 import {type CellInputType} from '../SheetListCell'
 
 export function BooleanCellInput(props: CellInputType<BooleanSchemaType>) {
-  const {cellValue, fieldType, setCellValue, handlePatchField, fieldRef} = props
+  const {
+    cellValue,
+    fieldType,
+    setCellValue,
+    handlePatchField,
+    fieldRef,
+    'data-testid': dataTestId,
+  } = props
   const layout = fieldType?.options?.layout || 'switch'
 
   const indeterminate = typeof cellValue !== 'boolean'
@@ -24,7 +31,7 @@ export function BooleanCellInput(props: CellInputType<BooleanSchemaType>) {
 
   return (
     <LayoutSpecificInput
-      data-testid="boolean-input"
+      data-testid={dataTestId}
       label={fieldType?.title}
       checked={checked}
       readOnly={!!fieldType.readOnly}
