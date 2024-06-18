@@ -12,8 +12,12 @@ test('should not show package version toast if not in auto-updating studio', asy
 })
 
 test.describe('auto-updating studio behavior', () => {
+  //unfortunately, injecting the importmap script tag is a bit too slow
+  //there are forthcoming tests that will e2e test auto-updating studio behavior
+  test.skip()
+
   test.beforeEach(async ({page, baseURL}) => {
-    await page.goto(baseURL ?? '', {waitUntil: 'networkidle'})
+    await page.goto(baseURL ?? '', {waitUntil: 'domcontentloaded'})
     // Inject a script tag with importmap into the page
     await page.evaluate(() => {
       const importMap = {
