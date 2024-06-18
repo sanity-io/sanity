@@ -1559,6 +1559,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'search.recent-searches-label': 'Recent searches',
   /** Accessibility label for the search results section, shown when the user has typed valid terms */
   'search.search-results-aria-label': 'Search results',
+  /** Button label for the publish all selected action in sheet list */
+  'sheet-list.actions.publish-all-label': 'Publish all',
+  /** Label listing count of all selected items in sheet list */
+  'sheet-list.actions.selected-count-label': '{{count}} {{itemPlural}} selected',
+  /** Button label for the unselect all selected action in sheet list */
+  'sheet-list.actions.unselect-all-label': 'Unselect all',
   /** Label for the edit columns button to change field visibility in sheet list */
   'sheet-list.edit-columns': 'Edit columns',
   /** Label for the header menu option to hide a field from the sheet list */
@@ -1567,6 +1573,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'sheet-list.reset-columns': 'Reset columns',
   /** Title for the edit columns menu */
   'sheet-list.select-fields': 'Select up to 5 field types',
+  /** Text for listing the reason items cannot be published in sheet list */
+  'sheet-list.validation-error.reason': 'Item with ID {{id}} cannot be published:',
+  /** Button tooltip for publish all action button in sheet list when selections have validation errors */
+  'sheet-list.validation-error.tooltip': 'Cannot publish documents with validation errors',
+
   /** Accessibility label for the navbar status button */
   'status-button.aria-label': 'Configuration status',
 
