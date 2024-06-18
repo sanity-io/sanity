@@ -160,7 +160,7 @@ export default async function buildSanityStudio(
   if (autoUpdatesEnabled) {
     importMap = {
       imports: {
-        ...(await buildVendorDependencies({cwd: workDir, outputDir})),
+        ...(await buildVendorDependencies({cwd: workDir, outputDir, basePath})),
         ...autoUpdatesImports,
       },
     }

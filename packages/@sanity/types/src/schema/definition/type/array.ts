@@ -1,3 +1,5 @@
+import {type InsertMenuOptions} from '@sanity/insert-menu'
+
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty, type SchemaValidationValue} from '../../types'
@@ -18,6 +20,8 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration {
   direction?: 'horizontal' | 'vertical'
   sortable?: boolean
   modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
+  /** @alpha This API may change */
+  insertMenu?: InsertMenuOptions
 }
 
 /** @public */

@@ -127,5 +127,47 @@ export default {
         },
       ],
     },
+    {
+      name: 'withAnonymousMemberSubtypes',
+      type: 'object',
+      fields: [
+        {
+          name: 'assets',
+          type: 'array',
+          title: 'Array of assets',
+          of: [{type: 'image'}, {type: 'file'}],
+        },
+      ],
+    },
+    {
+      name: 'withNamedMemberSubtypes',
+      type: 'object',
+      fields: [
+        {
+          name: 'assets',
+          type: 'array',
+          title: 'Array of assets',
+          of: [
+            {type: 'image', name: 'myImage'},
+            {type: 'file', name: 'myFile'},
+          ],
+        },
+      ],
+    },
+    {
+      name: 'withTitledMemberSubtypes',
+      type: 'object',
+      fields: [
+        {
+          name: 'assets',
+          type: 'array',
+          title: 'Array of assets',
+          of: [
+            {type: 'image', name: 'myImage', title: 'My beautiful image'},
+            {type: 'file', name: 'myFile', title: 'My wonderful file'},
+          ],
+        },
+      ],
+    },
   ],
 }

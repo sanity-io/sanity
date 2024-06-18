@@ -52,3 +52,43 @@ test(`file drop event should not propagate to dialog parent`, async ({
   // Ensure the list still contains one item.
   expect(item).toHaveCount(1)
 })
+
+test(`Scenario: Adding a new type from multiple options`, async ({page, createDraftDocument}) => {
+  await createDraftDocument('/test/content/input-standard;arraysTest')
+
+  // Given an empty array field allowing multiple types
+  const field = page.getByTestId('field-arrayOfMultipleTypes')
+  const noItemsLabel = field.getByText('No items')
+  await expect(noItemsLabel).toBeVisible()
+
+  // When the "Add item" button is clicked
+  const addItemButton = field.getByRole('button', {name: 'Add item...'})
+  await addItemButton.click()
+
+  // Then an "insert menu" appears
+  const insertMenuPopover = page.getByTestId('document-panel-portal')
+  const insertMenu = insertMenuPopover.getByRole('menu')
+  await expect(insertMenu).toBeVisible()
+
+  // And when the "Book" menuitem is clicked
+  const bookOption = insertMenu.getByRole('menuitem', {name: 'Book'})
+  await bookOption.click()
+
+  // Then an "insert dialog" appears
+  const insertDialog = page.getByRole('dialog')
+  await expect(insertDialog).toBeVisible()
+
+  // And when the "Title" input is filled
+  const titleInput = insertDialog.getByLabel('Title')
+  await titleInput.fill('Book title')
+  await expect(titleInput).toHaveValue('Book title')
+
+  // And the dialog is closed
+  const closeDialogButton = insertDialog.getByLabel('Close dialog')
+  await closeDialogButton.click()
+  await expect(insertDialog).not.toBeVisible()
+
+  // Then a new item is inserted in the array
+  const bookItem = field.getByText('Book title')
+  await expect(bookItem).toBeVisible()
+})
