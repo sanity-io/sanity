@@ -26,7 +26,7 @@ test.describe('copy and pasting of fields', () => {
 
     await page.getByTestId('field-objectWithColumns.string1').locator('input').focus()
 
-    await page.keyboard.type('A string to copy')
+    await page.keyboard.fill('A string to copy')
 
     await $objectWrapper.focus()
 
@@ -81,7 +81,7 @@ test.describe('copy and pasting of fields', () => {
 
     await page.getByTestId('field-objectWithColumns.string1').locator('input').focus()
 
-    await page.keyboard.type('A string to copy')
+    await page.keyboard.fill('A string to copy')
 
     // https://github.com/microsoft/playwright/pull/30572
     // maybe part of 1.44
