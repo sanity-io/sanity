@@ -1091,7 +1091,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for button that will make the browser reload when users' studio version is out-of-date */
   'package-version.new-package-available.reload-button': 'Reload',
   /** Title of the alert for studio users when packages in their studio are out-of-date */
-  'package-version.new-package-available.title': 'New version available',
+  'package-version.new-package-available.title': 'Sanity Studio was updated',
   /** Label for action to manage members of the current studio project */
   'presence.action.manage-members': 'Manage members',
   /** Accessibility label for presence menu button */
