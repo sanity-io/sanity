@@ -1,5 +1,6 @@
 import {type DocumentActionsResolver} from 'sanity'
 
+import {createCustomPublishAction} from './actions/createCustomPublishAction'
 import {TestConfirmDialogAction} from './actions/TestConfirmDialogAction'
 import {TestCustomComponentAction} from './actions/TestCustomComponentAction'
 import {TestCustomRestoreAction} from './actions/TestCustomRestoreAction'
@@ -18,7 +19,9 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
       if (action.action === 'restore') {
         return TestCustomRestoreAction(action)
       }
-
+      if (action.action === 'publish') {
+        return createCustomPublishAction(action)
+      }
       return action
     })
   }
