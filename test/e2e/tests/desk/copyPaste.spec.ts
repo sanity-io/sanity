@@ -24,9 +24,10 @@ test.describe('copy and pasting of fields', () => {
 
     await expect($objectWrapper).toBeVisible()
 
-    await page.getByTestId('field-objectWithColumns.string1').locator('input').focus()
-
-    await page.keyboard.fill('A string to copy')
+    await page
+      .getByTestId('field-objectWithColumns.string1')
+      .locator('input')
+      .fill('A string to copy')
 
     await $objectWrapper.focus()
 
@@ -79,9 +80,10 @@ test.describe('copy and pasting of fields', () => {
 
     await expect($object).toBeVisible()
 
-    await page.getByTestId('field-objectWithColumns.string1').locator('input').focus()
-
-    await page.keyboard.fill('A string to copy')
+    await page
+      .getByTestId('field-objectWithColumns.string1')
+      .locator('input')
+      .fill('A string to copy')
 
     // https://github.com/microsoft/playwright/pull/30572
     // maybe part of 1.44
