@@ -31,6 +31,8 @@ export type Slug = {
   current?: string;
   source?: string;
 };
+
+export type AllSanitySchemaTypes = Person | Slug;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/queries.ts
 // Variable: PAGE_QUERY

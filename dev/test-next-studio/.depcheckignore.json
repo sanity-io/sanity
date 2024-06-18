@@ -4,6 +4,7 @@
     "styled-components",
     "react",
     "react-dom",
+    "react-is",
     "sanity",
     "eslint-config-next",
     "sanity-test-studio",

@@ -9,7 +9,6 @@ Object {
         "actions": Object {
           "actionType": "sanity.action.document.publish",
           "draftId": "drafts.my-id",
-          "ifDraftRevisionId": "exampleRev",
           "ifPublishedRevisionId": "exampleRev",
           "publishedId": "my-id",
         },
@@ -37,7 +36,6 @@ Object {
         "actions": Object {
           "actionType": "sanity.action.document.publish",
           "draftId": "drafts.my-id",
-          "ifDraftRevisionId": "exampleRev",
           "ifPublishedRevisionId": undefined,
           "publishedId": "my-id",
         },
@@ -65,7 +63,6 @@ Object {
         "actions": Object {
           "actionType": "sanity.action.document.publish",
           "draftId": "drafts.my-id",
-          "ifDraftRevisionId": "exampleRev",
           "ifPublishedRevisionId": undefined,
           "publishedId": "my-id",
         },
