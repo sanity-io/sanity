@@ -1,4 +1,4 @@
-import {expect, type Page} from '@playwright/test'
+import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
 test.describe('Portable Text Input - Open Block Style Select', () => {
@@ -15,10 +15,11 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     await page.getByTestId('field-content').click()
 
     // wait for overlay to be gone
-    await page
-      .getByTestId('field-content')
-      .getByTestId('activate-overlay')
-      .waitFor({state: 'hidden'})
+    await expect(
+      await page.getByTestId('field-content').getByTestId('activate-overlay'),
+    ).not.toBeVisible({
+      timeout: 40000,
+    })
   })
 
   test('on a simple editor', async ({page}) => {
@@ -33,7 +34,9 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     await page.getByTestId('field-content').getByLabel('Expand editor').click()
 
     // wait for PTE to be full screen
-    await waitForFullScreen(page)
+    await page
+      .getByTestId('document-panel-portal')
+      .evaluate((element) => element.children.length > 0)
 
     await page.locator('[data-testid="block-style-select"]').click()
 
@@ -46,7 +49,9 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     await page.getByTestId('field-content').getByLabel('Expand editor').click()
 
     // wait for PTE to be full screen
-    await waitForFullScreen(page)
+    await page
+      .getByTestId('document-panel-portal')
+      .evaluate((element) => element.children.length > 0)
 
     // add a object with a nested PTE
     await page.getByRole('button', {name: 'Insert Nested (inline)'}).click()
@@ -67,7 +72,9 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     await nestedPTE.getByLabel('Expand editor').click()
 
     // wait for PTE to be full screen
-    await waitForFullScreen(page)
+    await page
+      .getByTestId('document-panel-portal')
+      .evaluate((element) => element.children.length > 1)
 
     // click the block style select
     await page.locator('[data-testid="block-style-select"]').nth(1).click()
@@ -77,10 +84,3 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     })
   })
 })
-
-// wait for PTE to be full screen
-async function waitForFullScreen(page: Page) {
-  return await page
-    .getByTestId('document-panel-portal')
-    .evaluate((element) => element.children.length > 0)
-}
