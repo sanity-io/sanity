@@ -71,7 +71,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         if (!latestPackageVersions) return
 
         const foundNewVersion = Object.entries(latestPackageVersions).some(([pkg, version]) => {
-          if (!version || currentPackageVersions[pkg]) return false
+          if (!version || !currentPackageVersions[pkg]) return false
           return semver.gt(version, currentPackageVersions[pkg])
         })
 
