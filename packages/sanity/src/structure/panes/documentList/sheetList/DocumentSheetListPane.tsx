@@ -9,7 +9,7 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   SearchProvider,
   set,
@@ -50,6 +50,7 @@ const PaneContainer = styled(Flex)`
 const TableContainer = styled.div`
   overflow: auto; //our scrollable table container
   position: relative; //needed for sticky header
+  height: 100%;
 `
 const Table = styled.table`
   border-collapse: separate;
@@ -130,7 +131,7 @@ function DocumentSheetListPaneInner(
   const {documentSchemaType, sortOrder: sortOrderRaw, ...paneProps} = props
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
-  const {data} = useDocumentSheetList({
+  const {data, isLoading} = useDocumentSheetList({
     typeName: documentSchemaType.name,
   })
 
@@ -166,15 +167,7 @@ function DocumentSheetListPaneInner(
         },
       })
     }
-
-    return () => {
-      if (canRunEffect) {
-        dispatch({
-          type: 'ORDERING_RESET',
-        })
-      }
-    }
-  }, [dispatch, nextSort, hasSelection, data])
+  }, [dispatch, nextSort, hasSelection])
 
   const totalRows = state.result.hits.length
   const meta = {
@@ -286,6 +279,8 @@ function DocumentSheetListPaneInner(
   )
 
   const isReady = useMemo(() => {
+    if (isLoading) return false
+
     if (table.options.meta?.patchDocument && rowOperations) {
       const isSomeOperationsDisabled = Object.values(rowOperations).some(
         (operation) => operation.patch.disabled !== false || operation.commit.disabled !== false,
@@ -294,64 +289,67 @@ function DocumentSheetListPaneInner(
       return !isSomeOperationsDisabled
     }
     return false
-  }, [rowOperations, table.options.meta?.patchDocument])
+  }, [isLoading, rowOperations, table.options.meta?.patchDocument])
 
   const rowsCount = `List total: ${totalRows} item${totalRows === 1 ? '' : 's'}`
 
   const renderContent = () => {
-    if (!isReady) {
-      return <LoadingPane paneKey={paneProps.paneKey} />
-    }
+    if (!isReady)
+      return (
+        <Flex style={{height: '100%'}}>
+          <LoadingPane paneKey={paneProps.paneKey} />
+        </Flex>
+      )
 
     return (
-      <React.Fragment>
-        <TableActionsWrapper
-          direction="row"
-          align="center"
-          paddingY={3}
-          paddingX={1}
-          justify="space-between"
-        >
-          <Flex direction="row" align="center">
-            <DocumentSheetListFilter />
-            <Text size={0} muted>
-              {rowsCount}
-            </Text>
-          </Flex>
-          <ColumnsControl table={table} />
-        </TableActionsWrapper>
-        <TableContainer>
-          <DocumentSheetListProvider table={table} setHasSelection={setHasSelection}>
-            <Table>
-              <thead>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <Box as="tr" key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <DocumentSheetListHeader
-                        key={header.id}
-                        header={header}
-                        headerGroup={headerGroup}
-                        table={table}
-                      />
-                    ))}
-                  </Box>
-                ))}
-              </thead>
-              <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
-            </Table>
-          </DocumentSheetListProvider>
-          <DocumentSheetActions table={table} schemaType={documentSchemaType} />
-        </TableContainer>
-        <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
-          <DocumentSheetListPaginator table={table} />
-        </Flex>
-      </React.Fragment>
+      <Table>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Box as="tr" key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <DocumentSheetListHeader
+                  key={header.id}
+                  header={header}
+                  headerGroup={headerGroup}
+                  table={table}
+                />
+              ))}
+            </Box>
+          ))}
+        </thead>
+        <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
+      </Table>
     )
   }
 
   return (
     <PaneContainer direction="column" paddingX={3} data-testid="document-sheet-list-pane">
-      {renderContent()}
+      <TableActionsWrapper
+        direction="row"
+        align="center"
+        paddingY={3}
+        paddingX={1}
+        justify="space-between"
+      >
+        <Flex direction="row" align="center">
+          <DocumentSheetListFilter />
+          <Text size={0} muted>
+            {rowsCount}
+          </Text>
+        </Flex>
+        <ColumnsControl table={table} />
+      </TableActionsWrapper>
+      <TableContainer>
+        <DocumentSheetListProvider table={table} setHasSelection={setHasSelection}>
+          {renderContent()}
+        </DocumentSheetListProvider>
+        <DocumentSheetActions table={table} schemaType={documentSchemaType} />
+      </TableContainer>
+      {isReady && (
+        <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
+          <DocumentSheetListPaginator table={table} />
+        </Flex>
+      )}
     </PaneContainer>
   )
 }
