@@ -56,14 +56,11 @@ export function StudioProvider({
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
 }: StudioProviderProps) {
-<<<<<<< HEAD
   // We initialize the error reporter as early as possible in order to catch anything that could
   // occur during configuration loading, React rendering etc. StudioProvider is often the highest
   // mounted React component that is shared across embedded and standalone studios.
   errorReporter.initialize()
 
-=======
->>>>>>> 8acd0e4a28 (feat: notify AUS users of new packages)
   const _children = (
     <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       <StudioTelemetryProvider config={config}>

@@ -8,13 +8,9 @@ import {useTranslation} from '../../i18n'
 import {checkForLatestVersions} from './checkForLatestVersions'
 
 // How often to to check last timestamp. at 30 min, should fetch new version
-const REFRESH_INTERVAL = 1000 * 60 * 5 // every 5 minutes
+const REFRESH_INTERVAL = 1000 * 30 // every 30 seconds
 const SHOW_TOAST_FREQUENCY = 1000 * 60 * 30 //half hour
 
-/*
- * We are currently only checking to see if the sanity module has a new version available.
- * We can add more packages to this list (e.g., @sanity/vision) if we want to check for more.
- */
 const currentPackageVersions: Record<string, string> = {
   sanity: SANITY_VERSION,
 }
@@ -49,8 +45,12 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
       ),
       closable: true,
       status: 'info',
-      //covering for some delays, etc. because of the toast ID, we should never see this twice
-      duration: SHOW_TOAST_FREQUENCY * 2,
+      /*
+       * We want to show the toast until the user closes it.
+       * Because of the toast ID, we should never see it twice.
+       * https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#maximum_delay_value
+       */
+      duration: 1000 * 60 * 60 * 24 * 24,
     })
   }, [toast, t])
 
@@ -71,7 +71,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         if (!latestPackageVersions) return
 
         const foundNewVersion = Object.entries(latestPackageVersions).some(([pkg, version]) => {
-          if (!version) return false
+          if (!version || currentPackageVersions[pkg]) return false
           return semver.gt(version, currentPackageVersions[pkg])
         })
 
