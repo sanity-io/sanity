@@ -58,7 +58,7 @@ export function UserMenu() {
   return (
     <MenuButton
       button={
-        <Button mode="bleed" padding={0} radius="full">
+        <Button mode="bleed" padding={0} radius="full" tabIndex={-1}>
           <UserAvatar size={1} user="me" />
         </Button>
       }

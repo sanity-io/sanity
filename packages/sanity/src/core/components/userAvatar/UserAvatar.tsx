@@ -88,6 +88,7 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
 
   return (
     <Avatar
+      as="button"
       __unstable_hideInnerStroke
       animateArrowFrom={animateArrowFrom}
       arrowPosition={position}
