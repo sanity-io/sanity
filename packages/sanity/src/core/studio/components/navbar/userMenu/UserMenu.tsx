@@ -64,7 +64,7 @@ export function UserMenu() {
       }
       id="user-menu"
       menu={
-        <StyledMenu>
+        <StyledMenu data-testid="user-menu">
           <Card padding={2}>
             <Flex align="center">
               <Tooltip
