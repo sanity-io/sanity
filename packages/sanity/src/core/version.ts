@@ -1,5 +1,4 @@
 import {version} from '../../package.json'
-
 /**
  * This version is provided by `@sanity/pkg-utils` at build time
  * @hidden

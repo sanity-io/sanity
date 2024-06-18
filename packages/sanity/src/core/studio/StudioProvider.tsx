@@ -17,6 +17,7 @@ import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
+import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
 import {
   AuthenticateScreen,
   ConfigErrorsScreen,
@@ -64,7 +65,9 @@ export function StudioProvider({
     <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       <StudioTelemetryProvider config={config}>
         <LocaleProvider>
-          <ResourceCacheProvider>{children}</ResourceCacheProvider>
+          <PackageVersionStatusProvider>
+            <ResourceCacheProvider>{children}</ResourceCacheProvider>
+          </PackageVersionStatusProvider>
         </LocaleProvider>
       </StudioTelemetryProvider>
     </WorkspaceLoader>
