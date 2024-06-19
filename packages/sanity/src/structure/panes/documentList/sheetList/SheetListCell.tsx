@@ -132,6 +132,10 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     [column.id, fieldType, patchDocument, row.original.__metadata.idPair.publishedId, setCellValue],
   )
 
+  const handleUnsetField = useCallback(() => {
+    unsetDocumentValue?.(row.original.__metadata.idPair.publishedId, column.id)
+  }, [column.id, row.original.__metadata.idPair.publishedId, unsetDocumentValue])
+
   const handleOnKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const {key} = event
@@ -156,7 +160,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
         case 'Backspace': {
           if (cellState !== 'focused') {
             setCellValue('')
-            unsetDocumentValue?.(row.original.__metadata.idPair.publishedId, column.id)
+            handleUnsetField()
           }
           break
         }
@@ -165,15 +169,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
           break
       }
     },
-    [
-      cellState,
-      column.id,
-      row.original.__metadata.idPair.publishedId,
-      setCellAsSelectedAnchor,
-      setCellValue,
-      submitFocusedCell,
-      unsetDocumentValue,
-    ],
+    [cellState, handleUnsetField, setCellAsSelectedAnchor, setCellValue, submitFocusedCell],
   )
 
   const handleOnFocus = useCallback(() => {
@@ -257,6 +253,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const inputProps = {
     ...cellContext,
     handlePatchField,
+    'handleUnsetField': unsetDocumentValue,
     'cellValue': rawCellValue,
     setCellValue,
     setShouldPreventDefaultMouseDown,

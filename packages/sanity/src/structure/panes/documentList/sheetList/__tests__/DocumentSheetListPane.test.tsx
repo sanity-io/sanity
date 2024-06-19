@@ -769,6 +769,89 @@ describe('DocumentSheetListPane', () => {
       })
     })
 
-    describe('selects', () => {})
+    describe('selects', () => {
+      const providedConfig = cloneDeep(DEFAULT_TEST_CONFIG)
+      beforeEach(() => {
+        providedConfig.schema.types[0].fields[0] = {
+          type: 'string',
+          name: 'name',
+          readOnly: false,
+          options: {
+            list: [
+              {title: 'John Doe', value: 'John Doe'},
+              {title: 'Jane Doe', value: 'Jane Doe'},
+            ],
+          },
+        }
+      })
+
+      it('should disable select if field is ready only', async () => {
+        providedConfig.schema.types[0].fields[0].readOnly = true
+        await renderTest(providedConfig)
+
+        expect(screen.getByTestId('cell-name-0-input-field')).toBeDisabled()
+      })
+
+      it('should render the existing value', async () => {
+        await renderTest(providedConfig)
+
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
+      })
+
+      it('should give the option to select a different value', async () => {
+        await renderTest(providedConfig)
+
+        userEvent.selectOptions(screen.getByTestId('cell-name-0-input-field'), 'Jane Doe')
+
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('Jane Doe')
+
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+            [{set: {name: 'Jane Doe'}}],
+            {},
+          )
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+        })
+      })
+
+      it.skip('should give the option to unset the value', async () => {
+        await renderTest(providedConfig)
+
+        userEvent.selectOptions(screen.getByTestId('cell-name-0-input-field'), '')
+
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('')
+
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith([{unset: ['name']}], {})
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+        })
+      })
+    })
+
+    // testing for the empty unset option
+    describe('radios', () => {
+      const providedConfig = cloneDeep(DEFAULT_TEST_CONFIG)
+      beforeEach(() => {
+        providedConfig.schema.types[0].fields[0] = {
+          type: 'string',
+          name: 'name',
+          readOnly: false,
+          options: {
+            layout: 'radio',
+            list: [
+              {title: 'John Doe', value: 'John Doe'},
+              {title: 'Jane Doe', value: 'Jane Doe'},
+            ],
+          },
+        }
+      })
+
+      it('should disable radio if field is ready only', async () => {
+        providedConfig.schema.types[0].fields[0].readOnly = true
+        await renderTest(providedConfig)
+
+        expect(screen.getByTestId('cell-name-0-input-field')).toBeDisabled()
+      })
+    })
   })
 })

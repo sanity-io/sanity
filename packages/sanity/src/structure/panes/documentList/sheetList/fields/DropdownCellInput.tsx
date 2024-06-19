@@ -18,16 +18,22 @@ export const shouldDropdownRender = (fieldType: StringSchemaType | NumberSchemaT
 export function DropdownCellInput({
   fieldType,
   handlePatchField,
+  handleUnsetField,
   cellValue,
   setCellValue,
   fieldRef,
+  'data-testid': dataTestId,
 }: CellInputType<StringSchemaType | NumberSchemaType>) {
   const handleOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value: boolean | string | number = e.target.value
 
     // update and patch document immediately whenever value is changed manually
     setCellValue(value)
-    handlePatchField(value)
+    if (value) {
+      handlePatchField(value)
+    } else {
+      handleUnsetField()
+    }
   }
 
   const options = fieldType.options?.list
@@ -46,6 +52,7 @@ export function DropdownCellInput({
       ref={fieldRef}
       value={cellValue}
       readOnly={!!fieldType.readOnly}
+      data-testid={dataTestId}
     >
       {/* only allow unset open when field is NOT a radio selection */}
       {isUnsetOptionAllowed && <option value={undefined} selected={!cellValue} />}
