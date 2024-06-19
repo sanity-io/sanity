@@ -36,7 +36,7 @@ test.describe('copy and pasting of fields', () => {
     // https://github.com/microsoft/playwright/pull/30572
     // maybe part of 1.44
     // await page.keyboard.press('ControlOrMeta+C')
-    await page.keyboard.press('Meta+C')
+    await $objectWrapper.press('Meta+C')
 
     // Firefox does not support the clipboard API yet
     if (browserName === 'firefox') {
