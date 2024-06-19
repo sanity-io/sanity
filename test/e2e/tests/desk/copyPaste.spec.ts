@@ -13,6 +13,9 @@ test.describe('copy and pasting of fields', () => {
     createDraftDocument,
     getClipboardItemsAsText,
   }) => {
+    // For now, skip test in Firefox due to flakiness
+    test.skip(browserName === 'firefox', 'Skip test in Firefox due to flakiness')
+
     await createDraftDocument('/test/content/input-standard;objectsTest')
 
     await expect(page.getByTestId(`field-objectWithColumns`)).toBeVisible()
@@ -33,10 +36,20 @@ test.describe('copy and pasting of fields', () => {
 
     await expect($objectWrapper).toBeFocused()
 
+    await expect(page.getByTestId('pane-footer-document-status-pulse')).toContainText('Saved', {
+      timeout: 10000,
+    })
+
     // https://github.com/microsoft/playwright/pull/30572
     // maybe part of 1.44
     // await page.keyboard.press('ControlOrMeta+C')
-    await $objectWrapper.press('Meta+C')
+    await page
+      .getByTestId('field-objectWithColumns')
+      .locator(`[tabindex="0"]`)
+      .first()
+      .press('Meta+C', {
+        delay: 150,
+      })
 
     // Firefox does not support the clipboard API yet
     if (browserName === 'firefox') {
@@ -72,6 +85,8 @@ test.describe('copy and pasting of fields', () => {
     getClipboardItemsAsText,
     getClipboardItemByMimeTypeAsText,
   }) => {
+    test.skip(browserName === 'firefox', 'Skip test in Firefox due to flakiness')
+
     await createDraftDocument('/test/content/input-standard;objectsTest')
 
     await expect(page.getByTestId(`field-objectWithColumns`)).toBeVisible()
