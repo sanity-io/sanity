@@ -1085,7 +1085,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'new-document.open-dialog-aria-label': 'Create new document',
   /** Title for "Create new document" dialog */
   'new-document.title': 'Create new document',
-
+  /** More detailed alert text letting user know they have an out-of-date version and should reload */
+  'package-version.new-package-available.description': 'Simply reload to use the new version.',
+  /** Label for button that will make the browser reload when users' studio version is out-of-date */
+  'package-version.new-package-available.reload-button': 'Reload',
+  /** Title of the alert for studio users when packages in their studio are out-of-date */
+  'package-version.new-package-available.title': 'Sanity Studio was updated',
   /** Label for action to manage members of the current studio project */
   'presence.action.manage-members': 'Manage members',
   /** Accessibility label for presence menu button */
@@ -1585,8 +1590,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.error.unable-to-load-revision': 'Unable to load revision',
   /** Label for when the timeline item is the latest in the history */
   'timeline.latest': 'Latest',
-  /** Label for latest version for timeline menu dropdown */
-  'timeline.latest-version': 'Latest version',
+
+  /** Label for latest revision for timeline menu dropdown */
+  'timeline.latest-revision': 'Latest revision',
+  /**
+   * Label for latest revision for timeline menu dropdown
+   * @deprecated as of `v3.47.0` `timeline.latest-revision` should be used instead. Note: _usage_ of this key is deprecated, but Studios on `< v3.47.0` still require this key to be _defined_
+   * */
+  'timeline.latest-version': 'Latest revision',
   /** The aria-label for the list of revisions in the timeline */
   'timeline.list.aria-label': 'Document revisions',
   /** Label for loading history */
