@@ -455,3 +455,49 @@ export type AllSanitySchemaTypes = OptionalData;"
     expect(objectNodeOut).toMatchSnapshot()
   })
 })
+
+describe('generateQueryMap', () => {
+  test('should generate a map of query results', () => {
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'author',
+        attributes: {
+          _id: {
+            type: 'objectAttribute',
+            value: {type: 'string'},
+          },
+          name: {
+            type: 'objectAttribute',
+            value: {type: 'string'},
+            optional: true,
+          },
+        },
+      },
+    ]
+
+    const queries = [
+      {
+        typeName: 'AuthorsResult',
+        query: '*[_type "author"]',
+      },
+      {
+        typeName: 'FirstAuthorResult',
+        query: '*[_type "author"][0]',
+      },
+    ]
+
+    const typeGenerator = new TypeGenerator(schema)
+    const actualOutput = typeGenerator.generateQueryMap(queries)
+
+    expect(actualOutput).toMatchInlineSnapshot(`
+"import \\"@sanity/client\\";
+declare module \\"@sanity/client\\" {
+  interface SanityQueries {
+    \\"*[_type \\\\\\"author\\\\\\"]\\": AuthorsResult;
+    \\"*[_type \\\\\\"author\\\\\\"][0]\\": FirstAuthorResult;
+  }
+}"
+`)
+  })
+})

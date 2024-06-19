@@ -14,6 +14,11 @@ import {
 const REFERENCE_SYMBOL_NAME = 'internalGroqTypeReferenceTo'
 const ALL_SCHEMA_TYPES = 'AllSanitySchemaTypes'
 
+type QueryWithTypeName = {
+  query: string
+  typeName: string
+}
+
 /**
  * A class used to generate TypeScript types from a given schema
  * @internal
@@ -99,6 +104,40 @@ export class TypeGenerator {
     const decleration = t.variableDeclaration('const', [t.variableDeclarator(identifier)])
     decleration.declare = true
     return new CodeGenerator(t.exportNamedDeclaration(decleration)).generate().code.trim()
+  }
+
+  /**
+   * Takes a list of queries from the codebase and generates a type declaration
+   * for SanityClient to consume.
+   *
+   * @param queries - A list of queries to generate a type declaration for
+   * @returns
+   * @internal
+   * @beta
+   */
+  generateQueryMap(queries: QueryWithTypeName[]): string {
+    const queryReturnInterface = t.tsInterfaceDeclaration(
+      t.identifier('SanityQueries'),
+      null,
+      [],
+      t.tsInterfaceBody(
+        queries.map((query) =>
+          t.tsPropertySignature(
+            t.stringLiteral(query.query),
+            t.tsTypeAnnotation(t.tsTypeReference(t.identifier(query.typeName))),
+          ),
+        ),
+      ),
+    )
+
+    const declareModule = t.declareModule(
+      t.stringLiteral('@sanity/client'),
+      t.blockStatement([queryReturnInterface]),
+    )
+
+    const clientImport = t.importDeclaration([], t.stringLiteral('@sanity/client'))
+
+    return new CodeGenerator(t.program([clientImport, declareModule])).generate().code.trim()
   }
 
   /**
