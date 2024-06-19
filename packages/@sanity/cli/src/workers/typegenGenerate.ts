@@ -21,6 +21,7 @@ export interface TypegenGenerateTypesWorkerData {
   schemaPath: string
   searchPath: string | string[]
   prettierConfig: PrettierOptions | null
+  overloadClientMethods?: boolean
 }
 
 export type TypegenGenerateTypesWorkerMessage =
@@ -48,6 +49,11 @@ export type TypegenGenerateTypesWorkerMessage =
       filename: string
       schema: string
       length: number
+    }
+  | {
+      type: 'typemap'
+      filename: string
+      typeMap: string
     }
   | {
       type: 'complete'
@@ -115,6 +121,7 @@ async function main() {
       queryName: string
       query: string
       type: string
+      typeName: string
       unknownTypeNodesGenerated: number
       typeNodesGenerated: number
       emptyUnionTypeNodesGenerated: number
@@ -124,13 +131,17 @@ async function main() {
         const ast = safeParseQuery(query)
         const queryTypes = typeEvaluate(ast, schema)
 
-        const {type} = typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes)
+        const {type, typeName} = typeGenerator.generateTypeNodeTypes(
+          `${queryName}Result`,
+          queryTypes,
+        )
         const code = await maybeFormatCode(type.trim(), opts.prettierConfig)
 
         const queryTypeStats = walkAndCountQueryTypeNodeStats(queryTypes)
         fileQueryTypes.push({
           queryName,
           query,
+          typeName,
           type: code,
           unknownTypeNodesGenerated: queryTypeStats.unknownTypes,
           typeNodesGenerated: queryTypeStats.allTypes,
@@ -155,6 +166,15 @@ async function main() {
         type: 'types',
         types: fileQueryTypes,
         filename: result.filename,
+      } satisfies TypegenGenerateTypesWorkerMessage)
+    }
+
+    if (fileQueryTypes.length > 0 && opts.overloadClientMethods) {
+      const typeMap = typeGenerator.generateQueryMap(fileQueryTypes)
+      parentPort?.postMessage({
+        type: 'typemap',
+        filename: result.filename,
+        typeMap,
       } satisfies TypegenGenerateTypesWorkerMessage)
     }
   }
