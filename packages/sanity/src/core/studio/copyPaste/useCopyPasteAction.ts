@@ -112,7 +112,7 @@ export function useCopyPasteAction(): {
       if (isWrittenToClipboard) {
         toast.push({
           status: 'success',
-          title: `${isDocument ? 'Document' : 'Field'} ${payloadValue.items.map((item) => item.schemaTypeTitle).join(', ')} copied`,
+          title: `${isDocument ? 'Document' : 'Field'} "${payloadValue.items.map((item) => item.schemaTypeTitle).join('", "')}" copied`,
         })
         return
       }
