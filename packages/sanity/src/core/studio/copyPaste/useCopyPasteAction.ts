@@ -109,18 +109,19 @@ export function useCopyPasteAction(): {
       setCopyResult(payloadValue)
       const isWrittenToClipboard = await writeClipboardItem(payloadValue)
 
-      if (isWrittenToClipboard) {
+      if (!isWrittenToClipboard) {
+        // TODO: how should this be handled, and what is the error message?
+        // We are waiting for Firefox to release this support, as it's available in next.
         toast.push({
-          status: 'success',
-          title: `${isDocument ? 'Document' : 'Field'} "${payloadValue.items.map((item) => item.schemaTypeTitle).join('", "')}" copied`,
+          status: 'error',
+          title: `Your browser doesn't support this action (yet)`,
         })
         return
       }
-      // TODO: how should this be handled, and what is the error message?
-      // We are waiting for Firefox to release this support, as it's available in next.
+
       toast.push({
-        status: 'error',
-        title: `Your browser doesn't support this action (yet)`,
+        status: 'success',
+        title: `${isDocument ? 'Document' : 'Field'} "${payloadValue.items.map((item) => item.schemaTypeTitle).join('", "')}" copied`,
       })
     },
     [getDocumentMeta, setCopyResult, telemetry, toast],
