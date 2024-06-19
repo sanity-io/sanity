@@ -33,7 +33,7 @@ export const writeClipboardItem = async (copyActionResult: CopyActionResult): Pr
     await window.navigator.clipboard.write([new ClipboardItem(clipboardItem)])
     return true
   } catch (error) {
-    console.error('Failed to write to clipboard', error)
+    console.error(`Failed to write to clipboard: ${error.message}`, error)
     return false
   }
 }
