@@ -180,12 +180,9 @@ export function PaneRouterProvider(props: {
         if (expandLast && lastPane) {
           expand(lastPane.element)
         }
-        navigate(
-          {
-            panes: [...routerPaneGroups.slice(0, groupIndex)],
-          },
-          {replace: true},
-        )
+        navigate({
+          panes: [...routerPaneGroups.slice(0, groupIndex)],
+        })
       },
 
       // Duplicate the current pane, with optional overrides for payload, parameters

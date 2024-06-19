@@ -195,11 +195,14 @@ export async function buildVendorDependencies({
         )
       }
 
-      const specifier = path.join(packageName, subpath)
-      const chunkName = path.join(packageName, path.relative(packageName, specifier) || 'index')
+      const specifier = path.posix.join(packageName, subpath)
+      const chunkName = path.posix.join(
+        packageName,
+        path.relative(packageName, specifier) || 'index',
+      )
 
       entry[chunkName] = entryPoint
-      imports[specifier] = path.join('/', basePath, VENDOR_DIR, `${chunkName}.mjs`)
+      imports[specifier] = path.posix.join('/', basePath, VENDOR_DIR, `${chunkName}.mjs`)
     }
   }
 
