@@ -718,7 +718,7 @@ describe('DocumentSheetListPane', () => {
           )
         })
 
-        it('should update value when clicked', async () => {
+        it('should update value when option selected', async () => {
           await renderTest(providedConfig)
 
           // initially checked field to be unchecked
@@ -782,7 +782,7 @@ describe('DocumentSheetListPane', () => {
               {title: 'Jane Doe', value: 'Jane Doe'},
             ],
           },
-        }
+        } as any
       })
 
       it('should disable select if field is ready only', async () => {
@@ -814,12 +814,14 @@ describe('DocumentSheetListPane', () => {
         })
       })
 
-      it.skip('should give the option to unset the value', async () => {
+      it('should give the option to unset the value', async () => {
         await renderTest(providedConfig)
 
-        userEvent.selectOptions(screen.getByTestId('cell-name-0-input-field'), '')
+        await userEvent.selectOptions(screen.getByTestId('cell-name-0-input-field'), '')
 
-        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('')
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('')
+        })
 
         await waitFor(() => {
           expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith([{unset: ['name']}], {})
@@ -843,7 +845,7 @@ describe('DocumentSheetListPane', () => {
               {title: 'Jane Doe', value: 'Jane Doe'},
             ],
           },
-        }
+        } as any
       })
 
       it('should disable radio if field is ready only', async () => {
@@ -851,6 +853,75 @@ describe('DocumentSheetListPane', () => {
         await renderTest(providedConfig)
 
         expect(screen.getByTestId('cell-name-0-input-field')).toBeDisabled()
+      })
+
+      it('should should not give option to unset if value already present', async () => {
+        await renderTest(providedConfig)
+
+        expect(screen.queryByRole('option', {name: ''})).toBeNull()
+      })
+
+      it('should render the current value', async () => {
+        await renderTest(providedConfig)
+
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
+      })
+
+      it('should give the option to select a different value', async () => {
+        await renderTest(providedConfig)
+
+        userEvent.selectOptions(screen.getByTestId('cell-name-0-input-field'), 'Jane Doe')
+
+        expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('Jane Doe')
+
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+            [{set: {name: 'Jane Doe'}}],
+            {},
+          )
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+        })
+      })
+
+      it('should give an unset option when the value is currently unset', async () => {
+        providedConfig.schema.types[0].fields[0] = {
+          name: 'occupation',
+          type: 'string',
+          readOnly: false,
+          options: {
+            layout: 'radio',
+            list: [
+              {title: 'Developer', value: 'Developer'},
+              {title: 'Designer', value: 'Designer'},
+            ],
+          },
+        } as any
+        await renderTest(providedConfig)
+
+        expect(screen.getByTestId('cell-occupation-0-input-field')).toHaveValue('')
+
+        expect(within(screen.getByTestId('cell-occupation-0')).queryByRole('option', {name: ''}))
+
+        await userEvent.selectOptions(
+          screen.getByTestId('cell-occupation-0-input-field'),
+          'Developer',
+        )
+
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-occupation-0-input-field')).toHaveValue('Developer')
+        })
+
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith(
+            [{set: {occupation: 'Developer'}}],
+            {},
+          )
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+        })
+
+        expect(
+          within(screen.getByTestId('cell-occupation-0')).queryByRole('option', {name: ''}),
+        ).toBeNull()
       })
     })
   })

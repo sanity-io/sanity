@@ -253,7 +253,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const inputProps = {
     ...cellContext,
     handlePatchField,
-    'handleUnsetField': unsetDocumentValue,
+    handleUnsetField,
     'cellValue': rawCellValue,
     setCellValue,
     setShouldPreventDefaultMouseDown,
