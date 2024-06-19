@@ -31,6 +31,7 @@ import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListHeader} from './DocumentSheetListHeader'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
 import {DocumentSheetListProvider} from './DocumentSheetListProvider'
+import {SheetListLocaleNamespace} from './i18n'
 import {SheetListCell} from './SheetListCell'
 import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
@@ -122,7 +123,7 @@ const DocumentRow = ({
 function DocumentSheetListPaneInner(
   props: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType},
 ) {
-  const {t} = useTranslation()
+  const {t} = useTranslation(SheetListLocaleNamespace)
   const {documentSchemaType, ...paneProps} = props
   const {dispatch, state} = useSearchState()
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
@@ -269,7 +270,7 @@ function DocumentSheetListPaneInner(
           <Flex direction="row" align="center">
             <DocumentSheetListFilter />
             <Text size={0} muted>
-              {t('sheet-list.row-count.label', {
+              {t('row-count.label', {
                 totalRows,
                 itemPlural: `item${totalRows === 1 ? '' : 's'}`,
               })}

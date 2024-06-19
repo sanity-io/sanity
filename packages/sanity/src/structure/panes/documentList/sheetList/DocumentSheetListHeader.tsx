@@ -6,6 +6,7 @@ import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, MenuItem, Tooltip} from '../../../../ui-components'
+import {SheetListLocaleNamespace} from './i18n'
 import {type DocumentSheetListTable, type DocumentSheetTableRow} from './types'
 import {getBorderWidth} from './utils'
 
@@ -62,7 +63,7 @@ const Resizer = styled.div`
 
 export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
   const {header, headerGroup, table} = props
-  const {t} = useTranslation()
+  const {t} = useTranslation(SheetListLocaleNamespace)
 
   const isPinned = header.column.getIsPinned()
   const shouldHideTitle = headerGroup.depth > 0 && !header.column.parent
@@ -128,11 +129,7 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
                     popover={{placement: 'bottom-end'}}
                     menu={
                       <Menu>
-                        <MenuItem
-                          text={t('sheet-list.hide-field')}
-                          icon={CloseIcon}
-                          onClick={hideColumn}
-                        />
+                        <MenuItem text={t('hide-field')} icon={CloseIcon} onClick={hideColumn} />
                       </Menu>
                     }
                   />

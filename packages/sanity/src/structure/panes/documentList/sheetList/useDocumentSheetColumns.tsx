@@ -21,6 +21,7 @@ import {PreviewCell} from './DocumentSheetPreviewCell'
 import {BooleanCellInput} from './fields/BooleanCellInput'
 import {CellInput} from './fields/CellInput'
 import {DropdownCellInput, shouldDropdownRender} from './fields/DropdownCellInput'
+import {SheetListLocaleNamespace} from './i18n'
 import {type DocumentSheetTableRow} from './types'
 
 export const VISIBLE_COLUMN_LIMIT = 5
@@ -105,7 +106,7 @@ const flatColumns = (cols: Columns): AccessorKeyColumnDef<DocumentSheetTableRow,
 }
 
 export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
-  const {t} = useTranslation()
+  const {t} = useTranslation(SheetListLocaleNamespace)
 
   const columns: Columns = useMemo(() => {
     if (!documentSchemaType) {
@@ -134,7 +135,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         },
         cell: DocumentSheetListSelect,
       }),
-      columnHelper.accessor(t('sheet-list.preview-header'), {
+      columnHelper.accessor(t('preview-header'), {
         enableHiding: false,
         size: 320,
         id: 'Preview',

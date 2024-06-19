@@ -15,6 +15,7 @@ import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {batchPublish} from './batchPublish'
+import {SheetListLocaleNamespace} from './i18n'
 import {type DocumentSheetListTable, type DocumentSheetTableRow} from './types'
 
 interface DocumentSheetActionsProps {
@@ -33,7 +34,7 @@ function BatchPublishAction({
     publishedDocId: string
   })[]
 }) {
-  const {t} = useTranslation()
+  const {t} = useTranslation(SheetListLocaleNamespace)
   const [publishStatus, setPublishStatus] = useState('idle')
   const hasErrorStatus = validationStatus.some((item) =>
     item.validation.some(isValidationErrorMarker),
@@ -54,8 +55,8 @@ function BatchPublishAction({
       duration: 60000,
       id: 'publishing-toast',
       status: 'info',
-      title: t('sheet-list.actions.toast.publishing-pending-title'),
-      description: t('sheet-list.actions.toast.publishing-pending-description', {
+      title: t('actions.toast.publishing-pending-title'),
+      description: t('actions.toast.publishing-pending-description', {
         itemPlural: `item${items.length > 1 ? 's' : ''}`,
       }),
     })
@@ -68,7 +69,7 @@ function BatchPublishAction({
             closable: true,
             id: 'publishing-toast',
             status: 'error',
-            title: t('sheet-list.actions.toast.publishing-failed-description'),
+            title: t('actions.toast.publishing-failed-description'),
             description: err.message,
           })
           return of(null)
@@ -81,8 +82,8 @@ function BatchPublishAction({
             closable: true,
             id: 'publishing-toast',
             status: 'success',
-            title: t('sheet-list.actions.toast.publishing-success-title'),
-            description: t('sheet-list.actions.toast.publishing-success-description'),
+            title: t('actions.toast.publishing-success-title'),
+            description: t('actions.toast.publishing-success-description'),
           })
         }
       })
@@ -99,14 +100,13 @@ function BatchPublishAction({
         tooltipProps={{
           disabled: !disabled,
           content: hasErrorStatus ? (
-            <Text>{t('sheet-list.validation-error.tooltip')}</Text>
+            <Text>{t('validation-error.tooltip')}</Text>
           ) : (
             actionDisabled && (
               <Stack space={2}>
                 {actionDisabled.map((reason) => (
                   <Text key={reason.id}>
-                    {t('sheet-list.validation-error.reason', {id: reason.id})}{' '}
-                    <strong>{reason.reason}</strong>
+                    {t('validation-error.reason', {id: reason.id})} <strong>{reason.reason}</strong>
                   </Text>
                 ))}
               </Stack>
@@ -115,7 +115,7 @@ function BatchPublishAction({
         }}
         loading={publishStatus === 'publishing'}
         icon={PublishIcon}
-        text={t('sheet-list.actions.publish-all-label')}
+        text={t('actions.publish-all-label')}
         onClick={handlePublish}
         disabled={disabled}
       />
@@ -160,7 +160,7 @@ export function DocumentSheetActions({table, schemaType}: DocumentSheetActionsPr
   const items = useMemo(() => selectedRows.map((row) => row.original.__metadata), [selectedRows])
   const itemsId = useMemo(() => items.map((item) => item.idPair.publishedId), [items])
   const validationStatus = useValidationStatusList(itemsId, schemaType.name)
-  const {t} = useTranslation()
+  const {t} = useTranslation(SheetListLocaleNamespace)
 
   return (
     <Popover
@@ -175,7 +175,7 @@ export function DocumentSheetActions({table, schemaType}: DocumentSheetActionsPr
           <Stack>
             <Flex align="center" justify="space-between">
               <Text size={1} weight="medium">
-                {t('sheet-list.actions.selected-count-label', {
+                {t('actions.selected-count-label', {
                   count: items.length,
                   itemPlural: `item${items.length > 1 ? 's' : ''}`,
                 })}
@@ -184,7 +184,7 @@ export function DocumentSheetActions({table, schemaType}: DocumentSheetActionsPr
                 mode="bleed"
                 tone="default"
                 iconRight={CloseIcon}
-                text={t('sheet-list.actions.unselect-all-label')}
+                text={t('actions.unselect-all-label')}
                 onClick={() => table.setRowSelection({})}
               />
             </Flex>
