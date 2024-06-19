@@ -141,6 +141,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'calendar.action.set-to-current-time': 'Set to current time',
   /** Label for selecting an hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
   'calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
+  /** Aria label for button to open date picker */
+  'calendar.button.aria-label': 'Open calendar',
   /** Error message displayed in calendar when entered date is not the correct format */
   'calendar.error.must-be-in-format': 'Must be in the format: {{exampleDate}}',
   /** Month name for April */
@@ -524,10 +526,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.resolving-initial-value': 'Resolving initial value…',
   /** Tooltip content when boolean input is disabled */
   'inputs.boolean.disabled': 'Disabled',
-  /** Accessibility label for button to open datetime input */
-  'inputs.datetime.aria-label': 'Open date picker',
   /** Placeholder value for datetime input */
   'inputs.datetime.placeholder': 'e.g. {{example}}',
+  /** Tooltip content for button to open datetime input */
+  'inputs.datetime.tooltip-content': 'Select date',
   /** Acessibility label for button to open file options menu */
   'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
   /** Browse */

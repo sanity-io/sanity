@@ -11,9 +11,9 @@ import {
   useState,
 } from 'react'
 import FocusLock from 'react-focus-lock'
-import {useTranslation} from 'react-i18next'
 
 import {Button, Popover} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'
@@ -79,14 +79,14 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const suffix = (
     <Flex style={{padding: '5px'}}>
       <Button
-        aria-label={t('inputs.datetime.aria-label')}
+        aria-label={calendarLabels.ariaLabel}
         ref={buttonRef}
         icon={CalendarIcon}
         mode="bleed"
         onClick={handleClick}
         style={{display: 'block'}}
         data-testid="select-date-button"
-        tooltipProps={{content: 'Select date'}}
+        tooltipProps={{content: t('inputs.datetime.tooltip-content')}}
       />
     </Flex>
   )

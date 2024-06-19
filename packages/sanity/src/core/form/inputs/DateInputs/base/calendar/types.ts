@@ -1,4 +1,5 @@
 export interface CalendarLabels {
+  ariaLabel: string
   goToTomorrow: string
   goToToday: string
   goToYesterday: string

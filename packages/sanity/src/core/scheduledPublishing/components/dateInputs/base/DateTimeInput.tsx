@@ -18,7 +18,6 @@ import {
   useState,
 } from 'react'
 import FocusLock from 'react-focus-lock'
-import {useTranslation} from 'react-i18next'
 
 import {Popover} from '../../../../../ui-components'
 import {LazyTextInput} from '../../../../form/inputs/DateInputs/base/LazyTextInput'
@@ -52,7 +51,6 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     timeStep,
     ...rest
   } = props
-  const {t} = useTranslation()
 
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
@@ -89,7 +87,6 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const suffix = (
     <Box style={{padding: '5px'}}>
       <Button
-        aria-label={t('inputs.datetime.aria-label')}
         ref={buttonRef}
         icon={CalendarIcon}
         mode="bleed"
