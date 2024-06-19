@@ -124,16 +124,14 @@ async function main() {
         const ast = safeParseQuery(query)
         const queryTypes = typeEvaluate(ast, schema)
 
-        const type = await maybeFormatCode(
-          typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes).trim(),
-          opts.prettierConfig,
-        )
+        const {type} = typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes)
+        const code = await maybeFormatCode(type.trim(), opts.prettierConfig)
 
         const queryTypeStats = walkAndCountQueryTypeNodeStats(queryTypes)
         fileQueryTypes.push({
           queryName,
           query,
-          type,
+          type: code,
           unknownTypeNodesGenerated: queryTypeStats.unknownTypes,
           typeNodesGenerated: queryTypeStats.allTypes,
           emptyUnionTypeNodesGenerated: queryTypeStats.emptyUnions,

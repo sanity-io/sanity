@@ -74,16 +74,19 @@ export class TypeGenerator {
    * @internal
    * @beta
    */
-  generateTypeNodeTypes(identifierName: string, typeNode: TypeNode): string {
+  generateTypeNodeTypes(
+    identifierName: string,
+    typeNode: TypeNode,
+  ): {type: string; typeName: string} {
     const type = this.getTypeNodeType(typeNode)
 
-    const typeAlias = t.tsTypeAliasDeclaration(
-      t.identifier(this.getTypeName(identifierName, typeNode)),
-      null,
-      type,
-    )
+    const typeName = this.getTypeName(identifierName)
+    const typeAlias = t.tsTypeAliasDeclaration(t.identifier(typeName), null, type)
 
-    return new CodeGenerator(t.exportNamedDeclaration(typeAlias)).generate().code.trim()
+    return {
+      type: new CodeGenerator(t.exportNamedDeclaration(typeAlias)).generate().code.trim(),
+      typeName,
+    }
   }
 
   static generateKnownTypes(): string {

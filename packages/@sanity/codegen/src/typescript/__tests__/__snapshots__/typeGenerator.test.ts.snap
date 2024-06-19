@@ -7,15 +7,40 @@ exports[`generateSchemaTypes Adds a comment when missing referenced inline type 
 
 exports[`generateSchemaTypes can generate well known types 1`] = `"export declare const internalGroqTypeReferenceTo: unique symbol;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: boolean 1`] = `"export type Test_2 = boolean;"`;
+exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: boolean 1`] = `
+Object {
+  "type": "export type Test_2 = boolean;",
+  "typeName": "Test_2",
+}
+`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: null 1`] = `"export type Test_5 = null;"`;
+exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: null 1`] = `
+Object {
+  "type": "export type Test_5 = null;",
+  "typeName": "Test_5",
+}
+`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: number 1`] = `"export type Test_3 = number;"`;
+exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: number 1`] = `
+Object {
+  "type": "export type Test_3 = number;",
+  "typeName": "Test_3",
+}
+`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: string 1`] = `"export type Test = string;"`;
+exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: string 1`] = `
+Object {
+  "type": "export type Test = string;",
+  "typeName": "Test",
+}
+`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: unknown 1`] = `"export type Test_4 = unknown;"`;
+exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: unknown 1`] = `
+Object {
+  "type": "export type Test_4 = unknown;",
+  "typeName": "Test_4",
+}
+`;
 
 exports[`generateSchemaTypes should generate TypeScript type declarations for a schema 1`] = `
 "export type Author = {
@@ -219,7 +244,8 @@ export type AllSanitySchemaTypes = Author | Post | Ghost | BlockContent | Sanity
 `;
 
 exports[`generateSchemaTypes should generate correct types for document schema with inline fields 1`] = `
-"export type MyObject = {
+Object {
+  "type": "export type MyObject = {
   inlineField: {
     test: string;
   } & Test;
@@ -228,7 +254,14 @@ exports[`generateSchemaTypes should generate correct types for document schema w
   unionField: {
     test: string;
   } | string | Test;
-};"
+};",
+  "typeName": "MyObject",
+}
 `;
 
-exports[`generateSchemaTypes should generate correct types for document schema with inline fields 2`] = `"export type SomeOtherType = MyObject;"`;
+exports[`generateSchemaTypes should generate correct types for document schema with inline fields 2`] = `
+Object {
+  "type": "export type SomeOtherType = MyObject;",
+  "typeName": "SomeOtherType",
+}
+`;
