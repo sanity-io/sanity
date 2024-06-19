@@ -828,9 +828,31 @@ describe('DocumentSheetListPane', () => {
           expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
         })
       })
+
+      it('should allow for unset when deleting', async () => {
+        await renderTest(providedConfig)
+
+        await act(() => {
+          userEvent.click(screen.getByTestId('cell-name-0'))
+        })
+
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
+        })
+
+        await userEvent.type(screen.getByTestId('cell-name-0'), `{Backspace}`)
+
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('')
+        })
+
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith([{unset: ['name']}], {})
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+        })
+      })
     })
 
-    // testing for the empty unset option
     describe('radios', () => {
       const providedConfig = cloneDeep(DEFAULT_TEST_CONFIG)
       beforeEach(() => {
@@ -922,6 +944,29 @@ describe('DocumentSheetListPane', () => {
         expect(
           within(screen.getByTestId('cell-occupation-0')).queryByRole('option', {name: ''}),
         ).toBeNull()
+      })
+
+      it('should allow for unset when deleting', async () => {
+        await renderTest(providedConfig)
+
+        await act(() => {
+          userEvent.click(screen.getByTestId('cell-name-0'))
+        })
+
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
+        })
+
+        await userEvent.type(screen.getByTestId('cell-name-0'), `{Backspace}`)
+
+        await waitFor(() => {
+          expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('')
+        })
+
+        await waitFor(() => {
+          expect(mockDocumentOperations.patch.execute).toHaveBeenCalledWith([{unset: ['name']}], {})
+          expect(mockDocumentOperations.commit.execute).toHaveBeenCalled()
+        })
       })
     })
   })
