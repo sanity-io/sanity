@@ -2,7 +2,7 @@ import {describe, expect, test} from '@jest/globals'
 
 import {findQueriesInSource} from '../findQueriesInSource'
 
-describe('findQueries', () => {
+describe('findQueries with the groq template', () => {
   describe('should find queries in source', () => {
     test('plain string', () => {
       const source = `
@@ -151,6 +151,175 @@ describe('findQueries', () => {
       // @sanity-typegen-ignore
       // This should be ignored because of the comment above
       export const postQuery = groq\`*[_type == "foo"]\`
+    `
+
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
+})
+
+describe('findQueries with defineQuery', () => {
+  describe('should find queries in source', () => {
+    test('plain string', () => {
+      const source = `
+      import { defineQuery } from "groq/define";
+      const postQuery = defineQuery("*[_type == 'author']");
+      const res = sanity.fetch(postQuery);
+    `
+
+      const queries = findQueriesInSource(source, 'test.ts')
+      const queryResult = queries[0]
+
+      expect(queryResult?.result).toEqual("*[_type == 'author']")
+    })
+
+    test('template string', () => {
+      const source = `
+      import { defineQuery } from "groq/define";
+      const postQuery = defineQuery(\`*[_type == "author"]\`);
+      const res = sanity.fetch(postQuery);
+    `
+
+      const queries = findQueriesInSource(source, 'test.ts')
+      const queryResult = queries[0]
+
+      expect(queryResult?.result).toEqual('*[_type == "author"]')
+    })
+
+    test('with variables', () => {
+      const source = `
+      import { defineQuery } from "groq/define";
+      const type = "author";
+      const authorQuery = defineQuery(\`*[_type == "\${type}"]\`);
+      const res = sanity.fetch(authorQuery);
+    `
+
+      const queries = findQueriesInSource(source, 'test.ts')
+      const queryResult = queries[0]
+
+      expect(queryResult?.result).toEqual('*[_type == "author"]')
+    })
+
+    test('with function', () => {
+      const source = `
+      import { defineQuery } from "groq/define";
+      const getType = () => () => () => "author";
+      const query = defineQuery(\`*[_type == "\${getType()()()}"]\`);
+      const res = sanity.fetch(query);
+    `
+
+      const queries = findQueriesInSource(source, 'test.ts')
+
+      const queryResult = queries[0]
+
+      expect(queryResult?.result).toEqual('*[_type == "author"]')
+    })
+
+    test('with block comment', () => {
+      const source = `
+        import { defineQuery } from "groq/define";
+        const type = "author";
+        const query = /* groq */ defineQuery(\`*[_type == "\${type}"]\`);
+        const res = sanity.fetch(query);
+      `
+
+      const queries = findQueriesInSource(source, 'test.ts')
+      const queryResult = queries[0]
+
+      expect(queryResult?.result).toEqual('*[_type == "author"]')
+    })
+  })
+
+  test('should not find inline queries in source', () => {
+    const source = `
+        import { defineQuery } from "groq/define";
+        const res = sanity.fetch(defineQuery(\`*[_type == "author"]\`));
+      `
+
+    const queries = findQueriesInSource(source, 'test.ts')
+
+    expect(queries.length).toBe(0)
+  })
+
+  test('should import', () => {
+    const source = `
+      import {defineQuery} from "groq/define";
+      import {foo}  from "./fixtures/exportVar";
+      const postQuery = defineQuery(\`*[_type == "\${foo}"]\`);
+      const res = sanity.fetch(postQueryResult);
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('*[_type == "foo"]')
+  })
+
+  test('should import, subdirectory', () => {
+    const source = `
+      import {defineQuery} from "groq/define";
+      import {foo}  from "../__tests__/fixtures/exportVar";
+      const postQuery = defineQuery(\`*[_type == "\${foo}"]\`);
+      const res = sanity.fetch(postQueryResult);
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('*[_type == "foo"]')
+  })
+
+  test('can import sequence of files', () => {
+    const source = `
+      import {defineQuery} from "groq/define";
+      import {query}  from "../__tests__/fixtures/importSeq1";
+      const someQuery = defineQuery(\`$\{query}\`);
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('*[_type == "foo bar"]')
+  })
+
+  test('will ignore declarations with ignore tag', () => {
+    const source = `
+      import {defineQuery} from "groq/define";
+
+      // @sanity-typegen-ignore
+      const postQuery = defineQuery(\`*[_type == "foo"]\`);
+    `
+
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
+
+  test('will ignore export named declarations with ignore tag', () => {
+    const source = `
+      import {defineQuery} from "groq/define";
+
+      // @sanity-typegen-ignore
+      export const postQuery = defineQuery(\`*[_type == "foo"]\`);
+    `
+
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
+
+  test('will ignore declarations with ignore tag, even with multiple comments above declaration', () => {
+    const source = `
+      import {defineQuery} from "groq/define";
+
+      // This is a query that queries posts
+      // @sanity-typegen-ignore
+      export const postQuery = groq\`*[_type == "foo"]\`
+    `
+
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
+
+  test('will ignore declerations if any of the leading comments are ignore tags', () => {
+    const source = `
+      import {defineQuery} from "groq/define";
+
+      // @sanity-typegen-ignore
+      // This should be ignored because of the comment above
+      export const postQuery = defineQuery(\`*[_type == "foo"]\`);
     `
 
     const queries = findQueriesInSource(source, __filename, undefined)

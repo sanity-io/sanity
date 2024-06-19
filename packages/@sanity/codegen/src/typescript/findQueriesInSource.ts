@@ -10,6 +10,7 @@ import {parseSourceFile} from './parseSource'
 const require = createRequire(__filename)
 
 const groqTagName = 'groq'
+const defineQueryFunctionName = 'defineQuery'
 
 const ignoreValue = '@sanity-typegen-ignore'
 
@@ -41,12 +42,18 @@ export function findQueriesInSource(
       const init = node.init
 
       // Look for tagged template expressions that are called with the `groq` tag
-      if (
+      const isGroqTemplateTag =
         babelTypes.isTaggedTemplateExpression(init) &&
         babelTypes.isIdentifier(init.tag) &&
-        babelTypes.isIdentifier(node.id) &&
         init.tag.name === groqTagName
-      ) {
+
+      // Look for strings wrapped in a defineQuery function call
+      const isDefineQueryCall =
+        babelTypes.isCallExpression(init) &&
+        babelTypes.isIdentifier(init.callee) &&
+        init.callee.name === defineQueryFunctionName
+
+      if (babelTypes.isIdentifier(node.id) && (isGroqTemplateTag || isDefineQueryCall)) {
         // If we find a comment leading the decleration which macthes with ignoreValue we don't add
         // the query
         if (declarationLeadingCommentContains(path, ignoreValue)) {
