@@ -145,7 +145,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         timestamp: new Date(chunk?.endTimestamp),
         formatParams,
       })
-    : t('timeline.latest-version')
+    : t('timeline.latest-revision')
 
   const sinceLabel = chunk
     ? t('timeline.since', {

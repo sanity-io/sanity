@@ -9,6 +9,7 @@ import typescript from 'refractor/lang/typescript.js'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {ErrorLogger} from '../error/ErrorLogger'
+import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
 import {ResourceCacheProvider} from '../store'
 import {UserColorManagerProvider} from '../user-color'
@@ -16,6 +17,7 @@ import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
+import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
 import {
   AuthenticateScreen,
   ConfigErrorsScreen,
@@ -54,11 +56,18 @@ export function StudioProvider({
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
 }: StudioProviderProps) {
+  // We initialize the error reporter as early as possible in order to catch anything that could
+  // occur during configuration loading, React rendering etc. StudioProvider is often the highest
+  // mounted React component that is shared across embedded and standalone studios.
+  errorReporter.initialize()
+
   const _children = (
     <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       <StudioTelemetryProvider config={config}>
         <LocaleProvider>
-          <ResourceCacheProvider>{children}</ResourceCacheProvider>
+          <PackageVersionStatusProvider>
+            <ResourceCacheProvider>{children}</ResourceCacheProvider>
+          </PackageVersionStatusProvider>
         </LocaleProvider>
       </StudioTelemetryProvider>
     </WorkspaceLoader>

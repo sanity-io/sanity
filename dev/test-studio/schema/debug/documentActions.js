@@ -8,5 +8,6 @@ export default {
       name: 'title',
       title: 'Title',
     },
+    {type: 'datetime', name: 'publishedAt', title: 'Published at'},
   ],
 }

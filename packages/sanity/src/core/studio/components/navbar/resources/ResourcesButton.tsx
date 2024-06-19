@@ -29,7 +29,7 @@ export function ResourcesButton() {
       }
       id="menu-button-resources"
       menu={
-        <StyledMenu>
+        <StyledMenu data-testid="menu-button-resources">
           <ResourcesMenuItems error={error} isLoading={isLoading} value={value} />
         </StyledMenu>
       }
