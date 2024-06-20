@@ -162,7 +162,7 @@ describe('findQueries with defineQuery', () => {
   describe('should find queries in source', () => {
     test('plain string', () => {
       const source = `
-      import { defineQuery } from "groq/define";
+      import { defineQuery } from "groq";
       const postQuery = defineQuery("*[_type == 'author']");
       const res = sanity.fetch(postQuery);
     `
@@ -175,7 +175,7 @@ describe('findQueries with defineQuery', () => {
 
     test('template string', () => {
       const source = `
-      import { defineQuery } from "groq/define";
+      import { defineQuery } from "groq";
       const postQuery = defineQuery(\`*[_type == "author"]\`);
       const res = sanity.fetch(postQuery);
     `
@@ -188,7 +188,7 @@ describe('findQueries with defineQuery', () => {
 
     test('with variables', () => {
       const source = `
-      import { defineQuery } from "groq/define";
+      import { defineQuery } from "groq";
       const type = "author";
       const authorQuery = defineQuery(\`*[_type == "\${type}"]\`);
       const res = sanity.fetch(authorQuery);
@@ -202,7 +202,7 @@ describe('findQueries with defineQuery', () => {
 
     test('with function', () => {
       const source = `
-      import { defineQuery } from "groq/define";
+      import { defineQuery } from "groq";
       const getType = () => () => () => "author";
       const query = defineQuery(\`*[_type == "\${getType()()()}"]\`);
       const res = sanity.fetch(query);
@@ -217,7 +217,7 @@ describe('findQueries with defineQuery', () => {
 
     test('with block comment', () => {
       const source = `
-        import { defineQuery } from "groq/define";
+        import { defineQuery } from "groq";
         const type = "author";
         const query = /* groq */ defineQuery(\`*[_type == "\${type}"]\`);
         const res = sanity.fetch(query);
@@ -232,7 +232,7 @@ describe('findQueries with defineQuery', () => {
 
   test('should not find inline queries in source', () => {
     const source = `
-        import { defineQuery } from "groq/define";
+        import { defineQuery } from "groq";
         const res = sanity.fetch(defineQuery(\`*[_type == "author"]\`));
       `
 
@@ -243,7 +243,7 @@ describe('findQueries with defineQuery', () => {
 
   test('should import', () => {
     const source = `
-      import {defineQuery} from "groq/define";
+      import {defineQuery} from "groq";
       import {foo}  from "./fixtures/exportVar";
       const postQuery = defineQuery(\`*[_type == "\${foo}"]\`);
       const res = sanity.fetch(postQueryResult);
@@ -255,7 +255,7 @@ describe('findQueries with defineQuery', () => {
 
   test('should import, subdirectory', () => {
     const source = `
-      import {defineQuery} from "groq/define";
+      import {defineQuery} from "groq";
       import {foo}  from "../__tests__/fixtures/exportVar";
       const postQuery = defineQuery(\`*[_type == "\${foo}"]\`);
       const res = sanity.fetch(postQueryResult);
@@ -267,7 +267,7 @@ describe('findQueries with defineQuery', () => {
 
   test('can import sequence of files', () => {
     const source = `
-      import {defineQuery} from "groq/define";
+      import {defineQuery} from "groq";
       import {query}  from "../__tests__/fixtures/importSeq1";
       const someQuery = defineQuery(\`$\{query}\`);
     `
@@ -278,7 +278,7 @@ describe('findQueries with defineQuery', () => {
 
   test('will ignore declarations with ignore tag', () => {
     const source = `
-      import {defineQuery} from "groq/define";
+      import {defineQuery} from "groq";
 
       // @sanity-typegen-ignore
       const postQuery = defineQuery(\`*[_type == "foo"]\`);
@@ -290,7 +290,7 @@ describe('findQueries with defineQuery', () => {
 
   test('will ignore export named declarations with ignore tag', () => {
     const source = `
-      import {defineQuery} from "groq/define";
+      import {defineQuery} from "groq";
 
       // @sanity-typegen-ignore
       export const postQuery = defineQuery(\`*[_type == "foo"]\`);
@@ -302,7 +302,7 @@ describe('findQueries with defineQuery', () => {
 
   test('will ignore declarations with ignore tag, even with multiple comments above declaration', () => {
     const source = `
-      import {defineQuery} from "groq/define";
+      import {defineQuery} from "groq";
 
       // This is a query that queries posts
       // @sanity-typegen-ignore
@@ -315,7 +315,7 @@ describe('findQueries with defineQuery', () => {
 
   test('will ignore declerations if any of the leading comments are ignore tags', () => {
     const source = `
-      import {defineQuery} from "groq/define";
+      import {defineQuery} from "groq";
 
       // @sanity-typegen-ignore
       // This should be ignored because of the comment above
