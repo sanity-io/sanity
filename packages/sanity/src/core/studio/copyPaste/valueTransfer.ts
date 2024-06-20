@@ -230,8 +230,13 @@ function collateObjectValue({
     }
   })
   const valueAtTargetPath = getValueAtPath(targetValue, targetPath)
+  const resultingValue = cleanObjectKeys(valueAtTargetPath as TypedObject)
+  // Special handling for weak references
+  if (isReferenceSchemaType(targetSchemaType) && targetSchemaType.weak) {
+    resultingValue._weak = true
+  }
   return {
-    targetValue: cleanObjectKeys(valueAtTargetPath as TypedObject),
+    targetValue: resultingValue,
     errors,
   }
 }
@@ -399,7 +404,7 @@ function collatePrimitiveValue({
 }
 
 function cleanObjectKeys(obj: TypedObject): TypedObject {
-  const disallowedKeys = ['_id', '_createdAt', '_updatedAt', '_rev']
+  const disallowedKeys = ['_id', '_createdAt', '_updatedAt', '_rev', '_weak']
   return Object.keys(obj).reduce((acc, key) => {
     if (disallowedKeys.includes(key)) {
       return acc
