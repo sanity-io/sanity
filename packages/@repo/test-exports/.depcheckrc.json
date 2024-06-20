@@ -7,7 +7,6 @@
     "@sanity/diff",
     "@sanity/migrate",
     "@sanity/mutator",
-    "@sanity/portable-text-editor",
     "@sanity/schema",
     "@sanity/types",
     "@sanity/util",

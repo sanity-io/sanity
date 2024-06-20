@@ -1,5 +1,5 @@
+import {type PortableTextBlock} from '@portabletext/editor'
 import {CommentIcon} from '@sanity/icons'
-import {type PortableTextBlock} from '@sanity/portable-text-editor'
 import {Box, Button, Popover, Stack, Text, TextArea} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useState} from 'react'
 import {type RenderBlockActionsCallback} from 'sanity'

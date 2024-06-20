@@ -6,7 +6,7 @@ import {
   PortableTextEditable,
   PortableTextEditor,
   type RangeDecoration,
-} from '@sanity/portable-text-editor'
+} from '@portabletext/editor'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@sanity/ui'
