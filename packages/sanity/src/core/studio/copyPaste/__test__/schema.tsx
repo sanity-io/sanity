@@ -118,6 +118,7 @@ export const schema = createSchema({
         {
           name: 'bestFriend',
           type: 'reference',
+          weak: true,
           to: [{type: 'author'}],
         },
       ],
@@ -170,6 +171,12 @@ export const schema = createSchema({
           name: 'friends',
           type: 'array',
           of: [{type: 'reference', to: [{type: 'editor'}, {type: 'author'}]}],
+        },
+        {
+          name: 'bestAuthorFriend',
+          type: 'reference',
+          weak: false,
+          to: [{type: 'author'}],
         },
       ],
     },
