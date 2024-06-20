@@ -1,4 +1,4 @@
-import {defineConfig, type PlaywrightTestConfig} from '@playwright/test'
+import {defineConfig, type PlaywrightTestConfig, type PlaywrightTestProject} from '@playwright/test'
 import {createPlaywrightConfig} from '@sanity/test'
 
 import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
@@ -24,7 +24,26 @@ const playwrightConfig = createPlaywrightConfig({
   projectId: readEnv('SANITY_E2E_PROJECT_ID'),
   token: readEnv('SANITY_E2E_SESSION_TOKEN'),
   playwrightOptions(config): PlaywrightTestConfig {
+    const chromiumOptions = {
+      permissions: ['clipboard-read', 'clipboard-write'],
+      contextOptions: {
+        // chromium-specific permissions
+        permissions: ['clipboard-read', 'clipboard-write'],
+      },
+    }
+
+    const autoUpdatingProjects: PlaywrightTestProject[] = []
+    // for now, only test auto-updating on chromium
+    if (config.projects?.find((project) => project.name === 'chromium')) {
+      autoUpdatingProjects.push({
+        ...config.projects.find((project) => project.name === 'chromium'),
+        name: 'auto-updating',
+        ...chromiumOptions,
+      })
+    }
+
     const projects = [
+      ...autoUpdatingProjects,
       ...(config?.projects?.map((project) => {
         const projectConfig = {
           ...project,
@@ -33,11 +52,7 @@ const playwrightConfig = createPlaywrightConfig({
         if (project.name === 'chromium') {
           return {
             ...projectConfig,
-            permissions: ['clipboard-read', 'clipboard-write'],
-            contextOptions: {
-              // chromium-specific permissions
-              permissions: ['clipboard-read', 'clipboard-write'],
-            },
+            ...chromiumOptions,
           }
         }
 

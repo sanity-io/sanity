@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
-        project: [chromium, firefox]
+        project: [chromium, firefox, auto-updating]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -82,8 +82,13 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
-        run: pnpm e2e:setup && pnpm e2e:build
-
+          IS_AUTO_UPDATING: ${{ matrix.project == 'auto-updating' && 'true' || '' }}
+        run: |
+          if [ "${{ matrix.project }}" == "auto-updating" ]; then
+            pnpm e2e:setup && pnpm e2e:build --auto-updates
+          else
+            pnpm e2e:setup && pnpm e2e:build
+          fi
       - name: Build E2E test studio on PR
         if: ${{ github.event_name == 'pull_request' }}
         env:
@@ -93,7 +98,13 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
-        run: pnpm e2e:setup && pnpm e2e:build
+          IS_AUTO_UPDATING: ${{ matrix.project == 'auto-updating' && 'true' || '' }}
+        run: |
+          if [ "${{ matrix.project }}" == "auto-updating" ]; then
+            pnpm e2e:setup && pnpm e2e:build --auto-updates
+          else
+            pnpm e2e:setup && pnpm e2e:build
+          fi
 
       # Caches build from either PR or next
       - name: Cache build
@@ -119,7 +130,7 @@ jobs:
       fail-fast: false
       matrix:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
-        project: [chromium, firefox]
+        project: [chromium, firefox, auto-updating]
         # Add more shards here if needed
         shardIndex: [1, 2]
         shardTotal: [2]
@@ -290,7 +301,7 @@ jobs:
       fail-fast: false
       matrix:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
-        project: [chromium, firefox]
+        project: [chromium, firefox, auto-updating]
 
     steps:
       - name: Checkout

@@ -61,7 +61,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     strategy:
       matrix:
-        project: [chromium, firefox]
+        project: [chromium, firefox, auto-updating]
 
     steps:
       - name: Checkout
