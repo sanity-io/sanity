@@ -2,13 +2,7 @@ import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocument} from '
 import {Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  type Row,
-  useReactTable,
-} from '@tanstack/react-table'
+import {getCoreRowModel, getFilteredRowModel, type Row, useReactTable} from '@tanstack/react-table'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   SearchProvider,
@@ -124,9 +118,10 @@ function DocumentSheetListPaneInner(
   const {documentSchemaType, ...paneProps} = props
   const {dispatch, state} = useSearchState()
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
-
+  const [pagination, setPagination] = useState({pageIndex: 0, pageSize: 25})
   const {data} = useDocumentSheetList({
     typeName: documentSchemaType.name,
+    pagination,
   })
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 
@@ -142,9 +137,9 @@ function DocumentSheetListPaneInner(
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     // Avoids resetting the page index when the data changes, e.g. a mutation is received
     autoResetPageIndex: false,
+    rowCount: totalRows,
     initialState: {
       columnPinning: {left: ['selected', 'Preview']},
       pagination: {pageSize: 25},
@@ -153,6 +148,12 @@ function DocumentSheetListPaneInner(
     getRowId: (row) => row._id,
     meta,
   })
+
+  const {pageIndex, pageSize} = table.getState().pagination
+
+  useEffect(() => {
+    setPagination({pageIndex, pageSize})
+  }, [pageIndex, pageSize])
 
   const {rows} = table.getRowModel()
 

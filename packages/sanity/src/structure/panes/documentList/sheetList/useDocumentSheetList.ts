@@ -2,14 +2,15 @@ import {useMemo} from 'react'
 import {getDraftId, getPublishedId, useSearchState} from 'sanity'
 
 import {type DocumentSheetTableRow} from './types'
-import {useDocumentSheetListStore} from './useDocumentSheetListStore'
+import {useWorkerAltStore} from './useAltStore'
 
 interface DocumentSheetListOptions {
   /**The schemaType.name  */
   typeName: string
+  pagination: {pageIndex: number; pageSize: number}
 }
 
-export function useDocumentSheetList({typeName}: DocumentSheetListOptions): {
+export function useDocumentSheetList({typeName, pagination}: DocumentSheetListOptions): {
   data: DocumentSheetTableRow[]
   isLoading: boolean
 } {
@@ -21,14 +22,7 @@ export function useDocumentSheetList({typeName}: DocumentSheetListOptions): {
     return map
   }, [state.result.hits])
 
-  // The store is listening to all the documents that match with the _type filter.
-  const {
-    data,
-    isLoading,
-    documents: allDocuments,
-  } = useDocumentSheetListStore({
-    filter: `_type == "${typeName}"`,
-  })
+  const {data, isLoading, documents: allDocuments} = useWorkerAltStore(typeName, pagination)
 
   // Only return the documents that match with the serverSide filter items.
   const documents: DocumentSheetTableRow[] = useMemo(() => {
