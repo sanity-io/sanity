@@ -19,7 +19,7 @@ jobs:
       matrix:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
         project: [chromium, firefox]
-        config: [auto-updating, normal]
+        config: [auto-updating, default]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -83,9 +83,9 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
-          IS_AUTO_UPDATING: ${{ matrix.config == 'auto-updating' && 'true' || '' }}
+          SANITY_E2E_IS_AUTO_UPDATING: ${{ matrix.config == 'auto-updating' && 'true' || '' }}
         run: |
-          if [ "${{ matrix.config }}" == "auto-update" ]; then
+          if [ "${{ matrix.config }}" == "auto-updating" ]; then
             pnpm e2e:setup && pnpm e2e:build --auto-updates
           else
             pnpm e2e:setup && pnpm e2e:build
@@ -99,9 +99,9 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
-          IS_AUTO_UPDATING: ${{ matrix.config == 'auto-updating' && 'true' || '' }}
+          SANITY_E2E_IS_AUTO_UPDATING: ${{ matrix.config == 'auto-updating' && 'true' || '' }}
         run: |
-          if [ "${{ matrix.config }}" == "auto-update" ]; then
+          if [ "${{ matrix.config }}" == "auto-updating" ]; then
             pnpm e2e:setup && pnpm e2e:build --auto-updates
           else
             pnpm e2e:setup && pnpm e2e:build
@@ -135,6 +135,7 @@ jobs:
         # Add more shards here if needed
         shardIndex: [1, 2]
         shardTotal: [2]
+        config: [auto-updating, default]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -211,6 +212,7 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
+          SANITY_E2E_IS_AUTO_UPDATING: ${{ matrix.config == 'auto-updating' && 'true' || '' }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Run E2E tests on PR
@@ -225,6 +227,7 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+          SANITY_E2E_IS_AUTO_UPDATING: ${{ matrix.config == 'auto-updating' && 'true' || '' }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v3
