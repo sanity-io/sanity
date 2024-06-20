@@ -1,5 +1,5 @@
-import {test} from '@sanity/test'
 import {expect} from '@playwright/test'
+import {test} from '@sanity/test'
 
 test(`date input shows validation on selecting date from datepicker`, async ({
   page,
@@ -7,7 +7,7 @@ test(`date input shows validation on selecting date from datepicker`, async ({
 }) => {
   await createDraftDocument('/test/content/input-debug;dateValidation')
 
-  await page.waitForSelector(`data-testid=field-requiredDate`)
+  await expect(await page.getByTestId(`field-requiredDate`)).toBeVisible()
 
   await page.getByTestId('field-requiredDate').getByTestId('select-date-button').click()
   await page.getByTestId('date-input-dialog').getByTestId('date-input').fill('2023')
@@ -45,7 +45,7 @@ test(`publish button is disabled when invalid date is entered in the field`, asy
 }) => {
   await createDraftDocument('/test/content/input-debug;dateValidation')
 
-  await page.waitForSelector(`data-testid=field-requiredDate`)
+  await expect(await page.getByTestId('field-requiredDate')).toBeVisible()
 
   await page.getByTestId('field-requiredDate').getByTestId('date-input').fill('20230101')
   // TODO: Remove this after fixing the blur test
