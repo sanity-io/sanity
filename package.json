@@ -184,5 +184,8 @@
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }
   },
-  "isSanityMonorepo": true
+  "isSanityMonorepo": true,
+  "dependencies": {
+    "@sanity/groq-store": "^4.1.3"
+  }
 }
