@@ -29,6 +29,8 @@ test(`file drop event should not propagate to dialog parent`, async ({
     },
   )
 
+  await expect(list).toBeVisible()
+
   // Drop the file.
   await list.dispatchEvent('drop', {dataTransfer})
 

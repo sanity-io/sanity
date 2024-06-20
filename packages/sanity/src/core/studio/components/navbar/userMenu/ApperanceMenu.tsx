@@ -28,6 +28,7 @@ export function AppearanceMenu({
           pressed={selected}
           text={title}
           iconRight={selected && <CheckmarkIcon />}
+          data-testid={`color-scheme-${name}`}
         />
       ))}
     </>
