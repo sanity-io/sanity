@@ -11,6 +11,11 @@ test('Portable Text Input - Array Input of images dragging an image will not tri
   await page.getByTestId('field-body').focus()
   await page.getByTestId('field-body').click()
 
+  page.on('dialog', async () => {
+    await expect(page.getByTestId('insert-menu-auto-collapse-menu')).toBeVisible()
+  })
+
+  // open the insert menu
   await page
     .getByTestId('insert-menu-auto-collapse-menu')
     .getByRole('button', {name: 'Insert Image slideshow (block)'})
