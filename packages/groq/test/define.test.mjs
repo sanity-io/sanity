@@ -2,7 +2,7 @@
 
 import {strict as assert} from 'node:assert'
 
-import {defineQuery} from 'groq/define'
+import {defineQuery} from 'groq'
 
 assert.equal(typeof defineQuery, 'function')
 

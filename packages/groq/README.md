@@ -26,7 +26,7 @@ If you are using `@sanity/codegen` you can use `defineQuery` instead of `groq` t
 get type inference out of the box:
 
 ```ts
-import {defineQuery} from 'groq/define'
+import {defineQuery} from 'groq'
 
 const query = defineQuery(`*[_type == 'products'][0...10]`)
 ```

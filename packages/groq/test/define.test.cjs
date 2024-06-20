@@ -3,7 +3,7 @@
 
 const {strict: assert} = require('node:assert')
 
-const {defineQuery} = require('groq/define')
+const {defineQuery} = require('groq')
 
 assert.equal(typeof defineQuery, 'function')
 
