@@ -4,7 +4,10 @@ export interface CreateProjectOptions {
   displayName: string
   organizationId?: string
   subscription?: {planId: string}
-  metadata?: {coupon?: string}
+  metadata?: {
+    coupon?: string
+    integration?: string
+  }
 }
 
 export function createProject(

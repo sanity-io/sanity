@@ -8,7 +8,7 @@ import {
   RocketIcon,
   SyncIcon,
   TerminalIcon,
-  UlistIcon,
+  ThListIcon,
   UsersIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
@@ -446,11 +446,11 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
           return listItem.child(
             S.documentTypeList(listItemId).menuItems([
               S.menuItem()
-                .title('Sheet view')
+                .title('Table view')
                 .group('layout')
                 .action('setLayout')
                 .params({layout: 'sheetList'})
-                .icon(UlistIcon),
+                .icon(ThListIcon),
               ...(S.documentTypeList(listItemId).getMenuItems() || []),
             ]),
           )

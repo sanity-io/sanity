@@ -1,4 +1,3 @@
-import {useForwardedRef} from '@sanity/ui'
 import createPubSub from 'nano-pubsub'
 import {
   createElement,
@@ -8,7 +7,9 @@ import {
   type HTMLProps,
   useContext,
   useEffect,
+  useImperativeHandle,
   useMemo,
+  useRef,
 } from 'react'
 import {ScrollContext} from 'sanity/_singletons'
 
@@ -32,12 +33,13 @@ const noop = () => undefined
  */
 export const ScrollContainer = forwardRef(function ScrollContainer<T extends ElementType = 'div'>(
   props: ScrollContainerProps<T>,
-  ref: ForwardedRef<HTMLDivElement>,
+  forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {as = 'div', onScroll, ...rest} = props
-  const forwardedRef = useForwardedRef(ref)
+  const ref = useRef<HTMLDivElement | null>(null)
 
-  // const selfRef = useRef<HTMLElement | null>(null)
+  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
+
   const parentContext = useContext(ScrollContext)
   const childContext = useMemo(() => createPubSub<Event>(), [])
 
@@ -62,7 +64,7 @@ export const ScrollContainer = forwardRef(function ScrollContainer<T extends Ele
       childContext.publish(event)
     }
 
-    const el = forwardedRef.current
+    const el = ref.current
 
     if (!el) {
       return undefined
@@ -76,11 +78,11 @@ export const ScrollContainer = forwardRef(function ScrollContainer<T extends Ele
     return () => {
       el.removeEventListener('scroll', handleScroll)
     }
-  }, [childContext, forwardedRef])
+  }, [childContext, ref])
 
   return (
     <ScrollContext.Provider value={childContext}>
-      {createElement(as, {'ref': forwardedRef, 'data-testid': 'scroll-container', ...rest})}
+      {createElement(as, {'ref': ref, 'data-testid': 'scroll-container', ...rest})}
     </ScrollContext.Provider>
   )
 })

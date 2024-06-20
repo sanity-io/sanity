@@ -37,7 +37,6 @@ import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
 import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types'
-import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
 import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
 import {Compositor, type PortableTextEditorElement} from './Compositor'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
@@ -355,6 +354,17 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const handlePaste: OnPasteFn = useCallback(
     (input) => {
       const {event} = input
+
+      // Some applications may put both text and files on the clipboard when content is copied.
+      // If we have both text and html on the clipboard, just ignore the files if this is a paste event.
+      // Drop events will most probably be files so skip this test for those.
+      const eventType = event.type === 'paste' ? 'paste' : 'drop'
+      const hasHtml = !!event.clipboardData.getData('text/html')
+      const hasText = !!event.clipboardData.getData('text/plain')
+      if (eventType === 'paste' && hasHtml && hasText) {
+        return onPaste?.(input)
+      }
+
       extractPastedFiles(event.clipboardData)
         .then((files) => {
           return files.length > 0 ? files : []
@@ -369,49 +379,41 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 
   return (
     <Box>
-      <UploadTargetCard
-        types={schemaType.of}
-        resolveUploader={props.resolveUploader}
-        onUpload={props.onUpload}
-        {...elementProps}
-        tabIndex={-1}
-      >
-        {!ignoreValidationError && respondToInvalidContent}
-        {(!invalidValue || ignoreValidationError) && (
-          <PortableTextMarkersProvider markers={markers}>
-            <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
-              <PortableTextEditor
-                patches$={patches$}
-                onChange={handleEditorChange}
-                maxBlocks={undefined} // TODO: from schema?
-                ref={editorRef}
-                readOnly={isOffline || readOnly}
-                schemaType={schemaType}
-                value={value}
-              >
-                <Compositor
-                  {...props}
-                  elementRef={elementRef}
-                  hasFocusWithin={hasFocusWithin}
-                  hotkeys={hotkeys}
-                  isActive={isActive}
-                  isFullscreen={isFullscreen}
-                  onActivate={handleActivate}
-                  onItemRemove={onItemRemove}
-                  onCopy={onCopy}
-                  onInsert={onInsert}
-                  onPaste={handlePaste}
-                  onToggleFullscreen={handleToggleFullscreen}
-                  rangeDecorations={rangeDecorations}
-                  renderBlockActions={renderBlockActions}
-                  renderCustomMarkers={renderCustomMarkers}
-                  renderEditable={renderEditable}
-                />
-              </PortableTextEditor>
-            </PortableTextMemberItemsProvider>
-          </PortableTextMarkersProvider>
-        )}
-      </UploadTargetCard>
+      {!ignoreValidationError && respondToInvalidContent}
+      {(!invalidValue || ignoreValidationError) && (
+        <PortableTextMarkersProvider markers={markers}>
+          <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
+            <PortableTextEditor
+              patches$={patches$}
+              onChange={handleEditorChange}
+              maxBlocks={undefined} // TODO: from schema?
+              ref={editorRef}
+              readOnly={isOffline || readOnly}
+              schemaType={schemaType}
+              value={value}
+            >
+              <Compositor
+                {...props}
+                elementRef={elementRef}
+                hasFocusWithin={hasFocusWithin}
+                hotkeys={hotkeys}
+                isActive={isActive}
+                isFullscreen={isFullscreen}
+                onActivate={handleActivate}
+                onItemRemove={onItemRemove}
+                onCopy={onCopy}
+                onInsert={onInsert}
+                onPaste={handlePaste}
+                onToggleFullscreen={handleToggleFullscreen}
+                rangeDecorations={rangeDecorations}
+                renderBlockActions={renderBlockActions}
+                renderCustomMarkers={renderCustomMarkers}
+                renderEditable={renderEditable}
+              />
+            </PortableTextEditor>
+          </PortableTextMemberItemsProvider>
+        </PortableTextMarkersProvider>
+      )}
     </Box>
   )
 }

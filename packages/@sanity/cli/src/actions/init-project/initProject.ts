@@ -21,6 +21,8 @@ import {
   installNewPackages,
 } from '../../packageManager'
 import {
+  ALLOWED_PACKAGE_MANAGERS,
+  allowedPackageManagersString,
   getPartialEnvWithNpmPath,
   type PackageManager,
 } from '../../packageManager/packageManagerChoice'
@@ -133,6 +135,7 @@ export default async function initSanity(
   const useGit = typeof commitMessage === 'undefined' ? true : Boolean(commitMessage)
   const bareOutput = cliFlags.bare
   const env = cliFlags.env
+  const packageManager = cliFlags['package-manager']
 
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
@@ -458,8 +461,6 @@ export default async function initSanity(
 
     // eslint-disable-next-line no-process-exit
     process.exit(0)
-
-    return
   }
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -542,15 +543,53 @@ export default async function initSanity(
   // Bootstrap Sanity, creating required project files, manifests etc
   await bootstrapTemplate(templateOptions, context)
 
+  // update that files were initialized locally; do not halt flow for request
+  apiClient({api: {projectId: projectId}})
+    .request<SanityProject>({uri: `/projects/${projectId}`})
+    .then((project: SanityProject) => {
+      if (!project?.metadata?.cliInitializedAt) {
+        return apiClient({api: {projectId}}).request({
+          method: 'PATCH',
+          uri: `/projects/${projectId}`,
+          body: {metadata: {cliInitializedAt: new Date().toISOString()}},
+        })
+      }
+      return Promise.resolve()
+    })
+    .catch(() => {
+      // Non-critical update
+      debug('Failed to update cliInitializedAt metadata')
+    })
+
+  let pkgManager: PackageManager
+
+  // If the user has specified a package manager, and it's allowed use that
+  if (packageManager && ALLOWED_PACKAGE_MANAGERS.includes(packageManager)) {
+    pkgManager = packageManager
+  } else {
+    // Otherwise, try to find the most optimal package manager to use
+    pkgManager = (
+      await getPackageManagerChoice(outputPath, {
+        prompt,
+        interactive: unattended ? false : isInteractive,
+      })
+    ).chosen
+
+    // only log warning if a package manager flag is passed
+    if (packageManager) {
+      output.warn(
+        chalk.yellow(
+          `Given package manager "${packageManager}" is not supported. Supported package managers are ${allowedPackageManagersString}.`,
+        ),
+      )
+      output.print(`Using ${pkgManager} as package manager`)
+    }
+  }
+
+  trace.log({step: 'selectPackageManager', selectedOption: pkgManager})
+
   // Now for the slow part... installing dependencies
-  const pkgManager = await getPackageManagerChoice(outputPath, {
-    prompt,
-    interactive: unattended ? false : isInteractive,
-  })
-
-  trace.log({step: 'selectPackageManager', selectedOption: pkgManager.chosen})
-
-  await installDeclaredPackages(outputPath, pkgManager.chosen, context)
+  await installDeclaredPackages(outputPath, pkgManager, context)
 
   // Try initializing a git repository
   if (useGit) {
@@ -585,7 +624,7 @@ export default async function initSanity(
     bun: 'bun dev',
     manual: 'npm run dev',
   }
-  const devCommand = devCommandMap[pkgManager.chosen]
+  const devCommand = devCommandMap[pkgManager]
 
   const isCurrentDir = outputPath === process.cwd()
   if (isCurrentDir) {
@@ -602,21 +641,6 @@ export default async function initSanity(
     print(`sanity docs - to open the documentation in a browser`)
     print(`sanity manage - to open the project settings in a browser`)
     print(`sanity help - to explore the CLI manual`)
-  }
-
-  try {
-    const client = apiClient({api: {projectId: projectId}})
-    const project = await client.request<SanityProject>({uri: `/projects/${projectId}`})
-    if (!project?.metadata?.cliInitializedAt) {
-      await apiClient({api: {projectId}}).request({
-        method: 'PATCH',
-        uri: `/projects/${projectId}`,
-        body: {metadata: {cliInitializedAt: new Date().toISOString()}},
-      })
-    }
-  } catch (err: unknown) {
-    // Non-critical update
-    debug('Failed to update cliInitializedAt metadata')
   }
 
   const sendInvite =
@@ -791,7 +815,7 @@ export default async function initSanity(
         displayName: projectName,
         organizationId: await getOrganizationId(organizations),
         subscription: selectedPlan ? {planId: selectedPlan} : undefined,
-        metadata: {coupon: intendedCoupon},
+        metadata: {coupon: intendedCoupon, integration: 'cli'},
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,

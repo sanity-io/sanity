@@ -115,6 +115,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
               t={t}
               i18nKey="panes.document-pane.document-not-found.text"
               values={{id: options.id}}
+              components={{Code: ({children}) => <code>{children}</code>}}
             />
           </Text>
         </Stack>

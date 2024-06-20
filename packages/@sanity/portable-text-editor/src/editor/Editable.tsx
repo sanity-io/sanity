@@ -13,6 +13,7 @@ import {
   type TextareaHTMLAttributes,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -59,7 +60,6 @@ import {normalizeSelection} from '../utils/selection'
 import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
 import {Element} from './components/Element'
 import {Leaf} from './components/Leaf'
-import {useForwardedRef} from './hooks/useForwardedRef'
 import {usePortableTextEditor} from './hooks/usePortableTextEditor'
 import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
 import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
@@ -140,11 +140,14 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const portableTextEditor = usePortableTextEditor()
   const readOnly = usePortableTextEditorReadOnlyStatus()
   const keyGenerator = usePortableTextEditorKeyGenerator()
-  const ref = useForwardedRef(forwardedRef)
+  const ref = useRef<HTMLDivElement | null>(null)
   const [editableElement, setEditableElement] = useState<HTMLDivElement | null>(null)
   const [hasInvalidValue, setHasInvalidValue] = useState(false)
   const [rangeDecorationState, setRangeDecorationsState] =
     useState<BaseRangeWithDecoration[]>(EMPTY_DECORATIONS_STATE)
+
+  // Forward ref to parent component
+  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
 
   const rangeDecorationsRef = useRef(rangeDecorations)
 

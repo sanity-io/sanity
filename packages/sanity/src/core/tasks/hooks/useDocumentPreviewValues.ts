@@ -1,6 +1,6 @@
 import {type PreviewValue} from '@sanity/types'
-import {type ElementType, type ReactNode} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {type ElementType, type ReactNode, useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useSchema} from '../../hooks'
@@ -24,10 +24,11 @@ export function useDocumentPreviewValues(options: PreviewHookOptions): PreviewHo
 
   const documentPreviewStore = useDocumentPreviewStore()
 
-  const previewState = useMemoObservable(() => {
+  const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
     return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '')
   }, [documentId, documentPreviewStore, schemaType])
+  const previewState = useObservable(previewStateObservable)
 
   const isLoading = previewState?.isLoading ?? true
 

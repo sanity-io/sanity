@@ -16,6 +16,7 @@ const defaultStudioManifestProps: PartialPackageManifest = {
 
 interface CheckResult {
   didInstall: boolean
+  installedSanityVersion: string
 }
 
 /**
@@ -26,15 +27,24 @@ interface CheckResult {
  *
  * If these dependencies are not installed/declared, we want to prompt the user
  * whether or not to add them to `package.json` and install them
+ *
+ * Additionally, returns the version of the 'sanity' dependency from the package.json.
  */
 export async function checkRequiredDependencies(context: CliCommandContext): Promise<CheckResult> {
   const {workDir: studioPath, output} = context
-  const [studioPackageManifest, installedStyledComponentsVersion] = await Promise.all([
-    await readPackageManifest(path.join(studioPath, 'package.json'), defaultStudioManifestProps),
-    await readModuleVersion(studioPath, 'styled-components'),
-  ])
+  const [studioPackageManifest, installedStyledComponentsVersion, installedSanityVersion] =
+    await Promise.all([
+      await readPackageManifest(path.join(studioPath, 'package.json'), defaultStudioManifestProps),
+      await readModuleVersion(studioPath, 'styled-components'),
+      await readModuleVersion(studioPath, 'sanity'),
+    ])
 
   const wantedStyledComponentsVersionRange = peerDependencies['styled-components']
+
+  // Retrieve the version of the 'sanity' dependency
+  if (!installedSanityVersion) {
+    throw new Error('Failed to read the installed sanity version.')
+  }
 
   // The studio _must_ now declare `styled-components` as a dependency. If it's not there,
   // we'll want to automatically _add it_ to the manifest and tell the user to reinstall
@@ -50,7 +60,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
     // broken assumptions about installation paths. This is a hack, and should be
     // solved properly.
     await execa(file, args, {cwd: studioPath, stdio: 'inherit'})
-    return {didInstall: true}
+    return {didInstall: true, installedSanityVersion}
   }
 
   // Theoretically the version specified in package.json could be incorrect, eg `foo`
@@ -103,7 +113,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
     `)
   }
 
-  return {didInstall: false}
+  return {didInstall: false, installedSanityVersion}
 }
 
 /**

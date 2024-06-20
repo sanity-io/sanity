@@ -397,6 +397,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Error text shown when form is unable to find an array item at a given keyed path */
   'form.error.no-array-item-at-key':
     'No array item with `_key` <code>"{{key}}"</code> found at path <code>{{path}}</code>',
+  /** The title above the error call stack output related to the crash */
+  'form.error.unhandled-runtime-error.call-stack.title': 'Call Stack:',
+  /** The title above the error component stack provided by React's underlying ErrorBoundary component */
+  'form.error.unhandled-runtime-error.component-stack.title': 'Component Stack:',
+  /** The error message for the unhandled error that crashed the Input component during render */
+  'form.error.unhandled-runtime-error.error-message': 'Error: {{message}}',
+  /** The title for the error card rendered inside a field in place of a crashing input */
+  'form.error.unhandled-runtime-error.title': 'Unhandled Runtime Error',
   /** Form field deprecated label */
   'form.field.deprecated-label': 'deprecated',
   /** Fallback title shown above field if it has no defined title */
@@ -498,6 +506,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.error.type-is-incompatible-title': 'Why is this happening?',
   /** Error label for unexpected errors in the Array Input */
   'inputs.array.error.unexpected-error': 'Unexpected Error: {{error}}',
+  /** Label for the array insert menu all items filter  */
+  'inputs.array.insert-menu.filter.all-items': 'All',
+  /** Label for when the array insert menu search shows no items */
+  'inputs.array.insert-menu.search.no-results': 'No items found',
+  /** Placeholder for the array insert menu search field */
+  'inputs.array.insert-menu.search.placeholder': 'Search',
+  /** Tooltip for the array insert menu grid view toggle */
+  'inputs.array.insert-menu.toggle-grid-view.tooltip': 'Toggle grid view',
+  /** Tooltip for the array insert menu list view toggle */
+  'inputs.array.insert-menu.toggle-list-view.tooltip': 'Toggle list view',
   /** Label for when the array input doesn't have any items */
   'inputs.array.no-items-label': 'No items',
   /** Label for read only array fields */
@@ -1067,7 +1085,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'new-document.open-dialog-aria-label': 'Create new document',
   /** Title for "Create new document" dialog */
   'new-document.title': 'Create new document',
-
+  /** More detailed alert text letting user know they have an out-of-date version and should reload */
+  'package-version.new-package-available.description': 'Simply reload to use the new version.',
+  /** Label for button that will make the browser reload when users' studio version is out-of-date */
+  'package-version.new-package-available.reload-button': 'Reload',
+  /** Title of the alert for studio users when packages in their studio are out-of-date */
+  'package-version.new-package-available.title': 'Sanity Studio was updated',
   /** Label for action to manage members of the current studio project */
   'presence.action.manage-members': 'Manage members',
   /** Accessibility label for presence menu button */
@@ -1541,6 +1564,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'search.recent-searches-label': 'Recent searches',
   /** Accessibility label for the search results section, shown when the user has typed valid terms */
   'search.search-results-aria-label': 'Search results',
+  /** Label for the edit columns button to change field visibility in sheet list */
+  'sheet-list.edit-columns': 'Edit columns',
+  /** Label for the header menu option to hide a field from the sheet list */
+  'sheet-list.hide-field': 'Remove from table',
+  /** Label for reset column visibilities button */
+  'sheet-list.reset-columns': 'Reset columns',
+  /** Title for the edit columns menu */
+  'sheet-list.select-fields': 'Select up to 5 field types',
   /** Accessibility label for the navbar status button */
   'status-button.aria-label': 'Configuration status',
 
@@ -1559,8 +1590,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.error.unable-to-load-revision': 'Unable to load revision',
   /** Label for when the timeline item is the latest in the history */
   'timeline.latest': 'Latest',
-  /** Label for latest version for timeline menu dropdown */
-  'timeline.latest-version': 'Latest version',
+
+  /** Label for latest revision for timeline menu dropdown */
+  'timeline.latest-revision': 'Latest revision',
+  /**
+   * Label for latest revision for timeline menu dropdown
+   * @deprecated as of `v3.47.0` `timeline.latest-revision` should be used instead. Note: _usage_ of this key is deprecated, but Studios on `< v3.47.0` still require this key to be _defined_
+   * */
+  'timeline.latest-version': 'Latest revision',
   /** The aria-label for the list of revisions in the timeline */
   'timeline.list.aria-label': 'Document revisions',
   /** Label for loading history */

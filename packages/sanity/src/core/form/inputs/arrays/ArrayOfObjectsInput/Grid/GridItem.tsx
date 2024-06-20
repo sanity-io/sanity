@@ -22,7 +22,7 @@ import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {CellLayout} from '../../layouts/CellLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
-import {InsertMenu} from '../InsertMenu'
+import {InsertMenuGroups} from '../InsertMenuGroups'
 
 type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
 
@@ -154,7 +154,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
                 icon={DuplicateIcon}
                 onClick={handleDuplicate}
               />
-              <InsertMenu types={insertableTypes} onInsert={handleInsert} />
+              <InsertMenuGroups types={insertableTypes} onInsert={handleInsert} />
             </Menu>
           }
           popover={MENU_POPOVER_PROPS}

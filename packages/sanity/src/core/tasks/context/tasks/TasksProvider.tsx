@@ -1,5 +1,5 @@
 import {debounce} from 'lodash'
-import {useCallback, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {TasksContext} from 'sanity/_singletons'
 
 import {useTasksStore} from '../../store'
@@ -20,8 +20,7 @@ export function TasksProvider(props: TasksProviderProps) {
   const {data = EMPTY_ARRAY, isLoading} = useTasksStore({})
 
   // This change is debounced to wait until the next document loads if we are switching between documents.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedSetActiveDocument = useCallback(debounce(setActiveDocument, 1000), [])
+  const debouncedSetActiveDocument = useMemo(() => debounce(setActiveDocument, 1000), [])
 
   const value: TasksContextValue = useMemo(
     () => ({

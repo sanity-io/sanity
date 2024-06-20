@@ -1,5 +1,5 @@
-import {useCallback} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {useCallback, useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useSchema} from '../../hooks'
@@ -37,10 +37,11 @@ export function useNotificationTarget(
 
   const documentPreviewStore = useDocumentPreviewStore()
 
-  const previewState = useMemoObservable(() => {
+  const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
     return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '')
   }, [documentId, documentPreviewStore, schemaType])
+  const previewState = useObservable(previewStateObservable)
 
   const {published, draft} = previewState || {}
   const documentTitle = (draft?.title || published?.title || 'Sanity document') as string

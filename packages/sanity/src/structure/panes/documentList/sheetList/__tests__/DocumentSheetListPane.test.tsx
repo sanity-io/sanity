@@ -1,5 +1,5 @@
 import {describe, expect, it, jest} from '@jest/globals'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {fireEvent, render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {act} from 'react'
 import {defineConfig} from 'sanity'
@@ -291,6 +291,40 @@ describe('DocumentSheetListPane', () => {
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
       })
+    })
+  })
+
+  describe('Column Headers', () => {
+    it('should render column headers', async () => {
+      await renderTest()
+
+      screen.getByText('Preview')
+      screen.getByText('Name')
+      screen.getByText('Age')
+    })
+
+    it('should not allow for hiding preview column', async () => {
+      await renderTest()
+
+      fireEvent.mouseMove(screen.getByText('Preview'))
+      expect(
+        within(screen.getByTestId('header-Preview')).queryByTestId('field-menu-button'),
+      ).toBeNull()
+    })
+
+    it('should allow for hiding other columns', async () => {
+      await renderTest()
+
+      fireEvent.mouseMove(screen.getByText('Name'))
+
+      expect(
+        within(screen.getByTestId('header-name')).getByTestId('field-menu-button'),
+      ).toBeVisible()
+
+      fireEvent.click(within(screen.getByTestId('header-name')).getByTestId('field-menu-button'))
+      fireEvent.click(screen.getByText('Remove from table'))
+
+      expect(screen.queryByText('Name')).toBeNull()
     })
   })
 })

@@ -63,12 +63,7 @@ const config = {
     'prettier/prettier': 'error',
     'tsdoc/syntax': 'error',
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': [
-      'error',
-      {
-        additionalHooks: '(useMemoObservable|useObservableCallback|useAsync)',
-      },
-    ],
+    'react-hooks/exhaustive-deps': 'error',
     // Set react-compiler to `error` once existing issues are fixed
     /**
      * Once all react-compiler warnings are fixed then this rule should be changed to 'error' and:
@@ -251,6 +246,19 @@ const config = {
       files: ['packages/sanity/src/_singletons/**'],
       rules: {
         'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
+      },
+    },
+
+    // Don't lint React Compiler rules on test code
+    {
+      files: [
+        `**/*/test/**/*`,
+        '**/*/__tests__/**/*',
+        '**/*.test.{js,ts,tsx}',
+        'packages/sanity/playwright-ct/**',
+      ],
+      rules: {
+        'react-compiler/react-compiler': 'off',
       },
     },
   ],

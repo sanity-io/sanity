@@ -6,7 +6,6 @@ import {
   Flex,
   Select,
   Text,
-  useForwardedRef,
 } from '@sanity/ui'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
@@ -18,6 +17,8 @@ import {
   type KeyboardEvent,
   useCallback,
   useEffect,
+  useImperativeHandle,
+  useRef,
 } from 'react'
 
 import useTimeZone from '../../../../hooks/useTimeZone'
@@ -128,7 +129,8 @@ export const Calendar = forwardRef(function Calendar(
     [onSelect, selectedDate, zoneDateToUtc],
   )
 
-  const ref = useForwardedRef(forwardedRef)
+  const ref = useRef<HTMLDivElement | null>(null)
+  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
 
   const focusCurrentWeekDay = useCallback(() => {
     ref.current?.querySelector<HTMLElement>(`[data-focused="true"]`)?.focus()

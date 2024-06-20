@@ -7,7 +7,7 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table'
 import {useMemo} from 'react'
-import {useMemoObservable} from 'react-rx'
+import {useObservable} from 'react-rx'
 import {
   type DocumentPreviewStore,
   DocumentStatusIndicator,
@@ -17,9 +17,8 @@ import {
   useDocumentPreviewStore,
 } from 'sanity'
 
-import {type PaneItemPreviewState} from '../../../components/paneItem/types'
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
-import {SheetListCell} from './SheetListCell'
+import {SheetListCellInner} from './SheetListCell'
 
 export const VISIBLE_COLUMN_LIMIT = 5
 
@@ -32,11 +31,15 @@ const PreviewCell = (props: {
 }) => {
   const {documentPreviewStore, row, schemaType} = props
   const title = 'Document title'
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const {draft, published, isLoading} = useMemoObservable<PaneItemPreviewState>(
+  const previewStateObservable = useMemo(
     () => getPreviewStateObservable(documentPreviewStore, schemaType, row.original._id, title),
-    [documentPreviewStore, schemaType, row.original._id],
-  )!
+    [documentPreviewStore, row.original._id, schemaType],
+  )
+  const {draft, published, isLoading} = useObservable(previewStateObservable, {
+    draft: null,
+    isLoading: true,
+    published: null,
+  })
   if (isLoading) {
     return (
       <Text size={1} muted>
@@ -72,7 +75,7 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
           id: parentalField ? `${parentalField}_${field.name}` : field.name,
           header: field.type.title,
           enableHiding: true,
-          cell: (info) => <SheetListCell {...info} fieldType={type} />,
+          cell: (info) => <SheetListCellInner {...info} fieldType={type} />,
         },
       )
 

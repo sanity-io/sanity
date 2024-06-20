@@ -7,7 +7,7 @@ import {Dialog} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
 import {useSchema} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
-import {useColorScheme} from '../../../colorScheme'
+import {useColorSchemeValue} from '../../../colorScheme'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
 
 export function ConfigIssuesButton() {
@@ -18,7 +18,7 @@ export function ConfigIssuesButton() {
     ) || []
 
   // get root scheme
-  const {scheme} = useColorScheme()
+  const scheme = useColorSchemeValue()
   const {t} = useTranslation()
 
   const dialogId = useId()

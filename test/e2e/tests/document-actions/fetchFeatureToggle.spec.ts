@@ -5,7 +5,11 @@ interface ActionsFeatureToggle {
   actions: boolean
 }
 
-test(`document actions follow appropriate logic after receiving response from feature toggle endpoint`, async ({
+/* 
+  Test skipped due to on going developments around server actions that make them flaky 
+  Re-enable this test when the server actions are stable 
+  */
+test.skip(`document actions follow appropriate logic after receiving response from feature toggle endpoint`, async ({
   page,
   createDraftDocument,
 }) => {

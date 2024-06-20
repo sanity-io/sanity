@@ -6,6 +6,7 @@ export const testimonials = defineType({
   type: 'object',
   name: 'testimonials',
   title: 'Testimonials',
+  icon: SlSpeech,
   fields: [
     defineField({
       type: 'array',
@@ -34,7 +35,6 @@ export const testimonials = defineType({
       return {
         title: 'Testimonials',
         subtitle: hasMore ? `${subtitle}...` : subtitle,
-        media: SlSpeech,
       }
     },
   },
@@ -44,6 +44,7 @@ export const testimonial = defineType({
   type: 'document',
   name: 'testimonial',
   title: 'Testimonial',
+  icon: SlSpeech,
   fields: [
     defineField({
       type: 'array',

@@ -1,11 +1,4 @@
-import {
-  BoundaryElementProvider,
-  Card,
-  type CardProps,
-  Code,
-  Flex,
-  useForwardedRef,
-} from '@sanity/ui'
+import {BoundaryElementProvider, Card, type CardProps, Code, Flex} from '@sanity/ui'
 import {
   type ForwardedRef,
   forwardRef,
@@ -13,7 +6,9 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
@@ -52,7 +47,7 @@ export const Pane = forwardRef(function Pane(
   props: PaneProps &
     Omit<CardProps, 'as' | 'overflow'> &
     Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
-  ref: ForwardedRef<HTMLDivElement>,
+  forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {
     children,
@@ -81,18 +76,18 @@ export const Pane = forwardRef(function Pane(
   const expanded = expandedElement === rootElement
   const collapsed = layoutCollapsed ? false : pane?.collapsed || false
   const nextCollapsed = nextPane?.collapsed || false
-  const forwardedRef = useForwardedRef(ref)
+  const ref = useRef<HTMLDivElement | null>(null)
   const flex = pane?.flex ?? flexProp
   const currentMinWidth = pane?.currentMinWidth ?? currentMinWidthProp
   const currentMaxWidth = pane?.currentMaxWidth ?? currentMaxWidthProp
 
-  const setRef = useCallback(
-    (refValue: HTMLDivElement | null) => {
-      setRootElement(refValue)
-      forwardedRef.current = refValue
-    },
-    [forwardedRef],
-  )
+  // Forward ref to parent
+  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
+
+  const setRef = useCallback((refValue: HTMLDivElement | null) => {
+    setRootElement(refValue)
+    ref.current = refValue
+  }, [])
 
   useEffect(() => {
     if (!rootElement) return undefined

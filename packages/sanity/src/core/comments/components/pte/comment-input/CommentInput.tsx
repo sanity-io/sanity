@@ -175,24 +175,20 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       }
     }, [requestFocus])
 
-    useImperativeHandle(
-      ref,
-      () => {
-        return {
-          focus: requestFocus,
-          blur() {
-            if (editorRef.current) {
-              PortableTextEditor.blur(editorRef.current)
-            }
-          },
-          scrollTo: scrollToEditor,
-          reset: resetEditorInstance,
+    useImperativeHandle(ref, () => {
+      return {
+        focus: requestFocus,
+        blur() {
+          if (editorRef.current) {
+            PortableTextEditor.blur(editorRef.current)
+          }
+        },
+        scrollTo: scrollToEditor,
+        reset: resetEditorInstance,
 
-          discardDialogController,
-        }
-      },
-      [discardDialogController, requestFocus, resetEditorInstance, scrollToEditor],
-    )
+        discardDialogController,
+      }
+    }, [discardDialogController, requestFocus, resetEditorInstance, scrollToEditor])
 
     const handleFocus = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {

@@ -9,7 +9,7 @@ import {useTranslation} from '../../../../i18n'
 import {FieldPresence} from '../../../../presence'
 import {FormFieldValidationStatus} from '../../../components/formField'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
-import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
+import {InsertMenuGroups} from '../ArrayOfObjectsInput/InsertMenuGroups'
 import {RowLayout} from '../layouts/RowLayout'
 import {getEmptyValue} from './getEmptyValue'
 
@@ -83,7 +83,7 @@ export const ItemRow = forwardRef(function ItemRow(
             icon={DuplicateIcon}
             onClick={handleDuplicate}
           />
-          <InsertMenu types={insertableTypes} onInsert={handleInsert} />
+          <InsertMenuGroups types={insertableTypes} onInsert={handleInsert} />
         </Menu>
       }
     />

@@ -1,30 +1,5 @@
-import {memo, useCallback, useEffect, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type DocumentInspector, type DocumentInspectorMenuItem, useUnique} from 'sanity'
-
-interface InspectorMenuItemProps {
-  documentId: string
-  documentType: string
-  index: number
-  setMenuItem: (index: number, node: DocumentInspectorMenuItem) => void
-  useMenuItem: NonNullable<DocumentInspector['useMenuItem']>
-}
-
-const InspectorMenuItem = memo(function InspectorMenuItem(props: InspectorMenuItemProps) {
-  const {documentId, documentType, index, setMenuItem, useMenuItem} = props
-
-  const node = useUnique(
-    useMenuItem({
-      documentId,
-      documentType,
-    }),
-  )
-
-  useEffect(() => {
-    setMenuItem(index, node)
-  }, [index, node, setMenuItem])
-
-  return <></>
-})
 
 interface DocumentInspectorMenuItemsResolverProps {
   documentId: string
@@ -81,21 +56,54 @@ export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuI
     onMenuItems(menuItems.filter(Boolean))
   }, [menuItems, onMenuItems])
 
+  const InspectorMenuItems = useMemo(() => {
+    return inspectors.map((inspector, index) => {
+      return inspector.useMenuItem
+        ? ([
+            defineInspectorMenuItemComponent({
+              documentId,
+              documentType,
+              index,
+              setMenuItem,
+              useMenuItem: inspector.useMenuItem,
+            }),
+            inspector.name,
+          ] as const)
+        : ([() => null, ''] as const)
+    })
+  }, [documentId, documentType, inspectors, setMenuItem])
+
   return (
     <>
-      {inspectors.map(
-        (inspector, inspectorIndex) =>
-          inspector.useMenuItem && (
-            <InspectorMenuItem
-              documentId={documentId}
-              documentType={documentType}
-              index={inspectorIndex}
-              key={inspector.name}
-              setMenuItem={setMenuItem}
-              useMenuItem={inspector.useMenuItem}
-            />
-          ),
-      )}
+      {InspectorMenuItems.map(([InspectorMenuItem, key]) => key && <InspectorMenuItem key={key} />)}
     </>
   )
+}
+
+function defineInspectorMenuItemComponent({
+  documentId,
+  documentType,
+  index,
+  setMenuItem,
+  useMenuItem,
+}: {
+  documentId: string
+  documentType: string
+  index: number
+  setMenuItem: (index: number, node: DocumentInspectorMenuItem) => void
+  useMenuItem: NonNullable<DocumentInspector['useMenuItem']>
+}) {
+  return memo(function InspectorMenuItem() {
+    const menuItem = useMenuItem({
+      documentId,
+      documentType,
+    })
+    const node = useUnique(menuItem)
+
+    useEffect(() => {
+      setMenuItem(index, node)
+    }, [node])
+
+    return null
+  })
 }

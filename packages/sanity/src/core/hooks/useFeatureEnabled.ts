@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
-import {useMemoObservable} from 'react-rx'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
@@ -45,7 +46,7 @@ export function useFeatureEnabled(featureKey: string): Features {
     cachedFeatureRequest.set(projectId, features)
   }
 
-  const featureInfo = useMemoObservable(
+  const featureInfoObservable = useMemo(
     () =>
       (cachedFeatureRequest.get(projectId) || of(EMPTY_ARRAY)).pipe(
         map((features = []) => ({
@@ -60,8 +61,8 @@ export function useFeatureEnabled(featureKey: string): Features {
         }),
       ),
     [featureKey, projectId],
-    INITIAL_LOADING_STATE,
   )
+  const featureInfo = useObservable(featureInfoObservable, INITIAL_LOADING_STATE)
 
   return featureInfo
 }
