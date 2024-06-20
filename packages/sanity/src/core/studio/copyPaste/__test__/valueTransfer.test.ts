@@ -127,26 +127,38 @@ describe('transferValue', () => {
       })
       expect(transferValueResult?.targetValue).toEqual(sourceValue)
     })
+
+    test('can copy weak references into hard references', () => {
+      const sourceValue = {
+        _type: 'reference',
+        _ref: 'e4be7fa20bb20c271060a46bca82b9e84907a13a-320x320-jpg',
+        _weak: true,
+      }
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('author')!, ['bestFriend'])
+      const transferValueResult = transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['bestAuthorFriend'],
+      })
+      expect(transferValueResult?.targetValue).toEqual(omit(sourceValue, ['_weak']))
+    })
+
+    test('can copy hard references into weak references', () => {
+      const sourceValue = {
+        _type: 'reference',
+        _ref: 'e4be7fa20bb20c271060a46bca82b9e84907a13a-320x320-jpg',
+      }
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('editor')!, ['bestAuthorFriend'])
+      const transferValueResult = transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('author')!,
+        targetPath: ['bestFriend'],
+      })
+      expect(transferValueResult?.targetValue).toEqual({...sourceValue, _weak: true})
+    })
   })
-  // test.only('can copy nested objects', () => {
-  //   const sourceValue = {
-  //     _type: 'nestedObject',
-  //     title: 'root',
-  //     objectList: [{_type: 'nestedObject', _key: 'yyy', title: 'item', items: []}],
-  //   }
-  //   const transferValueResult = transferValue({
-  //     sourceRootSchemaType: schema.get('author')!,
-  //     sourcePath: ['nestedTest', 'objectList', {_key: 'yyy'}],
-  //     sourceValue,
-  //     targetRootSchemaType: schema.get('editor')!,
-  //     targetPath: ['nestedTest'],
-  //   })
-  //   expect(transferValueResult.errors.length).toEqual(0)
-  //   expect(transferValueResult?.targetValue).toEqual({
-  //     _type: 'nestedObject',
-  //     _key: 'yyy',
-  //     title: 'item',
-  //     items: [],
-  //   })
-  // })
 })
