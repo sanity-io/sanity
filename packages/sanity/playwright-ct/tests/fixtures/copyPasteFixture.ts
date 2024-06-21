@@ -27,7 +27,7 @@ export const test = base.extend<{
           },
           writeText: (text: string) => {
             const textBlob = new Blob([text], {type: 'text/plain'})
-            ;(window as any).__clipboardItems.push(new ClipboardItem({'text/plain': textBlob}))
+            ;(window as any).__clipboardItems = [new ClipboardItem({'text/plain': textBlob})]
             return Promise.resolve()
           },
         }
