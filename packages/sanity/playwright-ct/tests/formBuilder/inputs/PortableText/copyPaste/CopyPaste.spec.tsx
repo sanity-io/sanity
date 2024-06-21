@@ -307,7 +307,12 @@ test.describe('Object input', () => {
 })
 
 test.describe('String input', () => {
-  test(`Copy via field actions`, async ({browserName, getClipboardItemsAsText, mount, page}) => {
+  test(`Copy and pasting via field actions`, async ({
+    browserName,
+    getClipboardItemsAsText,
+    mount,
+    page,
+  }) => {
     await mount(<CopyPasteStory document={document} />)
 
     await expect(page.getByTestId(`field-title`)).toBeVisible()
@@ -317,7 +322,7 @@ test.describe('String input', () => {
     // https://github.com/microsoft/playwright/pull/30572
     // maybe part of 1.44
     // await page.keyboard.press('ControlOrMeta+C')
-    const $fieldActions = page
+    let $fieldActions = page
       .getByTestId('field-actions-menu-title')
       .getByTestId('field-actions-trigger')
 
@@ -338,11 +343,33 @@ test.describe('String input', () => {
 
     // Check that the plain text version is set
     await expect(await getClipboardItemsAsText()).toContain('A string to copy')
+
+    // Trigger the field actions menu
+    $fieldActions = page
+      .getByTestId('field-actions-menu-title')
+      .getByTestId('field-actions-trigger')
+
+    await $fieldActions.focus()
+    await expect($fieldActions).toBeFocused()
+    await $fieldActions.click()
+
+    // Click on the "Paste field" option in the menu
+    await expect(page.getByRole('menuitem', {name: 'Paste field'})).toBeVisible()
+    await page.getByRole('menuitem', {name: 'Paste field'}).click()
+
+    // Verify that the field content is updated with the pasted value
+    await expect(page.getByText(`Field Title updated`)).toBeVisible()
+    await expect(page.getByTestId('field-title').locator('input')).toHaveValue('A string to copy')
   })
 })
 
 test.describe('Array input', () => {
-  test(`Copy via field actions`, async ({browserName, getClipboardItemsAsText, mount, page}) => {
+  test(`Copy and pasting via field actions`, async ({
+    browserName,
+    getClipboardItemsAsText,
+    mount,
+    page,
+  }) => {
     await mount(<CopyPasteStory document={document} />)
 
     await expect(page.getByTestId(`field-arrayOfPrimitives`)).toBeVisible()
