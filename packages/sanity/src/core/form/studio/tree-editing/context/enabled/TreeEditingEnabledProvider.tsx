@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
-import {TreeEditingEnabledContext, type TreeEditingEnabledContextValue} from 'sanity/_singletons'
+import {TreeEditingEnabledContext} from 'sanity/_singletons'
 
 import {useSource} from '../../../../../studio/source'
-import {useTreeEditingEnabled} from './useTreeEditingEnabled'
+import {type TreeEditingEnabledContextValue, useTreeEditingEnabled} from './useTreeEditingEnabled'
 
 interface TreeEditingEnabledProviderProps {
   children: React.ReactNode
