@@ -1,9 +1,12 @@
-import {type Path} from 'sanity'
+import {type Path, type PathSegment} from 'sanity'
 
 /**
  * Check if the item is selected
  */
-export function isArrayItemSelected(itemPath: Path, path: Path): boolean {
+export function isArrayItemSelected(
+  itemPath: Path | PathSegment,
+  path: Path | PathSegment,
+): boolean {
   return JSON.stringify(itemPath) === JSON.stringify(path)
 }
 
@@ -24,7 +27,7 @@ export function isArrayItemPath(path: Path): boolean {
 export function shouldBeInBreadcrumb(itemPath: Path, path: Path): boolean {
   return (
     itemPath.every((segment, index) => {
-      return JSON.stringify(path[index]) === JSON.stringify(segment)
+      return isArrayItemSelected(path[index], segment)
     }) && isArrayItemPath(itemPath)
   )
 }
