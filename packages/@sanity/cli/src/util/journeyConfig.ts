@@ -183,6 +183,7 @@ async function fetchJourneySchema(schemaUrl: string): Promise<DocumentOrObject[]
  */
 async function assembleJourneySchemaTypeFileContent(schemaType: DocumentOrObject): Promise<string> {
   const serialised = wrapSchemaTypeInHelpers(schemaType)
+  console.log('serialised', serialised)
   const imports = getImports(serialised)
   const prettifiedSchemaType = await format(serialised, {
     parser: 'typescript',
