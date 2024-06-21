@@ -237,7 +237,7 @@ export function useCopyPasteAction(): {
         const allPatches = flatten(updateItems.map(({patches}) => patches))
         const allTargetNames = updateItems
           .map(({targetSchemaTypeTitle}) => targetSchemaTypeTitle)
-          .join(', ')
+          .join('", "')
 
         // eslint-disable-next-line no-nested-ternary
         const titleSuffix = clipboardItem.isDocument
@@ -248,7 +248,7 @@ export function useCopyPasteAction(): {
         onChange?.(PatchEvent.from(allPatches))
         toast.push({
           status: 'success',
-          title: `${titleSuffix} ${allTargetNames} updated`,
+          title: `${titleSuffix} "${allTargetNames}" updated`,
         })
       }
     },
