@@ -19,6 +19,7 @@ export const test = base.extend<{
             return Promise.resolve()
           },
           readText: () => {
+            const items = (window as any).__clipboardItems as ClipboardItem[]
             const textItem = items.find((item) => item.types.includes('text/plain'))
             return textItem
               ? textItem.getType('text/plain').then((blob: Blob) => blob.text())
