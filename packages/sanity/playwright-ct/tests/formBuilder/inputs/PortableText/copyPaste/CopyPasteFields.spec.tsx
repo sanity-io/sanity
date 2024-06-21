@@ -74,7 +74,7 @@ test.describe('Copy and pasting fields', () => {
         return
       }
 
-      await expect(page.getByText(`Field Object with columns copied`)).toBeVisible()
+      await expect(page.getByText(`Field "Object with columns" copied`)).toBeVisible()
 
       // Check that the plain text version is set
       await expect(await getClipboardItemsAsText()).toContain('A string to copy')
@@ -97,7 +97,7 @@ test.describe('Copy and pasting fields', () => {
       await expect(page.getByRole('menuitem', {name: 'Paste field'})).toBeVisible()
       await page.getByRole('menuitem', {name: 'Paste field'}).press('Enter')
 
-      await expect(page.getByText(`Field Object with columns updated`)).toBeVisible()
+      await expect(page.getByText(`Field "Object with columns" updated`)).toBeVisible()
 
       await expect(
         page.getByTestId('field-objectWithColumns.string1').locator('input'),
@@ -141,7 +141,7 @@ test.describe('Copy and pasting fields', () => {
         return
       }
 
-      await expect(page.getByText(`Field Object with columns copied`)).toBeVisible()
+      await expect(page.getByText(`Field "Object with columns" copied`)).toBeVisible()
 
       // Check that the plain text version is set
       await expect(await getClipboardItemsAsText()).toContain('A string to copy')
@@ -151,7 +151,7 @@ test.describe('Copy and pasting fields', () => {
       await expect($object).toBeFocused()
       await $object.press('ControlOrMeta+V')
 
-      await expect(page.getByText(`Field Object with columns updated`)).toBeVisible()
+      await expect(page.getByText(`Field "Object with columns" updated`)).toBeVisible()
 
       await expect(
         page.getByTestId('field-objectWithColumns.string1').locator('input'),
@@ -190,7 +190,7 @@ test.describe('Copy and pasting fields', () => {
         return
       }
 
-      await expect(page.getByText(`Field Title copied`)).toBeVisible()
+      await expect(page.getByText(`Field "Title" copied`)).toBeVisible()
 
       // Check that the plain text version is set
       await expect(await getClipboardItemsAsText()).toContain('A string to copy')
@@ -206,7 +206,7 @@ test.describe('Copy and pasting fields', () => {
       await page.getByRole('menuitem', {name: 'Paste field'}).press('Enter')
 
       // Verify that the field content is updated with the pasted value
-      await expect(page.getByText(`Field Title updated`)).toBeVisible()
+      await expect(page.getByText(`Field "Title" updated`)).toBeVisible()
       await expect(page.getByTestId('field-title').locator('input')).toHaveValue('A string to copy')
     })
   })
@@ -242,7 +242,7 @@ test.describe('Copy and pasting fields', () => {
         return
       }
 
-      await expect(page.getByText(`Field Array of primitives copied`)).toBeVisible()
+      await expect(page.getByText(`Field "Array of primitives" copied`)).toBeVisible()
 
       // Check that the plain text version is set
       await expect(await getClipboardItemsAsText()).toContain('One, Two')
@@ -273,7 +273,7 @@ test.describe('Copy and pasting fields', () => {
       await expect(page.getByRole('menuitem', {name: 'Paste field'})).toBeVisible()
       await page.getByRole('menuitem', {name: 'Paste field'}).press('Enter')
 
-      await expect(page.getByText(`Field Array of primitives updated`)).toBeVisible()
+      await expect(page.getByText(`Field "Array of primitives" updated`)).toBeVisible()
 
       expect(
         page.getByTestId(`field-arrayOfPrimitives`).getByTestId('string-input').first(),
