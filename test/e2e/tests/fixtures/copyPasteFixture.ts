@@ -5,13 +5,10 @@ export const test = base.extend<{
   setClipboardItems: (items: ClipboardItem[]) => Promise<void>
   getClipboardItems: () => Promise<ClipboardItem[]>
   getClipboardItemsAsText: () => Promise<string>
-  clipboardItems: {items: ClipboardItem[]}
 }>({
-  clipboardItems: [{items: [] as ClipboardItem[]}, {scope: 'test'}],
-
-  page: async ({page, clipboardItems}, use) => {
-    const setupClipboardMocks = () => {
-      return page.addInitScript((items) => {
+  page: async ({page}, use) => {
+    const setupClipboardMocks = async () => {
+      return page.addInitScript(() => {
         const mockClipboard = {
           read: () => {
             return Promise.resolve((window as any).__clipboardItems)
@@ -22,6 +19,7 @@ export const test = base.extend<{
             return Promise.resolve()
           },
           readText: () => {
+            const items = (window as any).__clipboardItems as ClipboardItem[]
             const textItem = items.find((item) => item.types.includes('text/plain'))
             return textItem
               ? textItem.getType('text/plain').then((blob: Blob) => blob.text())
@@ -29,7 +27,7 @@ export const test = base.extend<{
           },
           writeText: (text: string) => {
             const textBlob = new Blob([text], {type: 'text/plain'})
-            items.push(new ClipboardItem({'text/plain': textBlob}))
+            ;(window as any).__clipboardItems.push(new ClipboardItem({'text/plain': textBlob}))
             return Promise.resolve()
           },
         }
@@ -37,8 +35,8 @@ export const test = base.extend<{
           value: mockClipboard,
           writable: false,
         })
-        ;(window as any).__clipboardItems = items
-      }, clipboardItems.items)
+        ;(window as any).__clipboardItems = []
+      })
     }
 
     await setupClipboardMocks()
@@ -50,9 +48,9 @@ export const test = base.extend<{
     await use(page)
   },
 
-  setClipboardItems: async ({clipboardItems}, use) => {
+  setClipboardItems: async ({page}, use) => {
     await use(async (items: ClipboardItem[]) => {
-      clipboardItems.items = items
+      ;(window as any).__clipboardItems = items
     })
   },
 
