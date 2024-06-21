@@ -31,7 +31,7 @@ export const test = base.extend<{
             return Promise.resolve()
           },
         }
-        Object.defineProperty(navigator, 'clipboard', {
+        Object.defineProperty(Object.getPrototypeOf(navigator), 'clipboard', {
           value: mockClipboard,
           writable: false,
         })
