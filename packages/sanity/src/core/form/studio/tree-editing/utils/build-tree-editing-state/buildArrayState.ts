@@ -14,7 +14,7 @@ import {getItemType} from '../../../../store/utils/getItemType'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
-import {getRelativePath, isSelected, shouldBeInBreadcrumb} from './utils'
+import {getRelativePath, isArrayItemSelected, shouldBeInBreadcrumb} from './utils'
 
 interface BuildArrayState {
   arrayValue: Record<string, unknown>[]
@@ -79,7 +79,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
       if (childField?.type?.options?.treeEditing === false) return
 
-      if (isSelected(childPath, openPath)) {
+      if (isArrayItemSelected(childPath, openPath)) {
         relativePath = getRelativePath(childPath)
       }
 
@@ -127,7 +127,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
 
-    if (isSelected(itemPath, openPath)) {
+    if (isArrayItemSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
     }
 

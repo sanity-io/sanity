@@ -3,7 +3,7 @@ import {type Path} from 'sanity'
 /**
  * Check if the item is selected
  */
-export function isSelected(itemPath: Path, path: Path): boolean {
+export function isArrayItemSelected(itemPath: Path, path: Path): boolean {
   return JSON.stringify(itemPath) === JSON.stringify(path)
 }
 
