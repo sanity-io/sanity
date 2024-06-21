@@ -129,10 +129,12 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     openPathRef.current = undefined
   }, [debouncedBuildTreeEditingState, onPathOpen])
 
-  const open = useMemo(
-    () => shouldArrayDialogOpen(schemaType, treeState.relativePath),
-    [treeState.relativePath, schemaType],
-  )
+  // if the path is outside of the current window, we want to use the openPath
+  const pathToUse = openPath.some((path) => treeState.relativePath.includes(path))
+    ? treeState.relativePath
+    : openPath
+
+  const open = useMemo(() => shouldArrayDialogOpen(schemaType, pathToUse), [schemaType, pathToUse])
 
   const onHandlePathSelect = useCallback(
     (path: Path) => {
