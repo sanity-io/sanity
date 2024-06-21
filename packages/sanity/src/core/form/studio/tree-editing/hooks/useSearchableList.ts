@@ -48,6 +48,9 @@ export function useSearchableList(items: TreeEditingMenuItem[]): SearchableTreeE
   )
 
   useEffect(() => {
+    // clear the searchableList when items change
+    setSearchableList([])
+
     flatList.forEach((item) => {
       const sub$ = observeForPreview(item.value as Previewable, item.schemaType).pipe(
         map((event) => {
