@@ -344,6 +344,8 @@ test.describe('String input', () => {
     // Check that the plain text version is set
     await expect(await getClipboardItemsAsText()).toContain('A string to copy')
 
+    await page.getByTestId('field-title').locator('input').fill('')
+
     // Trigger the field actions menu
     $fieldActions = page
       .getByTestId('field-actions-menu-title')
