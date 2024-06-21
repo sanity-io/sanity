@@ -11,7 +11,7 @@ export const test = base.extend<{
 
   page: async ({page, clipboardItems}, use) => {
     const setupClipboardMocks = () => {
-      page.addInitScript((items) => {
+      return page.addInitScript((items) => {
         const mockClipboard = {
           read: () => {
             return Promise.resolve((window as any).__clipboardItems)
