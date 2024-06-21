@@ -156,7 +156,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   useEffect(() => {
     // Don't proceed with building the tree editing state if the dialog
     // should not be open.
-    if (!shouldArrayDialogOpen(schemaType, openPath)) return
+    if (!shouldArrayDialogOpen(schemaType, openPath)) return undefined
 
     const valueChanged = !isEqual(value, valueRef.current)
     const openPathChanged = !isEqual(openPath, openPathRef.current)
@@ -177,12 +177,12 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
       openPathRef.current = openPath
 
-      return
+      return undefined
     }
 
     // Don't proceed with building the tree editing state if the
     // openPath and value has not changed.
-    if (!valueChanged && !openPathChanged) return
+    if (!valueChanged && !openPathChanged) return undefined
 
     // Store the openPath and value to be able to compare them
     // with the next openPath and value.
@@ -194,6 +194,11 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       documentValue: value,
       openPath,
     })
+
+    return () => {
+      // Cancel any debounced state building when navigating.
+      debouncedBuildTreeEditingState.cancel()
+    }
   }, [schemaType, value, debouncedBuildTreeEditingState, openPath, handleBuildTreeEditingState])
 
   if (!open || treeState.relativePath.length === 0) return null
