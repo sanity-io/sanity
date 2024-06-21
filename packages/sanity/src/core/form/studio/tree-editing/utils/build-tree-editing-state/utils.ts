@@ -11,6 +11,10 @@ export function isArrayItemSelected(itemPath: Path, path: Path): boolean {
  * Check if the path is an array item path
  */
 export function isArrayItemPath(path: Path): boolean {
+  if (path.length === 0) return false
+
+  // Check if the last segment in the path has a key
+  // at this point it will never be at path 0 since this method is not meant to be used for the document level
   return path[path.length - 1].hasOwnProperty('_key')
 }
 
