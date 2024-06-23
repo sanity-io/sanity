@@ -3,7 +3,9 @@ import {isString, type ObjectField, type ObjectFieldType, type Path, type Schema
 
 import {type CopyActionResult} from './types'
 
-const SANITY_CLIPBOARD_ITEM_TYPE = 'web application/sanity-studio'
+const SANITY_CLIPBOARD_ITEM_TYPE = isWebKit()
+  ? 'text/plain'
+  : 'web application/sanity-studio-clipboard-item'
 
 export const getClipboardItem = async (): Promise<CopyActionResult | null> => {
   const items = await window.navigator.clipboard.read()
@@ -20,15 +22,17 @@ export const writeClipboardItem = async (copyActionResult: CopyActionResult): Pr
   try {
     const clipboardItem: Record<string, Blob> = {
       [SANITY_CLIPBOARD_ITEM_TYPE]: new Blob([JSON.stringify(copyActionResult)], {
-        type: 'web application/sanity-studio',
+        type: SANITY_CLIPBOARD_ITEM_TYPE,
       }),
     }
-    const text = copyActionResult.items
-      .map((item) => transformValueToText(item.value))
-      .filter(Boolean)
-      .join('\n')
-    if (text.length > 0) {
-      clipboardItem['text/plain'] = new Blob([text], {type: 'text/plain'})
+    if (SANITY_CLIPBOARD_ITEM_TYPE !== 'text/plain') {
+      const text = copyActionResult.items
+        .map((item) => transformValueToText(item.value))
+        .filter(Boolean)
+        .join('\n')
+      if (text.length > 0) {
+        clipboardItem['text/plain'] = new Blob([text], {type: 'text/plain'})
+      }
     }
     await window.navigator.clipboard.write([new ClipboardItem(clipboardItem)])
     return true
@@ -171,4 +175,8 @@ export function isNativeEditableElement(el: EventTarget): boolean {
   }
   if (el instanceof HTMLTextAreaElement) return !(el.disabled || el.readOnly)
   return false
+}
+
+function isWebKit(): boolean {
+  return 'WebkitAppearance' in document.documentElement.style
 }
