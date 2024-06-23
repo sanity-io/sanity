@@ -1,12 +1,7 @@
 import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
-<<<<<<< HEAD
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {useTreeArrayEditingEnabled} from 'sanity'
-=======
-import {useCallback, useMemo, useRef} from 'react'
->>>>>>> 8fe3d35e5c (refactor(core): move code, fix imports)
 import {styled} from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
