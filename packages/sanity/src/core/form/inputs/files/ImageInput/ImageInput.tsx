@@ -4,6 +4,8 @@ import {Stack, useToast} from '@sanity/ui'
 import {get} from 'lodash'
 import {type FocusEvent, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
+import {shouldArrayDialogOpen} from 'sanity'
+import {useDocumentPane} from 'sanity/structure'
 
 import {useTranslation} from '../../../../i18n'
 import {FormInput} from '../../../components'
@@ -64,6 +66,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
   // it when closing the dialog (see `handleAssetSourceClosed`)
   const [menuButtonElement, setMenuButtonElement] = useState<HTMLButtonElement | null>(null)
   const [isMenuOpen, setMenuOpen] = useState(false)
+
+  const {schemaType: documentSchemaType} = useDocumentPane()
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
@@ -260,12 +264,15 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
       // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
       if (
         event.currentTarget === event.target &&
-        event.currentTarget === elementProps.ref?.current
+        event.currentTarget === elementProps.ref?.current &&
+        // when opening the array editing dialog, we don't want to focus to be on the element itself
+        // (the array) vs the item itself
+        !shouldArrayDialogOpen(documentSchemaType, path)
       ) {
         elementProps.onFocus(event)
       }
     },
-    [elementProps],
+    [elementProps, path, documentSchemaType],
   )
   const handleFilesOver = useCallback((nextHoveringFiles: FileInfo[]) => {
     setHoveringFiles(nextHoveringFiles.filter((file) => file.kind !== 'string'))
