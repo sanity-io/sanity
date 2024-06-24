@@ -137,8 +137,9 @@ async function updateManifest(newVersions: Map<string, string>) {
       destination: 'modules/v1/manifest-v1.json',
       contentType: 'application/json',
       metadata: {
-        // 10 seconds
-        cacheControl: 'public, max-age=10',
+        // no-cache to help with consistency across pods when this manifest
+        // is downloaded in the module-server
+        cacheControl: 'no-cache, max-age=0',
       },
     }
 
