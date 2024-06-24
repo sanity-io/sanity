@@ -168,7 +168,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     setDrawerOpen(true)
   }, [])
 
-  const release = useMemo(() => router.stickyParams.release, [router.stickyParams])
+  const perspective = useMemo(() => router.stickyParams.perspective, [router.stickyParams])
 
   const handleReleaseChange = useCallback(
     (element: ChangeEvent<HTMLSelectElement>) => {
@@ -239,7 +239,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                 )}
                 <Flex>
                   {/* TODO: Fix */}
-                  <Select value={release} onChange={handleReleaseChange}>
+                  <Select value={perspective} onChange={handleReleaseChange}>
                     {/* eslint-disable-next-line i18next/no-literal-string */}
                     <option value="">Published + Drafts</option>
                     {/* eslint-disable-next-line i18next/no-literal-string */}
