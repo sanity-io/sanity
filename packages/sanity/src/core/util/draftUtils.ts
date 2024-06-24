@@ -14,7 +14,8 @@ export type PublishedId = Opaque<string, 'publishedId'>
 
 /** @internal */
 export const DRAFTS_FOLDER = 'drafts'
-const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
+const PATH_SEPARATOR = '.'
+const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
 
 /**
  *
@@ -74,8 +75,16 @@ export function getDraftId(id: string): DraftId {
 }
 
 /** @internal */
-export function getPublishedId(id: string): PublishedId {
-  return (isDraftId(id) ? id.slice(DRAFTS_PREFIX.length) : id) as PublishedId
+export function getPublishedId(id: string, isVersion?: boolean): PublishedId {
+  if (isVersion) {
+    return id.split(PATH_SEPARATOR).slice(1).join(PATH_SEPARATOR) as PublishedId
+  }
+
+  if (isDraftId(id)) {
+    return id.slice(DRAFTS_PREFIX.length) as PublishedId
+  }
+
+  return id as PublishedId
 }
 
 /** @internal */
