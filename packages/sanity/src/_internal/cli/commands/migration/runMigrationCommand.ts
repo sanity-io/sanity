@@ -195,7 +195,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
         type: 'confirm',
       }))
 
-    if (response === false) {
+    if (flags.confirm && response === false) {
       debug('User aborted migration')
       return
     }
