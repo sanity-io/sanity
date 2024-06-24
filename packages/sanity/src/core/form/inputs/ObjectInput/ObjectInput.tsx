@@ -12,21 +12,22 @@ import {UnknownFields} from './UnknownFields'
  * @beta */
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   const {
-    schemaType,
+    __internal_arrayEditingModal: arrayEditingModal = null,
     groups,
+    id,
+    level,
     members,
     onChange,
+    onFieldGroupSelect,
     renderAnnotation,
     renderBlock,
+    renderField,
     renderInlineBlock,
     renderInput,
-    renderField,
     renderItem,
     renderPreview,
-    level,
+    schemaType,
     value,
-    id,
-    onFieldGroupSelect,
   } = props
 
   const {columns} = schemaType.options || {}
@@ -79,34 +80,38 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     return null
   }
   return (
-    <Stack space={6}>
-      {groups.length > 0 ? (
-        <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
-          <FieldGroupTabs
-            groups={groups}
-            inputId={id}
-            onClick={onFieldGroupSelect}
-            // autofocus is taken care of either by focusPath or focusFirstDescendant in the parent component
-            shouldAutoFocus={false}
-          />
-        </FieldGroupTabsWrapper>
-      ) : null}
+    <>
+      {arrayEditingModal}
 
-      <Fragment
-        // A key is used here to create a unique element for each selected group. This ensures
-        // virtualized descendants are recalculated when the selected group changes.
-        key={selectedGroup?.name}
-      >
-        {columns ? (
-          <AlignedBottomGrid columns={columns} gap={4} marginTop={1}>
-            {renderObjectMembers()}
-          </AlignedBottomGrid>
-        ) : (
-          renderObjectMembers()
-        )}
-      </Fragment>
+      <Stack space={6}>
+        {groups.length > 0 ? (
+          <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
+            <FieldGroupTabs
+              groups={groups}
+              inputId={id}
+              onClick={onFieldGroupSelect}
+              // autofocus is taken care of either by focusPath or focusFirstDescendant in the parent component
+              shouldAutoFocus={false}
+            />
+          </FieldGroupTabsWrapper>
+        ) : null}
 
-      {renderedUnknownFields}
-    </Stack>
+        <Fragment
+          // A key is used here to create a unique element for each selected group. This ensures
+          // virtualized descendants are recalculated when the selected group changes.
+          key={selectedGroup?.name}
+        >
+          {columns ? (
+            <AlignedBottomGrid columns={columns} gap={4} marginTop={1}>
+              {renderObjectMembers()}
+            </AlignedBottomGrid>
+          ) : (
+            renderObjectMembers()
+          )}
+        </Fragment>
+
+        {renderedUnknownFields}
+      </Stack>
+    </>
   )
 })

@@ -4,6 +4,8 @@ import {memo, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
+  shouldArrayDialogOpen,
+  useSource,
   useTimelineSelector,
 } from 'sanity'
 
@@ -22,9 +24,17 @@ interface DocumentStatusBarActionsInnerProps {
 
 function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks} = useDocumentPane()
+  const {__internal_tasks, schemaType, openPath} = useDocumentPane()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
+  const isTreeArrayEditingEnabled = useSource().features?.beta?.treeArrayEditing?.enabled
+
+  // Disable the main document action if the array dialog is open
+  const isTreeArrayEditingEnabledOpen = useMemo(() => {
+    if (!isTreeArrayEditingEnabled) return false
+
+    return shouldArrayDialogOpen(schemaType, openPath)
+  }, [isTreeArrayEditingEnabled, openPath, schemaType])
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
@@ -55,7 +65,9 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
             <Stack>
               <Button
                 data-testid={`action-${firstActionState.label}`}
-                disabled={disabled || Boolean(firstActionState.disabled)}
+                disabled={
+                  disabled || Boolean(firstActionState.disabled) || isTreeArrayEditingEnabledOpen
+                }
                 icon={firstActionState.icon}
                 // eslint-disable-next-line react/jsx-handler-names
                 onClick={firstActionState.onHandle}

@@ -18,6 +18,7 @@ import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
+import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../../../../studio/tree-editing'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {CellLayout} from '../../layouts/CellLayout'
@@ -81,6 +82,15 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
+
+  const treeEditing = useTreeEditingEnabled()
+  const treeEditingDisabledByOption = parentSchemaType?.options?.treeEditing === false
+  const legacyEditing = treeEditingDisabledByOption || treeEditing.legacyEditing
+
+  // The edit portal should open if the item is open and:
+  // - tree array editing is disabled
+  // - legacy array editing is enabled (e.g. in a Portable Text editor)
+  const openPortal = open && (!treeEditing.enabled || legacyEditing)
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -196,7 +206,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       radius={2}
       border
       dragHandle={sortable}
-      selected={open}
+      selected={openPortal}
       readOnly={readOnly}
     >
       <PreviewCard
@@ -229,11 +239,11 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
   return (
-    <>
+    <TreeEditingEnabledProvider legacyEditing={treeEditingDisabledByOption}>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         {item}
       </ChangeIndicator>
-      {open && (
+      {openPortal && (
         <EditPortal
           header={
             readOnly
@@ -250,6 +260,6 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           {children}
         </EditPortal>
       )}
-    </>
+    </TreeEditingEnabledProvider>
   )
 }

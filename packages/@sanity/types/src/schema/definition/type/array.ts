@@ -22,6 +22,11 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration {
   modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
   /** @alpha This API may change */
   insertMenu?: InsertMenuOptions
+  /**
+   * A boolean flag to enable or disable tree editing for the array.
+   * If there are any nested arrays, they will inherit this value.
+   */
+  treeEditing?: boolean
 }
 
 /** @public */

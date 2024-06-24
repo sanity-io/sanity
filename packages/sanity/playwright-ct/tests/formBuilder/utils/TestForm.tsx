@@ -35,10 +35,11 @@ declare global {
 }
 
 interface TestFormProps {
-  focusPath?: Path
-  onPathFocus?: (path: Path) => void
   document?: SanityDocument
+  focusPath?: Path
   id?: string
+  onPathFocus?: (path: Path) => void
+  openPath?: Path
   presence?: FormNodePresence[]
 }
 
@@ -48,11 +49,12 @@ export function TestForm(props: TestFormProps) {
     focusPath: focusPathFromProps,
     id: idFromProps = 'root',
     onPathFocus: onPathFocusFromProps,
+    openPath: openPathFromProps = EMPTY_ARRAY,
     presence: presenceFromProps = EMPTY_ARRAY,
   } = props
 
   const [validation, setValidation] = useState<ValidationMarker[]>([])
-  const [openPath, onSetOpenPath] = useState<Path>([])
+  const [openPath, onSetOpenPath] = useState<Path>(openPathFromProps)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
@@ -206,6 +208,7 @@ export function TestForm(props: TestFormProps) {
       onSelectFieldGroup: handleSetActiveFieldGroup,
       onSetFieldSetCollapsed: handleOnSetCollapsedFieldSet,
       onSetPathCollapsed: handleOnSetCollapsedPath,
+      openPath,
       path: EMPTY_ARRAY,
       presence: presenceFromProps,
       schemaType: formState?.schemaType || schemaType,
@@ -213,8 +216,8 @@ export function TestForm(props: TestFormProps) {
       value: formState?.value as FormDocumentValue,
     }),
     [
-      formState?.focusPath,
       formState?.focused,
+      formState?.focusPath,
       formState?.groups,
       formState?.level,
       formState?.members,
@@ -227,6 +230,7 @@ export function TestForm(props: TestFormProps) {
       handleOnSetCollapsedPath,
       handleSetActiveFieldGroup,
       idFromProps,
+      openPath,
       patchChannel,
       presenceFromProps,
       schemaType,

@@ -55,6 +55,9 @@ export function EditPortal(props: Props): ReactElement {
         containerElement={containerElement}
       >
         <Dialog
+          __unstable_autoFocus={autofocus}
+          contentRef={setDocumentScrollElement}
+          data-testid="edit-portal-dialog"
           header={header}
           id={id || ''}
           onClickOutside={onClose}
@@ -62,8 +65,6 @@ export function EditPortal(props: Props): ReactElement {
           onDragEnter={onDragEnter}
           onDrop={onDrop}
           width={width}
-          contentRef={setDocumentScrollElement}
-          __unstable_autoFocus={autofocus}
         >
           {contents}
         </Dialog>

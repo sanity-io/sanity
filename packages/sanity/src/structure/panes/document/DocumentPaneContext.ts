@@ -60,6 +60,7 @@ export interface DocumentPaneContextValue {
   onSetCollapsedPath: (path: Path, expanded: boolean) => void
   onSetCollapsedFieldSet: (path: Path, expanded: boolean) => void
   openInspector: (inspectorName: string, paneParams?: Record<string, string>) => void
+  openPath: Path
   paneKey: string
   previewUrl?: string | null
   ready: boolean

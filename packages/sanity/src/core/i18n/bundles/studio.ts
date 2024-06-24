@@ -1643,6 +1643,24 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.since-version-missing': 'Since: unknown version',
   /**Aria label for the action buttons in the PTE toolbar */
   'toolbar.portable-text.action-button-aria-label': '{{action}}',
+  /** Accesibility label for the breadcrumb menu */
+  'tree-editing-dialog.breadcrumbs.menu': 'Breadcrumb menu',
+  /** Title placeholder for search input in array of objects */
+  'tree-editing-dialog.search-placeholder': 'Search',
+  /** Menu aria label for the search menu */
+  'tree-editing-dialog.search.menu-label': 'Search menu',
+  /** Title label for when no search results are found on the tree of objects */
+  'tree-editing-dialog.search.no-results-title': 'No results found',
+  /** Label to close the sidebar */
+  'tree-editing-dialog.sidebar.action.close': 'Close sidebar',
+  /** Collapse label the menu item in the sidebar  */
+  'tree-editing-dialog.sidebar.action.collapse': 'Collapse',
+  /** Label to close the dialog */
+  'tree-editing-dialog.sidebar.action.done': 'Done',
+  /** Exapnd label the menu item in the sidebar  */
+  'tree-editing-dialog.sidebar.action.expand': 'Expand',
+  /** Label to open the sidebar */
+  'tree-editing-dialog.sidebar.action.open': 'Open sidebar',
   /** Label for the button showed after trial ended */
   'user-menu.action.free-trial-finished': 'Upgrade from free',
   /** Label for button showing the free trial days left */
