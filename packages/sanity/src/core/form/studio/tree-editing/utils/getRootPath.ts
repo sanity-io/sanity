@@ -6,14 +6,14 @@ import {type Path} from 'sanity'
  *
  * Example:
  * ```js
- * const rootPath = getRootPath(['object', 'array', { _key: '123'}])
+ * const rootPath = getRootPath(['object', 'array', { _key: '123' }])
  * // => ['object','array']
  * ```
  */
 export function getRootPath(path: Path): Path {
   const keyedSegmentIndex = path.findIndex((seg) => seg?.hasOwnProperty('_key'))
 
-  if (!keyedSegmentIndex) return path
+  if (keyedSegmentIndex === -1) return path
 
   return path.slice(0, keyedSegmentIndex)
 }
