@@ -246,6 +246,10 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                     <option value="previewDrafts">Preview drafts</option>
                     {/* eslint-disable-next-line i18next/no-literal-string */}
                     <option value="published">Published</option>
+                    {/* eslint-disable-next-line i18next/no-literal-string */}
+                    <option value="bundle.summerDrop">Summer Drop</option>
+                    {/* eslint-disable-next-line i18next/no-literal-string */}
+                    <option value="bundle.autumnDrop">Autumn Drop</option>
                   </Select>
                 </Flex>
               </Flex>
