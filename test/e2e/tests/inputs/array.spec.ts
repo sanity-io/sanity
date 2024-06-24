@@ -15,6 +15,9 @@ test(`file drop event should not propagate to dialog parent`, async ({
 }) => {
   await createDraftDocument('/test/content/input-standard;arraysTest')
 
+  await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
+    timeout: 40000,
+  })
   const list = page.getByTestId('field-arrayOfMultipleTypes').locator('#arrayOfMultipleTypes')
   const item = list.locator('[data-ui="Grid"] > div')
 
@@ -39,17 +42,17 @@ test(`file drop event should not propagate to dialog parent`, async ({
 
   // Open the dialog.
   await page.getByRole('button', {name: fileName}).click()
-  await expect(page.getByRole('dialog')).toBeVisible()
+  await expect(page.locator('#tree-editing-dialog')).toBeVisible()
 
   // Drop the file again; this time, while the dialog is open.
   //
   // - The drop event should not propagate to the parent.
   // - Therefore, the drop event should not cause the image to be added to the list again.
-  await page.getByRole('dialog').dispatchEvent('drop', {dataTransfer})
+  await page.locator('#tree-editing-dialog').dispatchEvent('drop', {dataTransfer})
 
   // Close the dialog.
-  await page.keyboard.press('Escape')
-  await expect(page.getByRole('dialog')).not.toBeVisible()
+  await page.getByTestId('tree-editing-done').click()
+  await expect(await page.locator('#tree-editing-dialog')).not.toBeVisible()
 
   // Ensure the list still contains one item.
   expect(item).toHaveCount(1)
@@ -57,6 +60,10 @@ test(`file drop event should not propagate to dialog parent`, async ({
 
 test(`Scenario: Adding a new type from multiple options`, async ({page, createDraftDocument}) => {
   await createDraftDocument('/test/content/input-standard;arraysTest')
+
+  await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
+    timeout: 40000,
+  })
 
   // Given an empty array field allowing multiple types
   const field = page.getByTestId('field-arrayOfMultipleTypes')
@@ -87,7 +94,7 @@ test(`Scenario: Adding a new type from multiple options`, async ({page, createDr
 
   // And the dialog is closed
   await page.keyboard.press('Escape')
-  await expect(insertDialog).not.toBeVisible()
+  await expect(await insertDialog).not.toBeVisible()
 
   // Then a new item is inserted in the array
   const bookItem = field.getByText('Book title')
@@ -103,6 +110,10 @@ test(`Scenario: Adding new array item before using the context menu`, async ({
 
   // Given an array field allowing multiple types
   await createDraftDocument('/test/content/input-standard;arraysTest')
+
+  await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
+    timeout: 40000,
+  })
 
   // And an already-inserted item in the array
   const book = await addInitialArrayItem(page, {
@@ -154,6 +165,10 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
   // Given an array field allowing multiple types
   await createDraftDocument('/test/content/input-standard;arraysTest')
 
+  await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
+    timeout: 40000,
+  })
+
   // And an already-inserted item in the array
   const book = await addInitialArrayItem(page, {
     menuItemLabel: 'Book',
@@ -202,9 +217,9 @@ function createArrayFieldLocators(page: Page) {
   const popover = page.getByTestId('document-panel-portal')
   const popoverMenu = popover.getByRole('menu')
   const popoverMenuItem = (name: string) => popoverMenu.getByRole('menuitem', {name})
-  const insertDialog = page.getByRole('dialog')
+  const insertDialog = page.locator('#tree-editing-dialog')
   const input = (label: string) => insertDialog.getByLabel(label)
-  const closeDialogButton = insertDialog.getByLabel('Close dialog')
+  const closeDialogButton = page.getByTestId('tree-editing-done')
 
   return {
     items,
