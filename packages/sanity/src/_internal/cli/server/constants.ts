@@ -11,17 +11,18 @@
  */
 export const TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT = `<script>
   // auto-generated script to add import map with timestamp
-  const { imports = {}, ...rest } = JSON.parse(document.getElementById('__imports').textContent);
+  const importsJson = document.getElementById('__imports')?.textContent;
+  const { imports = {}, ...rest } = importsJson ? JSON.parse(importsJson) : {};
   const importMapEl = document.createElement('script');
   importMapEl.type = 'importmap';
+  const newTimestamp = \`/t\${Math.floor(Date.now() / 1000)}\`;
   importMapEl.textContent = JSON.stringify({
     imports: Object.fromEntries(
       Object.entries(imports).map(([specifier, path]) => {
         try {
           const url = new URL(path);
           if (/^sanity-cdn\\.[a-zA-Z]+$/.test(url.hostname)) {
-            const newTimestamp = \`t\${Math.floor(Date.now() / 1000)}\`;
-            url.pathname = url.pathname.replace(/t\\d+/, newTimestamp);
+            url.pathname = url.pathname.replace(/\\/t\\d+/, newTimestamp);
           }
           return [specifier, url.toString()];
         } catch {
