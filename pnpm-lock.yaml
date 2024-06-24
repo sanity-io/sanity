@@ -1533,8 +1533,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.2
       '@sanity/export':
-        specifier: ^3.37.4
-        version: 3.38.1
+        specifier: ^3.38.2
+        version: 3.38.2
       '@sanity/icons':
         specifier: ^3.0.0
         version: 3.2.0(react@18.3.1)
@@ -6807,8 +6807,8 @@ packages:
       event-source-polyfill: 1.0.31
       eventsource: 2.0.2
 
-  /@sanity/export@3.38.1:
-    resolution: {integrity: sha512-n5aKX8aKcUGFl41D+MY+356a/DX/HE7NLkFyv/CZ3X3MXwwc/g75GQrV6kWFRIZMpNfJ+jyRcjao6SM8xHXi7g==}
+  /@sanity/export@3.38.2:
+    resolution: {integrity: sha512-iIQKDyNANIvfR8rWBK3YhtgObu/ZEshUXQLhveX2m4xl86uhTAk6dXpOfYRqZKuDO3rxt9cK2tm9dqIzKIXUcQ==}
     engines: {node: '>=18'}
     dependencies:
       '@sanity/client': 6.20.0(debug@4.3.5)
