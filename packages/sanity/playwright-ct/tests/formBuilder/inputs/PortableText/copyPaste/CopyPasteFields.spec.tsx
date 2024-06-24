@@ -54,6 +54,10 @@ test.describe('Copy and pasting fields', () => {
         .locator('input')
         .fill('This is the second field')
 
+      await expect(
+        page.getByTestId('field-objectWithColumns.string2').locator('input'),
+      ).toHaveValue('This is the second field')
+
       // https://github.com/microsoft/playwright/pull/30572
       // maybe part of 1.44
       // await page.keyboard.press('ControlOrMeta+C')
@@ -173,6 +177,7 @@ test.describe('Copy and pasting fields', () => {
       await expect(page.getByTestId(`field-title`)).toBeVisible()
 
       await page.getByTestId('field-title').locator('input').fill('A string to copy')
+      await expect(page.getByTestId('field-title').locator('input')).toHaveValue('A string to copy')
 
       const fieldActionsId = 'field-actions-menu-title'
       const fieldActionsTriggerId = 'field-actions-trigger'
@@ -225,13 +230,10 @@ test.describe('Copy and pasting fields', () => {
       // https://github.com/microsoft/playwright/pull/30572
       // maybe part of 1.44
       // await page.keyboard.press('ControlOrMeta+C')
-      const $fieldActions = page
+      await page
         .getByTestId('field-actions-menu-arrayOfPrimitives')
         .getByTestId('field-actions-trigger')
-
-      await $fieldActions.focus()
-      await expect($fieldActions).toBeFocused()
-      await $fieldActions.press('Enter')
+        .press('Enter')
 
       await expect(page.getByRole('menuitem', {name: 'Copy field'})).toBeVisible()
       await page.getByRole('menuitem', {name: 'Copy field'}).press('Enter')
@@ -266,9 +268,10 @@ test.describe('Copy and pasting fields', () => {
         page.getByTestId(`field-arrayOfPrimitives`).getByTestId('string-input').first(),
       ).toHaveValue('Two')
 
-      await $fieldActions.focus()
-      await expect($fieldActions).toBeFocused()
-      await $fieldActions.press('Enter')
+      await page
+        .getByTestId('field-actions-menu-arrayOfPrimitives')
+        .getByTestId('field-actions-trigger')
+        .press('Enter')
 
       await expect(page.getByRole('menuitem', {name: 'Paste field'})).toBeVisible()
       await page.getByRole('menuitem', {name: 'Paste field'}).press('Enter')
