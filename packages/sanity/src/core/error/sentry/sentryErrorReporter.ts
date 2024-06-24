@@ -122,7 +122,9 @@ export function getSentryErrorReporter(): ErrorReporter {
       ...clientOptions,
       defaultIntegrations: false,
       integrations,
-      beforeSend,
+      //We can't know if the user has consented to telemetry,
+      //so we'll drop errors until we know for sure.
+      beforeSend: () => null,
     })
 
     client = getClient()
@@ -172,9 +174,28 @@ export function getSentryErrorReporter(): ErrorReporter {
     return eventId ? {eventId} : null
   }
 
+  /* This function is called when we've confirmed we're allowed to send events.
+   * Directly mutating the client's beforeSend function is a bit awkward, but
+   * the Sentry team has recently said "it should work OK"
+   * https://github.com/getsentry/sentry-javascript/issues/10929#issuecomment-1982842340
+   */
+  function enable() {
+    if (client) {
+      client.getOptions().beforeSend = beforeSend
+    }
+  }
+
+  function disable() {
+    if (client) {
+      client.getOptions().beforeSend = () => null
+    }
+  }
+
   return {
     initialize,
     reportError,
+    enable,
+    disable,
   }
 }
 
@@ -317,7 +338,7 @@ function sanityDedupeIntegration() {
 }
 
 /**
- * Determines wether or not the given event should be dropped or not, based on a window of
+ * Determines whether or not the given event should be dropped or not, based on a window of
  * previously reported events.
  *
  * @param currentEvent - The event to check
