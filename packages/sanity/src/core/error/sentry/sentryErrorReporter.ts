@@ -17,7 +17,6 @@ import {
   init,
   isInitialized as sentryIsInitialized,
   linkedErrorsIntegration,
-  makeFetchTransport,
   Scope,
   withScope,
 } from '@sentry/react'
@@ -28,6 +27,7 @@ import {globalScope} from '../../util/globalScope'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'
 import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
+import {makeBufferedTransport} from './makeBufferedTransport'
 
 const SANITY_DSN = 'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
 
@@ -101,7 +101,7 @@ export function getSentryErrorReporter(): ErrorReporter {
     if (hasThirdPartySentry) {
       client = new BrowserClient({
         ...clientOptions,
-        transport: makeFetchTransport,
+        transport: makeBufferedTransport,
         stackParser: defaultStackParser,
         integrations,
         beforeSend,
@@ -122,9 +122,7 @@ export function getSentryErrorReporter(): ErrorReporter {
       ...clientOptions,
       defaultIntegrations: false,
       integrations,
-      //We can't know if the user has consented to telemetry,
-      //so we'll drop errors until we know for sure.
-      beforeSend: () => null,
+      beforeSend,
     })
 
     client = getClient()
@@ -174,21 +172,13 @@ export function getSentryErrorReporter(): ErrorReporter {
     return eventId ? {eventId} : null
   }
 
-  /* This function is called when we've confirmed we're allowed to send events.
-   * Directly mutating the client's beforeSend function is a bit awkward, but
-   * the Sentry team has recently said "it should work OK"
-   * https://github.com/getsentry/sentry-javascript/issues/10929#issuecomment-1982842340
-   */
   function enable() {
-    if (client) {
-      client.getOptions().beforeSend = beforeSend
-    }
+    //@ts-expect-error -- we've appended our transport with an additional function
+    client?.getTransport()?.giveConsent(true)
   }
-
   function disable() {
-    if (client) {
-      client.getOptions().beforeSend = () => null
-    }
+    //@ts-expect-error -- we've appended our transport with an additional function
+    client?.getTransport()?.giveConsent(false)
   }
 
   return {

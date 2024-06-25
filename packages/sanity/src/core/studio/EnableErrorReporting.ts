@@ -19,6 +19,8 @@ export function EnableErrorReporting() {
 
         if (res?.status === 'granted' || res?.status === 'unset') {
           errorReporter.enable()
+        } else {
+          errorReporter.disable()
         }
       } catch (e) {
         console.error('Error fetching telemetry status', e)
