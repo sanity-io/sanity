@@ -27,7 +27,7 @@ export function createProject(
           ...options?.metadata,
           integration: 'cli',
         },
-      }
+      },
     })
     .then((response) => ({
       projectId: response.projectId || response.id,
