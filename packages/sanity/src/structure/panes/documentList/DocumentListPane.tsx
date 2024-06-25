@@ -3,23 +3,17 @@ import {Box, TextInput} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
-import {
-  type GeneralPreviewLayoutKey,
-  useI18nText,
-  useSchema,
-  useTranslation,
-  useUnique,
-} from 'sanity'
+import {type GeneralPreviewLayoutKey, useI18nText, useTranslation, useUnique} from 'sanity'
 import {keyframes, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {EMPTY_RECORD} from './constants'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
-import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
-import {useShallowUnique} from './PaneContainer'
+import {findStaticTypesInFilter, useShallowUnique} from './helpers'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
+import {useDocumentListSort} from './useDocumentListSort'
 
 /**
  * @internal
@@ -48,7 +42,6 @@ const AnimatedSpinnerIcon = styled(SpinnerIcon)`
 
 export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
-  const schema = useSchema()
 
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
@@ -73,10 +66,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   // We only wan't to show the spinner when the user interacts with the search input.
   const showSearchLoadingRef = useRef<boolean>(false)
 
-  const sortWithOrderingFn =
-    typeName && sortOrderRaw
-      ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName) as any)
-      : sortOrderRaw
+  const sortWithOrderingFn = useDocumentListSort(pane, sortOrderRaw)
 
   const sortOrder = useUnique(sortWithOrderingFn)
 

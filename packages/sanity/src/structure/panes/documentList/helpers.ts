@@ -10,7 +10,9 @@ import {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {type ExprNode, parse} from 'groq-js'
+import {useRef} from 'react'
 import {collate, getPublishedId} from 'sanity'
+import shallowEquals from 'shallow-equals'
 
 import {type DocumentListPaneItem, type SortOrder} from './types'
 
@@ -236,4 +238,12 @@ export function findStaticTypesInFilter(
     // if we couldn't parse the filter, just return `null`
     return null
   }
+}
+
+export function useShallowUnique<ValueType>(value: ValueType): ValueType {
+  const valueRef = useRef<ValueType>(value)
+  if (!shallowEquals(valueRef.current, value)) {
+    valueRef.current = value
+  }
+  return valueRef.current
 }

@@ -24,10 +24,9 @@ import {css, styled} from 'styled-components'
 
 import {LoadingPane} from '../../loading'
 import {type BaseStructureToolPaneProps} from '../../types'
-import {EMPTY_RECORD} from '../constants'
-import {applyOrderingFunctions, findStaticTypesInFilter} from '../helpers'
-import {useShallowUnique} from '../PaneContainer'
+import {useShallowUnique} from '../helpers'
 import {type SortOrder} from '../types'
+import {useDocumentListSort} from '../useDocumentListSort'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetActions} from './DocumentSheetActions'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
@@ -135,30 +134,16 @@ function DocumentSheetListPaneInner(
     typeName: documentSchemaType.name,
   })
 
-  const {options} = paneProps.pane
-  const {filter} = options
-  const schema = useSchema()
-  const params = useShallowUnique(options.params || EMPTY_RECORD)
-  const typeName = useMemo(() => {
-    const staticTypes = findStaticTypesInFilter(filter, params)
-    if (staticTypes?.length === 1) return staticTypes[0]
-    return null
-  }, [filter, params])
-  const sortWithOrderingFn =
-    typeName && sortOrderRaw
-      ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName) as any)
-      : sortOrderRaw
-
+  const sortWithOrderingFn = useDocumentListSort(paneProps.pane, sortOrderRaw)
   const {dispatch, state} = useSearchState()
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
   const nextSort = useShallowUnique(sortWithOrderingFn?.by[0])
-
   const [hasSelection, setHasSelection] = useState(false)
 
   useEffect(() => {
-    const canRunEffect = nextSort && !hasSelection
+    const canRunSorting = nextSort && !hasSelection
 
-    if (canRunEffect) {
+    if (canRunSorting) {
       dispatch({
         type: 'ORDERING_SET',
         ordering: {
@@ -167,7 +152,7 @@ function DocumentSheetListPaneInner(
         },
       })
     }
-  }, [dispatch, nextSort, hasSelection])
+  }, [dispatch, hasSelection, nextSort])
 
   const totalRows = state.result.hits.length
   const meta = {
