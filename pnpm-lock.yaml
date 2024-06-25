@@ -1881,6 +1881,9 @@ importers:
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
+      '@types/jsdom':
+        specifier: ^20.0.0
+        version: 20.0.1
       '@types/lodash':
         specifier: ^4.14.149
         version: 4.17.0
