@@ -21,7 +21,10 @@ export function createProject(
     .request({
       method: 'POST',
       uri: '/projects',
-      body: options,
+      body: {
+        ...options,
+        metadata: { ...options?.metadata, source: 'cli'},
+      }
     })
     .then((response) => ({
       projectId: response.projectId || response.id,

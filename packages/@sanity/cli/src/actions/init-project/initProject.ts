@@ -815,7 +815,7 @@ export default async function initSanity(
         displayName: projectName,
         organizationId: await getOrganizationId(organizations),
         subscription: selectedPlan ? {planId: selectedPlan} : undefined,
-        metadata: {coupon: intendedCoupon, integration: 'cli'},
+        metadata: {coupon: intendedCoupon},
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
