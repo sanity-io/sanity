@@ -60,7 +60,6 @@ const DataCell = styled.td<DataCellProps>((props) => {
   const callOutColor = $validationLevel && validationLevelColors[$validationLevel]
 
   return css`
-    /* position: relative; */
     display: flex;
     align-items: center;
     overflow: hidden;
