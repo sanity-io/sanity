@@ -4,8 +4,8 @@ import {
   type NumberSchemaType,
   type StringSchemaType,
 } from '@sanity/types'
-import {TextInput, type TextInputType} from '@sanity/ui'
-import {type HTMLAttributes, useCallback, useEffect, useMemo} from 'react'
+import {TextArea, TextInput, type TextInputType} from '@sanity/ui'
+import {type FormEventHandler, type HTMLAttributes, useCallback, useEffect, useMemo} from 'react'
 import {getNumberInputProps, getUrlInputProps} from 'sanity'
 
 import {type CellInputType} from '../SheetListCell'
@@ -14,21 +14,22 @@ export const CellInput = ({
   cellValue,
   setCellValue,
   fieldRef,
-  setShouldPreventDefaultMouseDown,
+  shouldPreventDefaultMouseDownBehavior,
+  shouldPreventDefaultInputBehavior,
   'data-testid': dataTestId,
   fieldType,
 }: CellInputType<StringSchemaType | NumberSchemaType>) => {
   const value = cellValue as string
-  const handleOnChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange: FormEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setCellValue(event.target.value)
     },
     [setCellValue],
   )
 
   useEffect(() => {
-    if (fieldType?.name !== 'number') setShouldPreventDefaultMouseDown(true)
-  }, [fieldType?.name, setShouldPreventDefaultMouseDown])
+    if (fieldType?.name !== 'number') shouldPreventDefaultMouseDownBehavior()
+  }, [fieldType?.name, shouldPreventDefaultMouseDownBehavior])
 
   const {type: typeProps, inputMode: inputModeProp} = useMemo<{
     type: TextInputType
@@ -54,6 +55,30 @@ export const CellInput = ({
 
     return {type: 'text', inputMode: 'text'}
   }, [fieldType])
+
+  useEffect(() => {
+    if (fieldType.name !== 'text') {
+      shouldPreventDefaultInputBehavior()
+    }
+  }, [fieldType.name, shouldPreventDefaultInputBehavior])
+
+  if (fieldType.name === 'text') {
+    return (
+      <TextArea
+        size={0}
+        radius={0}
+        border={false}
+        ref={fieldRef}
+        type={typeProps}
+        inputMode={inputModeProp}
+        __unstable_disableFocusRing
+        readOnly={!!fieldType.readOnly}
+        value={value ?? ''}
+        data-testid={dataTestId}
+        onInput={handleOnChange}
+      />
+    )
+  }
 
   return (
     <TextInput

@@ -12,13 +12,14 @@ type SelectedCellDetails = {
   colId: string
   rowIndex: number
   state: 'focused' | 'selected'
+  inputFocused?: boolean
 } | null
 
 export type CellState = 'focused' | 'selectedAnchor' | 'selectedRange' | null
 
 /** @internal */
 export interface DocumentSheetListContextValue {
-  focusAnchorCell: () => void
+  focusAnchorCell: (isCellInputFocused?: boolean) => void
   resetFocusSelection: () => void
   setSelectedAnchorCell: (colId: string, rowIndex: number) => void
   getStateByCellId: (colId: string, rowIndex: number) => CellState
@@ -130,20 +131,19 @@ export function DocumentSheetListProvider({
     if (selectedRangeCellIndexes.length) {
       // only clear selected range if it exists
       setSelectedRangeCellIndexes([])
-    } else {
+    } else if (selectedAnchorCellDetails.state !== 'focused') {
+      // escaping when anchor is focused should reset the cell value
+      // so the SheetListCell should manage this process
+      // - therefore only clear when not focused
       const nextAnchorCellDetails: SelectedCellDetails =
         selectedAnchorCellDetails.state === 'selected'
           ? null
           : {
               ...selectedAnchorCellDetails,
               state: 'selected',
+              inputFocused: undefined,
             }
-      if (selectedAnchorCellDetails.state !== 'focused') {
-        // escaping when anchor is focused should reset the cell value
-        // so the SheetListCell should manage this process
-        // - therefore only clear when not focused
-        clearAndSetFocusSelection(nextAnchorCellDetails)
-      }
+      clearAndSetFocusSelection(nextAnchorCellDetails)
     }
   }, [clearAndSetFocusSelection, selectedAnchorCellDetails, selectedRangeCellIndexes.length])
 
@@ -168,7 +168,7 @@ export function DocumentSheetListProvider({
 
   const handleAnchorKeydown = useCallback(
     (event: KeyboardEvent) => {
-      if (!selectedAnchorCellDetails) return
+      if (!selectedAnchorCellDetails || selectedAnchorCellDetails.inputFocused) return
 
       const {key, shiftKey} = event
 
@@ -232,11 +232,11 @@ export function DocumentSheetListProvider({
   }, [handleAnchorClick, handleAnchorKeydown, selectedAnchorCellDetails])
 
   const focusAnchorCell = useCallback(
-    () =>
+    (isCellInputFocused?: boolean) =>
       setSelectedAnchorCellDetails((anchorCellDetails) => {
         if (!anchorCellDetails) return null
 
-        return {...anchorCellDetails, state: 'focused'}
+        return {...anchorCellDetails, state: 'focused', inputFocused: isCellInputFocused}
       }),
     [],
   )

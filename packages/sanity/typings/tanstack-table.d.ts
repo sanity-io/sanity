@@ -36,7 +36,16 @@ declare module '@tanstack/react-table' {
      * to allow for focus controls
      */
     'fieldRef': MutableRefObject<HTMLElement>
-    'setShouldPreventDefaultMouseDown': (shouldSuppressDefaultMouseDown: boolean) => void
+    /**
+     *
+     * Suppress the default mouse down DOM behavior and use the sheet list behavior instead
+     */
+    'shouldPreventDefaultMouseDownBehavior': () => void
+    /**
+     *
+     * * Suppress the default event behavior on the cell input and use the sheet list behavior instead
+     */
+    'shouldPreventDefaultInputBehavior': () => void
     'data-testid': string
     /**
      * Immediate change of the cell value, doing a server patch action.

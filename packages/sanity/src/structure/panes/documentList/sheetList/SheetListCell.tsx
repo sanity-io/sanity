@@ -119,6 +119,17 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     handleProgrammaticFocus,
     setCellAsSelectedAnchor,
   )
+  const [isPreventDefaultInputBehavior, setIsPreventDefaultInputBehavior] = useState(false)
+
+  const shouldPreventDefaultMouseDownBehavior = useCallback(
+    () => setShouldPreventDefaultMouseDown(true),
+    [setShouldPreventDefaultMouseDown],
+  )
+
+  const shouldPreventDefaultInputBehavior = useCallback(
+    () => setIsPreventDefaultInputBehavior(true),
+    [],
+  )
 
   const handlePatchField = useCallback(
     (value: any) => {
@@ -143,7 +154,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
       switch (key) {
         case 'Enter': {
           if (cellState === 'selectedAnchor') handleProgrammaticFocus()
-          if (cellState === 'focused') submitFocusedCell()
+          if (isPreventDefaultInputBehavior && cellState === 'focused') submitFocusedCell()
           break
         }
         case 'Escape': {
@@ -169,14 +180,21 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
           break
       }
     },
-    [cellState, handleUnsetField, setCellAsSelectedAnchor, setCellValue, submitFocusedCell],
+    [
+      cellState,
+      handleUnsetField,
+      isPreventDefaultInputBehavior,
+      setCellAsSelectedAnchor,
+      setCellValue,
+      submitFocusedCell,
+    ],
   )
 
   const handleOnFocus = useCallback(() => {
     // reselect in cases where focus achieved without initial mousedown
     setCellAsSelectedAnchor()
-    focusAnchorCell()
-  }, [focusAnchorCell, setCellAsSelectedAnchor])
+    focusAnchorCell(isPreventDefaultInputBehavior)
+  }, [focusAnchorCell, isPreventDefaultInputBehavior, setCellAsSelectedAnchor])
 
   const handleOnBlur = useCallback(() => {
     if (rawCellValue !== providedValueRef.current) {
@@ -256,7 +274,8 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     handleUnsetField,
     'cellValue': rawCellValue,
     setCellValue,
-    setShouldPreventDefaultMouseDown,
+    shouldPreventDefaultMouseDownBehavior,
+    shouldPreventDefaultInputBehavior,
     fieldRef,
     'data-testid': `${cellId}-input-field`,
   }
