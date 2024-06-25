@@ -64,7 +64,7 @@ describe('PaneContainer', () => {
     expect(screen.queryByTestId('document-sheet-list-pane')).toBeNull()
   })
 
-  it.only('should show the document sheet list pane when the sheet layout is selected', async () => {
+  it('should show the document sheet list pane when the sheet layout is selected', async () => {
     const mockDispatch = jest.fn()
     const config = defineConfig({
       projectId: 'test',
