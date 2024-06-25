@@ -179,13 +179,15 @@ export function getSentryErrorReporter(): ErrorReporter {
   }
 
   function enable() {
-    if (isBufferedTransport(client?.getTransport())) {
-      ;(client?.getTransport() as BufferedTransport).setConsent(true)
+    const transport = client?.getTransport()
+    if (isBufferedTransport(transport)) {
+      transport.setConsent(true)
     }
   }
   function disable() {
-    if (isBufferedTransport(client?.getTransport())) {
-      ;(client?.getTransport() as BufferedTransport).setConsent(false)
+    const transport = client?.getTransport()
+    if (isBufferedTransport(transport)) {
+      transport.setConsent(false)
     }
   }
 
