@@ -178,5 +178,5 @@ export function isNativeEditableElement(el: EventTarget): boolean {
 }
 
 function isWebKit(): boolean {
-  return 'WebkitAppearance' in document.documentElement.style
+  return typeof document !== 'undefined' && 'WebkitAppearance' in document.documentElement.style
 }
