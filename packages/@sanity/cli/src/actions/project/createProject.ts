@@ -23,7 +23,10 @@ export function createProject(
       uri: '/projects',
       body: {
         ...options,
-        metadata: {...options?.metadata, integration: 'cli'},
+        metadata: {
+          ...options?.metadata,
+          integration: 'cli',
+        },
       }
     })
     .then((response) => ({
