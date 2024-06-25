@@ -28,6 +28,7 @@ import {commit} from './operations/commit'
 import {del} from './operations/delete'
 import {discardChanges} from './operations/discardChanges'
 import {duplicate} from './operations/duplicate'
+import {newVersion} from './operations/newVersion'
 import {patch} from './operations/patch'
 import {publish} from './operations/publish'
 import {restore} from './operations/restore'
@@ -60,6 +61,7 @@ const operationImpls = {
   unpublish,
   duplicate,
   restore,
+  newVersion,
 } as const
 
 //as we add server operations one by one, we can add them here
