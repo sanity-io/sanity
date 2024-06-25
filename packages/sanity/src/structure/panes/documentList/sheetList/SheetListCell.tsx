@@ -193,7 +193,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const handleOnFocus = useCallback(() => {
     // reselect in cases where focus achieved without initial mousedown
     setCellAsSelectedAnchor()
-    focusAnchorCell(isPreventDefaultInputBehavior)
+    focusAnchorCell(!isPreventDefaultInputBehavior)
   }, [focusAnchorCell, isPreventDefaultInputBehavior, setCellAsSelectedAnchor])
 
   const handleOnBlur = useCallback(() => {
