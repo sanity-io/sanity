@@ -154,11 +154,16 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
 
   const validation = useChildValidation([column.id], true)
   const validationLevel = useMemo(() => {
-    const hasError = validation.some((v) => v.level === 'error')
-    const hasWarning = validation.some((v) => v.level === 'warning')
-    const hasInfo = validation.some((v) => v.level === 'info')
-    // eslint-disable-next-line no-nested-ternary
-    return hasError ? 'error' : hasWarning ? 'warning' : hasInfo ? 'info' : undefined
+    if (validation.some((v) => v.level === 'error')) {
+      return 'error'
+    }
+    if (validation.some((v) => v.level === 'warning')) {
+      return 'warning'
+    }
+    if (validation.some((v) => v.level === 'info')) {
+      return 'info'
+    }
+    return undefined
   }, [validation])
 
   const cellState = getStateByCellId(cell.column.id, cell.row.index)
