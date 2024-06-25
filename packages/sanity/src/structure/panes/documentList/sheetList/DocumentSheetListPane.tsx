@@ -9,14 +9,13 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {
   SearchProvider,
   set,
   toMutationPatches,
   unset,
   useSchema,
-  useSearchState,
   useValidationStatus,
   ValidationProvider,
 } from 'sanity'
@@ -127,15 +126,12 @@ function DocumentSheetListPaneInner(
   props: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType},
 ) {
   const {documentSchemaType, ...paneProps} = props
-  const {dispatch, state} = useSearchState()
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
-  const {data} = useDocumentSheetList({
-    typeName: documentSchemaType.name,
-  })
+  const {data} = useDocumentSheetList(documentSchemaType)
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 
-  const totalRows = state.result.hits.length
+  const totalRows = data.length
   const meta = {
     selectedAnchor,
     setSelectedAnchor,
@@ -229,13 +225,6 @@ function DocumentSheetListPaneInner(
       return nextOptions
     })
   }
-
-  useEffect(() => {
-    dispatch({type: 'TERMS_TYPE_ADD', schemaType: documentSchemaType})
-    return () => {
-      dispatch({type: 'TERMS_TYPE_REMOVE', schemaType: documentSchemaType})
-    }
-  }, [documentSchemaType, dispatch])
 
   const renderRow = useCallback(
     (row: Row<DocumentSheetTableRow>) => {
