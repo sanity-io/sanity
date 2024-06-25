@@ -1,14 +1,17 @@
 import {makeFetchTransport} from '@sentry/react'
 import {type EventEnvelope, type Transport, type TransportMakeRequestResponse} from '@sentry/types'
 
+/**
+ * @internal
+ */
 export type BufferedTransport = Transport & {
   setConsent: (consentGiven: boolean) => Promise<void>
 }
 
-/*
+/**
  * Because we want to buffer events until the user has given consent to telemetry,
  * we need to implement a custom transport, but mostly wrap the fetch transport.
-  @internal
+ * @internal
  */
 export function makeBufferedTransport(options: any): BufferedTransport {
   let buffer: EventEnvelope[] = []
@@ -19,8 +22,9 @@ export function makeBufferedTransport(options: any): BufferedTransport {
     if (consentGiven) {
       return sendImmediately(event)
     }
+
     //we may not have received consent yet. Buffer the event until we know what to do.
-    else if (typeof consentGiven === 'undefined') {
+    if (typeof consentGiven === 'undefined') {
       buffer.push(event)
     }
     // consent not given, skip sending the event

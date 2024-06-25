@@ -17,7 +17,7 @@ export function EnableErrorReporting() {
       try {
         const res = await fetchTelemetryConsent(client)
 
-        if (res?.status === 'granted' || res?.status === 'unset') {
+        if (res?.status === 'granted') {
           errorReporter.enable()
         } else {
           errorReporter.disable()
