@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import {MdMonitor} from 'react-icons/md'
 import {defineField, defineType} from 'sanity'
 
