@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs'
 import path from 'node:path'
 
-import {type Locator, type PlaywrightTestArgs} from '@playwright/test'
+import {expect, type Locator, type PlaywrightTestArgs} from '@playwright/test'
 
 export const DEFAULT_TYPE_DELAY = 20
 
@@ -10,9 +10,10 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
     const $overlay = $pteField.getByTestId('activate-overlay')
     if (await $overlay.isVisible()) {
       await $overlay.focus()
-      await page.keyboard.press('Space')
+      await $overlay.press('Space')
     }
-    await $overlay.waitFor({state: 'detached', timeout: 1000})
+
+    await expect($overlay).not.toBeVisible({timeout: 1500})
   }
   return {
     /**
