@@ -20,6 +20,7 @@ import {
   Scope,
   withScope,
 } from '@sentry/react'
+import {type Transport} from '@sentry/types'
 
 import {isDev} from '../../environment'
 import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
@@ -27,7 +28,7 @@ import {globalScope} from '../../util/globalScope'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'
 import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
-import {makeBufferedTransport} from './makeBufferedTransport'
+import {type BufferedTransport, makeBufferedTransport} from './makeBufferedTransport'
 
 const SANITY_DSN = 'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
 
@@ -44,6 +45,7 @@ const clientOptions: BrowserOptions = {
   environment: isDev ? 'development' : 'production',
   debug: DEBUG_ERROR_REPORTING,
   enabled: IS_BROWSER && (!isDev || DEBUG_ERROR_REPORTING),
+  transport: makeBufferedTransport,
 }
 
 const integrations = [
@@ -172,13 +174,19 @@ export function getSentryErrorReporter(): ErrorReporter {
     return eventId ? {eventId} : null
   }
 
+  function isBufferedTransport(transport: Transport | undefined): transport is BufferedTransport {
+    return !!transport && 'setConsent' in transport && typeof transport.setConsent === 'function'
+  }
+
   function enable() {
-    //@ts-expect-error -- we've appended our transport with an additional function
-    client?.getTransport()?.giveConsent(true)
+    if (isBufferedTransport(client?.getTransport())) {
+      ;(client?.getTransport() as BufferedTransport).setConsent(true)
+    }
   }
   function disable() {
-    //@ts-expect-error -- we've appended our transport with an additional function
-    client?.getTransport()?.giveConsent(false)
+    if (isBufferedTransport(client?.getTransport())) {
+      ;(client?.getTransport() as BufferedTransport).setConsent(false)
+    }
   }
 
   return {

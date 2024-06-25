@@ -1,7 +1,7 @@
 import {makeFetchTransport} from '@sentry/react'
 import {type EventEnvelope, type Transport, type TransportMakeRequestResponse} from '@sentry/types'
 
-type BufferedTransport = Transport & {
+export type BufferedTransport = Transport & {
   setConsent: (consentGiven: boolean) => Promise<void>
 }
 
@@ -40,7 +40,9 @@ export function makeBufferedTransport(options: any): BufferedTransport {
   }
 
   const flushBuffer = async () => {
-    buffer.map(sendImmediately)
+    await Promise.all(buffer.map(sendImmediately)).catch((err) => {
+      console.error('Failed to send buffered events from transport: ', err)
+    })
   }
 
   const flush = async () => {
