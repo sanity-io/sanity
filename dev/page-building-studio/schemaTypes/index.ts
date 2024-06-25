@@ -1,7 +1,11 @@
+import {byTheNumbers} from './byTheNumbers'
 import {hero} from './hero'
 import {logoCarousel} from './logoCarousel'
-import {byTheNumbers, page, pageOneBlockType, productCombos, threeVideos} from './page'
+import {page} from './page'
+import {pageOneBlockType} from './pageOneBlockType'
+import {productCombos} from './productCombos'
 import {testimonial, testimonials} from './testimonials'
+import {threeVideos} from './threeVideos'
 
 export const schemaTypes = [
   page,
