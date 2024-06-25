@@ -1,5 +1,7 @@
 import {omit} from 'lodash'
 
+import {getDraftId} from '../../../../../util'
+import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {type OperationImpl} from './types'
 
 const omitProps = ['_createdAt', '_updatedAt']
@@ -18,9 +20,7 @@ export const newVersion: OperationImpl<[baseDocumentId: string], 'NO_NEW_VERSION
     return client.observable.create(
       {
         ...omit(source, omitProps),
-        // we don't need to get a draft id or check live editing, we'll always want to create a new version based on the dupeId
-        // we have guardrails for this on the front
-        _id: dupeId,
+        _id: isLiveEditEnabled(schema, typeName) ? dupeId : getDraftId(dupeId),
         _type: source._type,
         _version: {},
       },
