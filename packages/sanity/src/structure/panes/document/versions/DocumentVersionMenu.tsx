@@ -43,12 +43,14 @@ export function DocumentVersionMenu(props: {
   const selectedVersion = getVersionName(documentId)
   const isDraft = selectedVersion === 'draft'
 
-  const [addVersionTitle, setAddVersionTitle] = useState('')
   const [documentVersions, setDocumentVersions] = useState<Version[]>([])
 
+  // search
+  const [addVersionTitle, setAddVersionTitle] = useState('')
   const addVersionName = toSlug(addVersionTitle)
+
   // use to prevent adding a version when you're already in that version
-  const addVersionExists = BUNDLES.some((r) => r.name === addVersionName)
+  const addVersionExists = BUNDLES.some((r) => r.name.toLocaleLowerCase() === addVersionName)
 
   // list of available bundles
   const bundleOptionsList = BUNDLES.filter((r) =>
@@ -60,7 +62,7 @@ export function DocumentVersionMenu(props: {
     setDocumentVersions(response)
   }, [client, documentId])
 
-  // DUMMY FETCH -- NEEDS TO BE REPLACED
+  // DUMMY FETCH -- NEEDS TO BE REPLACED -- USING GROQ from utils
   useEffect(() => {
     const fetchVersionsInner = async () => {
       fetchVersions()
