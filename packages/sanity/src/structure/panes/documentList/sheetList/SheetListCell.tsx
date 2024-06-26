@@ -349,6 +349,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
       {...cellProps}
     >
       <CellRoot>
+        <CellValidation validation={validation} />
         <Root tone={tone} height="fill" width="full">
           <Flex height="fill" justify="center" align="center">
             {flexRender(cell.column.columnDef.cell, inputProps)}
