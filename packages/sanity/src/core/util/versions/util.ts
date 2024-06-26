@@ -3,6 +3,8 @@ import {type IconSymbol} from '@sanity/icons'
 import formatRelative from 'date-fns/formatRelative'
 import {type SanityClient, type SanityDocument} from 'sanity'
 
+/* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
+
 const RANDOM_TONES: ColorHueKey[] = [
   'green',
   'yellow',
