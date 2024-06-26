@@ -98,7 +98,7 @@ jobs:
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}${{ matrix.config == 'auto-updating' && '-auto-updating' || '' }}
           SANITY_E2E_IS_AUTO_UPDATING: ${{ matrix.config == 'auto-updating' && 'true' || '' }}
         run: |
           if [ "${{ matrix.config }}" == "auto-updating" ]; then
@@ -226,7 +226,7 @@ jobs:
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}${{ matrix.config == 'auto-updating' && '-auto-updating' || '' }}
           SANITY_E2E_IS_AUTO_UPDATING: ${{ matrix.config == 'auto-updating' && 'true' || '' }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
