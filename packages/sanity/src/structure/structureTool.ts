@@ -3,12 +3,10 @@ import {lazy} from 'react'
 import {definePlugin} from 'sanity'
 
 import {
-  CopyAction,
   DeleteAction,
   DiscardChangesAction,
   DuplicateAction,
   HistoryRestoreAction,
-  PasteAction,
   PublishAction,
   UnpublishAction,
 } from './documentActions'
@@ -24,8 +22,6 @@ const documentActions = [
   PublishAction,
   UnpublishAction,
   DiscardChangesAction,
-  CopyAction,
-  PasteAction,
   DuplicateAction,
   DeleteAction,
   HistoryRestoreAction,
