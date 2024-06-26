@@ -174,8 +174,8 @@ function DocumentSheetListPaneInner(
 
   const rowOperations = useDocumentSheetListOperations(rowsPublishedIds, documentSchemaType.name)
 
-  const handlePatchDocument = useCallback(
-    (publishedDocumentId: string, fieldId: string, value: any) => {
+  const handlePatchDocument: GeneralDocumentOperation = useCallback(
+    (publishedDocumentId, fieldId, value: any) => {
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
@@ -199,8 +199,8 @@ function DocumentSheetListPaneInner(
     [rows, rowOperations],
   )
 
-  const handleUnsetDocumentValue = useCallback(
-    (publishedDocumentId: string, fieldId: string) => {
+  const handleUnsetDocumentValue: GeneralDocumentOperation = useCallback(
+    (publishedDocumentId, fieldId: string) => {
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
