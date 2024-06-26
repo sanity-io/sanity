@@ -139,7 +139,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               __unstable_extendedProjection: extendedProjection,
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
-              perspective,
+              perspective: omitBundlePerspective(perspective),
               skipSortByScore: true,
               sort: sortBy,
             }
@@ -165,4 +165,12 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     swr(swrKey),
     map(({fromCache, value}) => ({fromCache, documents: value})),
   )
+}
+
+function omitBundlePerspective(perspective: string | undefined): string | undefined {
+  if (perspective?.startsWith('bundle.')) {
+    return undefined
+  }
+
+  return perspective
 }
