@@ -177,6 +177,16 @@ export function isNativeEditableElement(el: EventTarget): boolean {
   return false
 }
 
+export function hasSelection(): boolean {
+  if (typeof window === 'undefined' || !window.getSelection) {
+    return false
+  }
+
+  const selection = window.getSelection()
+
+  return selection !== null && !selection.isCollapsed
+}
+
 function isWebKit(): boolean {
   return typeof document !== 'undefined' && 'WebkitAppearance' in document.documentElement.style
 }
