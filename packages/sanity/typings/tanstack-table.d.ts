@@ -42,5 +42,9 @@ declare module '@tanstack/react-table' {
      * Immediate change of the cell value, doing a server patch action.
      */
     'handlePatchField': (value: any) => void
+    /**
+     * Immediate unset of the cell value, doing a server patch unset action.
+     */
+    'handleUnsetField': () => void
   }
 }

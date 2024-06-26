@@ -6,6 +6,7 @@ import {
   type NumberSchemaType,
   type StringSchemaType,
 } from '@sanity/types'
+import {Card, type CardTone, Flex} from '@sanity/ui'
 import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {FormFieldValidationStatus, useChildValidation} from 'sanity'
@@ -54,6 +55,10 @@ interface DataCellProps {
   $rightBorderWidth: number
   $validationLevel?: ValidationLevel
 }
+
+const Root = styled(Card)`
+  width: 100%;
+`
 
 const DataCell = styled.td<DataCellProps>((props) => {
   const {width, $cellState, $rightBorderWidth, $validationLevel} = props
@@ -136,7 +141,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const cellContext = getContext()
   const cellId = `cell-${column.id}-${row.index}`
   const providedValueRef = useRef(getValue())
-  const [cellValue, setCellValue] = useState<string | number | boolean>(getValue() as string)
+  const [rawCellValue, setRawCellValue] = useState<string | number | boolean>(getValue() as string)
   const fieldRef = useRef<HTMLElement | null>(null)
 
   const Cell = isPinned ? PinnedDataCell : DataCell
@@ -168,6 +173,15 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const cellState = getStateByCellId(cell.column.id, cell.row.index)
   const {patchDocument, unsetDocumentValue} = cellContext.table.options.meta || {}
 
+  const setCellValue = useCallback(
+    (value: string | number | boolean) => {
+      if (!fieldType?.readOnly) {
+        setRawCellValue(value)
+      }
+    },
+    [fieldType?.readOnly],
+  )
+
   const handleProgrammaticFocus = () => {
     fieldRef.current?.focus()
     if (fieldRef.current instanceof HTMLInputElement) {
@@ -188,8 +202,12 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
       setCellValue(typedValue)
       patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, typedValue)
     },
-    [column.id, fieldType, patchDocument, row.original.__metadata.idPair.publishedId],
+    [column.id, fieldType, patchDocument, row.original.__metadata.idPair.publishedId, setCellValue],
   )
+
+  const handleUnsetField = useCallback(() => {
+    unsetDocumentValue?.(row.original.__metadata.idPair.publishedId, column.id)
+  }, [column.id, row.original.__metadata.idPair.publishedId, unsetDocumentValue])
 
   const handleOnKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -215,7 +233,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
         case 'Backspace': {
           if (cellState !== 'focused') {
             setCellValue('')
-            unsetDocumentValue?.(row.original.__metadata.idPair.publishedId, column.id)
+            handleUnsetField()
           }
           break
         }
@@ -224,14 +242,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
           break
       }
     },
-    [
-      cellState,
-      column.id,
-      row.original.__metadata.idPair.publishedId,
-      setCellAsSelectedAnchor,
-      submitFocusedCell,
-      unsetDocumentValue,
-    ],
+    [cellState, handleUnsetField, setCellAsSelectedAnchor, setCellValue, submitFocusedCell],
   )
 
   const handleOnFocus = useCallback(() => {
@@ -241,11 +252,11 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   }, [focusAnchorCell, setCellAsSelectedAnchor])
 
   const handleOnBlur = useCallback(() => {
-    if (cellValue !== providedValueRef.current) {
-      handlePatchField(cellValue)
+    if (rawCellValue !== providedValueRef.current) {
+      handlePatchField(rawCellValue)
     }
     resetFocusSelection()
-  }, [handlePatchField, cellValue, resetFocusSelection])
+  }, [handlePatchField, rawCellValue, resetFocusSelection])
 
   const handlePaste = useCallback(
     (event: ClipboardEvent) => {
@@ -266,9 +277,9 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   )
 
   const handleCopy = useCallback(() => {
-    if (typeof cellValue === 'undefined') return
-    navigator.clipboard.writeText(cellValue.toString())
-  }, [cellValue])
+    if (typeof rawCellValue === 'undefined') return
+    navigator.clipboard.writeText(rawCellValue.toString())
+  }, [rawCellValue])
 
   useEffect(() => {
     if (cellState)
@@ -295,13 +306,13 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const realTimeValue = getValue()
   useEffect(() => {
     if (providedValueRef?.current !== realTimeValue) {
-      if (providedValueRef.current === cellValue) {
-        // do not update the value if it's currently being edited
-        setCellValue(realTimeValue as string)
+      if (providedValueRef.current === rawCellValue) {
+        // only update the value if it's not current being edited
+        setRawCellValue(realTimeValue as string)
       }
       providedValueRef.current = realTimeValue
     }
-  }, [realTimeValue, cellValue])
+  }, [realTimeValue, rawCellValue])
 
   const cellProps = {
     'onFocus': disableCellFocus ? undefined : handleOnFocus,
@@ -315,12 +326,15 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const inputProps = {
     ...cellContext,
     handlePatchField,
-    cellValue,
+    handleUnsetField,
+    'cellValue': rawCellValue,
     setCellValue,
     setShouldPreventDefaultMouseDown,
     fieldRef,
     'data-testid': `${cellId}-input-field`,
   }
+
+  const tone: CardTone | undefined = fieldType?.readOnly ? 'transparent' : undefined
 
   return (
     <Cell
@@ -336,7 +350,11 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     >
       <CellRoot>
         <CellValidation validation={validation} />
-        {flexRender(cell.column.columnDef.cell, inputProps)}
+        <Root tone={tone} height="fill" width="full">
+          <Flex height="fill" justify="center" align="center">
+            {flexRender(cell.column.columnDef.cell, inputProps)}
+          </Flex>
+        </Root>
       </CellRoot>
     </Cell>
   )
