@@ -602,7 +602,6 @@ describe('DocumentSheetListPane', () => {
         })
 
         expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
-
         expect(mockDocumentOperations.patch.execute).not.toHaveBeenCalled()
         expect(mockDocumentOperations.commit.execute).not.toHaveBeenCalled()
       })
