@@ -1,4 +1,4 @@
-import {type BlockChildRenderProps, type RenderChildFunction} from '@sanity/portable-text-editor'
+import {type BlockChildRenderProps, type RenderChildFunction} from '@portabletext/editor'
 
 import {MentionInlineBlock} from '../blocks'
 

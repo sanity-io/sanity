@@ -2,7 +2,7 @@ import {
   PortableTextEditor,
   usePortableTextEditor,
   usePortableTextEditorSelection,
-} from '@sanity/portable-text-editor'
+} from '@portabletext/editor'
 import {isKeySegment} from '@sanity/types'
 import {memo, useCallback, useMemo} from 'react'
 

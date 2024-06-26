@@ -1,4 +1,4 @@
-// import {Type} from '@sanity/portable-text-editor'
+// import {Type} from '@portabletext/editor'
 
 import {type ObjectSchemaType} from '@sanity/types'
 import {type ComponentType, type ElementType, type ReactNode} from 'react'

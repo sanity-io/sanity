@@ -1,4 +1,4 @@
-import {type RenderBlockFunction} from '@sanity/portable-text-editor'
+import {type RenderBlockFunction} from '@portabletext/editor'
 import {type CurrentUser} from '@sanity/types'
 import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
