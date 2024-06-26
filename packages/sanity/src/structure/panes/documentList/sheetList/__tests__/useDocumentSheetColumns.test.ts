@@ -16,23 +16,23 @@ describe('useDocumentSheetColumns', () => {
       title: 'Author',
       type: 'document',
       fields: [
-        {name: 'name', type: {name: 'string'}},
-        {name: 'nickname', type: {name: 'string'}},
-        {name: 'email', type: {name: 'string'}},
-        {name: 'age', type: {name: 'number'}},
+        {name: 'name', type: {name: 'string', jsonType: 'string'}},
+        {name: 'nickname', type: {name: 'string', jsonType: 'string'}},
+        {name: 'email', type: {name: 'string', jsonType: 'string'}},
+        {name: 'age', type: {name: 'number', jsonType: 'number'}},
         {
           name: 'address',
           type: {
             name: 'object',
             jsonType: 'object',
             fields: [
-              {name: 'street', type: {name: 'string'}},
-              {name: 'country', type: {name: 'string'}},
+              {name: 'street', type: {name: 'string', jsonType: 'string'}},
+              {name: 'country', type: {name: 'string', jsonType: 'string'}},
             ],
           },
         },
-        {name: 'phone number', type: {name: 'number'}},
-        {name: 'has pet', type: {name: 'boolean'}},
+        {name: 'phone number', type: {name: 'number', jsonType: 'number'}},
+        {name: 'has pet', type: {name: 'boolean', jsonType: 'boolean'}},
       ],
     } as unknown as ObjectSchemaType
 

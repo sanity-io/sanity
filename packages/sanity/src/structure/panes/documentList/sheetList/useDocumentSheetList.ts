@@ -1,6 +1,6 @@
-import {type ObjectSchemaType} from '@sanity/types'
+import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo} from 'react'
-import {getDraftId, getPublishedId, type SanityDocument, useSearchState} from 'sanity'
+import {getDraftId, getPublishedId, useSearchState} from 'sanity'
 
 import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetListStore} from './useDocumentSheetListStore'
