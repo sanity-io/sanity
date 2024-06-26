@@ -7,6 +7,7 @@ import {styled} from 'styled-components'
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
+  version?: PreviewValue | Partial<SanityDocument> | null
 }
 
 const Root = styled(Text)`
@@ -29,19 +30,22 @@ const Root = styled(Text)`
  *
  * @internal
  */
-export function DocumentStatusIndicator({draft, published}: DocumentStatusProps) {
-  const $draft = !!draft
-  const $published = !!published
+export function DocumentStatusIndicator({draft, published, version}: DocumentStatusProps) {
+  const $version = Boolean(version)
+  const $draft = Boolean(draft)
+  const $published = Boolean(published)
 
   const status = useMemo(() => {
+    if ($version) return 'version'
     if ($draft && !$published) return 'unpublished'
     return 'edited'
-  }, [$draft, $published])
+  }, [$draft, $published, $version])
 
   // Return null if the document is:
+  // - Not a version
   // - Published without edits
   // - Neither published or without edits (this shouldn't be possible)
-  if ((!$draft && !$published) || (!$draft && $published)) {
+  if (!$version && ((!$draft && !$published) || (!$draft && $published))) {
     return null
   }
 
