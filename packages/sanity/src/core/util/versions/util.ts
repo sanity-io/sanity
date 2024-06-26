@@ -67,11 +67,11 @@ export async function getAllVersionsOfDocument(
   const query = `*[_id match "*${id}*"]`
 
   return await client.fetch(query).then((documents) => {
-    return documents.map((doc: SanityDocument) => ({
+    return documents.map((doc: SanityDocument, index: number) => ({
       name: getVersionName(doc._id),
       title: getVersionName(doc._id),
-      hue: RANDOM_TONES[Math.floor(Math.random() * RANDOM_TONES.length)],
-      icon: RANDOM_SYMBOLS[Math.floor(Math.random() * RANDOM_SYMBOLS.length)],
+      hue: RANDOM_TONES[index % RANDOM_SYMBOLS.length],
+      icon: RANDOM_SYMBOLS[index % RANDOM_SYMBOLS.length],
     }))
   })
 }
