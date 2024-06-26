@@ -9,6 +9,7 @@ import {type DocumentListPaneNode} from 'sanity/structure'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {DocumentSheetListPane} from '../DocumentSheetListPane'
+import {SheetListUsEnglishLocaleBundle} from '../i18n'
 import {useDocumentSheetListOperations} from '../useDocumentSheetListOperations'
 
 jest.mock('../useDocumentSheetList', () => ({
@@ -107,7 +108,7 @@ const renderTest = async (providedConfig: any = {}) => {
 
   const wrapper = await createTestProvider({
     config,
-    resources: [structureUsEnglishLocaleBundle],
+    resources: [structureUsEnglishLocaleBundle, SheetListUsEnglishLocaleBundle],
   })
   render(
     <DocumentSheetListPane
