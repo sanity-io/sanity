@@ -186,18 +186,18 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       `To adjust them, launch the management interface with ${chalk.cyan('sanity manage')}, navigate to the API settings, and toggle the webhooks before and after the migration as needed.\n`,
     )
 
-    const response =
-      flags.confirm &&
-      (await prompt.single<boolean>({
+    if (flags.confirm) {
+      const response = await prompt.single<boolean>({
         message: `This migration will run on the ${chalk.yellow(
           chalk.bold(apiConfig.dataset),
         )} dataset in ${chalk.yellow(chalk.bold(apiConfig.projectId))} project. Are you sure?`,
         type: 'confirm',
-      }))
+      })
 
-    if (response === false) {
-      debug('User aborted migration')
-      return
+      if (!response) {
+        debug('User aborted migration')
+        return
+      }
     }
 
     const spinner = output.spinner(`Running migration "${id}"`).start()
