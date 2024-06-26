@@ -25,6 +25,13 @@ export interface ErrorReporter {
    * @returns An object containing information on the reported error, or `null` if ignored
    */
   reportError: (error: Error, options?: ErrorInfo) => {eventId: string} | null
+  /**
+   * In some cases (for example, when we are respecting telemetry consent and not sending data to 3rd parties),
+   * we may start the error reporter in a pending state, where it will not report errors.
+   * This method can be used to activate the error reporter.
+   */
+  enable: () => void
+  disable: () => void
 }
 
 /**

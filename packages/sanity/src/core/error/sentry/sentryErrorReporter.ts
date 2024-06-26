@@ -17,10 +17,10 @@ import {
   init,
   isInitialized as sentryIsInitialized,
   linkedErrorsIntegration,
-  makeFetchTransport,
   Scope,
   withScope,
 } from '@sentry/react'
+import {type Transport} from '@sentry/types'
 
 import {isDev} from '../../environment'
 import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
@@ -28,6 +28,7 @@ import {globalScope} from '../../util/globalScope'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'
 import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
+import {type BufferedTransport, makeBufferedTransport} from './makeBufferedTransport'
 
 const SANITY_DSN = 'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
 
@@ -44,6 +45,7 @@ const clientOptions: BrowserOptions = {
   environment: isDev ? 'development' : 'production',
   debug: DEBUG_ERROR_REPORTING,
   enabled: IS_BROWSER && (!isDev || DEBUG_ERROR_REPORTING),
+  transport: makeBufferedTransport,
 }
 
 const integrations = [
@@ -101,10 +103,10 @@ export function getSentryErrorReporter(): ErrorReporter {
     if (hasThirdPartySentry) {
       client = new BrowserClient({
         ...clientOptions,
-        transport: makeFetchTransport,
         stackParser: defaultStackParser,
         integrations,
         beforeSend,
+        transport: makeBufferedTransport,
       })
 
       scope = new Scope()
@@ -172,9 +174,28 @@ export function getSentryErrorReporter(): ErrorReporter {
     return eventId ? {eventId} : null
   }
 
+  function isBufferedTransport(transport: Transport | undefined): transport is BufferedTransport {
+    return !!transport && 'setConsent' in transport && typeof transport.setConsent === 'function'
+  }
+
+  function enable() {
+    const transport = client?.getTransport()
+    if (isBufferedTransport(transport)) {
+      transport.setConsent(true)
+    }
+  }
+  function disable() {
+    const transport = client?.getTransport()
+    if (isBufferedTransport(transport)) {
+      transport.setConsent(false)
+    }
+  }
+
   return {
     initialize,
     reportError,
+    enable,
+    disable,
   }
 }
 
@@ -317,7 +338,7 @@ function sanityDedupeIntegration() {
 }
 
 /**
- * Determines wether or not the given event should be dropped or not, based on a window of
+ * Determines whether or not the given event should be dropped or not, based on a window of
  * previously reported events.
  *
  * @param currentEvent - The event to check
