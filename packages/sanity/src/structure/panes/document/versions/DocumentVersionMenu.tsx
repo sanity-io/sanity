@@ -41,6 +41,7 @@ export function DocumentVersionMenu(props: {
   const {newVersion} = useDocumentOperation(documentId, documentType)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const selectedVersion = getVersionName(documentId)
+  const isDraft = selectedVersion === 'draft'
 
   const [addVersionTitle, setAddVersionTitle] = useState('')
   const [documentVersions, setDocumentVersions] = useState<Version[]>([])
@@ -91,6 +92,14 @@ export function DocumentVersionMenu(props: {
     [],
   )
 
+  const handleGoToLatest = useCallback(
+    () => () => {
+      // eslint-disable-next-line no-console
+      console.log('switching into drafts / latest')
+    },
+    [],
+  )
+
   const onMenuOpen = useCallback(async () => {
     setAddVersionTitle('')
     fetchVersions()
@@ -105,24 +114,16 @@ export function DocumentVersionMenu(props: {
           onOpen={onMenuOpen}
           menu={
             <Menu padding={0} space={0}>
-              {/*<Stack padding={1}>
+              <Stack padding={1}>
+                {/* localize text */}
                 <MenuItem
-                  iconRight={
-                    draftVersionName === 'draft' ? (
-                      CheckmarkIcon
-                    ) : (
-                      <CheckmarkIcon style={{opacity: 0}} />
-                    )
-                  }
-                  onClick={() => {
-                    setVersionName('draft')
-                    setDraftVersionName('draft')
-                  }}
-                  // padding={2}
-                  pressed={draftVersionName === 'draft'}
+                  iconRight={isDraft ? CheckmarkIcon : <CheckmarkIcon style={{opacity: 0}} />}
+                  onClick={handleGoToLatest()}
+                  pressed={isDraft}
+                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
                   text="Latest version"
                 />
-              </Stack>*/}
+              </Stack>
 
               <MenuDivider />
 
