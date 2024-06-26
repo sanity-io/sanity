@@ -12,7 +12,7 @@ import {getBorderWidth} from './utils'
 
 const Header = styled.th<{width: number}>`
   margin: 16px;
-  z-index: 1;
+  z-index: 10;
   border-top: 1px solid var(--card-border-color);
   background-color: var(--card-badge-default-bg-color);
   box-sizing: border-box;
