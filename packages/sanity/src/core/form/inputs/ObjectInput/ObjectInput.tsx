@@ -2,7 +2,7 @@ import {Stack} from '@sanity/ui'
 import {last} from 'lodash'
 import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
 import {EMPTY_ARRAY, isKeySegment} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {ObjectInputMembers} from '../../members'
 import {type ObjectInputProps} from '../../types'
