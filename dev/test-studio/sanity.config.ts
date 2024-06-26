@@ -73,6 +73,14 @@ const sharedSettings = definePlugin({
     bundles: testStudioLocaleBundles,
   },
 
+  features: {
+    beta: {
+      treeArrayEditing: {
+        enabled: true,
+      },
+    },
+  },
+
   document: {
     actions: documentActions,
     inspectors: (prev, ctx) => {

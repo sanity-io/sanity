@@ -1,7 +1,8 @@
+/* eslint-disable no-nested-ternary, react/jsx-no-bind */
 import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
-import {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ChangeIndicator} from '../../../../../changeIndicators'
@@ -16,11 +17,12 @@ import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
+import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../../../../studio/tree-editing'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {RowLayout} from '../../layouts/RowLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
-import {InsertMenuGroups} from '../InsertMenuGroups'
+import {useInsertMenuMenuItems} from '../InsertMenuMenuItems'
 
 type PreviewItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
 
@@ -64,6 +66,15 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
+
+  const treeEditing = useTreeEditingEnabled()
+  const treeEditingDisabledByOption = parentSchemaType?.options?.treeEditing === false
+  const legacyEditing = treeEditingDisabledByOption || treeEditing.legacyEditing
+
+  // The edit portal should open if the item is open and:
+  // - tree array editing is disabled
+  // - legacy array editing is enabled (e.g. in a Portable Text editor)
+  const openPortal = open && (!treeEditing.enabled || legacyEditing)
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -117,33 +128,55 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
 
   const hasErrors = childValidation.some((v) => v.level === 'error')
   const hasWarnings = childValidation.some((v) => v.level === 'warning')
+  const [contextMenuButtonElement, setContextMenuButtonElement] =
+    useState<HTMLButtonElement | null>(null)
+  const {insertBefore, insertAfter} = useInsertMenuMenuItems({
+    schemaTypes: insertableTypes,
+    insertMenuOptions: parentSchemaType.options?.insertMenu,
+    onInsert: handleInsert,
+    referenceElement: contextMenuButtonElement,
+  })
 
   const menu = useMemo(
     () =>
       readOnly ? null : (
-        <MenuButton
-          button={<ContextMenuButton />}
-          id={`${props.inputId}-menuButton`}
-          menu={
-            <Menu>
-              <MenuItem
-                text={t('inputs.array.action.remove')}
-                tone="critical"
-                icon={TrashIcon}
-                onClick={onRemove}
+        <>
+          <MenuButton
+            ref={setContextMenuButtonElement}
+            onOpen={() => {
+              insertBefore.send({type: 'close'})
+              insertAfter.send({type: 'close'})
+            }}
+            button={
+              <ContextMenuButton
+                selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
               />
-              <MenuItem
-                text={t('inputs.array.action.duplicate')}
-                icon={DuplicateIcon}
-                onClick={handleDuplicate}
-              />
-              <InsertMenuGroups types={insertableTypes} onInsert={handleInsert} />
-            </Menu>
-          }
-          popover={MENU_POPOVER_PROPS}
-        />
+            }
+            id={`${props.inputId}-menuButton`}
+            menu={
+              <Menu>
+                <MenuItem
+                  text={t('inputs.array.action.remove')}
+                  tone="critical"
+                  icon={TrashIcon}
+                  onClick={onRemove}
+                />
+                <MenuItem
+                  text={t('inputs.array.action.duplicate')}
+                  icon={DuplicateIcon}
+                  onClick={handleDuplicate}
+                />
+                {insertBefore.menuItem}
+                {insertAfter.menuItem}
+              </Menu>
+            }
+            popover={MENU_POPOVER_PROPS}
+          />
+          {insertBefore.popover}
+          {insertAfter.popover}
+        </>
       ),
-    [handleDuplicate, handleInsert, onRemove, insertableTypes, props.inputId, readOnly, t],
+    [insertBefore, insertAfter, handleDuplicate, onRemove, props.inputId, readOnly, t],
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
@@ -184,12 +217,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   )
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
+
   return (
-    <>
+    <TreeEditingEnabledProvider legacyEditing={treeEditingDisabledByOption}>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>
       </ChangeIndicator>
-      {open && (
+
+      {openPortal && (
         <EditPortal
           header={
             readOnly
@@ -206,6 +241,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           {children}
         </EditPortal>
       )}
-    </>
+    </TreeEditingEnabledProvider>
   )
 }

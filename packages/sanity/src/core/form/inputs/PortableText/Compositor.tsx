@@ -16,6 +16,7 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
+import {TreeEditingEnabledProvider} from '../../studio/tree-editing'
 import {
   type ArrayOfObjectsInputProps,
   type PortableTextInputProps,
@@ -483,27 +484,29 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-      <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-        <ChangeIndicator
-          disabled={isFullscreen}
-          hasFocus={Boolean(focused)}
-          isChanged={changed}
-          path={path}
-        >
-          <Root
-            data-focused={editorFocused ? '' : undefined}
-            data-read-only={readOnly ? '' : undefined}
+    <TreeEditingEnabledProvider legacyEditing>
+      <PortalProvider __unstable_elements={portalElements} element={portal.element}>
+        <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+          <ChangeIndicator
+            disabled={isFullscreen}
+            hasFocus={Boolean(focused)}
+            isChanged={changed}
+            path={path}
           >
-            <Box data-wrapper="" ref={setWrapperElement}>
-              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
-              </Portal>
-            </Box>
-            <div data-border="" />
-          </Root>
-        </ChangeIndicator>
-      </ActivateOnFocus>
-    </PortalProvider>
+            <Root
+              data-focused={editorFocused ? '' : undefined}
+              data-read-only={readOnly ? '' : undefined}
+            >
+              <Box data-wrapper="" ref={setWrapperElement}>
+                <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                  {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                </Portal>
+              </Box>
+              <div data-border="" />
+            </Root>
+          </ChangeIndicator>
+        </ActivateOnFocus>
+      </PortalProvider>
+    </TreeEditingEnabledProvider>
   )
 }

@@ -9,7 +9,7 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {
   SearchProvider,
   set,
@@ -17,7 +17,6 @@ import {
   Translate,
   unset,
   useSchema,
-  useSearchState,
   useTranslation,
   useValidationStatus,
   ValidationProvider,
@@ -39,13 +38,13 @@ import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 import {useDocumentSheetListOperations} from './useDocumentSheetListOperations'
 
+type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'>
+
 type GeneralDocumentOperation = (
   publishedDocumentId: string,
   fieldId: string,
   ...otherArgs: unknown[]
 ) => void
-
-type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'>
 
 const PaneContainer = styled(Flex)`
   height: 100%;
@@ -119,7 +118,12 @@ const DocumentRow = ({
   )
   return (
     <ValidationProvider validation={validationStatus.validation}>
-      <TableRow as="tr" key={row.original._id + row.id} data-selected={row.getIsSelected()}>
+      <TableRow
+        as="tr"
+        key={row.original._id + row.id}
+        paddingY={2}
+        data-selected={row.getIsSelected()}
+      >
         {row.getVisibleCells().map((cell) => (
           <SheetListCell {...cell} key={row.original._id + cell.id} />
         ))}
@@ -132,15 +136,12 @@ function DocumentSheetListPaneInner(
 ) {
   const {t} = useTranslation(SheetListLocaleNamespace)
   const {documentSchemaType, ...paneProps} = props
-  const {dispatch, state} = useSearchState()
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
-  const {data} = useDocumentSheetList({
-    typeName: documentSchemaType.name,
-  })
+  const {data} = useDocumentSheetList(documentSchemaType)
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 
-  const totalRows = state.result.hits.length
+  const totalRows = data.length
   const meta = {
     selectedAnchor,
     setSelectedAnchor,
@@ -173,8 +174,8 @@ function DocumentSheetListPaneInner(
 
   const rowOperations = useDocumentSheetListOperations(rowsPublishedIds, documentSchemaType.name)
 
-  const handlePatchDocument: GeneralDocumentOperation = useCallback(
-    (publishedDocumentId, fieldId, value: any) => {
+  const handlePatchDocument = useCallback(
+    (publishedDocumentId: string, fieldId: string, value: any) => {
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
@@ -198,8 +199,8 @@ function DocumentSheetListPaneInner(
     [rows, rowOperations],
   )
 
-  const handleUnsetDocumentValue: GeneralDocumentOperation = useCallback(
-    (publishedDocumentId, fieldId) => {
+  const handleUnsetDocumentValue = useCallback(
+    (publishedDocumentId: string, fieldId: string) => {
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
@@ -247,13 +248,6 @@ function DocumentSheetListPaneInner(
       return nextOptions
     })
   }
-
-  useEffect(() => {
-    dispatch({type: 'TERMS_TYPE_ADD', schemaType: documentSchemaType})
-    return () => {
-      dispatch({type: 'TERMS_TYPE_REMOVE', schemaType: documentSchemaType})
-    }
-  }, [documentSchemaType, dispatch])
 
   const renderRow = useCallback(
     (row: Row<DocumentSheetTableRow>) => {

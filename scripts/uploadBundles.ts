@@ -91,7 +91,7 @@ async function copyPackages() {
 
 interface ManifestPackage {
   default: string
-  versions: string[]
+  versions: {version: string; timestamp: number}[]
 }
 
 interface Manifest {
@@ -111,7 +111,9 @@ async function updateManifest(newVersions: Map<string, string>) {
     console.log('Existing manifest not found', error)
   }
 
-  // Add the new version to the manifest
+  const timestamp = Math.floor(Date.now() / 1000)
+
+  // Add the new version to the manifest with timestamp
   const newManifest = Array.from(newVersions).reduce((initial, [key, value]) => {
     const dirName = cleanDirName(key)
 
@@ -122,7 +124,7 @@ async function updateManifest(newVersions: Map<string, string>) {
         [dirName]: {
           ...initial.packages[dirName],
           default: value,
-          versions: [...(initial.packages[dirName]?.versions || []), value],
+          versions: [...(initial.packages[dirName]?.versions || []), {version: value, timestamp}],
         },
       },
     }
@@ -135,8 +137,9 @@ async function updateManifest(newVersions: Map<string, string>) {
       destination: 'modules/v1/manifest-v1.json',
       contentType: 'application/json',
       metadata: {
-        // 10 seconds
-        cacheControl: 'public, max-age=10',
+        // no-cache to help with consistency across pods when this manifest
+        // is downloaded in the module-server
+        cacheControl: 'no-cache, max-age=0',
       },
     }
 

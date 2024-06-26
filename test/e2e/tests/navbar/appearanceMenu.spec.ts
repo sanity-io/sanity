@@ -15,16 +15,18 @@ test('color scheme changes and persists', async ({page, baseURL}) => {
   await page.goto(baseURL ?? '/test/content')
 
   await page.locator(`[id='user-menu']`).click()
-  await expect(page.getByTestId('user-menu')).toBeVisible()
-  await page.getByLabel('Use dark appearance').click()
+  await expect(await page.getByTestId('user-menu')).toBeVisible()
+  await expect(await page.getByTestId('color-scheme-dark')).toBeVisible()
+  await page.getByTestId('color-scheme-dark').click()
 
   const darkModeLocalStorage = await page.evaluate(() => window.localStorage)
 
   expect(darkModeLocalStorage[COLOR_SCHEME_KEY]).toBe('dark')
 
   await page.locator(`[id='user-menu']`).click()
-  await expect(page.getByTestId('user-menu')).toBeVisible()
-  await page.getByLabel('Use light appearance').click()
+  await expect(await page.getByTestId('user-menu')).toBeVisible()
+  await expect(await page.getByTestId('color-scheme-light')).toBeVisible()
+  await page.getByTestId('color-scheme-light').click()
 
   const lightModeLocalStorage = await page.evaluate(() => window.localStorage)
   expect(lightModeLocalStorage[COLOR_SCHEME_KEY]).toBe('light')

@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import {SlSpeech} from 'react-icons/sl'
 import {defineField, defineType} from 'sanity'
 

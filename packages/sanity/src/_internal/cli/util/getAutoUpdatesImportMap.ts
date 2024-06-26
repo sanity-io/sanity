@@ -17,11 +17,13 @@ const MODULES_HOST =
  * @internal
  */
 export function getAutoUpdateImportMap(version: string): AutoUpdatesImportMap {
+  const timestamp = `t${Math.floor(Date.now() / 1000)}`
+
   const autoUpdatesImports = {
-    'sanity': `${MODULES_HOST}/v1/modules/sanity/default/${version}`,
-    'sanity/': `${MODULES_HOST}/v1/modules/sanity/default/${version}/`,
-    '@sanity/vision': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}`,
-    '@sanity/vision/': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/`,
+    'sanity': `${MODULES_HOST}/v1/modules/sanity/default/${version}/${timestamp}`,
+    'sanity/': `${MODULES_HOST}/v1/modules/sanity/default/${version}/${timestamp}/`,
+    '@sanity/vision': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/${timestamp}`,
+    '@sanity/vision/': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/${timestamp}/`,
   }
 
   return autoUpdatesImports
