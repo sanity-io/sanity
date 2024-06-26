@@ -18,6 +18,7 @@ jobs:
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       NPM_CONFIG_PROVENANCE: true
+      PKG_VERSION: ${{ inputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,6 +60,10 @@ jobs:
 
       - name: Pre-flight
         run: |
+          # Check if the incoming version exactly matches the format xx.xx.xx e.g. no `v` prefix
+          [[ "$PKG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] \
+            || { echo "PKG_VERSION must be an explicit semver version with no `v` prefix"; exit 1; }
+
           # Check incoming version is at or above the currently published version on NPM
           # Note: we allow the current version in the even that a publish partially fails
           npx semver ${{ inputs.version }} -r ">=$(npm show sanity version) 3.x"
