@@ -128,6 +128,26 @@ describe('transferValue', () => {
       expect(transferValueResult?.targetValue).toEqual(sourceValue)
     })
 
+    test('cannot copy image into file objects', () => {
+      const sourceValue = {
+        _type: 'image',
+        asset: {
+          _ref: 'image-e4be7fa20bb20c271060a46bca82b9e84907a13a-320x320-jpg',
+          _type: 'reference',
+        },
+      }
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('author')!, ['profileImage'])
+      const transferValueResult = transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['profileCV'],
+      })
+      expect(transferValueResult.errors.length).toEqual(1)
+      expect(transferValueResult.errors[0].message).toEqual('A image is not allowed in a file')
+    })
+
     test('can copy weak references into hard references', () => {
       const sourceValue = {
         _type: 'reference',
