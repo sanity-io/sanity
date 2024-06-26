@@ -388,6 +388,10 @@ export interface PluginOptions {
      */
     enableLegacySearch?: boolean
   }
+  /** Configuration for studio features.
+   * @internal
+   */
+  features?: Features
 }
 
 /** @internal */
@@ -773,6 +777,10 @@ export interface Source {
 
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
+  /** Configuration for studio features.
+   * @internal
+   */
+  features?: Features
 }
 
 /** @internal */
@@ -884,4 +892,25 @@ export type {
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
+}
+
+/**
+ * Configuration for studio features.
+ * */
+interface Features {
+  /**
+   * Configuration for beta features.
+   */
+  beta?: {
+    /**
+     * @beta
+     * @hidden
+     * */
+    treeArrayEditing?: {
+      /**
+       * Enables the tree array editing feature.
+       */
+      enabled: boolean
+    }
+  }
 }

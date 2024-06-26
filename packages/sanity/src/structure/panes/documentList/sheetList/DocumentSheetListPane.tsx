@@ -125,7 +125,12 @@ const DocumentRow = ({
   )
   return (
     <ValidationProvider validation={validationStatus.validation}>
-      <TableRow as="tr" key={row.original._id + row.id} data-selected={row.getIsSelected()}>
+      <TableRow
+        as="tr"
+        key={row.original._id + row.id}
+        paddingY={2}
+        data-selected={row.getIsSelected()}
+      >
         {row.getVisibleCells().map((cell) => (
           <SheetListCell {...cell} key={row.original._id + cell.id} />
         ))}
@@ -140,12 +145,10 @@ function DocumentSheetListPaneInner(
   const {documentSchemaType, sortOrder: sortOrderRaw, ...paneProps} = props
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
-  const {data, isLoading} = useDocumentSheetList({
-    typeName: documentSchemaType.name,
-  })
+  const {data, isLoading} = useDocumentSheetList(documentSchemaType)
 
   const sortWithOrderingFn = useDocumentListSort(paneProps.pane, sortOrderRaw)
-  const {dispatch, state} = useSearchState()
+  const {dispatch} = useSearchState()
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
   const nextSort = useShallowUnique(sortWithOrderingFn?.by[0])
   const [hasSelection, setHasSelection] = useState(false)
@@ -164,7 +167,7 @@ function DocumentSheetListPaneInner(
     }
   }, [dispatch, hasSelection, nextSort])
 
-  const totalRows = state.result.hits.length
+  const totalRows = data.length
   const meta = {
     selectedAnchor,
     setSelectedAnchor,
@@ -271,13 +274,6 @@ function DocumentSheetListPaneInner(
       return nextOptions
     })
   }
-
-  useEffect(() => {
-    dispatch({type: 'TERMS_TYPE_ADD', schemaType: documentSchemaType})
-    return () => {
-      dispatch({type: 'TERMS_TYPE_REMOVE', schemaType: documentSchemaType})
-    }
-  }, [documentSchemaType, dispatch])
 
   const renderRow = useCallback(
     (row: Row<DocumentSheetTableRow>) => {

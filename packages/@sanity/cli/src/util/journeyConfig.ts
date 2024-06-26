@@ -251,8 +251,8 @@ export function wrapSchemaTypeInHelpers(schemaType: SchemaObject, root: boolean 
 
     const serializedProps = serialize(otherProperties)
     const fieldsDef =
-      fields && `fields: [${fields.map((f) => wrapSchemaTypeInHelpers(f, false)).join('')}],`
-    const ofDef = of && `of: [${of.map((f) => `defineArrayMember({${serialize(f)}})`).join(',')}],`
+      fields && `fields: [${fields.map((f) => wrapSchemaTypeInHelpers(f, false)).join('')}]`
+    const ofDef = of && `of: [${of.map((f) => `defineArrayMember({${serialize(f)}})`).join(',')}]`
     const previewDef = preview && `preview: {${serialize(preview)}}`
 
     const combinedDefinitions = [serializedProps, fieldsDef, ofDef, previewDef]

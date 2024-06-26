@@ -13,15 +13,11 @@ const PREV_RELEASE =
 const CHANGELOG_COMMAND = `git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse ${PREV_RELEASE}..origin/${BASE_BRANCH}`
 
 const TEMPLATE = `
-## Installation and upgrading
+# Install or upgrade Sanity Studio
 
-**To initiate a new Studio without installing the CLI globally:**
+To initiate a new Sanity Studio project or upgrade an existing one, please refer to our comprehensive guide on [Installing and Upgrading Sanity Studio](https://www.sanity.io/docs/upgrade).
 
-    npm create sanity@latest
-
-**To upgrade a v3 Studio, run this command in its folder:**
-
-    npm install sanity@latest
+If you are updating from a version earlier than [3.37.0](https://www.sanity.io/changelog/93306939-973b-4e48-bb63-89a6b91d70b3), you should also check out [this article](https://www.sanity.io/help/upgrade-packages) to ensure your dependencies are up to date.
 
 # ✨ Highlights
 

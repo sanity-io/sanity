@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-handler-names */
 
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
-import {useCallback, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
 import {type FormNodePresence} from '../../presence'
@@ -35,6 +35,7 @@ import {
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
+import {TreeEditingDialog, TreeEditingEnabledProvider, useTreeEditingEnabled} from './tree-editing'
 
 /**
  * @alpha
@@ -50,16 +51,17 @@ export interface FormBuilderProps
   changesOpen?: boolean
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
-  focusPath: Path
   focused: boolean | undefined
+  focusPath: Path
   id: string
   onChange: (changeEvent: PatchEvent) => void
+  onFieldGroupSelect: (path: Path, groupName: string) => void
   onPathBlur: (path: Path) => void
   onPathFocus: (path: Path) => void
   onPathOpen: (path: Path) => void
-  onFieldGroupSelect: (path: Path, groupName: string) => void
   onSetFieldSetCollapsed: (path: Path, collapsed: boolean) => void
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
+  openPath?: Path
   presence: FormNodePresence[]
   readOnly?: boolean
   schemaType: ObjectSchemaType
@@ -78,18 +80,19 @@ export function FormBuilder(props: FormBuilderProps) {
     changesOpen,
     collapsedFieldSets,
     collapsedPaths,
-    focusPath,
     focused,
+    focusPath,
     groups,
     id,
     members,
     onChange,
+    onFieldGroupSelect,
     onPathBlur,
     onPathFocus,
     onPathOpen,
-    onFieldGroupSelect,
     onSetFieldSetCollapsed,
     onSetPathCollapsed,
+    openPath = EMPTY_ARRAY,
     presence,
     readOnly,
     schemaType,
@@ -182,32 +185,62 @@ export function FormBuilder(props: FormBuilderProps) {
     [Annotation],
   )
 
-  const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = {
-    focusPath,
-    elementProps: {
-      'ref': focusRef,
+  const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = useMemo(() => {
+    return {
+      focusPath,
+      elementProps: {
+        'ref': focusRef,
+        id,
+        'onBlur': handleBlur,
+        'onFocus': handleFocus,
+        'aria-describedby': undefined, // Root input should not have any aria-describedby
+      },
+      changed: members.some((m) => m.kind === 'field' && m.field.changed),
+      focused,
+      groups,
       id,
-      'onBlur': handleBlur,
-      'onFocus': handleFocus,
-      'aria-describedby': undefined, // Root input should not have any aria-describedby
-    },
-    changed: members.some((m) => m.kind === 'field' && m.field.changed),
+      level: 0,
+      members,
+      onChange: handleChange,
+      onFieldClose: handleCloseField,
+      onFieldCollapse: handleCollapseField,
+      onFieldSetCollapse: handleCollapseFieldSet,
+      onFieldExpand: handleExpandField,
+      onFieldSetExpand: handleExpandFieldSet,
+      onPathFocus: onPathFocus,
+      onFieldOpen: handleOpenField,
+      onFieldGroupSelect: handleSelectFieldGroup,
+      path: EMPTY_ARRAY,
+      presence: EMPTY_ARRAY,
+      readOnly,
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
+      renderPreview,
+      schemaType,
+      validation: EMPTY_ARRAY,
+      value,
+    }
+  }, [
+    focusPath,
     focused,
     groups,
+    handleBlur,
+    handleChange,
+    handleCloseField,
+    handleCollapseField,
+    handleCollapseFieldSet,
+    handleExpandField,
+    handleExpandFieldSet,
+    handleFocus,
+    handleOpenField,
+    handleSelectFieldGroup,
     id,
-    level: 0,
     members,
-    onChange: handleChange,
-    onFieldClose: handleCloseField,
-    onFieldCollapse: handleCollapseField,
-    onFieldSetCollapse: handleCollapseFieldSet,
-    onFieldExpand: handleExpandField,
-    onFieldSetExpand: handleExpandFieldSet,
-    onPathFocus: onPathFocus,
-    onFieldOpen: handleOpenField,
-    onFieldGroupSelect: handleSelectFieldGroup,
-    path: EMPTY_ARRAY,
-    presence: EMPTY_ARRAY,
+    onPathFocus,
     readOnly,
     renderAnnotation,
     renderBlock,
@@ -217,9 +250,8 @@ export function FormBuilder(props: FormBuilderProps) {
     renderItem,
     renderPreview,
     schemaType,
-    validation: EMPTY_ARRAY,
     value,
-  }
+  ])
 
   return (
     <FormProvider
@@ -248,10 +280,46 @@ export function FormBuilder(props: FormBuilderProps) {
       <GetFormValueProvider value={value}>
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
-            {renderInput(rootInputProps)}
+            <TreeEditingEnabledProvider>
+              <RootInput
+                rootInputProps={rootInputProps}
+                onPathOpen={onPathOpen}
+                openPath={openPath}
+                renderInput={renderInput}
+              />
+            </TreeEditingEnabledProvider>
           </DocumentFieldActionsProvider>
         </FormValueProvider>
       </GetFormValueProvider>
     </FormProvider>
   )
+}
+
+interface RootInputProps {
+  rootInputProps: Omit<ObjectInputProps, 'renderDefault'>
+  onPathOpen: (path: Path) => void
+  openPath: Path
+  renderInput: (props: Omit<ObjectInputProps, 'renderDefault'>) => JSX.Element
+}
+
+function RootInput(props: RootInputProps) {
+  const {rootInputProps, onPathOpen, openPath, renderInput} = props
+  const treeEditing = useTreeEditingEnabled()
+
+  const isRoot = rootInputProps.id === 'root'
+
+  const arrayEditingModal = treeEditing.enabled && isRoot && (
+    <TreeEditingDialog
+      onPathFocus={rootInputProps.onPathFocus}
+      onPathOpen={onPathOpen}
+      openPath={openPath}
+      rootInputProps={rootInputProps}
+      schemaType={rootInputProps.schemaType}
+    />
+  )
+
+  return renderInput({
+    ...rootInputProps,
+    __internal_arrayEditingModal: arrayEditingModal,
+  })
 }

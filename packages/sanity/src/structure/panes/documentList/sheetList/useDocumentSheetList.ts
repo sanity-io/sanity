@@ -1,19 +1,23 @@
-import {useMemo} from 'react'
-import {getDraftId, getPublishedId, type SanityDocument, useSearchState} from 'sanity'
+import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
+import {useCallback, useEffect, useMemo} from 'react'
+import {getDraftId, getPublishedId, useSearchState} from 'sanity'
 
 import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetListStore} from './useDocumentSheetListStore'
 
-interface DocumentSheetListOptions {
-  /**The schemaType.name  */
-  typeName: string
-}
-
-export function useDocumentSheetList({typeName}: DocumentSheetListOptions): {
+export function useDocumentSheetList(schemaType: ObjectSchemaType): {
   data: DocumentSheetTableRow[]
   isLoading: boolean
 } {
-  const {state} = useSearchState()
+  const typeName = schemaType.name
+  const {state, dispatch} = useSearchState()
+
+  useEffect(() => {
+    dispatch({type: 'TERMS_TYPE_ADD', schemaType})
+    return () => {
+      dispatch({type: 'TERMS_TYPE_REMOVE', schemaType})
+    }
+  }, [schemaType, dispatch])
 
   const items = useMemo(() => {
     const map = new Map()
@@ -23,6 +27,19 @@ export function useDocumentSheetList({typeName}: DocumentSheetListOptions): {
     return map
   }, [state.result.hits])
 
+  const handleDocumentAdded = useCallback(
+    (document: SanityDocument) => {
+      items.set(getPublishedId(document._id), document)
+    },
+    [items],
+  )
+  const handleDocumentDeleted = useCallback(
+    (id: string) => {
+      items.delete(getPublishedId(id))
+    },
+    [items],
+  )
+
   // The store is listening to all the documents that match with the _type filter.
   const {
     data,
@@ -30,6 +47,8 @@ export function useDocumentSheetList({typeName}: DocumentSheetListOptions): {
     documents: allDocuments,
   } = useDocumentSheetListStore({
     filter: `_type == "${typeName}"`,
+    onDocumentDeleted: handleDocumentDeleted,
+    onDocumentAdded: handleDocumentAdded,
   })
 
   // Only return the documents that match with the serverSide filter items.

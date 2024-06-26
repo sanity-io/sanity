@@ -43,6 +43,7 @@
       "matchPackageNames": [
         "get-it",
         "@sanity/client",
+        "@sanity/export",
         "@sanity/presentation",
         "@sanity/ui",
         "groq-js"

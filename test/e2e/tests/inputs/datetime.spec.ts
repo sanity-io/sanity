@@ -1,5 +1,5 @@
-import {test} from '@sanity/test'
 import {expect} from '@playwright/test'
+import {test} from '@sanity/test'
 
 test(`datetime input shows validation on selecting date from datepicker`, async ({
   page,
@@ -13,6 +13,7 @@ test(`datetime input shows validation on selecting date from datepicker`, async 
   await page.getByTestId('date-input-dialog').getByTestId('date-input').fill('2023')
   await page.getByTestId('date-input-dialog').getByTestId('date-input').press('Enter')
   await page.getByTestId('date-input-dialog').getByRole('combobox').first().selectOption('0')
+  await expect(await page.getByLabel('Sun Jan 01 2023')).toBeVisible()
   await page.getByLabel('Sun Jan 01 2023').click()
 
   await expect(
@@ -44,7 +45,7 @@ test(`publish button is disabled when invalid date is entered in the field`, asy
 }) => {
   await createDraftDocument('/test/content/input-debug;dateTimeValidation')
 
-  await page.waitForSelector(`data-testid=field-requiredDatetime`)
+  await expect(await page.getByTestId('field-requiredDatetime')).toBeVisible()
 
   await page.getByTestId('field-requiredDatetime').getByTestId('date-input').fill('2023010100:00')
   // TODO: Remove this after fixing the blur test
@@ -59,7 +60,7 @@ test(`datetime inputs shows validation on entering date in the textfield and onB
 }) => {
   await createDraftDocument('/test/content/input-debug;dateTimeValidation')
 
-  await page.waitForSelector(`data-testid=field-requiredDatetime`)
+  await expect(await page.getByTestId('field-requiredDatetime')).toBeVisible()
 
   await page
     .getByTestId('field-requiredDatetime')
