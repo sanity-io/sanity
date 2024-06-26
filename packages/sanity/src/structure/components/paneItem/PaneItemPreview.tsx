@@ -76,7 +76,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   // TODO: Remove debug `_id` output.
   return (
     <SanityDefaultPreview
-      {...getPreviewValueWithFallback({value, draft, published, perspective})}
+      {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
       isPlaceholder={isLoading}
       icon={icon}
       layout={layout}
