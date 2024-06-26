@@ -8,7 +8,7 @@ import {
   type OnPasteFn,
   type RangeDecoration,
   usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+} from '@portabletext/editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'

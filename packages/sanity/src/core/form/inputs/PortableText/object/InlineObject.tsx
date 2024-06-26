@@ -1,8 +1,4 @@
-import {
-  type EditorSelection,
-  PortableTextEditor,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {
   type ObjectSchemaType,
   type Path,
