@@ -1,14 +1,22 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {createElement, type ReactElement} from 'react'
+import {type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
+import {DocumentVersionMenu} from '../../DocumentVersionMenu'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPerspectiveMenu} from './perspective/DocumentPerspectiveMenu'
 
 export function DocumentHeaderTitle(): ReactElement {
-  const {documentId, connectionState, schemaType, title, value: documentValue} = useDocumentPane()
+  const {
+    documentId,
+    documentType,
+    connectionState,
+    schemaType,
+    title,
+    value: documentValue,
+  } = useDocumentPane()
   const subscribed = Boolean(documentValue) && connectionState !== 'connecting'
 
   const {error, value} = useValuePreview({
@@ -43,7 +51,9 @@ export function DocumentHeaderTitle(): ReactElement {
   return (
     <Flex flex={1} gap={0}>
       <Flex flex="none" gap={3} padding={2}>
-        <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
+        <Text size={1}>
+          <DocumentIcon />
+        </Text>
         <Text
           muted={!value?.title}
           size={1}
@@ -59,7 +69,7 @@ export function DocumentHeaderTitle(): ReactElement {
       </Flex>
 
       <Flex flex="none" gap={1}>
-        <DocumentPerspectiveMenu documentId={documentId} />
+        <DocumentVersionMenu documentId={documentId} documentType={documentType} />
       </Flex>
     </Flex>
   )
