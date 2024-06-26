@@ -217,11 +217,6 @@ export async function transferValue({
           sourceValue: sourceValueAtPath,
         })
 
-        // errors.push({
-        //   level: 'error',
-        //   message: `A ${sourceSchemaTypeAtPath.name} is not allowed in a ${targetSchemaTypeAtPath.name}`,
-        //   sourceValue,
-        // })
         return {
           targetValue: undefined,
           errors,
