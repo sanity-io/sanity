@@ -22,21 +22,21 @@ export interface CopyActionResult {
 export const copyAction = defineDocumentFieldAction({
   name: 'copyField',
   useAction({path}) {
+    const isDocument = path.length === 0
     const getFormValue = useGetFormValue()
     const {onCopy} = useCopyPasteAction()
     const onAction = useCallback(() => {
       const value = getFormValue([]) as FormDocumentValue
       onCopy(path, value, {
-        context: {source: 'fieldAction'},
+        context: {source: isDocument ? 'documentFieldAction' : 'fieldAction'},
       })
-    }, [path, onCopy, getFormValue])
+    }, [path, isDocument, onCopy, getFormValue])
 
     return defineActionItem({
       type: 'action',
       icon: CopyIcon,
       onAction,
-      title: 'Copy field',
-      hidden: path.length === 0,
+      title: isDocument ? 'Copy document' : 'Copy field',
     })
   },
 })

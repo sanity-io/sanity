@@ -8,19 +8,19 @@ import {defineActionItem} from './define'
 export const pasteAction = defineDocumentFieldAction({
   name: 'pasteField',
   useAction({path}) {
+    const isDocument = path.length === 0
     const {onPaste} = useCopyPasteAction()
     const onAction = useCallback(() => {
       onPaste(path, {
-        context: {source: 'fieldAction'},
+        context: {source: isDocument ? 'documentFieldAction' : 'fieldAction'},
       })
-    }, [path, onPaste])
+    }, [onPaste, path, isDocument])
 
     return defineActionItem({
       type: 'action',
       icon: ClipboardIcon,
       onAction,
-      title: 'Paste field',
-      hidden: path.length === 0,
+      title: isDocument ? 'Paste document' : 'Paste field',
     })
   },
 })
