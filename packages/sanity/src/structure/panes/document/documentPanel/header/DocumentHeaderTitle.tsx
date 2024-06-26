@@ -4,9 +4,8 @@ import {type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
-import {DocumentVersionMenu} from '../../DocumentVersionMenu'
 import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentPerspectiveMenu} from './perspective/DocumentPerspectiveMenu'
+import {DocumentVersionMenu} from '../../versions/DocumentVersionMenu'
 
 export function DocumentHeaderTitle(): ReactElement {
   const {
