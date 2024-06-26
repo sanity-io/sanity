@@ -10,6 +10,7 @@ interface DocumentStatusProps {
   version?: PreviewValue | Partial<SanityDocument> | null
 }
 
+// TODO: `version` style is only for debugging.
 const Root = styled(Text)`
   &[data-status='edited'] {
     --card-icon-color: var(--card-badge-caution-dot-color);
@@ -17,6 +18,9 @@ const Root = styled(Text)`
   &[data-status='unpublished'] {
     --card-icon-color: var(--card-badge-default-dot-color);
     opacity: 0.5 !important;
+  }
+  &[data-status='version'] {
+    --card-icon-color: lime;
   }
 `
 
@@ -49,8 +53,10 @@ export function DocumentStatusIndicator({draft, published, version}: DocumentSta
     return null
   }
 
+  // TODO: Remove debug `status[0]` output.
   return (
     <Root data-status={status} size={1}>
+      <span>{status[0]}</span>
       <DotIcon />
     </Root>
   )
