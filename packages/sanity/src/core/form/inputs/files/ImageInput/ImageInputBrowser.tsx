@@ -64,5 +64,20 @@ function ImageInputBrowserComponent(
       />
     )
   }
+
+  return (
+    <Button
+      text={t('inputs.image.browse-menu.text')}
+      icon={SearchIcon}
+      mode="bleed"
+      // eslint-disable-next-line react/jsx-no-bind
+      onClick={() => {
+        setMenuOpen(false)
+        handleSelectImageFromAssetSource(assetSources[0])
+      }}
+      data-testid="file-input-browse-button"
+      disabled={readOnly}
+    />
+  )
 }
 export const ImageInputBrowser = memo(forwardRef(ImageInputBrowserComponent))
