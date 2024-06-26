@@ -200,7 +200,7 @@ function DocumentSheetListPaneInner(
   )
 
   const handleUnsetDocumentValue: GeneralDocumentOperation = useCallback(
-    (publishedDocumentId, fieldId: string) => {
+    (publishedDocumentId, fieldId) => {
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
