@@ -1432,9 +1432,6 @@ importers:
       '@sanity/mutator':
         specifier: 3.48.0
         version: link:../@sanity/mutator
-      '@sanity/portable-text-editor':
-        specifier: 3.48.0
-        version: 3.48.0(react-dom@18.3.1)(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.11)
       '@sanity/presentation':
         specifier: 1.16.0
         version: 1.16.0(@sanity/client@6.20.0)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
@@ -7015,31 +7012,6 @@ packages:
       - '@types/node'
       - debug
       - supports-color
-
-  /@sanity/portable-text-editor@3.48.0(react-dom@18.3.1)(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.11):
-    resolution: {integrity: sha512-L/EWm9top3SYaNa759WiN4dUHPNuaD40pG9G5sATq125a91JTpdUn4z95xKvx4q4hkxPO1jTHMuV+ZQD8wxdUA==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      react: '*'
-      rxjs: ^7
-      styled-components: ^6.1
-    dependencies:
-      '@sanity/block-tools': 3.48.0
-      '@sanity/schema': 3.48.0(debug@3.2.7)
-      '@sanity/types': 3.48.0(debug@3.2.7)
-      '@sanity/util': 3.48.0(debug@3.2.7)
-      debug: 3.2.7
-      is-hotkey-esm: 1.0.0
-      lodash: 4.17.21
-      react: 18.3.1
-      rxjs: 7.8.1
-      slate: 0.100.0
-      slate-react: 0.101.0(react-dom@18.3.1)(react@18.3.1)(slate@0.100.0)
-      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
-    transitivePeerDependencies:
-      - react-dom
-      - supports-color
-    dev: false
 
   /@sanity/presentation@1.16.0(@sanity/client@6.20.0)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
     resolution: {integrity: sha512-8nNGPM+r+D8dRe/UVcDEO6Z9gzS5LcOIQMzziOg8nMUGz284pcuEIzvRI9XQ3gbMiv6Zyo+fzuJPktoq+dkqhw==}
