@@ -2,6 +2,7 @@ import {
   isTitledListValue,
   type PrepareViewOptions,
   type PreviewValue,
+  type SanityDocument,
   type SchemaType,
   type TitledListValue,
 } from '@sanity/types'
@@ -13,7 +14,7 @@ import {type PreviewableType} from '../types'
 import {keysOf} from './keysOf'
 import {extractTextFromBlocks, isPortableTextPreviewValue} from './portableText'
 
-const PRESERVE_KEYS = ['_id', '_type', '_upload', '_createdAt', '_updatedAt']
+const PRESERVE_KEYS = ['_id', '_type', '_upload', '_createdAt', '_updatedAt', '_version']
 const EMPTY: never[] = []
 
 type SelectedValue = Record<string, unknown>
@@ -263,7 +264,7 @@ export function prepareForPreview(
   rawValue: unknown,
   type: PreviewableType,
   viewOptions: PrepareViewOptions = {},
-): PreviewValue & {_createdAt?: string; _updatedAt?: string} {
+): PreviewValue & {_createdAt?: string; _updatedAt?: string} & Pick<SanityDocument, '_version'> {
   const hasCustomPrepare = typeof type.preview?.prepare === 'function'
   const selection: Record<string, string> = type.preview?.select || {}
   const targetKeys = Object.keys(selection)
