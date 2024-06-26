@@ -1,6 +1,5 @@
 import {type ColorHueKey} from '@sanity/color'
 import {type IconSymbol} from '@sanity/icons'
-import formatRelative from 'date-fns/formatRelative'
 import {type SanityClient, type SanityDocument} from 'sanity'
 
 /* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
@@ -76,10 +75,6 @@ export async function getAllVersionsOfDocument(
       icon: RANDOM_SYMBOLS[index % RANDOM_SYMBOLS.length],
     }))
   })
-}
-
-export function formatRelativeTime(date: number | Date): string {
-  return formatRelative(date, new Date())
 }
 
 export function getVersionName(documentId: string): string {
