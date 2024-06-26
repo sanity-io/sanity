@@ -9,6 +9,7 @@ import {
   getValueAtPath,
   PatchEvent,
   set,
+  useClient,
   useSchema,
 } from 'sanity'
 
@@ -17,7 +18,7 @@ import {useCopyPaste} from './CopyPasteProvider'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
 import {type CopyActionResult, type CopyOptions, type PasteOptions} from './types'
 import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
-import {transferValue} from './valueTransfer'
+import {transferValue, type TransferValueOptions} from './valueTransfer'
 
 /**
  * @internal
@@ -33,6 +34,7 @@ export function useCopyPasteAction(): {
   const toast = useToast()
   const {onChange} = getDocumentMeta()! || {}
   const schema = useSchema()
+  const client = useClient()
 
   const onCopy = useCallback(
     async (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => {
@@ -190,11 +192,15 @@ export function useCopyPasteAction(): {
           sourceValue: item.value,
           targetRootSchemaType: targetSchemaType,
           targetPath: [],
+          options: {
+            validateAssets: true,
+            client,
+          } as TransferValueOptions,
         }
         copiedJsonTypes.push(sourceSchemaType.jsonType)
 
         try {
-          const {targetValue, errors} = transferValue(transferValueOptions)
+          const {targetValue, errors} = await transferValue(transferValueOptions)
           const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
           const _isEmptyValue = isEmptyValue(targetValue)
           if (nonWarningErrors.length > 0) {
@@ -252,7 +258,7 @@ export function useCopyPasteAction(): {
         })
       }
     },
-    [getDocumentMeta, schema, telemetry, toast, onChange],
+    [getDocumentMeta, schema, telemetry, toast, client, onChange],
   )
 
   return {onCopy, onPaste, onChange}
