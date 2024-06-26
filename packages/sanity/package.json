@@ -264,6 +264,7 @@
     "@sanity/pkg-utils": "6.9.3",
     "@sanity/tsdoc": "1.0.72",
     "@sanity/ui-workshop": "^1.2.11",
+    "@sentry/types": "^8.12.0",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.0.16",
