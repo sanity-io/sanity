@@ -18,7 +18,6 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sa
 
 import {
   BUNDLES,
-  formatRelativeTime,
   getAllVersionsOfDocument,
   getVersionName,
   type Version,
@@ -163,7 +162,9 @@ export function DocumentVersionMenu(props: {
                             <Box padding={2}>
                               <Text muted size={1}>
                                 {/* localize text */}
-                                {r.publishAt ? formatRelativeTime(r.publishAt) : 'No target date'}
+                                {r.publishAt
+                                  ? `a date will be here ${r.publishAt}`
+                                  : 'No target date'}
                               </Text>
                             </Box>
                           }
@@ -217,7 +218,9 @@ export function DocumentVersionMenu(props: {
 
                           <Box padding={2}>
                             <Text muted size={1}>
-                              {r.publishAt ? formatRelativeTime(r.publishAt) : 'No target date'}
+                              {r.publishAt
+                                ? `a date will be here ${r.publishAt}`
+                                : 'No target date'}
                             </Text>
                           </Box>
                         </Flex>
