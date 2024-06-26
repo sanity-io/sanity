@@ -148,18 +148,6 @@ describe('DocumentSheetListPane', () => {
   })
 
   describe('Keyboard navigation', () => {
-    const mockDocumentOperations = {
-      patch: {disabled: false, execute: jest.fn()},
-      commit: {disabled: false, execute: jest.fn()},
-    } as unknown as OperationsAPI
-
-    beforeEach(() => {
-      mockUseDocumentSheetList.mockReturnValue({
-        'pub-123': mockDocumentOperations,
-        'pub-456': mockDocumentOperations,
-      })
-    })
-
     describe('to edit single value', () => {
       it('should not edit cell when only single clicked', async () => {
         await renderTest()
