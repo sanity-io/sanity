@@ -1,3 +1,3 @@
-# @sanity/portable-text-editor
+# ⚠ This package is deprecated ️
 
-More info to come!
+Please note that this package is deprecated and has been replaced by [@portabletext/editor](https://www.npmjs.com/package/@portabletext/editor).

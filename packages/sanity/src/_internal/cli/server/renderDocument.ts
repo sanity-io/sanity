@@ -17,6 +17,7 @@ import {createElement} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 
 import {getAliases} from './aliases'
+import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from './constants'
 import {debug as serverDebug} from './debug'
 import {type SanityMonorepo} from './sanityMonorepo'
 
@@ -226,7 +227,7 @@ function getDocumentHtml(
   })
 
   debug('Rendering document component using React')
-  const result = addImportMapToHtml(
+  const result = addTimestampedImportMapScriptToHtml(
     renderToStaticMarkup(createElement(Document, {...defaultProps, ...props, css})),
     importMap,
   )
@@ -237,7 +238,7 @@ function getDocumentHtml(
 /**
  * @internal
  */
-export function addImportMapToHtml(
+export function addTimestampedImportMapScriptToHtml(
   html: string,
   importMap?: {imports?: Record<string, string>},
 ): string {
@@ -261,8 +262,9 @@ export function addImportMapToHtml(
 
   headEl.insertAdjacentHTML(
     'beforeend',
-    `<script type="importmap">${JSON.stringify(importMap)}</script>`,
+    `<script type="application/json" id="__imports">${JSON.stringify(importMap)}</script>`,
   )
+  headEl.insertAdjacentHTML('beforeend', TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT)
   return root.outerHTML
 }
 
