@@ -593,7 +593,6 @@ describe('DocumentSheetListPane', () => {
         await act(async () => {
           await userEvent.dblClick(screen.getByTestId('cell-name-0'))
           await userEvent.keyboard('{Escape}')
-          await userEvent.keyboard('{Escape}')
           fireEvent.paste(document, {
             clipboardData: {
               getData: () => 'Joe Blogs',
