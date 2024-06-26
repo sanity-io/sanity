@@ -4,6 +4,7 @@ import {type SearchSort} from 'sanity'
 export interface DocumentListPaneItem extends SanityDocumentLike {
   hasPublished: boolean
   hasDraft: boolean
+  isVersion: boolean
 }
 
 export type SortOrder = {
