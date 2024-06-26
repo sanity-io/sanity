@@ -4,6 +4,7 @@ import {omit} from 'lodash'
 
 import {resolveSchemaTypeForPath} from '../resolveSchemaTypeForPath'
 import {transferValue} from '../valueTransfer'
+import {createMockClient} from './mockClient'
 import {schema} from './schema'
 
 beforeEach(() => {
@@ -12,7 +13,7 @@ beforeEach(() => {
 })
 
 describe('transferValue', () => {
-  test('cannot copy from one type to another if the schema json type is different', () => {
+  test('cannot copy from one type to another if the schema json type is different', async () => {
     const sourceValue = {
       _type: 'author',
       _id: 'xxx',
@@ -24,7 +25,7 @@ describe('transferValue', () => {
         },
       ],
     }
-    const transferValueResult = transferValue({
+    const transferValueResult = await transferValue({
       sourceRootSchemaType: schema.get('author')!,
       sourcePath: [],
       sourceValue,
@@ -38,7 +39,7 @@ describe('transferValue', () => {
   })
 
   describe('objects', () => {
-    test('can copy object', () => {
+    test('can copy object', async () => {
       const sourceValue = {
         _type: 'author',
         _id: 'xxx',
@@ -50,7 +51,7 @@ describe('transferValue', () => {
           },
         ],
       }
-      const transferValueResult = transferValue({
+      const transferValueResult = await transferValue({
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: [],
         sourceValue,
@@ -76,13 +77,13 @@ describe('transferValue', () => {
       expect(targetValue.bio[0].children[0]._key).not.toEqual('someOtherKey')
     })
 
-    test('can copy array of numbers', () => {
+    test('can copy array of numbers', async () => {
       const sourceValue = {
         _type: 'author',
         _id: 'xxx',
         favoriteNumbers: [1, 2, 3, 4, 'foo'],
       }
-      const transferValueResult = transferValue({
+      const transferValueResult = await transferValue({
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['favoriteNumbers'],
         sourceValue,
@@ -92,10 +93,10 @@ describe('transferValue', () => {
       expect(transferValueResult?.targetValue).toEqual([1, 2, 3, 4])
     })
 
-    test('can copy nested objects', () => {
+    test('can copy nested objects', async () => {
       const sourceValue = {_type: 'nestedObject', _key: 'yyy', title: 'item', items: []}
       const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('author')!, ['nestedTest'])
-      const transferValueResult = transferValue({
+      const transferValueResult = await transferValue({
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
@@ -109,7 +110,7 @@ describe('transferValue', () => {
       })
     })
 
-    test('can copy image objects', () => {
+    test('can copy image objects', async () => {
       const sourceValue = {
         _type: 'image',
         asset: {
@@ -118,7 +119,7 @@ describe('transferValue', () => {
         },
       }
       const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('author')!, ['profileImage'])
-      const transferValueResult = transferValue({
+      const transferValueResult = await transferValue({
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
@@ -128,7 +129,68 @@ describe('transferValue', () => {
       expect(transferValueResult?.targetValue).toEqual(sourceValue)
     })
 
-    test('cannot copy image into file objects', () => {
+    test('will validate image objects', async () => {
+      const mockClient = createMockClient({
+        'image-1': {mimeType: 'image/jpeg', originalFilename: 'test.jpg'},
+        'file-1': {mimeType: 'application/pdf', originalFilename: 'test.pdf'},
+      })
+
+      const sourceValue = {
+        _type: 'image',
+        asset: {
+          _ref: 'image-1',
+          _type: 'reference',
+        },
+      }
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('author')!, ['profileImage'])
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['profileImagePNG'],
+        options: {
+          client: mockClient,
+          validateAssets: true,
+        },
+      })
+      // expect(transferValueResult?.targetValue).toEqual(sourceValue)
+      expect(transferValueResult.errors.length).toEqual(1)
+      expect(transferValueResult.errors[0].message).toEqual(
+        'MIME type image/jpeg is not accepted for this field',
+      )
+    })
+
+    test('will paste image into field that accepts same mime type', async () => {
+      const mockClient = createMockClient({
+        'image-1': {mimeType: 'image/jpeg', originalFilename: 'test.jpg'},
+        'file-1': {mimeType: 'application/pdf', originalFilename: 'test.pdf'},
+      })
+
+      const sourceValue = {
+        _type: 'image',
+        asset: {
+          _ref: 'image-1',
+          _type: 'reference',
+        },
+      }
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('author')!, ['profileImage'])
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['profileImageJpeg'],
+        options: {
+          client: mockClient,
+          validateAssets: true,
+        },
+      })
+      expect(transferValueResult.errors.length).toEqual(0)
+      expect(transferValueResult?.targetValue).toEqual(sourceValue)
+    })
+
+    test('cannot copy image into file objects', async () => {
       const sourceValue = {
         _type: 'image',
         asset: {
@@ -137,7 +199,7 @@ describe('transferValue', () => {
         },
       }
       const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('author')!, ['profileImage'])
-      const transferValueResult = transferValue({
+      const transferValueResult = await transferValue({
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
@@ -148,14 +210,14 @@ describe('transferValue', () => {
       expect(transferValueResult.errors[0].message).toEqual('A image is not allowed in a file')
     })
 
-    test('can copy weak references into hard references', () => {
+    test('can copy weak references into hard references', async () => {
       const sourceValue = {
         _type: 'reference',
         _ref: 'e4be7fa20bb20c271060a46bca82b9e84907a13a-320x320-jpg',
         _weak: true,
       }
       const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('author')!, ['bestFriend'])
-      const transferValueResult = transferValue({
+      const transferValueResult = await transferValue({
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
@@ -165,13 +227,13 @@ describe('transferValue', () => {
       expect(transferValueResult?.targetValue).toEqual(omit(sourceValue, ['_weak']))
     })
 
-    test('can copy hard references into weak references', () => {
+    test('can copy hard references into weak references', async () => {
       const sourceValue = {
         _type: 'reference',
         _ref: 'e4be7fa20bb20c271060a46bca82b9e84907a13a-320x320-jpg',
       }
       const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('editor')!, ['bestAuthorFriend'])
-      const transferValueResult = transferValue({
+      const transferValueResult = await transferValue({
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
@@ -181,7 +243,7 @@ describe('transferValue', () => {
       expect(transferValueResult?.targetValue).toEqual({...sourceValue, _weak: true})
     })
 
-    test('will remove empty reference', () => {
+    test('will remove empty reference', async () => {
       const sourceValue = {
         _type: 'author',
         _id: 'xxx',
@@ -197,7 +259,7 @@ describe('transferValue', () => {
           },
         ],
       }
-      const transferValueResult = transferValue({
+      const transferValueResult = await transferValue({
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: [],
         sourceValue,
