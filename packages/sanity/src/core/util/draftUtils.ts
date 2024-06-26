@@ -58,7 +58,7 @@ export function isDraftId(id: string): id is DraftId {
 
 /** @internal */
 export function isVersion(id: string): id is DraftId {
-  return id.startsWith(DRAFTS_PREFIX) || id.includes('.')
+  return id.includes('.')
 }
 
 /** @internal */
