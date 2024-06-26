@@ -13,6 +13,7 @@ import {
   Text,
   TextInput,
 } from '@sanity/ui'
+import {camelCase} from 'lodash'
 import {useCallback, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sanity'
 
@@ -25,11 +26,7 @@ import {
 import {ReleaseIcon} from './ReleaseIcon'
 
 function toSlug(str: string) {
-  return str
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+/, '')
-    .replace(/-+$/, '')
+  return camelCase(str)
 }
 
 export function DocumentVersionMenu(props: {
