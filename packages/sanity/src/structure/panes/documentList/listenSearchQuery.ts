@@ -126,7 +126,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
               __unstable_extendedProjection: extendedProjection,
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
-              perspective,
+              perspective: omitBundlePerspective(perspective),
               skipSortByScore: true,
               sort: sortBy,
             }
@@ -150,4 +150,12 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
       )
     }),
   )
+}
+
+function omitBundlePerspective(perspective: string | undefined): string | undefined {
+  if (perspective?.startsWith('bundle.')) {
+    return undefined
+  }
+
+  return perspective
 }
