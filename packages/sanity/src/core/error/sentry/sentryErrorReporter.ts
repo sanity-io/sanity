@@ -2,6 +2,7 @@ import {
   breadcrumbsIntegration,
   browserApiErrorsIntegration,
   BrowserClient,
+  type BrowserOptions,
   captureException,
   dedupeIntegration,
   defaultStackParser,
@@ -38,7 +39,7 @@ const DEBUG_ERROR_REPORTING =
 
 const IS_BROWSER = typeof window !== 'undefined'
 
-const clientOptions = {
+const clientOptions: BrowserOptions = {
   dsn: SANITY_DSN,
   release: SANITY_VERSION,
   environment: isDev ? 'development' : 'production',
@@ -105,6 +106,7 @@ export function getSentryErrorReporter(): ErrorReporter {
         stackParser: defaultStackParser,
         integrations,
         beforeSend,
+        transport: makeBufferedTransport,
       })
 
       scope = new Scope()
