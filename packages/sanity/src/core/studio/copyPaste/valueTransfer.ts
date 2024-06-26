@@ -1,3 +1,4 @@
+import {isAssetObjectStub, isReference} from '@sanity/asset-utils'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
@@ -14,9 +15,10 @@ import {
   type StringSchemaType,
   type TypedObject,
 } from '@sanity/types'
-import {isRecord, type Path, type SchemaType} from 'sanity'
+import {type FIXME, isRecord, type Path, type SchemaType} from 'sanity'
 
 import {getValueAtPath} from '../../field/paths/helpers'
+import {accepts} from '../../form/studio/uploads/accepts'
 import {randomKey} from '../../form/utils/randomKey'
 import {isEmptyValue, tryResolveSchemaTypeForPath} from './utils'
 
@@ -32,13 +34,27 @@ function isEqualSchemaType(a: unknown, b: unknown): boolean {
 
 const defaultKeyGenerator = () => randomKey(12)
 
-export function transferValue({
+interface ClientWithFetch {
+  fetch: <R = FIXME, Q = Record<string, unknown>>(query: string, params?: Q) => Promise<R>
+}
+
+export interface TransferValueOptions {
+  //validateReferences: boolean
+  validateAssets?: boolean
+  client?: ClientWithFetch
+}
+
+export async function transferValue({
   sourceRootSchemaType,
   sourcePath,
   sourceValue,
   targetRootSchemaType,
   targetPath,
   keyGenerator = defaultKeyGenerator,
+  options = {
+    validateAssets: true,
+    client: undefined,
+  },
 }: {
   sourceRootSchemaType: SchemaType
   sourcePath: Path
@@ -46,10 +62,11 @@ export function transferValue({
   targetRootSchemaType: SchemaType
   targetPath: Path
   keyGenerator?: () => string
-}): {
+  options?: TransferValueOptions
+}): Promise<{
   targetValue: unknown
   errors: TransferValueError[]
-} {
+}> {
   const errors: TransferValueError[] = []
 
   const sourceSchemaTypeAtPath = tryResolveSchemaTypeForPath(sourceRootSchemaType, sourcePath)
@@ -135,6 +152,80 @@ export function transferValue({
       return {
         targetValue: undefined,
         errors,
+      }
+    }
+
+    // @todo Look up the file or image document if there is a option.accept rule on the targetSchema type,
+    // and validate that the file/image is of the correct type based on the mimetype
+    if (
+      options.validateAssets &&
+      options.client &&
+      (isImageSchemaType(targetSchemaTypeAtPath) || isFileSchemaType(targetSchemaTypeAtPath)) &&
+      targetSchemaTypeAtPath.options?.accept &&
+      isAssetObjectStub(sourceValueAtPath) &&
+      isReference(sourceValueAtPath.asset)
+    ) {
+      const sourceRef = sourceValueAtPath.asset?._ref
+      if (!sourceRef) {
+        return {
+          targetValue: undefined,
+          errors,
+        }
+      }
+
+      try {
+        const assetType = isImageSchemaType(targetSchemaTypeAtPath)
+          ? 'sanity.imageAsset'
+          : 'sanity.fileAsset'
+        const asset = await options.client.fetch(
+          `*[_type == $type &&_id == $ref][0]{mimeType, originalFilename}`,
+          {
+            ref: sourceRef,
+            type: assetType,
+          },
+        )
+
+        if (!asset) {
+          return {
+            targetValue: undefined,
+            errors,
+          }
+        }
+
+        const fileLike = {
+          type: asset.mimeType,
+          name: asset.originalFilename,
+        }
+        const mimeType = asset.mimeType
+
+        if (!accepts(fileLike, targetSchemaTypeAtPath.options.accept)) {
+          errors.push({
+            level: 'error',
+            message: `MIME type ${mimeType} is not accepted for this field`,
+            sourceValue: sourceValueAtPath,
+          })
+          return {
+            targetValue: undefined,
+            errors,
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching asset document:', error)
+        errors.push({
+          level: 'error',
+          message: 'Failed to validate MIME type',
+          sourceValue: sourceValueAtPath,
+        })
+
+        // errors.push({
+        //   level: 'error',
+        //   message: `A ${sourceSchemaTypeAtPath.name} is not allowed in a ${targetSchemaTypeAtPath.name}`,
+        //   sourceValue,
+        // })
+        return {
+          targetValue: undefined,
+          errors,
+        }
       }
     }
 
