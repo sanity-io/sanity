@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
-import {AddIcon, ChevronDownIcon} from '@sanity/icons'
+import {AddIcon, CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -13,8 +13,17 @@ import {
   Text,
   TextInput,
 } from '@sanity/ui'
-import {useCallback, useState} from 'react'
-import {useDocumentOperation} from 'sanity'
+import {useCallback, useEffect, useState} from 'react'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sanity'
+
+import {
+  BUNDLES,
+  formatRelativeTime,
+  getAllVersionsOfDocument,
+  getVersionName,
+  type Version,
+} from '../../../../core/util/versions/util'
+import {ReleaseIcon} from './ReleaseIcon'
 
 function toSlug(str: string) {
   return str
@@ -24,36 +33,40 @@ function toSlug(str: string) {
     .replace(/-+$/, '')
 }
 
-// dummy data
-const BUNDLE_OPTIONS = [
-  {name: '', title: 'Create new bundle'},
-  {name: 'draft', title: 'Published + Drafts'},
-  {name: 'previewDrafts', title: 'Preview drafts'},
-  {name: 'published', title: 'Published'},
-  {name: 'summerDrop', title: 'Summer Drop'},
-  {name: 'autumnDrop', title: 'Autumn Drop'},
-]
-
-// dummy data
-const DOC_EXISTING_VERSIONS: any[] = []
-
 export function DocumentVersionMenu(props: {
   documentId: string
   documentType: string
 }): JSX.Element {
   const {documentId, documentType} = props
   const {newVersion} = useDocumentOperation(documentId, documentType)
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const selectedVersion = getVersionName(documentId)
 
   const [addVersionTitle, setAddVersionTitle] = useState('')
+  const [documentVersions, setDocumentVersions] = useState<Version[]>([])
 
   const addVersionName = toSlug(addVersionTitle)
   // use to prevent adding a version when you're already in that version
-  const addVersionExists = BUNDLE_OPTIONS.some((r) => r.name === addVersionName)
+  const addVersionExists = BUNDLES.some((r) => r.name === addVersionName)
 
   // list of available bundles
-  const bundleOptionsList = BUNDLE_OPTIONS.filter((r) =>
+  const bundleOptionsList = BUNDLES.filter((r) =>
     r.title.toLowerCase().includes(addVersionTitle.toLowerCase()),
   )
+
+  const fetchVersions = useCallback(async () => {
+    const response = await getAllVersionsOfDocument(client, documentId)
+    setDocumentVersions(response)
+  }, [client, documentId])
+
+  // DUMMY FETCH -- NEEDS TO BE REPLACED
+  useEffect(() => {
+    const fetchVersionsInner = async () => {
+      fetchVersions()
+    }
+
+    fetchVersionsInner()
+  }, [fetchVersions])
 
   /* used for the search of bundles when writing a new version name */
   const handleAddVersionChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,12 +91,18 @@ export function DocumentVersionMenu(props: {
     [],
   )
 
+  const onMenuOpen = useCallback(async () => {
+    setAddVersionTitle('')
+    fetchVersions()
+  }, [fetchVersions])
+
   return (
     <>
       <Box flex="none">
         <MenuButton
           button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
           id="version-menu"
+          onOpen={onMenuOpen}
           menu={
             <Menu padding={0} space={0}>
               {/*<Stack padding={1}>
@@ -107,7 +126,7 @@ export function DocumentVersionMenu(props: {
 
               <MenuDivider />
 
-              {BUNDLE_OPTIONS.length > 0 && (
+              {BUNDLES.length > 0 && (
                 <>
                   <Stack padding={1} space={1}>
                     <Box padding={3} paddingBottom={2}>
@@ -115,12 +134,12 @@ export function DocumentVersionMenu(props: {
                       localize text
                       */}
                       <Label muted size={1}>
-                        {/* localise text */}
+                        {/* localize text */}
                         Versions
                       </Label>
                     </Box>
 
-                    {DOC_EXISTING_VERSIONS.map((r) => (
+                    {documentVersions.map((r) => (
                       <MenuItem
                         key={r.name}
                         onClick={handleChangeToVersion(r.name)}
@@ -128,7 +147,7 @@ export function DocumentVersionMenu(props: {
                         //pressed={draftVersionName === r.name}
                       >
                         <Flex>
-                          {/*<ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />*/}
+                          {<ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />}
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">
@@ -136,17 +155,21 @@ export function DocumentVersionMenu(props: {
                             </Text>
                           </Box>
 
-                          {/*<Box padding={2}>
-                            <Text muted size={1}>
-                              {r.publishAt ? formatRelativeTime(r.publishAt) : 'No target date'}
-                            </Text>
-                          </Box>*/}
+                          {
+                            <Box padding={2}>
+                              <Text muted size={1}>
+                                {r.publishAt ? formatRelativeTime(r.publishAt) : 'No target date'}
+                              </Text>
+                            </Box>
+                          }
 
                           <Box padding={2}>
                             <Text size={1}>
-                              {/*<CheckmarkIcon
-                                style={{opacity: r.name === draftVersionName ? 1 : 0}}
-                              />*/}
+                              {
+                                <CheckmarkIcon
+                                  style={{opacity: r.name === selectedVersion ? 1 : 0}}
+                                />
+                              }
                             </Text>
                           </Box>
                         </Flex>
@@ -179,7 +202,7 @@ export function DocumentVersionMenu(props: {
                         padding={1}
                       >
                         <Flex>
-                          {/*<ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />*/}
+                          <ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">
@@ -188,22 +211,15 @@ export function DocumentVersionMenu(props: {
                           </Box>
 
                           <Box padding={2}>
-                            {/*<Text muted size={1}>
+                            <Text muted size={1}>
                               {r.publishAt ? formatRelativeTime(r.publishAt) : 'No target date'}
-                            </Text>*/}
-                          </Box>
-
-                          {/* 
-                            <Text size={1}>
-                              <CheckmarkIcon
-                                style={{opacity: r.name === (query.version || 'draft') ? 1 : 0}}
-                              />
                             </Text>
-                          </div> */}
+                          </Box>
                         </Flex>
                       </MenuItem>
                     ))}
 
+                    {/* localize text */}
                     <MenuItem
                       disabled={addVersionExists}
                       icon={AddIcon}
