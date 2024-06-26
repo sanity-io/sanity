@@ -1,6 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
-/* eslint-disable @sanity/i18n/no-attribute-template-literals */
 import {blue, gray, white} from '@sanity/color'
 import {CloseIcon, PublishIcon} from '@sanity/icons'
 import {Box, Card, Flex, Popover, Stack, Text, useToast} from '@sanity/ui'
@@ -10,6 +7,7 @@ import {
   isValidationErrorMarker,
   type ObjectSchemaType,
   useClient,
+  useTranslation,
   useValidationStatusList,
   type ValidationStatus,
 } from 'sanity'
@@ -17,6 +15,7 @@ import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {batchPublish} from './batchPublish'
+import {SheetListLocaleNamespace} from './i18n'
 import {type DocumentSheetListTable, type DocumentSheetTableRow} from './types'
 
 interface DocumentSheetActionsProps {
@@ -35,6 +34,7 @@ function BatchPublishAction({
     publishedDocId: string
   })[]
 }) {
+  const {t} = useTranslation(SheetListLocaleNamespace)
   const [publishStatus, setPublishStatus] = useState('idle')
   const hasErrorStatus = validationStatus.some((item) =>
     item.validation.some(isValidationErrorMarker),
@@ -55,8 +55,10 @@ function BatchPublishAction({
       duration: 60000,
       id: 'publishing-toast',
       status: 'info',
-      title: 'Publishing',
-      description: 'Publishing documents...',
+      title: t('actions.toast.publishing-pending-title'),
+      description: t('actions.toast.publishing-pending-description', {
+        itemPlural: `item${items.length > 1 ? 's' : ''}`,
+      }),
     })
     action
       .execute()
@@ -67,7 +69,7 @@ function BatchPublishAction({
             closable: true,
             id: 'publishing-toast',
             status: 'error',
-            title: 'An error occurred',
+            title: t('actions.toast.publishing-failed-description'),
             description: err.message,
           })
           return of(null)
@@ -80,12 +82,12 @@ function BatchPublishAction({
             closable: true,
             id: 'publishing-toast',
             status: 'success',
-            title: 'Published',
-            description: 'The documents have been published',
+            title: t('actions.toast.publishing-success-title'),
+            description: t('actions.toast.publishing-success-description'),
           })
         }
       })
-  }, [action, toast])
+  }, [action, items.length, t, toast])
   const actionDisabled = action.disabled()
 
   const disabled =
@@ -98,13 +100,13 @@ function BatchPublishAction({
         tooltipProps={{
           disabled: !disabled,
           content: hasErrorStatus ? (
-            <Text>Cannot publish documents with validation errors</Text>
+            <Text>{t('validation-error.tooltip')}</Text>
           ) : (
             actionDisabled && (
               <Stack space={2}>
                 {actionDisabled.map((reason) => (
                   <Text key={reason.id}>
-                    Item with ID {reason.id} cannot be published: <strong>{reason.reason}</strong>
+                    {t('validation-error.reason', {id: reason.id})} <strong>{reason.reason}</strong>
                   </Text>
                 ))}
               </Stack>
@@ -113,7 +115,7 @@ function BatchPublishAction({
         }}
         loading={publishStatus === 'publishing'}
         icon={PublishIcon}
-        text={'Publish all'}
+        text={t('actions.publish-all-label')}
         onClick={handlePublish}
         disabled={disabled}
       />
@@ -158,6 +160,7 @@ export function DocumentSheetActions({table, schemaType}: DocumentSheetActionsPr
   const items = useMemo(() => selectedRows.map((row) => row.original.__metadata), [selectedRows])
   const itemsId = useMemo(() => items.map((item) => item.idPair.publishedId), [items])
   const validationStatus = useValidationStatusList(itemsId, schemaType.name)
+  const {t} = useTranslation(SheetListLocaleNamespace)
 
   return (
     <Popover
@@ -172,13 +175,16 @@ export function DocumentSheetActions({table, schemaType}: DocumentSheetActionsPr
           <Stack>
             <Flex align="center" justify="space-between">
               <Text size={1} weight="medium">
-                {items.length} item{items.length > 1 ? 's' : ''} selected
+                {t('actions.selected-count-label', {
+                  count: items.length,
+                  itemPlural: `item${items.length > 1 ? 's' : ''}`,
+                })}
               </Text>
               <CloseButton
                 mode="bleed"
                 tone="default"
                 iconRight={CloseIcon}
-                text="Unselect all"
+                text={t('actions.unselect-all-label')}
                 onClick={() => table.setRowSelection({})}
               />
             </Flex>

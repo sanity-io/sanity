@@ -78,20 +78,12 @@ function documentsReducer(
     case 'DOCUMENT_UPDATED': {
       const updatedDocument = action.payload
       const id = updatedDocument._id as string
-      const document = state.documents[id]
-
-      const nextDocument = {
-        // Add existing document data
-        ...document,
-        // Add incoming document data
-        ...updatedDocument,
-      } satisfies SanityDocument
 
       return {
         ...state,
         documents: {
           ...state.documents,
-          [id]: nextDocument,
+          [id]: updatedDocument,
         },
       }
     }

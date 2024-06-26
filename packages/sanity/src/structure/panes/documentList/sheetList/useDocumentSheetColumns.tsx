@@ -1,4 +1,11 @@
-import {type IntrinsicTypeName, isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
+import {
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  isObjectSchemaType,
+  isPrimitiveSchemaType,
+  isStringSchemaType,
+  type ObjectSchemaType,
+} from '@sanity/types'
 import {Checkbox, Flex} from '@sanity/ui'
 import {
   type AccessorKeyColumnDef,
@@ -7,16 +14,19 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table'
 import {useMemo} from 'react'
+import {useTranslation} from 'sanity'
 
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {PreviewCell} from './DocumentSheetPreviewCell'
-import {SheetListCellInner} from './SheetListCell'
+import {BooleanCellInput} from './fields/BooleanCellInput'
+import {CellInput} from './fields/CellInput'
+import {DropdownCellInput, shouldDropdownRender} from './fields/DropdownCellInput'
+import {SheetListLocaleNamespace} from './i18n'
 import {type DocumentSheetTableRow} from './types'
 
 export const VISIBLE_COLUMN_LIMIT = 5
 
 const columnHelper = createColumnHelper<DocumentSheetTableRow>()
-const SUPPORTED_FIELDS: IntrinsicTypeName[] = ['string', 'number', 'boolean']
 
 type Columns = (
   | AccessorKeyColumnDef<DocumentSheetTableRow, unknown>
@@ -25,9 +35,8 @@ type Columns = (
 
 const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: string): Columns => {
   return schemaType.fields.reduce<Columns>((tableColumns: Columns, field) => {
-    const {type, name} = field
-    const typeName = type.name as IntrinsicTypeName
-    if (SUPPORTED_FIELDS.includes(typeName)) {
+    const {type: fieldType, name} = field
+    if (isPrimitiveSchemaType(fieldType)) {
       const nextCol = columnHelper.accessor(
         // accessor must use dot notation for internal tanstack method of reading cell data
         parentalField ? `${parentalField}.${field.name}` : field.name,
@@ -35,7 +44,23 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
           id: parentalField ? `${parentalField}_${field.name}` : field.name,
           header: field.type.title,
           enableHiding: true,
-          cell: (info) => <SheetListCellInner {...info} fieldType={type} />,
+          meta: {
+            fieldType,
+          },
+          cell: (info) => {
+            if (isNumberSchemaType(fieldType) || isStringSchemaType(fieldType)) {
+              if (shouldDropdownRender(fieldType))
+                return <DropdownCellInput {...info} fieldType={fieldType} />
+
+              return <CellInput {...info} fieldType={fieldType} />
+            }
+
+            if (isBooleanSchemaType(fieldType)) {
+              return <BooleanCellInput {...info} fieldType={fieldType} />
+            }
+
+            return null
+          },
         },
       )
 
@@ -43,10 +68,10 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
     }
 
     // if first layer nested object
-    if (typeName === 'object' && isObjectSchemaType(type) && !parentalField) {
+    if (fieldType.name === 'object' && isObjectSchemaType(fieldType) && !parentalField) {
       return [
         ...tableColumns,
-        columnHelper.group({header: name, columns: getColsFromSchemaType(type, field.name)}),
+        columnHelper.group({header: name, columns: getColsFromSchemaType(fieldType, field.name)}),
       ]
     }
 
@@ -81,6 +106,8 @@ const flatColumns = (cols: Columns): AccessorKeyColumnDef<DocumentSheetTableRow,
 }
 
 export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
+  const {t} = useTranslation(SheetListLocaleNamespace)
+
   const columns: Columns = useMemo(() => {
     if (!documentSchemaType) {
       return []
@@ -93,6 +120,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         meta: {
           customHeader: true,
           borderWidth: 0,
+          disableCellFocus: true,
         },
         header: (info) => {
           if (info.header.depth > 1) return null
@@ -107,17 +135,20 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         },
         cell: DocumentSheetListSelect,
       }),
-      columnHelper.accessor('List preview', {
+      columnHelper.accessor(t('preview-header'), {
         enableHiding: false,
         size: 320,
         id: 'Preview',
+        meta: {
+          disableCellFocus: true,
+        },
         cell: (info) => {
           return <PreviewCell {...info} schemaType={documentSchemaType} />
         },
       }),
       ...getColsFromSchemaType(documentSchemaType),
     ]
-  }, [documentSchemaType])
+  }, [documentSchemaType, t])
 
   const [initialColumnsVisibility]: [VisibilityState, number] = useMemo(
     () =>
