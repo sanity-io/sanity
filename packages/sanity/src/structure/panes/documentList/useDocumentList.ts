@@ -156,7 +156,9 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
             error: null,
             fromCache: event.result.fromCache,
             isLoading: false,
-            items: removePublishedWithDrafts(event.result.documents),
+            items: removePublishedWithDrafts(event.result.documents, {
+              bundlePerspective: (perspective ?? '').split('bundle.').at(1),
+            }),
             isLoadingFullList: false,
           }
         }

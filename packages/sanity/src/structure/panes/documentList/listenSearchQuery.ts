@@ -137,7 +137,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               __unstable_extendedProjection: extendedProjection,
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
-              perspective,
+              perspective: omitBundlePerspective(perspective),
               skipSortByScore: true,
               sort: sortBy,
             }
@@ -193,4 +193,12 @@ function memoLRU<T>(
         })),
       ),
     )
+}
+
+function omitBundlePerspective(perspective: string | undefined): string | undefined {
+  if (perspective?.startsWith('bundle.')) {
+    return undefined
+  }
+
+  return perspective
 }

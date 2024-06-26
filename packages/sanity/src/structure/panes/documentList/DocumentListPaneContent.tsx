@@ -114,7 +114,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
   const renderItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(
     (item, {activeIndex}) => {
-      const publishedId = getPublishedId(item._id)
+      const publishedId = getPublishedId(item._id, Boolean(item._version))
       const isSelected = childItemId === publishedId
       const pressed = !isActive && isSelected
       const selected = isActive && isSelected
