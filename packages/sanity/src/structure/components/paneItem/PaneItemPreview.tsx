@@ -45,10 +45,18 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       : null
 
   const previewStateObservable = useMemo(
-    () => getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title),
-    [props.documentPreviewStore, schemaType, title, value._id],
+    () =>
+      getPreviewStateObservable(
+        props.documentPreviewStore,
+        schemaType,
+        value._id,
+        title,
+        perspective?.startsWith('bundle.') ? perspective.split('bundle.').at(1) : undefined,
+      ),
+    [props.documentPreviewStore, schemaType, title, value._id, perspective],
   )
-  const {draft, published, isLoading} = useObservable(previewStateObservable, {
+
+  const {draft, published, version, isLoading} = useObservable(previewStateObservable, {
     draft: null,
     isLoading: true,
     published: null,
@@ -58,16 +66,16 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     <TooltipDelayGroupProvider>
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatusIndicator draft={draft} published={published} />
+        <DocumentStatusIndicator draft={draft} published={published} version={version} />
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = <DocumentStatus draft={draft} published={published} />
+  const tooltip = <DocumentStatus draft={draft} published={published} version={version} />
 
   return (
     <SanityDefaultPreview
-      {...getPreviewValueWithFallback({value, draft, published, perspective})}
+      {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
       isPlaceholder={isLoading}
       icon={icon}
       layout={layout}
