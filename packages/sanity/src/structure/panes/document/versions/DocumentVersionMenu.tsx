@@ -62,22 +62,12 @@ export function DocumentVersionMenu(props: {
 
   const handleAddVersion = useCallback(
     (name: string) => () => {
-      const bundleId = `${name}.${documentId}`
+      const nameSlugged = toSlug(name)
+      const bundleId = `${nameSlugged}.${documentId}`
 
       newVersion.execute(bundleId)
     },
     [documentId, newVersion],
-  )
-
-  const handleAddNewVersion = useCallback(
-    (name: string) => () => {
-      if (!name) return
-
-      //BUNDLE_OPTIONS.push({name: addVersionName, title: name})
-
-      handleAddVersion(addVersionName)
-    },
-    [addVersionName, handleAddVersion],
   )
 
   const handleChangeToVersion = useCallback(
@@ -217,7 +207,7 @@ export function DocumentVersionMenu(props: {
                     <MenuItem
                       disabled={addVersionExists}
                       icon={AddIcon}
-                      onClick={handleAddNewVersion(addVersionName)}
+                      onClick={handleAddVersion(addVersionName)}
                       text={<>Create version: "{addVersionTitle}"</>}
                     />
                   </>
