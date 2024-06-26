@@ -97,8 +97,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
     setSelectedAnchorCell(column.id, row.index)
   }, [column.id, row.index, setSelectedAnchorCell])
   const cellState = getStateByCellId(cell.column.id, cell.row.index)
-  const {patchDocument, unsetDocumentValue} =
-    (!fieldType?.readOnly && cellContext.table.options.meta) || {}
+  const {patchDocument, unsetDocumentValue} = cellContext.table.options.meta || {}
 
   const setCellValue = useCallback(
     (value: string | number | boolean) => {
