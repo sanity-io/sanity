@@ -144,13 +144,14 @@ export function DocumentVersionMenu(props: {
                         key={r.name}
                         onClick={handleChangeToVersion(r.name)}
                         padding={1}
-                        //pressed={draftVersionName === r.name}
+                        pressed={selectedVersion === r.name}
                       >
                         <Flex>
                           {<ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />}
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">
+                              {/* localize text */}
                               {r.name === 'draft' ? 'Latest' : r.title}
                             </Text>
                           </Box>
@@ -158,6 +159,7 @@ export function DocumentVersionMenu(props: {
                           {
                             <Box padding={2}>
                               <Text muted size={1}>
+                                {/* localize text */}
                                 {r.publishAt ? formatRelativeTime(r.publishAt) : 'No target date'}
                               </Text>
                             </Box>
