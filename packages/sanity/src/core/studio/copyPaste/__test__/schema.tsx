@@ -108,7 +108,11 @@ export const schema = createSchema({
         {
           name: 'bio',
           type: 'array',
-          of: [{type: 'customNamedBlock'}, {type: 'myStringObject'}],
+          of: [
+            {type: 'customNamedBlock'},
+            {type: 'myStringObject'},
+            {type: 'reference', to: [{type: 'author'}]},
+          ],
         },
         {
           name: 'friends',

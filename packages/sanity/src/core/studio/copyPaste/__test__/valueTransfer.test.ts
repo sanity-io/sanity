@@ -160,5 +160,47 @@ describe('transferValue', () => {
       })
       expect(transferValueResult?.targetValue).toEqual({...sourceValue, _weak: true})
     })
+
+    test('will remove empty reference', () => {
+      const sourceValue = {
+        _type: 'author',
+        _id: 'xxx',
+        bio: [
+          {
+            _key: 'someKey',
+            _type: 'customNamedBlock',
+            children: [{_key: 'someOtherKey', _type: 'span', text: 'Hello'}],
+          },
+          {
+            _key: 'someKey2',
+            _type: 'reference',
+          },
+        ],
+      }
+      const transferValueResult = transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('author')!,
+        targetPath: [],
+      })
+      const targetValue = transferValueResult?.targetValue as {
+        bio: (TypedObject & {children: TypedObject[]})[]
+      }
+      expect(targetValue).toMatchObject({
+        ...omit(sourceValue, ['_id']),
+        bio: [
+          {
+            _key: expect.any(String),
+            _type: 'customNamedBlock',
+            children: [{_key: expect.any(String), _type: 'span', text: 'Hello'}],
+          },
+        ],
+      })
+      // Test that the keys are not the same
+      expect(targetValue.bio[0]._key).not.toEqual('someKey')
+      expect(targetValue.bio[0].children[0]._key).not.toEqual('someOtherKey')
+      expect(targetValue.bio.length).toEqual(1)
+    })
   })
 })

@@ -318,18 +318,20 @@ function collateArrayValue({
     )
     targetValue =
       transferredItems.length > 0
-        ? transferredItems.map((item) => {
-            const collated = collateObjectValue({
-              sourceValue: item,
-              targetSchemaType: targetSchemaType.of.find(
-                (type) => type.name === item._type,
-              )! as ObjectSchemaType,
-              targetPath: [],
-              errors,
-              keyGenerator,
+        ? transferredItems
+            .map((item) => {
+              const collated = collateObjectValue({
+                sourceValue: item,
+                targetSchemaType: targetSchemaType.of.find(
+                  (type) => type.name === item._type,
+                )! as ObjectSchemaType,
+                targetPath: [],
+                errors,
+                keyGenerator,
+              })
+              return collated.targetValue
             })
-            return collated.targetValue
-          })
+            .filter((item) => !isEmptyValue(item))
         : undefined
     if (nonTransferredItems.length > 0) {
       nonTransferredItems.forEach((item) => {
