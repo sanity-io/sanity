@@ -14,9 +14,11 @@ import {
   SearchProvider,
   set,
   toMutationPatches,
+  Translate,
   unset,
   useSchema,
   useSearchState,
+  useTranslation,
   useValidationStatus,
   ValidationProvider,
 } from 'sanity'
@@ -33,6 +35,7 @@ import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListHeader} from './DocumentSheetListHeader'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
 import {DocumentSheetListProvider} from './DocumentSheetListProvider'
+import {SheetListLocaleNamespace} from './i18n'
 import {SheetListCell} from './SheetListCell'
 import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
@@ -127,6 +130,7 @@ const DocumentRow = ({
 function DocumentSheetListPaneInner(
   props: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType},
 ) {
+  const {t} = useTranslation(SheetListLocaleNamespace)
   const {documentSchemaType, sortOrder: sortOrderRaw, ...paneProps} = props
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
@@ -276,8 +280,6 @@ function DocumentSheetListPaneInner(
     return false
   }, [isLoading, rowOperations, table.options.meta?.patchDocument])
 
-  const rowsCount = `List total: ${totalRows} item${totalRows === 1 ? '' : 's'}`
-
   const renderContent = () => {
     if (!isReady)
       return (
@@ -319,7 +321,10 @@ function DocumentSheetListPaneInner(
         <Flex direction="row" align="center">
           <DocumentSheetListFilter />
           <Text size={0} muted>
-            {rowsCount}
+            {t('row-count.label', {
+              totalRows,
+              itemPlural: `item${totalRows === 1 ? '' : 's'}`,
+            })}
           </Text>
         </Flex>
         <ColumnsControl table={table} />
@@ -330,11 +335,9 @@ function DocumentSheetListPaneInner(
         </DocumentSheetListProvider>
         <DocumentSheetActions table={table} schemaType={documentSchemaType} />
       </TableContainer>
-      {isReady && (
-        <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
-          <DocumentSheetListPaginator table={table} />
-        </Flex>
-      )}
+      <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
+        <DocumentSheetListPaginator table={table} />
+      </Flex>
     </PaneContainer>
   )
 }
@@ -342,11 +345,21 @@ function DocumentSheetListPaneInner(
 export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
   const schema = useSchema()
   const typeName = props.pane.schemaTypeName
+  const {t} = useTranslation(SheetListLocaleNamespace)
 
   const schemaType = schema.get(typeName)
   if (!schemaType || !isDocumentSchemaType(schemaType)) {
-    throw new Error(`Schema type "${typeName}" not found or not a document schema`)
+    console.error(`Schema type "${typeName}" not found`)
+
+    return (
+      <Box padding={4}>
+        <Text>
+          <Translate t={t} i18nKey="not-supported.no-schema-type" />
+        </Text>
+      </Box>
+    )
   }
+
   return (
     <SearchProvider>
       <DocumentSheetListPaneInner {...props} documentSchemaType={schemaType} />
