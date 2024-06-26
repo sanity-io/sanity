@@ -39,6 +39,12 @@ import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 import {useDocumentSheetListOperations} from './useDocumentSheetListOperations'
 
+type GeneralDocumentOperation = (
+  publishedDocumentId: string,
+  fieldId: string,
+  ...otherArgs: unknown[]
+) => void
+
 type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'>
 
 const PaneContainer = styled(Flex)`
@@ -167,8 +173,8 @@ function DocumentSheetListPaneInner(
 
   const rowOperations = useDocumentSheetListOperations(rowsPublishedIds, documentSchemaType.name)
 
-  const handlePatchDocument = useCallback(
-    (publishedDocumentId: string, fieldId: string, value: any) => {
+  const handlePatchDocument: GeneralDocumentOperation = useCallback(
+    (publishedDocumentId, fieldId, value: any) => {
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
@@ -192,8 +198,8 @@ function DocumentSheetListPaneInner(
     [rows, rowOperations],
   )
 
-  const handleUnsetDocumentValue = useCallback(
-    (publishedDocumentId: string, fieldId: string) => {
+  const handleUnsetDocumentValue: GeneralDocumentOperation = useCallback(
+    (publishedDocumentId, fieldId) => {
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
@@ -217,13 +223,26 @@ function DocumentSheetListPaneInner(
     [rows, rowOperations],
   )
 
+  const readOnlyFieldGuard = useCallback(
+    (operation: GeneralDocumentOperation) => {
+      return (...args: [string, string, ...unknown[]]) => {
+        const [publishedDocumentId, fieldId, ...otherArgs] = args
+        const isReadOnlyField = table.getColumn(fieldId)?.columnDef.meta?.fieldType?.readOnly
+        if (isReadOnlyField) return
+
+        operation(publishedDocumentId, fieldId, ...otherArgs)
+      }
+    },
+    [table],
+  )
+
   if (table.options.meta) {
     table.setOptions((currentOptions) => {
       const nextOptions = {...currentOptions}
       if (!nextOptions.meta) return currentOptions
 
-      nextOptions.meta.patchDocument = handlePatchDocument
-      nextOptions.meta.unsetDocumentValue = handleUnsetDocumentValue
+      nextOptions.meta.patchDocument = readOnlyFieldGuard(handlePatchDocument)
+      nextOptions.meta.unsetDocumentValue = readOnlyFieldGuard(handleUnsetDocumentValue)
 
       return nextOptions
     })
