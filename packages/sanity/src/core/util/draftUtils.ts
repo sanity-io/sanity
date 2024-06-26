@@ -78,11 +78,6 @@ export function isPublishedId(id: string): id is PublishedId {
 
 /** @internal */
 export function getDraftId(id: string): DraftId {
-  // meaning, it already has a version attached to it
-  if (id.includes('.')) {
-    return id as DraftId
-  }
-
   return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
