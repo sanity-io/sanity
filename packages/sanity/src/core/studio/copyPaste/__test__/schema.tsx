@@ -141,6 +141,7 @@ export const schema = createSchema({
           type: 'number',
         },
         {type: 'image', name: 'profileImage'},
+        {type: 'file', name: 'profileCV'},
         {
           name: 'bio',
           type: 'array',
