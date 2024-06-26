@@ -4,6 +4,8 @@ import {
   isArrayOfObjectsSchemaType,
   isArrayOfPrimitivesSchemaType,
   isArraySchemaType,
+  isFileSchemaType,
+  isImageSchemaType,
   isObjectSchemaType,
   isPrimitiveSchemaType,
   isReferenceSchemaType,
@@ -12,7 +14,7 @@ import {
   type StringSchemaType,
   type TypedObject,
 } from '@sanity/types'
-import {type Path, type SchemaType} from 'sanity'
+import {isRecord, type Path, type SchemaType} from 'sanity'
 
 import {getValueAtPath} from '../../field/paths/helpers'
 import {randomKey} from '../../form/utils/randomKey'
@@ -22,6 +24,10 @@ export interface TransferValueError {
   level: 'warning' | 'error'
   message: string
   sourceValue: unknown
+}
+
+function isEqualSchemaType(a: unknown, b: unknown): boolean {
+  return isRecord(a) && isRecord(b) && (a.name === b.name || isEqualSchemaType(a.type, b.type))
 }
 
 const defaultKeyGenerator = () => randomKey(12)
@@ -95,7 +101,7 @@ export function transferValue({
     targetSchemaTypeAtPath.jsonType === 'object'
   ) {
     // Special handling for reference objects to ensure that (some) common references exists
-    // I think this is the best effort we can do without fetching and inspecting the actual referenced data,
+    // I think this is the best effort we can do without fetching and inspecting the actual referenced data
     if (
       isReferenceSchemaType(sourceSchemaTypeAtPath) &&
       isReferenceSchemaType(targetSchemaTypeAtPath)
@@ -112,6 +118,23 @@ export function transferValue({
           targetValue: undefined,
           errors,
         }
+      }
+    }
+
+    // Special handling for image/file objects to ensure that you can't copy image into file and vice versa
+    // I think this is the best effort we can do without fetching and inspecting the actual referenced data
+    if (
+      (isImageSchemaType(sourceSchemaTypeAtPath) || isFileSchemaType(sourceSchemaTypeAtPath)) &&
+      !isEqualSchemaType(sourceSchemaTypeAtPath, targetSchemaTypeAtPath)
+    ) {
+      errors.push({
+        level: 'error',
+        message: `A ${sourceSchemaTypeAtPath.name} is not allowed in a ${targetSchemaTypeAtPath.name}`,
+        sourceValue,
+      })
+      return {
+        targetValue: undefined,
+        errors,
       }
     }
 
