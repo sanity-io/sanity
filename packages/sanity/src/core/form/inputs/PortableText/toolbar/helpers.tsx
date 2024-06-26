@@ -1,4 +1,9 @@
 import {
+  type HotkeyOptions,
+  PortableTextEditor,
+  type PortableTextMemberSchemaTypes,
+} from '@portabletext/editor'
+import {
   BlockElementIcon,
   BoldIcon,
   CodeIcon,
@@ -11,11 +16,6 @@ import {
   UnderlineIcon,
   UnknownIcon,
 } from '@sanity/icons'
-import {
-  type HotkeyOptions,
-  PortableTextEditor,
-  type PortableTextMemberSchemaTypes,
-} from '@sanity/portable-text-editor'
 import {type ObjectSchemaType} from '@sanity/types'
 import {capitalize, get} from 'lodash'
 import {type ComponentType} from 'react'

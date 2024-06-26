@@ -1,4 +1,4 @@
-import {type PortableTextEditor} from '@sanity/portable-text-editor'
+import {type PortableTextEditor} from '@portabletext/editor'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {createRef, type RefObject, useMemo, useState} from 'react'
 import {type InputProps, type PortableTextInputProps} from 'sanity'

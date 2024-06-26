@@ -9,7 +9,7 @@ import {
   PortableTextEditor,
   type RangeDecoration,
   type RenderEditableFunction,
-} from '@sanity/portable-text-editor'
+} from '@portabletext/editor'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Text, useToast} from '@sanity/ui'

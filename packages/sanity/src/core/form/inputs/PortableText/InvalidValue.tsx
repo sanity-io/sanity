@@ -1,4 +1,4 @@
-import {type InvalidValueResolution} from '@sanity/portable-text-editor'
+import {type InvalidValueResolution} from '@portabletext/editor'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
   Box,

@@ -1,5 +1,5 @@
+import {keyGenerator} from '@portabletext/editor'
 import {CopyIcon} from '@sanity/icons'
-import {keyGenerator} from '@sanity/portable-text-editor'
 import {type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {memo, useCallback} from 'react'
 

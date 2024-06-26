@@ -4,7 +4,7 @@ import {
   PortableTextEditable,
   PortableTextEditor,
   type RenderBlockFunction,
-} from '@sanity/portable-text-editor'
+} from '@portabletext/editor'
 import {Schema} from '@sanity/schema'
 import {type PortableTextBlock} from '@sanity/types'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'

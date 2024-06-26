@@ -1,4 +1,4 @@
-import {PortableTextEditor} from '@sanity/portable-text-editor'
+import {PortableTextEditor} from '@portabletext/editor'
 import {useMemo} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
 

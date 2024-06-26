@@ -1,4 +1,4 @@
-import {type RenderBlockFunction} from '@sanity/portable-text-editor'
+import {type RenderBlockFunction} from '@portabletext/editor'
 
 import {DescriptionInputBlock} from '../blocks'
 

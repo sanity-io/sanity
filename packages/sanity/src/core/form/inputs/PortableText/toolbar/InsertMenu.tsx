@@ -1,4 +1,4 @@
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {upperFirst} from 'lodash'
 import {memo, useCallback, useMemo} from 'react'
 
