@@ -49,7 +49,7 @@ export interface CopyPasteContextType {
  */
 export interface BaseOptions {
   context?: {
-    source: 'fieldAction' | 'keyboardShortcut' | 'unknown'
+    source: 'fieldAction' | 'documentFieldAction' | 'keyboardShortcut' | 'unknown'
   }
 }
 
