@@ -1,5 +1,5 @@
 import {type SanityDocument, type SchemaType} from '@sanity/types'
-import {Flex} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {isNumber, isString} from 'lodash'
 import {type ComponentType, isValidElement, useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -73,14 +73,20 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const tooltip = <DocumentStatus draft={draft} published={published} version={version} />
 
+  // TODO: Remove debug `_id` output.
   return (
-    <SanityDefaultPreview
-      {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
-      isPlaceholder={isLoading}
-      icon={icon}
-      layout={layout}
-      status={status}
-      tooltip={tooltip}
-    />
+    <>
+      <Text size={1} muted>
+        {(version ?? draft ?? published)?._id}
+      </Text>
+      <SanityDefaultPreview
+        {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
+        isPlaceholder={isLoading}
+        icon={icon}
+        layout={layout}
+        status={status}
+        tooltip={tooltip}
+      />
+    </>
   )
 }
