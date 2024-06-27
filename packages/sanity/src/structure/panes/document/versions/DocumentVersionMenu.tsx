@@ -16,14 +16,11 @@ import {
 import {camelCase} from 'lodash'
 import {useCallback, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sanity'
+import {useRouter} from 'sanity/router'
 
-import {
-  BUNDLES,
-  getAllVersionsOfDocument,
-  getVersionName,
-  type Version,
-} from '../../../../core/util/versions/util'
+import {BUNDLES, getAllVersionsOfDocument, type Version} from '../../../../core/util/versions/util'
 import {ReleaseIcon} from './ReleaseIcon'
+import {VersionBadge} from './VersionBadge'
 
 function toSlug(str: string) {
   return camelCase(str)
@@ -36,10 +33,14 @@ export function DocumentVersionMenu(props: {
   const {documentId, documentType} = props
   const {newVersion} = useDocumentOperation(documentId, documentType)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const selectedVersion = getVersionName(documentId)
-  const isDraft = selectedVersion === 'draft'
+  const router = useRouter()
 
   const [documentVersions, setDocumentVersions] = useState<Version[]>([])
+
+  // eslint-disable-next-line no-warning-comments
+  // FIXME ONCE THE SWITCH OF VERSIONS
+  const selectedVersion = documentVersions[0] //getVersionName(documentId)
+  const isDraft = selectedVersion?.name === 'draft'
 
   // search
   const [addVersionTitle, setAddVersionTitle] = useState('')
@@ -84,18 +85,20 @@ export function DocumentVersionMenu(props: {
 
   const handleChangeToVersion = useCallback(
     (name: string) => () => {
-      // eslint-disable-next-line no-console
-      console.log('changing to an already existing version', name)
+      if (name === 'drafts') {
+        router.navigateStickyParam('perspective', '')
+      } else {
+        router.navigateStickyParam('perspective', `bundle.${name}`)
+      }
     },
-    [],
+    [router],
   )
 
   const handleGoToLatest = useCallback(
     () => () => {
-      // eslint-disable-next-line no-console
-      console.log('switching into drafts / latest')
+      router.navigateStickyParam('perspective', '')
     },
-    [],
+    [router],
   )
 
   const onMenuOpen = useCallback(async () => {
@@ -105,6 +108,10 @@ export function DocumentVersionMenu(props: {
 
   return (
     <>
+      {selectedVersion && selectedVersion.name !== 'draft' && (
+        <VersionBadge version={selectedVersion} />
+      )}
+
       <Box flex="none">
         <MenuButton
           button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
@@ -141,9 +148,10 @@ export function DocumentVersionMenu(props: {
                     {documentVersions.map((r) => (
                       <MenuItem
                         key={r.name}
+                        href=""
                         onClick={handleChangeToVersion(r.name)}
                         padding={1}
-                        pressed={selectedVersion === r.name}
+                        pressed={selectedVersion.name === r.name}
                       >
                         <Flex>
                           {<ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />}
@@ -170,7 +178,7 @@ export function DocumentVersionMenu(props: {
                             <Text size={1}>
                               {
                                 <CheckmarkIcon
-                                  style={{opacity: r.name === selectedVersion ? 1 : 0}}
+                                  style={{opacity: r.name === selectedVersion.name ? 1 : 0}}
                                 />
                               }
                             </Text>
