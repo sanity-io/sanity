@@ -30,5 +30,5 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
     return prev.filter(({action}) => action !== 'restore')
   }
 
-  return [...prev]
+  return prev
 }
