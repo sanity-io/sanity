@@ -26,8 +26,12 @@ import {isEmptyValue, tryResolveSchemaTypeForPath} from './utils'
 
 export interface TransferValueError {
   level: 'warning' | 'error'
-  message: string
   sourceValue: unknown
+
+  i18n: {
+    key: string
+    args?: Record<string, unknown>
+  }
 }
 
 function isEqualSchemaType(a: unknown, b: unknown): boolean {
@@ -133,8 +137,11 @@ export async function transferValue({
       errors: [
         {
           level: 'error',
-          message: `The target is read-only`,
           sourceValue,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.read-only-target.description',
+          },
         },
       ],
     }
@@ -162,8 +169,11 @@ export async function transferValue({
       errors: [
         {
           level: 'error',
-          message: 'Source and target schema types are not compatible',
           sourceValue,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.schema-type-incompatible.description',
+          },
         },
       ],
     }
@@ -184,12 +194,21 @@ export async function transferValue({
     ) {
       const sourceReferenceTypes = sourceSchemaTypeAtPath.to.map((type) => type.name)
       const targetReferenceTypes = targetSchemaTypeAtPath.to.map((type) => type.name)
+
       if (!targetReferenceTypes.some((type) => sourceReferenceTypes.includes(type))) {
         errors.push({
           level: 'error',
-          message: `References of type ${sourceReferenceTypes.join(', ')} is not allowed in reference field to types ${sourceReferenceTypes.join(', ')}`,
           sourceValue,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.reference-type-incompatible.description',
+            args: {
+              sourceReferenceTypes,
+              targetReferenceTypes,
+            },
+          },
         })
+
         return {
           targetValue: undefined,
           errors,
@@ -205,8 +224,15 @@ export async function transferValue({
     ) {
       errors.push({
         level: 'error',
-        message: `A ${sourceSchemaTypeAtPath.name} is not allowed in a ${targetSchemaTypeAtPath.name}`,
         sourceValue,
+
+        i18n: {
+          key: 'copy-paste.on-paste.validation.image-file-incompatible.description',
+          args: {
+            sourceSchemaType: sourceSchemaTypeAtPath.name,
+            targetSchemaType: targetSchemaTypeAtPath.name,
+          },
+        },
       })
       return {
         targetValue: undefined,
@@ -350,12 +376,14 @@ function collateObjectValue({
       errors,
     }
   }
+
   const targetValue = {
     _type: targetSchemaType.name,
     ...(sourceValue && typeof sourceValue === 'object' && '_key' in sourceValue
       ? {_key: keyGenerator()}
       : {}),
   } as TypedObject
+
   const objectMembers = targetSchemaType.fields
 
   objectMembers.forEach((member) => {
@@ -363,6 +391,7 @@ function collateObjectValue({
     const memberIsArray = isArraySchemaType(memberSchemaType)
     const memberIsObject = isObjectSchemaType(memberSchemaType)
     const memberIsPrimitive = isPrimitiveSchemaType(memberSchemaType)
+
     // Primitive field
     if (memberIsPrimitive) {
       const genericValue = sourceValue
@@ -373,9 +402,11 @@ function collateObjectValue({
         targetSchemaType: memberSchemaType,
         errors,
       })
+
       if (!isEmptyValue(collated.targetValue)) {
         targetValue[member.name] = collated.targetValue
       }
+
       // Object field
     } else if (memberIsObject) {
       const collated = collateObjectValue({
@@ -388,9 +419,11 @@ function collateObjectValue({
         errors,
         keyGenerator,
       })
+
       if (!isEmptyValue(collated.targetValue)) {
         targetValue[member.name] = cleanObjectKeys(collated.targetValue as TypedObject)
       }
+
       // Array field
     } else if (memberIsArray) {
       const genericValue = sourceValue
@@ -407,12 +440,15 @@ function collateObjectValue({
       }
     }
   })
+
   const valueAtTargetPath = getValueAtPath(targetValue, targetPath)
   const resultingValue = cleanObjectKeys(valueAtTargetPath as TypedObject)
+
   // Special handling for weak references
   if (isReferenceSchemaType(targetSchemaType) && targetSchemaType.weak) {
     resultingValue._weak = true
   }
+
   return {
     targetValue: resultingValue,
     errors,
@@ -450,12 +486,19 @@ function collateArrayValue({
       errors: [
         {
           level: 'error',
-          message: `Value of type ${typeof genericValue}, is not allowed in this array field`,
           sourceValue,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.array-type-incompatible.description',
+            args: {
+              type: typeof genericValue,
+            },
+          },
         },
       ],
     }
   }
+
   const isArrayOfPrimitivesMember = isArrayOfPrimitivesSchemaType(targetSchemaType)
   const isArrayOfObjectsMember = isArrayOfObjectsSchemaType(targetSchemaType)
 
@@ -478,11 +521,18 @@ function collateArrayValue({
       nonTransferredItems.forEach((item) => {
         errors.push({
           level: transferredItems.length > 0 ? 'warning' : 'error',
-          message: `Value of type ${typeof item}, is not allowed in this array field`,
           sourceValue: item,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.array-value-incompatible.description',
+            args: {
+              type: typeof item,
+            },
+          },
         })
       })
     }
+
     if (transferredItems.length > 0) {
       targetValue = transferredItems
     }
@@ -497,6 +547,7 @@ function collateArrayValue({
     const nonTransferredItems = value.filter(
       (item) => !targetSchemaType.of.some((type) => type.name === item._type),
     )
+
     targetValue =
       transferredItems.length > 0
         ? transferredItems
@@ -514,16 +565,24 @@ function collateArrayValue({
             })
             .filter((item) => !isEmptyValue(item))
         : undefined
+
     if (nonTransferredItems.length > 0) {
       nonTransferredItems.forEach((item) => {
         errors.push({
           level: transferredItems.length > 0 ? 'warning' : 'error',
-          message: `Value of type '${item._type || typeof item}' is not allowed in this array field`,
           sourceValue: item,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.array-value-incompatible.description',
+            args: {
+              type: item._type || typeof item,
+            },
+          },
         })
       })
     }
   }
+
   return {
     targetValue,
     errors,
@@ -548,7 +607,9 @@ function collatePrimitiveValue({
       errors,
     }
   }
+
   let targetValue: unknown
+
   const primitiveValue = sourceValue as unknown
   if (typeof primitiveValue === 'undefined') {
     return {
@@ -556,6 +617,7 @@ function collatePrimitiveValue({
       errors,
     }
   }
+
   const isSamePrimitiveType = targetSchemaType.jsonType === typeof primitiveValue
 
   // We also allow numbers to be transferred to string fields
@@ -574,11 +636,19 @@ function collatePrimitiveValue({
         targetSchemaType.options?.list?.map((item) =>
           typeof item === 'string' || typeof item === 'number' ? item : item.value,
         ) || []
+
       if (allowedStrings.length > 0 && !allowedStrings.includes(primitiveValue)) {
         errors.push({
           level: 'error',
-          message: `Value '${primitiveValue}' is not allowed in ${targetSchemaType.title || targetSchemaType.name}`,
           sourceValue: primitiveValue,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.string-value-incompatible.description',
+            args: {
+              value: primitiveValue,
+              allowedStrings,
+            },
+          },
         })
       }
     }
@@ -588,10 +658,17 @@ function collatePrimitiveValue({
   } else {
     errors.push({
       level: 'error',
-      message: `Value of type ${typeof primitiveValue}, is not allowed in this field`,
       sourceValue: primitiveValue,
+
+      i18n: {
+        key: 'copy-paste.on-paste.validation.primitive-type-incompatible.description',
+        args: {
+          type: typeof primitiveValue,
+        },
+      },
     })
   }
+
   return {
     targetValue,
     errors,

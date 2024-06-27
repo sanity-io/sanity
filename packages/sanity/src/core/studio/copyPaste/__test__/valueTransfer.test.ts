@@ -33,8 +33,8 @@ describe('transferValue', () => {
       targetPath: ['bio'],
     })
     expect(transferValueResult.errors.length).toEqual(1)
-    expect(transferValueResult.errors[0].message).toEqual(
-      'Source and target schema types are not compatible',
+    expect(transferValueResult.errors[0].i18n.key).toEqual(
+      'copy-paste.on-paste.validation.schema-type-incompatible.description',
     )
   })
 
@@ -569,7 +569,9 @@ describe('transferValue', () => {
         targetPath: ['profileCV'],
       })
       expect(transferValueResult.errors.length).toEqual(1)
-      expect(transferValueResult.errors[0].message).toEqual('A image is not allowed in a file')
+      expect(transferValueResult.errors[0].i18n.key).toEqual(
+        'copy-paste.on-paste.validation.image-file-incompatible.description',
+      )
     })
 
     test('can copy weak references into hard references', async () => {
