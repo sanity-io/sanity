@@ -415,7 +415,16 @@ export type AllSanitySchemaTypes = OptionalData;"
       },
     } satisfies TypeNode
 
-    const typeGenerator = new TypeGenerator([])
+    const typeGenerator = new TypeGenerator([
+      {
+        type: 'type',
+        name: 'test',
+        value: {
+          type: 'object',
+          attributes: {test: {type: 'objectAttribute', value: {type: 'string'}}},
+        },
+      },
+    ])
     const objectNodeOut = typeGenerator.generateTypeNodeTypes('myObject', objectNode)
     expect(objectNodeOut).toMatchSnapshot()
 
@@ -424,5 +433,25 @@ export type AllSanitySchemaTypes = OptionalData;"
       name: 'myObject',
     })
     expect(someOtherTypeOut).toMatchSnapshot()
+  })
+
+  test('Adds a comment when missing referenced inline type', () => {
+    const objectNode = {
+      type: 'object',
+      attributes: {
+        test: {
+          type: 'objectAttribute',
+          value: {type: 'string'},
+        },
+      },
+      rest: {
+        type: 'inline',
+        name: 'test',
+      },
+    } satisfies TypeNode
+
+    const typeGenerator = new TypeGenerator([])
+    const objectNodeOut = typeGenerator.generateTypeNodeTypes('myObject', objectNode)
+    expect(objectNodeOut).toMatchSnapshot()
   })
 })

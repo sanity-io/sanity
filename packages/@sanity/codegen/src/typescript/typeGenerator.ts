@@ -21,7 +21,8 @@ const ALL_SCHEMA_TYPES = 'AllSanitySchemaTypes'
  */
 export class TypeGenerator {
   private generatedTypeName: Set<string> = new Set()
-  private typeNameMap: Map<string, string> = new Map()
+  private typeNameMap: Map<TypeNode | DocumentSchemaType | TypeDeclarationSchemaType, string> =
+    new Map()
 
   private readonly schema: SchemaType
 
@@ -38,14 +39,13 @@ export class TypeGenerator {
   generateSchemaTypes(): string {
     const typeDeclarations: (t.TSTypeAliasDeclaration | t.ExportNamedDeclaration)[] = []
 
+    const schemaNames = new Set<string>()
     this.schema.forEach((schema) => {
       const typeLiteral = this.getTypeNodeType(schema)
 
-      const typeAlias = t.tsTypeAliasDeclaration(
-        t.identifier(this.getTypeName(schema.name)),
-        null,
-        typeLiteral,
-      )
+      const schemaName = this.getTypeName(schema.name, schema)
+      schemaNames.add(schemaName)
+      const typeAlias = t.tsTypeAliasDeclaration(t.identifier(schemaName), null, typeLiteral)
 
       typeDeclarations.push(t.exportNamedDeclaration(typeAlias))
     })
@@ -56,15 +56,7 @@ export class TypeGenerator {
           t.identifier(this.getTypeName(ALL_SCHEMA_TYPES)),
           null,
           t.tsUnionType(
-            this.schema.map(({name}) => {
-              const typeName = this.typeNameMap.get(name)
-              if (!typeName) {
-                // this is a type guard since maps return undefined if the key is not found, however this map should
-                // be set inside the loop above by `this.getTypeName(...)`
-                throw new Error(`Unexpected error: Could not find type name for schema ${name}`)
-              }
-              return t.tsTypeReference(t.identifier(typeName))
-            }),
+            [...schemaNames].map((typeName) => t.tsTypeReference(t.identifier(typeName))),
           ),
         ),
       ),
@@ -86,7 +78,7 @@ export class TypeGenerator {
     const type = this.getTypeNodeType(typeNode)
 
     const typeAlias = t.tsTypeAliasDeclaration(
-      t.identifier(this.getTypeName(identifierName)),
+      t.identifier(this.getTypeName(identifierName, typeNode)),
       null,
       type,
     )
@@ -111,7 +103,10 @@ export class TypeGenerator {
    * types would be sanityized into MuxVideo. To avoid this we keep track of the generated type names and add a index to the name.
    * When we reference a type we also keep track of the original name so we can reference the correct type later.
    */
-  private getTypeName(name: string): string {
+  private getTypeName(
+    name: string,
+    typeNode?: TypeNode | DocumentSchemaType | TypeDeclarationSchemaType,
+  ): string {
     const desiredName = uppercaseFirstLetter(sanitizeIdentifier(name))
 
     let generatedName = desiredName
@@ -121,7 +116,10 @@ export class TypeGenerator {
       generatedName = `${desiredName}_${i++}`
     }
     this.generatedTypeName.add(generatedName)
-    this.typeNameMap.set(name, generatedName)
+    if (typeNode) {
+      this.typeNameMap.set(typeNode, generatedName)
+    }
+
     return generatedName
   }
 
@@ -209,31 +207,44 @@ export class TypeGenerator {
     Object.entries(typeNode.attributes).forEach(([key, attribute]) => {
       props.push(this.generateObjectProperty(key, attribute))
     })
-    if (typeNode.rest !== undefined) {
-      switch (typeNode.rest.type) {
+    const rest = typeNode.rest
+    if (rest !== undefined) {
+      switch (rest.type) {
         case 'unknown': {
           return t.tsUnknownKeyword()
         }
         case 'object': {
-          Object.entries(typeNode.rest.attributes).forEach(([key, attribute]) => {
+          Object.entries(rest.attributes).forEach(([key, attribute]) => {
             props.push(this.generateObjectProperty(key, attribute))
           })
           break
         }
         case 'inline': {
+          const referencedTypeNode = this.schema.find((schema) => schema.name === rest.name)
+          if (referencedTypeNode === undefined) {
+            const missing = t.tsUnknownKeyword()
+            missing.trailingComments = [
+              {
+                type: 'CommentLine',
+                value: ` Unable to locate the referenced type "${rest.name}" in schema`,
+              },
+            ]
+            return missing
+          }
+
           return t.tsIntersectionType([
             t.tsTypeLiteral(props),
             t.tsTypeReference(
               t.identifier(
-                this.typeNameMap.get(typeNode.rest.name) ||
-                  uppercaseFirstLetter(sanitizeIdentifier(typeNode.rest.name)),
+                this.typeNameMap.get(referencedTypeNode) ||
+                  uppercaseFirstLetter(sanitizeIdentifier(rest.name)),
               ),
             ),
           ])
         }
         default: {
           // @ts-expect-error This should never happen
-          throw new Error(`Type "${typeNode.rest.type}" not found in schema`)
+          throw new Error(`Type "${rest.type}" not found in schema`)
         }
       }
     }
