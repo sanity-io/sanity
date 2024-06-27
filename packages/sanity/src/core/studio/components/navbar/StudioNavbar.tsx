@@ -8,18 +8,9 @@ import {
   Layer,
   LayerProvider,
   PortalProvider,
-  Select,
   useMediaIndex,
 } from '@sanity/ui'
-import {
-  type ChangeEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -30,6 +21,7 @@ import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {useWorkspace} from '../../workspace'
+import {GlobalReleaseMenu} from '../versions/GlobalReleaseMenu'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {FreeTrial} from './free-trial'
 import {FreeTrialProvider} from './free-trial/FreeTrialProvider'
@@ -170,13 +162,6 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
   const perspective = useMemo(() => router.stickyParams.perspective, [router.stickyParams])
 
-  const handleReleaseChange = useCallback(
-    (element: ChangeEvent<HTMLSelectElement>) => {
-      router.navigateStickyParam('perspective', element.currentTarget.value || '')
-    },
-    [router],
-  )
-
   const actionNodes = useMemo(() => {
     if (!shouldRender.tools) return null
 
@@ -228,6 +213,10 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                     <WorkspaceMenuButton />
                   </Flex>
                 </Flex>
+                {/* Versions button */}
+                <Flex>
+                  <GlobalReleaseMenu />
+                </Flex>
                 {/* New document button */}
                 <NewDocumentButton
                   {...newDocumentOptions}
@@ -237,21 +226,6 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                 {!shouldRender.searchFullscreen && (
                   <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
                 )}
-                <Flex>
-                  {/* TODO: Fix */}
-                  <Select value={perspective} onChange={handleReleaseChange}>
-                    {/* eslint-disable-next-line i18next/no-literal-string */}
-                    <option value="">Published + Drafts</option>
-                    {/* eslint-disable-next-line i18next/no-literal-string */}
-                    <option value="previewDrafts">Preview drafts</option>
-                    {/* eslint-disable-next-line i18next/no-literal-string */}
-                    <option value="published">Published</option>
-                    {/* eslint-disable-next-line i18next/no-literal-string */}
-                    <option value="bundle.summerDrop">Summer Drop</option>
-                    {/* eslint-disable-next-line i18next/no-literal-string */}
-                    <option value="bundle.autumnDrop">Autumn Drop</option>
-                  </Select>
-                </Flex>
               </Flex>
             </TooltipDelayGroupProvider>
 

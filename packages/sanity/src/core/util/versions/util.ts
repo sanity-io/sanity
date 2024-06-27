@@ -37,14 +37,22 @@ export interface SanityReleaseIcon {
 export interface Version {
   name: string
   title: string
-  icon: IconSymbol
-  hue: ColorHueKey
+  icon: IconSymbol | undefined
+  hue: ColorHueKey | undefined
   publishAt: Date | number
+}
+
+export const LATEST: Version = {
+  name: 'draft',
+  title: 'Latest',
+  icon: undefined,
+  hue: undefined,
+  publishAt: 0,
 }
 
 // dummy data
 export const BUNDLES: Version[] = [
-  {name: 'draft', title: 'Published + Drafts', icon: 'archive', hue: 'green', publishAt: 0},
+  LATEST,
   {name: 'previewDrafts', title: 'Preview drafts', icon: 'edit', hue: 'yellow', publishAt: 0},
   {name: 'published', title: 'Published', icon: 'eye-open', hue: 'blue', publishAt: 0},
   {name: 'summerDrop', title: 'Summer Drop', icon: 'sun', hue: 'orange', publishAt: 0},
