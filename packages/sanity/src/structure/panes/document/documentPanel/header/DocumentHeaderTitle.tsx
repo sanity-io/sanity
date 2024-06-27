@@ -1,6 +1,6 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {type ReactElement} from 'react'
+import {createElement, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -50,9 +50,7 @@ export function DocumentHeaderTitle(): ReactElement {
   return (
     <Flex flex={1} gap={0}>
       <Flex flex="none" gap={3} padding={2}>
-        <Text size={1}>
-          <DocumentIcon />
-        </Text>
+        <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
         <Text
           muted={!value?.title}
           size={1}
@@ -67,7 +65,7 @@ export function DocumentHeaderTitle(): ReactElement {
         </Text>
       </Flex>
 
-      <Flex flex="none" gap={1}>
+      <Flex flex="none" gap={1} hidden>
         <DocumentVersionMenu documentId={documentId} documentType={documentType} />
       </Flex>
     </Flex>
