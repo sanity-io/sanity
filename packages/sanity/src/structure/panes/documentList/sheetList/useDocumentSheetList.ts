@@ -95,7 +95,7 @@ export function useDocumentSheetList(
           },
         }
       })
-      .sort((a, b) => getSortIndexForId(a) - getSortIndexForId(b))
+      .sort((docA, docB) => getSortIndexForId(docA) - getSortIndexForId(docB))
   }, [data, items, allDocuments])
 
   return {data: documents, isLoading}
