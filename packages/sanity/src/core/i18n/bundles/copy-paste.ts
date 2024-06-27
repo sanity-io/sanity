@@ -59,6 +59,14 @@ const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
   /** The success message that is shown when a field is pasted */
   'copy-paste.on-paste.validation.field_one-paste-success.title': 'Field "{{fieldName}}" updated',
 
+  /** The error message that is shown when the MIME type is not accepted */
+  'copy-paste.on-paste.validation.mime-type-incompatible.description':
+    'MIME type "{{mimeType}}" is not accepted for this field',
+
+  /** The error message that is shown when the MIME type validation fails */
+  'copy-paste.on-paste.validation.mime-type-validation-failed.description':
+    'MIME type validation failed',
+
   /** --- On copy --- */
 
   /** The error message that is shown when there is an unknown error looking up document metadata */
