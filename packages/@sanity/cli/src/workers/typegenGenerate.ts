@@ -131,10 +131,8 @@ async function main() {
         const ast = safeParseQuery(query)
         const queryTypes = typeEvaluate(ast, schema)
 
-        const {type, typeName} = typeGenerator.generateTypeNodeTypes(
-          `${queryName}Result`,
-          queryTypes,
-        )
+        const typeName = `${queryName}Result`
+        const type = typeGenerator.generateTypeNodeTypes(typeName, queryTypes)
         const code = await maybeFormatCode(type.trim(), opts.prettierConfig)
 
         const queryTypeStats = walkAndCountQueryTypeNodeStats(queryTypes)

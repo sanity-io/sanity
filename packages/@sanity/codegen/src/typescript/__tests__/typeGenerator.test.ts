@@ -487,7 +487,12 @@ describe('generateQueryMap', () => {
       },
     ]
 
+    const objectNode = {type: 'unknown'} satisfies TypeNode
+
     const typeGenerator = new TypeGenerator(schema)
+    typeGenerator.generateTypeNodeTypes('AuthorsResult', objectNode)
+    typeGenerator.generateTypeNodeTypes('FirstAuthorResult', objectNode)
+
     const actualOutput = typeGenerator.generateQueryMap(queries)
 
     expect(actualOutput).toMatchInlineSnapshot(`

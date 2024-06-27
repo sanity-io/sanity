@@ -79,19 +79,13 @@ export class TypeGenerator {
    * @internal
    * @beta
    */
-  generateTypeNodeTypes(
-    identifierName: string,
-    typeNode: TypeNode,
-  ): {type: string; typeName: string} {
+  generateTypeNodeTypes(identifierName: string, typeNode: TypeNode): string {
     const type = this.getTypeNodeType(typeNode)
 
     const typeName = this.getTypeName(identifierName)
     const typeAlias = t.tsTypeAliasDeclaration(t.identifier(typeName), null, type)
 
-    return {
-      type: new CodeGenerator(t.exportNamedDeclaration(typeAlias)).generate().code.trim(),
-      typeName,
-    }
+    return new CodeGenerator(t.exportNamedDeclaration(typeAlias)).generate().code.trim()
   }
 
   static generateKnownTypes(): string {
@@ -121,12 +115,19 @@ export class TypeGenerator {
       null,
       [],
       t.tsInterfaceBody(
-        queries.map((query) =>
-          t.tsPropertySignature(
-            t.stringLiteral(query.query),
-            t.tsTypeAnnotation(t.tsTypeReference(t.identifier(query.typeName))),
-          ),
-        ),
+        queries
+          .map((query) => {
+            const name = this.typeNameMap.get(query.typeName)
+            if (!name) {
+              return null
+            }
+
+            return t.tsPropertySignature(
+              t.stringLiteral(query.query),
+              t.tsTypeAnnotation(t.tsTypeReference(t.identifier(name))),
+            )
+          })
+          .filter((entry): entry is t.TSPropertySignature => entry !== null),
       ),
     )
 
