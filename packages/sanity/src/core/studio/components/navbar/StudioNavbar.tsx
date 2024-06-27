@@ -214,18 +214,18 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </Flex>
                 </Flex>
                 {/* Versions button */}
-                <Flex>
+                <Flex gap={2}>
                   <GlobalReleaseMenu />
+                  {/* New document button */}
+                  <NewDocumentButton
+                    {...newDocumentOptions}
+                    modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
+                  />
+                  {/* Search button (desktop) */}
+                  {!shouldRender.searchFullscreen && (
+                    <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
+                  )}
                 </Flex>
-                {/* New document button */}
-                <NewDocumentButton
-                  {...newDocumentOptions}
-                  modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
-                />
-                {/* Search button (desktop) */}
-                {!shouldRender.searchFullscreen && (
-                  <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
-                )}
               </Flex>
             </TooltipDelayGroupProvider>
 
