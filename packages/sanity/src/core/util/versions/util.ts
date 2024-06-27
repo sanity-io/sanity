@@ -62,7 +62,7 @@ export async function getAllVersionsOfDocument(
   client: SanityClient,
   documentId: string,
 ): Promise<Version[]> {
-  // remove all versions, get just id (anything before .)
+  // remove all versions, get just id (anything anything after first .)
   const id = documentId.replace(/^[^.]*\./, '')
 
   const query = `*[_id match "*${id}*"]`
