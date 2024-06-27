@@ -38,6 +38,368 @@ describe('transferValue', () => {
     )
   })
 
+  describe('documents', () => {
+    test('can copy document of same type', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', name: 'Knut'}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('author')!,
+        targetPath: [],
+      })
+      expect(transferValueResult?.targetValue).toEqual({_type: 'author', name: 'Knut'})
+    })
+
+    test('can copy document of different type with shared fields', async () => {
+      const sourceValue = {
+        _type: 'author',
+        _id: 'xxx',
+        name: 'Knut',
+        uniqueStringNotInOtherDocument: 'Testing, testing',
+        friends: [
+          {
+            _key: 'someKey-1',
+            _type: 'reference',
+            _ref: 'e4be7fa20bb20c271060a46bca82b9e84907a13a-320x320-jpg',
+          },
+        ],
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: [],
+      })
+      expect(transferValueResult?.errors.length).toEqual(0)
+      expect(transferValueResult?.targetValue).toEqual({
+        _type: 'editor',
+        name: 'Knut',
+        friends: [
+          {
+            _key: expect.any(String),
+            _type: 'reference',
+            _ref: 'e4be7fa20bb20c271060a46bca82b9e84907a13a-320x320-jpg',
+          },
+        ],
+      })
+    })
+  })
+
+  describe('strings', () => {
+    test('can copy string', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', name: 'Knut'}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['name'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['name'],
+      })
+      expect(transferValueResult?.targetValue).toEqual('Knut')
+    })
+
+    test('can copy string into number', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', name: 'Knut'}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['name'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['born'],
+      })
+      expect(transferValueResult?.errors.length).toEqual(1)
+    })
+
+    test('can copy string into number with list', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', name: 'Knut'}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['name'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['testNumberWithListObjects'],
+      })
+      expect(transferValueResult?.errors.length).toEqual(1)
+    })
+
+    test('can copy string into array of strings', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', name: 'Knut'}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['name'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['favoriteStrings'],
+      })
+      expect(transferValueResult?.errors.length).toEqual(0)
+      expect(transferValueResult?.targetValue).toEqual(['Knut'])
+    })
+  })
+
+  describe('references', () => {
+    // generate tests for reference to reference, array of references
+    test('can copy reference', async () => {
+      const sourceValue = {
+        _type: 'author',
+        _id: 'xxx',
+        bestFriend: {_type: 'reference', _ref: 'yyy'},
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['bestFriend'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['bestAuthorFriend'],
+      })
+      expect(transferValueResult?.targetValue).toEqual({_type: 'reference', _ref: 'yyy'})
+    })
+    test('cant copy reference into another that doesnt accept type', async () => {
+      const sourceValue = {
+        _type: 'author',
+        _id: 'xxx',
+        bestFriend: {_type: 'reference', _ref: 'yyy'},
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['bestFriend'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['relatedEditor'],
+      })
+      expect(transferValueResult?.errors.length).toEqual(1)
+      expect(transferValueResult?.targetValue).toEqual(undefined)
+    })
+  })
+
+  describe('booleans', () => {
+    test('can copy boolean', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', isVerified: true}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['isVerified'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['isVerified'],
+      })
+      expect(transferValueResult?.targetValue).toEqual(true)
+    })
+    test('can copy boolean into array of booleans', async () => {
+      const sourceValue = {_type: 'editor', _id: 'xxx', isVerified: false}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('editor')!,
+        sourcePath: ['isVerified'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['favoriteBooleans'],
+      })
+      expect(transferValueResult?.errors.length).toEqual(0)
+      expect(transferValueResult?.targetValue).toEqual([false])
+    })
+
+    test('can copy booleans inside objects', async () => {
+      const sourceValue = {
+        _type: 'editor',
+        _id: 'xxx',
+        profile: {
+          _type: 'profile',
+          isFavorite: false,
+        },
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('editor')!,
+        sourcePath: ['profile'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['profile'],
+      })
+      expect(transferValueResult?.targetValue).toMatchObject({
+        _type: 'object',
+        isFavorite: false,
+      })
+    })
+  })
+
+  describe('arrays', () => {
+    test('can copy array of numbers', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', favoriteNumbers: [1, 2, 3]}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['favoriteNumbers'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['favoriteNumbers'],
+      })
+      expect(transferValueResult?.targetValue).toEqual([1, 2, 3])
+    })
+    test('can copy array of strings', async () => {
+      const sourceValue = {
+        _type: 'editor',
+        _id: 'xxx',
+        favoriteStrings: ['Alice', 'Bob', 'Charlie'],
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('editor')!,
+        sourcePath: ['favoriteStrings'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['favoriteStrings'],
+      })
+      expect(transferValueResult?.targetValue).toEqual(['Alice', 'Bob', 'Charlie'])
+    })
+    test('can copy array of predefined options', async () => {
+      const sourceValue = {
+        _type: 'editor',
+        _id: 'xxx',
+        arrayOfPredefinedOptions: [
+          {
+            _type: 'color',
+            title: 'Red',
+            name: 'red',
+            _key: 'auto-generated-0',
+          },
+          {
+            _type: 'color',
+            title: 'Blue',
+            name: 'blue',
+            _key: 'blue',
+          },
+        ],
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('editor')!,
+        sourcePath: ['arrayOfPredefinedOptions'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['arrayOfPredefinedOptions'],
+      })
+      expect(transferValueResult?.targetValue).toEqual([
+        {_key: expect.any(String), title: 'Red', name: 'red', _type: 'color'},
+        {_key: expect.any(String), title: 'Blue', name: 'blue', _type: 'color'},
+      ])
+    })
+    test('can copy array of multiple types', async () => {
+      const sourceValue = {
+        _type: 'editor',
+        _id: 'xxx',
+        arrayOfPredefinedOptions: [
+          {
+            _type: 'color',
+            title: 'Red',
+            name: 'red',
+            _key: 'auto-generated-0',
+          },
+          {
+            _type: 'color',
+            title: 'Blue',
+            name: 'blue',
+            _key: 'blue',
+          },
+        ],
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('editor')!,
+        sourcePath: ['arrayOfPredefinedOptions'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['arrayOfPredefinedOptions'],
+      })
+      expect(transferValueResult?.targetValue).toEqual([
+        {_key: expect.any(String), title: 'Red', name: 'red', _type: 'color'},
+        {_key: expect.any(String), title: 'Blue', name: 'blue', _type: 'color'},
+      ])
+    })
+  })
+
+  describe('numbers', () => {
+    test('can copy number', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', born: 1984}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['born'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['born'],
+      })
+      expect(transferValueResult?.targetValue).toEqual(1984)
+    })
+
+    test('can copy number into string', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', born: 1984}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['born'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['name'],
+      })
+      expect(transferValueResult?.errors.length).toEqual(0)
+      expect(transferValueResult?.targetValue).toEqual('1984')
+    })
+
+    test('can copy number into number', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', born: 1984}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['born'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['born'],
+      })
+      expect(transferValueResult?.targetValue).toEqual(1984)
+    })
+
+    test('can copy number into number with list', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', born: 1}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['born'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['testNumberWithListObjects'],
+      })
+      expect(transferValueResult?.targetValue).toEqual(1)
+    })
+
+    test('can copy number into array of strings', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', born: 1}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['born'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['favoriteStrings'],
+      })
+      expect(transferValueResult?.errors.length).toEqual(0)
+      expect(transferValueResult?.targetValue).toEqual(['1'])
+    })
+
+    test('can copy number into array of primitive numbers', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', born: 1}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['born'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['favoriteNumbers'],
+      })
+      expect(transferValueResult?.targetValue).toEqual([1])
+    })
+
+    test('can copy number into number with list and numbers', async () => {
+      const sourceValue = {_type: 'author', _id: 'xxx', born: 1}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['born'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['testNumberWithListObjects'],
+      })
+      expect(transferValueResult?.targetValue).toEqual(1)
+    })
+  })
+
   describe('objects', () => {
     test('can copy object', async () => {
       const sourceValue = {
