@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {useToast} from '@sanity/ui'
@@ -13,6 +14,7 @@ import {
   useSchema,
 } from 'sanity'
 
+import {useTranslation} from '../../i18n'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {useCopyPaste} from './CopyPasteProvider'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
@@ -20,21 +22,25 @@ import {type CopyActionResult, type CopyOptions, type PasteOptions} from './type
 import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
 import {transferValue, type TransferValueOptions} from './valueTransfer'
 
+interface CopyPasteHookValue {
+  onCopy: (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => Promise<void>
+  onPaste: (targetPath: Path, options?: PasteOptions) => Promise<void>
+  onChange: ((event: PatchEvent) => void) | undefined
+}
+
 /**
  * @internal
  * @hidden
  */
-export function useCopyPasteAction(): {
-  onCopy: (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => Promise<void>
-  onPaste: (targetPath: Path, options?: PasteOptions) => Promise<void>
-  onChange: ((event: PatchEvent) => void) | undefined
-} {
+export function useCopyPasteAction(): CopyPasteHookValue {
   const telemetry = useTelemetry()
-  const {getDocumentMeta, setCopyResult} = useCopyPaste()
-  const toast = useToast()
-  const {onChange} = getDocumentMeta()! || {}
   const schema = useSchema()
   const client = useClient()
+  const toast = useToast()
+  const {t} = useTranslation('copy-paste')
+
+  const {getDocumentMeta, setCopyResult} = useCopyPaste()
+  const {onChange} = getDocumentMeta()! || {}
 
   const onCopy = useCallback(
     async (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => {
@@ -43,20 +49,23 @@ export function useCopyPasteAction(): {
       // Test that we got document meta first
       if (!documentMeta) {
         console.warn(`Failed to resolve document meta data for path ${path.join('.')}.`)
+
         toast.push({
           status: 'error',
-          title: `Can't lookup the document meta data due to unknown error`,
+          title: t('copy-paste.on-copy.validation.document-metadata-unknown-error.title'),
         })
         return
       }
+
       const {documentId, documentType, schemaType} = documentMeta
+
       if (!schemaType) {
         console.warn(`Failed to resolve schema type for path ${path.join('.')}.`, {
           schemaType,
         })
         toast.push({
           status: 'error',
-          title: `Can't lookup the field due to unknown error`,
+          title: t('copy-paste.on-copy.validation.unknown-error.title'),
         })
         return
       }
@@ -66,7 +75,9 @@ export function useCopyPasteAction(): {
       if (!schemaTypeAtPath) {
         toast.push({
           status: 'error',
-          title: `Could not resolve schema type for path ${path.join('.')}`,
+          title: t('copy-paste.on-copy.validation.schema-type-incompatible.title', {
+            path: path.join('.'),
+          }),
         })
         return
       }
@@ -77,11 +88,10 @@ export function useCopyPasteAction(): {
       const valueAtPath = getValueAtPath(value, path)
 
       // Test if the value is empty (undefined, empty object or empty array)
-
       if (isEmptyValue(valueAtPath)) {
         toast.push({
           status: 'warning',
-          title: 'Empty value, nothing to copy',
+          title: t('copy-paste.on-copy.validation.no-value.title'),
         })
         return
       }
@@ -112,21 +122,27 @@ export function useCopyPasteAction(): {
       const isWrittenToClipboard = await writeClipboardItem(payloadValue)
 
       if (!isWrittenToClipboard) {
-        // TODO: how should this be handled, and what is the error message?
-        // We are waiting for Firefox to release this support, as it's available in next.
         toast.push({
           status: 'error',
-          title: `Your browser doesn't support this action (yet)`,
+          title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
         })
         return
       }
 
+      const fields = payloadValue.items.map((item) => item.schemaTypeTitle).join('", "')
+
       toast.push({
         status: 'success',
-        title: `${isDocument ? 'Document' : 'Field'} "${payloadValue.items.map((item) => item.schemaTypeTitle).join('", "')}" copied`,
+        title: isDocument
+          ? t('copy-paste.on-copy.validation.copy-document-success.title', {
+              fieldNames: fields,
+            })
+          : t('copy-paste.on-copy.validation.copy-field_one-success.title', {
+              fieldName: fields,
+            }),
       })
     },
-    [getDocumentMeta, setCopyResult, telemetry, toast],
+    [getDocumentMeta, setCopyResult, telemetry, toast, t],
   )
 
   const onPaste = useCallback(
@@ -140,7 +156,7 @@ export function useCopyPasteAction(): {
       if (!clipboardItem) {
         toast.push({
           status: 'info',
-          title: 'Nothing to paste',
+          title: t('copy-paste.on-paste.validation.clipboard-empty.title'),
         })
         return
       }
@@ -148,7 +164,7 @@ export function useCopyPasteAction(): {
       if (!clipboardItem.documentType) {
         toast.push({
           status: 'error',
-          title: 'Invalid clipboard item',
+          title: t('copy-paste.on-paste.validation.clipboard-invalid.title'),
         })
         return
       }
@@ -158,7 +174,7 @@ export function useCopyPasteAction(): {
       if (!sourceDocumentSchemaType) {
         toast.push({
           status: 'error',
-          title: 'Invalid clipboard item',
+          title: t('copy-paste.on-paste.validation.clipboard-invalid.title'),
         })
         return
       }
@@ -171,20 +187,27 @@ export function useCopyPasteAction(): {
           sourceDocumentSchemaType,
           item.documentPath,
         )
+
         if (!sourceSchemaType) {
           toast.push({
             status: 'error',
-            title: `Failed to resolve schema type for path ${item.documentPath.join('.')}`,
+            title: t('copy-paste.on-paste.validation.schema-type-incompatible.title', {
+              path: item.documentPath.join('.'),
+            }),
           })
           return
         }
+
         if (!targetDocumentSchemaType) {
           toast.push({
             status: 'error',
-            title: `Failed to resolve schema type for path ${targetPath.join('.')}`,
+            title: t('copy-paste.on-paste.validation.schema-type-incompatible.title', {
+              path: targetPath.join('.'),
+            }),
           })
           return
         }
+
         const targetSchemaTypeTitle = targetSchemaType.title || targetSchemaType.name
         const transferValueOptions = {
           sourceRootSchemaType: sourceSchemaType,
@@ -203,27 +226,36 @@ export function useCopyPasteAction(): {
           const {targetValue, errors} = await transferValue(transferValueOptions)
           const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
           const _isEmptyValue = isEmptyValue(targetValue)
+
           if (nonWarningErrors.length > 0) {
+            const description = t(nonWarningErrors[0].i18n.key, nonWarningErrors[0].i18n.args)
+
             toast.push({
               status: 'error',
-              title: 'Could not paste',
-              description: nonWarningErrors[0].message,
+              title: t('copy-paste.on-paste.validation.clipboard-invalid.title'),
+              description,
             })
             return
-          } else if (errors.length > 0 && !_isEmptyValue) {
+          }
+
+          if (errors.length > 0 && !_isEmptyValue) {
+            const description = errors.map((error) => t(error.i18n.key, error.i18n.args)).join(', ')
+
             toast.push({
               status: 'warning',
-              title: 'Could not paste all values',
-              description: errors.map((error) => error.message).join(', '),
+              title: t('copy-paste.on-paste.validation.partial-warning.title'),
+              description,
             })
           }
+
           if (_isEmptyValue) {
             toast.push({
               status: 'warning',
-              title: 'Nothing from the clipboard could be pasted here',
+              title: t('copy-paste.on-paste.validation.clipboard-empty.title'),
             })
             return
           }
+
           updateItems.push({patches: [set(targetValue, targetPath)], targetSchemaTypeTitle})
         } catch (error) {
           toast.push({
@@ -245,20 +277,32 @@ export function useCopyPasteAction(): {
           .map(({targetSchemaTypeTitle}) => targetSchemaTypeTitle)
           .join('", "')
 
-        // eslint-disable-next-line no-nested-ternary
-        const titleSuffix = clipboardItem.isDocument
-          ? 'Document'
-          : updateItems.length === 1
-            ? 'Field'
-            : 'Fields'
         onChange?.(PatchEvent.from(allPatches))
-        toast.push({
-          status: 'success',
-          title: `${titleSuffix} "${allTargetNames}" updated`,
-        })
+
+        if (clipboardItem.isDocument) {
+          toast.push({
+            status: 'success',
+            title: t('copy-paste.on-paste.validation.document-paste-success.title', {
+              fieldNames: allTargetNames,
+            }),
+          })
+
+          return
+        }
+
+        const isSingleField = updateItems.length === 1
+
+        if (isSingleField) {
+          toast.push({
+            status: 'success',
+            title: t('copy-paste.on-paste.validation.field_one-paste-success.title', {
+              fieldName: allTargetNames,
+            }),
+          })
+        }
       }
     },
-    [getDocumentMeta, schema, telemetry, toast, client, onChange],
+    [getDocumentMeta, schema, telemetry, toast, client, onChange, t],
   )
 
   return {onCopy, onPaste, onChange}
