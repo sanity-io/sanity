@@ -327,9 +327,7 @@ function DocumentSheetListPaneInner(
         <ColumnsControl table={table} />
       </TableActionsWrapper>
       <TableContainer>
-        <DocumentSheetListProvider table={table} setHasSelection={() => null}>
-          {renderContent()}
-        </DocumentSheetListProvider>
+        <DocumentSheetListProvider table={table}>{renderContent()}</DocumentSheetListProvider>
         <DocumentSheetActions table={table} schemaType={documentSchemaType} />
       </TableContainer>
       <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>

@@ -6,7 +6,6 @@ import {type DocumentSheetListTable} from './types'
 interface DocumentSheetListProviderProps {
   children?: ReactNode
   table: DocumentSheetListTable
-  setHasSelection: (hasSelection: boolean) => void
 }
 
 type SelectedCellDetails = {
@@ -40,7 +39,6 @@ export const useDocumentSheetListContext = (): DocumentSheetListContextValue => 
 export function DocumentSheetListProvider({
   children,
   table,
-  setHasSelection,
 }: DocumentSheetListProviderProps): ReactNode {
   const [selectedAnchorCellDetails, setSelectedAnchorCellDetails] =
     useState<SelectedCellDetails>(null)
@@ -60,10 +58,6 @@ export function DocumentSheetListProvider({
     },
     [selectedAnchorCellDetails],
   )
-
-  useEffect(() => {
-    setHasSelection(!!selectedAnchorCellDetails)
-  }, [selectedAnchorCellDetails, setHasSelection])
 
   const resetFocusSelection = useCallback(
     () => clearAndSetFocusSelection(),
