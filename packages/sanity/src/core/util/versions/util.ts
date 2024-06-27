@@ -78,6 +78,7 @@ export async function getAllVersionsOfDocument(
 }
 
 export function getVersionName(documentId: string): string {
+  if (documentId.indexOf('.') === -1) return 'Published'
   const version = documentId.slice(0, documentId.indexOf('.'))
   return version
 }
