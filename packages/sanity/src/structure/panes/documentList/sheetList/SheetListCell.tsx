@@ -136,12 +136,14 @@ const getFieldValueAsFieldType = (
 export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const isPinned = cell.column.getIsPinned()
   const {column, row, getValue, getContext} = cell
+
   const {fieldType, disableCellFocus} = column.columnDef.meta || {}
   const cellContext = getContext()
   const cellId = `cell-${column.id}-${row.index}`
   const providedValueRef = useRef(getValue())
   const [rawCellValue, setRawCellValue] = useState<string | number | boolean>(getValue() as string)
   const fieldRef = useRef<HTMLElement | null>(null)
+
   const Cell = isPinned ? PinnedDataCell : DataCell
   const {
     focusAnchorCell,
