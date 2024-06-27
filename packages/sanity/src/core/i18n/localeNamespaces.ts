@@ -13,3 +13,11 @@ export const studioLocaleNamespace = 'studio' as const
  * @hidden
  */
 export const validationLocaleNamespace = 'validation' as const
+
+/**
+ * The namespace for copy/paste messages.
+ *
+ * @internal
+ * @hidden
+ */
+export const copyPasteLocalNamespace = 'copy-paste' as const
