@@ -7,9 +7,11 @@ import {
   isArraySchemaType,
   isFileSchemaType,
   isImageSchemaType,
+  isNumberSchemaType,
   isObjectSchemaType,
   isPrimitiveSchemaType,
   isReferenceSchemaType,
+  isStringSchemaType,
   type NumberSchemaType,
   type ObjectSchemaType,
   type StringSchemaType,
@@ -32,6 +34,50 @@ function isEqualSchemaType(a: unknown, b: unknown): boolean {
   return isRecord(a) && isRecord(b) && (a.name === b.name || isEqualSchemaType(a.type, b.type))
 }
 
+function isCompatiblePrimitiveType(value: unknown, targetJsonTypes: string[]): boolean {
+  if (typeof value === 'string' && targetJsonTypes.includes('string')) {
+    return true
+  }
+
+  // We allow putting numbers into string fields
+  if (
+    (typeof value === 'number' && targetJsonTypes.includes('number')) ||
+    targetJsonTypes.includes('string')
+  ) {
+    return true
+  }
+
+  if (typeof value === 'boolean' && targetJsonTypes.includes('boolean')) {
+    return true
+  }
+
+  return false
+}
+
+function isNumberToStringSchemaType(a: unknown, b: unknown): boolean {
+  return (
+    isRecord(a) &&
+    isRecord(b) &&
+    ((a.jsonType === 'number' && b.jsonType === 'string') ||
+      isNumberToStringSchemaType(a.type, b.type))
+  )
+}
+
+function arrayJsonTypes(schemaType: ArraySchemaType): string[] {
+  return schemaType.of.map((type) => type.jsonType)
+}
+
+function isNumberToArrayOfStrings(a: unknown, b: unknown): boolean {
+  return (
+    isRecord(a) &&
+    isRecord(b) &&
+    ((a.jsonType === 'number' &&
+      isArrayOfPrimitivesSchemaType(b) &&
+      arrayJsonTypes(b).includes('string')) ||
+      isNumberToArrayOfStrings(a.type, b.type))
+  )
+}
+
 const defaultKeyGenerator = () => randomKey(12)
 
 interface ClientWithFetch {
@@ -39,11 +85,12 @@ interface ClientWithFetch {
 }
 
 export interface TransferValueOptions {
-  //validateReferences: boolean
+  validateReferences?: boolean
   validateAssets?: boolean
   client?: ClientWithFetch
 }
 
+// eslint-disable-next-line complexity, max-statements
 export async function transferValue({
   sourceRootSchemaType,
   sourcePath,
@@ -52,6 +99,7 @@ export async function transferValue({
   targetPath,
   keyGenerator = defaultKeyGenerator,
   options = {
+    validateReferences: true,
     validateAssets: true,
     client: undefined,
   },
@@ -92,12 +140,23 @@ export async function transferValue({
     }
   }
 
+  // Generally we test that the target schema types are compatible with the source schema types
+  // However we want to make some exceptions:
+  // - Number to string is allowed
+  // - Primitive values to array of primitives is allowed
+  const sourceJsonType = sourceSchemaTypeAtPath.jsonType
+  const targetJsonType = targetSchemaTypeAtPath.jsonType
+  const isSourcePrimitive = ['number', 'string', 'boolean'].includes(sourceJsonType)
+  const isPrimitiveSourceAndPrimitiveArrayTarget =
+    isSourcePrimitive && isArrayOfPrimitivesSchemaType(targetSchemaTypeAtPath)
+  const isCompatibleSchemaTypes =
+    sourceJsonType === targetJsonType ||
+    isNumberToStringSchemaType(sourceSchemaTypeAtPath, targetSchemaTypeAtPath) ||
+    isNumberToArrayOfStrings(sourceSchemaTypeAtPath, targetSchemaTypeAtPath) ||
+    isPrimitiveSourceAndPrimitiveArrayTarget
+
   // Test that the target schematypes are compatible
-  if (
-    sourceSchemaTypeAtPath &&
-    targetSchemaTypeAtPath &&
-    sourceSchemaTypeAtPath.jsonType !== targetSchemaTypeAtPath.jsonType
-  ) {
+  if (!isCompatibleSchemaTypes) {
     return {
       targetValue: undefined,
       errors: [
@@ -237,6 +296,16 @@ export async function transferValue({
   if (sourceSchemaTypeAtPath.jsonType === 'array' && targetSchemaTypeAtPath.jsonType === 'array') {
     return collateArrayValue({
       sourceValue: sourceValueAtPath as unknown[],
+      targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
+      errors,
+      keyGenerator,
+    })
+  }
+
+  // If this is a primitive source and primitive array target, we need to wrap the source value in an array
+  if (isPrimitiveSourceAndPrimitiveArrayTarget) {
+    return collateArrayValue({
+      sourceValue: [sourceValueAtPath] as unknown[],
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
       errors,
       keyGenerator,
@@ -392,16 +461,19 @@ function collateArrayValue({
 
   // Primitive array
   if (isArrayOfPrimitivesMember) {
-    const transferredItems = genericValue.filter(
+    const jsonTypes = targetSchemaType.of.map((type) => type.jsonType)
+
+    // We allow converting numbers to string arrays
+    const isNumberCompatible = jsonTypes.includes('number')
+    const transferredItems = genericValue
+      .filter((item) => isCompatiblePrimitiveType(item, jsonTypes))
+      .map((item) => (!isNumberCompatible && typeof item === 'number' ? `${item}` : item))
+    const nonTransferredItems = genericValue.filter(
       (item) =>
-        (typeof item === 'number' &&
-          targetSchemaType.of.map((type) => type.jsonType).includes('number')) ||
-        (typeof item === 'string' &&
-          targetSchemaType.of.map((type) => type.jsonType).includes('string')) ||
-        (typeof item === 'boolean' &&
-          targetSchemaType.of.map((type) => type.jsonType).includes('boolean')),
+        !transferredItems.includes(
+          !isNumberCompatible && typeof item === 'number' ? `${item}` : item,
+        ),
     )
-    const nonTransferredItems = genericValue.filter((item) => !transferredItems.includes(item))
     if (nonTransferredItems.length > 0) {
       nonTransferredItems.forEach((item) => {
         errors.push({
@@ -485,12 +557,22 @@ function collatePrimitiveValue({
     }
   }
   const isSamePrimitiveType = targetSchemaType.jsonType === typeof primitiveValue
-  if (isSamePrimitiveType) {
+
+  // We also allow numbers to be transferred to string fields
+  const isNumberToString =
+    typeof primitiveValue === 'number' && targetSchemaType.jsonType === 'string'
+
+  if (isSamePrimitiveType || isNumberToString) {
+    const isNumberOrString =
+      typeof primitiveValue === 'string' || typeof primitiveValue === 'number'
     // Test that the primitive value is allowed if this is a string list schema type
-    if (targetSchemaType.jsonType === 'string' && typeof primitiveValue === 'string') {
+    if (
+      (isNumberSchemaType(targetSchemaType) || isStringSchemaType(targetSchemaType)) &&
+      isNumberOrString
+    ) {
       const allowedStrings =
         targetSchemaType.options?.list?.map((item) =>
-          typeof item === 'string' ? item : item.value,
+          typeof item === 'string' || typeof item === 'number' ? item : item.value,
         ) || []
       if (allowedStrings.length > 0 && !allowedStrings.includes(primitiveValue)) {
         errors.push({
@@ -500,7 +582,9 @@ function collatePrimitiveValue({
         })
       }
     }
-    targetValue = primitiveValue
+
+    // Convert number to string if needed
+    targetValue = isNumberToString ? `${primitiveValue}` : primitiveValue
   } else {
     errors.push({
       level: 'error',
