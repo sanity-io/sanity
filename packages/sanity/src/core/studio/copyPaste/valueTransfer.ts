@@ -286,8 +286,13 @@ export async function transferValue({
         if (!accepts(fileLike, targetSchemaTypeAtPath.options.accept)) {
           errors.push({
             level: 'error',
-            message: `MIME type ${mimeType} is not accepted for this field`,
             sourceValue: sourceValueAtPath,
+            i18n: {
+              key: 'copy-paste.on-paste.validation.mime-type-incompatible.description',
+              args: {
+                mimeType,
+              },
+            },
           })
           return {
             targetValue: undefined,
@@ -298,8 +303,11 @@ export async function transferValue({
         console.error('Error fetching asset document:', error)
         errors.push({
           level: 'error',
-          message: 'Failed to validate MIME type',
           sourceValue: sourceValueAtPath,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.mime-type-validation-failed.description',
+          },
         })
 
         return {
