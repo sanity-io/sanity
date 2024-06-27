@@ -43,6 +43,7 @@ import {pasteAction} from './fieldActions/pasteAction'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
+import {errorReportingTestPlugin} from './plugins/error-reporting-test'
 import {languageFilter} from './plugins/language-filter'
 import {presenceTool} from './plugins/presence'
 import {routerDebugTool} from './plugins/router-debug'
@@ -70,6 +71,14 @@ const sharedSettings = definePlugin({
 
   i18n: {
     bundles: testStudioLocaleBundles,
+  },
+
+  features: {
+    beta: {
+      treeArrayEditing: {
+        enabled: true,
+      },
+    },
   },
 
   document: {
@@ -135,6 +144,7 @@ const sharedSettings = definePlugin({
     imageHotspotArrayPlugin(),
     presenceTool(),
     routerDebugTool(),
+    errorReportingTestPlugin(),
     tsdoc(),
   ],
 })

@@ -9,6 +9,7 @@ import {type DocumentListPaneNode} from 'sanity/structure'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {DocumentSheetListPane} from '../DocumentSheetListPane'
+import {SheetListUsEnglishLocaleBundle} from '../i18n'
 import {useDocumentSheetListOperations} from '../useDocumentSheetListOperations'
 
 jest.mock('../useDocumentSheetList', () => ({
@@ -107,7 +108,7 @@ const renderTest = async (providedConfig: any = {}) => {
 
   const wrapper = await createTestProvider({
     config,
-    resources: [structureUsEnglishLocaleBundle],
+    resources: [structureUsEnglishLocaleBundle, SheetListUsEnglishLocaleBundle],
   })
   render(
     <DocumentSheetListPane
@@ -592,7 +593,6 @@ describe('DocumentSheetListPane', () => {
         await act(async () => {
           await userEvent.dblClick(screen.getByTestId('cell-name-0'))
           await userEvent.keyboard('{Escape}')
-          await userEvent.keyboard('{Escape}')
           fireEvent.paste(document, {
             clipboardData: {
               getData: () => 'Joe Blogs',
@@ -601,7 +601,6 @@ describe('DocumentSheetListPane', () => {
         })
 
         expect(screen.getByTestId('cell-name-0-input-field')).toHaveValue('John Doe')
-
         expect(mockDocumentOperations.patch.execute).not.toHaveBeenCalled()
         expect(mockDocumentOperations.commit.execute).not.toHaveBeenCalled()
       })

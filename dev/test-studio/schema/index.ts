@@ -50,6 +50,7 @@ import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
 import manyFieldsTest from './debug/manyFieldsTest'
 import notitle from './debug/notitle'
+import {objectsDebug} from './debug/objectsDebug'
 import poppers from './debug/poppers'
 import presence, {objectWithNestedArray} from './debug/presence'
 import previewImageUrlTest from './debug/previewImageUrlTest'
@@ -221,6 +222,7 @@ export const schemaTypes = [
   namedDeprecatedObject,
   namedDeprecatedArray,
   notitle,
+  objectsDebug,
   poppers,
   presence,
   objectWithNestedArray,

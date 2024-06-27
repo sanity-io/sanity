@@ -15,7 +15,7 @@ import {
 import {structureLocaleNamespace} from '../i18n'
 
 const DISABLED_REASON_KEY = {
-  NO_CHANGES: 'action.discard-changes.disabled.no-changes',
+  NO_CHANGES: 'action.discard-changes.disabled.no-change',
   NOT_PUBLISHED: 'action.discard-changes.disabled.not-published',
   NOT_READY: 'action.discard-changes.disabled.not-ready',
 } as const

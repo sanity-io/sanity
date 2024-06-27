@@ -1,5 +1,6 @@
 import {
   type BooleanSchemaType,
+  type FormNodeValidation,
   isBooleanSchemaType,
   isNumberSchemaType,
   type NumberSchemaType,
@@ -7,7 +8,8 @@ import {
 } from '@sanity/types'
 import {Card, type CardTone, Flex} from '@sanity/ui'
 import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {FormFieldValidationStatus, useChildValidation} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {type CellState, useDocumentSheetListContext} from './DocumentSheetListProvider'
@@ -22,10 +24,36 @@ export type CellInputType<TFieldType = DocumentSheetListSchemaTypes> = CellConte
   fieldType: TFieldType
 }
 
+const ValidationIconContainer = styled.div`
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  z-index: 2;
+`
+
+const CellValidation = ({validation}: {validation: FormNodeValidation[]}) => {
+  if (validation.length === 0) {
+    return null
+  }
+  return (
+    <ValidationIconContainer id="validation-icon">
+      <FormFieldValidationStatus validation={validation} fontSize={0} />
+    </ValidationIconContainer>
+  )
+}
+
+type ValidationLevel = 'error' | 'warning' | 'info'
+const validationLevelColors: {[key in ValidationLevel]: string} = {
+  error: 'var(--card-badge-critical-fg-color)',
+  warning: 'var(--card-badge-warning-fg-color)',
+  info: 'var(--card-badge-primary-fg-color)',
+}
+
 interface DataCellProps {
   width: number
   $cellState: CellState
   $rightBorderWidth: number
+  $validationLevel?: ValidationLevel
 }
 
 const Root = styled(Card)`
@@ -33,7 +61,9 @@ const Root = styled(Card)`
 `
 
 const DataCell = styled.td<DataCellProps>((props) => {
-  const {width, $cellState, $rightBorderWidth} = props
+  const {width, $cellState, $rightBorderWidth, $validationLevel} = props
+  const callOutColor = $validationLevel && validationLevelColors[$validationLevel]
+
   return css`
     display: flex;
     align-items: center;
@@ -44,11 +74,29 @@ const DataCell = styled.td<DataCellProps>((props) => {
     background-color: var(--card-bg-color);
     border-top: 1px solid var(--card-border-color);
     border-right: ${$rightBorderWidth}px solid var(--card-border-color);
+    box-shadow: ${$validationLevel
+      ? `
+        inset 1px 0px 0px 0px var(--card-bg-color),
+        inset 0px 2px 0px 0px var(--card-bg-color),
+        inset 0px -2px 0px 0px var(--card-bg-color),
+        inset 2px 0px 0px 0px ${callOutColor};
+      `
+      : 'none'};
 
     &[aria-selected='true'] {
       transition: box-shadow 0.1s;
       box-shadow: inset 0px 0px 0px ${$cellState === 'focused' ? 2 : 1}px
         var(--card-focus-ring-color);
+    }
+
+    & #validation-icon {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    :hover {
+      & #validation-icon {
+        opacity: 1;
+      }
     }
   `
 })
@@ -56,6 +104,15 @@ const DataCell = styled.td<DataCellProps>((props) => {
 const PinnedDataCell = styled(DataCell)`
   position: sticky;
   z-index: 2;
+`
+
+const CellRoot = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 `
 
 const getFieldValueAsFieldType = (
@@ -96,9 +153,23 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const setCellAsSelectedAnchor = useCallback(() => {
     setSelectedAnchorCell(column.id, row.index)
   }, [column.id, row.index, setSelectedAnchorCell])
+
+  const validation = useChildValidation([column.id], true)
+  const validationLevel = useMemo(() => {
+    if (validation.some((v) => v.level === 'error')) {
+      return 'error'
+    }
+    if (validation.some((v) => v.level === 'warning')) {
+      return 'warning'
+    }
+    if (validation.some((v) => v.level === 'info')) {
+      return 'info'
+    }
+    return undefined
+  }, [validation])
+
   const cellState = getStateByCellId(cell.column.id, cell.row.index)
-  const {patchDocument, unsetDocumentValue} =
-    (!fieldType?.readOnly && cellContext.table.options.meta) || {}
+  const {patchDocument, unsetDocumentValue} = cellContext.table.options.meta || {}
 
   const setCellValue = useCallback(
     (value: string | number | boolean) => {
@@ -266,6 +337,7 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   return (
     <Cell
       $cellState={cellState}
+      $validationLevel={validationLevel}
       $rightBorderWidth={getBorderWidth(cell)}
       key={cell.row.original._id + cell.id}
       style={{
@@ -274,11 +346,14 @@ export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
       width={cell.column.getSize()}
       {...cellProps}
     >
-      <Root tone={tone} height="fill" width="full">
-        <Flex height="fill" justify="center" align="center">
-          {flexRender(cell.column.columnDef.cell, inputProps)}
-        </Flex>
-      </Root>
+      <CellRoot>
+        <CellValidation validation={validation} />
+        <Root tone={tone} height="fill" width="full">
+          <Flex height="fill" justify="center" align="center">
+            {flexRender(cell.column.columnDef.cell, inputProps)}
+          </Flex>
+        </Root>
+      </CellRoot>
     </Cell>
   )
 }

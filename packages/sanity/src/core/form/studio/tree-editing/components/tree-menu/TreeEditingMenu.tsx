@@ -1,0 +1,38 @@
+import {Stack} from '@sanity/ui'
+import {toString} from '@sanity/util/paths'
+import {memo} from 'react'
+import {type Path} from 'sanity'
+
+import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
+import {TreeEditingMenuItem} from './TreeEditingMenuItem'
+import {getSiblingHasChildren} from './utils'
+
+interface TreeEditingMenuProps {
+  items: TreeEditingMenuItemType[]
+  onPathSelect: (path: Path) => void
+  selectedPath: Path | null
+}
+
+export const TreeEditingMenu = memo(function TreeEditingMenu(
+  props: TreeEditingMenuProps,
+): JSX.Element {
+  const {items, onPathSelect, selectedPath} = props
+
+  return (
+    <Stack as="ul" role="tree" space={2} data-testid="sidebar-tree-list">
+      {items.map((item) => {
+        const siblingHasChildren = getSiblingHasChildren(items)
+
+        return (
+          <TreeEditingMenuItem
+            item={item}
+            key={toString(item.path)}
+            onPathSelect={onPathSelect}
+            selectedPath={selectedPath}
+            siblingHasChildren={siblingHasChildren}
+          />
+        )
+      })}
+    </Stack>
+  )
+})

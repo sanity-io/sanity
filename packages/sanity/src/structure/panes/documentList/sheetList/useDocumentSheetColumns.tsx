@@ -14,12 +14,14 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table'
 import {useMemo} from 'react'
+import {useTranslation} from 'sanity'
 
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {PreviewCell} from './DocumentSheetPreviewCell'
 import {BooleanCellInput} from './fields/BooleanCellInput'
 import {CellInput} from './fields/CellInput'
 import {DropdownCellInput, shouldDropdownRender} from './fields/DropdownCellInput'
+import {SheetListLocaleNamespace} from './i18n'
 import {type DocumentSheetTableRow} from './types'
 
 export const VISIBLE_COLUMN_LIMIT = 5
@@ -104,6 +106,8 @@ const flatColumns = (cols: Columns): AccessorKeyColumnDef<DocumentSheetTableRow,
 }
 
 export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
+  const {t} = useTranslation(SheetListLocaleNamespace)
+
   const columns: Columns = useMemo(() => {
     if (!documentSchemaType) {
       return []
@@ -131,7 +135,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         },
         cell: DocumentSheetListSelect,
       }),
-      columnHelper.accessor('List preview', {
+      columnHelper.accessor(t('preview-header'), {
         enableHiding: false,
         size: 320,
         id: 'Preview',
@@ -144,7 +148,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
       }),
       ...getColsFromSchemaType(documentSchemaType),
     ]
-  }, [documentSchemaType])
+  }, [documentSchemaType, t])
 
   const [initialColumnsVisibility]: [VisibilityState, number] = useMemo(
     () =>

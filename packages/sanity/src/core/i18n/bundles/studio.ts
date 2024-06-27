@@ -1085,7 +1085,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'new-document.open-dialog-aria-label': 'Create new document',
   /** Title for "Create new document" dialog */
   'new-document.title': 'Create new document',
-
+  /** More detailed alert text letting user know they have an out-of-date version and should reload */
+  'package-version.new-package-available.description': 'Simply reload to use the new version.',
+  /** Label for button that will make the browser reload when users' studio version is out-of-date */
+  'package-version.new-package-available.reload-button': 'Reload',
+  /** Title of the alert for studio users when packages in their studio are out-of-date */
+  'package-version.new-package-available.title': 'Sanity Studio was updated',
   /** Label for action to manage members of the current studio project */
   'presence.action.manage-members': 'Manage members',
   /** Accessibility label for presence menu button */
@@ -1559,17 +1564,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'search.recent-searches-label': 'Recent searches',
   /** Accessibility label for the search results section, shown when the user has typed valid terms */
   'search.search-results-aria-label': 'Search results',
-  /** Label for the edit columns button to change field visibility in sheet list */
-  'sheet-list.edit-columns': 'Edit columns',
-  /** Label for the header menu option to hide a field from the sheet list */
-  'sheet-list.hide-field': 'Remove from table',
-  /** Label for reset column visibilities button */
-  'sheet-list.reset-columns': 'Reset columns',
-  /** Title for the edit columns menu */
-  'sheet-list.select-fields': 'Select up to 5 field types',
   /** Accessibility label for the navbar status button */
   'status-button.aria-label': 'Configuration status',
-
   /** Description for error when the timeline for the given document can't be loaded */
   'timeline.error.load-document-changes-description':
     'Document history transactions have not been affected.',
@@ -1585,8 +1581,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.error.unable-to-load-revision': 'Unable to load revision',
   /** Label for when the timeline item is the latest in the history */
   'timeline.latest': 'Latest',
-  /** Label for latest version for timeline menu dropdown */
-  'timeline.latest-version': 'Latest version',
+
+  /** Label for latest revision for timeline menu dropdown */
+  'timeline.latest-revision': 'Latest revision',
+  /**
+   * Label for latest revision for timeline menu dropdown
+   * @deprecated as of `v3.47.0` `timeline.latest-revision` should be used instead. Note: _usage_ of this key is deprecated, but Studios on `< v3.47.0` still require this key to be _defined_
+   * */
+  'timeline.latest-version': 'Latest revision',
   /** The aria-label for the list of revisions in the timeline */
   'timeline.list.aria-label': 'Document revisions',
   /** Label for loading history */
@@ -1632,6 +1634,24 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.since-version-missing': 'Since: unknown version',
   /**Aria label for the action buttons in the PTE toolbar */
   'toolbar.portable-text.action-button-aria-label': '{{action}}',
+  /** Accesibility label for the breadcrumb menu */
+  'tree-editing-dialog.breadcrumbs.menu': 'Breadcrumb menu',
+  /** Title placeholder for search input in array of objects */
+  'tree-editing-dialog.search-placeholder': 'Search',
+  /** Menu aria label for the search menu */
+  'tree-editing-dialog.search.menu-label': 'Search menu',
+  /** Title label for when no search results are found on the tree of objects */
+  'tree-editing-dialog.search.no-results-title': 'No results found',
+  /** Label to close the sidebar */
+  'tree-editing-dialog.sidebar.action.close': 'Close sidebar',
+  /** Collapse label the menu item in the sidebar  */
+  'tree-editing-dialog.sidebar.action.collapse': 'Collapse',
+  /** Label to close the dialog */
+  'tree-editing-dialog.sidebar.action.done': 'Done',
+  /** Exapnd label the menu item in the sidebar  */
+  'tree-editing-dialog.sidebar.action.expand': 'Expand',
+  /** Label to open the sidebar */
+  'tree-editing-dialog.sidebar.action.open': 'Open sidebar',
   /** Label for the button showed after trial ended */
   'user-menu.action.free-trial-finished': 'Upgrade from free',
   /** Label for button showing the free trial days left */

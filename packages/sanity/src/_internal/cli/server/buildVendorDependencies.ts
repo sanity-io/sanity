@@ -195,16 +195,22 @@ export async function buildVendorDependencies({
         )
       }
 
-      const specifier = path.join(packageName, subpath)
-      const chunkName = path.join(packageName, path.relative(packageName, specifier) || 'index')
+      const specifier = path.posix.join(packageName, subpath)
+      const chunkName = path.posix.join(
+        packageName,
+        path.relative(packageName, specifier) || 'index',
+      )
 
       entry[chunkName] = entryPoint
-      imports[specifier] = path.join('/', basePath, VENDOR_DIR, `${chunkName}.mjs`)
+      imports[specifier] = path.posix.join('/', basePath, VENDOR_DIR, `${chunkName}.mjs`)
     }
   }
 
+  // removes the `RollupWatcher` type
+  type BuildResult = Exclude<Awaited<ReturnType<typeof build>>, {close: unknown}>
+
   // Use Vite to build the packages into the output directory
-  await build({
+  let buildResult = (await build({
     // Define a custom cache directory so that sanity's vite cache
     // does not conflict with any potential local vite projects
     cacheDir: 'node_modules/.sanity/vite-vendor',
@@ -223,11 +229,32 @@ export async function buildVendorDependencies({
       lib: {entry, formats: ['es']},
       rollupOptions: {
         external: createExternalFromImportMap({imports}),
-        output: {exports: 'named', format: 'es'},
+        output: {
+          entryFileNames: '[name]-[hash].mjs',
+          chunkFileNames: '[name]-[hash].mjs',
+          exports: 'named',
+          format: 'es',
+        },
         treeshake: {preset: 'recommended'},
       },
     },
-  })
+  })) as BuildResult
 
-  return imports
+  buildResult = Array.isArray(buildResult) ? buildResult : [buildResult]
+
+  // Create a map of the original import specifiers to their hashed filenames
+  const hashedImports: Record<string, string> = {}
+  const output = buildResult.flatMap((i) => i.output)
+
+  for (const chunk of output) {
+    if (chunk.type === 'asset') continue
+
+    for (const [specifier, originalPath] of Object.entries(imports)) {
+      if (originalPath.endsWith(`${chunk.name}.mjs`)) {
+        hashedImports[specifier] = path.posix.join('/', basePath, VENDOR_DIR, chunk.fileName)
+      }
+    }
+  }
+
+  return hashedImports
 }

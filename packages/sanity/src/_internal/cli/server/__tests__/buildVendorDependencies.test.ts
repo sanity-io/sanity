@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
+import {type InlineConfig} from 'vite'
 
 import {buildVendorDependencies} from '../buildVendorDependencies'
 
@@ -19,7 +20,17 @@ describe('buildVendorDependencies', () => {
   beforeEach(() => {
     jest.resetAllMocks()
     const vite = require('vite')
-    vite.build.mockResolvedValue({})
+    vite.build.mockImplementation((input: InlineConfig) => {
+      const libOptions = input.build?.lib
+      if (!libOptions) throw new Error(`Expected lib in inline config`)
+
+      const output = Object.keys(libOptions.entry).map((entry) => ({
+        type: 'chunk',
+        name: entry,
+        fileName: `${entry.replace('/', '-')}-12345.mjs`,
+      }))
+      return Promise.resolve({output})
+    })
   })
 
   describe.each([
@@ -41,17 +52,17 @@ describe('buildVendorDependencies', () => {
       const imports = await buildVendorDependencies({cwd, basePath: basePath, outputDir})
 
       expect(imports).toEqual({
-        'react': `${expectedPath}vendor/react/index.mjs`,
-        'react-dom': `${expectedPath}vendor/react-dom/index.mjs`,
-        'react-dom/client': `${expectedPath}vendor/react-dom/client.mjs`,
-        'react-dom/package.json': `${expectedPath}vendor/react-dom/package.json.mjs`,
-        'react-dom/server': `${expectedPath}vendor/react-dom/server.mjs`,
-        'react-dom/server.browser': `${expectedPath}vendor/react-dom/server.browser.mjs`,
-        'react/jsx-dev-runtime': `${expectedPath}vendor/react/jsx-dev-runtime.mjs`,
-        'react/jsx-runtime': `${expectedPath}vendor/react/jsx-runtime.mjs`,
-        'react/package.json': `${expectedPath}vendor/react/package.json.mjs`,
-        'styled-components': `${expectedPath}vendor/styled-components/index.mjs`,
-        'styled-components/package.json': `${expectedPath}vendor/styled-components/package.json.mjs`,
+        'react': `${expectedPath}vendor/react-index-12345.mjs`,
+        'react-dom': `${expectedPath}vendor/react-dom-index-12345.mjs`,
+        'react-dom/client': `${expectedPath}vendor/react-dom-client-12345.mjs`,
+        'react-dom/package.json': `${expectedPath}vendor/react-dom-package.json-12345.mjs`,
+        'react-dom/server': `${expectedPath}vendor/react-dom-server-12345.mjs`,
+        'react-dom/server.browser': `${expectedPath}vendor/react-dom-server.browser-12345.mjs`,
+        'react/jsx-dev-runtime': `${expectedPath}vendor/react-jsx-dev-runtime-12345.mjs`,
+        'react/jsx-runtime': `${expectedPath}vendor/react-jsx-runtime-12345.mjs`,
+        'react/package.json': `${expectedPath}vendor/react-package.json-12345.mjs`,
+        'styled-components': `${expectedPath}vendor/styled-components-index-12345.mjs`,
+        'styled-components/package.json': `${expectedPath}vendor/styled-components-package.json-12345.mjs`,
       })
 
       expect(build).toHaveBeenCalledTimes(1)
@@ -144,20 +155,20 @@ describe('buildVendorDependencies', () => {
       const imports = await buildVendorDependencies({cwd, basePath, outputDir})
 
       expect(imports).toEqual({
-        'react': `${expectedPath}vendor/react/index.mjs`,
-        'react-dom': `${expectedPath}vendor/react-dom/index.mjs`,
-        'react-dom/client': `${expectedPath}vendor/react-dom/client.mjs`,
-        'react-dom/package.json': `${expectedPath}vendor/react-dom/package.json.mjs`,
-        'react-dom/server': `${expectedPath}vendor/react-dom/server.mjs`,
-        'react-dom/server.browser': `${expectedPath}vendor/react-dom/server.browser.mjs`,
-        'react-dom/static': `${expectedPath}vendor/react-dom/static.mjs`,
-        'react-dom/static.browser': `${expectedPath}vendor/react-dom/static.browser.mjs`,
-        'react/compiler-runtime': `${expectedPath}vendor/react/compiler-runtime.mjs`,
-        'react/jsx-dev-runtime': `${expectedPath}vendor/react/jsx-dev-runtime.mjs`,
-        'react/jsx-runtime': `${expectedPath}vendor/react/jsx-runtime.mjs`,
-        'react/package.json': `${expectedPath}vendor/react/package.json.mjs`,
-        'styled-components': `${expectedPath}vendor/styled-components/index.mjs`,
-        'styled-components/package.json': `${expectedPath}vendor/styled-components/package.json.mjs`,
+        'react': `${expectedPath}vendor/react-index-12345.mjs`,
+        'react-dom': `${expectedPath}vendor/react-dom-index-12345.mjs`,
+        'react-dom/client': `${expectedPath}vendor/react-dom-client-12345.mjs`,
+        'react-dom/package.json': `${expectedPath}vendor/react-dom-package.json-12345.mjs`,
+        'react-dom/server': `${expectedPath}vendor/react-dom-server-12345.mjs`,
+        'react-dom/server.browser': `${expectedPath}vendor/react-dom-server.browser-12345.mjs`,
+        'react-dom/static': `${expectedPath}vendor/react-dom-static-12345.mjs`,
+        'react-dom/static.browser': `${expectedPath}vendor/react-dom-static.browser-12345.mjs`,
+        'react/compiler-runtime': `${expectedPath}vendor/react-compiler-runtime-12345.mjs`,
+        'react/jsx-dev-runtime': `${expectedPath}vendor/react-jsx-dev-runtime-12345.mjs`,
+        'react/jsx-runtime': `${expectedPath}vendor/react-jsx-runtime-12345.mjs`,
+        'react/package.json': `${expectedPath}vendor/react-package.json-12345.mjs`,
+        'styled-components': `${expectedPath}vendor/styled-components-index-12345.mjs`,
+        'styled-components/package.json': `${expectedPath}vendor/styled-components-package.json-12345.mjs`,
       })
 
       expect(build).toHaveBeenCalledTimes(1)

@@ -9,14 +9,15 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {
   SearchProvider,
   set,
   toMutationPatches,
+  Translate,
   unset,
   useSchema,
-  useSearchState,
+  useTranslation,
   useValidationStatus,
   ValidationProvider,
 } from 'sanity'
@@ -30,6 +31,7 @@ import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListHeader} from './DocumentSheetListHeader'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
 import {DocumentSheetListProvider} from './DocumentSheetListProvider'
+import {SheetListLocaleNamespace} from './i18n'
 import {SheetListCell} from './SheetListCell'
 import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
@@ -37,6 +39,12 @@ import {useDocumentSheetList} from './useDocumentSheetList'
 import {useDocumentSheetListOperations} from './useDocumentSheetListOperations'
 
 type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'>
+
+type GeneralDocumentOperation = (
+  publishedDocumentId: string,
+  fieldId: string,
+  ...otherArgs: unknown[]
+) => void
 
 const PaneContainer = styled(Flex)`
   height: 100%;
@@ -110,7 +118,12 @@ const DocumentRow = ({
   )
   return (
     <ValidationProvider validation={validationStatus.validation}>
-      <TableRow as="tr" key={row.original._id + row.id} data-selected={row.getIsSelected()}>
+      <TableRow
+        as="tr"
+        key={row.original._id + row.id}
+        paddingY={2}
+        data-selected={row.getIsSelected()}
+      >
         {row.getVisibleCells().map((cell) => (
           <SheetListCell {...cell} key={row.original._id + cell.id} />
         ))}
@@ -121,16 +134,14 @@ const DocumentRow = ({
 function DocumentSheetListPaneInner(
   props: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType},
 ) {
+  const {t} = useTranslation(SheetListLocaleNamespace)
   const {documentSchemaType, ...paneProps} = props
-  const {dispatch, state} = useSearchState()
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
-  const {data} = useDocumentSheetList({
-    typeName: documentSchemaType.name,
-  })
+  const {data} = useDocumentSheetList(documentSchemaType)
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 
-  const totalRows = state.result.hits.length
+  const totalRows = data.length
   const meta = {
     selectedAnchor,
     setSelectedAnchor,
@@ -163,8 +174,8 @@ function DocumentSheetListPaneInner(
 
   const rowOperations = useDocumentSheetListOperations(rowsPublishedIds, documentSchemaType.name)
 
-  const handlePatchDocument = useCallback(
-    (publishedDocumentId: string, fieldId: string, value: any) => {
+  const handlePatchDocument: GeneralDocumentOperation = useCallback(
+    (publishedDocumentId, fieldId, value: any) => {
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
@@ -188,8 +199,8 @@ function DocumentSheetListPaneInner(
     [rows, rowOperations],
   )
 
-  const handleUnsetDocumentValue = useCallback(
-    (publishedDocumentId: string, fieldId: string) => {
+  const handleUnsetDocumentValue: GeneralDocumentOperation = useCallback(
+    (publishedDocumentId, fieldId) => {
       const documentOperations = rowOperations?.[publishedDocumentId]
 
       if (!documentOperations || documentOperations.patch.disabled !== false)
@@ -213,24 +224,30 @@ function DocumentSheetListPaneInner(
     [rows, rowOperations],
   )
 
+  const readOnlyFieldGuard = useCallback(
+    (operation: GeneralDocumentOperation) => {
+      return (...args: [string, string, ...unknown[]]) => {
+        const [publishedDocumentId, fieldId, ...otherArgs] = args
+        const isReadOnlyField = table.getColumn(fieldId)?.columnDef.meta?.fieldType?.readOnly
+        if (isReadOnlyField) return
+
+        operation(publishedDocumentId, fieldId, ...otherArgs)
+      }
+    },
+    [table],
+  )
+
   if (table.options.meta) {
     table.setOptions((currentOptions) => {
       const nextOptions = {...currentOptions}
       if (!nextOptions.meta) return currentOptions
 
-      nextOptions.meta.patchDocument = handlePatchDocument
-      nextOptions.meta.unsetDocumentValue = handleUnsetDocumentValue
+      nextOptions.meta.patchDocument = readOnlyFieldGuard(handlePatchDocument)
+      nextOptions.meta.unsetDocumentValue = readOnlyFieldGuard(handleUnsetDocumentValue)
 
       return nextOptions
     })
   }
-
-  useEffect(() => {
-    dispatch({type: 'TERMS_TYPE_ADD', schemaType: documentSchemaType})
-    return () => {
-      dispatch({type: 'TERMS_TYPE_REMOVE', schemaType: documentSchemaType})
-    }
-  }, [documentSchemaType, dispatch])
 
   const renderRow = useCallback(
     (row: Row<DocumentSheetTableRow>) => {
@@ -250,8 +267,6 @@ function DocumentSheetListPaneInner(
     return false
   }, [rowOperations, table.options.meta?.patchDocument])
 
-  const rowsCount = `List total: ${totalRows} item${totalRows === 1 ? '' : 's'}`
-
   const renderContent = () => {
     if (!isReady) {
       return <LoadingPane paneKey={paneProps.paneKey} />
@@ -269,7 +284,10 @@ function DocumentSheetListPaneInner(
           <Flex direction="row" align="center">
             <DocumentSheetListFilter />
             <Text size={0} muted>
-              {rowsCount}
+              {t('row-count.label', {
+                totalRows,
+                itemPlural: `item${totalRows === 1 ? '' : 's'}`,
+              })}
             </Text>
           </Flex>
           <ColumnsControl table={table} />
@@ -313,11 +331,21 @@ function DocumentSheetListPaneInner(
 export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
   const schema = useSchema()
   const typeName = props.pane.schemaTypeName
+  const {t} = useTranslation(SheetListLocaleNamespace)
 
   const schemaType = schema.get(typeName)
   if (!schemaType || !isDocumentSchemaType(schemaType)) {
-    throw new Error(`Schema type "${typeName}" not found or not a document schema`)
+    console.error(`Schema type "${typeName}" not found`)
+
+    return (
+      <Box padding={4}>
+        <Text>
+          <Translate t={t} i18nKey="not-supported.no-schema-type" />
+        </Text>
+      </Box>
+    )
   }
+
   return (
     <SearchProvider>
       <DocumentSheetListPaneInner {...props} documentSchemaType={schemaType} />

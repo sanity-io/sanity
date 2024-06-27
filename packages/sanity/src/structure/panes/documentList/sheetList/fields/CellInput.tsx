@@ -60,8 +60,8 @@ export const CellInput = ({
       size={0}
       radius={0}
       border={false}
-      ref={fieldRef}
       type={typeProps}
+      ref={fieldRef}
       inputMode={inputModeProp}
       __unstable_disableFocusRing
       readOnly={!!fieldType.readOnly}
