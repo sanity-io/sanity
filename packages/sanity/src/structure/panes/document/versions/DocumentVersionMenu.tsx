@@ -1,4 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
+// eslint-disable-next-line no-warning-comments
+/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */
+
 import {AddIcon, CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {
   Box,
@@ -18,9 +21,9 @@ import {useCallback, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {ReleaseIcon} from '../../../../core/studio/components/versions/ReleaseIcon'
+import {VersionBadge} from '../../../../core/studio/components/versions/VersionBadge'
 import {BUNDLES, getAllVersionsOfDocument, type Version} from '../../../../core/util/versions/util'
-import {ReleaseIcon} from './ReleaseIcon'
-import {VersionBadge} from './VersionBadge'
 
 function toSlug(str: string) {
   return camelCase(str)

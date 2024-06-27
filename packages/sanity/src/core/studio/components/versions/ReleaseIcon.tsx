@@ -5,11 +5,11 @@ import {Box, Flex, Text, useTheme_v2} from '@sanity/ui'
 import {rgba} from '@sanity/ui/theme'
 import {type CSSProperties} from 'react'
 
-import {type SanityReleaseIcon} from '../../../../core/util/versions/util'
+import {type SanityReleaseIcon} from '../../../util/versions/util'
 
 export function ReleaseIcon(
   props: Partial<SanityReleaseIcon> & {openButton?: boolean; padding?: number; title?: string},
-) {
+): JSX.Element {
   const {hue = 'gray', icon, openButton, padding = 3, title} = props
   const {color} = useTheme_v2()
 
