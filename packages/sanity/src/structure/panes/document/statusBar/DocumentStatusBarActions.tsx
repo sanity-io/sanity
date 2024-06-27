@@ -1,14 +1,17 @@
 /* eslint-disable camelcase */
+import {AddIcon} from '@sanity/icons'
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useMemo, useState} from 'react'
+import {memo, useCallback, useContext, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
   shouldArrayDialogOpen,
+  useDocumentOperation,
   useSource,
   useTimelineSelector,
 } from 'sanity'
 
+import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -24,7 +27,9 @@ interface DocumentStatusBarActionsInnerProps {
 
 function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks, schemaType, openPath} = useDocumentPane()
+  const {__internal_tasks, schemaType, openPath, documentId, documentType} = useDocumentPane()
+  const {newVersion} = useDocumentOperation(documentId, documentType)
+
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const isTreeArrayEditingEnabled = useSource().features?.beta?.treeArrayEditing?.enabled
@@ -56,6 +61,16 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
     )
   }, [firstActionState])
 
+  /* Version / Bundling handling */
+  const {currentVersion, isDraft} = useContext(VersionContext)
+  const {name, title} = currentVersion
+
+  const handleAddVersion = useCallback(() => {
+    const bundleId = `${name}.${documentId}`
+
+    newVersion.execute(bundleId)
+  }, [documentId, name, newVersion])
+
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
@@ -63,19 +78,32 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              <Button
-                data-testid={`action-${firstActionState.label}`}
-                disabled={
-                  disabled || Boolean(firstActionState.disabled) || isTreeArrayEditingEnabledOpen
-                }
-                icon={firstActionState.icon}
-                // eslint-disable-next-line react/jsx-handler-names
-                onClick={firstActionState.onHandle}
-                ref={setButtonElement}
-                size="large"
-                text={firstActionState.label}
-                tone={firstActionState.tone || 'primary'}
-              />
+              {isDraft ? (
+                <Button
+                  data-testid={`action-${firstActionState.label}`}
+                  disabled={
+                    disabled || Boolean(firstActionState.disabled) || isTreeArrayEditingEnabledOpen
+                  }
+                  icon={firstActionState.icon}
+                  // eslint-disable-next-line react/jsx-handler-names
+                  onClick={firstActionState.onHandle}
+                  ref={setButtonElement}
+                  text={firstActionState.label}
+                  tone={firstActionState.tone || 'primary'}
+                />
+              ) : (
+                // localize text
+                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                <Button
+                  data-testid={`action-add-to-${name}`}
+                  // localize text
+                  // eslint-disable-next-line @sanity/i18n/no-attribute-template-literals
+                  text={`Add to ${title}`}
+                  icon={AddIcon}
+                  tone="primary"
+                  onClick={handleAddVersion}
+                />
+              )}
             </Stack>
           </Tooltip>
         </LayerProvider>

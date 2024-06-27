@@ -65,7 +65,7 @@ export function DocumentHeaderTitle(): ReactElement {
         </Text>
       </Flex>
 
-      <Flex flex="none" gap={1} hidden>
+      <Flex flex="none" gap={1}>
         <DocumentVersionMenu documentId={documentId} documentType={documentType} />
       </Flex>
     </Flex>

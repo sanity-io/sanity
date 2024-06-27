@@ -1,8 +1,9 @@
 import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {useCallback, useContext, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
+import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
 import {BUNDLES, LATEST, type Version} from '../../../util/versions/util'
 import {ReleaseIcon} from './ReleaseIcon'
 
@@ -15,10 +16,8 @@ export function GlobalReleaseMenu(): JSX.Element {
 
   // eslint-disable-next-line no-warning-comments
   // FIXME REPLACE WHEN WE HAVE REAL DATA
-  const [currentRelease, setCurrentRelease] = useState(releases[0])
+  const {currentVersion, setCurrentVersion, isDraft} = useContext(VersionContext)
   const [createReleaseDialogOpen, setCreateReleaseDialogOpen] = useState(false)
-
-  const isDraft = currentRelease?.name === 'draft'
 
   const handleBundleChange = useCallback(
     (bundle: Version) => () => {
@@ -30,18 +29,18 @@ export function GlobalReleaseMenu(): JSX.Element {
         router.navigateStickyParam('perspective', `bundle.${name}`)
       }
 
-      setCurrentRelease(bundle)
+      setCurrentVersion(bundle)
     },
-    [router],
+    [router, setCurrentVersion],
   )
 
   const handleGoToLatest = useCallback(
     () => () => {
       router.navigateStickyParam('perspective', '')
 
-      setCurrentRelease(LATEST)
+      setCurrentVersion(LATEST)
     },
-    [router],
+    [router, setCurrentVersion],
   )
 
   /* create new bundle */
@@ -67,12 +66,12 @@ export function GlobalReleaseMenu(): JSX.Element {
         button={
           <Button mode="bleed" padding={0} radius="full">
             <ReleaseIcon
-              hue={currentRelease?.hue}
-              icon={isDraft ? undefined : currentRelease?.icon}
+              hue={currentVersion?.hue}
+              icon={isDraft ? undefined : currentVersion?.icon}
               openButton
               padding={2}
               // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-              title={isDraft ? 'Latest' : currentRelease?.title}
+              title={isDraft ? 'Latest' : currentVersion?.title}
             />
           </Button>
         }
@@ -112,7 +111,7 @@ export function GlobalReleaseMenu(): JSX.Element {
 
                     <Box padding={2}>
                       <Text size={1}>
-                        <CheckmarkIcon style={{opacity: currentRelease.name === r.name ? 1 : 0}} />
+                        <CheckmarkIcon style={{opacity: currentVersion.name === r.name ? 1 : 0}} />
                       </Text>
                     </Box>
                   </Flex>
