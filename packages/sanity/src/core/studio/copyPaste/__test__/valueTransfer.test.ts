@@ -518,8 +518,8 @@ describe('transferValue', () => {
       })
       // expect(transferValueResult?.targetValue).toEqual(sourceValue)
       expect(transferValueResult.errors.length).toEqual(1)
-      expect(transferValueResult.errors[0].message).toEqual(
-        'MIME type image/jpeg is not accepted for this field',
+      expect(transferValueResult.errors[0].i18n.key).toEqual(
+        'copy-paste.on-paste.validation.mime-type-incompatible.description',
       )
     })
 
