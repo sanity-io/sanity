@@ -17,10 +17,11 @@ import {
   TextInput,
 } from '@sanity/ui'
 import {camelCase} from 'lodash'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useContext, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
 import {ReleaseIcon} from '../../../../core/studio/components/versions/ReleaseIcon'
 import {VersionBadge} from '../../../../core/studio/components/versions/VersionBadge'
 import {BUNDLES, getAllVersionsOfDocument, type Version} from '../../../../core/util/versions/util'
@@ -37,13 +38,9 @@ export function DocumentVersionMenu(props: {
   const {newVersion} = useDocumentOperation(documentId, documentType)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const router = useRouter()
+  const {currentVersion, isDraft} = useContext(VersionContext)
 
   const [documentVersions, setDocumentVersions] = useState<Version[]>([])
-
-  // eslint-disable-next-line no-warning-comments
-  // FIXME ONCE THE SWITCH OF VERSIONS
-  const selectedVersion = documentVersions[0] //getVersionName(documentId)
-  const isDraft = selectedVersion?.name === 'draft'
 
   // search
   const [addVersionTitle, setAddVersionTitle] = useState('')
@@ -109,13 +106,13 @@ export function DocumentVersionMenu(props: {
     fetchVersions()
   }, [fetchVersions])
 
+  /* TODO Version Badge should only show when the current opened document is in a version */
+
   return (
     <>
-      {selectedVersion && selectedVersion.name !== 'draft' && (
-        <VersionBadge version={selectedVersion} />
-      )}
+      {currentVersion && !isDraft && <VersionBadge version={currentVersion} />}
 
-      <Box flex="none">
+      <Box flex="none" hidden>
         <MenuButton
           button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
           id="version-menu"
@@ -154,7 +151,7 @@ export function DocumentVersionMenu(props: {
                         href=""
                         onClick={handleChangeToVersion(r.name)}
                         padding={1}
-                        pressed={selectedVersion.name === r.name}
+                        pressed={currentVersion.name === r.name}
                       >
                         <Flex>
                           {<ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />}
@@ -181,7 +178,7 @@ export function DocumentVersionMenu(props: {
                             <Text size={1}>
                               {
                                 <CheckmarkIcon
-                                  style={{opacity: r.name === selectedVersion.name ? 1 : 0}}
+                                  style={{opacity: r.name === currentVersion.name ? 1 : 0}}
                                 />
                               }
                             </Text>
