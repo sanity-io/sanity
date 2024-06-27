@@ -276,6 +276,17 @@ describe('findQueries with defineQuery', () => {
     expect(queries[0].result).toBe('*[_type == "foo bar"]')
   })
 
+  test('should detect defineQuery calls that have been required', () => {
+    const source = `
+      const {defineQuery} = require("groq");
+      import {query}  from "../__tests__/fixtures/importSeq1";
+      const someQuery = defineQuery(\`$\{query}\`);
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('*[_type == "foo bar"]')
+  })
+
   test('will ignore declarations with ignore tag', () => {
     const source = `
       import {defineQuery} from "groq";
@@ -322,6 +333,24 @@ describe('findQueries with defineQuery', () => {
       export const postQuery = defineQuery(\`*[_type == "foo"]\`);
     `
 
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
+
+  test('will ignore defineQuery calls that are not coming from the groq module', () => {
+    const source = `
+      import {defineQuery} from "another-module";
+      export const postQuery = defineQuery(\`*[_type == "foo"]\`);
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
+
+  test('will ignore defineQuery calls that are not coming from the groq module when using require', () => {
+    const source = `
+      const {defineQuery} = require("another-module");
+      export const postQuery = defineQuery(\`*[_type == "foo"]\`);
+    `
     const queries = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
