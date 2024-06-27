@@ -9,7 +9,7 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {
   SearchProvider,
   set,
@@ -17,7 +17,6 @@ import {
   Translate,
   unset,
   useSchema,
-  useSearchState,
   useTranslation,
   useValidationStatus,
   ValidationProvider,
@@ -26,7 +25,6 @@ import {css, styled} from 'styled-components'
 
 import {LoadingPane} from '../../loading'
 import {type BaseStructureToolPaneProps} from '../../types'
-import {useShallowUnique} from '../helpers'
 import {type SortOrder} from '../types'
 import {useDocumentListSort} from '../useDocumentListSort'
 import {ColumnsControl} from './ColumnsControl'
@@ -145,27 +143,11 @@ function DocumentSheetListPaneInner(
   const {documentSchemaType, sortOrder: sortOrderRaw, ...paneProps} = props
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
-  const {data, isLoading} = useDocumentSheetList(documentSchemaType)
-
   const sortWithOrderingFn = useDocumentListSort(paneProps.pane, sortOrderRaw)
-  const {dispatch} = useSearchState()
+
+  const {data, isLoading} = useDocumentSheetList(documentSchemaType, sortWithOrderingFn)
+
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
-  const nextSort = useShallowUnique(sortWithOrderingFn?.by[0])
-  const [hasSelection, setHasSelection] = useState(false)
-
-  useEffect(() => {
-    const canRunSorting = nextSort && !hasSelection
-
-    if (canRunSorting) {
-      dispatch({
-        type: 'ORDERING_SET',
-        ordering: {
-          sort: nextSort,
-          titleKey: `search.ordering.${nextSort.field}-label`,
-        },
-      })
-    }
-  }, [dispatch, hasSelection, nextSort])
 
   const totalRows = data.length
   const meta = {
@@ -345,7 +327,7 @@ function DocumentSheetListPaneInner(
         <ColumnsControl table={table} />
       </TableActionsWrapper>
       <TableContainer>
-        <DocumentSheetListProvider table={table} setHasSelection={setHasSelection}>
+        <DocumentSheetListProvider table={table} setHasSelection={() => null}>
           {renderContent()}
         </DocumentSheetListProvider>
         <DocumentSheetActions table={table} schemaType={documentSchemaType} />

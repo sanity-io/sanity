@@ -2,15 +2,21 @@ import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo} from 'react'
 import {getDraftId, getPublishedId, useSearchState} from 'sanity'
 
+import {useShallowUnique} from '../helpers'
+import {type SortOrder} from '../types'
 import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetListStore} from './useDocumentSheetListStore'
 
-export function useDocumentSheetList(schemaType: ObjectSchemaType): {
+export function useDocumentSheetList(
+  schemaType: ObjectSchemaType,
+  sortWithOrderingFn?: SortOrder,
+): {
   data: DocumentSheetTableRow[]
   isLoading: boolean
 } {
   const typeName = schemaType.name
   const {state, dispatch} = useSearchState()
+  const nextSort = useShallowUnique(sortWithOrderingFn?.by[0])
 
   useEffect(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType})
@@ -18,6 +24,18 @@ export function useDocumentSheetList(schemaType: ObjectSchemaType): {
       dispatch({type: 'TERMS_TYPE_REMOVE', schemaType})
     }
   }, [schemaType, dispatch])
+
+  useEffect(() => {
+    if (nextSort) {
+      dispatch({
+        type: 'ORDERING_SET',
+        ordering: {
+          sort: nextSort,
+          titleKey: `search.ordering.${nextSort.field}-label`,
+        },
+      })
+    }
+  }, [dispatch, nextSort])
 
   const items = useMemo(() => {
     const map = new Map()
