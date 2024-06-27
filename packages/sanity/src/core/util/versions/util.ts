@@ -67,7 +67,7 @@ export async function getAllVersionsOfDocument(
 
   const query = `*[_id match "*${id}*"]`
 
-  return await client.fetch(query).then((documents) => {
+  return await client.fetch(query, {}, {tag: 'document.list-versions'}).then((documents) => {
     return documents.map((doc: SanityDocument, index: number) => ({
       name: getVersionName(doc._id),
       title: getVersionName(doc._id),
