@@ -38,7 +38,7 @@ export function ReleaseRow({release}: Props) {
       </Box>
       {/* Scheduled */}
       <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 100}}>
-        {release.publishAt && (
+        {!!release.publishAt && (
           <Text muted size={1}>
             {shortRelativeDate(release.publishAt)}
           </Text>

@@ -2,8 +2,6 @@
 /* eslint-disable i18next/no-literal-string */
 import {
   ArrowLeftIcon,
-  CheckmarkCircleIcon,
-  CheckmarkIcon,
   EllipsisHorizontalIcon,
   PublishIcon,
   StarIcon,
@@ -15,7 +13,6 @@ import {useRouter} from 'sanity/router'
 
 import {Button as StudioButton} from '../../../ui-components'
 import {getRandomToneIcon, type Version} from '../../util/versions/util'
-import {ProgressIcon} from '../components/progressIcon/ProgressIcon'
 import {type ReleasesRouterState} from '../types/router'
 
 type Screen = 'overview' | 'review'
@@ -90,31 +87,10 @@ export const ReleaseDetail = () => {
           </Flex>
 
           <Flex flex="none" gap={2}>
-            {/* TODO: render progress and publish only if there are documents in release */}
-            <Flex flex="none" gap={2} padding={2}>
-              {releaseProgress < 1 ? (
-                <Text size={1}>
-                  <ProgressIcon
-                    progress={releaseProgress}
-                    style={{color: 'var(--card-badge-caution-icon-color)'}}
-                  />
-                </Text>
-              ) : (
-                <Text muted size={1}>
-                  <CheckmarkCircleIcon style={{color: 'var(--card-badge-positive-icon-color)'}} />
-                </Text>
-              )}
-              <Text muted size={1}>
-                {releaseProgress < 1 ? `${(releaseProgress * 100).toFixed(0)}%` : 'Ready'}
-              </Text>
-            </Flex>
-
-            <Button
-              icon={release.publishAt ? CheckmarkIcon : PublishIcon}
-              padding={2}
-              space={2}
-              text={release.publishAt ? 'Mark all as ready' : 'Publish all'}
-            />
+            {/* hide if release is already published */}
+            {release.publishAt && (
+              <Button icon={PublishIcon} padding={2} space={2} text="Publish all" />
+            )}
             <MenuButton
               button={<Button icon={EllipsisHorizontalIcon} mode="bleed" padding={2} />}
               id="release-menu"
