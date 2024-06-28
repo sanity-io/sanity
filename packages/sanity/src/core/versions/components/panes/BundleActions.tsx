@@ -49,7 +49,7 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
     const bundleId = `${name}.${documentId}`
 
     newVersion.execute(bundleId)
-  }, [documentId, name, newVersion, title, toast])
+  }, [documentId, documentVersions, name, newVersion, title, toast])
 
   const handleReady = useCallback(() => {
     // eslint-disable-next-line no-console
