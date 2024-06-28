@@ -310,6 +310,34 @@ describe('transferValue', () => {
         {_key: expect.any(String), title: 'Blue', name: 'blue', _type: 'color'},
       ])
     })
+    test.failing('can copy array into a deeply nested array inside object', async () => {
+      const sourceValue = [
+        {
+          _type: 'color',
+          _key: '39fd2dd21625',
+          title: 'Hello there',
+          name: 'Fred',
+        },
+      ]
+      const targetValue = [
+        {
+          _type: 'color',
+          _key: '39fd2dd21625',
+          title: 'Hello there',
+          name: 'Fred',
+        },
+      ]
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('editor')!,
+        sourcePath: ['arrayOfPredefinedOptions'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['arrayOfMultipleNestedTypes', {_key: 'color-1'}, 'nestedArray'],
+      })
+      expect(transferValueResult?.targetValue).toEqual([
+        {_key: expect.any(String), title: 'Hello there', name: 'Fred', _type: 'color'},
+      ])
+    })
   })
 
   describe('numbers', () => {
