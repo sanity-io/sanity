@@ -102,7 +102,7 @@
     "@bjoerge/mutiny": "^0.5.3",
     "@google-cloud/storage": "^7.11.0",
     "@jest/globals": "^29.7.0",
-    "@playwright/test": "1.41.2",
+    "@playwright/test": "1.44.1",
     "@repo/package.config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/client": "^6.20.2",
