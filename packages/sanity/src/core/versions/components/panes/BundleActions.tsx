@@ -1,8 +1,9 @@
 import {AddIcon, CheckmarkIcon} from '@sanity/icons'
-import {Button, useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sanity'
 
+import {Button} from '../../../../ui-components'
 import {type Version} from '../../types'
 import {getAllVersionsOfDocument, versionDocumentExists} from '../../util/dummyGetters'
 
