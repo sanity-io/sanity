@@ -2,7 +2,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {Box, Button, Card, Flex, Text} from '@sanity/ui'
 
-export function ReleaseHeader() {
+export function BundleHeader() {
   return (
     <Card as="thead" radius={3}>
       <Flex as="tr">
@@ -13,7 +13,6 @@ export function ReleaseHeader() {
             </Text>
           </Box>
         </Flex>
-        {/* Scheduled */}
         {/* Published */}
         <Flex
           as="th"

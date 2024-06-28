@@ -4,10 +4,10 @@ import {AddIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Container, Flex, Heading, Stack, Text, TextInput} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
+import {CreateBundleDialog} from '../../versions/components/dialog/CreateBundleDialog'
 import {type Version} from '../../versions/types'
 import {BUNDLES} from '../../versions/util/const'
-import {getRandomToneIcon} from '../../versions/util/dummyGetters'
-import {ReleaseTable} from '../components/releaseTable/ReleaseTable'
+import {BundlesTable} from '../components/BundlesTable/BundlesTable'
 
 type Mode = 'current' | 'past'
 
@@ -16,42 +16,26 @@ const HISTORY_MODES: {label: string; value: Mode}[] = [
   {label: 'Archived', value: 'past'},
 ]
 
-export default function ReleasesOverview() {
-  const [releases, setReleases] = useState<Version[]>(BUNDLES)
-  const [releaseHistoryMode, setReleaseHistoryMode] = useState<Mode>('current')
+export default function BundlesOverview() {
+  const [bundles, setBundles] = useState<Version[]>(BUNDLES)
+  const [bundleHistoryMode, setBundleHistoryMode] = useState<Mode>('current')
+  const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
 
-  const handleCreateReleaseClick = useCallback(() => {
-    const {tone, icon} = getRandomToneIcon()
+  const handleOnCreateBundle = useCallback(() => setIsCreateBundleDialogOpen(true), [])
 
-    setReleases((currentReleases) => {
-      const name = `New release ${currentReleases.length + 1}`
-
-      return [
-        ...currentReleases,
-        {
-          name,
-          title: name,
-          tone,
-          icon,
-          publishAt: Date.now() + 1000 * 60 * 60 * 24 * 2,
-        },
-      ]
-    })
-  }, [])
-
-  const hasReleases = Boolean(releases.length)
+  const hasBundles = Boolean(bundles.length)
 
   const renderCurrentArchivedPicker = useCallback(
     () => (
       <Card radius={2} shadow={1} tone="inherit">
         {HISTORY_MODES.map((mode) => (
           <Button
-            // TODO: disable button if no releases matching history
+            // TODO: disable button if no bundle matching history
             key={mode.value}
             mode="bleed"
-            onClick={() => setReleaseHistoryMode(mode.value)}
+            onClick={() => setBundleHistoryMode(mode.value)}
             padding={2}
-            selected={releaseHistoryMode === mode.value}
+            selected={bundleHistoryMode === mode.value}
             style={{
               borderTopLeftRadius: 0,
               borderBottomLeftRadius: 0,
@@ -61,10 +45,10 @@ export default function ReleasesOverview() {
         ))}
       </Card>
     ),
-    [releaseHistoryMode],
+    [bundleHistoryMode],
   )
 
-  const renderReleaseSearch = useCallback(
+  const renderBundleSearch = useCallback(
     () => (
       <Flex flex="none" gap={2}>
         <TextInput
@@ -76,15 +60,26 @@ export default function ReleasesOverview() {
         />
         <Button
           icon={AddIcon}
-          onClick={handleCreateReleaseClick}
+          onClick={handleOnCreateBundle}
           padding={2}
           space={2}
           text="Create release"
         />
       </Flex>
     ),
-    [handleCreateReleaseClick],
+    [handleOnCreateBundle],
   )
+
+  const renderCreateBundleDialog = () => {
+    if (!isCreateBundleDialogOpen) return null
+
+    return (
+      <CreateBundleDialog
+        onCancel={() => setIsCreateBundleDialogOpen(false)}
+        onSubmit={() => null}
+      />
+    )
+  }
 
   return (
     <Card flex={1} overflow="auto">
@@ -97,7 +92,7 @@ export default function ReleasesOverview() {
                   Releases
                 </Heading>
 
-                {!hasReleases && (
+                {!hasBundles && (
                   <Container style={{margin: 0}} width={0}>
                     <Stack space={5}>
                       <Text muted size={2}>
@@ -107,7 +102,7 @@ export default function ReleasesOverview() {
                       <Box>
                         <Button
                           icon={AddIcon}
-                          onClick={handleCreateReleaseClick}
+                          onClick={handleOnCreateBundle}
                           padding={2}
                           space={2}
                           text="Create release"
@@ -117,13 +112,14 @@ export default function ReleasesOverview() {
                   </Container>
                 )}
               </Stack>
-              {hasReleases && renderCurrentArchivedPicker()}
+              {hasBundles && renderCurrentArchivedPicker()}
             </Flex>
-            {hasReleases && renderReleaseSearch()}
+            {hasBundles && renderBundleSearch()}
           </Flex>
-          {hasReleases && <ReleaseTable releases={releases} />}
+          {hasBundles && <BundlesTable bundles={bundles} />}
         </Stack>
       </Container>
+      {renderCreateBundleDialog()}
     </Card>
   )
 }

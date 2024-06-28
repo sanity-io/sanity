@@ -1,14 +1,14 @@
 import {useRouter} from 'sanity/router'
 
-import {ReleaseDetail} from './ReleaseDetail'
-import ReleasesOverview from './ReleasesOverview'
+import {BundleDetail} from './BundleDetail'
+import BundlesOverview from './BundlesOverview'
 
 export function ReleasesTool() {
   const router = useRouter()
 
-  const {releaseId} = router.state
+  const {bundleId} = router.state
 
-  if (releaseId) return <ReleaseDetail />
+  if (bundleId) return <BundleDetail />
 
-  return <ReleasesOverview />
+  return <BundlesOverview />
 }

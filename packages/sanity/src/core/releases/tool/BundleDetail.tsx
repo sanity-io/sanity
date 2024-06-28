@@ -25,14 +25,14 @@ const useVersions = (versionId: string): Version => ({
   publishAt: Date.now() + 1000 * 60 * 60 * 24 * 2,
 })
 
-export const ReleaseDetail = () => {
+export const BundleDetail = () => {
   const router = useRouter()
   const [activeScreen, setActiveScreen] = useState<Screen>('overview')
-  const {releaseId}: ReleasesRouterState = router.state
-  const parsed = decodeURIComponent(releaseId || '')
+  const {bundleId}: ReleasesRouterState = router.state
+  const parsed = decodeURIComponent(bundleId || '')
 
-  const release = useVersions(parsed)
-  const releaseProgress = Math.random()
+  const bundle = useVersions(parsed)
+  const bundleProgress = Math.random()
 
   return (
     <Flex direction="column">
@@ -41,7 +41,7 @@ export const ReleaseDetail = () => {
           <Flex align="baseline" flex={1} gap={1}>
             <Button
               as="a"
-              // navigate back to releases overview
+              // navigate back to bundles overview
               onClick={() => router.navigate({})}
               icon={ArrowLeftIcon}
               mode="bleed"
@@ -49,7 +49,7 @@ export const ReleaseDetail = () => {
             />
             <Box paddingX={1} paddingY={2}>
               <Text as="h1" size={1} weight="semibold">
-                {release.title}
+                {bundle.title}
               </Text>
             </Box>
 
@@ -69,12 +69,12 @@ export const ReleaseDetail = () => {
                 {/* StudioButton supports tooltip when button is disabled */}
                 <StudioButton
                   tooltipProps={{
-                    disabled: releaseProgress === 1,
+                    disabled: bundleProgress === 1,
                     content: 'Add documents to this release to review changes',
                     placement: 'bottom',
                   }}
                   key="review"
-                  disabled={releaseProgress !== 1}
+                  disabled={bundleProgress !== 1}
                   mode="bleed"
                   onClick={() => setActiveScreen('review')}
                   style={{
@@ -88,13 +88,13 @@ export const ReleaseDetail = () => {
           </Flex>
 
           <Flex flex="none" gap={2}>
-            {/* hide if release is already published */}
-            {release.publishAt && (
+            {/* hide if bundle is already published */}
+            {bundle.publishAt && (
               <Button icon={PublishIcon} padding={2} space={2} text="Publish all" />
             )}
             <MenuButton
               button={<Button icon={EllipsisHorizontalIcon} mode="bleed" padding={2} />}
-              id="release-menu"
+              id="bundle-menu"
               menu={
                 <Menu>
                   <MenuItem icon={TrashIcon} text="Delete release" />
