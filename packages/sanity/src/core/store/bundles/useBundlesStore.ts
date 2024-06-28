@@ -1,6 +1,6 @@
 import {type ListenEvent, type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
-import {catchError, of} from 'rxjs'
+import {catchError, concatMap, map, of, retry, timeout} from 'rxjs'
 
 import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {bundlesReducer, type bundlesReducerAction, type bundlesReducerState} from './reducer'
@@ -52,12 +52,20 @@ export function useBundlesStore(): BundlesStoreReturnType {
       return of(null) // emits null and completes if no client
     }
     return client.observable.fetch(QUERY).pipe(
+      timeout(10000), // 10s timeout
       map((res) => {
         dispatch({type: 'BUNDLES_SET', bundles: res})
         didInitialFetch.current = true
         setLoading(false)
       }),
+      retry({
+        count: 2,
+        delay: 1000,
+      }),
       catchError((err) => {
+        if (err.name === 'TimeoutError') {
+          console.error('Fetch operation timed out:', err)
+        }
         setError(err)
         return of(null) // ensure stream completion even on error
       }),
