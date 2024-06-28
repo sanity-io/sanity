@@ -12,7 +12,8 @@ import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button as StudioButton} from '../../../ui-components'
-import {getRandomToneIcon, type Version} from '../../util/versions/util'
+import {type Version} from '../../versions/types'
+import {getRandomToneIcon} from '../../versions/util/dummyGetters'
 import {type ReleasesRouterState} from '../types/router'
 
 type Screen = 'overview' | 'review'

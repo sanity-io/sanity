@@ -1,17 +1,14 @@
-import {hues} from '@sanity/color'
 import {ChevronDownIcon, Icon} from '@sanity/icons'
 // eslint-disable-next-line camelcase
-import {Box, Flex, Text, useTheme_v2} from '@sanity/ui'
-import {rgba} from '@sanity/ui/theme'
+import {Box, Flex, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 
-import {type SanityReleaseIcon} from '../../../../core/util/versions/util'
+import {type SanityVersionIcon} from '../types'
 
-export function ReleaseIcon(
-  props: Partial<SanityReleaseIcon> & {openButton?: boolean; padding?: number; title?: string},
-) {
-  const {hue = 'gray', icon, openButton, padding = 3, title} = props
-  const {color} = useTheme_v2()
+export function VersionIcon(
+  props: Partial<SanityVersionIcon> & {openButton?: boolean; padding?: number; title?: string},
+): JSX.Element {
+  const {tone, icon, openButton, padding = 3, title} = props
 
   return (
     <Flex
@@ -19,10 +16,9 @@ export function ReleaseIcon(
       padding={padding}
       style={
         {
-          '--card-bg-color': rgba(hues[hue][color._dark ? 700 : 300].hex, 0.2),
-          '--card-fg-color': hues[hue][color._dark ? 400 : 600].hex,
-          '--card-icon-color': hues[hue][color._dark ? 400 : 600].hex,
-          'backgroundColor': 'var(--card-bg-color)',
+          '--card-fg-color': `var(--card-badge-${tone}-fg-color)`,
+          '--card-icon-color': `var(--card-badge-${tone}-icon-color)`,
+          'backgroundColor': `var(--card-badge-${tone}-bg-color)`,
           'borderRadius': '9999px',
         } as CSSProperties
       }

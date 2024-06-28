@@ -1,5 +1,7 @@
+/* eslint-disable no-warning-comments */
 /* eslint-disable i18next/no-literal-string */
-import {AddIcon, CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
+
+import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -11,37 +13,35 @@ import {
   MenuItem,
   Stack,
   Text,
-  TextInput,
 } from '@sanity/ui'
-import {camelCase} from 'lodash'
-import {useCallback, useEffect, useState} from 'react'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sanity'
+import {useCallback, useContext, useEffect, useState} from 'react'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
+import {useRouter} from 'sanity/router'
 
-import {
-  BUNDLES,
-  getAllVersionsOfDocument,
-  getVersionName,
-  type Version,
-} from '../../../../core/util/versions/util'
-import {ReleaseIcon} from './ReleaseIcon'
+import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
+import {type Version} from '../../types'
+import {BUNDLES} from '../../util/const'
+import {getAllVersionsOfDocument} from '../../util/dummyGetters'
+import {VersionBadge} from '../VersionBadge'
+import {VersionIcon} from '../VersionIcon'
 
-function toSlug(str: string) {
-  return camelCase(str)
-}
-
+// TODO A LOT OF DOCUMENTED CODE IS RELATED TO SEARCH AND CREATING BUNDLE FROM HERE
+// STILL NEED TO DECIDE IF WE KEEP IT OR NOT
 export function DocumentVersionMenu(props: {
   documentId: string
   documentType: string
 }): JSX.Element {
   const {documentId, documentType} = props
-  const {newVersion} = useDocumentOperation(documentId, documentType)
+  //const {newVersion} = useDocumentOperation(documentId, documentType)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const selectedVersion = getVersionName(documentId)
-  const isDraft = selectedVersion === 'draft'
+  const router = useRouter()
+  const {currentVersion, isDraft} = useContext(VersionContext)
+  const {name} = currentVersion
+  // const toast = useToast()
 
   const [documentVersions, setDocumentVersions] = useState<Version[]>([])
 
-  // search
+  /*// search
   const [addVersionTitle, setAddVersionTitle] = useState('')
   const addVersionName = toSlug(addVersionTitle)
 
@@ -51,7 +51,7 @@ export function DocumentVersionMenu(props: {
   // list of available bundles
   const bundleOptionsList = BUNDLES.filter((r) =>
     r.title.toLowerCase().includes(addVersionTitle.toLowerCase()),
-  )
+  )*/
 
   const fetchVersions = useCallback(async () => {
     const response = await getAllVersionsOfDocument(client, documentId)
@@ -68,43 +68,60 @@ export function DocumentVersionMenu(props: {
   }, [fetchVersions])
 
   /* used for the search of bundles when writing a new version name */
-  const handleAddVersionChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  /*const handleAddVersionChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setAddVersionTitle(event.target.value)
   }, [])
 
   const handleAddVersion = useCallback(
-    (name: string) => () => {
-      const nameSlugged = toSlug(name)
+    (versionName: string) => () => {
+      const nameSlugged = toSlug(versionName)
+
+      // only add to version if there isn't already a version in that bundle of this doc
+      if (versionDocumentExists(documentVersions, versionName)) {
+        toast.push({
+          status: 'error',
+          title: `There's already a version of this document in the bundle ${title}`,
+        })
+        return
+      }
       const bundleId = `${nameSlugged}.${documentId}`
 
       newVersion.execute(bundleId)
     },
-    [documentId, newVersion],
-  )
+    [documentVersions, documentId, newVersion, toast, title],
+  )*/
 
   const handleChangeToVersion = useCallback(
-    (name: string) => () => {
-      // eslint-disable-next-line no-console
-      console.log('changing to an already existing version', name)
+    (versionName: string) => () => {
+      if (versionName === 'drafts') {
+        router.navigateStickyParam('perspective', '')
+      } else {
+        router.navigateStickyParam('perspective', `bundle.${versionName}`)
+      }
     },
-    [],
+    [router],
   )
 
   const handleGoToLatest = useCallback(
     () => () => {
-      // eslint-disable-next-line no-console
-      console.log('switching into drafts / latest')
+      router.navigateStickyParam('perspective', '')
     },
-    [],
+    [router],
   )
 
   const onMenuOpen = useCallback(async () => {
-    setAddVersionTitle('')
+    //setAddVersionTitle('')
     fetchVersions()
   }, [fetchVersions])
 
+  /* TODO Version Badge should only show when the current opened document is in a version */
+
   return (
     <>
+      {currentVersion && !isDraft && <VersionBadge version={currentVersion} />}
+
+      {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
+
       <Box flex="none">
         <MenuButton
           button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
@@ -141,12 +158,13 @@ export function DocumentVersionMenu(props: {
                     {documentVersions.map((r) => (
                       <MenuItem
                         key={r.name}
+                        href=""
                         onClick={handleChangeToVersion(r.name)}
                         padding={1}
-                        pressed={selectedVersion === r.name}
+                        pressed={name === r.name}
                       >
                         <Flex>
-                          {<ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />}
+                          {<VersionIcon tone={r.tone} icon={r.icon} padding={2} />}
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">
@@ -168,11 +186,7 @@ export function DocumentVersionMenu(props: {
 
                           <Box padding={2}>
                             <Text size={1}>
-                              {
-                                <CheckmarkIcon
-                                  style={{opacity: r.name === selectedVersion ? 1 : 0}}
-                                />
-                              }
+                              {<CheckmarkIcon style={{opacity: r.name === name ? 1 : 0}} />}
                             </Text>
                           </Box>
                         </Flex>
@@ -184,7 +198,7 @@ export function DocumentVersionMenu(props: {
                 </>
               )}
 
-              <Stack padding={1} space={1}>
+              {/*<Stack padding={1} space={1}>
                 <Box>
                   <TextInput
                     border={false}
@@ -205,7 +219,7 @@ export function DocumentVersionMenu(props: {
                         padding={1}
                       >
                         <Flex>
-                          <ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />
+                          <VersionIcon tone={r.tone} icon={r.icon} padding={2} />
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">
@@ -224,16 +238,16 @@ export function DocumentVersionMenu(props: {
                       </MenuItem>
                     ))}
 
-                    {/* localize text */}
+                    // localize text
                     <MenuItem
                       disabled={addVersionExists}
                       icon={AddIcon}
                       onClick={handleAddVersion(addVersionName)}
                       text={<>Create version: "{addVersionTitle}"</>}
                     />
-                  </>
+                  </></Menu>
                 )}
-              </Stack>
+              </Stack>*/}
             </Menu>
           }
           popover={{

@@ -4,7 +4,9 @@ import {AddIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Container, Flex, Heading, Stack, Text, TextInput} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {BUNDLES, getRandomToneIcon, type Version} from '../../util/versions/util'
+import {type Version} from '../../versions/types'
+import {BUNDLES} from '../../versions/util/const'
+import {getRandomToneIcon} from '../../versions/util/dummyGetters'
 import {ReleaseTable} from '../components/releaseTable/ReleaseTable'
 
 type Mode = 'current' | 'past'
@@ -19,7 +21,7 @@ export default function ReleasesOverview() {
   const [releaseHistoryMode, setReleaseHistoryMode] = useState<Mode>('current')
 
   const handleCreateReleaseClick = useCallback(() => {
-    const {hue, icon} = getRandomToneIcon()
+    const {tone, icon} = getRandomToneIcon()
 
     setReleases((currentReleases) => {
       const name = `New release ${currentReleases.length + 1}`
@@ -29,7 +31,7 @@ export default function ReleasesOverview() {
         {
           name,
           title: name,
-          hue,
+          tone,
           icon,
           publishAt: Date.now() + 1000 * 60 * 60 * 24 * 2,
         },
