@@ -1,4 +1,4 @@
-import {AddIcon, CheckmarkIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sanity'
@@ -52,13 +52,14 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
     newVersion.execute(bundleId)
   }, [documentId, documentVersions, name, newVersion, title, toast])
 
+  /* follow up
   const handleReady = useCallback(() => {
     // eslint-disable-next-line no-console
     console.log('handle ready', name)
-  }, [name])
-
-  return isReady ? (
-    <Button
+  }, [name]) 
+  
+  isReady ? (
+    {<Button
       data-testid={`action-ready-to-${name}`}
       // localize text
       // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
@@ -66,7 +67,9 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
       icon={CheckmarkIcon}
       onClick={handleReady}
     />
-  ) : (
+  )*/
+
+  return (
     <Button
       data-testid={`action-add-to-${name}`}
       // localize text
