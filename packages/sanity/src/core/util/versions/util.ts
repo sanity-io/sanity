@@ -14,7 +14,7 @@ const RANDOM_TONES: ColorHueKey[] = [
   'magenta',
   'orange',
 ]
-const RANDOM_SYMBOLS = [
+const RANDOM_SYMBOLS: IconSymbol[] = [
   'archive',
   'edit',
   'eye-open',
@@ -27,6 +27,11 @@ const RANDOM_SYMBOLS = [
   'trash',
   'user',
 ]
+
+export const getRandomToneIcon = () => ({
+  hue: RANDOM_TONES[Math.floor(Math.random() * RANDOM_TONES.length)],
+  icon: RANDOM_SYMBOLS[Math.floor(Math.random() * RANDOM_SYMBOLS.length)],
+})
 
 export interface SanityReleaseIcon {
   hue: ColorHueKey
