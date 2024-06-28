@@ -4,8 +4,9 @@ import {useCallback, useContext, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {VersionContext} from '../../../_singletons/core/form/VersionContext'
-import {type Version} from '../types'
+import {type Bundle, type Version} from '../types'
 import {BUNDLES, LATEST} from '../util/const'
+import {CreateReleaseDialog} from './dialog/CreateReleaseDialog'
 import {ReleaseIcon} from './ReleaseIcon'
 
 export function GlobalReleaseMenu(): JSX.Element {
@@ -54,12 +55,15 @@ export function GlobalReleaseMenu(): JSX.Element {
     setCreateReleaseDialogOpen(false)
   }, [])
 
-  const handleSubmit = useCallback((value: Version) => {
-    setCreateReleaseDialogOpen(false)
+  const handleSubmit = useCallback(
+    () => (value: Bundle) => {
+      // eslint-disable-next-line no-console
+      console.log('create new bundle', value.name)
 
-    // eslint-disable-next-line no-console
-    console.log('create new bundle', value.name)
-  }, [])
+      setCreateReleaseDialogOpen(false)
+    },
+    [],
+  )
 
   return (
     <>
@@ -67,7 +71,7 @@ export function GlobalReleaseMenu(): JSX.Element {
         button={
           <Button mode="bleed" padding={0} radius="full">
             <ReleaseIcon
-              hue={currentVersion?.hue}
+              tone={currentVersion?.tone}
               icon={isDraft ? undefined : currentVersion?.icon}
               openButton
               padding={2}
@@ -96,7 +100,7 @@ export function GlobalReleaseMenu(): JSX.Element {
               .map((r) => (
                 <MenuItem key={r.name} onClick={handleBundleChange(r)} padding={1} pressed={false}>
                   <Flex>
-                    <ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />
+                    <ReleaseIcon tone={r.tone} icon={r.icon} padding={2} />
 
                     <Box flex={1} padding={2} style={{minWidth: 100}}>
                       <Text size={1} weight="medium">
@@ -130,10 +134,9 @@ export function GlobalReleaseMenu(): JSX.Element {
         }}
       />
 
-      {createReleaseDialogOpen &&
-        {
-          /*<CreateReleaseDialog onCancel={handleCancel} onSubmit={handleSubmit} />*/
-        }}
+      {createReleaseDialogOpen && (
+        <CreateReleaseDialog onCancel={handleCancel} onSubmit={handleSubmit} />
+      )}
     </>
   )
 }
