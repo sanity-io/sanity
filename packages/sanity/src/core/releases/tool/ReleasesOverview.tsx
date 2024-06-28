@@ -24,29 +24,42 @@ export default function ReleasesOverview() {
     setReleases((currentReleases) => {
       const name = `New release ${currentReleases.length + 1}`
 
-      return [...currentReleases, {name, title: name, hue, icon, publishAt: Date.now()}]
+      return [
+        ...currentReleases,
+        {
+          name,
+          title: name,
+          hue,
+          icon,
+          publishAt: Date.now() + 1000 * 60 * 60 * 24 * 2,
+        },
+      ]
     })
   }, [])
 
   const hasReleases = Boolean(releases.length)
 
-  const renderCurrentArchivedPicker = () => (
-    <Card radius={2} shadow={1} tone="inherit">
-      {HISTORY_MODES.map((mode) => (
-        <Button
-          key={mode.value}
-          mode="bleed"
-          onClick={() => setReleaseHistoryMode(mode.value)}
-          padding={2}
-          selected={releaseHistoryMode === mode.value}
-          style={{
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-          }}
-          text={mode.label}
-        />
-      ))}
-    </Card>
+  const renderCurrentArchivedPicker = useCallback(
+    () => (
+      <Card radius={2} shadow={1} tone="inherit">
+        {HISTORY_MODES.map((mode) => (
+          <Button
+            // TODO: disable button if no releases matching history
+            key={mode.value}
+            mode="bleed"
+            onClick={() => setReleaseHistoryMode(mode.value)}
+            padding={2}
+            selected={releaseHistoryMode === mode.value}
+            style={{
+              borderTopLeftRadius: 0,
+              borderBottomLeftRadius: 0,
+            }}
+            text={mode.label}
+          />
+        ))}
+      </Card>
+    ),
+    [releaseHistoryMode],
   )
 
   const renderReleaseSearch = useCallback(

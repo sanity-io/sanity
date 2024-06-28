@@ -22,7 +22,7 @@ type Screen = 'overview' | 'review'
 
 const useVersions = (versionId: string): Version => ({
   name: versionId,
-  title: `Release ${versionId}`,
+  title: versionId,
   ...getRandomToneIcon(),
   publishAt: Date.now() + 1000 * 60 * 60 * 24 * 2,
 })
@@ -31,14 +31,16 @@ export const ReleaseDetail = () => {
   const router = useRouter()
   const [activeScreen, setActiveScreen] = useState<Screen>('overview')
   const {releaseId}: ReleasesRouterState = router.state
-  const release = useVersions(releaseId || '')
+  const parsed = decodeURIComponent(releaseId || '')
+
+  const release = useVersions(parsed)
   const releaseProgress = Math.random()
 
   return (
     <Flex direction="column">
       <Card flex="none" padding={3}>
         <Flex>
-          <Flex flex={1} gap={1}>
+          <Flex align="baseline" flex={1} gap={1}>
             <Button
               as="a"
               // navigate back to releases overview

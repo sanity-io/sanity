@@ -64,3 +64,13 @@ export const ProgressIcon = forwardRef(function ProgressCircleIcon(
     </svg>
   )
 })
+
+/**
+ * @internal
+ */
+export const ProgressHalfIcon = forwardRef(function ProgressHalfCircleIcon(
+  props: Omit<Props, 'progress'>,
+  ref: ForwardedRef<SVGSVGElement>,
+) {
+  return <ProgressIcon progress={0.5} {...props} ref={ref} />
+})
