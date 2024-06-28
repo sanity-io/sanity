@@ -2,55 +2,15 @@ import {type ColorHueKey} from '@sanity/color'
 import {type IconSymbol} from '@sanity/icons'
 import {type SanityClient, type SanityDocument} from 'sanity'
 
-import {type Version} from '../../versions/types'
+import {type Version} from '../types'
+import {RANDOM_SYMBOLS, RANDOM_TONES} from './const'
 
 /* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
-
-const RANDOM_TONES: ColorHueKey[] = [
-  'green',
-  'yellow',
-  'red',
-  'purple',
-  'blue',
-  'cyan',
-  'magenta',
-  'orange',
-]
-const RANDOM_SYMBOLS = [
-  'archive',
-  'edit',
-  'eye-open',
-  'heart',
-  'info-filled',
-  'circle',
-  'search',
-  'sun',
-  'star',
-  'trash',
-  'user',
-]
 
 export interface SanityReleaseIcon {
   hue: ColorHueKey
   icon: IconSymbol
 }
-
-export const LATEST: Version = {
-  name: 'draft',
-  title: 'Latest',
-  icon: undefined,
-  hue: undefined,
-  publishAt: 0,
-}
-
-// dummy data
-export const BUNDLES: Version[] = [
-  LATEST,
-  {name: 'previewDrafts', title: 'Preview drafts', icon: 'edit', hue: 'yellow', publishAt: 0},
-  {name: 'published', title: 'Published', icon: 'eye-open', hue: 'blue', publishAt: 0},
-  {name: 'summerDrop', title: 'Summer Drop', icon: 'sun', hue: 'orange', publishAt: 0},
-  {name: 'autumnDrop', title: 'Autumn Drop', icon: 'star', hue: 'red', publishAt: 0},
-]
 
 /**
  * Returns all versions of a document
@@ -72,7 +32,7 @@ export async function getAllVersionsOfDocument(
     return documents.map((doc: SanityDocument, index: number) => ({
       name: getVersionName(doc._id),
       title: getVersionName(doc._id),
-      hue: RANDOM_TONES[index % RANDOM_SYMBOLS.length],
+      hue: RANDOM_TONES[index % RANDOM_TONES.length],
       icon: RANDOM_SYMBOLS[index % RANDOM_SYMBOLS.length],
     }))
   })

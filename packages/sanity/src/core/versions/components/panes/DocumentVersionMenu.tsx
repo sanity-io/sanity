@@ -21,11 +21,11 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sa
 import {useRouter} from 'sanity/router'
 
 import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
-import {ReleaseIcon} from '../../../../core/versions/components/ReleaseIcon'
-import {VersionBadge} from '../../../../core/versions/components/VersionBadge'
-import {type Version} from '../../../../core/versions/types'
-import {BUNDLES} from '../../../../core/versions/util/const'
-import {getAllVersionsOfDocument} from '../../../../core/versions/util/dummyGetters'
+import {type Version} from '../../types'
+import {BUNDLES} from '../../util/const'
+import {getAllVersionsOfDocument} from '../../util/dummyGetters'
+import {ReleaseIcon} from '../ReleaseIcon'
+import {VersionBadge} from '../VersionBadge'
 
 function toSlug(str: string) {
   return camelCase(str)

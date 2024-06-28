@@ -5,7 +5,7 @@ import {Box, Flex, Text, useTheme_v2} from '@sanity/ui'
 import {rgba} from '@sanity/ui/theme'
 import {type CSSProperties} from 'react'
 
-import {type SanityReleaseIcon} from '../../../util/versions/util'
+import {type SanityReleaseIcon} from '../util/dummyGetters'
 
 export function ReleaseIcon(
   props: Partial<SanityReleaseIcon> & {openButton?: boolean; padding?: number; title?: string},
