@@ -4,7 +4,8 @@ import {useCallback, useContext, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
-import {BUNDLES, LATEST, type Version} from '../../../util/versions/util'
+import {BUNDLES, LATEST} from '../../../util/versions/util'
+import {type Version} from '../../../versions/types'
 import {ReleaseIcon} from './ReleaseIcon'
 
 export function GlobalReleaseMenu(): JSX.Element {

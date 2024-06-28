@@ -2,6 +2,8 @@ import {type ColorHueKey} from '@sanity/color'
 import {type IconSymbol} from '@sanity/icons'
 import {type SanityClient, type SanityDocument} from 'sanity'
 
+import {type Version} from '../../versions/types'
+
 /* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
 
 const RANDOM_TONES: ColorHueKey[] = [
@@ -31,15 +33,6 @@ const RANDOM_SYMBOLS = [
 export interface SanityReleaseIcon {
   hue: ColorHueKey
   icon: IconSymbol
-}
-
-// move out of here and make it right
-export interface Version {
-  name: string
-  title: string
-  icon: IconSymbol | undefined
-  hue: ColorHueKey | undefined
-  publishAt: Date | number
 }
 
 export const LATEST: Version = {

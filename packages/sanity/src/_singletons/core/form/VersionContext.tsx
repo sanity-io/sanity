@@ -1,9 +1,11 @@
 // eslint-disable-next-line no-warning-comments
 /* TODO REMOVE THIS, THIS IS JUST A TEMPORARY FIX UNTIL STORES ARE SET UP */
 
-import type {createContext, React, ReactNode, useState} from 'react'
+// eslint-disable-next-line import/consistent-type-specifier-style
+import {createContext, type ReactElement, useState} from 'react'
 
-import type {LATEST, Version} from '../../../core/util/versions/util'
+import {LATEST} from '../../../core/util/versions/util'
+import type {Version} from '../../../core/versions/types'
 
 interface VersionContextValue {
   currentVersion: Version
@@ -18,7 +20,11 @@ export const VersionContext = createContext<VersionContextValue>({
   setCurrentVersion: () => {},
 })
 
-export const VersionProvider: React.FC<{children: ReactNode}> = ({children}) => {
+interface VersionProviderProps {
+  children: ReactElement
+}
+
+export function VersionProvider({children}: VersionProviderProps): JSX.Element {
   const [currentVersion, setCurrentVersion] = useState<Version>(LATEST)
   const isDraft = currentVersion.name === 'draft'
 
