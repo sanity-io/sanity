@@ -92,7 +92,7 @@ export function DocumentVersionMenu(props: {
 
       newVersion.execute(bundleId)
     },
-    [documentId, newVersion, toast],
+    [currentVersion.title, documentId, documentVersions, newVersion, toast],
   )
 
   const handleChangeToVersion = useCallback(
