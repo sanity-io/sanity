@@ -1,7 +1,8 @@
 import {definePlugin} from 'sanity'
+import {route} from 'sanity/router'
 
 import {TOOL_NAME, TOOL_TITLE} from '../constants'
-import ReleasesTool from '../tool/ReleasesTool'
+import {ReleasesTool} from '../tool/ReleasesTool'
 
 /**
  * @internal
@@ -14,5 +15,12 @@ export const RELEASES_NAME = 'sanity/releases'
 export const releases = definePlugin({
   name: RELEASES_NAME,
 
-  tools: [{name: TOOL_NAME, title: TOOL_TITLE, component: ReleasesTool}],
+  tools: [
+    {
+      name: TOOL_NAME,
+      title: TOOL_TITLE,
+      component: ReleasesTool,
+      router: route.create('/', [route.create('/:releaseId')]),
+    },
+  ],
 })
