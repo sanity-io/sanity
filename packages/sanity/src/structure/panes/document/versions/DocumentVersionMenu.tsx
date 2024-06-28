@@ -14,6 +14,7 @@ import {
   Stack,
   Text,
   TextInput,
+  useToast,
 } from '@sanity/ui'
 import {camelCase} from 'lodash'
 import {useCallback, useContext, useEffect, useState} from 'react'
@@ -25,7 +26,10 @@ import {ReleaseIcon} from '../../../../core/versions/components/ReleaseIcon'
 import {VersionBadge} from '../../../../core/versions/components/VersionBadge'
 import {type Version} from '../../../../core/versions/types'
 import {BUNDLES} from '../../../../core/versions/util/const'
-import {getAllVersionsOfDocument} from '../../../../core/versions/util/dummyGetters'
+import {
+  getAllVersionsOfDocument,
+  versionDocumentExists,
+} from '../../../../core/versions/util/dummyGetters'
 
 function toSlug(str: string) {
   return camelCase(str)
@@ -39,6 +43,7 @@ export function DocumentVersionMenu(props: {
   const {newVersion} = useDocumentOperation(documentId, documentType)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const router = useRouter()
+  const toast = useToast()
   const {currentVersion, isDraft} = useContext(VersionContext)
 
   const [documentVersions, setDocumentVersions] = useState<Version[]>([])
@@ -77,11 +82,21 @@ export function DocumentVersionMenu(props: {
   const handleAddVersion = useCallback(
     (name: string) => () => {
       const nameSlugged = toSlug(name)
+
+      // only add to version if there isn't already a version in that bundle of this doc
+      if (versionDocumentExists(documentVersions, name)) {
+        toast.push({
+          status: 'error',
+          title: `There's already a version of this document in the bundle ${currentVersion.title}`,
+        })
+        return
+      }
+
       const bundleId = `${nameSlugged}.${documentId}`
 
       newVersion.execute(bundleId)
     },
-    [documentId, newVersion],
+    [documentId, newVersion, toast],
   )
 
   const handleChangeToVersion = useCallback(

@@ -3,7 +3,7 @@ import {type IconSymbol} from '@sanity/icons'
 import {type SanityClient, type SanityDocument} from 'sanity'
 
 import {type Version} from '../types'
-import {RANDOM_SYMBOLS, RANDOM_TONES} from './const'
+import {BUNDLES, RANDOM_SYMBOLS, RANDOM_TONES} from './const'
 
 /* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
 
@@ -42,4 +42,8 @@ export function getVersionName(documentId: string): string {
   if (documentId.indexOf('.') === -1) return 'Published'
   const version = documentId.slice(0, documentId.indexOf('.'))
   return version
+}
+
+export function versionDocumentExists(documentVersions: Version[], name: string): boolean {
+  return documentVersions.some((version) => version.name === name)
 }
