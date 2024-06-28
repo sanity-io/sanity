@@ -42,34 +42,33 @@ export function useBundlesStore(): BundlesStoreReturnType {
   const {client} = useAddonDataset()
 
   const [state, dispatch] = useReducer(bundlesReducer, INITIAL_STATE)
-  const [loading, setLoading] = useState<boolean>(client !== null)
+  const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   const didInitialFetch = useRef<boolean>(false)
 
-  const initialFetch = useCallback(async () => {
+  const initialFetch$ = useCallback(() => {
     if (!client) {
-      setLoading(false)
-      return
+      return of(null) // emits null and completes if no client
     }
-
-    try {
-      const res = await client.fetch(QUERY)
-      dispatch({type: 'BUNDLES_SET', bundles: res})
-      setLoading(false)
-    } catch (err) {
-      setError(err)
-    }
+    return client.observable.fetch(QUERY).pipe(
+      map((res) => {
+        dispatch({type: 'BUNDLES_SET', bundles: res})
+        didInitialFetch.current = true
+        setLoading(false)
+      }),
+      catchError((err) => {
+        setError(err)
+        return of(null) // ensure stream completion even on error
+      }),
+    )
   }, [client])
-
   const handleListenerEvent = useCallback(
-    async (event: ListenEvent<Record<string, BundleDocument>>) => {
+    (event: ListenEvent<Record<string, BundleDocument>>) => {
       // Fetch all bundles on initial connection
       if (event.type === 'welcome' && !didInitialFetch.current) {
-        setLoading(true)
-        await initialFetch()
-        setLoading(false)
-        didInitialFetch.current = true
+        // Do nothing here, the initial fetch is done in the useEffect below
+        initialFetch$()
       }
 
       // The reconnect event means that we are trying to reconnect to the realtime listener.
@@ -83,59 +82,57 @@ export function useBundlesStore(): BundlesStoreReturnType {
 
       // Handle mutations (create, update, delete) from the realtime listener
       // and update the bundles store accordingly
-      if (event.type === 'mutation') {
+      if (event.type === 'mutation' && didInitialFetch.current) {
+        if (event.transition === 'disappear') {
+          dispatch({type: 'BUNDLE_DELETED', id: event.documentId})
+        }
+
         if (event.transition === 'appear') {
           const nextBundle = event.result as BundleDocument | undefined
 
           if (nextBundle) {
-            dispatch({
-              type: 'BUNDLE_RECEIVED',
-              payload: nextBundle,
-            })
+            dispatch({type: 'BUNDLE_RECEIVED', payload: nextBundle})
           }
-        }
-
-        if (event.transition === 'disappear') {
-          dispatch({type: 'BUNDLE_DELETED', id: event.documentId})
         }
 
         if (event.transition === 'update') {
           const updatedBundle = event.result as BundleDocument | undefined
 
           if (updatedBundle) {
-            dispatch({
-              type: 'BUNDLE_UPDATED',
-              payload: updatedBundle,
-            })
+            dispatch({type: 'BUNDLE_UPDATED', payload: updatedBundle})
           }
         }
       }
     },
-    [initialFetch],
+    [initialFetch$],
   )
 
   const listener$ = useMemo(() => {
     if (!client) return of()
 
     const events$ = client.observable.listen(QUERY, {}, LISTEN_OPTIONS).pipe(
+      map(handleListenerEvent),
       catchError((err) => {
         setError(err)
         return of(err)
       }),
     )
 
-    return events$
-  }, [client])
+    return events$ // as Observable<ListenEvent<Record<string, BundleDocument>>>
+  }, [client, handleListenerEvent])
 
   useEffect(() => {
-    const sub = listener$.subscribe(handleListenerEvent)
+    if (!client) return
+    const subscription = initialFetch$()
+      .pipe(concatMap(() => listener$))
+      .subscribe()
 
+    // eslint-disable-next-line consistent-return
     return () => {
-      sub?.unsubscribe()
+      subscription.unsubscribe()
     }
-  }, [handleListenerEvent, listener$])
+  }, [initialFetch$, listener$, client])
 
-  // Transform bundles object to array
   const bundlesAsArray = useMemo(() => Array.from(state.bundles.values()), [state.bundles])
 
   return {
