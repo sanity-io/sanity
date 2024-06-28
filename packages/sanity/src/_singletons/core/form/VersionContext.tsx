@@ -4,8 +4,8 @@
 // eslint-disable-next-line import/consistent-type-specifier-style
 import {createContext, type ReactElement, useState} from 'react'
 
-import {LATEST} from '../../../core/util/versions/util'
 import type {Version} from '../../../core/versions/types'
+import {LATEST} from '../../../core/versions/util/const'
 
 interface VersionContextValue {
   currentVersion: Version

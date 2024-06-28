@@ -4,9 +4,9 @@ import {useCallback, useContext, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
-import {BUNDLES, LATEST} from '../../../util/versions/util'
 import {type Version} from '../../../versions/types'
-import {ReleaseIcon} from './ReleaseIcon'
+import {BUNDLES, LATEST} from '../../util/const'
+import {ReleaseIcon} from '../ReleaseIcon'
 
 export function GlobalReleaseMenu(): JSX.Element {
   const router = useRouter()

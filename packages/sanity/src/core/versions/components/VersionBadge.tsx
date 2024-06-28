@@ -1,6 +1,6 @@
 import {Box, Button} from '@sanity/ui'
 
-import {type Version} from '../../../versions/types'
+import {type Version} from '../types'
 import {ReleaseIcon} from './ReleaseIcon'
 
 export function VersionBadge(props: {version: Version}): JSX.Element {
