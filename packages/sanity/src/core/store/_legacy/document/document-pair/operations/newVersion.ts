@@ -19,7 +19,7 @@ export const newVersion: OperationImpl<[baseDocumentId: string], 'NO_NEW_VERSION
       {
         ...omit(source, omitProps),
         // we don't need to get a draft id or check live editing, we'll always want to create a new version based on the dupeId
-        // we have guardrails for this on the front and backend
+        // we have guardrails for this on the front
         _id: dupeId,
         _type: source._type,
         _version: {},

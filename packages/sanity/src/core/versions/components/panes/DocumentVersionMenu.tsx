@@ -41,6 +41,7 @@ export function DocumentVersionMenu(props: {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const router = useRouter()
   const {currentVersion, isDraft} = useContext(VersionContext)
+  const {name, title} = currentVersion
   const toast = useToast()
 
   const [documentVersions, setDocumentVersions] = useState<Version[]>([])
@@ -77,14 +78,14 @@ export function DocumentVersionMenu(props: {
   }, [])
 
   const handleAddVersion = useCallback(
-    (name: string) => () => {
-      const nameSlugged = toSlug(name)
+    (versionName: string) => () => {
+      const nameSlugged = toSlug(versionName)
 
       // only add to version if there isn't already a version in that bundle of this doc
-      if (versionDocumentExists(documentVersions, name)) {
+      if (versionDocumentExists(documentVersions, versionName)) {
         toast.push({
           status: 'error',
-          title: `There's already a version of this document in the bundle ${currentVersion.title}`,
+          title: `There's already a version of this document in the bundle ${title}`,
         })
         return
       }
@@ -92,15 +93,15 @@ export function DocumentVersionMenu(props: {
 
       newVersion.execute(bundleId)
     },
-    [currentVersion.title, documentId, documentVersions, newVersion, toast],
+    [documentVersions, documentId, newVersion, toast, title],
   )
 
   const handleChangeToVersion = useCallback(
-    (name: string) => () => {
-      if (name === 'drafts') {
+    (versionName: string) => () => {
+      if (versionName === 'drafts') {
         router.navigateStickyParam('perspective', '')
       } else {
-        router.navigateStickyParam('perspective', `bundle.${name}`)
+        router.navigateStickyParam('perspective', `bundle.${versionName}`)
       }
     },
     [router],
@@ -126,7 +127,7 @@ export function DocumentVersionMenu(props: {
 
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
 
-      <Box flex="none" hidden>
+      <Box flex="none">
         <MenuButton
           button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
           id="version-menu"
@@ -165,7 +166,7 @@ export function DocumentVersionMenu(props: {
                         href=""
                         onClick={handleChangeToVersion(r.name)}
                         padding={1}
-                        pressed={currentVersion.name === r.name}
+                        pressed={name === r.name}
                       >
                         <Flex>
                           {<ReleaseIcon hue={r.hue} icon={r.icon} padding={2} />}
@@ -190,11 +191,7 @@ export function DocumentVersionMenu(props: {
 
                           <Box padding={2}>
                             <Text size={1}>
-                              {
-                                <CheckmarkIcon
-                                  style={{opacity: r.name === currentVersion.name ? 1 : 0}}
-                                />
-                              }
+                              {<CheckmarkIcon style={{opacity: r.name === name ? 1 : 0}} />}
                             </Text>
                           </Box>
                         </Flex>
