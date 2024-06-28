@@ -69,6 +69,9 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
     />
   )*/
 
+  // eslint-disable-next-line no-warning-comments
+  /** TODO what should happen when you add a version if we don't have the ready button */
+
   return (
     <Button
       data-testid={`action-add-to-${name}`}

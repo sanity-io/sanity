@@ -101,7 +101,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
           </Tooltip>
         </LayerProvider>
       )}
-      {showMenu && menuActionStates.length > 0 && isReady && (
+      {showMenu && menuActionStates.length > 0 && isDraft && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
