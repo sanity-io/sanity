@@ -219,6 +219,26 @@ describe('transferValue', () => {
         isFavorite: false,
       })
     })
+
+    test('can copy booleans inside documents', async () => {
+      const sourceValue = {
+        _type: 'editor',
+        _id: 'xxx',
+        isVerified: false,
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('editor')!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: [],
+      })
+      expect(transferValueResult?.errors.length).toEqual(0)
+      expect(transferValueResult?.targetValue).toMatchObject({
+        _type: 'editor',
+        isVerified: false,
+      })
+    })
   })
 
   describe('arrays', () => {
