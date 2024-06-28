@@ -1,7 +1,7 @@
 import {uuid} from '@sanity/uuid'
 import {useCallback} from 'react'
-import {useAddonDataset} from 'sanity'
 
+import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {type BundleDocument} from './types'
 
 // WIP - Raw implementation for initial testing purposes

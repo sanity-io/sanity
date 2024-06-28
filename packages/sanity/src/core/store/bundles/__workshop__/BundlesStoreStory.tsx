@@ -1,22 +1,20 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ComponentType, type FormEvent, useCallback, useState} from 'react'
-import {AddonDatasetProvider, LoadingBlock} from 'sanity'
 
 import {Button} from '../../../../ui-components'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {AddonDatasetProvider} from '../../../studio/addonDataset/AddonDatasetProvider'
 import {type BundleDocument} from '../types'
 import {useBundleOperations} from '../useBundleOperations'
 import {useBundlesStore} from '../useBundlesStore'
 import {ReleaseForm} from './ReleaseForm'
 
 const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>): React.FC<P> => {
-  // Function that returns the wrapped component
   const WrappedComponent: React.FC<P> = (props) => (
     <AddonDatasetProvider>
       <Component {...props} />
     </AddonDatasetProvider>
   )
-
-  // Setting a display name for the wrapped component
   WrappedComponent.displayName = `WithAddonDatasetProvider(${Component.displayName || Component.name || 'Component'})`
 
   return WrappedComponent
