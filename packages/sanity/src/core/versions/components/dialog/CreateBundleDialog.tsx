@@ -3,9 +3,9 @@ import {Box, Button, Dialog, Flex} from '@sanity/ui'
 import {useState} from 'react'
 
 import {type Bundle} from '../../types'
-import {ReleaseForm} from './ReleaseForm'
+import {BundleForm} from './BundleForm'
 
-export function CreateReleaseDialog(props: {
+export function CreateBundleDialog(props: {
   onCancel: () => void
   onSubmit: (value: Bundle) => void
 }): JSX.Element {
@@ -22,13 +22,13 @@ export function CreateReleaseDialog(props: {
     <Dialog
       animate
       header="Create release"
-      id="create-release-dialog"
+      id="create-bundle-dialog"
       onClose={onCancel}
       zOffset={5000}
       width={1}
     >
       <Box padding={6}>
-        <ReleaseForm onChange={setValue} value={value} />
+        <BundleForm onChange={setValue} value={value} />
       </Box>
       <Flex justify="flex-end" padding={3}>
         <Button

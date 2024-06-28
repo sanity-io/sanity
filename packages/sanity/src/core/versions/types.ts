@@ -21,7 +21,7 @@ export interface Bundle {
   publishAt?: string
 }
 
-export interface SanityReleaseIcon {
+export interface SanityVersionIcon {
   tone: ButtonTone
   icon: IconSymbol
 }
