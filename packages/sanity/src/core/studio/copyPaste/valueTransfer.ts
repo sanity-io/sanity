@@ -22,7 +22,8 @@ import {type FIXME, isRecord, type Path, type SchemaType} from 'sanity'
 import {getValueAtPath} from '../../field/paths/helpers'
 import {accepts} from '../../form/studio/uploads/accepts'
 import {randomKey} from '../../form/utils/randomKey'
-import {isEmptyValue, tryResolveSchemaTypeForPath} from './utils'
+import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
+import {isEmptyValue} from './utils'
 
 export interface TransferValueError {
   level: 'warning' | 'error'
@@ -121,8 +122,8 @@ export async function transferValue({
 }> {
   const errors: TransferValueError[] = []
 
-  const sourceSchemaTypeAtPath = tryResolveSchemaTypeForPath(sourceRootSchemaType, sourcePath)
-  const targetSchemaTypeAtPath = tryResolveSchemaTypeForPath(targetRootSchemaType, targetPath)
+  const sourceSchemaTypeAtPath = resolveSchemaTypeForPath(sourceRootSchemaType, sourcePath)
+  const targetSchemaTypeAtPath = resolveSchemaTypeForPath(targetRootSchemaType, targetPath)
 
   if (!sourceSchemaTypeAtPath) {
     throw new Error('Could not find source schema type at path')
