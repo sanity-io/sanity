@@ -1,17 +1,16 @@
 /* eslint-disable camelcase */
-import {AddIcon} from '@sanity/icons'
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useCallback, useContext, useMemo, useState} from 'react'
+import {memo, useContext, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
   shouldArrayDialogOpen,
-  useDocumentOperation,
   useSource,
   useTimelineSelector,
 } from 'sanity'
 
 import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
+import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -28,7 +27,6 @@ interface DocumentStatusBarActionsInnerProps {
 function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps) {
   const {disabled, showMenu, states} = props
   const {__internal_tasks, schemaType, openPath, documentId, documentType} = useDocumentPane()
-  const {newVersion} = useDocumentOperation(documentId, documentType)
 
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -63,13 +61,13 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 
   /* Version / Bundling handling */
   const {currentVersion, isDraft} = useContext(VersionContext)
-  const {name, title} = currentVersion
 
-  const handleAddVersion = useCallback(() => {
-    const bundleId = `${name}.${documentId}`
-
-    newVersion.execute(bundleId)
-  }, [documentId, name, newVersion])
+  // eslint-disable-next-line no-warning-comments
+  /* TODO - replace with real data
+   - needs to check for publish data
+   - if it's published
+   */
+  const isReady = false
 
   return (
     <Flex align="center" gap={1}>
@@ -92,23 +90,18 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
                   tone={firstActionState.tone || 'primary'}
                 />
               ) : (
-                // localize text
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                <Button
-                  data-testid={`action-add-to-${name}`}
-                  // localize text
-                  // eslint-disable-next-line @sanity/i18n/no-attribute-template-literals
-                  text={`Add to ${title}`}
-                  icon={AddIcon}
-                  tone="primary"
-                  onClick={handleAddVersion}
+                <BundleActions
+                  currentVersion={currentVersion}
+                  documentId={documentId}
+                  documentType={documentType}
+                  isReady={isReady}
                 />
               )}
             </Stack>
           </Tooltip>
         </LayerProvider>
       )}
-      {showMenu && menuActionStates.length > 0 && (
+      {showMenu && menuActionStates.length > 0 && isReady && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
