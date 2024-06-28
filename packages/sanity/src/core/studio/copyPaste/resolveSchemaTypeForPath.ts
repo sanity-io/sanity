@@ -42,7 +42,7 @@ export function getSchemaField(
 export function resolveSchemaTypeForPath(
   baseType: SchemaType,
   path: Path,
-  documentValue?: FormDocumentValue | undefined,
+  documentValue?: FormDocumentValue | undefined | unknown,
 ): SchemaType | undefined {
   if (!baseType) return undefined
 

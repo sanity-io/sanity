@@ -101,6 +101,7 @@ export async function transferValue({
   sourcePath,
   sourceValue,
   targetRootSchemaType,
+  targetValue,
   targetPath,
   keyGenerator = defaultKeyGenerator,
   options = {
@@ -114,6 +115,7 @@ export async function transferValue({
   sourceValue: unknown
   targetRootSchemaType: SchemaType
   targetPath: Path
+  targetValue?: unknown
   keyGenerator?: () => string
   options?: TransferValueOptions
 }): Promise<{
@@ -122,8 +124,16 @@ export async function transferValue({
 }> {
   const errors: TransferValueError[] = []
 
-  const sourceSchemaTypeAtPath = resolveSchemaTypeForPath(sourceRootSchemaType, sourcePath)
-  const targetSchemaTypeAtPath = resolveSchemaTypeForPath(targetRootSchemaType, targetPath)
+  const sourceSchemaTypeAtPath = resolveSchemaTypeForPath(
+    sourceRootSchemaType,
+    sourcePath,
+    sourceValue,
+  )
+  const targetSchemaTypeAtPath = resolveSchemaTypeForPath(
+    targetRootSchemaType,
+    targetPath,
+    targetValue,
+  )
 
   if (!sourceSchemaTypeAtPath) {
     throw new Error('Could not find source schema type at path')
