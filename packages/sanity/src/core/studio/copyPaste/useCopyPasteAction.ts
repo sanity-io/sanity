@@ -24,7 +24,11 @@ import {transferValue, type TransferValueOptions} from './valueTransfer'
 
 interface CopyPasteHookValue {
   onCopy: (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => Promise<void>
-  onPaste: (targetPath: Path, options?: PasteOptions) => Promise<void>
+  onPaste: (
+    targetPath: Path,
+    value: FormDocumentValue | undefined,
+    options?: PasteOptions,
+  ) => Promise<void>
   onChange: ((event: PatchEvent) => void) | undefined
 }
 
@@ -70,7 +74,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
         return
       }
 
-      const schemaTypeAtPath = resolveSchemaTypeForPath(schemaType, path)
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schemaType, path, value)
 
       if (!schemaTypeAtPath) {
         toast.push({
@@ -146,9 +150,13 @@ export function useCopyPasteAction(): CopyPasteHookValue {
   )
 
   const onPaste = useCallback(
-    async (targetPath: Path, options?: PasteOptions) => {
+    async (targetPath: Path, value: FormDocumentValue | undefined, options?: PasteOptions) => {
       const {schemaType: targetDocumentSchemaType} = getDocumentMeta()!
-      const targetSchemaType = resolveSchemaTypeForPath(targetDocumentSchemaType!, targetPath)!
+      const targetSchemaType = resolveSchemaTypeForPath(
+        targetDocumentSchemaType!,
+        targetPath,
+        value,
+      )!
 
       const clipboardItem = await getClipboardItem()
 
@@ -186,6 +194,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
         const sourceSchemaType = resolveSchemaTypeForPath(
           sourceDocumentSchemaType,
           item.documentPath,
+          value,
         )
 
         if (!sourceSchemaType) {
