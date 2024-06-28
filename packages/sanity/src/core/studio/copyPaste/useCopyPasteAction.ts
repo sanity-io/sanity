@@ -2,6 +2,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {useToast} from '@sanity/ui'
+import * as PathUtils from '@sanity/util/paths'
 import {flatten} from 'lodash'
 import {useCallback} from 'react'
 import {
@@ -17,9 +18,13 @@ import {
 import {useTranslation} from '../../i18n'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {useCopyPaste} from './CopyPasteProvider'
-import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
 import {type CopyActionResult, type CopyOptions, type PasteOptions} from './types'
-import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
+import {
+  getClipboardItem,
+  isEmptyValue,
+  tryResolveSchemaTypeForPath,
+  writeClipboardItem,
+} from './utils'
 import {transferValue, type TransferValueOptions} from './valueTransfer'
 
 interface CopyPasteHookValue {
@@ -48,7 +53,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
 
       // Test that we got document meta first
       if (!documentMeta) {
-        console.warn(`Failed to resolve document meta data for path ${path.join('.')}.`)
+        console.warn(`Failed to resolve document meta data for path ${PathUtils.toString(path)}.`)
 
         toast.push({
           status: 'error',
@@ -60,7 +65,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
       const {documentId, documentType, schemaType} = documentMeta
 
       if (!schemaType) {
-        console.warn(`Failed to resolve schema type for path ${path.join('.')}.`, {
+        console.warn(`Failed to resolve schema type for path ${PathUtils.toString(path)}.`, {
           schemaType,
         })
         toast.push({
@@ -70,13 +75,13 @@ export function useCopyPasteAction(): CopyPasteHookValue {
         return
       }
 
-      const schemaTypeAtPath = resolveSchemaTypeForPath(schemaType, path)
+      const schemaTypeAtPath = tryResolveSchemaTypeForPath(schemaType, path)
 
       if (!schemaTypeAtPath) {
         toast.push({
           status: 'error',
           title: t('copy-paste.on-copy.validation.schema-type-incompatible.title', {
-            path: path.join('.'),
+            path: PathUtils.toString(path),
           }),
         })
         return
@@ -148,7 +153,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
   const onPaste = useCallback(
     async (targetPath: Path, options?: PasteOptions) => {
       const {schemaType: targetDocumentSchemaType} = getDocumentMeta()!
-      const targetSchemaType = resolveSchemaTypeForPath(targetDocumentSchemaType!, targetPath)!
+      const targetSchemaType = tryResolveSchemaTypeForPath(targetDocumentSchemaType!, targetPath)!
 
       const clipboardItem = await getClipboardItem()
 
@@ -183,7 +188,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
       const copiedJsonTypes: string[] = []
 
       for (const item of clipboardItem.items) {
-        const sourceSchemaType = resolveSchemaTypeForPath(
+        const sourceSchemaType = tryResolveSchemaTypeForPath(
           sourceDocumentSchemaType,
           item.documentPath,
         )
@@ -192,7 +197,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
           toast.push({
             status: 'error',
             title: t('copy-paste.on-paste.validation.schema-type-incompatible.title', {
-              path: item.documentPath.join('.'),
+              path: PathUtils.toString(item.documentPath),
             }),
           })
           return
@@ -202,7 +207,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
           toast.push({
             status: 'error',
             title: t('copy-paste.on-paste.validation.schema-type-incompatible.title', {
-              path: targetPath.join('.'),
+              path: PathUtils.toString(targetPath),
             }),
           })
           return
