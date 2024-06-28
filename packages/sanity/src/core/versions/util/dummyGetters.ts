@@ -1,16 +1,10 @@
-import {type ColorHueKey} from '@sanity/color'
-import {type IconSymbol} from '@sanity/icons'
+import {camelCase} from 'lodash'
 import {type SanityClient, type SanityDocument} from 'sanity'
 
 import {type Version} from '../types'
-import {BUNDLES, RANDOM_SYMBOLS, RANDOM_TONES} from './const'
+import {RANDOM_SYMBOLS, RANDOM_TONES} from './const'
 
 /* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
-
-export interface SanityReleaseIcon {
-  hue: ColorHueKey
-  icon: IconSymbol
-}
 
 /**
  * Returns all versions of a document
@@ -32,7 +26,7 @@ export async function getAllVersionsOfDocument(
     return documents.map((doc: SanityDocument, index: number) => ({
       name: getVersionName(doc._id),
       title: getVersionName(doc._id),
-      hue: RANDOM_TONES[index % RANDOM_TONES.length],
+      tone: RANDOM_TONES[index % RANDOM_TONES.length],
       icon: RANDOM_SYMBOLS[index % RANDOM_SYMBOLS.length],
     }))
   })
@@ -46,4 +40,8 @@ export function getVersionName(documentId: string): string {
 
 export function versionDocumentExists(documentVersions: Version[], name: string): boolean {
   return documentVersions.some((version) => version.name === name)
+}
+
+export function toSlug(value: string): string {
+  return camelCase(value)
 }

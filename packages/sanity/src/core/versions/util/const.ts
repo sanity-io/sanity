@@ -1,20 +1,11 @@
 /*  TEMPORARY  DUMMY DATA */
 
-import {type ColorHueKey} from '@sanity/color'
 import {type IconSymbol} from '@sanity/icons'
+import {type ButtonTone} from '@sanity/ui'
 
 import {type Version} from '../types'
 
-export const RANDOM_TONES: ColorHueKey[] = [
-  'green',
-  'yellow',
-  'red',
-  'purple',
-  'blue',
-  'cyan',
-  'magenta',
-  'orange',
-]
+export const RANDOM_TONES: ButtonTone[] = ['default', 'caution', 'critical', 'positive', 'primary']
 export const RANDOM_SYMBOLS: IconSymbol[] = [
   'archive',
   'edit',
@@ -33,15 +24,15 @@ export const LATEST: Version = {
   name: 'draft',
   title: 'Latest',
   icon: undefined,
-  hue: undefined,
+  tone: 'default',
   publishAt: 0,
 }
 
 // dummy data
 export const BUNDLES: Version[] = [
   LATEST,
-  {name: 'previewDrafts', title: 'Preview drafts', icon: 'edit', hue: 'yellow', publishAt: 0},
-  {name: 'published', title: 'Published', icon: 'eye-open', hue: 'blue', publishAt: 0},
-  {name: 'summerDrop', title: 'Summer Drop', icon: 'sun', hue: 'orange', publishAt: 0},
-  {name: 'autumnDrop', title: 'Autumn Drop', icon: 'star', hue: 'red', publishAt: 0},
+  {name: 'previewDrafts', title: 'Preview drafts', icon: 'edit', tone: 'caution', publishAt: 0},
+  {name: 'published', title: 'Published', icon: 'eye-open', tone: 'primary', publishAt: 0},
+  {name: 'summerDrop', title: 'Summer Drop', icon: 'sun', tone: 'critical', publishAt: 0},
+  {name: 'autumnDrop', title: 'Autumn Drop', icon: 'star', tone: 'positive', publishAt: 0},
 ]

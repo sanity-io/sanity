@@ -1,5 +1,5 @@
-import {type ColorHueKey} from '@sanity/color'
 import {type IconSymbol} from '@sanity/icons'
+import {type ButtonTone} from '@sanity/ui'
 
 /**
  * @beta
@@ -9,6 +9,19 @@ export interface Version {
   name: string
   title: string
   icon: IconSymbol | undefined
-  hue: ColorHueKey | undefined
-  publishAt: Date | number
+  tone: ButtonTone | undefined
+  publishAt: Date | number | undefined
+}
+
+export interface Bundle {
+  name: string
+  title: string
+  description?: string
+  tone?: ButtonTone | undefined
+  publishAt?: string
+}
+
+export interface SanityReleaseIcon {
+  tone: ButtonTone
+  icon: IconSymbol
 }
