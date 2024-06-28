@@ -1,7 +1,17 @@
 /* eslint-disable i18next/no-literal-string */
-import {type ColorHueKey} from '@sanity/color'
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Select, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  type ButtonTone,
+  Card,
+  Flex,
+  Select,
+  Stack,
+  Text,
+  TextArea,
+  TextInput,
+} from '@sanity/ui'
 import {useCallback} from 'react'
 
 import {type Bundle} from '../../types'
@@ -28,7 +38,7 @@ export function BundleForm(props: {
 
   const handleBundleToneChange = useCallback(
     () => (event: React.ChangeEvent<HTMLSelectElement>) => {
-      onChange({...value, tone: (event.target.value || undefined) as ColorHueKey | undefined})
+      onChange({...value, tone: (event.target.value || undefined) as ButtonTone | undefined})
     },
     [onChange, value],
   )
