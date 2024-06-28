@@ -69,12 +69,12 @@ export function useGlobalCopyPasteElementHandler({
         }
 
         event.preventDefault()
-        onPaste(focusPathRef.current, {
+        onPaste(focusPathRef.current, valueRef.current, {
           context: {source: 'keyboardShortcut'},
         })
       }
     },
-    [onCopy, onPaste, focusPathRef, valueRef],
+    [onCopy, onPaste],
   )
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export function useGlobalCopyPasteElementHandler({
         return
       }
       event.preventDefault()
-      onPaste(focusPathRef.current)
+      onPaste(focusPathRef.current, valueRef.current)
     }
 
     element?.addEventListener('paste', handlePaste)

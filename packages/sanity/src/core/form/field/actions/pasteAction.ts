@@ -1,5 +1,6 @@
 import {ClipboardIcon} from '@sanity/icons'
 import {useCallback} from 'react'
+import {type FormDocumentValue, useGetFormValue} from 'sanity'
 
 import {defineDocumentFieldAction} from '../../../config/document/fieldActions/define'
 import {useTranslation} from '../../../i18n'
@@ -10,6 +11,7 @@ export const pasteAction = defineDocumentFieldAction({
   name: 'pasteField',
   useAction({path}) {
     const {t} = useTranslation('copy-paste')
+    const getFormValue = useGetFormValue()
 
     const isDocument = path.length === 0
 
@@ -20,10 +22,11 @@ export const pasteAction = defineDocumentFieldAction({
     const {onPaste} = useCopyPasteAction()
 
     const onAction = useCallback(() => {
-      onPaste(path, {
+      const value = getFormValue([]) as FormDocumentValue
+      onPaste(path, value, {
         context: {source: isDocument ? 'documentFieldAction' : 'fieldAction'},
       })
-    }, [onPaste, path, isDocument])
+    }, [getFormValue, onPaste, path, isDocument])
 
     return defineActionItem({
       type: 'action',

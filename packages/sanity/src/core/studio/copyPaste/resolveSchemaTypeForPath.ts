@@ -1,58 +1,84 @@
 import {
+  type ArraySchemaType,
   isIndexSegment,
   isKeySegment,
-  isReferenceSchemaType,
+  isObjectSchemaType,
+  type ObjectField,
+  type ObjectSchemaType,
   type Path,
   type SchemaType,
 } from '@sanity/types'
+import {fromString, toString} from '@sanity/util/paths'
+import {type FormDocumentValue, getValueAtPath} from 'sanity'
 
-function getFieldTypeByName(type: SchemaType, fieldName: string): SchemaType | undefined {
-  if (!('fields' in type)) {
-    return undefined
+import {getItemType} from '../../form/store/utils/getItemType'
+
+export function getSchemaField(
+  schemaType: SchemaType,
+  fieldPath: string,
+): ObjectField<SchemaType> | undefined {
+  if (!fieldPath) return undefined
+
+  const paths = fromString(fieldPath)
+  const firstPath = paths[0]
+
+  if (firstPath && isObjectSchemaType(schemaType)) {
+    const field = schemaType?.fields?.find((f) => f.name === firstPath)
+
+    if (field) {
+      const nextPath = toString(paths.slice(1))
+
+      if (nextPath) {
+        return getSchemaField(field.type, nextPath)
+      }
+
+      return field
+    }
   }
 
-  const fieldType = type.fields.find((field) => field.name === fieldName)
-  return fieldType ? fieldType.type : undefined
+  return undefined
 }
 
-export function resolveSchemaTypeForPath(baseType: SchemaType, path: Path): SchemaType | undefined {
-  const pathSegments = path
+export function resolveSchemaTypeForPath(
+  baseType: SchemaType,
+  path: Path,
+  documentValue?: FormDocumentValue | undefined,
+): SchemaType | undefined {
+  if (!baseType) return undefined
 
-  let current: SchemaType | undefined = baseType
-  for (const segment of pathSegments) {
-    if (!current) {
-      return undefined
+  let currentField: ObjectSchemaType | ArraySchemaType<unknown> | SchemaType = baseType
+
+  path.forEach((segment, index) => {
+    const nextPath = path.slice(0, index + 1)
+    const isArrayItem = isKeySegment(segment) || isIndexSegment(segment)
+
+    if (isArrayItem) {
+      // We know that the currentField is an array schema type
+      // if the current segment is an array item.
+      const arraySchemaType = currentField as ArraySchemaType<unknown>
+
+      // Get the value of the array item at the current path
+      const itemValue = getValueAtPath(documentValue, nextPath) as unknown[]
+
+      // Get the schema type of the array item
+      const item = getItemType(arraySchemaType, itemValue)
+
+      if (item) {
+        currentField = item as ObjectSchemaType
+
+        return
+      }
     }
 
-    if (typeof segment === 'string') {
-      current = getFieldTypeByName(current, segment)
-      continue
+    const nextField = getSchemaField(
+      currentField,
+      toString(nextPath.length > 1 ? nextPath.slice(-1) : nextPath),
+    ) as ObjectSchemaType
+
+    if (nextField?.type) {
+      currentField = nextField.type as ObjectSchemaType
     }
+  })
 
-    const isArrayAccessor = isKeySegment(segment) || isIndexSegment(segment)
-    if (!isArrayAccessor || current.jsonType !== 'array') {
-      return undefined
-    }
-
-    const [memberType, otherType] = current.of || []
-    if (otherType || !memberType) {
-      // Can't figure out the type without knowing the value
-      return undefined
-    }
-
-    if (!isReferenceSchemaType(memberType)) {
-      current = memberType
-      continue
-    }
-
-    const [refType, otherRefType] = memberType.to || []
-    if (otherRefType || !refType) {
-      // Can't figure out the type without knowing the value
-      return undefined
-    }
-
-    current = refType
-  }
-
-  return current
+  return currentField
 }

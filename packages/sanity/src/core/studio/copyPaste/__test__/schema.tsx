@@ -1,4 +1,4 @@
-import {defineField, defineType, type Schema} from '@sanity/types'
+import {defineArrayMember, defineField, defineType, type Schema} from '@sanity/types'
 
 import {createSchema} from '../../../schema'
 
@@ -306,6 +306,53 @@ export const schema = createSchema({
             },
           ],
         },
+        defineField({
+          name: 'arrayOfMultipleNestedTypes',
+          title: 'Array of multiple nested types',
+          type: 'array',
+          of: [
+            defineArrayMember({
+              type: 'image',
+            }),
+            defineArrayMember({
+              type: 'object',
+              name: 'color',
+              title: 'Color with a long title',
+              fields: [
+                {
+                  name: 'title',
+                  type: 'string',
+                },
+                {
+                  name: 'name',
+                  type: 'string',
+                },
+                defineField({
+                  name: 'nestedArray',
+                  title: 'Nested array',
+                  type: 'array',
+                  of: [
+                    defineArrayMember({
+                      type: 'object',
+                      name: 'color',
+                      title: 'Nested color with a long title',
+                      fields: [
+                        {
+                          name: 'title',
+                          type: 'string',
+                        },
+                        {
+                          name: 'name',
+                          type: 'string',
+                        },
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
       ],
     },
     {

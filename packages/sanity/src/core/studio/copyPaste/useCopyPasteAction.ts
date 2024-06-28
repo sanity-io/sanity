@@ -18,18 +18,18 @@ import {
 import {useTranslation} from '../../i18n'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {useCopyPaste} from './CopyPasteProvider'
+import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
 import {type CopyActionResult, type CopyOptions, type PasteOptions} from './types'
-import {
-  getClipboardItem,
-  isEmptyValue,
-  tryResolveSchemaTypeForPath,
-  writeClipboardItem,
-} from './utils'
+import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
 import {transferValue, type TransferValueOptions} from './valueTransfer'
 
 interface CopyPasteHookValue {
   onCopy: (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => Promise<void>
-  onPaste: (targetPath: Path, options?: PasteOptions) => Promise<void>
+  onPaste: (
+    targetPath: Path,
+    value: FormDocumentValue | undefined,
+    options?: PasteOptions,
+  ) => Promise<void>
   onChange: ((event: PatchEvent) => void) | undefined
 }
 
@@ -75,7 +75,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
         return
       }
 
-      const schemaTypeAtPath = tryResolveSchemaTypeForPath(schemaType, path)
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schemaType, path, value)
 
       if (!schemaTypeAtPath) {
         toast.push({
@@ -151,9 +151,13 @@ export function useCopyPasteAction(): CopyPasteHookValue {
   )
 
   const onPaste = useCallback(
-    async (targetPath: Path, options?: PasteOptions) => {
+    async (targetPath: Path, value: FormDocumentValue | undefined, options?: PasteOptions) => {
       const {schemaType: targetDocumentSchemaType} = getDocumentMeta()!
-      const targetSchemaType = tryResolveSchemaTypeForPath(targetDocumentSchemaType!, targetPath)!
+      const targetSchemaType = resolveSchemaTypeForPath(
+        targetDocumentSchemaType!,
+        targetPath,
+        value,
+      )!
 
       const clipboardItem = await getClipboardItem()
 
@@ -188,9 +192,10 @@ export function useCopyPasteAction(): CopyPasteHookValue {
       const copiedJsonTypes: string[] = []
 
       for (const item of clipboardItem.items) {
-        const sourceSchemaType = tryResolveSchemaTypeForPath(
+        const sourceSchemaType = resolveSchemaTypeForPath(
           sourceDocumentSchemaType,
           item.documentPath,
+          value,
         )
 
         if (!sourceSchemaType) {
