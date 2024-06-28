@@ -1,12 +1,10 @@
 name: End-to-End Component Tests
 on:
-  # Build on pushes branches that have a PR (including drafts)
   pull_request:
-  # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
     branches: [next]
 jobs:
-  test:
+  install:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
@@ -17,19 +15,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         id: pnpm-install
         with:
           run_install: false
-
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
       - name: Cache node modules
         id: cache-node-modules
         uses: actions/cache@v4
@@ -42,10 +37,8 @@ jobs:
             v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
             v1-${{ runner.os }}-pnpm-store-
             v1-${{ runner.os }}-
-
       - name: Install project dependencies
         run: pnpm install
-
       - name: Store Playwright's Version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
@@ -61,17 +54,133 @@ jobs:
         run: npx playwright install --with-deps
       - name: Build packages
         run: pnpm build --output-logs=full --log-order=grouped
-      - name: Run end-to-end tests
-        run: pnpm --filter sanity test:ct
+      - name: Cache build
+        id: cache-e2e-ct-build
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-e2e-ct-build
+        with:
+          path: |
+            ./*
+            !**/node_modules/**
+          key: ${{ runner.os }}-e2e-ct-${{ env.cache-name }}-${{ github.run_id }}
+
+  playwright-test:
+    needs: [install]
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2]
+        shardTotal: [2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-
+            v1-${{ runner.os }}-
+      - name: Install project dependencies
+        run: pnpm install
+      - name: Restore Playwright browsers cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+      - name: Restore build cache
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: cache-e2e-ct-build
+        with:
+          path: |
+            ./*
+            !**/node_modules/**
+          key: ${{ runner.os }}-e2e-ct-${{ env.cache-name }}-${{ github.run_id }}
+          fail-on-cache-miss: true
+      - name: Run end-to-end component tests
+        run: pnpm --filter sanity test:ct --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
           NODE_OPTIONS: --max_old_space_size=8192
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-ct-report-shard-${{ matrix.shardIndex }}
+          path: |
+            ${{ github.workspace }}/packages/sanity/playwright-ct/report
+            ${{ github.workspace }}/packages/sanity/playwright-ct/results
+          retention-days: 30
+
+  merge-reports:
+    if: always()
+    needs: [playwright-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-
+            v1-${{ runner.os }}-
+      - name: Install project dependencies
+        run: pnpm install
+      - name: Download shard reports
+        uses: actions/download-artifact@v3
+        with:
+          path: playwright-ct-reports
+      - name: Merge reports
+        run: |
+          npx playwright merge-reports --reporter html ./playwright-ct-reports
       - name: Get Current Job Log URL
-        uses: Tiryoh/gha-jobid-action@c1d1cf7334b70c29374ae382b91053674c8049a2 # v1
+        uses: Tiryoh/gha-jobid-action@c1d1cf7334b70c29374ae382b91053674c8049a2
         id: job_html_url
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          job_name: "test"
+          job_name: "merge-reports"
       - name: Parse playwright report
         id: parse-playwright-report
         if: always()
@@ -79,17 +188,32 @@ jobs:
         env:
           GITHUB_WORKFLOW_URL: "${{ steps.job_html_url.outputs.html_url }}"
       - name: PR comment with report
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
         if: ${{ always() && steps.parse-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
         with:
           comment_tag: "playwright-ct-report"
           filePath: ${{ github.workspace }}/packages/sanity/playwright-ct/results/playwright-report-pr-comment.md
-
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-ct-report
+          name: playwright-ct-report-merged
           path: |
-            ${{ github.workspace }}/packages/sanity/playwright-ct/report
-            ${{ github.workspace }}/packages/sanity/playwright-ct/results
+            playwright-ct-reports
           retention-days: 30
+
+  cleanup:
+    if: always()
+    needs: [merge-reports]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Delete Cache
+        run: gh cache delete ${{ runner.os }}-e2e-ct-${{ env.cache-name }}-${{ github.run_id }}
+        env:
+          cache-name: cache-e2e-ct-build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
