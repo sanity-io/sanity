@@ -3,10 +3,10 @@ import {ChevronDownIcon, Icon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 
-import {type SanityReleaseIcon} from '../types'
+import {type SanityVersionIcon} from '../types'
 
-export function ReleaseIcon(
-  props: Partial<SanityReleaseIcon> & {openButton?: boolean; padding?: number; title?: string},
+export function VersionIcon(
+  props: Partial<SanityVersionIcon> & {openButton?: boolean; padding?: number; title?: string},
 ): JSX.Element {
   const {tone, icon, openButton, padding = 3, title} = props
 

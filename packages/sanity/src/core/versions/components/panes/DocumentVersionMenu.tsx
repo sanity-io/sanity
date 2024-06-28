@@ -22,8 +22,8 @@ import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
 import {type Version} from '../../types'
 import {BUNDLES} from '../../util/const'
 import {getAllVersionsOfDocument} from '../../util/dummyGetters'
-import {ReleaseIcon} from '../ReleaseIcon'
 import {VersionBadge} from '../VersionBadge'
+import {VersionIcon} from '../VersionIcon'
 
 // TODO A LOT OF DOCUMENTED CODE IS RELATED TO SEARCH AND CREATING BUNDLE FROM HERE
 // STILL NEED TO DECIDE IF WE KEEP IT OR NOT
@@ -164,7 +164,7 @@ export function DocumentVersionMenu(props: {
                         pressed={name === r.name}
                       >
                         <Flex>
-                          {<ReleaseIcon tone={r.tone} icon={r.icon} padding={2} />}
+                          {<VersionIcon tone={r.tone} icon={r.icon} padding={2} />}
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">
@@ -219,7 +219,7 @@ export function DocumentVersionMenu(props: {
                         padding={1}
                       >
                         <Flex>
-                          <ReleaseIcon tone={r.tone} icon={r.icon} padding={2} />
+                          <VersionIcon tone={r.tone} icon={r.icon} padding={2} />
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">

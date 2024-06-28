@@ -8,32 +8,32 @@ import {type Bundle} from '../../types'
 import {RANDOM_TONES} from '../../util/const'
 import {toSlug} from '../../util/dummyGetters'
 
-export function ReleaseForm(props: {
+export function BundleForm(props: {
   onChange: (params: Bundle) => void
   value: Bundle
 }): JSX.Element {
   const {onChange, value} = props
 
-  const handleReleaseTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBundleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const v = event.target.value
 
     onChange({...value, title: v, name: toSlug(v)})
   }
 
-  const handleReleaseDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleBundleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const v = event.target.value
 
     onChange({...value, description: v || undefined})
   }
 
-  const handleReleaseToneChange = useCallback(
+  const handleBundleToneChange = useCallback(
     () => (event: React.ChangeEvent<HTMLSelectElement>) => {
       onChange({...value, tone: (event.target.value || undefined) as ColorHueKey | undefined})
     },
     [onChange, value],
   )
 
-  const handleReleasePublishAtChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBundlePublishAtChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const v = event.target.value
 
     onChange({...value, publishAt: v})
@@ -46,7 +46,7 @@ export function ReleaseForm(props: {
           {/* localize text */}
           Title
         </Text>
-        <TextInput onChange={handleReleaseTitleChange} value={value.title} />
+        <TextInput onChange={handleBundleTitleChange} value={value.title} />
       </Stack>
 
       <Stack space={3}>
@@ -54,7 +54,7 @@ export function ReleaseForm(props: {
           {/* localize text */}
           Description
         </Text>
-        <TextArea onChange={handleReleaseDescriptionChange} value={value.description} />
+        <TextArea onChange={handleBundleDescriptionChange} value={value.description} />
       </Stack>
 
       <Stack space={3}>
@@ -63,7 +63,7 @@ export function ReleaseForm(props: {
           Schedule for publishing at
         </Text>
         <TextInput
-          onChange={handleReleasePublishAtChange}
+          onChange={handleBundlePublishAtChange}
           suffix={
             <Box padding={1} style={{border: '1px solid transparent'}}>
               <Button icon={CalendarIcon} mode="bleed" padding={2} />
@@ -104,7 +104,7 @@ export function ReleaseForm(props: {
           </Card>
           <Stack flex={1}>
             <Select
-              onChange={handleReleaseToneChange}
+              onChange={handleBundleToneChange}
               style={{
                 borderTopLeftRadius: 0,
                 borderBottomLeftRadius: 0,

@@ -6,20 +6,20 @@ import {useRouter} from 'sanity/router'
 import {VersionContext} from '../../../_singletons/core/form/VersionContext'
 import {type Bundle, type Version} from '../types'
 import {BUNDLES, LATEST} from '../util/const'
-import {CreateReleaseDialog} from './dialog/CreateReleaseDialog'
-import {ReleaseIcon} from './ReleaseIcon'
+import {CreateBundleDialog} from './dialog/CreateBundleDialog'
+import {VersionIcon} from './VersionIcon'
 
-export function GlobalReleaseMenu(): JSX.Element {
+export function GlobalBundleMenu(): JSX.Element {
   const router = useRouter()
 
   // eslint-disable-next-line no-warning-comments
   // FIXME REPLACE WHEN WE HAVE REAL DATA
-  const releases = BUNDLES
+  const bundles = BUNDLES
 
   // eslint-disable-next-line no-warning-comments
   // FIXME REPLACE WHEN WE HAVE REAL DATA
   const {currentVersion, setCurrentVersion, isDraft} = useContext(VersionContext)
-  const [createReleaseDialogOpen, setCreateReleaseDialogOpen] = useState(false)
+  const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
   const handleBundleChange = useCallback(
     (bundle: Version) => () => {
@@ -47,12 +47,12 @@ export function GlobalReleaseMenu(): JSX.Element {
 
   /* create new bundle */
 
-  const handleCreateReleaseClick = useCallback(() => {
-    setCreateReleaseDialogOpen(true)
+  const handleCreateBundleClick = useCallback(() => {
+    setCreateBundleDialogOpen(true)
   }, [])
 
   const handleCancel = useCallback(() => {
-    setCreateReleaseDialogOpen(false)
+    setCreateBundleDialogOpen(false)
   }, [])
 
   const handleSubmit = useCallback(
@@ -60,7 +60,7 @@ export function GlobalReleaseMenu(): JSX.Element {
       // eslint-disable-next-line no-console
       console.log('create new bundle', value.name)
 
-      setCreateReleaseDialogOpen(false)
+      setCreateBundleDialogOpen(false)
     },
     [],
   )
@@ -70,7 +70,7 @@ export function GlobalReleaseMenu(): JSX.Element {
       <MenuButton
         button={
           <Button mode="bleed" padding={0} radius="full">
-            <ReleaseIcon
+            <VersionIcon
               tone={currentVersion?.tone}
               icon={isDraft ? undefined : currentVersion?.icon}
               openButton
@@ -90,33 +90,33 @@ export function GlobalReleaseMenu(): JSX.Element {
               // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
               text="Latest"
             />
-            {releases.length > 0 && (
+            {bundles.length > 0 && (
               <>
                 <MenuDivider />
               </>
             )}
-            {releases
-              .filter((r) => r.name !== 'draft')
-              .map((r) => (
-                <MenuItem key={r.name} onClick={handleBundleChange(r)} padding={1} pressed={false}>
+            {bundles
+              .filter((b) => b.name !== 'draft')
+              .map((b) => (
+                <MenuItem key={b.name} onClick={handleBundleChange(b)} padding={1} pressed={false}>
                   <Flex>
-                    <ReleaseIcon tone={r.tone} icon={r.icon} padding={2} />
+                    <VersionIcon tone={b.tone} icon={b.icon} padding={2} />
 
                     <Box flex={1} padding={2} style={{minWidth: 100}}>
                       <Text size={1} weight="medium">
-                        {r.name === 'draft' ? 'Latest' : r.title}
+                        {b.name === 'draft' ? 'Latest' : b.title}
                       </Text>
                     </Box>
 
                     <Box padding={2}>
                       <Text muted size={1}>
-                        {r.publishAt ? `a date will be here ${r.publishAt}` : 'No target date'}
+                        {b.publishAt ? `a date will be here ${b.publishAt}` : 'No target date'}
                       </Text>
                     </Box>
 
                     <Box padding={2}>
                       <Text size={1}>
-                        <CheckmarkIcon style={{opacity: currentVersion.name === r.name ? 1 : 0}} />
+                        <CheckmarkIcon style={{opacity: currentVersion.name === b.name ? 1 : 0}} />
                       </Text>
                     </Box>
                   </Flex>
@@ -124,7 +124,7 @@ export function GlobalReleaseMenu(): JSX.Element {
               ))}
             <MenuDivider />
             {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */}
-            <MenuItem icon={AddIcon} onClick={handleCreateReleaseClick} text="Create release" />
+            <MenuItem icon={AddIcon} onClick={handleCreateBundleClick} text="Create release" />
           </Menu>
         }
         popover={{
@@ -134,8 +134,8 @@ export function GlobalReleaseMenu(): JSX.Element {
         }}
       />
 
-      {createReleaseDialogOpen && (
-        <CreateReleaseDialog onCancel={handleCancel} onSubmit={handleSubmit} />
+      {createBundleDialogOpen && (
+        <CreateBundleDialog onCancel={handleCancel} onSubmit={handleSubmit} />
       )}
     </>
   )
