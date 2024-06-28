@@ -24,7 +24,8 @@ import {useRouter} from 'sanity/router'
 import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
 import {ReleaseIcon} from '../../../../core/studio/components/versions/ReleaseIcon'
 import {VersionBadge} from '../../../../core/studio/components/versions/VersionBadge'
-import {BUNDLES, getAllVersionsOfDocument, type Version} from '../../../../core/util/versions/util'
+import {BUNDLES, getAllVersionsOfDocument} from '../../../../core/util/versions/util'
+import {type Version} from '../../../../core/versions/types'
 
 function toSlug(str: string) {
   return camelCase(str)
