@@ -1,12 +1,25 @@
 import {Stack} from '@sanity/ui'
+import styled from 'styled-components'
 
-import {type Version} from '../../../versions/types'
+import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleHeader} from './BundleHeader'
 import {BundleRow} from './BundleRow'
-import {RowStack} from './RowStack'
+
+const RowStack = styled(Stack)({
+  '& > *:not(:first-child)': {
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    marginTop: -1,
+  },
+
+  '& > *:not(:last-child)': {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+})
 
 type Props = {
-  bundles: Version[]
+  bundles: BundleDocument[]
 }
 
 export function BundlesTable({bundles}: Props) {

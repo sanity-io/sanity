@@ -20,7 +20,7 @@ export const releases = definePlugin({
       name: TOOL_NAME,
       title: TOOL_TITLE,
       component: ReleasesTool,
-      router: route.create('/', [route.create('/:releaseId')]),
+      router: route.create('/', [route.create('/:bundleId')]),
     },
   ],
 })

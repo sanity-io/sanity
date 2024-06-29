@@ -34,7 +34,7 @@ export function CreateBundleDialog(props: {
         <Button
           disabled={!value.title}
           iconRight={ArrowRightIcon}
-          onClick={onSubmit(value)}
+          onClick={() => onSubmit(value)}
           // localize Text
           // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
           text="Create release"

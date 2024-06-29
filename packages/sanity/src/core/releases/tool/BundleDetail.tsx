@@ -1,41 +1,29 @@
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
 /* eslint-disable i18next/no-literal-string */
-import {
-  ArrowLeftIcon,
-  EllipsisHorizontalIcon,
-  PublishIcon,
-  StarIcon,
-  TrashIcon,
-} from '@sanity/icons'
-import {Box, Button, Card, Flex, Menu, MenuButton, MenuItem, Text} from '@sanity/ui'
-import {useState} from 'react'
+import {ArrowLeftIcon, PublishIcon, StarIcon} from '@sanity/icons'
+import {Box, Button, Card, Flex, Text} from '@sanity/ui'
+import {useMemo, useState} from 'react'
+import {LoadingBlock} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Button as StudioButton} from '../../../ui-components'
-import {type Version} from '../../versions/types'
-import {getRandomToneIcon} from '../../versions/util/dummyGetters'
+import {useBundlesStore} from '../../store/bundles'
+import {BundleMenuButton} from '../components/BundleMenuButton/bundleMenuButton'
 import {type ReleasesRouterState} from '../types/router'
 
 type Screen = 'overview' | 'review'
-
-const useVersions = (versionId: string): Version => ({
-  name: versionId,
-  title: versionId,
-  ...getRandomToneIcon(),
-  publishAt: Date.now() + 1000 * 60 * 60 * 24 * 2,
-})
 
 export const BundleDetail = () => {
   const router = useRouter()
   const [activeScreen, setActiveScreen] = useState<Screen>('overview')
   const {bundleId}: ReleasesRouterState = router.state
-  const parsed = decodeURIComponent(bundleId || '')
+  const parsedBundleId = decodeURIComponent(bundleId || '')
+  const {data, loading} = useBundlesStore()
 
-  const bundle = useVersions(parsed)
-  const bundleProgress = Math.random()
+  const bundle = data?.find((storeBundle) => storeBundle._id === parsedBundleId)
 
-  return (
-    <Flex direction="column">
+  const header = useMemo(
+    () => (
       <Card flex="none" padding={3}>
         <Flex>
           <Flex align="baseline" flex={1} gap={1}>
@@ -49,7 +37,7 @@ export const BundleDetail = () => {
             />
             <Box paddingX={1} paddingY={2}>
               <Text as="h1" size={1} weight="semibold">
-                {bundle.title}
+                {bundle?.title}
               </Text>
             </Box>
 
@@ -69,12 +57,12 @@ export const BundleDetail = () => {
                 {/* StudioButton supports tooltip when button is disabled */}
                 <StudioButton
                   tooltipProps={{
-                    disabled: bundleProgress === 1,
+                    // hide tooltip if documents in bundle
                     content: 'Add documents to this release to review changes',
                     placement: 'bottom',
                   }}
                   key="review"
-                  disabled={bundleProgress !== 1}
+                  // disable review if no documents in bundle
                   mode="bleed"
                   onClick={() => setActiveScreen('review')}
                   style={{
@@ -89,27 +77,25 @@ export const BundleDetail = () => {
 
           <Flex flex="none" gap={2}>
             {/* hide if bundle is already published */}
-            {bundle.publishAt && (
-              <Button icon={PublishIcon} padding={2} space={2} text="Publish all" />
-            )}
-            <MenuButton
-              button={<Button icon={EllipsisHorizontalIcon} mode="bleed" padding={2} />}
-              id="bundle-menu"
-              menu={
-                <Menu>
-                  <MenuItem icon={TrashIcon} text="Delete release" />
-                </Menu>
-              }
-              popover={{
-                constrainSize: true,
-                fallbackPlacements: [],
-                placement: 'bottom',
-                portal: true,
-              }}
+            <Button
+              icon={PublishIcon}
+              padding={2}
+              space={2}
+              disabled={!bundle}
+              text="Publish all"
             />
+            <BundleMenuButton bundle={bundle} />
           </Flex>
         </Flex>
       </Card>
+    ),
+    [activeScreen, bundle, router],
+  )
+
+  return (
+    <Flex direction="column">
+      {header}
+      {loading && <LoadingBlock fill />}
     </Flex>
   )
 }

@@ -1,12 +1,13 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useRouter} from 'sanity/router'
 
+import {type BundleDocument} from '../../../store/bundles/types'
 import {VersionIcon} from '../../../versions/components/VersionIcon'
-import {type Version} from '../../../versions/types'
 import {shortRelativeDate} from '../../utils/shortRelativeDate'
+import {BundleMenuButton} from '../BundleMenuButton/bundleMenuButton'
 
 type Props = {
-  bundle: Version
+  bundle: BundleDocument
 }
 
 export function BundleRow({bundle}: Props) {
@@ -18,7 +19,7 @@ export function BundleRow({bundle}: Props) {
         <Card
           as="a"
           // navigate to bundle detail
-          onClick={() => router.navigate({bundleId: bundle.name})}
+          onClick={() => router.navigate({bundleId: bundle._id})}
           padding={2}
           radius={2}
         >
@@ -43,6 +44,9 @@ export function BundleRow({bundle}: Props) {
             {shortRelativeDate(bundle.publishAt)}
           </Text>
         )}
+      </Flex>
+      <Flex align="center" flex="none" padding={3}>
+        <BundleMenuButton bundle={bundle} />
       </Flex>
     </Card>
   )

@@ -25,6 +25,9 @@ export function BundleHeader() {
         >
           <Button mode="bleed" padding={1} space={1} text="Published" />
         </Flex>
+        <Flex align="center" gap={1} paddingX={2} paddingY={1} sizing="border" style={{width: 49}}>
+          &nbsp;
+        </Flex>
       </Flex>
     </Card>
   )
