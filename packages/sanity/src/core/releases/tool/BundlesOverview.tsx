@@ -6,6 +6,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {LoadingBlock, useCurrentUser} from 'sanity'
 
 import {useBundlesStore} from '../../store/bundles'
+import {type BundleDocument} from '../../store/bundles/types'
 import {useBundleOperations} from '../../store/bundles/useBundleOperations'
 import {CreateBundleDialog} from '../../versions/components/dialog/CreateBundleDialog'
 import {type Bundle} from '../../versions/types'
@@ -27,6 +28,7 @@ export default function BundlesOverview() {
 
   const [bundleHistoryMode, setBundleHistoryMode] = useState<Mode>('current')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState<string>()
 
   const handleOnCreateBundle = useCallback(() => setIsCreateBundleDialogOpen(true), [])
 
@@ -38,7 +40,7 @@ export default function BundlesOverview() {
       <Card radius={2} shadow={1} tone="inherit">
         {HISTORY_MODES.map((mode) => (
           <Button
-            // TODO: disable button if no bundle matching history
+            // TODO: disable archived button if no published bundles
             disabled={loading || !hasBundles}
             key={mode.value}
             mode="bleed"
@@ -77,14 +79,18 @@ export default function BundlesOverview() {
           disabled={loading}
           fontSize={1}
           icon={SearchIcon}
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.currentTarget.value)}
+          onClear={() => setSearchTerm('')}
           padding={2}
+          clearButton
           placeholder="Search releases"
           space={2}
         />
         {createReleaseButton}
       </Flex>
     ),
-    [createReleaseButton, loading],
+    [createReleaseButton, loading, searchTerm],
   )
 
   const handleOnSubmitCreateBundle = useCallback(
@@ -101,6 +107,16 @@ export default function BundlesOverview() {
       })
     },
     [createBundle, currentUser],
+  )
+
+  const applySearchTermToBundles = useCallback(
+    (bundle: BundleDocument) => !searchTerm || bundle.title.includes(searchTerm),
+    [searchTerm],
+  )
+
+  const filteredBundles = useMemo(
+    () => data?.filter(applySearchTermToBundles) || [],
+    [applySearchTermToBundles, data],
   )
 
   const renderCreateBundleDialog = () => {
@@ -124,7 +140,6 @@ export default function BundlesOverview() {
                 <Heading as="h1" size={2} style={{margin: '1px 0'}}>
                   Releases
                 </Heading>
-                {loading && <LoadingBlock fill />}
                 {!loading && !hasBundles && (
                   <Container style={{margin: 0}} width={0}>
                     <Stack space={5}>
@@ -141,7 +156,7 @@ export default function BundlesOverview() {
             </Flex>
             {loadingOrHasBundles && renderBundleSearch()}
           </Flex>
-          {!loading && hasBundles && <BundlesTable bundles={data} />}
+          {loading ? <LoadingBlock fill /> : <BundlesTable bundles={filteredBundles} />}
         </Stack>
       </Container>
       {renderCreateBundleDialog()}
