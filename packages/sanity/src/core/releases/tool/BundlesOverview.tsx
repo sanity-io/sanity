@@ -31,6 +31,7 @@ export default function BundlesOverview() {
   const handleOnCreateBundle = useCallback(() => setIsCreateBundleDialogOpen(true), [])
 
   const hasBundles = data && containsBundles(data)
+  const loadingOrHasBundles = loading || hasBundles
 
   const renderCurrentArchivedPicker = useCallback(
     () => (
@@ -136,9 +137,9 @@ export default function BundlesOverview() {
                   </Container>
                 )}
               </Stack>
-              {renderCurrentArchivedPicker()}
+              {loadingOrHasBundles && renderCurrentArchivedPicker()}
             </Flex>
-            {renderBundleSearch()}
+            {loadingOrHasBundles && renderBundleSearch()}
           </Flex>
           {!loading && hasBundles && <BundlesTable bundles={data} />}
         </Stack>
