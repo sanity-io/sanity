@@ -14,11 +14,11 @@ import {getRandomToneIcon} from '../../versions/util/dummyGetters'
 import {BundlesTable} from '../components/BundlesTable/BundlesTable'
 import {containsBundles} from '../types/bundle'
 
-type Mode = 'current' | 'past'
+type Mode = 'current' | 'archived'
 
 const HISTORY_MODES: {label: string; value: Mode}[] = [
   {label: 'Open', value: 'current'},
-  {label: 'Archived', value: 'past'},
+  {label: 'Archived', value: 'archived'},
 ]
 
 export default function BundlesOverview() {
@@ -30,12 +30,10 @@ export default function BundlesOverview() {
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>()
 
-  const handleOnCreateBundle = useCallback(() => setIsCreateBundleDialogOpen(true), [])
-
   const hasBundles = data && containsBundles(data)
   const loadingOrHasBundles = loading || hasBundles
 
-  const renderCurrentArchivedPicker = useCallback(
+  const currentArchivedPicker = useMemo(
     () => (
       <Card radius={2} shadow={1} tone="inherit">
         {HISTORY_MODES.map((mode) => (
@@ -63,16 +61,16 @@ export default function BundlesOverview() {
     () => (
       <Button
         icon={AddIcon}
-        onClick={handleOnCreateBundle}
+        onClick={() => setIsCreateBundleDialogOpen(true)}
         padding={2}
         space={2}
         text="Create release"
       />
     ),
-    [handleOnCreateBundle],
+    [],
   )
 
-  const renderBundleSearch = useCallback(
+  const bundleSearch = useMemo(
     () => (
       <Flex flex="none" gap={2}>
         <TextInput
@@ -83,7 +81,7 @@ export default function BundlesOverview() {
           onChange={(event) => setSearchTerm(event.currentTarget.value)}
           onClear={() => setSearchTerm('')}
           padding={2}
-          clearButton
+          clearButton={!!searchTerm}
           placeholder="Search releases"
           space={2}
         />
@@ -93,7 +91,7 @@ export default function BundlesOverview() {
     [createReleaseButton, loading, searchTerm],
   )
 
-  const handleOnSubmitCreateBundle = useCallback(
+  const handleOnCreateBundle = useCallback(
     (bundleFormValue: Bundle) => {
       createBundle({
         _type: 'bundle',
@@ -125,7 +123,7 @@ export default function BundlesOverview() {
     return (
       <CreateBundleDialog
         onCancel={() => setIsCreateBundleDialogOpen(false)}
-        onSubmit={handleOnSubmitCreateBundle}
+        onSubmit={handleOnCreateBundle}
       />
     )
   }
@@ -152,9 +150,9 @@ export default function BundlesOverview() {
                   </Container>
                 )}
               </Stack>
-              {loadingOrHasBundles && renderCurrentArchivedPicker()}
+              {loadingOrHasBundles && currentArchivedPicker}
             </Flex>
-            {loadingOrHasBundles && renderBundleSearch()}
+            {loadingOrHasBundles && bundleSearch}
           </Flex>
           {loading ? <LoadingBlock fill /> : <BundlesTable bundles={filteredBundles} />}
         </Stack>
