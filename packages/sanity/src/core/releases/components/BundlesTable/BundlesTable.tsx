@@ -1,7 +1,7 @@
 import {Stack} from '@sanity/ui'
 import styled from 'styled-components'
 
-import {type BundleDocument} from '../../../store/bundles/types'
+import {type AtLeastOneBundle} from '../../types/bundle'
 import {BundleHeader} from './BundleHeader'
 import {BundleRow} from './BundleRow'
 
@@ -19,7 +19,7 @@ const RowStack = styled(Stack)({
 })
 
 type Props = {
-  bundles: BundleDocument[]
+  bundles: AtLeastOneBundle
 }
 
 export function BundlesTable({bundles}: Props) {

@@ -11,6 +11,7 @@ import {CreateBundleDialog} from '../../versions/components/dialog/CreateBundleD
 import {type Bundle} from '../../versions/types'
 import {getRandomToneIcon} from '../../versions/util/dummyGetters'
 import {BundlesTable} from '../components/BundlesTable/BundlesTable'
+import {containsBundles} from '../types/bundle'
 
 type Mode = 'current' | 'past'
 
@@ -29,7 +30,7 @@ export default function BundlesOverview() {
 
   const handleOnCreateBundle = useCallback(() => setIsCreateBundleDialogOpen(true), [])
 
-  const hasBundles = data && Boolean(data.length)
+  const hasBundles = data && containsBundles(data)
 
   const renderCurrentArchivedPicker = useCallback(
     () => (
@@ -139,7 +140,7 @@ export default function BundlesOverview() {
             </Flex>
             {renderBundleSearch()}
           </Flex>
-          {hasBundles && !loading && data && <BundlesTable bundles={data} />}
+          {!loading && hasBundles && <BundlesTable bundles={data} />}
         </Stack>
       </Container>
       {renderCreateBundleDialog()}
