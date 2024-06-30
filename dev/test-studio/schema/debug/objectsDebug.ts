@@ -213,6 +213,28 @@ const animals = defineField({
   of: [animal],
 })
 
+const fieldsetArray = defineField({
+  type: 'array',
+  name: 'fieldsetArray',
+  title: 'Fieldset array',
+
+  fieldset: 'fieldset',
+
+  of: [
+    {
+      type: 'object',
+      name: 'myObject',
+      fields: [
+        {
+          name: 'string',
+          type: 'string',
+          title: 'String',
+        },
+      ],
+    },
+  ],
+})
+
 const arrayOfImages = defineField({
   type: 'array',
   name: 'arrayOfImages',
@@ -353,6 +375,14 @@ const arrayOfMixedTypes = defineField({
 export const objectsDebug = defineType({
   type: 'document',
   name: 'objectsDebug',
+
+  fieldsets: [
+    {
+      name: 'fieldset',
+      title: 'Fieldset',
+    },
+  ],
+
   fields: [
     {
       name: 'title',
@@ -361,6 +391,7 @@ export const objectsDebug = defineType({
     animals,
     arrayOfMixedTypes,
     body,
+    fieldsetArray,
     objectWithArray,
     arrayOfAnonymousObjects,
     arrayOfImages,
