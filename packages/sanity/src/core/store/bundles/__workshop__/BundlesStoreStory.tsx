@@ -1,13 +1,13 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ComponentType, type FormEvent, useCallback, useState} from 'react'
 
-import {Button, Dialog} from '../../../../ui-components'
-import {BundleForm} from '../../../bundles/components/dialog/BundleForm'
+import {Button} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {AddonDatasetProvider} from '../../../studio/addonDataset/AddonDatasetProvider'
 import {type BundleDocument} from '../types'
 import {useBundleOperations} from '../useBundleOperations'
-import {useBundles} from '../useBundles'
+import {useBundlesStore} from '../useBundlesStore'
+import {ReleaseForm} from './ReleaseForm'
 
 const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>): React.FC<P> => {
   const WrappedComponent: React.FC<P> = (props) => (
@@ -21,13 +21,10 @@ const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>)
 }
 
 const initialValue = {name: '', title: '', tone: undefined, publishAt: undefined}
-
 const BundlesStoreStory = () => {
-  const {data, loading} = useBundles()
-  const {createBundle, deleteBundle, updateBundle} = useBundleOperations()
+  const {data, loading} = useBundlesStore()
+  const {createBundle, deleteBundle} = useBundleOperations()
   const [creating, setCreating] = useState(false)
-  const [updating, setUpdating] = useState(false)
-  const [editing, setEditing] = useState<BundleDocument | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
   const [value, setValue] = useState<Partial<BundleDocument>>(initialValue)
   const handleCreateBundle = useCallback(
@@ -44,20 +41,6 @@ const BundlesStoreStory = () => {
       }
     },
     [createBundle, value],
-  )
-
-  const handleUpdateBundle = useCallback(
-    async (bundle: BundleDocument) => {
-      try {
-        setUpdating(true)
-        await updateBundle(bundle)
-        setUpdating(false)
-        setEditing(null)
-      } catch (err) {
-        console.error(err)
-      }
-    },
-    [updateBundle],
   )
 
   const handleDeleteBundle = useCallback(
@@ -77,11 +60,11 @@ const BundlesStoreStory = () => {
   return (
     <Stack space={3}>
       <Flex gap={2}>
-        <Card margin={3} padding={3} border style={{maxWidth: '50%'}}>
+        <Card margin={3} padding={3} border>
           <form onSubmit={handleCreateBundle}>
             <Stack space={4}>
               <Text weight="medium">Create a new release</Text>
-              <BundleForm onChange={setValue} value={value} />
+              <ReleaseForm onChange={setValue} value={value} />
               <Flex justify="flex-end">
                 <Button
                   text="Create"
@@ -94,7 +77,7 @@ const BundlesStoreStory = () => {
             </Stack>
           </form>
         </Card>
-        <Card margin={3} border padding={3} style={{maxWidth: '50%'}}>
+        <Card margin={3} border padding={3}>
           <div style={{maxHeight: '400px', overflow: 'scroll'}}>
             <Text>Data</Text>
             {loading ? <LoadingBlock /> : <pre>{JSON.stringify(data, null, 2)}</pre>}
@@ -107,57 +90,19 @@ const BundlesStoreStory = () => {
             <Card key={bundle._id} padding={3} border radius={3}>
               <Flex align="center" gap={3} justify={'space-between'}>
                 <Text>{bundle.name}</Text>
-                <Flex align="center" gap={2}>
-                  <Button
-                    text="Delete"
-                    mode="bleed"
-                    tone="critical"
-                    // eslint-disable-next-line react/jsx-no-bind
-                    onClick={() => handleDeleteBundle(bundle._id)}
-                    disabled={deleting === bundle._id}
-                    loading={deleting === bundle._id}
-                  />
-                  <Button
-                    text="Edit"
-                    // eslint-disable-next-line react/jsx-no-bind
-                    onClick={() => setEditing(bundle)}
-                    disabled={deleting === bundle._id}
-                    loading={deleting === bundle._id}
-                  />
-                </Flex>
+                <Button
+                  text="Delete"
+                  tone="critical"
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onClick={() => handleDeleteBundle(bundle._id)}
+                  disabled={deleting === bundle._id}
+                  loading={deleting === bundle._id}
+                />
               </Flex>
             </Card>
           ))}
         </Stack>
       </Card>
-      {editing && (
-        <Dialog
-          id="edit-bundle-dialog"
-          header="Edit release"
-          onClose={() => setEditing(null)}
-          footer={{
-            confirmButton: {
-              onClick: () => handleUpdateBundle(editing),
-              disabled: updating,
-              loading: updating,
-              tone: 'primary',
-            },
-          }}
-        >
-          {editing && (
-            <BundleForm
-              // eslint-disable-next-line react/jsx-no-bind
-              onChange={(bundle) =>
-                setEditing((prev) => ({
-                  ...(prev as BundleDocument),
-                  ...bundle,
-                }))
-              }
-              value={editing}
-            />
-          )}
-        </Dialog>
-      )}
     </Stack>
   )
 }
