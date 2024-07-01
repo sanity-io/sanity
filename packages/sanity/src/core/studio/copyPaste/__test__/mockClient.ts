@@ -24,6 +24,12 @@ export function createMockClient(mockData: Record<string, FIXME> = {}): ClientWi
             return mockData[ref] as R
           }
         }
+        if (query.includes('*[_id == $id][0]') && isNonNullObject(params) && 'id' in params) {
+          const id = params.id as string
+          if (typeof id === 'string' && id in mockData) {
+            return mockData[id] as R
+          }
+        }
         throw new Error('Unexpected query or params in mock client')
       },
     ),

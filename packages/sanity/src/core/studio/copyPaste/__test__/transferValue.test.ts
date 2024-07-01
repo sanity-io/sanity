@@ -167,6 +167,12 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['relatedEditor'],
+        options: {
+          validateReferences: true,
+          client: createMockClient({
+            yyy: {_type: 'author', _id: 'yyy'},
+          }),
+        },
       })
       expect(transferValueResult?.errors.length).toEqual(1)
       expect(transferValueResult?.targetValue).toEqual(undefined)
