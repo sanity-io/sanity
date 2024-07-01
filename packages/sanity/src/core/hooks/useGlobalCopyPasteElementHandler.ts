@@ -3,7 +3,7 @@ import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useEffect, useRef} from 'react'
 import {type FormDocumentValue, useCopyPasteAction} from 'sanity'
 
-import {hasSelection, isNativeEditableElement} from '../studio/copyPaste/utils'
+import {hasSelection, isEmptyFocusPath, isNativeEditableElement} from '../studio/copyPaste/utils'
 
 /** @internal */
 export interface GlobalCopyPasteElementHandler {
@@ -35,7 +35,11 @@ export function useGlobalCopyPasteElementHandler({
     (event: ClipboardEvent) => {
       const targetElement = event.target as HTMLElement
       // We will skip handling this event if you have focus on an native editable element
-      if (isNativeEditableElement(targetElement) || hasSelection()) {
+      if (
+        isNativeEditableElement(targetElement) ||
+        hasSelection() ||
+        isEmptyFocusPath(focusPathRef.current)
+      ) {
         return
       }
 
@@ -52,7 +56,11 @@ export function useGlobalCopyPasteElementHandler({
 
       if (isCopyHotKey(event)) {
         // We will skip handling this event if you have focus on an native editable element
-        if (isNativeEditableElement(targetElement as HTMLElement) || hasSelection()) {
+        if (
+          isNativeEditableElement(targetElement as HTMLElement) ||
+          hasSelection() ||
+          isEmptyFocusPath(focusPathRef.current)
+        ) {
           return
         }
 
@@ -81,7 +89,10 @@ export function useGlobalCopyPasteElementHandler({
     const handlePaste = async (event: ClipboardEvent) => {
       const targetElement = event.target
 
-      if (isNativeEditableElement(targetElement as HTMLElement)) {
+      if (
+        isNativeEditableElement(targetElement as HTMLElement) ||
+        isEmptyFocusPath(focusPathRef.current)
+      ) {
         return
       }
       event.preventDefault()
