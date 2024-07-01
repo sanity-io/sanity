@@ -24,17 +24,23 @@ export function BundleForm(props: {
 }): JSX.Element {
   const {onChange, value} = props
 
-  const handleBundleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const v = event.target.value
+  const handleBundleTitleChange = useCallback(
+    () => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const v = event.target.value
 
-    onChange({...value, title: v, name: toSlug(v)})
-  }
+      onChange({...value, title: v, name: toSlug(v)})
+    },
+    [onChange, value],
+  )
 
-  const handleBundleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const v = event.target.value
+  const handleBundleDescriptionChange = useCallback(
+    () => (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const v = event.target.value
 
-    onChange({...value, description: v || undefined})
-  }
+      onChange({...value, description: v || undefined})
+    },
+    [onChange, value],
+  )
 
   const handleBundleToneChange = useCallback(
     () => (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -43,11 +49,14 @@ export function BundleForm(props: {
     [onChange, value],
   )
 
-  const handleBundlePublishAtChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const v = event.target.value
+  const handleBundlePublishAtChange = useCallback(
+    () => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const v = event.target.value
 
-    onChange({...value, publishAt: v})
-  }
+      onChange({...value, publishAt: v})
+    },
+    [onChange, value],
+  )
 
   return (
     <Stack space={5}>
