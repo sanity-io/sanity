@@ -72,6 +72,7 @@ export function useBundlesStore(): BundlesStoreReturnType {
       }),
     )
   }, [client])
+
   const handleListenerEvent = useCallback(
     (event: ListenEvent<Record<string, BundleDocument>>) => {
       // Fetch all bundles on initial connection

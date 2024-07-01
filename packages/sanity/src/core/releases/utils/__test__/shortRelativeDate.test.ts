@@ -2,7 +2,7 @@ import {afterAll, beforeAll, describe, expect, jest, test} from '@jest/globals'
 
 import {shortRelativeDate} from '../shortRelativeDate'
 
-describe('shortTimeSince', () => {
+describe('shortRelativeDate', () => {
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date(2024, 6, 28, 12, 0))
