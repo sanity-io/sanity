@@ -79,7 +79,7 @@ export function isPublishedId(id: string): id is PublishedId {
 
 /** @internal */
 export function getDraftId(id: string): DraftId {
-  return isDraftId(id) || isVersion(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
+  return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
 /**  @internal */
