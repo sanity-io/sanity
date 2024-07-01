@@ -1,3 +1,4 @@
+/* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useContext, useMemo, useState} from 'react'
@@ -93,6 +94,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
                   tone={firstActionState.tone || 'primary'}
                 />
               ) : (
+                /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
                 <BundleActions
                   currentVersion={currentVersion}
                   documentId={documentId}
@@ -104,6 +106,10 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
           </Tooltip>
         </LayerProvider>
       )}
+      {/**
+       * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
+       * SPECIFICALLY FOR ISDRAFT
+       */}
       {showMenu && menuActionStates.length > 0 && isDraft && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
