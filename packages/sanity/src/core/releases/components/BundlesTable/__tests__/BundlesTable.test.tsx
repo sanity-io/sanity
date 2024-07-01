@@ -13,7 +13,7 @@ jest.mock('sanity/router', () => ({
 }))
 
 jest.mock('../../../../store/bundles/useBundleOperations', () => ({
-  useBundleOperations: jest.fn().mockReturnValue({deleteBundle: jest.fn().mockResolvedValue()}),
+  useBundleOperations: jest.fn().mockReturnValue({deleteBundle: jest.fn()}),
 }))
 
 const renderBundlesTable = async (bundles: BundleDocument[]) => {
