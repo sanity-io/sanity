@@ -16,7 +16,7 @@ interface BundleUpdatedAction {
 }
 
 interface BundlesSetAction {
-  bundles: BundleDocument[]
+  payload: BundleDocument[]
   type: 'BUNDLES_SET'
 }
 
@@ -51,7 +51,7 @@ export function bundlesReducer(
   switch (action.type) {
     case 'BUNDLES_SET': {
       // Create an object with the BUNDLE id as key
-      const bundlesById = createBundlesSet(action.bundles)
+      const bundlesById = createBundlesSet(action.payload)
 
       return {
         ...state,

@@ -54,7 +54,7 @@ export function useBundlesStore(): BundlesStoreReturnType {
     return client.observable.fetch(QUERY).pipe(
       timeout(10000), // 10s timeout
       map((res) => {
-        dispatch({type: 'BUNDLES_SET', bundles: res})
+        dispatch({type: 'BUNDLES_SET', payload: res})
         didInitialFetch.current = true
         setLoading(false)
       }),
