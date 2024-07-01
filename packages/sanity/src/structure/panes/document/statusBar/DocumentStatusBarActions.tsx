@@ -1,6 +1,7 @@
+/* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useCallback, useMemo, useState} from 'react'
+import {memo, useCallback, useContext, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
@@ -8,6 +9,11 @@ import {
   useTimelineSelector,
 } from 'sanity'
 
+import {
+  VersionContext,
+  type VersionContextValue,
+} from '../../../../_singletons/core/form/VersionContext'
+import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -25,7 +31,8 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks} = useDocumentPane()
+  const {__internal_tasks, documentId, documentType} = useDocumentPane()
+
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
@@ -50,6 +57,16 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     )
   }, [firstActionState])
 
+  /* Version / Bundling handling */
+  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
+
+  // eslint-disable-next-line no-warning-comments
+  /* TODO - replace with real data
+   - needs to check for publish data
+   - if it's published
+   */
+  const isReady = false
+
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
@@ -57,22 +74,35 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              <Button
-                data-testid={`action-${firstActionState.label}`}
-                disabled={disabled || Boolean(firstActionState.disabled)}
-                icon={firstActionState.icon}
-                // eslint-disable-next-line react/jsx-handler-names
-                onClick={firstActionState.onHandle}
-                ref={setButtonElement}
-                size="large"
-                text={firstActionState.label}
-                tone={firstActionState.tone || 'primary'}
-              />
+              {isDraft ? (
+                <Button
+                  data-testid={`action-${firstActionState.label}`}
+                  disabled={disabled || Boolean(firstActionState.disabled)}
+                  icon={firstActionState.icon}
+                  // eslint-disable-next-line react/jsx-handler-names
+                  onClick={firstActionState.onHandle}
+                  ref={setButtonElement}
+                  text={firstActionState.label}
+                  tone={firstActionState.tone || 'primary'}
+                />
+              ) : (
+                /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
+                <BundleActions
+                  currentVersion={currentVersion}
+                  documentId={documentId}
+                  documentType={documentType}
+                  isReady={isReady}
+                />
+              )}
             </Stack>
           </Tooltip>
         </LayerProvider>
       )}
-      {showMenu && menuActionStates.length > 0 && (
+      {/**
+       * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
+       * SPECIFICALLY FOR ISDRAFT
+       */}
+      {showMenu && menuActionStates.length > 0 && isDraft && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
