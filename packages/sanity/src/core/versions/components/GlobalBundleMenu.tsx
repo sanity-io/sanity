@@ -66,8 +66,7 @@ export function GlobalBundleMenu(): JSX.Element {
               icon={isDraft ? undefined : currentVersion?.icon}
               openButton
               padding={2}
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-              title={isDraft ? 'Latest' : currentVersion?.title}
+              title={isDraft ? LATEST.title : currentVersion?.title}
             />
           </Button>
         }
@@ -78,8 +77,7 @@ export function GlobalBundleMenu(): JSX.Element {
               iconRight={isDraft ? <CheckmarkIcon /> : undefined}
               onClick={handleBundleChange(LATEST)}
               pressed={false}
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-              text="Latest"
+              text={LATEST.title}
             />
             {bundles.length > 0 && (
               <>

@@ -20,7 +20,7 @@ import {useRouter} from 'sanity/router'
 
 import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
 import {type Version} from '../../types'
-import {BUNDLES} from '../../util/const'
+import {BUNDLES, LATEST} from '../../util/const'
 import {getAllVersionsOfDocument} from '../../util/dummyGetters'
 import {VersionBadge} from '../VersionBadge'
 import {VersionIcon} from '../VersionIcon'
@@ -135,8 +135,7 @@ export function DocumentVersionMenu(props: {
                   iconRight={isDraft ? CheckmarkIcon : <CheckmarkIcon style={{opacity: 0}} />}
                   onClick={handleGoToLatest()}
                   pressed={isDraft}
-                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                  text="Latest version"
+                  text={LATEST.title}
                 />
               </Stack>
 
@@ -168,8 +167,7 @@ export function DocumentVersionMenu(props: {
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">
-                              {/* localize text */}
-                              {r.name === 'draft' ? 'Latest' : r.title}
+                              {r.name === 'draft' ? LATEST.title : r.title}
                             </Text>
                           </Box>
 
@@ -223,7 +221,7 @@ export function DocumentVersionMenu(props: {
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">
-                              {r.name === 'draft' ? 'Latest' : r.title}
+                              {r.name === 'draft' ? LATEST.title : r.title}
                             </Text>
                           </Box>
 
