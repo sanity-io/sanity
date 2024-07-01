@@ -24,7 +24,7 @@ export async function getAllVersionsOfDocument(
 
   return await client.fetch(query, {}, {tag: 'document.list-versions'}).then((documents) => {
     return documents.map((doc: SanityDocument, index: number) => ({
-      name: getVersionName(doc._id),
+      name: getVersionName(doc._id).toLocaleLowerCase(),
       title: getVersionName(doc._id),
       tone: RANDOM_TONES[index % RANDOM_TONES.length],
       icon: RANDOM_SYMBOLS[index % RANDOM_SYMBOLS.length],
@@ -44,4 +44,8 @@ export function versionDocumentExists(documentVersions: Version[], name: string)
 
 export function toSlug(value: string): string {
   return camelCase(value)
+}
+
+export function isDraftOrPublished(versionName: string): boolean {
+  return versionName === 'drafts' || versionName === 'published'
 }

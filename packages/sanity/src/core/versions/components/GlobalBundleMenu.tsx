@@ -6,6 +6,7 @@ import {useRouter} from 'sanity/router'
 import {VersionContext} from '../../../_singletons/core/form/VersionContext'
 import {type Bundle, type Version} from '../types'
 import {BUNDLES, LATEST} from '../util/const'
+import {isDraftOrPublished} from '../util/dummyGetters'
 import {CreateBundleDialog} from './dialog/CreateBundleDialog'
 import {VersionIcon} from './VersionIcon'
 
@@ -85,7 +86,7 @@ export function GlobalBundleMenu(): JSX.Element {
               </>
             )}
             {bundles
-              .filter((b) => b.name !== 'draft')
+              .filter((b) => !isDraftOrPublished(b.name))
               .map((b) => (
                 <MenuItem key={b.name} onClick={handleBundleChange(b)} padding={1} pressed={false}>
                   <Flex>
@@ -93,7 +94,7 @@ export function GlobalBundleMenu(): JSX.Element {
 
                     <Box flex={1} padding={2} style={{minWidth: 100}}>
                       <Text size={1} weight="medium">
-                        {b.name === 'draft' ? 'Latest' : b.title}
+                        {b.title}
                       </Text>
                     </Box>
 
