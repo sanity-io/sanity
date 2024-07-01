@@ -1,3 +1,4 @@
+import {type Path} from '@sanity/types'
 import {isString} from 'sanity'
 
 import {type CopyActionResult} from './types'
@@ -115,6 +116,11 @@ export function hasSelection(): boolean {
   const selection = window.getSelection()
 
   return selection !== null && !selection.isCollapsed
+}
+
+/** @internal */
+export function isEmptyFocusPath(path: Path): boolean {
+  return path.length === 0 || (path.length === 1 && path[0] === '')
 }
 
 function isWebKit(): boolean {
