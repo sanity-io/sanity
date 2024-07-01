@@ -1,3 +1,5 @@
+/* eslint-disable max-statements */
+/* eslint-disable complexity */
 import {isAssetObjectStub, isReference} from '@sanity/asset-utils'
 import {
   type ArraySchemaType,
@@ -12,6 +14,7 @@ import {
   isPrimitiveSchemaType,
   isReferenceSchemaType,
   isStringSchemaType,
+  isTypedObject,
   type NumberSchemaType,
   type ObjectSchemaType,
   type StringSchemaType,
@@ -33,10 +36,6 @@ export interface TransferValueError {
     key: string
     args?: Record<string, unknown>
   }
-}
-
-function isEqualSchemaType(a: unknown, b: unknown): boolean {
-  return isRecord(a) && isRecord(b) && (a.name === b.name || isEqualSchemaType(a.type, b.type))
 }
 
 function isCompatiblePrimitiveType(value: unknown, targetJsonTypes: string[]): boolean {
@@ -197,143 +196,13 @@ export async function transferValue({
     sourceSchemaTypeAtPath.jsonType === 'object' &&
     targetSchemaTypeAtPath.jsonType === 'object'
   ) {
-    // Special handling for reference objects to ensure that (some) common references exists
-    // I think this is the best effort we can do without fetching and inspecting the actual referenced data
-    if (
-      isReferenceSchemaType(sourceSchemaTypeAtPath) &&
-      isReferenceSchemaType(targetSchemaTypeAtPath)
-    ) {
-      const sourceReferenceTypes = sourceSchemaTypeAtPath.to.map((type) => type.name)
-      const targetReferenceTypes = targetSchemaTypeAtPath.to.map((type) => type.name)
-
-      if (!targetReferenceTypes.some((type) => sourceReferenceTypes.includes(type))) {
-        errors.push({
-          level: 'error',
-          sourceValue,
-
-          i18n: {
-            key: 'copy-paste.on-paste.validation.reference-type-incompatible.description',
-            args: {
-              sourceReferenceTypes,
-              targetReferenceTypes,
-            },
-          },
-        })
-
-        return {
-          targetValue: undefined,
-          errors,
-        }
-      }
-    }
-
-    // Special handling for image/file objects to ensure that you can't copy image into file and vice versa
-    // I think this is the best effort we can do without fetching and inspecting the actual referenced data
-    if (
-      (isImageSchemaType(sourceSchemaTypeAtPath) || isFileSchemaType(sourceSchemaTypeAtPath)) &&
-      !isEqualSchemaType(sourceSchemaTypeAtPath, targetSchemaTypeAtPath)
-    ) {
-      errors.push({
-        level: 'error',
-        sourceValue,
-
-        i18n: {
-          key: 'copy-paste.on-paste.validation.image-file-incompatible.description',
-          args: {
-            sourceSchemaType: sourceSchemaTypeAtPath.name,
-            targetSchemaType: targetSchemaTypeAtPath.name,
-          },
-        },
-      })
-      return {
-        targetValue: undefined,
-        errors,
-      }
-    }
-
-    // @todo Look up the file or image document if there is a option.accept rule on the targetSchema type,
-    // and validate that the file/image is of the correct type based on the mimetype
-    if (
-      options.validateAssets &&
-      options.client &&
-      (isImageSchemaType(targetSchemaTypeAtPath) || isFileSchemaType(targetSchemaTypeAtPath)) &&
-      targetSchemaTypeAtPath.options?.accept &&
-      isAssetObjectStub(sourceValueAtPath) &&
-      isReference(sourceValueAtPath.asset)
-    ) {
-      const sourceRef = sourceValueAtPath.asset?._ref
-      if (!sourceRef) {
-        return {
-          targetValue: undefined,
-          errors,
-        }
-      }
-
-      try {
-        const assetType = isImageSchemaType(targetSchemaTypeAtPath)
-          ? 'sanity.imageAsset'
-          : 'sanity.fileAsset'
-        const asset = await options.client.fetch(
-          `*[_type == $type &&_id == $ref][0]{mimeType, originalFilename}`,
-          {
-            ref: sourceRef,
-            type: assetType,
-          },
-        )
-
-        if (!asset) {
-          return {
-            targetValue: undefined,
-            errors,
-          }
-        }
-
-        const fileLike = {
-          type: asset.mimeType,
-          name: asset.originalFilename,
-        }
-        const mimeType = asset.mimeType
-
-        if (!accepts(fileLike, targetSchemaTypeAtPath.options.accept)) {
-          errors.push({
-            level: 'error',
-            sourceValue: sourceValueAtPath,
-            i18n: {
-              key: 'copy-paste.on-paste.validation.mime-type-incompatible.description',
-              args: {
-                mimeType,
-              },
-            },
-          })
-          return {
-            targetValue: undefined,
-            errors,
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching asset document:', error)
-        errors.push({
-          level: 'error',
-          sourceValue: sourceValueAtPath,
-
-          i18n: {
-            key: 'copy-paste.on-paste.validation.mime-type-validation-failed.description',
-          },
-        })
-
-        return {
-          targetValue: undefined,
-          errors,
-        }
-      }
-    }
-
     return collateObjectValue({
       sourceValue: sourceValueAtPath as TypedObject,
       targetSchemaType: targetSchemaTypeAtPath as ObjectSchemaType,
       targetPath: [],
       errors,
       keyGenerator,
+      options,
     })
   }
 
@@ -370,18 +239,20 @@ export async function transferValue({
   })
 }
 
-function collateObjectValue({
+async function collateObjectValue({
   sourceValue,
   targetSchemaType,
   targetPath,
   errors,
   keyGenerator,
+  options,
 }: {
   sourceValue: unknown
   targetSchemaType: ObjectSchemaType
   targetPath: Path
   errors: TransferValueError[]
   keyGenerator: () => string
+  options?: TransferValueOptions
 }) {
   if (isEmptyValue(sourceValue)) {
     return {
@@ -403,9 +274,175 @@ function collateObjectValue({
       : {}),
   } as TypedObject
 
+  // Validate reference types
+  if (isReferenceSchemaType(targetSchemaType)) {
+    const targetReferenceTypes = targetSchemaType.to.map((type) => type.name)
+
+    // Validate the actual reference value
+    // TODO: take optional reference filter option into account
+    if (options?.validateReferences && options.client && isReference(sourceValue)) {
+      try {
+        const reference = await options.client.fetch(`*[_id == $id][0]{_id, _type}`, {
+          id: sourceValue._ref,
+        })
+
+        // Test that we have an actual referenced object if this is not a weak reference
+        if (!reference && !targetSchemaType.weak) {
+          errors.push({
+            level: 'error',
+            sourceValue: sourceValue,
+
+            i18n: {
+              key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+            },
+          })
+
+          return {
+            targetValue: undefined,
+            errors,
+          }
+        }
+        // Test that the actual referenced type is allowed by the schema.
+        if (!targetReferenceTypes.includes(reference._type)) {
+          errors.push({
+            level: 'error',
+            sourceValue: sourceValue,
+
+            i18n: {
+              key: 'copy-paste.on-paste.validation.reference-type-incompatible.description',
+              args: {
+                sourceReferenceTypes: [reference._type],
+                targetReferenceTypes,
+              },
+            },
+          })
+
+          return {
+            targetValue: undefined,
+            errors,
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching reference document:', error)
+        errors.push({
+          level: 'error',
+          sourceValue: targetValue,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+          },
+        })
+
+        return {
+          targetValue: undefined,
+          errors,
+        }
+      }
+    }
+  }
+
+  // Special handling for image/file objects to ensure that you can't copy image into file and vice versa
+  if (
+    isTypedObject(sourceValue) &&
+    ((isImageSchemaType(targetSchemaType) && sourceValue._type !== 'image') ||
+      (isFileSchemaType(targetSchemaType) && sourceValue._type !== 'file'))
+  ) {
+    errors.push({
+      level: 'error',
+      sourceValue,
+
+      i18n: {
+        key: 'copy-paste.on-paste.validation.image-file-incompatible.description',
+        args: {
+          sourceSchemaType: sourceValue._type,
+          targetSchemaType: targetSchemaType.name,
+        },
+      },
+    })
+    return {
+      targetValue: undefined,
+      errors,
+    }
+  }
+
+  if (
+    options?.validateAssets &&
+    options.client &&
+    (isImageSchemaType(targetSchemaType) || isFileSchemaType(targetSchemaType)) &&
+    targetSchemaType.options?.accept &&
+    isAssetObjectStub(sourceValue) &&
+    isReference(sourceValue.asset)
+  ) {
+    const sourceRef = sourceValue.asset?._ref
+    if (!sourceRef) {
+      return {
+        targetValue: undefined,
+        errors,
+      }
+    }
+
+    try {
+      const assetType = isImageSchemaType(targetSchemaType)
+        ? 'sanity.imageAsset'
+        : 'sanity.fileAsset'
+      const asset = await options.client.fetch(
+        `*[_type == $type &&_id == $ref][0]{mimeType, originalFilename}`,
+        {
+          ref: sourceRef,
+          type: assetType,
+        },
+      )
+
+      if (!asset) {
+        return {
+          targetValue: undefined,
+          errors,
+        }
+      }
+
+      const fileLike = {
+        type: asset.mimeType,
+        name: asset.originalFilename,
+      }
+      const mimeType = asset.mimeType
+
+      if (!accepts(fileLike, targetSchemaType.options.accept)) {
+        errors.push({
+          level: 'error',
+          sourceValue,
+          i18n: {
+            key: 'copy-paste.on-paste.validation.mime-type-incompatible.description',
+            args: {
+              mimeType,
+            },
+          },
+        })
+        return {
+          targetValue: undefined,
+          errors,
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching asset document:', error)
+      errors.push({
+        level: 'error',
+        sourceValue,
+
+        i18n: {
+          key: 'copy-paste.on-paste.validation.mime-type-validation-failed.description',
+        },
+      })
+
+      return {
+        targetValue: undefined,
+        errors,
+      }
+    }
+  }
+
   const objectMembers = targetSchemaType.fields
 
-  objectMembers.forEach((member) => {
+  for (const member of objectMembers) {
     const memberSchemaType = member.type
     const memberIsArray = isArraySchemaType(memberSchemaType)
     const memberIsObject = isObjectSchemaType(memberSchemaType)
@@ -428,7 +465,7 @@ function collateObjectValue({
 
       // Object field
     } else if (memberIsObject) {
-      const collated = collateObjectValue({
+      const collated = await collateObjectValue({
         sourceValue: getValueAtPath(
           sourceValue as TypedObject,
           targetPath.concat(member.name),
@@ -448,7 +485,7 @@ function collateObjectValue({
       const genericValue = sourceValue
         ? ((sourceValue as TypedObject)[member.name] as unknown)
         : undefined
-      const collated = collateArrayValue({
+      const collated = await collateArrayValue({
         sourceValue: genericValue,
         targetSchemaType: memberSchemaType as ArraySchemaType,
         errors,
@@ -458,7 +495,7 @@ function collateObjectValue({
         targetValue[member.name] = collated.targetValue
       }
     }
-  })
+  }
 
   const valueAtTargetPath = getValueAtPath(targetValue, targetPath)
   const resultingValue = cleanObjectKeys(valueAtTargetPath as TypedObject)
@@ -474,7 +511,7 @@ function collateObjectValue({
   }
 }
 
-function collateArrayValue({
+async function collateArrayValue({
   sourceValue,
   targetSchemaType,
   errors,
@@ -484,10 +521,10 @@ function collateArrayValue({
   targetSchemaType: ArraySchemaType
   errors: TransferValueError[]
   keyGenerator: () => string
-}): {
+}): Promise<{
   targetValue: unknown
   errors: TransferValueError[]
-} {
+}> {
   if (targetSchemaType.readOnly) {
     return {
       targetValue: undefined,
@@ -567,23 +604,26 @@ function collateArrayValue({
       (item) => !targetSchemaType.of.some((type) => type.name === item._type),
     )
 
-    targetValue =
-      transferredItems.length > 0
-        ? transferredItems
-            .map((item) => {
-              const collated = collateObjectValue({
-                sourceValue: item,
-                targetSchemaType: targetSchemaType.of.find(
-                  (type) => type.name === item._type,
-                )! as ObjectSchemaType,
-                targetPath: [],
-                errors,
-                keyGenerator,
-              })
-              return collated.targetValue
-            })
-            .filter((item) => !isEmptyValue(item))
-        : undefined
+    if (transferredItems.length === 0) {
+      targetValue = undefined
+    } else {
+      const collatedItems = await Promise.all(
+        transferredItems.map((item) =>
+          collateObjectValue({
+            sourceValue: item,
+            targetSchemaType: targetSchemaType.of.find(
+              (type) => type.name === item._type,
+            )! as ObjectSchemaType,
+            targetPath: [],
+            errors,
+            keyGenerator,
+          }),
+        ),
+      )
+      targetValue = collatedItems
+        .map((item) => item.targetValue as TypedObject)
+        .filter((item) => !isEmptyValue(item))
+    }
 
     if (nonTransferredItems.length > 0) {
       nonTransferredItems.forEach((item) => {
