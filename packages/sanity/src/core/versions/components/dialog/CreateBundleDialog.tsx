@@ -1,6 +1,6 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Flex} from '@sanity/ui'
-import {useState} from 'react'
+import {useCallback, useState} from 'react'
 
 import {type Bundle} from '../../types'
 import {BundleForm} from './BundleForm'
@@ -18,6 +18,13 @@ export function CreateBundleDialog(props: {
     publishAt: undefined,
   })
 
+  const handleOnSubmit = useCallback(
+    () => (bundle: Bundle) => {
+      onSubmit(bundle)
+    },
+    [onSubmit],
+  )
+
   return (
     <Dialog
       animate
@@ -34,7 +41,7 @@ export function CreateBundleDialog(props: {
         <Button
           disabled={!value.title}
           iconRight={ArrowRightIcon}
-          onClick={onSubmit(value)}
+          onClick={handleOnSubmit}
           // localize Text
           // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
           text="Create release"
