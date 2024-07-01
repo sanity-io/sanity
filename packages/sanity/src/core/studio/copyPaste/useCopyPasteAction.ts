@@ -228,6 +228,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
           targetPath: [],
           options: {
             validateAssets: true,
+            validateReferences: true,
             client,
           } as TransferValueOptions,
         }
