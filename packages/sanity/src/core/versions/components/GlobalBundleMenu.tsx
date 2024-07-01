@@ -36,15 +36,6 @@ export function GlobalBundleMenu(): JSX.Element {
     [router, setCurrentVersion],
   )
 
-  const handleGoToLatest = useCallback(
-    () => () => {
-      router.navigateStickyParam('perspective', '')
-
-      setCurrentVersion(LATEST)
-    },
-    [router, setCurrentVersion],
-  )
-
   /* create new bundle */
 
   const handleCreateBundleClick = useCallback(() => {
@@ -85,7 +76,7 @@ export function GlobalBundleMenu(): JSX.Element {
           <Menu>
             <MenuItem
               iconRight={isDraft ? <CheckmarkIcon /> : undefined}
-              onClick={handleGoToLatest()}
+              onClick={handleBundleChange(LATEST)}
               pressed={false}
               // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
               text="Latest"
