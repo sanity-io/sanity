@@ -1,11 +1,23 @@
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
 /* eslint-disable i18next/no-literal-string */
 import {AddIcon, SearchIcon} from '@sanity/icons'
-import {Box, Button, Card, Container, Flex, Heading, Stack, Text, TextInput} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  type ButtonMode,
+  Card,
+  Container,
+  Flex,
+  Heading,
+  Stack,
+  Text,
+  TextInput,
+} from '@sanity/ui'
 import {isBefore} from 'date-fns'
-import {useCallback, useMemo, useState} from 'react'
+import {type MouseEventHandler, useCallback, useMemo, useState} from 'react'
 import {LoadingBlock, useCurrentUser} from 'sanity'
 
+import {Button as StudioButton} from '../../../ui-components'
 import {useBundlesStore} from '../../store/bundles'
 import {type BundleDocument} from '../../store/bundles/types'
 import {useBundleOperations} from '../../store/bundles/useBundleOperations'
@@ -17,17 +29,14 @@ import {containsBundles} from '../types/bundle'
 
 type Mode = 'open' | 'archived'
 
-const HISTORY_MODES: {label: string; value: Mode}[] = [
-  {label: 'Open', value: 'open'},
-  {label: 'Archived', value: 'archived'},
-]
+const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 
 export default function BundlesOverview() {
   const {data, loading} = useBundlesStore()
   const {createBundle} = useBundleOperations()
   const currentUser = useCurrentUser()
 
-  const [bundleHistoryMode, setBundleHistoryMode] = useState<Mode>('open')
+  const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>()
 
@@ -36,45 +45,60 @@ export default function BundlesOverview() {
 
   const groupedBundles = useMemo(
     () =>
-      (data || []).reduce<{open: BundleDocument[]; archived: BundleDocument[]}>(
-        (groups, bundle) => {
-          const bundleGroup =
-            bundle.publishedAt && isBefore(bundle.publishedAt, new Date()) ? 'archived' : 'open'
+      data?.reduce<{open: BundleDocument[]; archived: BundleDocument[]}>((groups, bundle) => {
+        const group =
+          bundle.publishedAt && isBefore(bundle.publishedAt, new Date()) ? 'archived' : 'open'
 
-          return {...groups, [bundleGroup]: [...groups[bundleGroup], bundle]}
-        },
-        {open: [], archived: []},
-      ),
+        return {...groups, [group]: [...groups[group], bundle]}
+      }, EMPTY_BUNDLE_GROUPS) || EMPTY_BUNDLE_GROUPS,
     [data],
   )
 
-  const currentArchivedPicker = useMemo(
-    () => (
-      <Card radius={2} shadow={1} tone="inherit">
-        {HISTORY_MODES.map((mode) => (
-          <Button
-            // TODO: disable archived button if no published bundles
-            disabled={
-              loading ||
-              !hasBundles ||
-              (mode.value === 'archived' && !groupedBundles.archived.length)
-            }
-            key={mode.value}
-            mode="bleed"
-            onClick={() => setBundleHistoryMode(mode.value)}
-            padding={2}
-            selected={bundleHistoryMode === mode.value}
-            style={{
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-            }}
-            text={mode.label}
-          />
-        ))}
-      </Card>
-    ),
-    [bundleHistoryMode, groupedBundles.archived.length, hasBundles, loading],
+  const handleBundleGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
+    ({currentTarget: {value: groupMode}}) => setBundleGroupMode(groupMode as Mode),
+    [],
   )
+
+  const currentArchivedPicker = useMemo(() => {
+    const groupModeButtonBaseProps = {
+      disabled: loading || !hasBundles,
+      mode: 'bleed' as ButtonMode,
+      padding: 2,
+      style: {
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+      },
+    }
+    return (
+      <Card radius={2} shadow={1} tone="inherit" display="flex">
+        <Button
+          {...groupModeButtonBaseProps}
+          onClick={handleBundleGroupModeChange}
+          selected={bundleGroupMode === 'open'}
+          text="Open"
+        />
+        {/* StudioButton supports tooltip when button is disabled */}
+        <StudioButton
+          {...groupModeButtonBaseProps}
+          disabled={groupModeButtonBaseProps.disabled || !groupedBundles.archived.length}
+          tooltipProps={{
+            disabled: groupedBundles.archived.length !== 0,
+            content: 'No published releases',
+            placement: 'bottom',
+          }}
+          onClick={handleBundleGroupModeChange}
+          selected={bundleGroupMode === 'archived'}
+          text="Archived"
+        />
+      </Card>
+    )
+  }, [
+    bundleGroupMode,
+    groupedBundles.archived.length,
+    handleBundleGroupModeChange,
+    hasBundles,
+    loading,
+  ])
 
   const createReleaseButton = useMemo(
     () => (
@@ -126,16 +150,6 @@ export default function BundlesOverview() {
     [createBundle, currentUser],
   )
 
-  const applySearchTermToBundles = useCallback(
-    (bundle: BundleDocument) => !searchTerm || bundle.title.includes(searchTerm),
-    [searchTerm],
-  )
-
-  const filteredBundles = useMemo(
-    () => groupedBundles[bundleHistoryMode]?.filter(applySearchTermToBundles) || [],
-    [applySearchTermToBundles, bundleHistoryMode, groupedBundles],
-  )
-
   const renderCreateBundleDialog = () => {
     if (!isCreateBundleDialogOpen) return null
 
@@ -146,6 +160,16 @@ export default function BundlesOverview() {
       />
     )
   }
+
+  const applySearchTermToBundles = useCallback(
+    (bundle: BundleDocument) => !searchTerm || bundle.title.includes(searchTerm),
+    [searchTerm],
+  )
+
+  const filteredBundles = useMemo(
+    () => groupedBundles[bundleGroupMode]?.filter(applySearchTermToBundles) || [],
+    [applySearchTermToBundles, bundleGroupMode, groupedBundles],
+  )
 
   return (
     <Card flex={1} overflow="auto">

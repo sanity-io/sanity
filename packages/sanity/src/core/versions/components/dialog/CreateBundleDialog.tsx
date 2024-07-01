@@ -20,7 +20,7 @@ export function CreateBundleDialog(props: {
   })
 
   const handleOnSubmit = useCallback(
-    () => (bundle: Bundle) => {
+    (bundle: Bundle) => {
       onSubmit(bundle)
     },
     [onSubmit],
@@ -42,7 +42,7 @@ export function CreateBundleDialog(props: {
         <Button
           disabled={!value.title || isDraftOrPublished(value.title)}
           iconRight={ArrowRightIcon}
-          onClick={handleOnSubmit}
+          onClick={() => handleOnSubmit(value)}
           // localize Text
           // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
           text="Create release"

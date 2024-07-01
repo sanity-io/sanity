@@ -15,6 +15,7 @@ export function BundleRow({bundle}: Props) {
 
   return (
     <Card data-testid="bundle-row" as="tr" border radius={3} display="flex" margin={-1}>
+      {/* Title */}
       <Box as="td" flex={1} padding={1}>
         <Card
           as="a"
@@ -37,14 +38,15 @@ export function BundleRow({bundle}: Props) {
           </Flex>
         </Card>
       </Box>
-      {/* Scheduled */}
+      {/* Published */}
       <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 100}}>
-        {!!bundle.publishAt && (
+        {!!bundle.publishedAt && (
           <Text muted size={1}>
-            {shortRelativeDate(bundle.publishAt)}
+            {shortRelativeDate(bundle.publishedAt)}
           </Text>
         )}
       </Flex>
+      {/* Actions */}
       <Flex as="td" align="center" flex="none" padding={3}>
         <BundleMenuButton bundle={bundle} />
       </Flex>

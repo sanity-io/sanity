@@ -38,7 +38,7 @@ export function BundlesTable({bundles}: Props) {
             justifyContent: 'center',
           }}
         >
-          <Text muted size={1}>
+          <Text as="td" muted size={1}>
             No Releases
           </Text>
         </Card>

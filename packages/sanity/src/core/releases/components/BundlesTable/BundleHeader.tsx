@@ -6,6 +6,7 @@ export function BundleHeader() {
   return (
     <Card as="thead" radius={3}>
       <Flex as="tr">
+        {/* Title */}
         <Flex as="th" align="center" flex={1} paddingX={2} paddingY={1} paddingLeft={3}>
           <Box paddingY={1}>
             <Text muted size={1}>
@@ -25,9 +26,16 @@ export function BundleHeader() {
         >
           <Button mode="bleed" padding={1} space={1} text="Published" />
         </Flex>
-        <Flex align="center" gap={1} paddingX={2} paddingY={1} sizing="border" style={{width: 49}}>
-          &nbsp;
-        </Flex>
+        {/* Actions */}
+        <Flex
+          align="center"
+          gap={1}
+          as="th"
+          paddingX={2}
+          paddingY={1}
+          sizing="border"
+          style={{width: 50}}
+        />
       </Flex>
     </Card>
   )

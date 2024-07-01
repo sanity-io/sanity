@@ -23,6 +23,8 @@ export const BundleDetail = () => {
 
   const bundle = data?.find((storeBundle) => storeBundle._id === parsedBundleId)
   const bundleHasDocuments = !!bundleDocuments.length
+  const showPublishButton = loading || !bundle?.publishedAt
+  const isPublishButtonDisabled = loading || !bundle || !bundleHasDocuments
 
   const header = useMemo(
     () => (
@@ -78,26 +80,27 @@ export const BundleDetail = () => {
           </Flex>
 
           <Flex flex="none" gap={2}>
-            {/* hide if bundle is already published */}
-            <Button
-              icon={PublishIcon}
-              padding={2}
-              space={2}
-              disabled={!bundle || !bundleHasDocuments}
-              text="Publish all"
-            />
+            {showPublishButton && (
+              <Button
+                icon={PublishIcon}
+                padding={2}
+                space={2}
+                disabled={isPublishButtonDisabled}
+                text="Publish all"
+              />
+            )}
             <BundleMenuButton bundle={bundle} />
           </Flex>
         </Flex>
       </Card>
     ),
-    [activeScreen, bundle, bundleHasDocuments, router],
+    [activeScreen, bundle, bundleHasDocuments, isPublishButtonDisabled, router, showPublishButton],
   )
 
   return (
     <Flex direction="column">
       {header}
-      {loading && <LoadingBlock fill />}
+      {loading && <LoadingBlock fill data-testid="bundle-documents-table-loader" />}
     </Flex>
   )
 }
