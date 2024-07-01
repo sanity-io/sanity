@@ -1,11 +1,11 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {type ReactElement} from 'react'
+import {createElement, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
+import {DocumentVersionMenu} from '../../../../../core/versions/components/panes/DocumentVersionMenu'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentVersionMenu} from '../../versions/DocumentVersionMenu'
 
 export function DocumentHeaderTitle(): ReactElement {
   const {
@@ -50,9 +50,7 @@ export function DocumentHeaderTitle(): ReactElement {
   return (
     <Flex flex={1} gap={0}>
       <Flex flex="none" gap={3} padding={2}>
-        <Text size={1}>
-          <DocumentIcon />
-        </Text>
+        <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
         <Text
           muted={!value?.title}
           size={1}
