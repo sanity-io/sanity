@@ -57,11 +57,6 @@ export function isDraftId(id: string): id is DraftId {
 }
 
 /** @internal */
-export function isVersion(id: string): id is DraftId {
-  return id.includes('.')
-}
-
-/** @internal */
 export function getIdPair(id: string): {draftId: DraftId; publishedId: PublishedId} {
   return {
     draftId: getDraftId(id),
@@ -76,7 +71,7 @@ export function isPublishedId(id: string): id is PublishedId {
 
 /** @internal */
 export function getDraftId(id: string): DraftId {
-  return isDraftId(id) || isVersion(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
+  return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
 /** @internal */

@@ -123,7 +123,6 @@ export const DocumentPanelHeader = memo(
               />
             )
           }
-          subActions={<TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />}
           actions={
             <Flex align="center" gap={1}>
               {unstable_languageFilter.length > 0 && (
@@ -142,37 +141,43 @@ export const DocumentPanelHeader = memo(
                 <PaneHeaderActionButton key={item.key} node={item} />
               ))}
               {editState && (
-                <RenderActionCollectionState
-                  actions={actions}
-                  actionProps={editState}
-                  group="paneActions"
-                >
-                  {({states}) => (
-                    <ActionDialogWrapper actionStates={states} referenceElement={referenceElement}>
-                      {({handleAction}) => (
-                        <div ref={setReferenceElement}>
-                          <PaneContextMenuButton
-                            nodes={contextMenuNodes}
-                            key="context-menu"
-                            actionsNodes={
-                              states.length > 0
-                                ? states.map((actionState, actionIndex) => (
-                                    <ActionMenuListItem
-                                      key={actionState.label}
-                                      actionState={actionState}
-                                      disabled={Boolean(actionState.disabled)}
-                                      index={actionIndex}
-                                      onAction={handleAction}
-                                    />
-                                  ))
-                                : undefined
-                            }
-                          />
-                        </div>
-                      )}
-                    </ActionDialogWrapper>
-                  )}
-                </RenderActionCollectionState>
+                <>
+                  <RenderActionCollectionState
+                    actions={actions}
+                    actionProps={editState}
+                    group="paneActions"
+                  >
+                    {({states}) => (
+                      <ActionDialogWrapper
+                        actionStates={states}
+                        referenceElement={referenceElement}
+                      >
+                        {({handleAction}) => (
+                          <div ref={setReferenceElement}>
+                            <PaneContextMenuButton
+                              nodes={contextMenuNodes}
+                              key="context-menu"
+                              actionsNodes={
+                                states.length > 0
+                                  ? states.map((actionState, actionIndex) => (
+                                      <ActionMenuListItem
+                                        key={actionState.label}
+                                        actionState={actionState}
+                                        disabled={Boolean(actionState.disabled)}
+                                        index={actionIndex}
+                                        onAction={handleAction}
+                                      />
+                                    ))
+                                  : undefined
+                              }
+                            />
+                          </div>
+                        )}
+                      </ActionDialogWrapper>
+                    )}
+                  </RenderActionCollectionState>
+                  <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
+                </>
               )}
 
               {showSplitPaneButton && (
