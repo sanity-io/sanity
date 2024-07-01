@@ -18,12 +18,14 @@ import {useCallback, useContext, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
+import {
+  VersionContext,
+  type VersionContextValue,
+} from '../../../../_singletons/core/form/VersionContext'
 import {type Version} from '../../types'
-import {BUNDLES} from '../../util/const'
-import {getAllVersionsOfDocument} from '../../util/dummyGetters'
+import {BUNDLES, LATEST} from '../../util/const'
+import {getAllVersionsOfDocument, isDraftOrPublished} from '../../util/dummyGetters'
 import {VersionBadge} from '../VersionBadge'
-import {VersionIcon} from '../VersionIcon'
 
 // TODO A LOT OF DOCUMENTED CODE IS RELATED TO SEARCH AND CREATING BUNDLE FROM HERE
 // STILL NEED TO DECIDE IF WE KEEP IT OR NOT
@@ -35,7 +37,7 @@ export function DocumentVersionMenu(props: {
   //const {newVersion} = useDocumentOperation(documentId, documentType)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const router = useRouter()
-  const {currentVersion, isDraft} = useContext(VersionContext)
+  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
   const {name} = currentVersion
   // const toast = useToast()
 
@@ -43,7 +45,7 @@ export function DocumentVersionMenu(props: {
 
   /*// search
   const [addVersionTitle, setAddVersionTitle] = useState('')
-  const addVersionName = toSlug(addVersionTitle)
+  const addVersionName = speakingurl(addVersionTitle)
 
   // use to prevent adding a version when you're already in that version
   const addVersionExists = BUNDLES.some((r) => r.name.toLocaleLowerCase() === addVersionName)
@@ -74,7 +76,7 @@ export function DocumentVersionMenu(props: {
 
   const handleAddVersion = useCallback(
     (versionName: string) => () => {
-      const nameSlugged = toSlug(versionName)
+      const nameSlugged = speakingurl(versionName)
 
       // only add to version if there isn't already a version in that bundle of this doc
       if (versionDocumentExists(documentVersions, versionName)) {
@@ -92,19 +94,14 @@ export function DocumentVersionMenu(props: {
   )*/
 
   const handleChangeToVersion = useCallback(
-    (versionName: string) => () => {
-      if (versionName === 'drafts') {
+    (version: Version) => () => {
+      const {name: versionName} = version
+
+      if (isDraftOrPublished(versionName)) {
         router.navigateStickyParam('perspective', '')
       } else {
         router.navigateStickyParam('perspective', `bundle.${versionName}`)
       }
-    },
-    [router],
-  )
-
-  const handleGoToLatest = useCallback(
-    () => () => {
-      router.navigateStickyParam('perspective', '')
     },
     [router],
   )
@@ -118,7 +115,14 @@ export function DocumentVersionMenu(props: {
 
   return (
     <>
-      {currentVersion && !isDraft && <VersionBadge version={currentVersion} />}
+      {currentVersion && !isDraft && (
+        <VersionBadge
+          tone={currentVersion.tone}
+          title={currentVersion.title}
+          icon={currentVersion.icon}
+          padding={2}
+        />
+      )}
 
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
 
@@ -133,10 +137,9 @@ export function DocumentVersionMenu(props: {
                 {/* localize text */}
                 <MenuItem
                   iconRight={isDraft ? CheckmarkIcon : <CheckmarkIcon style={{opacity: 0}} />}
-                  onClick={handleGoToLatest()}
+                  onClick={handleChangeToVersion(LATEST)}
                   pressed={isDraft}
-                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                  text="Latest version"
+                  text={LATEST.title}
                 />
               </Stack>
 
@@ -155,43 +158,44 @@ export function DocumentVersionMenu(props: {
                       </Label>
                     </Box>
 
-                    {documentVersions.map((r) => (
-                      <MenuItem
-                        key={r.name}
-                        href=""
-                        onClick={handleChangeToVersion(r.name)}
-                        padding={1}
-                        pressed={name === r.name}
-                      >
-                        <Flex>
-                          {<VersionIcon tone={r.tone} icon={r.icon} padding={2} />}
+                    {documentVersions
+                      .filter((b) => !isDraftOrPublished(b.name))
+                      .map((b) => (
+                        <MenuItem
+                          key={b.name}
+                          href=""
+                          onClick={handleChangeToVersion(b)}
+                          padding={1}
+                          pressed={name === b.name}
+                        >
+                          <Flex>
+                            {<VersionBadge tone={b.tone} icon={b.icon} padding={2} />}
 
-                          <Box flex={1} padding={2} style={{minWidth: 100}}>
-                            <Text size={1} weight="medium">
-                              {/* localize text */}
-                              {r.name === 'draft' ? 'Latest' : r.title}
-                            </Text>
-                          </Box>
-
-                          {
-                            <Box padding={2}>
-                              <Text muted size={1}>
-                                {/* localize text */}
-                                {r.publishAt
-                                  ? `a date will be here ${r.publishAt}`
-                                  : 'No target date'}
+                            <Box flex={1} padding={2} style={{minWidth: 100}}>
+                              <Text size={1} weight="medium">
+                                {b.title}
                               </Text>
                             </Box>
-                          }
 
-                          <Box padding={2}>
-                            <Text size={1}>
-                              {<CheckmarkIcon style={{opacity: r.name === name ? 1 : 0}} />}
-                            </Text>
-                          </Box>
-                        </Flex>
-                      </MenuItem>
-                    ))}
+                            {
+                              <Box padding={2}>
+                                <Text muted size={1}>
+                                  {/* localize text */}
+                                  {b.publishAt
+                                    ? `a date will be here ${b.publishAt}`
+                                    : 'No target date'}
+                                </Text>
+                              </Box>
+                            }
+
+                            <Box padding={2}>
+                              <Text size={1}>
+                                {<CheckmarkIcon style={{opacity: b.name === name ? 1 : 0}} />}
+                              </Text>
+                            </Box>
+                          </Flex>
+                        </MenuItem>
+                      ))}
                   </Stack>
 
                   <MenuDivider />
@@ -219,11 +223,11 @@ export function DocumentVersionMenu(props: {
                         padding={1}
                       >
                         <Flex>
-                          <VersionIcon tone={r.tone} icon={r.icon} padding={2} />
+                          <VersionBadge tone={r.tone} icon={r.icon} padding={2} />
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">
-                              {r.name === 'draft' ? 'Latest' : r.title}
+                              {r.name === 'draft' ? LATEST.title : r.title}
                             </Text>
                           </Box>
 

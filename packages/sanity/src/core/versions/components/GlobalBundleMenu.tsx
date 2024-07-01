@@ -3,11 +3,15 @@ import {Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, Text} from '
 import {useCallback, useContext, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {VersionContext} from '../../../_singletons/core/form/VersionContext'
+import {
+  VersionContext,
+  type VersionContextValue,
+} from '../../../_singletons/core/form/VersionContext'
 import {type Bundle, type Version} from '../types'
 import {BUNDLES, LATEST} from '../util/const'
+import {isDraftOrPublished} from '../util/dummyGetters'
 import {CreateBundleDialog} from './dialog/CreateBundleDialog'
-import {VersionIcon} from './VersionIcon'
+import {VersionBadge} from './VersionBadge'
 
 export function GlobalBundleMenu(): JSX.Element {
   const router = useRouter()
@@ -18,29 +22,21 @@ export function GlobalBundleMenu(): JSX.Element {
 
   // eslint-disable-next-line no-warning-comments
   // FIXME REPLACE WHEN WE HAVE REAL DATA
-  const {currentVersion, setCurrentVersion, isDraft} = useContext(VersionContext)
+  const {currentVersion, setCurrentVersion, isDraft} =
+    useContext<VersionContextValue>(VersionContext)
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
   const handleBundleChange = useCallback(
     (bundle: Version) => () => {
       const {name} = bundle
 
-      if (name === 'drafts') {
+      if (isDraftOrPublished(name)) {
         router.navigateStickyParam('perspective', '')
       } else {
         router.navigateStickyParam('perspective', `bundle.${name}`)
       }
 
       setCurrentVersion(bundle)
-    },
-    [router, setCurrentVersion],
-  )
-
-  const handleGoToLatest = useCallback(
-    () => () => {
-      router.navigateStickyParam('perspective', '')
-
-      setCurrentVersion(LATEST)
     },
     [router, setCurrentVersion],
   )
@@ -70,13 +66,12 @@ export function GlobalBundleMenu(): JSX.Element {
       <MenuButton
         button={
           <Button mode="bleed" padding={0} radius="full">
-            <VersionIcon
+            <VersionBadge
               tone={currentVersion?.tone}
               icon={isDraft ? undefined : currentVersion?.icon}
               openButton
               padding={2}
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-              title={isDraft ? 'Latest' : currentVersion?.title}
+              title={isDraft ? LATEST.title : currentVersion?.title}
             />
           </Button>
         }
@@ -85,10 +80,9 @@ export function GlobalBundleMenu(): JSX.Element {
           <Menu>
             <MenuItem
               iconRight={isDraft ? <CheckmarkIcon /> : undefined}
-              onClick={handleGoToLatest()}
+              onClick={handleBundleChange(LATEST)}
               pressed={false}
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-              text="Latest"
+              text={LATEST.title}
             />
             {bundles.length > 0 && (
               <>
@@ -96,15 +90,15 @@ export function GlobalBundleMenu(): JSX.Element {
               </>
             )}
             {bundles
-              .filter((b) => b.name !== 'draft')
+              .filter((b) => !isDraftOrPublished(b.name))
               .map((b) => (
                 <MenuItem key={b.name} onClick={handleBundleChange(b)} padding={1} pressed={false}>
                   <Flex>
-                    <VersionIcon tone={b.tone} icon={b.icon} padding={2} />
+                    <VersionBadge tone={b.tone} icon={b.icon} padding={2} />
 
                     <Box flex={1} padding={2} style={{minWidth: 100}}>
                       <Text size={1} weight="medium">
-                        {b.name === 'draft' ? 'Latest' : b.title}
+                        {b.title}
                       </Text>
                     </Box>
 

@@ -3,6 +3,7 @@ import {Box, Button, Dialog, Flex} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {type Bundle} from '../../types'
+import {isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleForm} from './BundleForm'
 
 export function CreateBundleDialog(props: {
@@ -39,7 +40,7 @@ export function CreateBundleDialog(props: {
       </Box>
       <Flex justify="flex-end" padding={3}>
         <Button
-          disabled={!value.title}
+          disabled={!value.title || isDraftOrPublished(value.title)}
           iconRight={ArrowRightIcon}
           onClick={handleOnSubmit}
           // localize Text

@@ -11,15 +11,13 @@ import {
   TextArea,
   TextInput,
 } from '@sanity/ui'
+import speakingurl from 'speakingurl'
 
 import {Button} from '../../../../ui-components/button'
 import {type BundleDocument} from '../types'
 
 function toSlug(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  return speakingurl(value, {truncate: 200, symbols: true})
 }
 
 /**

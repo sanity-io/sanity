@@ -1,5 +1,6 @@
 import {type ListenEvent, type ListenOptions} from '@sanity/client'
-import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {useCallback, useMemo, useReducer, useRef, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {catchError, concatMap, map, of, retry, timeout} from 'rxjs'
 
 import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
@@ -54,7 +55,7 @@ export function useBundlesStore(): BundlesStoreReturnType {
     return client.observable.fetch(QUERY).pipe(
       timeout(10000), // 10s timeout
       map((res) => {
-        dispatch({type: 'BUNDLES_SET', bundles: res})
+        dispatch({type: 'BUNDLES_SET', payload: res})
         didInitialFetch.current = true
         setLoading(false)
       }),
@@ -129,17 +130,12 @@ export function useBundlesStore(): BundlesStoreReturnType {
     return events$ // as Observable<ListenEvent<Record<string, BundleDocument>>>
   }, [client, handleListenerEvent])
 
-  useEffect(() => {
-    if (!client) return
-    const subscription = initialFetch$()
-      .pipe(concatMap(() => listener$))
-      .subscribe()
-
-    // eslint-disable-next-line consistent-return
-    return () => {
-      subscription.unsubscribe()
-    }
+  const observable = useMemo(() => {
+    if (!client) return of(null) // emits null and completes if no client
+    return initialFetch$().pipe(concatMap(() => listener$))
   }, [initialFetch$, listener$, client])
+
+  useObservable(observable)
 
   const bundlesAsArray = useMemo(() => Array.from(state.bundles.values()), [state.bundles])
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useContext, useMemo, useState} from 'react'
@@ -9,7 +10,10 @@ import {
   useTimelineSelector,
 } from 'sanity'
 
-import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
+import {
+  VersionContext,
+  type VersionContextValue,
+} from '../../../../_singletons/core/form/VersionContext'
 import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
@@ -60,7 +64,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   }, [firstActionState])
 
   /* Version / Bundling handling */
-  const {currentVersion, isDraft} = useContext(VersionContext)
+  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
 
   // eslint-disable-next-line no-warning-comments
   /* TODO - replace with real data
@@ -90,6 +94,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
                   tone={firstActionState.tone || 'primary'}
                 />
               ) : (
+                /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
                 <BundleActions
                   currentVersion={currentVersion}
                   documentId={documentId}
@@ -101,6 +106,10 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
           </Tooltip>
         </LayerProvider>
       )}
+      {/**
+       * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
+       * SPECIFICALLY FOR ISDRAFT
+       */}
       {showMenu && menuActionStates.length > 0 && isDraft && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
