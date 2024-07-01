@@ -1,7 +1,7 @@
 /* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useMemo, useState} from 'react'
+import {memo, useContext, useMemo, useState} from 'react'
 import {
   BundleActions,
   type DocumentActionComponent,
@@ -14,6 +14,11 @@ import {
   useTimelineSelector,
 } from 'sanity'
 
+import {
+  VersionContext,
+  type VersionContextValue,
+} from '../../../../_singletons/core/form/VersionContext'
+import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -63,9 +68,14 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   }, [firstActionState])
 
   /* Version / Bundling handling */
+  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
 
-  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentGlobalBundle} = usePerspective()
+  // eslint-disable-next-line no-warning-comments
+  /* TODO - replace with real data
+   - needs to check for publish data
+   - if it's published
+   */
+  const isReady = false
 
   return (
     <Flex align="center" gap={1}>
@@ -74,7 +84,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              {currentGlobalBundle.name === LATEST.name ? (
+              {isDraft ? (
                 <Button
                   data-testid={`action-${firstActionState.label}`}
                   disabled={
@@ -88,23 +98,13 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
                   tone={firstActionState.tone || 'primary'}
                 />
               ) : (
-                <>
-                  {
-                    /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
-                    isBundleDocument(currentGlobalBundle) ? (
-                      <BundleActions
-                        currentGlobalBundle={currentGlobalBundle}
-                        documentId={documentId}
-                        documentType={documentType}
-                      />
-                    ) : (
-                      <div>
-                        {/* eslint-disable-next-line i18next/no-literal-string */}
-                        <Text>Not a bundle</Text>
-                      </div>
-                    )
-                  }
-                </>
+                /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
+                <BundleActions
+                  currentVersion={currentVersion}
+                  documentId={documentId}
+                  documentType={documentType}
+                  isReady={isReady}
+                />
               )}
             </Stack>
           </Tooltip>
@@ -114,7 +114,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
        * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
        * SPECIFICALLY FOR ISDRAFT
        */}
-      {showMenu && menuActionStates.length > 0 && currentGlobalBundle.name === LATEST.name && (
+      {showMenu && menuActionStates.length > 0 && isDraft && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
