@@ -7,6 +7,7 @@ import json from 'refractor/lang/json.js'
 import jsx from 'refractor/lang/jsx.js'
 import typescript from 'refractor/lang/typescript.js'
 
+import {VersionProvider} from '../../_singletons/core/form/VersionContext'
 import {LoadingBlock} from '../components/loadingBlock'
 import {ErrorLogger} from '../error/ErrorLogger'
 import {errorReporter} from '../error/errorReporter'
@@ -62,15 +63,20 @@ export function StudioProvider({
   // mounted React component that is shared across embedded and standalone studios.
   errorReporter.initialize()
 
+  // eslint-disable-next-line no-warning-comments
+  /* TODO REMOVE VERSION PROVIDER ONCE STORES ARE SET UP */
+
   const _children = useMemo(
     () => (
       <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
         <StudioTelemetryProvider config={config}>
           <LocaleProvider>
-            <PackageVersionStatusProvider>
-              <MaybeEnableErrorReporting errorReporter={errorReporter} />
-              <ResourceCacheProvider>{children}</ResourceCacheProvider>
-            </PackageVersionStatusProvider>
+            <VersionProvider>
+              <PackageVersionStatusProvider>
+                <MaybeEnableErrorReporting errorReporter={errorReporter} />
+                <ResourceCacheProvider>{children}</ResourceCacheProvider>
+              </PackageVersionStatusProvider>
+            </VersionProvider>
           </LocaleProvider>
         </StudioTelemetryProvider>
       </WorkspaceLoader>
