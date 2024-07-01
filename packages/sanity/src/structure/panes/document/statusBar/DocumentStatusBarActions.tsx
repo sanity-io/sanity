@@ -9,7 +9,10 @@ import {
   useTimelineSelector,
 } from 'sanity'
 
-import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
+import {
+  VersionContext,
+  type VersionContextValue,
+} from '../../../../_singletons/core/form/VersionContext'
 import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
@@ -60,7 +63,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   }, [firstActionState])
 
   /* Version / Bundling handling */
-  const {currentVersion, isDraft} = useContext(VersionContext)
+  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
 
   // eslint-disable-next-line no-warning-comments
   /* TODO - replace with real data

@@ -2,7 +2,7 @@ import {camelCase} from 'lodash'
 import {type SanityClient, type SanityDocument} from 'sanity'
 
 import {type Version} from '../types'
-import {RANDOM_SYMBOLS, RANDOM_TONES} from './const'
+import {BUNDLES} from './const'
 
 /* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
 
@@ -23,12 +23,16 @@ export async function getAllVersionsOfDocument(
   const query = `*[_id match "*${id}*"]`
 
   return await client.fetch(query, {}, {tag: 'document.list-versions'}).then((documents) => {
-    return documents.map((doc: SanityDocument, index: number) => ({
-      name: getVersionName(doc._id).toLocaleLowerCase(),
-      title: getVersionName(doc._id),
-      tone: RANDOM_TONES[index % RANDOM_TONES.length],
-      icon: RANDOM_SYMBOLS[index % RANDOM_SYMBOLS.length],
-    }))
+    return documents.map((doc: SanityDocument) => {
+      const sluggedName = getVersionName(doc._id)
+      const bundle = BUNDLES.find((b) => b.name === sluggedName)
+      return {
+        name: toSlug(sluggedName),
+        title: bundle?.title || sluggedName,
+        tone: bundle?.tone || 'default',
+        icon: bundle?.icon || 'cube',
+      }
+    })
   })
 }
 

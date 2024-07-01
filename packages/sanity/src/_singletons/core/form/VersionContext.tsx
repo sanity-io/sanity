@@ -1,13 +1,14 @@
 // eslint-disable-next-line no-warning-comments
-/* TODO REMOVE THIS, THIS IS JUST A TEMPORARY FIX UNTIL STORES ARE SET UP */
+/* TODO DO WE STILL NEED THIS AFTER THE STORES ARE SET UP? */
 
 // eslint-disable-next-line import/consistent-type-specifier-style
-import {createContext, type ReactElement, useState} from 'react'
+import {createContext, type ReactElement} from 'react'
 
 import type {Version} from '../../../core/versions/types'
-import {LATEST} from '../../../core/versions/util/const'
+import {BUNDLES, LATEST} from '../../../core/versions/util/const'
+import {useRouter} from '../../../router'
 
-interface VersionContextValue {
+export interface VersionContextValue {
   currentVersion: Version
   isDraft: boolean
   setCurrentVersion: (version: Version) => void
@@ -25,13 +26,32 @@ interface VersionProviderProps {
 }
 
 export function VersionProvider({children}: VersionProviderProps): JSX.Element {
-  const [currentVersion, setCurrentVersion] = useState<Version>(LATEST)
+  const router = useRouter()
+  const setCurrentVersion = (version: Version) => {
+    const {name} = version
+    if (name === 'drafts') {
+      router.navigateStickyParam('perspective', '')
+    } else {
+      router.navigateStickyParam('perspective', `bundle.${name}`)
+    }
+  }
+  const selectedVersion = router.stickyParams?.perspective
+    ? BUNDLES.find((bundle) => {
+        return (
+          `bundle.${bundle.name}`.toLocaleLowerCase() ===
+          router.stickyParams.perspective?.toLocaleLowerCase()
+        )
+      })
+    : LATEST
+
+  const currentVersion = selectedVersion || LATEST
+
   const isDraft = currentVersion.name === 'drafts'
 
   const contextValue: VersionContextValue = {
-    currentVersion,
     isDraft,
     setCurrentVersion,
+    currentVersion,
   }
 
   return <VersionContext.Provider value={contextValue}>{children}</VersionContext.Provider>

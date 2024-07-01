@@ -18,7 +18,10 @@ import {useCallback, useContext, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {VersionContext} from '../../../../_singletons/core/form/VersionContext'
+import {
+  VersionContext,
+  type VersionContextValue,
+} from '../../../../_singletons/core/form/VersionContext'
 import {type Version} from '../../types'
 import {BUNDLES, LATEST} from '../../util/const'
 import {getAllVersionsOfDocument, isDraftOrPublished} from '../../util/dummyGetters'
@@ -35,7 +38,7 @@ export function DocumentVersionMenu(props: {
   //const {newVersion} = useDocumentOperation(documentId, documentType)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const router = useRouter()
-  const {currentVersion, isDraft} = useContext(VersionContext)
+  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
   const {name} = currentVersion
   // const toast = useToast()
 
@@ -92,19 +95,14 @@ export function DocumentVersionMenu(props: {
   )*/
 
   const handleChangeToVersion = useCallback(
-    (versionName: string) => () => {
-      if (versionName === 'drafts') {
+    (version: Version) => () => {
+      const {name: versionName} = version
+
+      if (isDraftOrPublished(versionName)) {
         router.navigateStickyParam('perspective', '')
       } else {
         router.navigateStickyParam('perspective', `bundle.${versionName}`)
       }
-    },
-    [router],
-  )
-
-  const handleGoToLatest = useCallback(
-    () => () => {
-      router.navigateStickyParam('perspective', '')
     },
     [router],
   )
@@ -133,7 +131,7 @@ export function DocumentVersionMenu(props: {
                 {/* localize text */}
                 <MenuItem
                   iconRight={isDraft ? CheckmarkIcon : <CheckmarkIcon style={{opacity: 0}} />}
-                  onClick={handleGoToLatest()}
+                  onClick={handleChangeToVersion(LATEST)}
                   pressed={isDraft}
                   text={LATEST.title}
                 />
@@ -160,7 +158,7 @@ export function DocumentVersionMenu(props: {
                         <MenuItem
                           key={b.name}
                           href=""
-                          onClick={handleChangeToVersion(b.name)}
+                          onClick={handleChangeToVersion(b)}
                           padding={1}
                           pressed={name === b.name}
                         >
@@ -169,7 +167,7 @@ export function DocumentVersionMenu(props: {
 
                             <Box flex={1} padding={2} style={{minWidth: 100}}>
                               <Text size={1} weight="medium">
-                                {b.name === 'draft' ? LATEST.title : b.title}
+                                {b.title}
                               </Text>
                             </Box>
 

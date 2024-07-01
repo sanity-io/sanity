@@ -3,7 +3,10 @@ import {Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, Text} from '
 import {useCallback, useContext, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {VersionContext} from '../../../_singletons/core/form/VersionContext'
+import {
+  VersionContext,
+  type VersionContextValue,
+} from '../../../_singletons/core/form/VersionContext'
 import {type Bundle, type Version} from '../types'
 import {BUNDLES, LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/dummyGetters'
@@ -19,14 +22,15 @@ export function GlobalBundleMenu(): JSX.Element {
 
   // eslint-disable-next-line no-warning-comments
   // FIXME REPLACE WHEN WE HAVE REAL DATA
-  const {currentVersion, setCurrentVersion, isDraft} = useContext(VersionContext)
+  const {currentVersion, setCurrentVersion, isDraft} =
+    useContext<VersionContextValue>(VersionContext)
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
   const handleBundleChange = useCallback(
     (bundle: Version) => () => {
       const {name} = bundle
 
-      if (name === 'drafts') {
+      if (isDraftOrPublished(name)) {
         router.navigateStickyParam('perspective', '')
       } else {
         router.navigateStickyParam('perspective', `bundle.${name}`)
