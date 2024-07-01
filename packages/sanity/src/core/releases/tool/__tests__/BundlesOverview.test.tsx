@@ -8,6 +8,7 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {releasesUsEnglishLocaleBundle} from '../../i18n'
 import BundlesOverview from '../BundlesOverview'
 
+// TODO: move this to test for CreateBundleDialog
 jest.mock('../../../store/bundles/useBundleOperations', () => ({
   useBundleOperations: jest.fn().mockReturnValue({deleteBundle: jest.fn()}),
 }))

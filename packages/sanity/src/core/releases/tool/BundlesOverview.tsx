@@ -15,15 +15,12 @@ import {
 } from '@sanity/ui'
 import {isBefore} from 'date-fns'
 import {type MouseEventHandler, useCallback, useMemo, useState} from 'react'
-import {LoadingBlock, useCurrentUser} from 'sanity'
+import {LoadingBlock} from 'sanity'
 
 import {Button as StudioButton} from '../../../ui-components'
 import {useBundlesStore} from '../../store/bundles'
 import {type BundleDocument} from '../../store/bundles/types'
-import {useBundleOperations} from '../../store/bundles/useBundleOperations'
 import {CreateBundleDialog} from '../../versions/components/dialog/CreateBundleDialog'
-import {type Bundle} from '../../versions/types'
-import {getRandomToneIcon} from '../../versions/util/dummyGetters'
 import {BundlesTable} from '../components/BundlesTable/BundlesTable'
 import {containsBundles} from '../types/bundle'
 
@@ -33,8 +30,6 @@ const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 
 export default function BundlesOverview() {
   const {data, loading} = useBundlesStore()
-  const {createBundle} = useBundleOperations()
-  const currentUser = useCurrentUser()
 
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
@@ -76,6 +71,7 @@ export default function BundlesOverview() {
           onClick={handleBundleGroupModeChange}
           selected={bundleGroupMode === 'open'}
           text="Open"
+          value="open"
         />
         {/* StudioButton supports tooltip when button is disabled */}
         <StudioButton
@@ -89,6 +85,7 @@ export default function BundlesOverview() {
           onClick={handleBundleGroupModeChange}
           selected={bundleGroupMode === 'archived'}
           text="Archived"
+          value="archived"
         />
       </Card>
     )
@@ -134,29 +131,13 @@ export default function BundlesOverview() {
     [createReleaseButton, loading, searchTerm],
   )
 
-  const handleOnCreateBundle = useCallback(
-    (bundleFormValue: Bundle) => {
-      createBundle({
-        _type: 'bundle',
-        name: bundleFormValue.title,
-        authorId: currentUser?.id,
-        _createdAt: new Date().toISOString(),
-        _updatedAt: new Date().toISOString(),
-        title: bundleFormValue.title,
-        description: bundleFormValue.description,
-        ...getRandomToneIcon(),
-      })
-    },
-    [createBundle, currentUser],
-  )
-
   const renderCreateBundleDialog = () => {
     if (!isCreateBundleDialogOpen) return null
 
     return (
       <CreateBundleDialog
         onCancel={() => setIsCreateBundleDialogOpen(false)}
-        onSubmit={handleOnCreateBundle}
+        onCreate={() => setIsCreateBundleDialogOpen(false)}
       />
     )
   }
