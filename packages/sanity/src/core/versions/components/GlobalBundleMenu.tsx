@@ -11,7 +11,7 @@ import {type Bundle, type Version} from '../types'
 import {BUNDLES, LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/dummyGetters'
 import {CreateBundleDialog} from './dialog/CreateBundleDialog'
-import {VersionIcon} from './VersionIcon'
+import {VersionBadge} from './VersionBadge'
 
 export function GlobalBundleMenu(): JSX.Element {
   const router = useRouter()
@@ -66,7 +66,7 @@ export function GlobalBundleMenu(): JSX.Element {
       <MenuButton
         button={
           <Button mode="bleed" padding={0} radius="full">
-            <VersionIcon
+            <VersionBadge
               tone={currentVersion?.tone}
               icon={isDraft ? undefined : currentVersion?.icon}
               openButton
@@ -94,7 +94,7 @@ export function GlobalBundleMenu(): JSX.Element {
               .map((b) => (
                 <MenuItem key={b.name} onClick={handleBundleChange(b)} padding={1} pressed={false}>
                   <Flex>
-                    <VersionIcon tone={b.tone} icon={b.icon} padding={2} />
+                    <VersionBadge tone={b.tone} icon={b.icon} padding={2} />
 
                     <Box flex={1} padding={2} style={{minWidth: 100}}>
                       <Text size={1} weight="medium">

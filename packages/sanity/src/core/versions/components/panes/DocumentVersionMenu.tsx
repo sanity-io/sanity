@@ -26,7 +26,6 @@ import {type Version} from '../../types'
 import {BUNDLES, LATEST} from '../../util/const'
 import {getAllVersionsOfDocument, isDraftOrPublished} from '../../util/dummyGetters'
 import {VersionBadge} from '../VersionBadge'
-import {VersionIcon} from '../VersionIcon'
 
 // TODO A LOT OF DOCUMENTED CODE IS RELATED TO SEARCH AND CREATING BUNDLE FROM HERE
 // STILL NEED TO DECIDE IF WE KEEP IT OR NOT
@@ -116,7 +115,14 @@ export function DocumentVersionMenu(props: {
 
   return (
     <>
-      {currentVersion && !isDraft && <VersionBadge version={currentVersion} />}
+      {currentVersion && !isDraft && (
+        <VersionBadge
+          tone={currentVersion.tone}
+          title={currentVersion.title}
+          icon={currentVersion.icon}
+          padding={2}
+        />
+      )}
 
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
 
@@ -163,7 +169,7 @@ export function DocumentVersionMenu(props: {
                           pressed={name === b.name}
                         >
                           <Flex>
-                            {<VersionIcon tone={b.tone} icon={b.icon} padding={2} />}
+                            {<VersionBadge tone={b.tone} icon={b.icon} padding={2} />}
 
                             <Box flex={1} padding={2} style={{minWidth: 100}}>
                               <Text size={1} weight="medium">
@@ -217,7 +223,7 @@ export function DocumentVersionMenu(props: {
                         padding={1}
                       >
                         <Flex>
-                          <VersionIcon tone={r.tone} icon={r.icon} padding={2} />
+                          <VersionBadge tone={r.tone} icon={r.icon} padding={2} />
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">
