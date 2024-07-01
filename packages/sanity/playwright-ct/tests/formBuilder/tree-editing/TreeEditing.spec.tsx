@@ -28,6 +28,48 @@ const DOCUMENT_VALUE: SanityDocument = {
       _key: 'key-3',
       title: 'My object 3',
     },
+    {
+      _type: 'myObject',
+      _key: 'key-4',
+      title: 'My object 4',
+      pte: [
+        {
+          _key: 'key-4-1',
+          _type: 'myBlockObject',
+          myBlockObjectArray: [
+            {
+              _type: 'myBlockObjectArrayItem',
+              _key: 'key-4-1-1',
+              title: 'My block object array item 1',
+            },
+            {
+              _type: 'myBlockObjectArrayItem',
+              _key: 'key-4-1-2',
+              title: 'My block object array item 2',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+
+  pte: [
+    {
+      _key: 'key-1',
+      _type: 'myBlockObject',
+      myBlockObjectArray: [
+        {
+          _type: 'myBlockObjectArrayItem',
+          _key: 'key-2-1',
+          title: 'My block object array item 1',
+        },
+        {
+          _type: 'myBlockObjectArrayItem',
+          _key: 'key-2-2',
+          title: 'My block object array item 2',
+        },
+      ],
+    },
   ],
 
   myFieldsetArray: [
@@ -45,7 +87,7 @@ const DOCUMENT_VALUE: SanityDocument = {
 }
 
 test.describe('Tree editing', () => {
-  test('should open dialog when adding an item and close it when clicking done', async ({
+  test('should open tree editing dialog when adding an item and close it when clicking done', async ({
     mount,
     page,
   }) => {
@@ -174,7 +216,10 @@ test.describe('Tree editing', () => {
     await expect(thirdObjectStringInput).toHaveValue('My object 3')
   })
 
-  test('should open dialog with correct form view based on the openPath', async ({mount, page}) => {
+  test('should open tree editing dialog with correct form view based on the openPath', async ({
+    mount,
+    page,
+  }) => {
     await mount(
       <TreeEditingStory value={DOCUMENT_VALUE} openPath={['myArrayOfObjects', {_key: 'key-2'}]} />,
     )
@@ -214,5 +259,50 @@ test.describe('Tree editing', () => {
 
     const dialog = page.getByTestId('tree-editing-dialog')
     await expect(dialog).not.toBeVisible()
+  })
+
+  test('should open both tree editing dialog and portable text dialog when the openPath points to an array field nested inside a portable text field', async ({
+    mount,
+    page,
+  }) => {
+    await mount(
+      <TreeEditingStory
+        value={DOCUMENT_VALUE}
+        openPath={[
+          'myArrayOfObjects',
+          {_key: 'key-4'},
+          'pte',
+          {_key: 'key-4-1'},
+          'myBlockObjectArray',
+          {_key: 'key-4-1-1'},
+        ]}
+      />,
+    )
+    const dialog = page.getByTestId('tree-editing-dialog')
+    await expect(dialog).toBeVisible()
+
+    const editPortalDialog = page.getByTestId('edit-portal-dialog')
+    await expect(editPortalDialog).toBeVisible()
+
+    const stringInput = editPortalDialog.getByTestId('string-input')
+    await expect(stringInput).toHaveValue('My block object array item 1')
+  })
+
+  test('should open only the portable text dialog when the openPath points directly to an array field inside a portable text field', async ({
+    mount,
+    page,
+  }) => {
+    await mount(
+      <TreeEditingStory
+        value={DOCUMENT_VALUE}
+        openPath={['pte', {_key: 'key-1'}, 'myBlockObjectArray', {_key: 'key-2-2'}]}
+      />,
+    )
+
+    const dialog = page.getByTestId('tree-editing-dialog')
+    await expect(dialog).not.toBeVisible()
+
+    const editPortalDialog = page.getByTestId('edit-portal-dialog')
+    await expect(editPortalDialog).toBeVisible()
   })
 })
