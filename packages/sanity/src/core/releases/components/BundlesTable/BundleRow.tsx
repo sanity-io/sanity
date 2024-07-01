@@ -2,8 +2,8 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useRouter} from 'sanity/router'
 
 import {type BundleDocument} from '../../../store/bundles/types'
-import {VersionIcon} from '../../../versions/components/VersionIcon'
 import {shortRelativeDate} from '../../utils/shortRelativeDate'
+import {BundleIcon} from '../BundleIcon/BundleIcon'
 import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
 
 type Props = {
@@ -25,7 +25,7 @@ export function BundleRow({bundle}: Props) {
         >
           <Flex align="center" gap={2}>
             <Box flex="none">
-              <VersionIcon tone={bundle.tone} icon={bundle.icon} />
+              <BundleIcon tone={bundle.tone} icon={bundle.icon} />
             </Box>
             <Stack flex={1} space={2}>
               <Flex align="center" gap={2}>
@@ -45,7 +45,7 @@ export function BundleRow({bundle}: Props) {
           </Text>
         )}
       </Flex>
-      <Flex align="center" flex="none" padding={3}>
+      <Flex as="td" align="center" flex="none" padding={3}>
         <BundleMenuButton bundle={bundle} />
       </Flex>
     </Card>
