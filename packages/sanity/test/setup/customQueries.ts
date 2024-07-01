@@ -1,4 +1,4 @@
-import {buildQueries, queryHelpers} from '@testing-library/react'
+import {buildQueries, type Matcher, type MatcherOptions, queryHelpers} from '@testing-library/react'
 
 const queryAllByDataUi = (container: HTMLElement, id: Matcher, options?: MatcherOptions) => {
   return queryHelpers.queryAllByAttribute('data-ui', container, id, options)

@@ -5,6 +5,7 @@ import {queryByDataUi} from '../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {useBundlesStore} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
+import {releasesUsEnglishLocaleBundle} from '../../i18n'
 import BundlesOverview from '../BundlesOverview'
 
 jest.mock('../../../store/bundles/useBundleOperations', () => ({
@@ -22,6 +23,11 @@ jest.mock('sanity/router', () => ({
 
 jest.mock('sanity')
 
+const createWrapper = () =>
+  createTestProvider({
+    resources: [releasesUsEnglishLocaleBundle],
+  })
+
 const mockUseBundleStore = useBundlesStore as jest.Mock<typeof useBundlesStore>
 
 describe('BundlesOverview', () => {
@@ -33,7 +39,8 @@ describe('BundlesOverview', () => {
         error: null,
         dispatch: jest.fn(),
       })
-      const wrapper = await createTestProvider()
+
+      const wrapper = await createWrapper()
 
       return render(<BundlesOverview />, {wrapper})
     })
@@ -69,7 +76,7 @@ describe('BundlesOverview', () => {
         error: null,
         dispatch: jest.fn(),
       })
-      const wrapper = await createTestProvider()
+      const wrapper = await createWrapper()
 
       return render(<BundlesOverview />, {wrapper})
     })
@@ -110,7 +117,7 @@ describe('BundlesOverview', () => {
         error: null,
         dispatch: jest.fn(),
       })
-      const wrapper = await createTestProvider()
+      const wrapper = await createWrapper()
 
       return render(<BundlesOverview />, {wrapper})
     })
@@ -139,6 +146,14 @@ describe('BundlesOverview', () => {
 
       screen.getByText('Bundle 1')
       expect(screen.queryByText('Bundle 2')).toBeNull()
+
+      // search for non-existent bundle title
+      fireEvent.change(screen.getByPlaceholderText('Search releases'), {
+        target: {value: 'Bananas'},
+      })
+
+      screen.getByText('No Releases')
+      expect(screen.queryByText('Bundle 1')).toBeNull()
     })
   })
 })
