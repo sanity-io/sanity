@@ -152,7 +152,6 @@ export const DocumentPanelHeader = memo(
               />
             )
           }
-          subActions={<TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />}
           actions={
             <Flex align="center" gap={1}>
               {unstable_languageFilter.length > 0 && (
@@ -171,13 +170,16 @@ export const DocumentPanelHeader = memo(
                 <PaneHeaderActionButton key={item.key} node={item} />
               ))}
               {editState && (
-                <RenderActionCollectionState
-                  actions={actions}
-                  actionProps={editState}
-                  group="paneActions"
-                >
-                  {renderPaneActions}
-                </RenderActionCollectionState>
+                <>
+                  <RenderActionCollectionState
+                    actions={actions}
+                    actionProps={editState}
+                    group="paneActions"
+                  >
+                    {renderPaneActions}
+                  </RenderActionCollectionState>
+                  <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
+                </>
               )}
 
               {showSplitPaneButton && (
