@@ -2,12 +2,12 @@ import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ComponentType, type FormEvent, useCallback, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
-import {BundleForm} from '../../../bundles/components/dialog/BundleForm'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {AddonDatasetProvider} from '../../../studio/addonDataset/AddonDatasetProvider'
 import {type BundleDocument} from '../types'
 import {useBundleOperations} from '../useBundleOperations'
-import {useBundles} from '../useBundles'
+import {useBundlesStore} from '../useBundlesStore'
+import {ReleaseForm} from './ReleaseForm'
 
 const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>): React.FC<P> => {
   const WrappedComponent: React.FC<P> = (props) => (
@@ -22,7 +22,7 @@ const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>)
 
 const initialValue = {name: '', title: '', tone: undefined, publishAt: undefined}
 const BundlesStoreStory = () => {
-  const {data, loading} = useBundles()
+  const {data, loading} = useBundlesStore()
   const {createBundle, deleteBundle} = useBundleOperations()
   const [creating, setCreating] = useState(false)
   const [deleting, setDeleting] = useState<string | null>(null)
@@ -64,7 +64,7 @@ const BundlesStoreStory = () => {
           <form onSubmit={handleCreateBundle}>
             <Stack space={4}>
               <Text weight="medium">Create a new release</Text>
-              <BundleForm onChange={setValue} value={value} />
+              <ReleaseForm onChange={setValue} value={value} />
               <Flex justify="flex-end">
                 <Button
                   text="Create"
