@@ -2,6 +2,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {AddIcon, SearchIcon} from '@sanity/icons'
 import {Box, Button, Card, Container, Flex, Heading, Stack, Text, TextInput} from '@sanity/ui'
+import {isBefore} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
 import {LoadingBlock, useCurrentUser} from 'sanity'
 
@@ -14,10 +15,10 @@ import {getRandomToneIcon} from '../../versions/util/dummyGetters'
 import {BundlesTable} from '../components/BundlesTable/BundlesTable'
 import {containsBundles} from '../types/bundle'
 
-type Mode = 'current' | 'archived'
+type Mode = 'open' | 'archived'
 
 const HISTORY_MODES: {label: string; value: Mode}[] = [
-  {label: 'Open', value: 'current'},
+  {label: 'Open', value: 'open'},
   {label: 'Archived', value: 'archived'},
 ]
 
@@ -26,12 +27,26 @@ export default function BundlesOverview() {
   const {createBundle} = useBundleOperations()
   const currentUser = useCurrentUser()
 
-  const [bundleHistoryMode, setBundleHistoryMode] = useState<Mode>('current')
+  const [bundleHistoryMode, setBundleHistoryMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>()
 
   const hasBundles = data && containsBundles(data)
   const loadingOrHasBundles = loading || hasBundles
+
+  const groupedBundles = useMemo(
+    () =>
+      (data || []).reduce<{open: BundleDocument[]; archived: BundleDocument[]}>(
+        (groups, bundle) => {
+          const bundleGroup =
+            bundle.publishedAt && isBefore(bundle.publishedAt, new Date()) ? 'archived' : 'open'
+
+          return {...groups, [bundleGroup]: [...groups[bundleGroup], bundle]}
+        },
+        {open: [], archived: []},
+      ),
+    [data],
+  )
 
   const currentArchivedPicker = useMemo(
     () => (
@@ -39,7 +54,11 @@ export default function BundlesOverview() {
         {HISTORY_MODES.map((mode) => (
           <Button
             // TODO: disable archived button if no published bundles
-            disabled={loading || !hasBundles}
+            disabled={
+              loading ||
+              !hasBundles ||
+              (mode.value === 'archived' && !groupedBundles.archived.length)
+            }
             key={mode.value}
             mode="bleed"
             onClick={() => setBundleHistoryMode(mode.value)}
@@ -54,7 +73,7 @@ export default function BundlesOverview() {
         ))}
       </Card>
     ),
-    [bundleHistoryMode, hasBundles, loading],
+    [bundleHistoryMode, groupedBundles.archived.length, hasBundles, loading],
   )
 
   const createReleaseButton = useMemo(
@@ -113,8 +132,8 @@ export default function BundlesOverview() {
   )
 
   const filteredBundles = useMemo(
-    () => data?.filter(applySearchTermToBundles) || [],
-    [applySearchTermToBundles, data],
+    () => groupedBundles[bundleHistoryMode]?.filter(applySearchTermToBundles) || [],
+    [applySearchTermToBundles, bundleHistoryMode, groupedBundles],
   )
 
   const renderCreateBundleDialog = () => {
@@ -154,7 +173,11 @@ export default function BundlesOverview() {
             </Flex>
             {loadingOrHasBundles && bundleSearch}
           </Flex>
-          {loading ? <LoadingBlock fill /> : <BundlesTable bundles={filteredBundles} />}
+          {loading ? (
+            <LoadingBlock fill data-testid="bundle-table-loader" />
+          ) : (
+            <BundlesTable bundles={filteredBundles} />
+          )}
         </Stack>
       </Container>
       {renderCreateBundleDialog()}
