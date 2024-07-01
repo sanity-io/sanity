@@ -51,8 +51,10 @@ test.describe('Tree editing', () => {
   }) => {
     await mount(<TreeEditingStory />)
 
+    const field = page.getByTestId('field-myArrayOfObjects')
+
     // Add an item
-    await page.getByTestId('add-single-object-button').click()
+    await field.getByTestId('add-single-object-button').click()
 
     // Wait for the dialog to be visible
     await expect(page.getByTestId('tree-editing-dialog')).toBeVisible()
@@ -70,8 +72,10 @@ test.describe('Tree editing', () => {
   }) => {
     await mount(<TreeEditingStory legacyEditing />)
 
+    const field = page.getByTestId('field-myArrayOfObjects')
+
     // Add an item
-    await page.getByTestId('add-single-object-button').click()
+    await field.getByTestId('add-single-object-button').click()
 
     // Test that the legacy dialog is visible and the tree editing dialog is not
     await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
