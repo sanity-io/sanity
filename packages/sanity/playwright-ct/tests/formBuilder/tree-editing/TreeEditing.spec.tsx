@@ -29,6 +29,19 @@ const DOCUMENT_VALUE: SanityDocument = {
       title: 'My object 3',
     },
   ],
+
+  myFieldsetArray: [
+    {
+      _type: 'myObject',
+      _key: 'key-1',
+      title: 'My object 1',
+    },
+    {
+      _type: 'myObject',
+      _key: 'key-2',
+      title: 'My object 2',
+    },
+  ],
 }
 
 test.describe('Tree editing', () => {
@@ -38,8 +51,10 @@ test.describe('Tree editing', () => {
   }) => {
     await mount(<TreeEditingStory />)
 
+    const field = page.getByTestId('field-myArrayOfObjects')
+
     // Add an item
-    await page.getByTestId('add-single-object-button').click()
+    await field.getByTestId('add-single-object-button').click()
 
     // Wait for the dialog to be visible
     await expect(page.getByTestId('tree-editing-dialog')).toBeVisible()
@@ -57,8 +72,10 @@ test.describe('Tree editing', () => {
   }) => {
     await mount(<TreeEditingStory legacyEditing />)
 
+    const field = page.getByTestId('field-myArrayOfObjects')
+
     // Add an item
-    await page.getByTestId('add-single-object-button').click()
+    await field.getByTestId('add-single-object-button').click()
 
     // Test that the legacy dialog is visible and the tree editing dialog is not
     await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
@@ -160,6 +177,21 @@ test.describe('Tree editing', () => {
   test('should open dialog with correct form view based on the openPath', async ({mount, page}) => {
     await mount(
       <TreeEditingStory value={DOCUMENT_VALUE} openPath={['myArrayOfObjects', {_key: 'key-2'}]} />,
+    )
+
+    const dialog = page.getByTestId('tree-editing-dialog')
+    await expect(dialog).toBeVisible()
+
+    const stringInput = dialog.getByTestId('string-input')
+    await expect(stringInput).toHaveValue('My object 2')
+  })
+
+  test('should open dialog with correct form view based on the openPath when the array is in a fieldset', async ({
+    mount,
+    page,
+  }) => {
+    await mount(
+      <TreeEditingStory value={DOCUMENT_VALUE} openPath={['myFieldsetArray', {_key: 'key-2'}]} />,
     )
 
     const dialog = page.getByTestId('tree-editing-dialog')

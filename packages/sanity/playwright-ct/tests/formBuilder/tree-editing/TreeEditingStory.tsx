@@ -18,14 +18,44 @@ function getSchemaTypes(opts: GetSchemaTypesOpts) {
       type: 'document',
       name: 'test',
       title: 'Test',
+
+      fieldsets: [
+        {
+          name: 'fieldset',
+        },
+      ],
+
       fields: [
         defineField({
           type: 'array',
           name: 'myArrayOfObjects',
           title: 'My array of objects',
+
           options: {
             treeEditing: treeEditingEnabled,
           },
+
+          of: [
+            {
+              type: 'object',
+              name: 'myObject',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+              ],
+            },
+          ],
+        }),
+
+        defineField({
+          type: 'array',
+          name: 'myFieldsetArray',
+          title: 'My fieldset array',
+          fieldset: 'fieldset',
+
           of: [
             {
               type: 'object',
