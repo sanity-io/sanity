@@ -14,10 +14,11 @@ import {
   TextInput,
 } from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import speakingurl from 'speakingurl'
 
 import {type Bundle} from '../../types'
 import {RANDOM_TONES} from '../../util/const'
-import {isDraftOrPublished, toSlug} from '../../util/dummyGetters'
+import {isDraftOrPublished} from '../../util/dummyGetters'
 
 export function BundleForm(props: {
   onChange: (params: Bundle) => void
@@ -36,7 +37,7 @@ export function BundleForm(props: {
         setShowTitleValidation(false)
       }
 
-      onChange({...value, title: title, name: toSlug(title)})
+      onChange({...value, title: title, name: speakingurl(title)})
     },
     [onChange, value],
   )

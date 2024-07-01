@@ -45,7 +45,7 @@ export function DocumentVersionMenu(props: {
 
   /*// search
   const [addVersionTitle, setAddVersionTitle] = useState('')
-  const addVersionName = toSlug(addVersionTitle)
+  const addVersionName = speakingurl(addVersionTitle)
 
   // use to prevent adding a version when you're already in that version
   const addVersionExists = BUNDLES.some((r) => r.name.toLocaleLowerCase() === addVersionName)
@@ -76,7 +76,7 @@ export function DocumentVersionMenu(props: {
 
   const handleAddVersion = useCallback(
     (versionName: string) => () => {
-      const nameSlugged = toSlug(versionName)
+      const nameSlugged = speakingurl(versionName)
 
       // only add to version if there isn't already a version in that bundle of this doc
       if (versionDocumentExists(documentVersions, versionName)) {

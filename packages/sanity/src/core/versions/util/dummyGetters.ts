@@ -1,5 +1,5 @@
-import {camelCase} from 'lodash'
 import {type SanityClient, type SanityDocument} from 'sanity'
+import speakingurl from 'speakingurl'
 
 import {type Version} from '../types'
 import {BUNDLES} from './const'
@@ -27,7 +27,7 @@ export async function getAllVersionsOfDocument(
       const sluggedName = getVersionName(doc._id)
       const bundle = BUNDLES.find((b) => b.name === sluggedName)
       return {
-        name: toSlug(sluggedName),
+        name: speakingurl(sluggedName),
         title: bundle?.title || sluggedName,
         tone: bundle?.tone || 'default',
         icon: bundle?.icon || 'cube',
@@ -46,10 +46,6 @@ export function versionDocumentExists(documentVersions: Version[], name: string)
   return documentVersions.some((version) => version.name === name)
 }
 
-export function toSlug(value: string): string {
-  return camelCase(value)
-}
-
 export function isDraftOrPublished(versionName: string): boolean {
-  return toSlug(versionName) === 'drafts' || toSlug(versionName) === 'published'
+  return speakingurl(versionName) === 'drafts' || speakingurl(versionName) === 'published'
 }
