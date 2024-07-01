@@ -19,9 +19,9 @@ import {useTranslation} from '../../i18n'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {useCopyPaste} from './CopyPasteProvider'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
+import {transferValue, type TransferValueOptions} from './transferValue'
 import {type CopyActionResult, type CopyOptions, type PasteOptions} from './types'
 import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
-import {transferValue, type TransferValueOptions} from './valueTransfer'
 
 interface CopyPasteHookValue {
   onCopy: (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => Promise<void>

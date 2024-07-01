@@ -3,7 +3,7 @@ import {type TypedObject} from '@sanity/types'
 import {omit} from 'lodash'
 
 import {resolveSchemaTypeForPath} from '../resolveSchemaTypeForPath'
-import {transferValue} from '../valueTransfer'
+import {transferValue} from '../transferValue'
 import {createMockClient} from './mockClient'
 import {schema} from './schema'
 
