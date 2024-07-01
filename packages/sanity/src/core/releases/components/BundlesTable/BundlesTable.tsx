@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {Card, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleHeader} from './BundleHeader'

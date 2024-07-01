@@ -38,6 +38,7 @@ export const BundleMenuButton = ({bundle}: Props) => {
           icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
           mode="bleed"
           padding={2}
+          aria-label="Release menu"
         />
       }
       id="bundle-menu"

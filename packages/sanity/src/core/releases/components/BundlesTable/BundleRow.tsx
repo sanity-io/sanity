@@ -4,7 +4,7 @@ import {useRouter} from 'sanity/router'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {VersionIcon} from '../../../versions/components/VersionIcon'
 import {shortRelativeDate} from '../../utils/shortRelativeDate'
-import {BundleMenuButton} from '../BundleMenuButton/bundleMenuButton'
+import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
 
 type Props = {
   bundle: BundleDocument
@@ -14,7 +14,7 @@ export function BundleRow({bundle}: Props) {
   const router = useRouter()
 
   return (
-    <Card as="tr" border radius={3} display="flex" margin={-1}>
+    <Card data-testid="bundle-row" as="tr" border radius={3} display="flex" margin={-1}>
       <Box as="td" flex={1} padding={1}>
         <Card
           as="a"

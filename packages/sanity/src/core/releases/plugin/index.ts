@@ -1,6 +1,6 @@
-import {definePlugin} from 'sanity'
 import {route} from 'sanity/router'
 
+import {definePlugin} from '../../config'
 import {TOOL_NAME, TOOL_TITLE} from '../constants'
 import {ReleasesTool} from '../tool/ReleasesTool'
 
