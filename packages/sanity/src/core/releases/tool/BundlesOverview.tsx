@@ -101,13 +101,14 @@ export default function BundlesOverview() {
     () => (
       <Button
         icon={AddIcon}
+        disabled={isCreateBundleDialogOpen}
         onClick={() => setIsCreateBundleDialogOpen(true)}
         padding={2}
         space={2}
         text="Create release"
       />
     ),
-    [],
+    [isCreateBundleDialogOpen],
   )
 
   const bundleSearch = useMemo(
