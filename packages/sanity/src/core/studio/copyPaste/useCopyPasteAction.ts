@@ -16,6 +16,7 @@ import {
 } from 'sanity'
 
 import {useTranslation} from '../../i18n'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {useCopyPaste} from './CopyPasteProvider'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
@@ -40,7 +41,7 @@ interface CopyPasteHookValue {
 export function useCopyPasteAction(): CopyPasteHookValue {
   const telemetry = useTelemetry()
   const schema = useSchema()
-  const client = useClient()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const {t} = useTranslation('copy-paste')
 
