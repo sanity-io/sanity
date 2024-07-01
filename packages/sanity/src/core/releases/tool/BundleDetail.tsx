@@ -8,7 +8,7 @@ import {useRouter} from 'sanity/router'
 
 import {Button as StudioButton} from '../../../ui-components'
 import {useBundlesStore} from '../../store/bundles'
-import {BundleMenuButton} from '../components/BundleMenuButton/bundleMenuButton'
+import {BundleMenuButton} from '../components/BundleMenuButton/BundleMenuButton'
 import {type ReleasesRouterState} from '../types/router'
 
 type Screen = 'overview' | 'review'
@@ -19,8 +19,10 @@ export const BundleDetail = () => {
   const {bundleId}: ReleasesRouterState = router.state
   const parsedBundleId = decodeURIComponent(bundleId || '')
   const {data, loading} = useBundlesStore()
+  const bundleDocuments = [] // TODO: fetch docs with bundle version
 
   const bundle = data?.find((storeBundle) => storeBundle._id === parsedBundleId)
+  const bundleHasDocuments = !!bundleDocuments.length
 
   const header = useMemo(
     () => (
@@ -57,12 +59,12 @@ export const BundleDetail = () => {
                 {/* StudioButton supports tooltip when button is disabled */}
                 <StudioButton
                   tooltipProps={{
-                    // hide tooltip if documents in bundle
+                    disabled: bundleHasDocuments,
                     content: 'Add documents to this release to review changes',
                     placement: 'bottom',
                   }}
                   key="review"
-                  // disable review if no documents in bundle
+                  disabled={!bundleHasDocuments}
                   mode="bleed"
                   onClick={() => setActiveScreen('review')}
                   style={{
@@ -81,7 +83,7 @@ export const BundleDetail = () => {
               icon={PublishIcon}
               padding={2}
               space={2}
-              disabled={!bundle}
+              disabled={!bundle || !bundleHasDocuments}
               text="Publish all"
             />
             <BundleMenuButton bundle={bundle} />
@@ -89,7 +91,7 @@ export const BundleDetail = () => {
         </Flex>
       </Card>
     ),
-    [activeScreen, bundle, router],
+    [activeScreen, bundle, bundleHasDocuments, router],
   )
 
   return (
