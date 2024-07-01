@@ -155,13 +155,13 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       'data-testid': 'new-document-button',
       'disabled': disabled || loading,
       'icon': AddIcon,
-      'text': t('new-document.button'),
-      'mode': 'ghost',
+      'text': '',
+      'mode': 'bleed',
       'onClick': handleToggleOpen,
       'ref': setButtonElement,
       'selected': open,
     }),
-    [disabled, handleToggleOpen, loading, open, openDialogAriaLabel, t],
+    [disabled, handleToggleOpen, loading, open, openDialogAriaLabel],
   )
 
   // Tooltip content for the open button
