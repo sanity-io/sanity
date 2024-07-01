@@ -1,3 +1,4 @@
+/* eslint-disable no-warning-comments */
 /* eslint-disable i18next/no-literal-string */
 import {CalendarIcon} from '@sanity/icons'
 import {
@@ -12,29 +13,36 @@ import {
   TextArea,
   TextInput,
 } from '@sanity/ui'
-import {useCallback} from 'react'
+import {useCallback, useState} from 'react'
 
 import {type Bundle} from '../../types'
 import {RANDOM_TONES} from '../../util/const'
-import {toSlug} from '../../util/dummyGetters'
+import {isDraftOrPublished, toSlug} from '../../util/dummyGetters'
 
 export function BundleForm(props: {
   onChange: (params: Bundle) => void
   value: Bundle
 }): JSX.Element {
   const {onChange, value} = props
+  const [showTitleValidation, setShowTitleValidation] = useState(false)
 
   const handleBundleTitleChange = useCallback(
-    () => (event: React.ChangeEvent<HTMLInputElement>) => {
-      const v = event.target.value
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const title = event.target.value
 
-      onChange({...value, title: v, name: toSlug(v)})
+      if (isDraftOrPublished(title)) {
+        setShowTitleValidation(true)
+      } else {
+        setShowTitleValidation(false)
+      }
+
+      onChange({...value, title: title, name: toSlug(title)})
     },
     [onChange, value],
   )
 
   const handleBundleDescriptionChange = useCallback(
-    () => (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
       const v = event.target.value
 
       onChange({...value, description: v || undefined})
@@ -43,14 +51,14 @@ export function BundleForm(props: {
   )
 
   const handleBundleToneChange = useCallback(
-    () => (event: React.ChangeEvent<HTMLSelectElement>) => {
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
       onChange({...value, tone: (event.target.value || undefined) as ButtonTone | undefined})
     },
     [onChange, value],
   )
 
   const handleBundlePublishAtChange = useCallback(
-    () => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       const v = event.target.value
 
       onChange({...value, publishAt: v})
@@ -61,6 +69,14 @@ export function BundleForm(props: {
   return (
     <Stack space={5}>
       <Stack space={3}>
+        {showTitleValidation && (
+          <Card tone="critical" padding={3} radius={2}>
+            <Text align="center" muted size={1}>
+              {/* localize text */}
+              Title cannot be "drafts" or "published"
+            </Text>
+          </Card>
+        )}
         <Text size={1} weight="medium">
           {/* localize text */}
           Title
@@ -81,6 +97,7 @@ export function BundleForm(props: {
           {/* localize text */}
           Schedule for publishing at
         </Text>
+        {/** TODO UPDATE WITH REAL INPUT */}
         <TextInput
           onChange={handleBundlePublishAtChange}
           suffix={

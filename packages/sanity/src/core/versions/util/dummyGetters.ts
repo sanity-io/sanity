@@ -51,5 +51,5 @@ export function toSlug(value: string): string {
 }
 
 export function isDraftOrPublished(versionName: string): boolean {
-  return versionName === 'drafts' || versionName === 'published'
+  return toSlug(versionName) === 'drafts' || toSlug(versionName) === 'published'
 }
