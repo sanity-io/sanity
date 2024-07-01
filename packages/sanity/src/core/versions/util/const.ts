@@ -3,7 +3,7 @@
 import {type IconSymbol} from '@sanity/icons'
 import {type ButtonTone} from '@sanity/ui'
 
-import {type Version} from '../types'
+import {type BundleDocument} from '../../store/bundles/types'
 
 export const RANDOM_TONES: ButtonTone[] = ['default', 'caution', 'critical', 'positive', 'primary']
 export const RANDOM_SYMBOLS: IconSymbol[] = [
@@ -20,19 +20,73 @@ export const RANDOM_SYMBOLS: IconSymbol[] = [
   'user',
 ]
 
-export const LATEST: Version = {
+export const LATEST: BundleDocument = {
   name: 'drafts',
   title: 'Latest',
   icon: undefined,
   tone: 'default',
-  publishAt: 0,
+  publishAt: '',
+  _type: 'bundle',
+  authorId: '',
+  _id: '',
+  _createdAt: '',
+  _updatedAt: '',
+  _rev: '',
 }
 
 // dummy data
-export const BUNDLES: Version[] = [
+export const BUNDLES: BundleDocument[] = [
   LATEST,
-  {name: 'previewDrafts', title: 'Preview drafts', icon: 'edit', tone: 'caution', publishAt: 0},
-  {name: 'published', title: 'Published', icon: 'eye-open', tone: 'primary', publishAt: 0},
-  {name: 'summerDrop', title: 'Summer Drop', icon: 'sun', tone: 'critical', publishAt: 0},
-  {name: 'autumnDrop', title: 'Autumn Drop', icon: 'star', tone: 'positive', publishAt: 0},
+  {
+    name: 'previewDrafts',
+    title: 'Preview drafts',
+    icon: 'edit',
+    tone: 'caution',
+    publishAt: '',
+    _type: 'bundle',
+    authorId: '',
+    _id: '',
+    _createdAt: '',
+    _updatedAt: '',
+    _rev: '',
+  },
+  {
+    name: 'published',
+    title: 'Published',
+    icon: 'eye-open',
+    tone: 'primary',
+    publishAt: '',
+    _type: 'bundle',
+    authorId: '',
+    _id: '',
+    _createdAt: '',
+    _updatedAt: '',
+    _rev: '',
+  },
+  {
+    name: 'summerDrop',
+    title: 'Summer Drop',
+    icon: 'sun',
+    tone: 'critical',
+    publishAt: '',
+    _type: 'bundle',
+    authorId: '',
+    _id: '',
+    _createdAt: '',
+    _updatedAt: '',
+    _rev: '',
+  },
+  {
+    name: 'autumnDrop',
+    title: 'Autumn Drop',
+    icon: 'star',
+    tone: 'positive',
+    publishAt: '',
+    _type: 'bundle',
+    authorId: '',
+    _id: '',
+    _createdAt: '',
+    _updatedAt: '',
+    _rev: '',
+  },
 ]

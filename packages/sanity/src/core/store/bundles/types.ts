@@ -9,4 +9,5 @@ export interface BundleDocument extends SanityDocument {
   tone?: ButtonTone
   icon?: string
   authorId: string
+  publishedAt?: string
 }

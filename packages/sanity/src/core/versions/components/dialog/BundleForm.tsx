@@ -16,13 +16,13 @@ import {
 import {useCallback, useState} from 'react'
 import speakingurl from 'speakingurl'
 
-import {type Bundle} from '../../types'
+import {type BundleDocument} from '../../../store/bundles/types'
 import {RANDOM_TONES} from '../../util/const'
 import {isDraftOrPublished} from '../../util/dummyGetters'
 
 export function BundleForm(props: {
-  onChange: (params: Bundle) => void
-  value: Bundle
+  onChange: (params: BundleDocument) => void
+  value: BundleDocument
 }): JSX.Element {
   const {onChange, value} = props
   const [showTitleValidation, setShowTitleValidation] = useState(false)

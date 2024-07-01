@@ -1,29 +1,45 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Flex} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {useCurrentUser} from 'sanity'
 
-import {type Bundle} from '../../types'
+import {type BundleDocument} from '../../../store/bundles/types'
 import {isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleForm} from './BundleForm'
 
 export function CreateBundleDialog(props: {
   onCancel: () => void
-  onSubmit: (value: Bundle) => void
+  onSubmit: (value: BundleDocument) => void
 }): JSX.Element {
   const {onCancel, onSubmit} = props
+  const currentUser = useCurrentUser()
 
-  const [value, setValue] = useState<Bundle>({
+  const [value, setValue] = useState<BundleDocument>({
+    _type: 'bundle',
+    _rev: '',
+    authorId: currentUser?.id || '',
+    _id: '',
+    _createdAt: new Date().toDateString(),
+    _updatedAt: new Date().toDateString(),
+    // Add any other missing properties here
     name: '',
     title: '',
     tone: undefined,
-    publishAt: undefined,
+    publishAt: '',
   })
 
   const handleOnSubmit = useCallback(
-    () => (bundle: Bundle) => {
+    () => (bundle: BundleDocument) => {
+      setValue({
+        ...value,
+        ...{
+          _createdAt: new Date().toDateString(),
+          _updatedAt: new Date().toDateString(),
+        },
+      })
       onSubmit(bundle)
     },
-    [onSubmit],
+    [onSubmit, value],
   )
 
   return (

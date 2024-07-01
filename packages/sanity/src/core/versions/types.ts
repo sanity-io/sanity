@@ -10,15 +10,7 @@ export interface Version {
   title: string
   icon: IconSymbol | undefined
   tone: ButtonTone | undefined
-  publishAt: Date | number | undefined
-}
-
-export interface Bundle {
-  name: string
-  title: string
-  description?: string
-  tone?: ButtonTone | undefined
-  publishAt?: string
+  publishAt: string
 }
 
 export interface SanityVersionIcon {

@@ -7,7 +7,8 @@ import {
   VersionContext,
   type VersionContextValue,
 } from '../../../_singletons/core/form/VersionContext'
-import {type Bundle, type Version} from '../types'
+import {type BundleDocument} from '../../store/bundles/types'
+import {type Version} from '../types'
 import {BUNDLES, LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/dummyGetters'
 import {CreateBundleDialog} from './dialog/CreateBundleDialog'
@@ -52,7 +53,7 @@ export function GlobalBundleMenu(): JSX.Element {
   }, [])
 
   const handleSubmit = useCallback(
-    () => (value: Bundle) => {
+    () => (value: BundleDocument) => {
       // eslint-disable-next-line no-console
       console.log('create new bundle', value.name)
 
