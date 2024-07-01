@@ -489,6 +489,18 @@ export interface SourceOptions extends PluginOptions {
   apiHost?: string
 
   /**
+   * If enabled, and the studio cannot detect a modern HTTP version being used for API requests,
+   * API requests will be spread across multiple hostnames, to avoid browser connection limits.
+   * This is rarely, if ever, what you want. With HTTP/2, the connection limit is much higher,
+   * and the overhead of setting up a new connection is much lower. This setting is only useful
+   * for companies who have an HTTP proxy or similar that prevents HTTP/2 from being used, and
+   * should generally be avoided.
+   *
+   * Note that `auth.loginMethod` _must_ be set to `token` for this to work.
+   */
+  allowDomainSharding?: boolean
+
+  /**
    * Authentication options for this source.
    */
   auth?: AuthConfig | AuthStore

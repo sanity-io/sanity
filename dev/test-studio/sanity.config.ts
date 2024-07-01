@@ -157,6 +157,8 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
+    allowDomainSharding: true,
+    auth: {loginMethod: 'token'},
     icon: SanityMonogram,
     // eslint-disable-next-line camelcase
     __internal_serverDocumentActions: {

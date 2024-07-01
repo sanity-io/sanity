@@ -222,8 +222,22 @@ function getAuthStore(source: SourceOptions): AuthStore {
   }
 
   const clientFactory = source.unstable_clientFactory || createClient
-  const {projectId, dataset, apiHost} = source
-  return createAuthStore({apiHost, ...source.auth, clientFactory, dataset, projectId})
+  const {projectId, dataset, apiHost, allowDomainSharding = false} = source
+
+  if (allowDomainSharding && source.auth?.loginMethod !== 'token') {
+    throw new Error(
+      'Domain sharding is only supported with token-based authentication. Please set `allowDomainSharding: false` or `auth.loginMethod: "token"` in your studio configuration.',
+    )
+  }
+
+  return createAuthStore({
+    apiHost,
+    ...source.auth,
+    clientFactory,
+    dataset,
+    projectId,
+    allowDomainSharding,
+  })
 }
 
 interface ResolveSourceOptions {

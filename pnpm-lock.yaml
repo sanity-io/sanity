@@ -47,8 +47,8 @@ importers:
         specifier: workspace:*
         version: link:packages/@repo/tsconfig
       '@sanity/client':
-        specifier: ^6.20.0
-        version: 6.20.0(debug@4.3.5)
+        specifier: 6.20.2-beta.2
+        version: 6.20.2-beta.2(debug@4.3.5)
       '@sanity/eslint-config-i18n':
         specifier: 1.0.0
         version: 1.0.0(eslint@8.57.0)(typescript@5.4.5)
@@ -129,7 +129,7 @@ importers:
         version: 7.1.2(@typescript-eslint/eslint-plugin@7.11.0)(@typescript-eslint/parser@7.11.0)(eslint-plugin-import@2.29.1)(eslint-plugin-react-hooks@4.6.2)(eslint-plugin-react@7.34.2)(eslint@8.57.0)
       eslint-config-turbo:
         specifier: ^2.0.4
-        version: 2.0.6(eslint@8.57.0)
+        version: 2.0.4(eslint@8.57.0)
       eslint-import-resolver-typescript:
         specifier: ^3.6.1
         version: 3.6.1(@typescript-eslint/parser@7.11.0)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
@@ -219,7 +219,7 @@ importers:
         version: 7.6.2
       turbo:
         specifier: ^2.0.4
-        version: 2.0.6
+        version: 2.0.4
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -449,8 +449,8 @@ importers:
         specifier: 3.49.0
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
-        specifier: ^6.20.0
-        version: 6.20.0(debug@4.3.5)
+        specifier: 6.20.2-beta.2
+        version: 6.20.2-beta.2(debug@4.3.5)
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.6
@@ -486,10 +486,10 @@ importers:
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.17(@sanity/client@6.20.0)
+        version: 1.6.17(@sanity/client@6.20.2-beta.2)
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.10.3(@sanity/client@6.20.0)(react@18.3.1)
+        version: 1.10.3(@sanity/client@6.20.2-beta.2)(react@18.3.1)
       '@sanity/tsdoc':
         specifier: 1.0.72
         version: 1.0.72(@types/node@18.19.31)(debug@4.3.5)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
@@ -513,7 +513,7 @@ importers:
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
         specifier: 2.1.5
-        version: 2.1.5(@sanity/client@6.20.0)(react-dom@18.3.1)(react@18.3.1)
+        version: 2.1.5(@sanity/client@6.20.2-beta.2)(react-dom@18.3.1)(react@18.3.1)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -752,8 +752,8 @@ importers:
         specifier: ^7.23.5
         version: 7.24.7
       '@sanity/client':
-        specifier: ^6.20.0
-        version: 6.20.0(debug@4.3.5)
+        specifier: 6.20.2-beta.2
+        version: 6.20.2-beta.2(debug@4.3.5)
       '@sanity/codegen':
         specifier: 3.49.0
         version: link:../codegen
@@ -1058,8 +1058,8 @@ importers:
         specifier: ^0.5.1
         version: 0.5.3
       '@sanity/client':
-        specifier: ^6.20.0
-        version: 6.20.0(debug@4.3.5)
+        specifier: 6.20.2-beta.2
+        version: 6.20.2-beta.2(debug@4.3.5)
       '@sanity/types':
         specifier: 3.49.0
         version: link:../types
@@ -1184,8 +1184,8 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^6.20.0
-        version: 6.20.0(debug@4.3.5)
+        specifier: 6.20.2-beta.2
+        version: 6.20.2-beta.2(debug@4.3.5)
       '@types/react':
         specifier: ^18.0.25
         version: 18.3.3
@@ -1206,8 +1206,8 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: ^6.20.0
-        version: 6.20.0(debug@4.3.5)
+        specifier: 6.20.2-beta.2
+        version: 6.20.2-beta.2(debug@4.3.5)
       '@sanity/types':
         specifier: 3.49.0
         version: link:../types
@@ -1307,8 +1307,8 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: ^6.20.0
-        version: 6.20.0(debug@4.3.5)
+        specifier: 6.20.2-beta.2
+        version: 6.20.2-beta.2(debug@4.3.5)
       '@sanity/codegen':
         specifier: workspace:*
         version: link:../codegen
@@ -1397,8 +1397,8 @@ importers:
         specifier: 3.49.0
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^6.20.0
-        version: 6.20.0(debug@4.3.5)
+        specifier: 6.20.2-beta.2
+        version: 6.20.2-beta.2(debug@4.3.5)
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.6
@@ -1437,7 +1437,7 @@ importers:
         version: link:../@sanity/mutator
       '@sanity/presentation':
         specifier: 1.16.0
-        version: 1.16.0(@sanity/client@6.20.0)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+        version: 1.16.0(@sanity/client@6.20.2-beta.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/schema':
         specifier: 3.49.0
         version: link:../@sanity/schema
@@ -1875,8 +1875,8 @@ importers:
         specifier: 1.41.2
         version: 1.41.2
       '@sanity/client':
-        specifier: ^6.20.0
-        version: 6.20.0(debug@4.3.5)
+        specifier: 6.20.2-beta.2
+        version: 6.20.2-beta.2(debug@4.3.5)
       '@sanity/uuid':
         specifier: ^3.0.1
         version: 3.0.2
@@ -6628,17 +6628,27 @@ packages:
     transitivePeerDependencies:
       - debug
 
+  /@sanity/client@6.20.2-beta.2(debug@4.3.5):
+    resolution: {integrity: sha512-JszZJXF5ETVMkkjs2UuAGxT/2G2kzBuahGH2qYcbENkjrEp97vZDJjHRu48+74IYy4W54NdlRqHJ9lvAe78d2w==}
+    engines: {node: '>=14.18'}
+    dependencies:
+      '@sanity/eventsource': 5.0.2
+      get-it: 8.6.2(debug@4.3.5)
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - debug
+
   /@sanity/color@3.0.6:
     resolution: {integrity: sha512-2TjYEvOftD0v7ukx3Csdh9QIu44P2z7NDJtlC3qITJRYV36J7R6Vfd3trVhFnN77/7CZrGjqngrtohv8VqO5nw==}
     engines: {node: '>=18.0.0'}
 
-  /@sanity/core-loader@1.6.19(@sanity/client@6.20.0):
+  /@sanity/core-loader@1.6.19(@sanity/client@6.20.2-beta.2):
     resolution: {integrity: sha512-dLV2Flw0L521KYm2EdWOqtS53D+geGpLqMIvpWdLD/7NhM3p3y12Eps8UY3VYHZfsUtqpXmOBx0X9vYsfZlvxA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.19.1
     dependencies:
-      '@sanity/client': 6.20.0(debug@4.3.5)
+      '@sanity/client': 6.20.2-beta.2(debug@4.3.5)
     dev: false
 
   /@sanity/diff-match-patch@3.1.1:
@@ -6943,15 +6953,15 @@ packages:
       - debug
       - supports-color
 
-  /@sanity/presentation@1.16.0(@sanity/client@6.20.0)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
+  /@sanity/presentation@1.16.0(@sanity/client@6.20.2-beta.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
     resolution: {integrity: sha512-8nNGPM+r+D8dRe/UVcDEO6Z9gzS5LcOIQMzziOg8nMUGz284pcuEIzvRI9XQ3gbMiv6Zyo+fzuJPktoq+dkqhw==}
     engines: {node: '>=16.14'}
     peerDependencies:
       '@sanity/client': ^6.19.1
     dependencies:
-      '@sanity/client': 6.20.0(debug@4.3.5)
+      '@sanity/client': 6.20.2-beta.2(debug@4.3.5)
       '@sanity/icons': 3.2.0(react@18.3.1)
-      '@sanity/preview-url-secret': 1.6.17(@sanity/client@6.20.0)
+      '@sanity/preview-url-secret': 1.6.17(@sanity/client@6.20.2-beta.2)
       '@sanity/ui': 2.4.0(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6980,25 +6990,25 @@ packages:
       prettier-plugin-packagejson: 2.5.0(prettier@3.3.2)
     dev: true
 
-  /@sanity/preview-url-secret@1.6.17(@sanity/client@6.20.0):
+  /@sanity/preview-url-secret@1.6.17(@sanity/client@6.20.2-beta.2):
     resolution: {integrity: sha512-Gj0bnochUdyGJdcYdZMJ8up81aqp6dCy1ldE5Hx3tIktANc7LYie0KfZctexY1h+teBi50vKpk8uiVID/V2e2w==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.19.1
     dependencies:
-      '@sanity/client': 6.20.0(debug@4.3.5)
+      '@sanity/client': 6.20.2-beta.2(debug@4.3.5)
       '@sanity/uuid': 3.0.2
     dev: false
 
-  /@sanity/react-loader@1.10.3(@sanity/client@6.20.0)(react@18.3.1):
+  /@sanity/react-loader@1.10.3(@sanity/client@6.20.2-beta.2)(react@18.3.1):
     resolution: {integrity: sha512-SR0qcxgICFeiFA5WTKm57sr7UspQ8tpy9TbbS33ILcWUkTBo9TCbiYiG7ooD/ood4Df6MKZCnWq6cxskbCxY2A==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.19.1
       react: '*'
     dependencies:
-      '@sanity/client': 6.20.0(debug@4.3.5)
-      '@sanity/core-loader': 1.6.19(@sanity/client@6.20.0)
+      '@sanity/client': 6.20.2-beta.2(debug@4.3.5)
+      '@sanity/core-loader': 1.6.19(@sanity/client@6.20.2-beta.2)
       react: 18.3.1
     dev: false
 
@@ -7059,7 +7069,7 @@ packages:
       express: 4.19.2
       globby: 11.1.0
       groq: 3.48.0
-      groq-js: 1.10.0
+      groq-js: 1.9.0
       history: 5.3.0
       jsonc-parser: 3.2.1
       mkdirp: 1.0.4
@@ -7095,8 +7105,8 @@ packages:
       - debug
     dev: false
 
-  /@sanity/types@3.48.1:
-    resolution: {integrity: sha512-UG+AjRPYhh+URH5pBrIQ4h81rRbVZ+J/WLL+vP9uL/bseq61etWIYz8iljXWuReVHbqBPLGHQF1EpcMX1EZ5MQ==}
+  /@sanity/types@3.49.0:
+    resolution: {integrity: sha512-rJ7JgQXgucRLdc149wTXlXynxUGesum6rQKA4k/Use+ZqHlY3xU0/yED9fS++ZlNyi6RYKQHzv4LCK18sGUGsA==}
     dependencies:
       '@sanity/client': 6.20.0(debug@4.3.5)
       '@types/react': 18.3.3
@@ -7176,12 +7186,12 @@ packages:
       - debug
     dev: false
 
-  /@sanity/util@3.48.1:
-    resolution: {integrity: sha512-MTWKGuE88ASGnx9nngqAd0ZphVXppCIIgh5KB/xvMDigaWcrP5tWW34XR6yN52/6kRHGxU2ehyC7RRZDMTj9pQ==}
+  /@sanity/util@3.49.0:
+    resolution: {integrity: sha512-8YKJ7HkJ354nNxHRZR4C9cp+vXWY/R/mEpHeWUIerc8QxZ0CxsxinbeVDti0gykdSKSW3mwdpbWVSZm9FjQ8yg==}
     engines: {node: '>=18'}
     dependencies:
       '@sanity/client': 6.20.0(debug@4.3.5)
-      '@sanity/types': 3.48.1
+      '@sanity/types': 3.49.0
       get-random-values-esm: 1.0.2
       moment: 2.30.1
       rxjs: 7.8.1
@@ -7195,7 +7205,7 @@ packages:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  /@sanity/visual-editing@2.1.5(@sanity/client@6.20.0)(react-dom@18.3.1)(react@18.3.1):
+  /@sanity/visual-editing@2.1.5(@sanity/client@6.20.2-beta.2)(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-CWwqI60Fvcsg+KbvtwKrgfumAtQ+nJUJ9NSl7SlGSkeQLlpIKnLOsTpLx0JuNxkR57/j79jU2eOh56FGVDiACg==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -7218,8 +7228,8 @@ packages:
       svelte:
         optional: true
     dependencies:
-      '@sanity/client': 6.20.0(debug@4.3.5)
-      '@sanity/preview-url-secret': 1.6.17(@sanity/client@6.20.0)
+      '@sanity/client': 6.20.2-beta.2(debug@4.3.5)
+      '@sanity/preview-url-secret': 1.6.17(@sanity/client@6.20.2-beta.2)
       '@vercel/stega': 0.1.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -11222,13 +11232,13 @@ packages:
       eslint-plugin-simple-import-sort: 12.1.0(eslint@8.57.0)
     dev: true
 
-  /eslint-config-turbo@2.0.6(eslint@8.57.0):
-    resolution: {integrity: sha512-PkRjFnZUZWPcrYT4Xoi5OWOUtnn6xVGh88I6TsayiH4AQZuLs/MDmzfJRK+PiWIrI7Q7sbsVEQP+nUyyRE3uAw==}
+  /eslint-config-turbo@2.0.4(eslint@8.57.0):
+    resolution: {integrity: sha512-zGvU+bxoNWVvSl0prGItrnH9FgeNzKEAjRmv8ruqql1psI37T8IoLF/XeOzT3CzzYzJxuI3wW1yb2agDFYQdHQ==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
       eslint: 8.57.0
-      eslint-plugin-turbo: 2.0.6(eslint@8.57.0)
+      eslint-plugin-turbo: 2.0.4(eslint@8.57.0)
     dev: true
 
   /eslint-import-resolver-node@0.3.9:
@@ -11470,8 +11480,8 @@ packages:
       '@microsoft/tsdoc-config': 0.17.0
     dev: true
 
-  /eslint-plugin-turbo@2.0.6(eslint@8.57.0):
-    resolution: {integrity: sha512-yGnpMvyBxI09ZrF5bGpaniBz57MiExTCsRnNxP+JnbMFD+xU3jG3ukRzehVol8LYNdC/G7E4HoH+x7OEpoSGAQ==}
+  /eslint-plugin-turbo@2.0.4(eslint@8.57.0):
+    resolution: {integrity: sha512-Ozn//vTXJeqIEvEkThM2vuuldMckPqAne7vg/S3GxF+BBY516cjdp7+dYpCU5Q0083hVm638c8542ubccNE+8w==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
@@ -12811,6 +12821,15 @@ packages:
 
   /groq-js@1.10.0:
     resolution: {integrity: sha512-U2bKyqRpU8dlGaOLjaQZ5+4yNXS12IlpA7Dqi5hBBimnJMvWwfENEE4FVkD0+iRXbgvCdMBDCSWWpGYO4HvE7w==}
+    engines: {node: '>= 14'}
+    dependencies:
+      debug: 4.3.5(supports-color@9.4.0)
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /groq-js@1.9.0:
+    resolution: {integrity: sha512-I2e3HEz9YavBU7YT9XY7ZBnoPAAFv45u8RKiX36gkHkr/K6NytjZGqrw6cbF0tCZdsdGq062TPKH6/ubkrJSxg==}
     engines: {node: '>= 14'}
     dependencies:
       debug: 4.3.5(supports-color@9.4.0)
@@ -17979,7 +17998,7 @@ packages:
       '@sanity/image-url': 1.0.2
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1)(react@18.3.1)
       '@sanity/ui': 2.4.0(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
-      '@sanity/util': 3.48.1
+      '@sanity/util': 3.49.0
       '@types/lodash-es': 4.17.12
       framer-motion: 11.0.8(react-dom@18.3.1)(react@18.3.1)
       lodash-es: 4.17.21
@@ -19484,64 +19503,64 @@ packages:
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
     dev: true
 
-  /turbo-darwin-64@2.0.6:
-    resolution: {integrity: sha512-XpgBwWj3Ggmz/gQVqXdMKXHC1iFPMDiuwugLwSzE7Ih0O13JuNtYZKhQnopvbDQnFQCeRq2Vsm5OTWabg/oB/g==}
+  /turbo-darwin-64@2.0.4:
+    resolution: {integrity: sha512-x9mvmh4wudBstML8Z8IOmokLWglIhSfhQwnh2gBCSqabgVBKYvzl8Y+i+UCNPxheCGTgtsPepTcIaKBIyFIcvw==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64@2.0.6:
-    resolution: {integrity: sha512-RfeZYXIAkiA21E8lsvfptGTqz/256YD+eI1x37fedfvnHFWuIMFZGAOwJxtZc6QasQunDZ9TRRREbJNI68tkIw==}
+  /turbo-darwin-arm64@2.0.4:
+    resolution: {integrity: sha512-/B1Ih8zPRGVw5vw4SlclOf3C/woJ/2T6ieH6u54KT4wypoaVyaiyMqBcziIXycdObIYr7jQ+raHO7q3mhay9/A==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64@2.0.6:
-    resolution: {integrity: sha512-92UDa0xNQQbx0HdSp9ag3YSS3xPdavhc7q9q9mxIAcqyjjD6VElA4Y85m4F/DDGE5SolCrvBz2sQhVmkOd6Caw==}
+  /turbo-linux-64@2.0.4:
+    resolution: {integrity: sha512-6aG670e5zOWu6RczEYcB81nEl8EhiGJEvWhUrnAfNEUIMBEH1pR5SsMmG2ol5/m3PgiRM12r13dSqTxCLcHrVg==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64@2.0.6:
-    resolution: {integrity: sha512-eQKu6utCVUkIH2kqOzD8OS6E0ba6COjWm6PRDTNCHQRljZW503ycaTUIdMOiJrVg1MkEjDyOReUg8s8D18aJ4Q==}
+  /turbo-linux-arm64@2.0.4:
+    resolution: {integrity: sha512-AXfVOjst+mCtPDFT4tCu08Qrfv12Nj7NDd33AjGwV79NYN1Y1rcFY59UQ4nO3ij3rbcvV71Xc+TZJ4csEvRCSg==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64@2.0.6:
-    resolution: {integrity: sha512-+9u4EPrpoeHYCQ46dRcou9kbkSoelhOelHNcbs2d86D6ruYD/oIAHK9qgYK8LeARRz0jxhZIA/dWYdYsxJJWkw==}
+  /turbo-windows-64@2.0.4:
+    resolution: {integrity: sha512-QOnUR9hKl0T5gq5h1fAhVEqBSjpcBi/BbaO71YGQNgsr6pAnCQdbG8/r3MYXet53efM0KTdOhieWeO3KLNKybA==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64@2.0.6:
-    resolution: {integrity: sha512-rdrKL+p+EjtdDVg0wQ/7yTbzkIYrnb0Pw4IKcjsy3M0RqUM9UcEi67b94XOAyTa5a0GqJL1+tUj2ebsFGPgZbg==}
+  /turbo-windows-arm64@2.0.4:
+    resolution: {integrity: sha512-3v8WpdZy1AxZw0gha0q3caZmm+0gveBQ40OspD6mxDBIS+oBtO5CkxhIXkFJJW+jDKmDlM7wXDIGfMEq+QyNCQ==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo@2.0.6:
-    resolution: {integrity: sha512-/Ftmxd5Mq//a9yMonvmwENNUN65jOVTwhhBPQjEtNZutYT9YKyzydFGLyVM1nzhpLWahQSMamRc/RDBv5EapzA==}
+  /turbo@2.0.4:
+    resolution: {integrity: sha512-Ilme/2Q5kYw0AeRr+aw3s02+WrEYaY7U8vPnqSZU/jaDG/qd6jHVN6nRWyd/9KXvJGYM69vE6JImoGoyNjLwaw==}
     hasBin: true
     optionalDependencies:
-      turbo-darwin-64: 2.0.6
-      turbo-darwin-arm64: 2.0.6
-      turbo-linux-64: 2.0.6
-      turbo-linux-arm64: 2.0.6
-      turbo-windows-64: 2.0.6
-      turbo-windows-arm64: 2.0.6
+      turbo-darwin-64: 2.0.4
+      turbo-darwin-arm64: 2.0.4
+      turbo-linux-64: 2.0.4
+      turbo-linux-arm64: 2.0.4
+      turbo-windows-64: 2.0.4
+      turbo-windows-arm64: 2.0.4
     dev: true
 
   /type-check@0.4.0:
