@@ -103,7 +103,7 @@ export const PaneContainer = memo(function PaneContainer(
 
   const isSheetListLayout = layout === 'sheetList'
   const paneLayout = isSheetListLayout ? (
-    <DocumentSheetListPane {...props} sortOrder={sortOrderRaw} />
+    <DocumentSheetListPane {...props} sortOrder={sortOrderRaw} key={props.pane.id} />
   ) : (
     <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
   )
