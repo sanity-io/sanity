@@ -26,7 +26,7 @@ interface VersionProviderProps {
 
 export function VersionProvider({children}: VersionProviderProps): JSX.Element {
   const [currentVersion, setCurrentVersion] = useState<Version>(LATEST)
-  const isDraft = currentVersion.name === 'draft'
+  const isDraft = currentVersion.name === 'drafts'
 
   const contextValue: VersionContextValue = {
     currentVersion,

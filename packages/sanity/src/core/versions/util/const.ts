@@ -21,7 +21,7 @@ export const RANDOM_SYMBOLS: IconSymbol[] = [
 ]
 
 export const LATEST: Version = {
-  name: 'draft',
+  name: 'drafts',
   title: 'Latest',
   icon: undefined,
   tone: 'default',
