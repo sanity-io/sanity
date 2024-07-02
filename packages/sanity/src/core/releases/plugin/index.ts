@@ -1,7 +1,6 @@
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config'
-import {TOOL_NAME, TOOL_TITLE} from '../constants'
 import {ReleasesTool} from '../tool/ReleasesTool'
 
 /**
@@ -17,8 +16,8 @@ export const releases = definePlugin({
 
   tools: [
     {
-      name: TOOL_NAME,
-      title: TOOL_TITLE,
+      name: 'releases',
+      title: 'Releases',
       component: ReleasesTool,
       router: route.create('/', [route.create('/:bundleId')]),
     },

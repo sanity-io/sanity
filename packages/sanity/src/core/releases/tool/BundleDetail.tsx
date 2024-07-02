@@ -1,5 +1,3 @@
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
-/* eslint-disable i18next/no-literal-string */
 import {ArrowLeftIcon, PublishIcon, StarIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
