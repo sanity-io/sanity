@@ -1,4 +1,4 @@
-import {defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const linkType = defineType({
   type: 'object',
@@ -42,5 +42,126 @@ export const nestedObjectType = defineType({
         },
       ],
     },
+  ],
+})
+
+export const arrayOfMultipleNestedTypes = defineField({
+  name: 'arrayOfMultipleNestedTypes',
+  title: 'Array of multiple nested types',
+  type: 'array',
+  of: [
+    defineArrayMember({
+      type: 'image',
+    }),
+    defineArrayMember({
+      type: 'object',
+      name: 'house',
+      title: 'House with a long title',
+      fields: [
+        {
+          name: 'title',
+          type: 'string',
+        },
+        defineField({
+          name: 'nestedArray',
+          title: 'Nested array',
+          type: 'array',
+          of: [
+            defineArrayMember({
+              type: 'object',
+              name: 'color',
+              title: 'Nested color with a long title',
+              fields: [
+                {
+                  name: 'title',
+                  type: 'string',
+                },
+                {
+                  name: 'name',
+                  type: 'string',
+                },
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+    defineArrayMember({
+      type: 'object',
+      name: 'color',
+      title: 'Color with a long title',
+      fields: [
+        {
+          name: 'title',
+          type: 'string',
+        },
+        {
+          name: 'name',
+          type: 'string',
+        },
+        defineField({
+          name: 'nestedArray',
+          title: 'Nested array',
+          type: 'array',
+          of: [
+            defineArrayMember({
+              type: 'object',
+              name: 'color',
+              title: 'Nested color with a long title',
+              fields: [
+                {
+                  name: 'title',
+                  type: 'string',
+                },
+                {
+                  name: 'name',
+                  type: 'string',
+                },
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  ],
+})
+
+export const arrayOfMultipleNestedTypesWithoutColor = defineField({
+  name: 'arrayOfMultipleNestedTypesWithoutColor',
+  title: 'Array of multiple nested types without color',
+  type: 'array',
+  of: [
+    defineArrayMember({
+      type: 'image',
+    }),
+    defineArrayMember({
+      type: 'object',
+      name: 'house',
+      title: 'House with a long title',
+      fields: [
+        {
+          name: 'title',
+          type: 'string',
+        },
+        defineField({
+          name: 'nestedArray',
+          title: 'Nested array',
+          type: 'array',
+          of: [
+            defineArrayMember({
+              type: 'object',
+              name: 'house',
+              title: 'Nested house with a long title',
+              fields: [
+                {
+                  name: 'title',
+                  type: 'string',
+                },
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
   ],
 })

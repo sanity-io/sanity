@@ -1,4 +1,4 @@
-import {beforeEach, describe, expect, jest, test} from '@jest/globals'
+import {beforeAll, beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {type TypedObject} from '@sanity/types'
 import {omit} from 'lodash'
 
@@ -10,6 +10,11 @@ import {schema} from './schema'
 beforeEach(() => {
   jest.resetModules()
   jest.clearAllMocks()
+})
+
+beforeAll(() => {
+  expect(schema).toBeDefined()
+  expect(schema?._validation).toEqual([])
 })
 
 describe('transferValue', () => {
