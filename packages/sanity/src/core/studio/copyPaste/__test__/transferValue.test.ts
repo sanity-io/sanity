@@ -37,7 +37,7 @@ describe('transferValue', () => {
       targetRootSchemaType: schema.get('editor')!,
       targetPath: ['bio'],
     })
-    expect(transferValueResult.errors.length).toEqual(1)
+    expect(transferValueResult.errors).not.toEqual([])
     expect(transferValueResult.errors[0].i18n.key).toEqual(
       'copy-paste.on-paste.validation.schema-type-incompatible.description',
     )
@@ -798,6 +798,7 @@ describe('transferValue', () => {
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['profileImage'],
       })
+      expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(sourceValue)
     })
 
@@ -827,7 +828,7 @@ describe('transferValue', () => {
         },
       })
       // expect(transferValueResult?.targetValue).toEqual(sourceValue)
-      expect(transferValueResult.errors.length).toEqual(1)
+      expect(transferValueResult.errors).not.toEqual([])
       expect(transferValueResult.errors[0].i18n.key).toEqual(
         'copy-paste.on-paste.validation.mime-type-incompatible.description',
       )
@@ -875,10 +876,32 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
-        targetRootSchemaType: schema.get('editor')!,
-        targetPath: ['profileCV'],
+        targetRootSchemaType: resolveSchemaTypeForPath(schema.get('author')!, ['profileCV'])!,
+        targetPath: [],
       })
-      expect(transferValueResult.errors.length).toEqual(1)
+      expect(transferValueResult.errors).not.toEqual([])
+      expect(transferValueResult.errors[0].i18n.key).toEqual(
+        'copy-paste.on-paste.validation.image-file-incompatible.description',
+      )
+    })
+
+    test('cannot copy file into image objects', async () => {
+      const sourceValue = {
+        _type: 'file',
+        asset: {
+          _ref: 'file-e4be7fa20bb20c271060a46bca82b9e84907a13a-pdf',
+          _type: 'reference',
+        },
+      }
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('author')!, ['profileCV'])
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: resolveSchemaTypeForPath(schema.get('author')!, ['profileImage'])!,
+        targetPath: [],
+      })
+      expect(transferValueResult.errors).not.toEqual([])
       expect(transferValueResult.errors[0].i18n.key).toEqual(
         'copy-paste.on-paste.validation.image-file-incompatible.description',
       )
