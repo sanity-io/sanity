@@ -441,7 +441,91 @@ describe('transferValue', () => {
         {_key: expect.any(String), title: 'Blue', name: 'blue', _type: 'color'},
       ])
     })
-    test.failing('can copy array into a deeply nested array inside object', async () => {
+    test('can not copy array values into another array that does not accept type', async () => {
+      const sourceValue = [
+        {
+          _type: 'color',
+          _key: '39fd2dd21625',
+          title: 'Hello there',
+          name: 'Fred',
+        },
+      ]
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('editor')!,
+        sourcePath: ['arrayOfMultipleNestedTypes'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['arrayOfMultipleNestedTypesWithoutColor'],
+        // targetValue,
+      })
+      expect(transferValueResult?.errors).not.toEqual([])
+      expect(transferValueResult?.targetValue).toEqual(undefined)
+    })
+    test('can not copy array values into another nested array that does not accept type', async () => {
+      const sourceValue = [
+        {
+          _type: 'house',
+          _key: '39fd2dd21625',
+          title: 'Hello there',
+          name: 'Fred',
+        },
+      ]
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('editor')!,
+        sourcePath: ['arrayOfMultipleNestedTypes', {_key: '39fd2dd21625'}],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['arrayOfMultipleNestedTypes', {_key: '39fd2dd21625'}, 'nestedArray'],
+      })
+      expect(transferValueResult?.errors).not.toEqual([])
+      expect(transferValueResult?.targetValue).toEqual(undefined)
+    })
+    test('can not copy array objects values into another nested primitive array that does not accept type', async () => {
+      const sourceValue = [{_key: 'c9b6815500b1', _type: 'mbwEvent', where: 'Hello'}]
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('objects')!, ['events'])
+      const targetValue = {
+        _id: 'xxx',
+        type: 'objects',
+        events: [{_key: 'c9b6815500b1', _type: 'mbwEvent', where: 'Hello'}],
+      }
+      const transferValueResult = await transferValue({
+        // sourceRootSchemaType: schema.get('objects')!,
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('objects')!,
+        targetPath: ['events', {_key: 'c9b6815500b1'}, 'what'],
+        targetValue,
+      })
+      expect(transferValueResult?.errors).not.toEqual([])
+      expect(transferValueResult?.targetValue).toEqual(undefined)
+    })
+    test('can copy array values into another nested array that does accept type', async () => {
+      const sourceValue = [
+        {
+          _type: 'color',
+          _key: '39fd2dd21625',
+          title: 'Hello there',
+          name: 'Fred',
+        },
+      ]
+      const sourceRootSchemaType = resolveSchemaTypeForPath(schema.get('editor')!, [
+        'arrayOfMultipleNestedTypes',
+      ])!
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['arrayOfMultipleNestedTypes', {_key: '39fd2dd21625'}, 'nestedArray'],
+        //targetValue: [],
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual([
+        {_key: expect.any(String), title: 'Hello there', name: 'Fred', _type: 'color'},
+      ])
+    })
+    test('can copy array into a deeply nested array inside object', async () => {
       const sourceValue = [
         {
           _type: 'color',
@@ -458,9 +542,12 @@ describe('transferValue', () => {
           name: 'Fred',
         },
       ]
+      const sourceRootSchemaType = resolveSchemaTypeForPath(schema.get('editor')!, [
+        'arrayOfPredefinedOptions',
+      ])!
       const transferValueResult = await transferValue({
-        sourceRootSchemaType: schema.get('editor')!,
-        sourcePath: ['arrayOfPredefinedOptions'],
+        sourceRootSchemaType,
+        sourcePath: [],
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfMultipleNestedTypes', {_key: 'color-1'}, 'nestedArray'],
@@ -830,7 +917,7 @@ describe('transferValue', () => {
       expect(transferValueResult?.targetValue).toEqual({...sourceValue, _weak: true})
     })
 
-    test('will remove empty reference', async () => {
+    test('should not remove empty reference', async () => {
       const sourceValue = {
         _type: 'author',
         _id: 'xxx',
@@ -864,12 +951,17 @@ describe('transferValue', () => {
             _type: 'customNamedBlock',
             children: [{_key: expect.any(String), _type: 'span', text: 'Hello'}],
           },
+          {
+            _key: expect.any(String),
+            _type: 'reference',
+          },
         ],
       })
       // Test that the keys are not the same
       expect(targetValue.bio[0]._key).not.toEqual('someKey')
       expect(targetValue.bio[0].children[0]._key).not.toEqual('someOtherKey')
-      expect(targetValue.bio.length).toEqual(1)
+      expect(targetValue.bio[1]._type).toEqual('reference')
+      expect(targetValue.bio.length).toEqual(2)
     })
   })
 })
