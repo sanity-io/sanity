@@ -1,4 +1,6 @@
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
+
+import {arrayOfMultipleNestedTypes, arrayOfMultipleNestedTypesWithoutColor} from './objects'
 
 export const editorDocument = defineType({
   name: 'editor',
@@ -135,7 +137,7 @@ export const editorDocument = defineType({
         ],
       },
     }),
-    {
+    defineField({
       name: 'arrayOfMultipleTypes',
       title: 'Array of multiple types',
       type: 'array',
@@ -159,53 +161,8 @@ export const editorDocument = defineType({
           ],
         },
       ],
-    },
-    defineField({
-      name: 'arrayOfMultipleNestedTypes',
-      title: 'Array of multiple nested types',
-      type: 'array',
-      of: [
-        defineArrayMember({
-          type: 'image',
-        }),
-        defineArrayMember({
-          type: 'object',
-          name: 'color',
-          title: 'Color with a long title',
-          fields: [
-            {
-              name: 'title',
-              type: 'string',
-            },
-            {
-              name: 'name',
-              type: 'string',
-            },
-            defineField({
-              name: 'nestedArray',
-              title: 'Nested array',
-              type: 'array',
-              of: [
-                defineArrayMember({
-                  type: 'object',
-                  name: 'color',
-                  title: 'Nested color with a long title',
-                  fields: [
-                    {
-                      name: 'title',
-                      type: 'string',
-                    },
-                    {
-                      name: 'name',
-                      type: 'string',
-                    },
-                  ],
-                }),
-              ],
-            }),
-          ],
-        }),
-      ],
     }),
+    arrayOfMultipleNestedTypes,
+    arrayOfMultipleNestedTypesWithoutColor,
   ],
 })
