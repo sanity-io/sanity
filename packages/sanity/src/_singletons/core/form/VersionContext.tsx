@@ -12,7 +12,7 @@ import {useRouter} from '../../../router'
 export interface VersionContextValue {
   currentVersion: BundleDocument
   isDraft: boolean
-  setCurrentVersion: (version: BundleDocument) => void
+  setCurrentVersion: (bundle: BundleDocument) => void
 }
 
 export const VersionContext = createContext<VersionContextValue>({

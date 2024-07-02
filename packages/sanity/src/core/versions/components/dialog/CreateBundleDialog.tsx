@@ -1,5 +1,5 @@
 import {ArrowRightIcon} from '@sanity/icons'
-import {Box, Button, Dialog, Flex, useClickOutside} from '@sanity/ui'
+import {Box, Button, Dialog, Flex} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
 
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -14,11 +14,11 @@ export function CreateBundleDialog(props: {onClose: () => void}): JSX.Element {
   const [value, setValue] = useState<Partial<BundleDocument>>({
     name: '',
     title: '',
-    tone: undefined,
+    hue: 'gray',
+    icon: 'cube',
     publishAt: undefined,
   })
   const [isCreating, setIsCreating] = useState(false)
-  const [formRef, setFormRef] = useState<HTMLDivElement | null>(null)
 
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -37,7 +37,9 @@ export function CreateBundleDialog(props: {onClose: () => void}): JSX.Element {
     [createBundle, value, onClose],
   )
 
-  useClickOutside(onClose, [formRef])
+  const handleOnChange = useCallback((changedValue: Partial<BundleDocument>) => {
+    setValue(changedValue)
+  }, [])
 
   return (
     <Dialog
@@ -49,8 +51,8 @@ export function CreateBundleDialog(props: {onClose: () => void}): JSX.Element {
       width={1}
     >
       <form onSubmit={handleOnSubmit}>
-        <Box padding={6} ref={setFormRef}>
-          <BundleForm onChange={setValue} value={value} />
+        <Box padding={6}>
+          <BundleForm onChange={handleOnChange} value={value} />
         </Box>
         <Flex justify="flex-end" padding={3}>
           <Button

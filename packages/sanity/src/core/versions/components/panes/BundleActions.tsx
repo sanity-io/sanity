@@ -5,11 +5,11 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sa
 
 import {Button} from '../../../../ui-components'
 import {useBundlesStore} from '../../../store/bundles'
-import {type Version} from '../../types'
+import {type BundleDocument} from '../../../store/bundles/types'
 import {getAllVersionsOfDocument, versionDocumentExists} from '../../util/dummyGetters'
 
 interface BundleActionsProps {
-  currentVersion: Version
+  currentVersion: BundleDocument
   documentId: string
   documentType: string
   isReady: boolean

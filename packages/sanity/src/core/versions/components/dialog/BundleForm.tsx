@@ -1,24 +1,13 @@
 /* eslint-disable no-warning-comments */
 /* eslint-disable i18next/no-literal-string */
 import {CalendarIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  type ButtonTone,
-  Card,
-  Flex,
-  Select,
-  Stack,
-  Text,
-  TextArea,
-  TextInput,
-} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {Box, Button, Card, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
 import speakingurl from 'speakingurl'
 
 import {type BundleDocument} from '../../../store/bundles/types'
-import {RANDOM_TONES} from '../../util/const'
 import {isDraftOrPublished} from '../../util/dummyGetters'
+import {BundleIconEditorPicker} from './BundleIconEditorPicker'
 
 export function BundleForm(props: {
   onChange: (params: Partial<BundleDocument>) => void
@@ -26,6 +15,14 @@ export function BundleForm(props: {
 }): JSX.Element {
   const {onChange, value} = props
   const [showTitleValidation, setShowTitleValidation] = useState(false)
+
+  const iconValue: Partial<BundleDocument> = useMemo(
+    () => ({
+      icon: value.icon ?? 'cube',
+      hue: value.hue ?? 'gray',
+    }),
+    [value],
+  )
 
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,13 +48,6 @@ export function BundleForm(props: {
     [onChange, value],
   )
 
-  const handleBundleToneChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      onChange({...value, tone: (event.target.value || undefined) as ButtonTone | undefined})
-    },
-    [onChange, value],
-  )
-
   const handleBundlePublishAtChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const v = event.target.value
@@ -67,8 +57,18 @@ export function BundleForm(props: {
     [onChange, value],
   )
 
+  const handleIconValueChange = useCallback(
+    (icon: Partial<BundleDocument>) => {
+      onChange({...value, icon: icon.icon, hue: icon.hue})
+    },
+    [onChange, value],
+  )
+
   return (
     <Stack space={5}>
+      <Flex>
+        <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
+      </Flex>
       <Stack space={3}>
         {showTitleValidation && (
           <Card tone="critical" padding={3} radius={2}>
@@ -108,55 +108,6 @@ export function BundleForm(props: {
           }
           value={value.publishAt || ''}
         />
-      </Stack>
-
-      <Stack space={3}>
-        <Text size={1} weight="medium">
-          {/* localize text */}
-          Color
-        </Text>
-        <Flex>
-          <Card
-            borderTop
-            borderLeft
-            borderBottom
-            flex="none"
-            radius={2}
-            padding={2}
-            style={{
-              borderTopRightRadius: 0,
-              borderBottomRightRadius: 0,
-            }}
-          >
-            <div
-              style={{
-                borderRadius: 1,
-                width: 17,
-                height: 17,
-                backgroundColor: `var(--card-badge-${value.tone || 'default'}-icon-color)`,
-              }}
-            >
-              &nbsp;
-            </div>
-          </Card>
-          <Stack flex={1}>
-            <Select
-              onChange={handleBundleToneChange}
-              style={{
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-                textTransform: 'capitalize',
-              }}
-              value={value.tone || ''}
-            >
-              {RANDOM_TONES.map((tone) => (
-                <option key={tone} value={tone}>
-                  {tone}
-                </option>
-              ))}
-            </Select>
-          </Stack>
-        </Flex>
       </Stack>
     </Stack>
   )

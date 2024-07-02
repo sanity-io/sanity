@@ -1,30 +1,12 @@
 /*  TEMPORARY  DUMMY DATA */
 
-import {type IconSymbol} from '@sanity/icons'
-import {type ButtonTone} from '@sanity/ui'
-
 import {type BundleDocument} from '../../store/bundles/types'
-
-export const RANDOM_TONES: ButtonTone[] = ['default', 'caution', 'critical', 'positive', 'primary']
-export const RANDOM_SYMBOLS: IconSymbol[] = [
-  'archive',
-  'edit',
-  'eye-open',
-  'heart',
-  'info-filled',
-  'circle',
-  'search',
-  'sun',
-  'star',
-  'trash',
-  'user',
-]
 
 export const LATEST: BundleDocument = {
   name: 'drafts',
   title: 'Latest',
   icon: undefined,
-  tone: 'default',
+  tone: 'gray',
   publishAt: '',
   _type: 'bundle',
   authorId: '',

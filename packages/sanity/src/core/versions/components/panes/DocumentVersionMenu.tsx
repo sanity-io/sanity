@@ -23,7 +23,6 @@ import {
 } from '../../../../_singletons/core/form/VersionContext'
 import {useBundlesStore} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {type Version} from '../../types'
 import {LATEST} from '../../util/const'
 import {getAllVersionsOfDocument, isDraftOrPublished} from '../../util/dummyGetters'
 import {VersionBadge} from '../VersionBadge'
@@ -44,7 +43,7 @@ export function DocumentVersionMenu(props: {
 
   const {data: bundles, loading} = useBundlesStore()
 
-  const [documentVersions, setDocumentVersions] = useState<Version[]>([])
+  const [documentVersions, setDocumentVersions] = useState<BundleDocument[]>([])
 
   /*// search
   const [addVersionTitle, setAddVersionTitle] = useState('')
@@ -99,8 +98,8 @@ export function DocumentVersionMenu(props: {
   )*/
 
   const handleChangeToVersion = useCallback(
-    (version: BundleDocument) => () => {
-      setCurrentVersion(version)
+    (bundle: BundleDocument) => () => {
+      setCurrentVersion(bundle)
     },
     [setCurrentVersion],
   )
@@ -116,7 +115,7 @@ export function DocumentVersionMenu(props: {
     <>
       {currentVersion && !isDraft && (
         <VersionBadge
-          tone={currentVersion.tone}
+          hue={currentVersion.hue}
           title={currentVersion.title}
           icon={currentVersion.icon}
           padding={2}
@@ -168,10 +167,16 @@ export function DocumentVersionMenu(props: {
                           pressed={name === b.name}
                         >
                           <Flex>
-                            {<VersionBadge tone={b.tone} icon={b.icon} padding={2} />}
+                            {<VersionBadge hue={b.hue} icon={b.icon} padding={2} />}
 
                             <Box flex={1} padding={2} style={{minWidth: 100}}>
-                              <Text size={1} weight="medium">
+                              <Text
+                                size={1}
+                                weight="medium"
+                                textOverflow="ellipsis"
+                                style={{minWidth: 100}}
+                                title={b.title}
+                              >
                                 {b.title}
                               </Text>
                             </Box>
@@ -222,7 +227,7 @@ export function DocumentVersionMenu(props: {
                         padding={1}
                       >
                         <Flex>
-                          <VersionBadge tone={r.tone} icon={r.icon} padding={2} />
+                          <VersionBadge hue={r.hue} icon={r.icon} padding={2} />
 
                           <Box flex={1} padding={2} style={{minWidth: 100}}>
                             <Text size={1} weight="medium">

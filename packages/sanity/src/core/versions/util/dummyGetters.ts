@@ -30,7 +30,7 @@ export async function getAllVersionsOfDocument(
       return {
         name: speakingurl(sluggedName),
         title: bundle?.title || sluggedName,
-        tone: bundle?.tone || 'default',
+        hue: bundle?.hue || 'gray',
         icon: bundle?.icon || 'cube',
       }
     })

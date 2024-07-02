@@ -14,7 +14,7 @@ import {CreateBundleDialog} from './dialog/CreateBundleDialog'
 import {VersionBadge} from './VersionBadge'
 
 export function GlobalBundleMenu(): JSX.Element {
-  const {data: bundles} = useBundlesStore()
+  const {data: bundles, isLoading} = useBundlesStore()
 
   // eslint-disable-next-line no-warning-comments
   // FIXME REPLACE WHEN WE HAVE REAL DATA
@@ -45,7 +45,7 @@ export function GlobalBundleMenu(): JSX.Element {
         button={
           <Button mode="bleed" padding={0} radius="full">
             <VersionBadge
-              tone={currentVersion?.tone}
+              hue={currentVersion?.hue}
               icon={isDraft ? undefined : currentVersion?.icon}
               openButton
               padding={2}
@@ -78,7 +78,7 @@ export function GlobalBundleMenu(): JSX.Element {
                     pressed={false}
                   >
                     <Flex>
-                      <VersionBadge tone={b.tone} icon={b.icon} padding={2} />
+                      <VersionBadge hue={b.hue} icon={b.icon} padding={2} />
 
                       <Box flex={1} padding={2} style={{minWidth: 100}}>
                         <Text size={1} weight="medium">
