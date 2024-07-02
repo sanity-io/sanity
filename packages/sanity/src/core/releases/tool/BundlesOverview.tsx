@@ -75,7 +75,7 @@ export default function BundlesOverview() {
           disabled={groupModeButtonBaseProps.disabled || !groupedBundles.archived.length}
           tooltipProps={{
             disabled: groupedBundles.archived.length !== 0,
-            content: 'No published releases',
+            content: 'No archived releases',
             placement: 'bottom',
           }}
           onClick={handleBundleGroupModeChange}
