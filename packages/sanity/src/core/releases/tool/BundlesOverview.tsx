@@ -59,13 +59,9 @@ export default function BundlesOverview() {
       disabled: loading || !hasBundles,
       mode: 'bleed' as ButtonMode,
       padding: 2,
-      style: {
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-      },
     }
     return (
-      <Card radius={2} shadow={1} tone="inherit" display="flex">
+      <Flex flex="none" gap={1}>
         <Button
           {...groupModeButtonBaseProps}
           onClick={handleBundleGroupModeChange}
@@ -87,7 +83,7 @@ export default function BundlesOverview() {
           text="Archived"
           value="archived"
         />
-      </Card>
+      </Flex>
     )
   }, [
     bundleGroupMode,
