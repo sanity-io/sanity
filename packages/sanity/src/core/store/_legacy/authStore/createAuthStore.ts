@@ -3,11 +3,13 @@ import {
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
+import {type CurrentUser} from '@sanity/types'
 import {isEqual, memoize} from 'lodash'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
 import {type AuthConfig} from '../../../config'
+import {supportsModernHttp} from '../../../network/modernHttp'
 import {CorsOriginError} from '../cors'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {createLoginComponent} from './createLoginComponent'
@@ -16,11 +18,20 @@ import * as storage from './storage'
 import {type AuthState, type AuthStore} from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 
+/**
+ * For development purposes - allows forcing domain sharding to be enabled,
+ * regardless of the browser's support for modern HTTP.
+ *
+ * @internal
+ */
+const FORCE_DOMAIN_SHARDING = false
+
 /** @internal */
 export interface AuthStoreOptions extends AuthConfig {
   clientFactory?: (options: SanityClientConfig) => SanityClient
   projectId: string
   dataset: string
+  allowDomainSharding?: boolean
 }
 
 const getStorageKey = (projectId: string) => {
@@ -69,7 +80,7 @@ const getCurrentUser = async (
   broadcastToken: (token: string | null) => void,
 ) => {
   try {
-    const user = await client.request({
+    const user = await client.request<CurrentUser>({
       uri: '/users/me',
       withCredentials: true,
       tag: 'users.get-current',
@@ -121,6 +132,7 @@ export function _createAuthStore({
   dataset,
   apiHost,
   loginMethod = 'dual',
+  allowDomainSharding,
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
   // this broadcast channel receives either a token as a `string` or `null`.
@@ -169,12 +181,23 @@ export function _createAuthStore({
     ),
     switchMap((client) =>
       defer(async (): Promise<AuthState> => {
-        const currentUser = await getCurrentUser(client, broadcast)
+        const [currentUser, hasModernHttpSupport] = await Promise.all([
+          getCurrentUser(client, broadcast),
+          allowDomainSharding ? supportsModernHttp(client) : Promise.resolve(undefined),
+        ])
 
         return {
           currentUser,
-          client,
-          authenticated: !!currentUser,
+          // We want to use the base, unsharded API domain for authentication, but once we know we
+          // have/don't have a user, we want to switch to the sharded domains for subsequent requests.
+          // If the user has chosen to use domain sharding _but_ the browser actually _supports_
+          // modern HTTP, we still want to use unsharded domains, however - thus the extra check.
+          client:
+            FORCE_DOMAIN_SHARDING ||
+            (allowDomainSharding && !hasModernHttpSupport && client.config().token)
+              ? client.withConfig({useDomainSharding: true})
+              : client,
+          authenticated: Boolean(currentUser),
         }
       }),
     ),
