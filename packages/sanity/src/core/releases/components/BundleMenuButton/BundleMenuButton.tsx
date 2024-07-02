@@ -1,4 +1,5 @@
-import {ArchiveIcon, EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
+/* eslint-disable @sanity/i18n/no-attribute-string-literals */
+import {EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
 import {Button, Menu, MenuButton, MenuItem, Spinner} from '@sanity/ui'
 import {useState} from 'react'
 import {useRouter} from 'sanity/router'
@@ -11,9 +12,8 @@ type Props = {
 }
 
 export const BundleMenuButton = ({bundle}: Props) => {
-  const {deleteBundle, updateBundle} = useBundleOperations()
+  const {deleteBundle} = useBundleOperations()
   const router = useRouter()
-  const isBundleArchived = !!bundle?.archivedAt
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
 
   const bundleMenuDisabled = !bundle
@@ -30,22 +30,11 @@ export const BundleMenuButton = ({bundle}: Props) => {
     }
   }
 
-  const handleOnToggleArchive = async () => {
-    if (bundleMenuDisabled) return
-
-    setIsPerformingOperation(true)
-    await updateBundle({
-      ...bundle,
-      archivedAt: isBundleArchived ? undefined : new Date().toISOString(),
-    })
-    setIsPerformingOperation(false)
-  }
-
   return (
     <MenuButton
       button={
         <Button
-          disabled={bundleMenuDisabled || isPerformingOperation}
+          disabled={bundleMenuDisabled}
           icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
           mode="bleed"
           padding={2}
@@ -55,14 +44,7 @@ export const BundleMenuButton = ({bundle}: Props) => {
       id="bundle-menu"
       menu={
         <Menu>
-          <MenuItem
-            onClick={handleOnToggleArchive}
-            // TODO: swap line once UnaryIcon is available
-            // icon={isBundleArchived ? UnarchiveIcon : ArchiveIcon}
-            icon={isBundleArchived ? ArchiveIcon : ArchiveIcon}
-            text={isBundleArchived ? 'Unarchive' : 'Archive'}
-          />
-          <MenuItem onClick={handleOnDeleteBundle} icon={TrashIcon} text="Delete" />
+          <MenuItem onClick={handleOnDeleteBundle} icon={TrashIcon} text="Delete release" />
         </Menu>
       }
       popover={{

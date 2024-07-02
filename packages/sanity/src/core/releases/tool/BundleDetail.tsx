@@ -5,7 +5,7 @@ import {LoadingBlock} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Button as StudioButton} from '../../../ui-components'
-import {useBundles} from '../../store/bundles'
+import {useBundlesStore} from '../../store/bundles'
 import {BundleMenuButton} from '../components/BundleMenuButton/BundleMenuButton'
 import {type ReleasesRouterState} from '../types/router'
 
@@ -16,7 +16,7 @@ export const BundleDetail = () => {
   const [activeScreen, setActiveScreen] = useState<Screen>('overview')
   const {bundleId}: ReleasesRouterState = router.state
   const parsedBundleId = decodeURIComponent(bundleId || '')
-  const {data, loading} = useBundles()
+  const {data, loading} = useBundlesStore()
   const bundleDocuments = [] // TODO: fetch docs with bundle version
 
   const bundle = data?.find((storeBundle) => storeBundle._id === parsedBundleId)

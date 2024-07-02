@@ -1,10 +1,10 @@
 import {Card, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {type BundleDocument} from 'sanity'
 import {styled} from 'styled-components'
 
 import {BundleHeader, type BundleHeaderProps} from './BundleHeader'
 import {BundleRow} from './BundleRow'
+import { BundleDocument } from '../../../store/bundles/types'
 
 const RowStack = styled(Stack)({
   '& > *:not(:first-child)': {
