@@ -8,6 +8,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   FormInput,
   type InputProps,
+  isKeySegment,
   type ObjectInputProps,
   type ObjectSchemaType,
   type Path,
@@ -19,7 +20,6 @@ import {
   buildTreeEditingState,
   type BuildTreeEditingStateProps,
   EMPTY_TREE_STATE,
-  shouldArrayDialogOpen,
   type TreeEditingState,
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
@@ -111,14 +111,20 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   )
 
   const onClose = useCallback(() => {
+    // Focus the root array item when closing the dialog.
+    const firstKeySegmentIndex = openPath.findIndex(isKeySegment)
+    const rootFocusPath = openPath.slice(0, firstKeySegmentIndex + 1)
+
+    onPathFocus(rootFocusPath)
+
+    // Reset the `openPath`
+    onPathOpen(EMPTY_ARRAY)
+
     // Cancel any debounced state building when closing the dialog.
     debouncedBuildTreeEditingState.cancel()
 
     // Reset the tree state when closing the dialog.
     setTreeState(EMPTY_TREE_STATE)
-
-    // Reset the `openPath`
-    onPathOpen(EMPTY_ARRAY)
 
     // Reset the stored value and openPath to undefined.
     // This is important since the next time the dialog is opened,
@@ -127,9 +133,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     // previous stored values.
     valueRef.current = undefined
     openPathRef.current = undefined
-  }, [debouncedBuildTreeEditingState, onPathOpen])
-
-  const open = useMemo(() => shouldArrayDialogOpen(schemaType, openPath), [schemaType, openPath])
+  }, [debouncedBuildTreeEditingState, onPathFocus, onPathOpen, openPath])
 
   const onHandlePathSelect = useCallback(
     (path: Path) => {
@@ -149,10 +153,6 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   )
 
   useEffect(() => {
-    // Don't proceed with building the tree editing state if the dialog
-    // should not be open.
-    if (!shouldArrayDialogOpen(schemaType, openPath)) return undefined
-
     const valueChanged = !isEqual(value, valueRef.current)
     const openPathChanged = !isEqual(openPath, openPathRef.current)
     const isInitialRender = valueRef.current === undefined && openPathRef.current === undefined
@@ -196,12 +196,12 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     }
   }, [schemaType, value, debouncedBuildTreeEditingState, openPath, handleBuildTreeEditingState])
 
-  if (!open || treeState.relativePath.length === 0) return null
+  if (treeState.relativePath.length === 0) return null
 
   return (
     <StyledDialog
       __unstable_hideCloseButton
-      autoFocus={false}
+      animate
       data-testid="tree-editing-dialog"
       id="tree-editing-dialog"
       onClickOutside={onClose}
