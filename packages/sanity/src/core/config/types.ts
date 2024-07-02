@@ -497,6 +497,8 @@ export interface SourceOptions extends PluginOptions {
    * should generally be avoided.
    *
    * Note that `auth.loginMethod` _must_ be set to `token` for this to work.
+   *
+   * @alpha Warning: This API may be removed at any point and should not be relied on.
    */
   allowDomainSharding?: boolean
 
