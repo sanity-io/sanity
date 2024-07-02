@@ -2,9 +2,14 @@ import {type SanityClient, type SanityDocument} from 'sanity'
 import speakingurl from 'speakingurl'
 
 import {type Version} from '../types'
-import {BUNDLES} from './const'
+import {BUNDLES, RANDOM_SYMBOLS, RANDOM_TONES} from './const'
 
 /* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
+
+export const getRandomToneIcon = () => ({
+  tone: RANDOM_TONES[Math.floor(Math.random() * RANDOM_TONES.length)],
+  icon: RANDOM_SYMBOLS[Math.floor(Math.random() * RANDOM_SYMBOLS.length)],
+})
 
 /**
  * Returns all versions of a document
