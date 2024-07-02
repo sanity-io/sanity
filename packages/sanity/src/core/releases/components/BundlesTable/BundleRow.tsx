@@ -1,9 +1,9 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {RelativeTime} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {type BundleDocument} from '../../../store/bundles/types'
 import {VersionBadge} from '../../../versions/components/VersionBadge'
-import {shortRelativeDate} from '../../utils/shortRelativeDate'
 import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
 
 type Props = {
@@ -42,7 +42,7 @@ export function BundleRow({bundle}: Props) {
       <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 100}}>
         {!!bundle.publishedAt && (
           <Text muted size={1}>
-            {shortRelativeDate(bundle.publishedAt)}
+            <RelativeTime time={bundle.publishedAt} />
           </Text>
         )}
       </Flex>
