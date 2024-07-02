@@ -51,15 +51,12 @@ export function GlobalBundleMenu(): JSX.Element {
     setCreateBundleDialogOpen(false)
   }, [])
 
-  const handleSubmit = useCallback(
-    () => (value: Bundle) => {
-      // eslint-disable-next-line no-console
-      console.log('create new bundle', value.name)
+  const handleSubmit = useCallback((value: Bundle) => {
+    // eslint-disable-next-line no-console
+    console.log('create new bundle', value.name)
 
-      setCreateBundleDialogOpen(false)
-    },
-    [],
-  )
+    setCreateBundleDialogOpen(false)
+  }, [])
 
   return (
     <>
@@ -129,7 +126,7 @@ export function GlobalBundleMenu(): JSX.Element {
       />
 
       {createBundleDialogOpen && (
-        <CreateBundleDialog onCancel={handleCancel} onSubmit={handleSubmit} />
+        <CreateBundleDialog onCancel={handleCancel} onCreate={handleSubmit} />
       )}
     </>
   )
