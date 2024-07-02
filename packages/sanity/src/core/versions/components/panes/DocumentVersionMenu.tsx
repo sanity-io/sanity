@@ -21,9 +21,10 @@ import {
   VersionContext,
   type VersionContextValue,
 } from '../../../../_singletons/core/form/VersionContext'
+import {useBundlesStore} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {type Version} from '../../types'
-import {BUNDLES, LATEST} from '../../util/const'
+import {LATEST} from '../../util/const'
 import {getAllVersionsOfDocument, isDraftOrPublished} from '../../util/dummyGetters'
 import {VersionBadge} from '../VersionBadge'
 
@@ -41,6 +42,8 @@ export function DocumentVersionMenu(props: {
   const {name} = currentVersion
   // const toast = useToast()
 
+  const {data: bundles, loading} = useBundlesStore()
+
   const [documentVersions, setDocumentVersions] = useState<Version[]>([])
 
   /*// search
@@ -48,17 +51,19 @@ export function DocumentVersionMenu(props: {
   const addVersionName = speakingurl(addVersionTitle)
 
   // use to prevent adding a version when you're already in that version
-  const addVersionExists = BUNDLES.some((r) => r.name.toLocaleLowerCase() === addVersionName)
+  const addVersionExists = bundles.some((r) => r.name.toLocaleLowerCase() === addVersionName)
 
   // list of available bundles
-  const bundleOptionsList = BUNDLES.filter((r) =>
+  const bundleOptionsList = bundles.filter((r) =>
     r.title.toLowerCase().includes(addVersionTitle.toLowerCase()),
   )*/
 
   const fetchVersions = useCallback(async () => {
-    const response = await getAllVersionsOfDocument(client, documentId)
-    setDocumentVersions(response)
-  }, [client, documentId])
+    if (!loading) {
+      const response = await getAllVersionsOfDocument(bundles, client, documentId)
+      setDocumentVersions(response)
+    }
+  }, [bundles, client, documentId, loading])
 
   // DUMMY FETCH -- NEEDS TO BE REPLACED -- USING GROQ from utils
   useEffect(() => {
@@ -139,7 +144,7 @@ export function DocumentVersionMenu(props: {
 
               <MenuDivider />
 
-              {BUNDLES.length > 0 && (
+              {bundles && bundles.length > 0 && (
                 <>
                   <Stack padding={1} space={1}>
                     <Box padding={3} paddingBottom={2}>

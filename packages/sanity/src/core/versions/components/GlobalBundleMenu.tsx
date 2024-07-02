@@ -6,16 +6,15 @@ import {
   VersionContext,
   type VersionContextValue,
 } from '../../../_singletons/core/form/VersionContext'
+import {useBundlesStore} from '../../store/bundles'
 import {type BundleDocument} from '../../store/bundles/types'
-import {BUNDLES, LATEST} from '../util/const'
+import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/dummyGetters'
 import {CreateBundleDialog} from './dialog/CreateBundleDialog'
 import {VersionBadge} from './VersionBadge'
 
 export function GlobalBundleMenu(): JSX.Element {
-  // eslint-disable-next-line no-warning-comments
-  // FIXME REPLACE WHEN WE HAVE REAL DATA
-  const bundles = BUNDLES
+  const {data: bundles} = useBundlesStore()
 
   // eslint-disable-next-line no-warning-comments
   // FIXME REPLACE WHEN WE HAVE REAL DATA
@@ -63,38 +62,46 @@ export function GlobalBundleMenu(): JSX.Element {
               pressed={false}
               text={LATEST.title}
             />
-            {bundles.length > 0 && (
+            {bundles && bundles.length > 0 && (
               <>
                 <MenuDivider />
               </>
             )}
-            {bundles
-              .filter((b) => !isDraftOrPublished(b.name))
-              .map((b) => (
-                <MenuItem key={b.name} onClick={handleBundleChange(b)} padding={1} pressed={false}>
-                  <Flex>
-                    <VersionBadge tone={b.tone} icon={b.icon} padding={2} />
+            {bundles &&
+              bundles
+                .filter((b) => !isDraftOrPublished(b.name))
+                .map((b) => (
+                  <MenuItem
+                    key={b.name}
+                    onClick={handleBundleChange(b)}
+                    padding={1}
+                    pressed={false}
+                  >
+                    <Flex>
+                      <VersionBadge tone={b.tone} icon={b.icon} padding={2} />
 
-                    <Box flex={1} padding={2} style={{minWidth: 100}}>
-                      <Text size={1} weight="medium">
-                        {b.title}
-                      </Text>
-                    </Box>
+                      <Box flex={1} padding={2} style={{minWidth: 100}}>
+                        <Text size={1} weight="medium">
+                          {b.title}
+                        </Text>
+                      </Box>
 
-                    <Box padding={2}>
-                      <Text muted size={1}>
-                        {b.publishAt ? `a date will be here ${b.publishAt}` : 'No target date'}
-                      </Text>
-                    </Box>
+                      <Box padding={2}>
+                        <Text muted size={1}>
+                          {b.publishAt ? `a date will be here ${b.publishAt}` : 'No target date'}
+                        </Text>
+                      </Box>
 
-                    <Box padding={2}>
-                      <Text size={1}>
-                        <CheckmarkIcon style={{opacity: currentVersion.name === b.name ? 1 : 0}} />
-                      </Text>
-                    </Box>
-                  </Flex>
-                </MenuItem>
-              ))}
+                      <Box padding={2}>
+                        <Text size={1}>
+                          <CheckmarkIcon
+                            style={{opacity: currentVersion.name === b.name ? 1 : 0}}
+                          />
+                        </Text>
+                      </Box>
+                    </Flex>
+                  </MenuItem>
+                ))}
             <MenuDivider />
             {/* localize text */}
             {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */}

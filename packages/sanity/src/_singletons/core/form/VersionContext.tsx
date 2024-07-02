@@ -4,8 +4,9 @@
 // eslint-disable-next-line import/consistent-type-specifier-style
 import {createContext, type ReactElement} from 'react'
 
+import {useBundlesStore} from '../../../core/store/bundles'
 import type {BundleDocument} from '../../../core/store/bundles/types'
-import {BUNDLES, LATEST} from '../../../core/versions/util/const'
+import {LATEST} from '../../../core/versions/util/const'
 import {useRouter} from '../../../router'
 
 export interface VersionContextValue {
@@ -27,6 +28,8 @@ interface VersionProviderProps {
 
 export function VersionProvider({children}: VersionProviderProps): JSX.Element {
   const router = useRouter()
+  const {data: bundles} = useBundlesStore()
+
   const setCurrentVersion = (version: BundleDocument) => {
     const {name} = version
     if (name === 'drafts') {
@@ -35,14 +38,15 @@ export function VersionProvider({children}: VersionProviderProps): JSX.Element {
       router.navigateStickyParam('perspective', `bundle.${name}`)
     }
   }
-  const selectedVersion = router.stickyParams?.perspective
-    ? BUNDLES.find((bundle) => {
-        return (
-          `bundle.${bundle.name}`.toLocaleLowerCase() ===
-          router.stickyParams.perspective?.toLocaleLowerCase()
-        )
-      })
-    : LATEST
+  const selectedVersion =
+    router.stickyParams?.perspective && bundles
+      ? bundles.find((bundle) => {
+          return (
+            `bundle.${bundle.name}`.toLocaleLowerCase() ===
+            router.stickyParams.perspective?.toLocaleLowerCase()
+          )
+        })
+      : LATEST
 
   const currentVersion = selectedVersion || LATEST
 

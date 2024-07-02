@@ -4,6 +4,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sanity'
 
 import {Button} from '../../../../ui-components'
+import {useBundlesStore} from '../../../store/bundles'
 import {type Version} from '../../types'
 import {getAllVersionsOfDocument, versionDocumentExists} from '../../util/dummyGetters'
 
@@ -17,6 +18,7 @@ interface BundleActionsProps {
 export function BundleActions(props: BundleActionsProps): JSX.Element {
   const {currentVersion, documentId, documentType, isReady} = props
   const {name, title} = currentVersion
+  const {data: bundles, loading} = useBundlesStore()
 
   const [documentVersions, setDocumentVersions] = useState<Version[]>([])
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -24,9 +26,11 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
   const {newVersion} = useDocumentOperation(documentId, documentType)
 
   const fetchVersions = useCallback(async () => {
-    const response = await getAllVersionsOfDocument(client, documentId)
-    setDocumentVersions(response)
-  }, [client, documentId])
+    if (!loading) {
+      const response = await getAllVersionsOfDocument(bundles, client, documentId)
+      setDocumentVersions(response)
+    }
+  }, [loading, bundles, client, documentId])
 
   // DUMMY FETCH -- NEEDS TO BE REPLACED -- USING GROQ from utils
   useEffect(() => {

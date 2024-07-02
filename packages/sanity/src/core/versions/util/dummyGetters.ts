@@ -1,8 +1,8 @@
 import {type SanityClient, type SanityDocument} from 'sanity'
 import speakingurl from 'speakingurl'
 
+import {type BundleDocument} from '../../store/bundles/types'
 import {type Version} from '../types'
-import {BUNDLES} from './const'
 
 /* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
 
@@ -14,6 +14,7 @@ import {BUNDLES} from './const'
  * @returns array of SanityDocuments versions from a specific doc
  */
 export async function getAllVersionsOfDocument(
+  bundles: BundleDocument[] | null,
   client: SanityClient,
   documentId: string,
 ): Promise<Version[]> {
@@ -25,7 +26,7 @@ export async function getAllVersionsOfDocument(
   return await client.fetch(query, {}, {tag: 'document.list-versions'}).then((documents) => {
     return documents.map((doc: SanityDocument) => {
       const sluggedName = getVersionName(doc._id)
-      const bundle = BUNDLES.find((b) => b.name === sluggedName)
+      const bundle = bundles?.find((b) => b.name === sluggedName)
       return {
         name: speakingurl(sluggedName),
         title: bundle?.title || sluggedName,
