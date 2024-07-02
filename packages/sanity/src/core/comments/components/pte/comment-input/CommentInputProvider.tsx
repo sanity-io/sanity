@@ -1,8 +1,4 @@
-import {
-  type EditorSelection,
-  PortableTextEditor,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {isPortableTextSpan, type Path} from '@sanity/types'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {CommentInputContext} from 'sanity/_singletons'

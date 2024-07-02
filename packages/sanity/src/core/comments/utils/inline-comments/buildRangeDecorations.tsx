@@ -1,7 +1,4 @@
-import {
-  type RangeDecoration,
-  type RangeDecorationOnMovedDetails,
-} from '@sanity/portable-text-editor'
+import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
 import {type PortableTextBlock} from '@sanity/types'
 import {memo, useCallback, useEffect, useRef} from 'react'
 

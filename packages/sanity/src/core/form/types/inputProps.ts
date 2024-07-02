@@ -6,7 +6,7 @@ import {
   type OnPasteFn,
   type PortableTextEditor,
   type RangeDecoration,
-} from '@sanity/portable-text-editor'
+} from '@portabletext/editor'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,

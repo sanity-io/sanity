@@ -16,7 +16,6 @@
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
-    "@sanity/portable-text-editor": "workspace:*",
     "@sanity/schema": "workspace:*",
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
