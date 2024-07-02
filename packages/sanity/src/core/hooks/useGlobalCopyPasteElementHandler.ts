@@ -72,7 +72,10 @@ export function useGlobalCopyPasteElementHandler({
       }
 
       if (isPasteHotKey(event)) {
-        if (isNativeEditableElement(targetElement as HTMLElement)) {
+        if (
+          isNativeEditableElement(targetElement as HTMLElement) ||
+          isEmptyFocusPath(focusPathRef.current)
+        ) {
           return
         }
 
