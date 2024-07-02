@@ -85,13 +85,6 @@ export function parseCopyResult(value: string): CopyActionResult | null {
 
 export function isEmptyValue(value: unknown): boolean {
   if (value === null || value === undefined) return true
-  // Test that an object is empty. An object is considered not empty if it has some
-  // key that is not prefixed with _ or has a _ref key (exception for all other _ keys)
-  if (
-    typeof value === 'object' &&
-    Object.keys(value).filter((key) => key === '_ref' || !key.startsWith('_')).length === 0
-  )
-    return true
   if (Array.isArray(value) && value.length === 0) return true
   return false
 }

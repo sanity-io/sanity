@@ -123,6 +123,13 @@ export async function transferValue({
 }> {
   const errors: TransferValueError[] = []
 
+  if (!sourceRootSchemaType) {
+    throw new Error('Source root schema type is not defined')
+  }
+  if (!targetRootSchemaType) {
+    throw new Error('Target root schema type is not defined')
+  }
+
   const sourceSchemaTypeAtPath = resolveSchemaTypeForPath(
     sourceRootSchemaType,
     sourcePath,
@@ -260,13 +267,6 @@ async function collateObjectValue({
       errors,
     }
   }
-  if (targetSchemaType.readOnly) {
-    return {
-      targetValue: undefined,
-      errors,
-    }
-  }
-
   const targetValue = {
     _type: targetSchemaType.name,
     ...(sourceValue && typeof sourceValue === 'object' && '_key' in sourceValue
@@ -525,13 +525,6 @@ async function collateArrayValue({
   targetValue: unknown
   errors: TransferValueError[]
 }> {
-  if (targetSchemaType.readOnly) {
-    return {
-      targetValue: undefined,
-      errors,
-    }
-  }
-
   let targetValue: unknown[] | undefined = undefined
 
   const genericValue = sourceValue as unknown[]
@@ -660,13 +653,6 @@ function collatePrimitiveValue({
   targetValue: unknown
   errors: TransferValueError[]
 } {
-  if (targetSchemaType.readOnly) {
-    return {
-      targetValue: undefined,
-      errors,
-    }
-  }
-
   let targetValue: unknown
 
   const primitiveValue = sourceValue as unknown
