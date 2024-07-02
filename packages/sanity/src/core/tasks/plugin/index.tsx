@@ -18,7 +18,7 @@ export const TASKS_NAME = 'sanity/tasks'
  * @beta
  */
 export const tasks = definePlugin({
-  name: 'sanity/tasks',
+  name: TASKS_NAME,
   // eslint-disable-next-line camelcase
   __internal_tasks: {
     footerAction: <TasksFooterOpenTasks />,
