@@ -449,6 +449,10 @@ export interface WorkspaceOptions extends SourceOptions {
    * @internal
    */
   tasks?: DefaultPluginsWorkspaceOptions['tasks']
+  /**
+   * @internal
+   */
+  releases?: DefaultPluginsWorkspaceOptions['releases']
 
   /**
    * @hidden
@@ -892,6 +896,7 @@ export type {
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
+  releases: {enabled: boolean}
 }
 
 /**
