@@ -1,16 +1,21 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Flex} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {useCurrentUser} from 'sanity'
 
+import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {type Bundle} from '../../types'
-import {isDraftOrPublished} from '../../util/dummyGetters'
+import {getRandomToneIcon, isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleForm} from './BundleForm'
 
 export function CreateBundleDialog(props: {
   onCancel: () => void
-  onSubmit: (value: Bundle) => void
+  onCreate: (value: Bundle) => void
 }): JSX.Element {
-  const {onCancel, onSubmit} = props
+  const {onCancel, onCreate} = props
+  const {createBundle} = useBundleOperations()
+  const currentUser = useCurrentUser()
+  const [isCreating, setIsCreating] = useState(false)
 
   const [value, setValue] = useState<Bundle>({
     name: '',
@@ -20,10 +25,26 @@ export function CreateBundleDialog(props: {
   })
 
   const handleOnSubmit = useCallback(
-    () => (bundle: Bundle) => {
-      onSubmit(bundle)
+    async (bundle: Bundle) => {
+      setIsCreating(true)
+      try {
+        await createBundle({
+          _type: 'bundle',
+          name: value.title,
+          authorId: currentUser?.id,
+          title: value.title,
+          description: value.description,
+          ...getRandomToneIcon(),
+        })
+
+        onCreate(bundle)
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setIsCreating(false)
+      }
     },
-    [onSubmit],
+    [createBundle, currentUser?.id, onCreate, value.description, value.title],
   )
 
   return (
@@ -40,9 +61,10 @@ export function CreateBundleDialog(props: {
       </Box>
       <Flex justify="flex-end" padding={3}>
         <Button
-          disabled={!value.title || isDraftOrPublished(value.title)}
+          loading={isCreating}
+          disabled={!value.title || isDraftOrPublished(value.title) || isCreating}
           iconRight={ArrowRightIcon}
-          onClick={handleOnSubmit}
+          onClick={() => handleOnSubmit(value)}
           // localize Text
           // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
           text="Create release"

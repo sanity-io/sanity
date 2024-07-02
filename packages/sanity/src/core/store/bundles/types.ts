@@ -1,3 +1,4 @@
+import {type IconSymbol} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
 
@@ -7,6 +8,7 @@ export interface BundleDocument extends SanityDocument {
   name: string
   description?: string
   tone?: ButtonTone
-  icon?: string
+  icon?: IconSymbol
   authorId: string
+  publishedAt?: string
 }
