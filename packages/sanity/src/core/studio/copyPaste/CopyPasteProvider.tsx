@@ -1,4 +1,5 @@
-import {type ReactNode, useCallback, useContext, useMemo, useRef, useState} from 'react'
+import {isEqual} from 'lodash'
+import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {getPublishedId} from 'sanity'
 import {CopyPasteContext} from 'sanity/_singletons'
 
@@ -11,32 +12,37 @@ import {type CopyActionResult, type DocumentMeta} from './types'
 export const CopyPasteProvider: React.FC<{
   children: ReactNode
 }> = ({children}) => {
-  const documentMetaRef = useRef<DocumentMeta | null>(null)
+  const [documentMeta, setDocumentMetaState] = useState<DocumentMeta | null>(null)
   const [copyResult, setCopyResult] = useState<CopyActionResult | null>(null)
 
   const setDocumentMeta = useCallback(
     ({documentId, documentType, schemaType, onChange}: Required<DocumentMeta>) => {
-      documentMetaRef.current = {
+      const processedMeta = {
         documentId: getPublishedId(documentId),
         documentType,
         schemaType,
         onChange,
       }
+
+      setDocumentMetaState((prevMeta) => {
+        if (isEqual(prevMeta, processedMeta)) {
+          return prevMeta // No update if the new meta is the same as the current
+        }
+        return processedMeta
+      })
     },
     [],
   )
-
-  const getDocumentMeta = useCallback(() => documentMetaRef.current, [])
-
   const contextValue = useMemo(
     () => ({
       copyResult,
-      onChange: documentMetaRef?.current?.onChange,
-      getDocumentMeta,
+      documentMeta,
+      onChange: documentMeta?.onChange,
+      getDocumentMeta: documentMeta,
       setCopyResult,
       setDocumentMeta,
     }),
-    [copyResult, getDocumentMeta, setDocumentMeta],
+    [copyResult, documentMeta, setDocumentMeta],
   )
 
   return <CopyPasteContext.Provider value={contextValue}>{children}</CopyPasteContext.Provider>
