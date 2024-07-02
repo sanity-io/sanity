@@ -1,5 +1,3 @@
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
-/* eslint-disable i18next/no-literal-string */
 import {AddIcon} from '@sanity/icons'
 import {Box, Button, type ButtonMode, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {isBefore} from 'date-fns'

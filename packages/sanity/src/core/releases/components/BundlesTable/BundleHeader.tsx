@@ -1,5 +1,3 @@
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
-/* eslint-disable i18next/no-literal-string */
 import {SearchIcon} from '@sanity/icons'
 import {Button, Card, Flex, Stack, TextInput} from '@sanity/ui'
 
