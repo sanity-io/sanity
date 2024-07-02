@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
-import {isAssetObjectStub, isFileAssetId, isImageAssetId, isReference} from '@sanity/asset-utils'
+import {isAssetObjectStub, isFileAssetId, isImageAssetId} from '@sanity/asset-utils'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
@@ -12,6 +12,7 @@ import {
   isNumberSchemaType,
   isObjectSchemaType,
   isPrimitiveSchemaType,
+  isReference,
   isReferenceSchemaType,
   isStringSchemaType,
   isTypedObject,
@@ -534,6 +535,16 @@ async function collateObjectValue({
   // Special handling for weak references
   if (isReferenceSchemaType(targetSchemaType) && targetSchemaType.weak) {
     resultingValue._weak = true
+  }
+
+  // Special handling for weak references that will be strengthened on publish
+  if (
+    isReferenceSchemaType(targetSchemaType) &&
+    isReference(sourceValue) &&
+    sourceValue._strengthenOnPublish
+  ) {
+    resultingValue._weak = true
+    resultingValue._strengthenOnPublish = sourceValue._strengthenOnPublish
   }
 
   return {
