@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../../store/bundles/types'
-import {BundleHeader} from './BundleHeader'
+import {BundleHeader, type BundleHeaderProps} from './BundleHeader'
 import {BundleRow} from './BundleRow'
 
 const RowStack = styled(Stack)({
@@ -20,11 +20,11 @@ const RowStack = styled(Stack)({
   },
 })
 
-type Props = {
+interface BundlesTableProps extends Omit<BundleHeaderProps, 'searchDisabled'> {
   bundles: BundleDocument[]
 }
 
-export function BundlesTable({bundles}: Props) {
+export function BundlesTable({bundles, searchTerm, setSearchTerm}: BundlesTableProps) {
   const tableContent = useMemo(() => {
     if (bundles.length === 0) {
       return (
@@ -50,7 +50,11 @@ export function BundlesTable({bundles}: Props) {
 
   return (
     <Stack as="table" space={1}>
-      <BundleHeader />
+      <BundleHeader
+        searchDisabled={!bundles.length}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
       <RowStack as="tbody">{tableContent}</RowStack>
     </Stack>
   )

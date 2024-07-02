@@ -16,16 +16,18 @@ jest.mock('../../../../store/bundles/useBundleOperations', () => ({
   useBundleOperations: jest.fn().mockReturnValue({deleteBundle: jest.fn()}),
 }))
 
+const mockSetSearchTerm = jest.fn()
+
 const renderBundlesTable = async (bundles: BundleDocument[]) => {
   const wrapper = await createTestProvider()
-  return render(<BundlesTable bundles={bundles} />, {wrapper})
+  return render(<BundlesTable bundles={bundles} setSearchTerm={mockSetSearchTerm} />, {wrapper})
 }
 
 describe('BundlesTable', () => {
-  it('should render the header', async () => {
+  it('should render the table headers', async () => {
     await renderBundlesTable([])
 
-    screen.getByText('Release')
+    screen.getByPlaceholderText('Search releases')
     screen.getByText('Published')
   })
 
@@ -46,6 +48,21 @@ describe('BundlesTable', () => {
     const bundleRows = screen.getAllByTestId('bundle-row')
     expect(bundleRows).toHaveLength(bundles.length)
     bundles.forEach((bundle, index) => within(bundleRows[index]).getByText(bundle.title))
+  })
+
+  it('should disable search when no bundles in table', async () => {
+    await renderBundlesTable([])
+
+    expect(screen.getByPlaceholderText('Search releases')).toBeDisabled()
+  })
+
+  it('should enable and trigger a search when there are bundles in the table', async () => {
+    await renderBundlesTable([{title: 'Bundle 1'}] as BundleDocument[])
+
+    const searchInput = screen.getByPlaceholderText('Search releases')
+    fireEvent.change(searchInput, {target: {value: 'Bundle 1'}})
+
+    expect(mockSetSearchTerm).toHaveBeenCalledWith('Bundle 1')
   })
 
   describe('A bundle row', () => {

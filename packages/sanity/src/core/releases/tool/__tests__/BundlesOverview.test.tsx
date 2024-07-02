@@ -56,10 +56,6 @@ describe('BundlesOverview', () => {
       expect(screen.getByText('Archived').closest('button')).toBeDisabled()
     })
 
-    it('does not allow for searching bundles', () => {
-      expect(screen.getByPlaceholderText('Search releases')).toBeDisabled()
-    })
-
     it('does show the page heading', () => {
       screen.getByText('Releases')
     })
@@ -89,10 +85,6 @@ describe('BundlesOverview', () => {
     it('does not show bundle history mode switch', () => {
       expect(screen.queryByText('Open')).toBeNull()
       expect(screen.queryByText('Archived')).toBeNull()
-    })
-
-    it('does now show bundle search', () => {
-      expect(screen.queryByPlaceholderText('Search releases')).toBeNull()
     })
 
     it('shows the page heading', () => {

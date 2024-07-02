@@ -1,18 +1,7 @@
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
 /* eslint-disable i18next/no-literal-string */
-import {AddIcon, SearchIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  type ButtonMode,
-  Card,
-  Container,
-  Flex,
-  Heading,
-  Stack,
-  Text,
-  TextInput,
-} from '@sanity/ui'
+import {AddIcon} from '@sanity/icons'
+import {Box, Button, type ButtonMode, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {isBefore} from 'date-fns'
 import {type MouseEventHandler, useCallback, useMemo, useState} from 'react'
 import {LoadingBlock} from 'sanity'
@@ -50,7 +39,10 @@ export default function BundlesOverview() {
   )
 
   const handleBundleGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
-    ({currentTarget: {value: groupMode}}) => setBundleGroupMode(groupMode as Mode),
+    ({currentTarget: {value: groupMode}}) => {
+      setSearchTerm('') // clear the table search applied
+      setBundleGroupMode(groupMode as Mode)
+    },
     [],
   )
 
@@ -107,27 +99,6 @@ export default function BundlesOverview() {
     [isCreateBundleDialogOpen],
   )
 
-  const bundleSearch = useMemo(
-    () => (
-      <Flex flex="none" gap={2}>
-        <TextInput
-          disabled={loading}
-          fontSize={1}
-          icon={SearchIcon}
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.currentTarget.value)}
-          onClear={() => setSearchTerm('')}
-          padding={2}
-          clearButton={!!searchTerm}
-          placeholder="Search releases"
-          space={2}
-        />
-        {createReleaseButton}
-      </Flex>
-    ),
-    [createReleaseButton, loading, searchTerm],
-  )
-
   const renderCreateBundleDialog = () => {
     if (!isCreateBundleDialogOpen) return null
 
@@ -173,12 +144,16 @@ export default function BundlesOverview() {
               </Stack>
               {loadingOrHasBundles && currentArchivedPicker}
             </Flex>
-            {loadingOrHasBundles && bundleSearch}
+            {loadingOrHasBundles && createReleaseButton}
           </Flex>
           {loading ? (
             <LoadingBlock fill data-testid="bundle-table-loader" />
           ) : (
-            <BundlesTable bundles={filteredBundles} />
+            <BundlesTable
+              bundles={filteredBundles}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+            />
           )}
         </Stack>
       </Container>

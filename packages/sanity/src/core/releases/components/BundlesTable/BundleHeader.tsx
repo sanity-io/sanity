@@ -1,19 +1,36 @@
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
 /* eslint-disable i18next/no-literal-string */
-import {Box, Button, Card, Flex, Text} from '@sanity/ui'
+import {SearchIcon} from '@sanity/icons'
+import {Button, Card, Flex, Stack, TextInput} from '@sanity/ui'
 
-export function BundleHeader() {
+/**
+ * @internal
+ */
+export interface BundleHeaderProps {
+  searchDisabled?: boolean
+  searchTerm?: string
+  setSearchTerm: (value?: string) => void
+}
+
+export function BundleHeader({searchDisabled, searchTerm, setSearchTerm}: BundleHeaderProps) {
   return (
     <Card as="thead" radius={3}>
       <Flex as="tr">
         {/* Title */}
-        <Flex as="th" align="center" flex={1} paddingX={2} paddingY={1} paddingLeft={3}>
-          <Box paddingY={1}>
-            <Text muted size={1}>
-              Release
-            </Text>
-          </Box>
-        </Flex>
+        <Stack as="th" flex={1} paddingY={2} paddingRight={3}>
+          <TextInput
+            border={false}
+            fontSize={1}
+            icon={SearchIcon}
+            placeholder="Search releases"
+            radius={3}
+            value={searchTerm}
+            disabled={searchDisabled}
+            onChange={(event) => setSearchTerm(event.currentTarget.value)}
+            onClear={() => setSearchTerm('')}
+            clearButton={!!searchTerm}
+          />
+        </Stack>
         {/* Published */}
         <Flex
           as="th"
