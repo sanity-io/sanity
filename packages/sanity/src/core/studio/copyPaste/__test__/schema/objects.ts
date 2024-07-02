@@ -165,3 +165,32 @@ export const arrayOfMultipleNestedTypesWithoutColor = defineField({
     }),
   ],
 })
+
+export const eventsArray = defineField({
+  name: 'events',
+  title: 'Events',
+  type: 'array',
+  of: [
+    defineArrayMember({
+      name: 'mbwEvent',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'where',
+          title: 'Where',
+          description: 'Victoriagade? Baghaven? Koelschip?',
+          type: 'string',
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: 'what',
+          title: 'What',
+          description: 'Party? Bottle release? Tap takeover?',
+          type: 'array',
+          of: [{type: 'string'}],
+          validation: (Rule) => Rule.min(1),
+        }),
+      ],
+    }),
+  ],
+})

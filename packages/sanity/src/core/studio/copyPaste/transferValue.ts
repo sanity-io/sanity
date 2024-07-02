@@ -45,8 +45,8 @@ function isCompatiblePrimitiveType(value: unknown, targetJsonTypes: string[]): b
 
   // We allow putting numbers into string fields
   if (
-    (typeof value === 'number' && targetJsonTypes.includes('number')) ||
-    targetJsonTypes.includes('string')
+    typeof value === 'number' &&
+    (targetJsonTypes.includes('number') || targetJsonTypes.includes('string'))
   ) {
     return true
   }
