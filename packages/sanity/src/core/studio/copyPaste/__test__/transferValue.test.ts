@@ -620,6 +620,47 @@ describe('transferValue', () => {
       expect(transferValueResult.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(expectValue)
     })
+
+    test('can copy array of weak references from create new action', async () => {
+      const sourceValue = [
+        {
+          _type: 'reference',
+          _key: '572199919d45',
+          _ref: '26e2c49c-9e7a-4ece-9b63-c5b3157856b1',
+          _weak: true,
+          _strengthenOnPublish: {
+            type: 'author',
+            template: {id: 'author'},
+          },
+        },
+      ]
+      const expectedOutput = [
+        {
+          _type: 'reference',
+          _key: expect.any(String),
+          _ref: '26e2c49c-9e7a-4ece-9b63-c5b3157856b1',
+          _weak: true,
+          _strengthenOnPublish: {
+            type: 'author',
+            template: {id: 'author'},
+          },
+        },
+      ]
+      const sourceRootSchemaType = resolveSchemaTypeForPath(schema.get('referencesDocument')!, [
+        'arrayOfReferences',
+      ])!
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: resolveSchemaTypeForPath(schema.get('referencesDocument')!, [
+          'arrayOfReferences',
+        ])!,
+        targetPath: [],
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual(expectedOutput)
+    })
   })
 
   describe('numbers', () => {

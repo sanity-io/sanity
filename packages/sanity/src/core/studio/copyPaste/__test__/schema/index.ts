@@ -3,6 +3,7 @@ import {type Schema} from '@sanity/types'
 import {createSchema} from '../../../../schema'
 import {authorDocument} from './author'
 import {objectsDocument} from './documents/objects'
+import {referencesDocument} from './documents/references'
 import {editorDocument} from './editor'
 import {hotspotDocument} from './hotspot'
 import {linkType, myStringObjectType, nestedObjectType} from './objects'
@@ -42,5 +43,6 @@ export const schema = createSchema({
     pteCustomMarkersDocument,
     hotspotDocument,
     objectsDocument,
+    referencesDocument,
   ],
 }) as Schema
