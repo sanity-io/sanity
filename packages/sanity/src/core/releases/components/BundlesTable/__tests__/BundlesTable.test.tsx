@@ -9,7 +9,7 @@ import {BundlesTable} from '../BundlesTable'
 
 jest.mock('sanity/router', () => ({
   ...(jest.requireActual('sanity/router') || {}),
-  useRouter: jest.fn().mockReturnValue({state: {bundleName: '123'}, navigate: jest.fn()}),
+  useRouter: jest.fn().mockReturnValue({state: {bundleId: '123'}, navigate: jest.fn()}),
 }))
 
 jest.mock('../../../../store/bundles/useBundleOperations', () => ({
@@ -67,32 +67,27 @@ describe('BundlesTable', () => {
 
   describe('A bundle row', () => {
     it('should navigate to the bundle detail when clicked', async () => {
-      const bundles = [{_id: '123', title: 'Bundle 1', name: 'bundle-1'}] as BundleDocument[]
+      const bundles = [{_id: '123', title: 'Bundle 1'}] as BundleDocument[]
       await renderBundlesTable(bundles)
 
       const bundleRow = screen.getAllByTestId('bundle-row')[0]
       fireEvent.click(within(bundleRow).getByText('Bundle 1'))
 
-      expect(useRouter().navigate).toHaveBeenCalledWith({bundleName: 'bundle-1'})
+      expect(useRouter().navigate).toHaveBeenCalledWith({bundleId: '123'})
     })
 
     it('should delete bundle when menu button is clicked', async () => {
-      const bundles = [{_id: '123', title: 'Bundle 1', name: 'bundle-1'}] as BundleDocument[]
+      const bundles = [{_id: '123', title: 'Bundle 1'}] as BundleDocument[]
       await renderBundlesTable(bundles)
 
       const bundleRow = screen.getAllByTestId('bundle-row')[0]
       fireEvent.click(within(bundleRow).getByLabelText('Release menu'))
 
-      fireEvent.click(screen.getByText('Delete'))
-      fireEvent.click(screen.getByText('Confirm'))
+      fireEvent.click(screen.getByText('Delete release'))
 
       await waitFor(() => {
-        expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith({
-          _id: '123',
-          name: 'bundle-1',
-          title: 'Bundle 1',
-        })
-        expect(useRouter().navigate).toHaveBeenCalledWith({bundleName: undefined})
+        expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith('123')
+        expect(useRouter().navigate).toHaveBeenCalledWith({bundleId: undefined})
       })
     })
   })
