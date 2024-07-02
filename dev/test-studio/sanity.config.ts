@@ -149,7 +149,7 @@ const sharedSettings = definePlugin({
   ],
 })
 
-export default defineConfig([
+const production = defineConfig([
   {
     name: 'default',
     title: 'Test Studio',
@@ -157,8 +157,6 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
-    allowDomainSharding: true,
-    auth: {loginMethod: 'token'},
     icon: SanityMonogram,
     // eslint-disable-next-line camelcase
     __internal_serverDocumentActions: {
@@ -216,22 +214,6 @@ export default defineConfig([
     dataset: 'playground-partial-indexing',
     plugins: [sharedSettings()],
     basePath: '/playground-partial-indexing',
-  },
-  {
-    name: 'staging',
-    title: 'Staging',
-    subtitle: 'Staging dataset',
-    projectId: 'exx11uqh',
-    dataset: 'playground',
-    plugins: [sharedSettings()],
-    basePath: '/staging',
-    apiHost: 'https://api.sanity.work',
-    auth: {
-      loginMethod: 'token',
-    },
-    unstable_tasks: {
-      enabled: true,
-    },
   },
   {
     name: 'custom-components',
@@ -331,4 +313,30 @@ export default defineConfig([
     ],
     basePath: '/presentation',
   },
-]) as WorkspaceOptions[]
+])
+
+const staging = defineConfig([
+  {
+    name: 'staging',
+    title: 'Staging',
+    subtitle: 'Staging dataset',
+    projectId: 'exx11uqh',
+    dataset: 'playground',
+    plugins: [sharedSettings()],
+    basePath: '/staging',
+    apiHost: 'https://api.sanity.work',
+    allowDomainSharding: true,
+    auth: {
+      loginMethod: 'token',
+    },
+    unstable_tasks: {
+      enabled: true,
+    },
+  },
+])
+
+const studioConfig: WorkspaceOptions[] =
+  // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
+  typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__ ? staging : production
+
+export default studioConfig
