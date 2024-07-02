@@ -45,13 +45,11 @@ export function useCopyPasteAction(): CopyPasteHookValue {
   const toast = useToast()
   const {t} = useTranslation('copy-paste')
 
-  const {getDocumentMeta, setCopyResult} = useCopyPaste()
-  const {onChange} = getDocumentMeta()! || {}
+  const {documentMeta, setCopyResult} = useCopyPaste()
+  const {onChange} = documentMeta || {}
 
   const onCopy = useCallback(
     async (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => {
-      const documentMeta = getDocumentMeta()
-
       // Test that we got document meta first
       if (!documentMeta) {
         console.warn(`Failed to resolve document meta data for path ${PathUtils.toString(path)}.`)
@@ -148,12 +146,12 @@ export function useCopyPasteAction(): CopyPasteHookValue {
             }),
       })
     },
-    [getDocumentMeta, setCopyResult, telemetry, toast, t],
+    [documentMeta, setCopyResult, telemetry, toast, t],
   )
 
   const onPaste = useCallback(
     async (targetPath: Path, value: FormDocumentValue | undefined, options?: PasteOptions) => {
-      const {schemaType: targetDocumentSchemaType} = getDocumentMeta()!
+      const {schemaType: targetDocumentSchemaType} = documentMeta || {}
       const targetSchemaType = resolveSchemaTypeForPath(
         targetDocumentSchemaType!,
         targetPath,
@@ -289,7 +287,17 @@ export function useCopyPasteAction(): CopyPasteHookValue {
           .map(({targetSchemaTypeTitle}) => targetSchemaTypeTitle)
           .join('", "')
 
-        onChange?.(PatchEvent.from(allPatches))
+        if (!onChange) {
+          console.warn(`Failed to resolve document onChange method when pasting.`)
+
+          toast.push({
+            status: 'error',
+            title: t('copy-paste.on-copy.validation.document-metadata-unknown-error.title'),
+          })
+          return
+        }
+
+        onChange(PatchEvent.from(allPatches))
 
         if (clipboardItem.isDocument) {
           toast.push({
@@ -314,7 +322,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
         }
       }
     },
-    [getDocumentMeta, schema, telemetry, toast, client, onChange, t],
+    [documentMeta, schema, telemetry, toast, client, onChange, t],
   )
 
   return {onCopy, onPaste, onChange}

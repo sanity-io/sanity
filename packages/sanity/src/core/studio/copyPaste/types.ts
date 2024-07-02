@@ -37,7 +37,7 @@ export interface CopyActionResult {
  * @hidden
  */
 export interface CopyPasteContextType {
-  getDocumentMeta: () => DocumentMeta | null
+  documentMeta: DocumentMeta | null
   copyResult: CopyActionResult | null
   setCopyResult: (result: CopyActionResult) => void
   setDocumentMeta: (meta: Required<DocumentMeta>) => void
