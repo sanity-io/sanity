@@ -11,6 +11,7 @@ import {getSchemaTypeTitle, type Path, SanityDefaultPreview} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
 
+import {usePreviewComponent} from '../../../../form-components-hooks'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
 import {isArrayItemPath} from '../../utils/build-tree-editing-state/utils'
@@ -111,15 +112,17 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Elemen
   const {item, onPathSelect, selectedPath, siblingHasChildren} = props
   const {children} = item
   const hasChildren = children && children.length > 0
-  const [open, setOpen] = useState<boolean>(false)
-  const {t} = useTranslation()
 
+  const {t} = useTranslation()
+  const PreviewComponent = usePreviewComponent()
+
+  const [open, setOpen] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
 
   const selected = useMemo(() => isEqual(item.path, selectedPath), [item.path, selectedPath])
   const isArrayParent = useMemo(() => !isArrayItemPath(item.path), [item.path])
 
-  const {value} = useValuePreviewWithFallback({
+  const {value, isLoading, error} = useValuePreviewWithFallback({
     schemaType: item.schemaType,
     value: item.value,
   })
@@ -193,11 +196,23 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Elemen
               title={title}
             >
               <Flex align="center">
-                <SanityDefaultPreview
-                  layout="inline"
-                  media={isArrayParent ? <StackCompactIcon /> : value.media}
-                  title={title}
-                />
+                {!isArrayParent && (
+                  <PreviewComponent
+                    {...value}
+                    error={error}
+                    isPlaceholder={isLoading}
+                    layout="inline"
+                    schemaType={item.schemaType}
+                  />
+                )}
+
+                {isArrayParent && (
+                  <SanityDefaultPreview
+                    layout="inline"
+                    media={<StackCompactIcon />}
+                    title={title}
+                  />
+                )}
               </Flex>
             </Button>
           </Stack>
