@@ -1,3 +1,4 @@
+import {toString} from '@sanity/util/paths'
 import {
   type ArraySchemaType,
   EMPTY_ARRAY,
@@ -122,6 +123,19 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           schemaType: childField as ObjectSchemaType,
           value: childValue,
         })
+
+        return
+      }
+
+      // If `openPath` points to an array field within a portable text field,
+      // set `relativePath` to the parent of the portable text field.
+      // This ensures that the tree editing dialog opens at the parent level
+      // of the portable text field.
+      // Portable text fields manage their own dialogs, so we open the tree editing
+      // dialog for the parent item and let the portable text field handle its
+      // dialogs via `openPath`.
+      if (isPortableText && toString(openPath).startsWith(toString(childPath))) {
+        relativePath = getRelativePath(childPath)
       }
     })
 
