@@ -7,10 +7,13 @@ import {
   isArrayOfObjectsSchemaType,
   isArrayOfPrimitivesSchemaType,
   isArraySchemaType,
+  isBlockSchemaType,
   isFileSchemaType,
   isImageSchemaType,
   isNumberSchemaType,
   isObjectSchemaType,
+  isPortableTextSpan,
+  isPortableTextTextBlock,
   isPrimitiveSchemaType,
   isReference,
   isReferenceSchemaType,
@@ -472,6 +475,30 @@ async function collateObjectValue({
     }
   }
 
+  const markDefKeyMap: Record<string, string> = {}
+  const isPortableTextBlockWithMarkdefs =
+    isBlockSchemaType(targetSchemaType) &&
+    isPortableTextTextBlock(sourceValue) &&
+    !isEmptyValue(sourceValue.markDefs)
+
+  // Special handling for markDefs on block objects
+  if (isPortableTextBlockWithMarkdefs) {
+    // We want to generate a new key for each markDef preempetively
+    const markDefs = sourceValue.markDefs || []
+
+    // Map old to new markDef key
+    markDefs
+      .filter((item) => item._key)
+      .forEach((item) => {
+        markDefKeyMap[item._key] = keyGenerator()
+      })
+
+    targetValue.markDefs = markDefs.map((item) => ({
+      ...item,
+      _key: markDefKeyMap[item._key],
+    }))
+  }
+
   const objectMembers = targetSchemaType.fields
 
   for (const member of objectMembers) {
@@ -523,6 +550,16 @@ async function collateObjectValue({
         errors,
         keyGenerator,
       })
+
+      // Return early because we have set the markDefs one level up
+      if (
+        isPortableTextBlockWithMarkdefs &&
+        member.name === 'markDefs' &&
+        !isEmptyValue(targetValue.markDefs)
+      ) {
+        continue
+      }
+
       if (!isEmptyValue(collated.targetValue)) {
         targetValue[member.name] = collated.targetValue
       }
@@ -531,6 +568,19 @@ async function collateObjectValue({
 
   const valueAtTargetPath = getValueAtPath(targetValue, targetPath)
   const resultingValue = cleanObjectKeys(valueAtTargetPath as TypedObject)
+
+  if (Object.keys(markDefKeyMap).length > 0 && isPortableTextTextBlock(resultingValue)) {
+    // Now we need to update the _key references in the spans
+    resultingValue.children = resultingValue.children.map((child) => {
+      if (isPortableTextSpan(child) && child.marks) {
+        return {
+          ...child,
+          marks: [...child.marks.map((markKey: string) => markDefKeyMap[markKey] || markKey)],
+        }
+      }
+      return child
+    })
+  }
 
   // Special handling for weak references
   if (isReferenceSchemaType(targetSchemaType) && targetSchemaType.weak) {
