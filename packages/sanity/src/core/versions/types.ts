@@ -15,5 +15,5 @@ export interface Version {
 
 export interface SanityVersionIcon {
   tone: ButtonTone
-  icon: IconSymbol
+  icon?: string | undefined
 }

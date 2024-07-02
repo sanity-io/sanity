@@ -1,22 +1,18 @@
 import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, Text} from '@sanity/ui'
 import {useCallback, useContext, useState} from 'react'
-import {useRouter} from 'sanity/router'
 
 import {
   VersionContext,
   type VersionContextValue,
 } from '../../../_singletons/core/form/VersionContext'
 import {type BundleDocument} from '../../store/bundles/types'
-import {type Version} from '../types'
 import {BUNDLES, LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/dummyGetters'
 import {CreateBundleDialog} from './dialog/CreateBundleDialog'
 import {VersionBadge} from './VersionBadge'
 
 export function GlobalBundleMenu(): JSX.Element {
-  const router = useRouter()
-
   // eslint-disable-next-line no-warning-comments
   // FIXME REPLACE WHEN WE HAVE REAL DATA
   const bundles = BUNDLES
@@ -28,18 +24,10 @@ export function GlobalBundleMenu(): JSX.Element {
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
   const handleBundleChange = useCallback(
-    (bundle: Version) => () => {
-      const {name} = bundle
-
-      if (isDraftOrPublished(name)) {
-        router.navigateStickyParam('perspective', '')
-      } else {
-        router.navigateStickyParam('perspective', `bundle.${name}`)
-      }
-
+    (bundle: BundleDocument) => () => {
       setCurrentVersion(bundle)
     },
-    [router, setCurrentVersion],
+    [setCurrentVersion],
   )
 
   /* create new bundle */
@@ -48,19 +36,9 @@ export function GlobalBundleMenu(): JSX.Element {
     setCreateBundleDialogOpen(true)
   }, [])
 
-  const handleCancel = useCallback(() => {
+  const handleClose = useCallback(() => {
     setCreateBundleDialogOpen(false)
   }, [])
-
-  const handleSubmit = useCallback(
-    () => (value: BundleDocument) => {
-      // eslint-disable-next-line no-console
-      console.log('create new bundle', value.name)
-
-      setCreateBundleDialogOpen(false)
-    },
-    [],
-  )
 
   return (
     <>
@@ -118,6 +96,7 @@ export function GlobalBundleMenu(): JSX.Element {
                 </MenuItem>
               ))}
             <MenuDivider />
+            {/* localize text */}
             {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */}
             <MenuItem icon={AddIcon} onClick={handleCreateBundleClick} text="Create release" />
           </Menu>
@@ -129,9 +108,7 @@ export function GlobalBundleMenu(): JSX.Element {
         }}
       />
 
-      {createBundleDialogOpen && (
-        <CreateBundleDialog onCancel={handleCancel} onSubmit={handleSubmit} />
-      )}
+      {createBundleDialogOpen && <CreateBundleDialog onClose={handleClose} />}
     </>
   )
 }

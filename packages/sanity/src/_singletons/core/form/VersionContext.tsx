@@ -4,14 +4,14 @@
 // eslint-disable-next-line import/consistent-type-specifier-style
 import {createContext, type ReactElement} from 'react'
 
-import type {Version} from '../../../core/versions/types'
+import type {BundleDocument} from '../../../core/store/bundles/types'
 import {BUNDLES, LATEST} from '../../../core/versions/util/const'
 import {useRouter} from '../../../router'
 
 export interface VersionContextValue {
-  currentVersion: Version
+  currentVersion: BundleDocument
   isDraft: boolean
-  setCurrentVersion: (version: Version) => void
+  setCurrentVersion: (version: BundleDocument) => void
 }
 
 export const VersionContext = createContext<VersionContextValue>({
@@ -27,7 +27,7 @@ interface VersionProviderProps {
 
 export function VersionProvider({children}: VersionProviderProps): JSX.Element {
   const router = useRouter()
-  const setCurrentVersion = (version: Version) => {
+  const setCurrentVersion = (version: BundleDocument) => {
     const {name} = version
     if (name === 'drafts') {
       router.navigateStickyParam('perspective', '')

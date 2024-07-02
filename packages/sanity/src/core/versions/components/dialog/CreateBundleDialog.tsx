@@ -1,69 +1,69 @@
 import {ArrowRightIcon} from '@sanity/icons'
-import {Box, Button, Dialog, Flex} from '@sanity/ui'
-import {useCallback, useState} from 'react'
-import {useCurrentUser} from 'sanity'
+import {Box, Button, Dialog, Flex, useClickOutside} from '@sanity/ui'
+import {type FormEvent, useCallback, useState} from 'react'
 
 import {type BundleDocument} from '../../../store/bundles/types'
+import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleForm} from './BundleForm'
 
-export function CreateBundleDialog(props: {
-  onCancel: () => void
-  onSubmit: (value: BundleDocument) => void
-}): JSX.Element {
-  const {onCancel, onSubmit} = props
-  const currentUser = useCurrentUser()
+export function CreateBundleDialog(props: {onClose: () => void}): JSX.Element {
+  const {onClose} = props
+  const {createBundle} = useBundleOperations()
 
-  const [value, setValue] = useState<BundleDocument>({
-    _type: 'bundle',
-    _rev: '',
-    authorId: currentUser?.id || '',
-    _id: '',
-    _createdAt: new Date().toDateString(),
-    _updatedAt: new Date().toDateString(),
-    // Add any other missing properties here
+  const [value, setValue] = useState<Partial<BundleDocument>>({
     name: '',
     title: '',
     tone: undefined,
-    publishAt: '',
+    publishAt: undefined,
   })
+  const [isCreating, setIsCreating] = useState(false)
+  const [formRef, setFormRef] = useState<HTMLDivElement | null>(null)
 
   const handleOnSubmit = useCallback(
-    () => (bundle: BundleDocument) => {
-      setValue({
-        ...value,
-        ...{
-          _createdAt: new Date().toDateString(),
-          _updatedAt: new Date().toDateString(),
-        },
-      })
-      onSubmit(bundle)
+    async (event: FormEvent<HTMLFormElement>) => {
+      try {
+        event.preventDefault()
+        setIsCreating(true)
+        await createBundle(value)
+        setValue(value)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setIsCreating(false)
+        onClose()
+      }
     },
-    [onSubmit, value],
+    [createBundle, value, onClose],
   )
+
+  useClickOutside(onClose, [formRef])
 
   return (
     <Dialog
       animate
       header="Create release"
       id="create-bundle-dialog"
-      onClose={onCancel}
+      onClose={onClose}
       zOffset={5000}
       width={1}
     >
-      <Box padding={6}>
-        <BundleForm onChange={setValue} value={value} />
-      </Box>
-      <Flex justify="flex-end" padding={3}>
-        <Button
-          disabled={!value.title || isDraftOrPublished(value.title)}
-          iconRight={ArrowRightIcon}
-          onClick={handleOnSubmit}
-          // localize Text
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          text="Create release"
-        />
-      </Flex>
+      <form onSubmit={handleOnSubmit}>
+        <Box padding={6} ref={setFormRef}>
+          <BundleForm onChange={setValue} value={value} />
+        </Box>
+        <Flex justify="flex-end" padding={3}>
+          <Button
+            disabled={!value.title || isDraftOrPublished(value.title) || isCreating}
+            iconRight={ArrowRightIcon}
+            type="submit"
+            // localize Text
+            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+            text="Create release"
+            loading={isCreating}
+          />
+        </Flex>
+      </form>
     </Dialog>
   )
 }

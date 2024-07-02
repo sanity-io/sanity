@@ -21,8 +21,8 @@ import {RANDOM_TONES} from '../../util/const'
 import {isDraftOrPublished} from '../../util/dummyGetters'
 
 export function BundleForm(props: {
-  onChange: (params: BundleDocument) => void
-  value: BundleDocument
+  onChange: (params: Partial<BundleDocument>) => void
+  value: Partial<BundleDocument>
 }): JSX.Element {
   const {onChange, value} = props
   const [showTitleValidation, setShowTitleValidation] = useState(false)

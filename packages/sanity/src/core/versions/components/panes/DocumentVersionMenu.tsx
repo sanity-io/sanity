@@ -16,12 +16,12 @@ import {
 } from '@sanity/ui'
 import {useCallback, useContext, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
-import {useRouter} from 'sanity/router'
 
 import {
   VersionContext,
   type VersionContextValue,
 } from '../../../../_singletons/core/form/VersionContext'
+import {type BundleDocument} from '../../../store/bundles/types'
 import {type Version} from '../../types'
 import {BUNDLES, LATEST} from '../../util/const'
 import {getAllVersionsOfDocument, isDraftOrPublished} from '../../util/dummyGetters'
@@ -36,8 +36,8 @@ export function DocumentVersionMenu(props: {
   const {documentId, documentType} = props
   //const {newVersion} = useDocumentOperation(documentId, documentType)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const router = useRouter()
-  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
+  const {currentVersion, setCurrentVersion, isDraft} =
+    useContext<VersionContextValue>(VersionContext)
   const {name} = currentVersion
   // const toast = useToast()
 
@@ -94,16 +94,10 @@ export function DocumentVersionMenu(props: {
   )*/
 
   const handleChangeToVersion = useCallback(
-    (version: Version) => () => {
-      const {name: versionName} = version
-
-      if (isDraftOrPublished(versionName)) {
-        router.navigateStickyParam('perspective', '')
-      } else {
-        router.navigateStickyParam('perspective', `bundle.${versionName}`)
-      }
+    (version: BundleDocument) => () => {
+      setCurrentVersion(version)
     },
-    [router],
+    [setCurrentVersion],
   )
 
   const onMenuOpen = useCallback(async () => {
