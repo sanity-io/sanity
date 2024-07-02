@@ -279,6 +279,106 @@ describe('transferValue', () => {
       })
       expect(transferValueResult?.targetValue).toEqual(['Alice', 'Bob', 'Charlie'])
     })
+    test('can copy pte values with custom markers', async () => {
+      const sourceValue = {
+        _type: 'pte_customMarkers',
+        _id: 'xxx',
+        content: [
+          {
+            _key: '2291402e9364',
+            _type: 'block',
+            children: [
+              {
+                _key: '4bd1b8513714',
+                _type: 'span',
+                marks: [],
+                text: 'dsafadsfds',
+              },
+            ],
+            markDefs: [],
+            style: 'normal',
+          },
+          {
+            _key: '702747444e69',
+            _type: 'block',
+            children: [
+              {
+                _key: 'd373eb211a66',
+                _type: 'span',
+                marks: ['0fb5eb9f09b4'],
+                text: 'ewr',
+              },
+            ],
+            markDefs: [{_key: '0fb5eb9f09b4', _type: 'hyperlink'}],
+            style: 'normal',
+          },
+          {
+            _key: '02bb994c6a40',
+            _type: 'block',
+            children: [
+              {
+                _key: '290c117abcda',
+                _type: 'span',
+                marks: ['0fb5eb9f09b4'],
+                text: 'n.',
+              },
+            ],
+            markDefs: [{_key: '0fb5eb9f09b4', _type: 'hyperlink'}],
+            style: 'normal',
+          },
+        ],
+      }
+      const expectedOutput = [
+        {
+          _key: expect.any(String),
+          _type: 'block',
+          children: [
+            {
+              _key: expect.any(String),
+              _type: 'span',
+              text: 'dsafadsfds',
+            },
+          ],
+          style: 'normal',
+        },
+        {
+          _key: expect.any(String),
+          _type: 'block',
+          children: [
+            {
+              _key: expect.any(String),
+              _type: 'span',
+              marks: [expect.any(String)],
+              text: 'ewr',
+            },
+          ],
+          markDefs: [{_key: expect.any(String), _type: 'hyperlink'}],
+          style: 'normal',
+        },
+        {
+          _key: expect.any(String),
+          _type: 'block',
+          children: [
+            {
+              _key: expect.any(String),
+              _type: 'span',
+              marks: [expect.any(String)],
+              text: 'n.',
+            },
+          ],
+          markDefs: [{_key: expect.any(String), _type: 'hyperlink'}],
+          style: 'normal',
+        },
+      ]
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('pte_customMarkers')!,
+        sourcePath: ['content'],
+        sourceValue,
+        targetRootSchemaType: schema.get('pte_customMarkers')!,
+        targetPath: ['content'],
+      })
+      expect(transferValueResult?.targetValue).toEqual(expectedOutput)
+    })
     test('can copy array of predefined options', async () => {
       const sourceValue = {
         _type: 'editor',
@@ -365,9 +465,73 @@ describe('transferValue', () => {
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfMultipleNestedTypes', {_key: 'color-1'}, 'nestedArray'],
       })
+      expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual([
         {_key: expect.any(String), title: 'Hello there', name: 'Fred', _type: 'color'},
       ])
+    })
+
+    test('can copy array values with objects with read-only properties into another array that does accept type', async () => {
+      const sourceValue = [
+        {
+          _key: '01fab2296a40',
+          _type: 'hotspot',
+          details: 'New Hotspot at 20% x 47.83%',
+          x: 20,
+          y: 47.83,
+        },
+        {
+          _key: '543baa938baf',
+          _type: 'hotspot',
+          details: 'New Hotspot at 54% x 48%',
+          x: 54.51,
+          y: 46.08,
+        },
+        {
+          _key: '0e7c1fb080c4',
+          _type: 'hotspot',
+          details: 'booper\n',
+          x: 31.33,
+          y: 56.25,
+        },
+        {
+          _key: '8c966cc5aef8',
+          _type: 'hotspot',
+          details: 'New Hotspot at 72.17% x 31.67%',
+          x: 72.17,
+          y: 31.67,
+        },
+        {
+          _key: '14fa20f16bbc',
+          _type: 'hotspot',
+          details: 'New Hotspot at 37.5% x 29.17%',
+          x: 37.5,
+          y: 29.17,
+        },
+        {
+          _key: 'cde6ac018ff2',
+          _type: 'hotspot',
+          details: 'New Hotspot at 82.83% x 79.67%',
+          x: 34.67,
+          y: 79.62,
+        },
+      ]
+      const expectValue = sourceValue.map((item) => ({
+        ...item,
+        _key: expect.any(String),
+      }))
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('hotspotDocument')!, [
+        'hotspots',
+      ])
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('hotspotDocument')!,
+        targetPath: ['hotspots'],
+      })
+      expect(transferValueResult.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual(expectValue)
     })
   })
 
