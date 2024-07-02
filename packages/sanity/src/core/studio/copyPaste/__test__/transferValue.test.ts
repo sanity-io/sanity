@@ -280,54 +280,50 @@ describe('transferValue', () => {
       expect(transferValueResult?.targetValue).toEqual(['Alice', 'Bob', 'Charlie'])
     })
     test('can copy pte values with custom markers', async () => {
-      const sourceValue = {
-        _type: 'pte_customMarkers',
-        _id: 'xxx',
-        content: [
-          {
-            _key: '2291402e9364',
-            _type: 'block',
-            children: [
-              {
-                _key: '4bd1b8513714',
-                _type: 'span',
-                marks: [],
-                text: 'dsafadsfds',
-              },
-            ],
-            markDefs: [],
-            style: 'normal',
-          },
-          {
-            _key: '702747444e69',
-            _type: 'block',
-            children: [
-              {
-                _key: 'd373eb211a66',
-                _type: 'span',
-                marks: ['0fb5eb9f09b4'],
-                text: 'ewr',
-              },
-            ],
-            markDefs: [{_key: '0fb5eb9f09b4', _type: 'hyperlink'}],
-            style: 'normal',
-          },
-          {
-            _key: '02bb994c6a40',
-            _type: 'block',
-            children: [
-              {
-                _key: '290c117abcda',
-                _type: 'span',
-                marks: ['0fb5eb9f09b4'],
-                text: 'n.',
-              },
-            ],
-            markDefs: [{_key: '0fb5eb9f09b4', _type: 'hyperlink'}],
-            style: 'normal',
-          },
-        ],
-      }
+      const sourceValue = [
+        {
+          _key: '2291402e9364',
+          _type: 'block',
+          children: [
+            {
+              _key: '4bd1b8513714',
+              _type: 'span',
+              marks: [],
+              text: 'dsafadsfds',
+            },
+          ],
+          markDefs: [],
+          style: 'normal',
+        },
+        {
+          _key: '702747444e69',
+          _type: 'block',
+          children: [
+            {
+              _key: 'd373eb211a66',
+              _type: 'span',
+              marks: ['0fb5eb9f09b4'],
+              text: 'ewr',
+            },
+          ],
+          markDefs: [{_key: '0fb5eb9f09b4', _type: 'hyperlink'}],
+          style: 'normal',
+        },
+        {
+          _key: '02bb994c6a40',
+          _type: 'block',
+          children: [
+            {
+              _key: '290c117abcda',
+              _type: 'span',
+              marks: ['0fb5eb9f09b4'],
+              text: 'n.',
+            },
+          ],
+          markDefs: [{_key: '0fb5eb9f09b4', _type: 'hyperlink'}],
+          style: 'normal',
+        },
+      ]
       const expectedOutput = [
         {
           _key: expect.any(String),
@@ -370,14 +366,25 @@ describe('transferValue', () => {
           style: 'normal',
         },
       ]
+      const sourceRootSchemaType = resolveSchemaTypeForPath(schema.get('pte_customMarkers')!, [
+        'content',
+      ])!
       const transferValueResult = await transferValue({
-        sourceRootSchemaType: schema.get('pte_customMarkers')!,
-        sourcePath: ['content'],
+        sourceRootSchemaType,
+        sourcePath: [],
         sourceValue,
-        targetRootSchemaType: schema.get('pte_customMarkers')!,
-        targetPath: ['content'],
+        targetRootSchemaType: resolveSchemaTypeForPath(schema.get('pte_customMarkers')!, [
+          'content',
+        ])!,
+        targetPath: [],
       })
+      expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(expectedOutput)
+      // @ts-expect-error We already know this is coming from a block
+      expect(transferValueResult?.targetValue[1].children[0].marks[0]).toEqual(
+        // @ts-expect-error We already know this is coming from a block
+        transferValueResult?.targetValue[1].markDefs[0]._key,
+      )
     })
     test('can copy array of predefined options', async () => {
       const sourceValue = {
