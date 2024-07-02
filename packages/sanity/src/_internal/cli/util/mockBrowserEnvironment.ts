@@ -72,13 +72,31 @@ const getFakeGlobals = (basePath: string) => ({
     })),
 })
 
+const getFakeDocumentProps = () => ({
+  execCommand: function execCommand(
+    // Provide the right arity for the function, even if unused
+    /* eslint-disable @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars */
+    _commandName: string,
+    _showDefaultUI: boolean,
+    _valueArgument: unknown,
+    /* eslint-enable @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars */
+  ) {
+    // Return false to indicate "unsupported"
+    return false
+  },
+})
+
 function provideFakeGlobals(basePath: string): () => void {
   const globalEnv = global as any as Record<string, unknown>
   const globalWindow = global.window as Record<string, any>
+  const globalDocument = (global.document || document || {}) as Record<string, any>
 
   const fakeGlobals = getFakeGlobals(basePath)
+  const fakeDocumentProps = getFakeDocumentProps()
+
   const stubbedGlobalKeys: string[] = []
   const stubbedWindowKeys: string[] = []
+  const stubbedDocumentKeys: string[] = []
 
   for (const [rawKey, value] of Object.entries(fakeGlobals)) {
     if (typeof value === 'undefined') {
@@ -98,6 +116,18 @@ function provideFakeGlobals(basePath: string): () => void {
     }
   }
 
+  for (const [rawKey, value] of Object.entries(fakeDocumentProps)) {
+    if (typeof value === 'undefined') {
+      continue
+    }
+
+    const key = rawKey as keyof typeof fakeDocumentProps
+    if (!(key in globalDocument)) {
+      globalDocument[key] = fakeDocumentProps[key]
+      stubbedDocumentKeys.push(key)
+    }
+  }
+
   return () => {
     stubbedGlobalKeys.forEach((key) => {
       delete globalEnv[key]
@@ -105,6 +135,10 @@ function provideFakeGlobals(basePath: string): () => void {
 
     stubbedWindowKeys.forEach((key) => {
       delete globalWindow[key]
+    })
+
+    stubbedDocumentKeys.forEach((key) => {
+      delete globalDocument[key]
     })
   }
 }
