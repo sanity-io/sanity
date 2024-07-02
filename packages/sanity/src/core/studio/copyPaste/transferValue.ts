@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
-import {isAssetObjectStub, isReference} from '@sanity/asset-utils'
+import {isAssetObjectStub, isFileAssetId, isImageAssetId, isReference} from '@sanity/asset-utils'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
@@ -164,6 +164,30 @@ export async function transferValue({
     }
   }
 
+  const isIncompatibleAssetSchemaType =
+    (isFileSchemaType(sourceSchemaTypeAtPath) && isImageSchemaType(targetSchemaTypeAtPath)) ||
+    (isImageSchemaType(sourceSchemaTypeAtPath) && isFileSchemaType(targetSchemaTypeAtPath))
+
+  if (isIncompatibleAssetSchemaType) {
+    return {
+      targetValue: undefined,
+      errors: [
+        {
+          level: 'error',
+          sourceValue,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.image-file-incompatible.description',
+            args: {
+              sourceSchemaType: sourceRootSchemaType.name,
+              targetSchemaType: targetRootSchemaType.name,
+            },
+          },
+        },
+      ],
+    }
+  }
+
   // Generally we test that the target schema types are compatible with the source schema types
   // However we want to make some exceptions:
   // - Number to string is allowed
@@ -274,79 +298,19 @@ async function collateObjectValue({
       : {}),
   } as TypedObject
 
-  // Validate reference types
-  if (isReferenceSchemaType(targetSchemaType)) {
-    const targetReferenceTypes = targetSchemaType.to.map((type) => type.name)
-
-    // Validate the actual reference value
-    // TODO: take optional reference filter option into account
-    if (options?.validateReferences && options.client && isReference(sourceValue)) {
-      try {
-        const reference = await options.client.fetch(`*[_id == $id][0]{_id, _type}`, {
-          id: sourceValue._ref,
-        })
-
-        // Test that we have an actual referenced object if this is not a weak reference
-        if (!reference && !targetSchemaType.weak) {
-          errors.push({
-            level: 'error',
-            sourceValue: sourceValue,
-
-            i18n: {
-              key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
-            },
-          })
-
-          return {
-            targetValue: undefined,
-            errors,
-          }
-        }
-        // Test that the actual referenced type is allowed by the schema.
-        if (!targetReferenceTypes.includes(reference._type)) {
-          errors.push({
-            level: 'error',
-            sourceValue: sourceValue,
-
-            i18n: {
-              key: 'copy-paste.on-paste.validation.reference-type-incompatible.description',
-              args: {
-                sourceReferenceTypes: [reference._type],
-                targetReferenceTypes,
-              },
-            },
-          })
-
-          return {
-            targetValue: undefined,
-            errors,
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching reference document:', error)
-        errors.push({
-          level: 'error',
-          sourceValue: targetValue,
-
-          i18n: {
-            key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
-          },
-        })
-
-        return {
-          targetValue: undefined,
-          errors,
-        }
-      }
-    }
-  }
-
+  const sourceValueRef =
+    isAssetObjectStub(sourceValue) && isReference(sourceValue.asset)
+      ? sourceValue.asset._ref
+      : undefined
+  const sourceValueType = isTypedObject(sourceValue) ? sourceValue._type : undefined
+  const isImageRef = sourceValueRef && isImageAssetId(sourceValueRef)
+  const isFileRef = sourceValueRef && isFileAssetId(sourceValueRef)
+  const isIncompatibleImageRef =
+    (sourceValueType === 'image' || isImageRef) && !isImageSchemaType(targetSchemaType)
+  const isIncompatibleFileRef =
+    (sourceValueType === 'file' || isFileRef) && !isFileSchemaType(targetSchemaType)
   // Special handling for image/file objects to ensure that you can't copy image into file and vice versa
-  if (
-    isTypedObject(sourceValue) &&
-    ((isImageSchemaType(targetSchemaType) && sourceValue._type !== 'image') ||
-      (isFileSchemaType(targetSchemaType) && sourceValue._type !== 'file'))
-  ) {
+  if (isTypedObject(sourceValue) && (isIncompatibleImageRef || isIncompatibleFileRef)) {
     errors.push({
       level: 'error',
       sourceValue,
@@ -354,7 +318,7 @@ async function collateObjectValue({
       i18n: {
         key: 'copy-paste.on-paste.validation.image-file-incompatible.description',
         args: {
-          sourceSchemaType: sourceValue._type,
+          sourceSchemaType: sourceValueType,
           targetSchemaType: targetSchemaType.name,
         },
       },
@@ -436,6 +400,73 @@ async function collateObjectValue({
       return {
         targetValue: undefined,
         errors,
+      }
+    }
+  }
+
+  // Validate reference types
+  if (isReferenceSchemaType(targetSchemaType)) {
+    const targetReferenceTypes = targetSchemaType.to.map((type) => type.name)
+
+    // Validate the actual reference value
+    // TODO: take optional reference filter option into account
+    if (options?.validateReferences && options.client && isReference(sourceValue)) {
+      try {
+        const reference = await options.client.fetch(`*[_id == $id][0]{_id, _type}`, {
+          id: sourceValue._ref,
+        })
+
+        // Test that we have an actual referenced object if this is not a weak reference
+        if (!reference && !targetSchemaType.weak) {
+          errors.push({
+            level: 'error',
+            sourceValue: sourceValue,
+
+            i18n: {
+              key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+            },
+          })
+
+          return {
+            targetValue: undefined,
+            errors,
+          }
+        }
+        // Test that the actual referenced type is allowed by the schema.
+        if (!targetReferenceTypes.includes(reference._type)) {
+          errors.push({
+            level: 'error',
+            sourceValue: sourceValue,
+
+            i18n: {
+              key: 'copy-paste.on-paste.validation.reference-type-incompatible.description',
+              args: {
+                sourceReferenceTypes: [reference._type],
+                targetReferenceTypes,
+              },
+            },
+          })
+
+          return {
+            targetValue: undefined,
+            errors,
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching reference document:', error)
+        errors.push({
+          level: 'error',
+          sourceValue: targetValue,
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+          },
+        })
+
+        return {
+          targetValue: undefined,
+          errors,
+        }
       }
     }
   }
