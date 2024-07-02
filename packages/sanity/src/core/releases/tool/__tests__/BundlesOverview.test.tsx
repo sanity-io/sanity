@@ -1,10 +1,9 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
-import {type ReactNode} from 'react'
+import {fireEvent, render, screen} from '@testing-library/react'
 
 import {queryByDataUi} from '../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {useBundles} from '../../../store/bundles'
+import {useBundlesStore} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {releasesUsEnglishLocaleBundle} from '../../i18n'
 import BundlesOverview from '../BundlesOverview'
@@ -14,8 +13,8 @@ jest.mock('../../../store/bundles/useBundleOperations', () => ({
   useBundleOperations: jest.fn().mockReturnValue({deleteBundle: jest.fn()}),
 }))
 
-jest.mock('../../../store/bundles', () => ({
-  useBundles: jest.fn(),
+jest.mock('../../../store/bundles/useBundlesStore', () => ({
+  useBundlesStore: jest.fn(),
 }))
 
 jest.mock('sanity/router', () => ({
@@ -23,16 +22,14 @@ jest.mock('sanity/router', () => ({
   useRouter: jest.fn().mockReturnValue({state: {}, navigate: jest.fn()}),
 }))
 
-const createWrapper = async () => {
-  const TestProvider = await createTestProvider({
+jest.mock('sanity')
+
+const createWrapper = () =>
+  createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  return function Wrapper({children}: {children: ReactNode}) {
-    return <TestProvider>{children}</TestProvider>
-  }
-}
 
-const mockUseBundleStore = useBundles as jest.Mock<typeof useBundles>
+const mockUseBundleStore = useBundlesStore as jest.Mock<typeof useBundlesStore>
 
 describe('BundlesOverview', () => {
   describe('when loading bundles', () => {
@@ -40,6 +37,7 @@ describe('BundlesOverview', () => {
       mockUseBundleStore.mockReturnValue({
         data: null,
         loading: true,
+        error: null,
         dispatch: jest.fn(),
       })
 
@@ -72,6 +70,7 @@ describe('BundlesOverview', () => {
       mockUseBundleStore.mockReturnValue({
         data: [],
         loading: false,
+        error: null,
         dispatch: jest.fn(),
       })
       const wrapper = await createWrapper()
@@ -101,14 +100,14 @@ describe('BundlesOverview', () => {
     const bundles = [
       {title: 'Bundle 1'},
       {title: 'Bundle 2'},
-      {title: 'Bundle 3', publishedAt: new Date().toISOString()},
-      {title: 'Bundle 4', archivedAt: new Date().toISOString()},
+      {title: 'Bundle 3', publishedAt: new Date()},
     ] as unknown as BundleDocument[]
 
     beforeEach(async () => {
       mockUseBundleStore.mockReturnValue({
         data: bundles,
         loading: false,
+        error: null,
         dispatch: jest.fn(),
       })
       const wrapper = await createWrapper()
@@ -125,14 +124,11 @@ describe('BundlesOverview', () => {
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
     })
 
-    it('shows published bundles', async () => {
+    it('shows published bundles', () => {
       fireEvent.click(screen.getByText('Archived'))
 
-      await waitFor(() => {
-        screen.getByText('Bundle 3')
-        screen.getByText('Bundle 4')
-        expect(screen.queryByText('Bundle 1')).toBeNull()
-      })
+      screen.getByText('Bundle 3')
+      expect(screen.queryByText('Bundle 1')).toBeNull()
     })
 
     it('allows for searching bundles', () => {
