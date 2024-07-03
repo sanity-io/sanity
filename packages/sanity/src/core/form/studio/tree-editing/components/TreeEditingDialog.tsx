@@ -111,17 +111,11 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   )
 
   const onClose = useCallback(() => {
-    // Focus the root array item when closing the dialog.
-    const firstKeySegmentIndex = openPath.findIndex(isKeySegment)
-    const rootFocusPath = openPath.slice(0, firstKeySegmentIndex + 1)
-
-    onPathFocus(rootFocusPath)
+    // Cancel any debounced state building when closing the dialog.
+    debouncedBuildTreeEditingState.cancel()
 
     // Reset the `openPath`
     onPathOpen(EMPTY_ARRAY)
-
-    // Cancel any debounced state building when closing the dialog.
-    debouncedBuildTreeEditingState.cancel()
 
     // Reset the tree state when closing the dialog.
     setTreeState(EMPTY_TREE_STATE)
@@ -133,6 +127,11 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     // previous stored values.
     valueRef.current = undefined
     openPathRef.current = undefined
+
+    // Focus the root array item when closing the dialog.
+    const firstKeySegmentIndex = openPath.findIndex(isKeySegment)
+    const rootFocusPath = openPath.slice(0, firstKeySegmentIndex + 1)
+    onPathFocus(rootFocusPath)
   }, [debouncedBuildTreeEditingState, onPathFocus, onPathOpen, openPath])
 
   const onHandlePathSelect = useCallback(
