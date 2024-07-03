@@ -4,15 +4,17 @@ import {type ComponentType, type FormEvent, useCallback, useState} from 'react'
 import {Button} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {AddonDatasetProvider} from '../../../studio/addonDataset/AddonDatasetProvider'
+import {BundlesProvider, useBundles} from '../BundlesProvider'
 import {type BundleDocument} from '../types'
 import {useBundleOperations} from '../useBundleOperations'
-import {useBundlesStore} from '../useBundlesStore'
 import {ReleaseForm} from './ReleaseForm'
 
 const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>): React.FC<P> => {
   const WrappedComponent: React.FC<P> = (props) => (
     <AddonDatasetProvider>
-      <Component {...props} />
+      <BundlesProvider>
+        <Component {...props} />
+      </BundlesProvider>
     </AddonDatasetProvider>
   )
   WrappedComponent.displayName = `WithAddonDatasetProvider(${Component.displayName || Component.name || 'Component'})`
@@ -22,7 +24,7 @@ const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>)
 
 const initialValue = {name: '', title: '', tone: undefined, publishAt: undefined}
 const BundlesStoreStory = () => {
-  const {data, loading} = useBundlesStore()
+  const {data, loading} = useBundles()
   const {createBundle, deleteBundle} = useBundleOperations()
   const [creating, setCreating] = useState(false)
   const [deleting, setDeleting] = useState<string | null>(null)
