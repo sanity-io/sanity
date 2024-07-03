@@ -2,7 +2,6 @@ import {type SanityClient, type SanityDocument} from 'sanity'
 import speakingurl from 'speakingurl'
 
 import {type BundleDocument} from '../../store/bundles/types'
-import {type Version} from '../types'
 
 /* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
 
@@ -17,7 +16,7 @@ export async function getAllVersionsOfDocument(
   bundles: BundleDocument[] | null,
   client: SanityClient,
   documentId: string,
-): Promise<Version[]> {
+): Promise<BundleDocument[]> {
   // remove all versions, get just id (anything anything after first .)
   const id = documentId.replace(/^[^.]*\./, '')
 
