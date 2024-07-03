@@ -1,6 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
-import {type ReactNode, useCallback, useContext} from 'react'
+import {type ReactElement, useCallback, useContext} from 'react'
 import {RelativeTime} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -18,10 +18,10 @@ const StyledMenu = styled(Menu)`
 `
 
 interface BundleListProps {
-  button: ReactNode
+  button: ReactElement
   bundles: BundleDocument[] | null
   loading: boolean
-  actions?: ReactNode
+  actions?: ReactElement
 }
 
 export function BundleMenu(props: BundleListProps): JSX.Element {
@@ -29,7 +29,8 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
 
   // eslint-disable-next-line no-warning-comments
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {setCurrentVersion} = useContext<VersionContextValue>(VersionContext)
+  const {currentVersion, setCurrentVersion, isDraft} =
+    useContext<VersionContextValue>(VersionContext)
 
   // eslint-disable-next-line no-warning-comments
   // FIXME REPLACE WHEN WE HAVE REAL DATA
