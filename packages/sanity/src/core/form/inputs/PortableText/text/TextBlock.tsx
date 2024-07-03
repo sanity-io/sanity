@@ -1,8 +1,4 @@
-import {
-  type EditorSelection,
-  PortableTextEditor,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
+import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'

@@ -8,6 +8,41 @@ interface GetSchemaTypesOpts {
   legacyEditing?: boolean
 }
 
+const blockField = defineField({
+  type: 'array',
+  name: 'pte',
+  title: 'PTE',
+  of: [
+    {type: 'block'},
+    {
+      type: 'object',
+      name: 'myBlockObject',
+      title: 'My block object',
+      fields: [
+        {
+          type: 'array',
+          name: 'myBlockObjectArray',
+          title: 'My block object array',
+          of: [
+            {
+              type: 'object',
+              name: 'myBlockObjectArrayItem',
+              title: 'My block object array item',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
 function getSchemaTypes(opts: GetSchemaTypesOpts) {
   const {legacyEditing} = opts
 
@@ -18,6 +53,11 @@ function getSchemaTypes(opts: GetSchemaTypesOpts) {
       type: 'document',
       name: 'test',
       title: 'Test',
+      fieldsets: [
+        {
+          name: 'fieldset',
+        },
+      ],
       fields: [
         defineField({
           type: 'array',
@@ -36,10 +76,32 @@ function getSchemaTypes(opts: GetSchemaTypesOpts) {
                   name: 'title',
                   title: 'Title',
                 },
+                blockField,
               ],
             },
           ],
         }),
+        defineField({
+          type: 'array',
+          name: 'myFieldsetArray',
+          title: 'My fieldset array',
+          fieldset: 'fieldset',
+          of: [
+            {
+              type: 'object',
+              name: 'myObject',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+                blockField,
+              ],
+            },
+          ],
+        }),
+        blockField,
       ],
     }),
   ]

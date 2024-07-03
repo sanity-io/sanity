@@ -21,6 +21,7 @@ const config = {
     'plugin:react/jsx-runtime',
     'prettier',
     '@sanity/eslint-config-i18n',
+    'turbo',
   ],
   parser: '@typescript-eslint/parser',
   plugins: [
@@ -259,6 +260,17 @@ const config = {
       ],
       rules: {
         'react-compiler/react-compiler': 'off',
+      },
+    },
+    // Don't lint Turbo undeclared process env variables in code that is used in the CLI at runtime
+    {
+      files: [
+        'packages/@sanity/cli/**',
+        'packages/sanity/src/_internal/cli/**',
+        'packages/sanity/playwright-ct/**',
+      ],
+      rules: {
+        'turbo/no-undeclared-env-vars': 'off',
       },
     },
   ],
