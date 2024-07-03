@@ -2,7 +2,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Button} from '@sanity/ui'
 import {useCallback, useContext, useEffect, useState} from 'react'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, RelativeTime, useClient} from 'sanity'
 
 import {
   VersionContext,
