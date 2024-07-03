@@ -1,4 +1,4 @@
-import {type BlockListItemRenderProps} from '@sanity/portable-text-editor'
+import {type BlockListItemRenderProps} from '@portabletext/editor'
 import {useMemo} from 'react'
 
 import {type BlockListItemProps} from '../../../types'

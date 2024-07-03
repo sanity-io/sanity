@@ -1,4 +1,4 @@
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
 import {

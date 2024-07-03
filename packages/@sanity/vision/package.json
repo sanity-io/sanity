@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.48.1",
+  "version": "3.49.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -80,7 +80,6 @@
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
-    "@sanity/portable-text-editor": "workspace:*",
     "@sanity/schema": "workspace:*",
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
