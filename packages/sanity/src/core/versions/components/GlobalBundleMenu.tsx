@@ -6,14 +6,14 @@ import {
   VersionContext,
   type VersionContextValue,
 } from '../../../_singletons/core/form/VersionContext'
-import {useBundlesStore} from '../../store/bundles'
+import {useBundles} from '../../store/bundles/BundlesProvider'
 import {LATEST} from '../util/const'
 import {BundleBadge} from './BundleBadge'
 import {BundleMenu} from './BundleMenu'
 import {CreateBundleDialog} from './dialog/CreateBundleDialog'
 
 export function GlobalBundleMenu(): JSX.Element {
-  const {data: bundles, loading} = useBundlesStore()
+  const {data: bundles, loading} = useBundles()
 
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 

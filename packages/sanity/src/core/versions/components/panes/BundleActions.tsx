@@ -10,7 +10,7 @@ import {
 } from 'sanity'
 
 import {Button} from '../../../../ui-components'
-import {useBundlesStore} from '../../../store/bundles'
+import {useBundles} from '../../../store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {getAllVersionsOfDocument, versionDocumentExists} from '../../util/dummyGetters'
 
@@ -23,7 +23,7 @@ interface BundleActionsProps {
 export function BundleActions(props: BundleActionsProps): JSX.Element {
   const {currentVersion, documentId, documentType} = props
   const {name, title} = currentVersion
-  const {data: bundles, loading} = useBundlesStore()
+  const {data: bundles, loading} = useBundles()
   const documentStore = useDocumentStore()
 
   const [documentVersions, setDocumentVersions] = useState<BundleDocument[]>([])

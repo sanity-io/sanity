@@ -8,7 +8,7 @@ import {
   VersionContext,
   type VersionContextValue,
 } from '../../../../_singletons/core/form/VersionContext'
-import {useBundlesStore} from '../../../store/bundles'
+import {useBundles} from '../../../store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {getAllVersionsOfDocument} from '../../util/dummyGetters'
 import {BundleBadge} from '../BundleBadge'
@@ -26,7 +26,7 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
 
   const {title, hue, icon} = currentVersion
 
-  const {data: bundles} = useBundlesStore()
+  const {data: bundles} = useBundles()
 
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const [documentVersions, setDocumentVersions] = useState<BundleDocument[]>([])
