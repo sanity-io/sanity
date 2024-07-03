@@ -38,7 +38,7 @@ export function DocumentVersionMenu(props: {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {currentVersion, setCurrentVersion, isDraft} =
     useContext<VersionContextValue>(VersionContext)
-  const {name} = currentVersion
+  const {name, title, hue, icon} = currentVersion
   // const toast = useToast()
 
   const {data: bundles, loading} = useBundlesStore()
@@ -114,12 +114,7 @@ export function DocumentVersionMenu(props: {
   return (
     <>
       {currentVersion && !isDraft && (
-        <VersionBadge
-          hue={currentVersion.hue}
-          title={currentVersion.title}
-          icon={currentVersion.icon}
-          padding={2}
-        />
+        <VersionBadge hue={hue} title={title} icon={icon} padding={2} />
       )}
 
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
