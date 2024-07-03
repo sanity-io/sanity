@@ -458,40 +458,22 @@ export type AllSanitySchemaTypes = OptionalData;"
 
 describe('generateQueryMap', () => {
   test('should generate a map of query results', () => {
-    const schema: SchemaType = [
-      {
-        type: 'document',
-        name: 'author',
-        attributes: {
-          _id: {
-            type: 'objectAttribute',
-            value: {type: 'string'},
-          },
-          name: {
-            type: 'objectAttribute',
-            value: {type: 'string'},
-            optional: true,
-          },
-        },
-      },
-    ]
+    const schema: SchemaType = []
 
     const queries = [
       {
-        typeName: 'AuthorsResult',
-        query: '*[_type "author"]',
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "author"]',
       },
       {
-        typeName: 'FirstAuthorResult',
-        query: '*[_type "author"][0]',
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "author"][0]',
       },
     ]
 
-    const objectNode = {type: 'unknown'} satisfies TypeNode
-
     const typeGenerator = new TypeGenerator(schema)
-    typeGenerator.generateTypeNodeTypes('AuthorsResult', objectNode)
-    typeGenerator.generateTypeNodeTypes('FirstAuthorResult', objectNode)
+    typeGenerator.generateTypeNodeTypes('AuthorsResult', queries[0].typeNode)
+    typeGenerator.generateTypeNodeTypes('FirstAuthorResult', queries[1].typeNode)
 
     const actualOutput = typeGenerator.generateQueryMap(queries)
 
@@ -499,8 +481,39 @@ describe('generateQueryMap', () => {
 "import \\"@sanity/client\\";
 declare module \\"@sanity/client\\" {
   interface SanityQueries {
-    \\"*[_type \\\\\\"author\\\\\\"]\\": AuthorsResult;
-    \\"*[_type \\\\\\"author\\\\\\"][0]\\": FirstAuthorResult;
+    \\"*[_type == \\\\\\"author\\\\\\"]\\": AuthorsResult;
+    \\"*[_type == \\\\\\"author\\\\\\"][0]\\": FirstAuthorResult;
+  }
+}"
+`)
+  })
+
+  test('should generate a map of query results with duplicate type names', () => {
+    const schema: SchemaType = []
+
+    const queries = [
+      {
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "foo"]',
+      },
+      {
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "bar"]',
+      },
+    ]
+
+    const typeGenerator = new TypeGenerator(schema)
+    typeGenerator.generateTypeNodeTypes('Foo', queries[0].typeNode)
+    typeGenerator.generateTypeNodeTypes('Foo', queries[1].typeNode)
+
+    const actualOutput = typeGenerator.generateQueryMap(queries)
+
+    expect(actualOutput).toMatchInlineSnapshot(`
+"import \\"@sanity/client\\";
+declare module \\"@sanity/client\\" {
+  interface SanityQueries {
+    \\"*[_type == \\\\\\"foo\\\\\\"]\\": Foo;
+    \\"*[_type == \\\\\\"bar\\\\\\"]\\": Foo_2;
   }
 }"
 `)

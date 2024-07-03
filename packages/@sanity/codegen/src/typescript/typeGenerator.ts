@@ -14,9 +14,9 @@ import {
 const REFERENCE_SYMBOL_NAME = 'internalGroqTypeReferenceTo'
 const ALL_SCHEMA_TYPES = 'AllSanitySchemaTypes'
 
-type QueryWithTypeName = {
+type QueryWithTypeNode = {
   query: string
-  typeName: string
+  typeNode: TypeNode
 }
 
 /**
@@ -82,7 +82,7 @@ export class TypeGenerator {
   generateTypeNodeTypes(identifierName: string, typeNode: TypeNode): string {
     const type = this.getTypeNodeType(typeNode)
 
-    const typeName = this.getTypeName(identifierName)
+    const typeName = this.getTypeName(identifierName, typeNode)
     const typeAlias = t.tsTypeAliasDeclaration(t.identifier(typeName), null, type)
 
     return new CodeGenerator(t.exportNamedDeclaration(typeAlias)).generate().code.trim()
@@ -104,12 +104,15 @@ export class TypeGenerator {
    * Takes a list of queries from the codebase and generates a type declaration
    * for SanityClient to consume.
    *
+   * Note: only types that have previously been generated with `generateTypeNodeTypes`
+   * will be included in the query map.
+   *
    * @param queries - A list of queries to generate a type declaration for
    * @returns
    * @internal
    * @beta
    */
-  generateQueryMap(queries: QueryWithTypeName[]): string {
+  generateQueryMap(queries: QueryWithTypeNode[]): string {
     const queryReturnInterface = t.tsInterfaceDeclaration(
       t.identifier('SanityQueries'),
       null,
@@ -117,7 +120,7 @@ export class TypeGenerator {
       t.tsInterfaceBody(
         queries
           .map((query) => {
-            const name = this.typeNameMap.get(query.typeName)
+            const name = this.typeNameMap.get(query.typeNode)
             if (!name) {
               return null
             }

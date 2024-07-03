@@ -122,6 +122,7 @@ async function main() {
       query: string
       type: string
       typeName: string
+      typeNode: TypeNode
       unknownTypeNodesGenerated: number
       typeNodesGenerated: number
       emptyUnionTypeNodesGenerated: number
@@ -140,6 +141,7 @@ async function main() {
           queryName,
           query,
           typeName,
+          typeNode: queryTypes,
           type: code,
           unknownTypeNodesGenerated: queryTypeStats.unknownTypes,
           typeNodesGenerated: queryTypeStats.allTypes,
