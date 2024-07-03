@@ -31,25 +31,6 @@ export function useGlobalCopyPasteElementHandler({
 
   const {onCopy, onPaste} = useCopyPasteAction()
 
-  const handleCopy = useCallback(
-    (event: ClipboardEvent) => {
-      const targetElement = event.target as HTMLElement
-      // We will skip handling this event if you have focus on an native editable element
-      if (
-        isNativeEditableElement(targetElement) ||
-        hasSelection() ||
-        isEmptyFocusPath(focusPathRef.current)
-      ) {
-        return
-      }
-
-      onCopy(focusPathRef.current, valueRef.current, {
-        context: {source: 'keyboardShortcut'},
-      })
-    },
-    [onCopy, focusPathRef],
-  )
-
   const handleKeydown = useCallback(
     (event: KeyboardEvent) => {
       const targetElement = event.target
@@ -79,6 +60,7 @@ export function useGlobalCopyPasteElementHandler({
           return
         }
 
+        event.stopPropagation()
         event.preventDefault()
         onPaste(focusPathRef.current, valueRef.current, {
           context: {source: 'keyboardShortcut'},
@@ -89,27 +71,10 @@ export function useGlobalCopyPasteElementHandler({
   )
 
   useEffect(() => {
-    const handlePaste = async (event: ClipboardEvent) => {
-      const targetElement = event.target
-
-      if (
-        isNativeEditableElement(targetElement as HTMLElement) ||
-        isEmptyFocusPath(focusPathRef.current)
-      ) {
-        return
-      }
-      event.preventDefault()
-      onPaste(focusPathRef.current, valueRef.current)
-    }
-
-    element?.addEventListener('paste', handlePaste)
     element?.addEventListener('keydown', handleKeydown)
-    element?.addEventListener('copy', handleCopy)
 
     return () => {
-      element?.removeEventListener('paste', handlePaste)
       element?.removeEventListener('keydown', handleKeydown)
-      element?.removeEventListener('copy', handleCopy)
     }
-  }, [element, handleCopy, handleKeydown, onPaste])
+  }, [element, handleKeydown, onPaste])
 }
