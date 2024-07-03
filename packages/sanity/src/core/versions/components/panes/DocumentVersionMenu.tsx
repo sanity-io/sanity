@@ -15,7 +15,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {useCallback, useContext, useEffect, useState} from 'react'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, RelativeTime, useClient} from 'sanity'
 
 import {
   VersionContext,
@@ -184,10 +184,12 @@ export function DocumentVersionMenu(props: {
                             {
                               <Box padding={2}>
                                 <Text muted size={1}>
-                                  {/* localize text */}
-                                  {b.publishAt
-                                    ? `a date will be here ${b.publishAt}`
-                                    : 'No target date'}
+                                  {b.publishAt ? (
+                                    <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
+                                  ) : (
+                                    /* localize text */
+                                    <span>{'No target date'}</span>
+                                  )}
                                 </Text>
                               </Box>
                             }
@@ -237,9 +239,11 @@ export function DocumentVersionMenu(props: {
 
                           <Box padding={2}>
                             <Text muted size={1}>
-                              {r.publishAt
-                                ? `a date will be here ${r.publishAt}`
-                                : 'No target date'}
+                             {b.publishAt ? (
+                            <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
+                          ) : (
+                            <span>{'No target date'}</span>
+                          )}
                             </Text>
                           </Box>
                         </Flex>

@@ -1,6 +1,7 @@
 import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, Text} from '@sanity/ui'
 import {useCallback, useContext, useState} from 'react'
+import {RelativeTime} from 'sanity'
 
 import {
   VersionContext,
@@ -88,7 +89,12 @@ export function GlobalBundleMenu(): JSX.Element {
 
                       <Box padding={2}>
                         <Text muted size={1}>
-                          {b.publishAt ? `a date will be here ${b.publishAt}` : 'No target date'}
+                          {b.publishAt ? (
+                            <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
+                          ) : (
+                            /* localize text */
+                            <span>{'No target date'}</span>
+                          )}
                         </Text>
                       </Box>
 
