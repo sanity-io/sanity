@@ -6,7 +6,7 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {AddonDatasetProvider} from '../../../studio/addonDataset/AddonDatasetProvider'
 import {type BundleDocument} from '../types'
 import {useBundleOperations} from '../useBundleOperations'
-import {useBundlesStore} from '../useBundlesStore'
+import {useBundles} from '../useBundles'
 import {ReleaseForm} from './ReleaseForm'
 
 const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>): React.FC<P> => {
@@ -22,7 +22,7 @@ const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>)
 
 const initialValue = {name: '', title: '', tone: undefined, publishAt: undefined}
 const BundlesStoreStory = () => {
-  const {data, loading} = useBundlesStore()
+  const {data, loading} = useBundles()
   const {createBundle, deleteBundle} = useBundleOperations()
   const [creating, setCreating] = useState(false)
   const [deleting, setDeleting] = useState<string | null>(null)

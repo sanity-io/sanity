@@ -1,13 +1,13 @@
-import {type ListenEvent, type ListenOptions} from '@sanity/client'
+import {type ListenEvent} from '@sanity/client'
 import {useCallback, useMemo, useReducer, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, concatMap, map, of, retry, timeout} from 'rxjs'
+import {catchError, concatMap, map, of, retry, share, timeout} from 'rxjs'
+import {useBundlesStore} from 'sanity'
 
-import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {bundlesReducer, type bundlesReducerAction, type bundlesReducerState} from './reducer'
 import {type BundleDocument} from './types'
 
-interface BundlesStoreReturnType {
+interface BundlesStore {
   data: BundleDocument[] | null
   error: Error | null
   loading: boolean
@@ -18,41 +18,16 @@ const INITIAL_STATE: bundlesReducerState = {
   bundles: new Map(),
 }
 
-const LISTEN_OPTIONS: ListenOptions = {
-  events: ['welcome', 'mutation', 'reconnect'],
-  includeResult: true,
-  visibility: 'query',
-}
-
-export const SORT_FIELD = '_createdAt'
-export const SORT_ORDER = 'desc'
-
-const QUERY_FILTERS = [`_type == "bundle"`]
-
-// TODO: Extend the projection with the fields needed
-const QUERY_PROJECTION = `{
-  ...,
-}`
-
-// Newest bundles first
-const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
-
-const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
-
-export function useBundlesStore(): BundlesStoreReturnType {
-  const {client} = useAddonDataset()
-
+export function useBundles(): BundlesStore {
   const [state, dispatch] = useReducer(bundlesReducer, INITIAL_STATE)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   const didInitialFetch = useRef<boolean>(false)
-
+  const {initialFetch, listener} = useBundlesStore()
   const initialFetch$ = useCallback(() => {
-    if (!client) {
-      return of(null) // emits null and completes if no client
-    }
-    return client.observable.fetch(QUERY).pipe(
+    return initialFetch().pipe(
+      share(),
       timeout(10000), // 10s timeout
       map((res) => {
         dispatch({type: 'BUNDLES_SET', payload: res})
@@ -71,10 +46,10 @@ export function useBundlesStore(): BundlesStoreReturnType {
         return of(null) // ensure stream completion even on error
       }),
     )
-  }, [client])
+  }, [initialFetch])
 
   const handleListenerEvent = useCallback(
-    (event: ListenEvent<Record<string, BundleDocument>>) => {
+    (event: ListenEvent<Record<string, BundleDocument | null>>) => {
       // Fetch all bundles on initial connection
       if (event.type === 'welcome' && !didInitialFetch.current) {
         // Do nothing here, the initial fetch is done in the useEffect below
@@ -118,9 +93,8 @@ export function useBundlesStore(): BundlesStoreReturnType {
   )
 
   const listener$ = useMemo(() => {
-    if (!client) return of()
-
-    const events$ = client.observable.listen(QUERY, {}, LISTEN_OPTIONS).pipe(
+    const events$ = listener().pipe(
+      share(),
       map(handleListenerEvent),
       catchError((err) => {
         setError(err)
@@ -129,17 +103,16 @@ export function useBundlesStore(): BundlesStoreReturnType {
     )
 
     return events$ // as Observable<ListenEvent<Record<string, BundleDocument>>>
-  }, [client, handleListenerEvent])
+  }, [handleListenerEvent, listener])
 
   const observable = useMemo(() => {
-    if (!client) return of(null) // emits null and completes if no client
     return initialFetch$().pipe(concatMap(() => listener$))
-  }, [initialFetch$, listener$, client])
+  }, [initialFetch$, listener$])
 
   useObservable(observable)
 
   const bundlesAsArray = useMemo(() => Array.from(state.bundles.values()), [state.bundles])
-
+  console.log('bundlesAsArray', bundlesAsArray)
   return {
     data: bundlesAsArray,
     dispatch,

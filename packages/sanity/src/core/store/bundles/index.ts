@@ -1,1 +1,1 @@
-export * from './useBundlesStore'
+export * from './useBundles'

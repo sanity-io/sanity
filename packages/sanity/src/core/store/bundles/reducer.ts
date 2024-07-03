@@ -16,7 +16,7 @@ interface BundleUpdatedAction {
 }
 
 interface BundlesSetAction {
-  payload: BundleDocument[]
+  payload: BundleDocument[] | null
   type: 'BUNDLES_SET'
 }
 
@@ -36,7 +36,10 @@ export interface bundlesReducerState {
   bundles: Map<string, BundleDocument>
 }
 
-function createBundlesSet(bundles: BundleDocument[]) {
+function createBundlesSet(bundles: BundleDocument[] | null) {
+  if (!bundles) {
+    return new Map<string, BundleDocument>()
+  }
   const bundlesById = bundles.reduce((acc, bundle) => {
     acc.set(bundle._id, bundle)
     return acc

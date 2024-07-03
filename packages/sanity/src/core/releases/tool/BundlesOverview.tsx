@@ -5,7 +5,7 @@ import {type MouseEventHandler, useCallback, useMemo, useState} from 'react'
 import {LoadingBlock} from 'sanity'
 
 import {Button as StudioButton} from '../../../ui-components'
-import {useBundlesStore} from '../../store/bundles'
+import {useBundles} from '../../store/bundles'
 import {type BundleDocument} from '../../store/bundles/types'
 import {CreateBundleDialog} from '../../versions/components/dialog/CreateBundleDialog'
 import {BundlesTable} from '../components/BundlesTable/BundlesTable'
@@ -16,7 +16,7 @@ type Mode = 'open' | 'archived'
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 
 export default function BundlesOverview() {
-  const {data, loading} = useBundlesStore()
+  const {data, loading} = useBundles()
 
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
@@ -29,7 +29,9 @@ export default function BundlesOverview() {
     () =>
       data?.reduce<{open: BundleDocument[]; archived: BundleDocument[]}>((groups, bundle) => {
         const group =
-          bundle.publishedAt && isBefore(bundle.publishedAt, new Date()) ? 'archived' : 'open'
+          bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date())
+            ? 'archived'
+            : 'open'
 
         return {...groups, [group]: [...groups[group], bundle]}
       }, EMPTY_BUNDLE_GROUPS) || EMPTY_BUNDLE_GROUPS,
