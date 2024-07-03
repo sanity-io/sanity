@@ -24,7 +24,7 @@ export function GlobalBundleMenu(): JSX.Element {
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
   const handleBundleChange = useCallback(
-    (bundle: BundleDocument) => () => {
+    (bundle: Partial<BundleDocument>) => () => {
       setCurrentVersion(bundle)
     },
     [setCurrentVersion],

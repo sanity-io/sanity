@@ -98,7 +98,7 @@ export function DocumentVersionMenu(props: {
   )*/
 
   const handleChangeToVersion = useCallback(
-    (bundle: BundleDocument) => () => {
+    (bundle: Partial<BundleDocument>) => () => {
       setCurrentVersion(bundle)
     },
     [setCurrentVersion],

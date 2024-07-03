@@ -10,9 +10,9 @@ import {LATEST} from '../../../core/versions/util/const'
 import {useRouter} from '../../../router'
 
 export interface VersionContextValue {
-  currentVersion: BundleDocument
+  currentVersion: Partial<BundleDocument>
   isDraft: boolean
-  setCurrentVersion: (bundle: BundleDocument) => void
+  setCurrentVersion: (bundle: Partial<BundleDocument>) => void
 }
 
 export const VersionContext = createContext<VersionContextValue>({
@@ -30,7 +30,7 @@ export function VersionProvider({children}: VersionProviderProps): JSX.Element {
   const router = useRouter()
   const {data: bundles} = useBundlesStore()
 
-  const setCurrentVersion = (version: BundleDocument) => {
+  const setCurrentVersion = (version: Partial<BundleDocument>) => {
     const {name} = version
     if (name === 'drafts') {
       router.navigateStickyParam('perspective', '')
