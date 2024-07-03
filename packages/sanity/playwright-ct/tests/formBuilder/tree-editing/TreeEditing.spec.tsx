@@ -305,4 +305,30 @@ test.describe('Tree editing', () => {
     const editPortalDialog = page.getByTestId('edit-portal-dialog')
     await expect(editPortalDialog).toBeVisible()
   })
+
+  test('should focus root array item when closing tree editing dialog', async ({mount, page}) => {
+    await mount(<TreeEditingStory value={DOCUMENT_VALUE} />)
+
+    const field = page.getByTestId('field-myArrayOfObjects')
+
+    // Click on the first item in the array inputs
+    const firstArrayItemButton = field.getByRole('button', {name: 'My object 1'})
+    await firstArrayItemButton.click()
+
+    // Expect the dialog to open
+    const dialog = page.getByTestId('tree-editing-dialog')
+    await expect(dialog).toBeVisible()
+
+    // Focus first field
+    await dialog.getByTestId('string-input').focus()
+
+    // Click done
+    await page.getByTestId('tree-editing-done').click()
+
+    // Wait for the dialog to be hidden
+    await expect(dialog).not.toBeVisible()
+
+    // Expect the first item in the array to be focused
+    await expect(firstArrayItemButton).toBeFocused()
+  })
 })
