@@ -1,10 +1,14 @@
 /* eslint-disable no-warning-comments */
 /* eslint-disable i18next/no-literal-string */
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Box, Button, Card, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
+import {useDateTimeFormat, useTranslation} from 'sanity'
 import speakingurl from 'speakingurl'
 
+import {type CalendarLabels} from '../../../form/inputs/DateInputs/base/calendar/types'
+import {DatePicker} from '../../../form/inputs/DateInputs/base/DatePicker'
+import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleIconEditorPicker} from './BundleIconEditorPicker'
@@ -14,27 +18,42 @@ export function BundleForm(props: {
   value: Partial<BundleDocument>
 }): JSX.Element {
   const {onChange, value} = props
+  const {title, description, icon, hue, publishAt} = value
+
+  const dateFormatter = useDateTimeFormat()
+
   const [showTitleValidation, setShowTitleValidation] = useState(false)
+  const [showDateValidation, setShowDateValidation] = useState(false)
+  const [showDatePicker, setShowDatePicker] = useState(false)
+
+  const publishAtDisplayValue = useMemo(() => {
+    if (!publishAt) return ''
+    return dateFormatter.format(new Date(publishAt as Date))
+  }, [dateFormatter, publishAt])
+
+  const [displayDate, setDisplayDate] = useState(publishAtDisplayValue)
+  const {t: coreT} = useTranslation()
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
 
   const iconValue: Partial<BundleDocument> = useMemo(
     () => ({
-      icon: value.icon ?? 'cube',
-      hue: value.hue ?? 'gray',
+      icon: icon ?? 'cube',
+      hue: hue ?? 'gray',
     }),
-    [value],
+    [icon, hue],
   )
 
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const title = event.target.value
+      const pickedTitle = event.target.value
 
-      if (isDraftOrPublished(title)) {
+      if (isDraftOrPublished(pickedTitle)) {
         setShowTitleValidation(true)
       } else {
         setShowTitleValidation(false)
       }
 
-      onChange({...value, title: title, name: speakingurl(title)})
+      onChange({...value, title: pickedTitle, name: speakingurl(pickedTitle)})
     },
     [onChange, value],
   )
@@ -48,18 +67,40 @@ export function BundleForm(props: {
     [onChange, value],
   )
 
-  const handleBundlePublishAtChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const v = event.target.value
+  const handleOpenDatePicker = useCallback(() => {
+    setShowDatePicker(!showDatePicker)
+  }, [showDatePicker])
 
-      onChange({...value, publishAt: v})
+  const handleBundlePublishAtChange = useCallback(
+    (nextDate: Date | undefined) => {
+      onChange({...value, publishAt: nextDate})
+      setDisplayDate(dateFormatter.format(new Date(nextDate as Date)))
+
+      setShowDatePicker(false)
+    },
+    [dateFormatter, onChange, value],
+  )
+
+  const handlePublishAtInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      // there's likely a better way of doing this
+      // needs to check that the date is not invalid & not empty
+      // in which case it can update the input value but not the actual bundle value
+      if (new Date(event.target.value).toString() === 'Invalid Date' && event.target.value !== '') {
+        setShowDateValidation(true)
+        setDisplayDate(event.target.value)
+      } else {
+        setShowDateValidation(false)
+        setDisplayDate(event.target.value)
+        onChange({...value, publishAt: event.target.value})
+      }
     },
     [onChange, value],
   )
 
   const handleIconValueChange = useCallback(
-    (icon: Partial<BundleDocument>) => {
-      onChange({...value, icon: icon.icon, hue: icon.hue})
+    (pickedIcon: Partial<BundleDocument>) => {
+      onChange({...value, icon: pickedIcon.icon, hue: pickedIcon.hue})
     },
     [onChange, value],
   )
@@ -82,7 +123,7 @@ export function BundleForm(props: {
           {/* localize text */}
           Title
         </Text>
-        <TextInput onChange={handleBundleTitleChange} value={value.title} />
+        <TextInput onChange={handleBundleTitleChange} value={title} />
       </Stack>
 
       <Stack space={3}>
@@ -90,7 +131,7 @@ export function BundleForm(props: {
           {/* localize text */}
           Description
         </Text>
-        <TextArea onChange={handleBundleDescriptionChange} value={value.description} />
+        <TextArea onChange={handleBundleDescriptionChange} value={description} />
       </Stack>
 
       <Stack space={3}>
@@ -98,16 +139,41 @@ export function BundleForm(props: {
           {/* localize text */}
           Schedule for publishing at
         </Text>
-        {/** TODO UPDATE WITH REAL INPUT */}
-        <TextInput
-          onChange={handleBundlePublishAtChange}
-          suffix={
-            <Box padding={1} style={{border: '1px solid transparent'}}>
-              <Button icon={CalendarIcon} mode="bleed" padding={2} />
-            </Box>
-          }
-          value={value.publishAt || ''}
-        />
+        {showDateValidation && 'abc'}
+
+        {
+          <TextInput
+            suffix={
+              <Popover
+                constrainSize
+                content={
+                  <Box overflow="auto">
+                    <DatePicker
+                      onChange={handleBundlePublishAtChange}
+                      calendarLabels={calendarLabels}
+                      value={publishAt as Date}
+                      selectTime
+                    />
+                  </Box>
+                }
+                open={showDatePicker}
+                placement="bottom-end"
+                radius={2}
+              >
+                <Box padding={1} style={{border: '1px solid transparent'}}>
+                  <Button
+                    icon={CalendarIcon}
+                    mode="bleed"
+                    padding={2}
+                    onClick={handleOpenDatePicker}
+                  />
+                </Box>
+              </Popover>
+            }
+            value={displayDate}
+            onChange={handlePublishAtInputChange}
+          />
+        }
       </Stack>
     </Stack>
   )
