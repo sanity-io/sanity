@@ -1,6 +1,6 @@
 import {Card, Code} from '@sanity/ui'
 import {isEqual} from 'lodash'
-import {memo, useMemo, useRef} from 'react'
+import {memo, useMemo} from 'react'
 import {
   EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
@@ -8,7 +8,6 @@ import {
   useI18nText,
   useSource,
 } from 'sanity'
-import shallowEquals from 'shallow-equals'
 
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
@@ -17,7 +16,7 @@ import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
-import {findStaticTypesInFilter} from './helpers'
+import {findStaticTypesInFilter, useShallowUnique} from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {DocumentSheetListPane} from './sheetList/DocumentSheetListPane'
 import {type SortOrder} from './types'
@@ -46,14 +45,6 @@ const addSelectedStateToMenuItems = (options: {
 
     return {...item, selected: false}
   })
-}
-
-export function useShallowUnique<ValueType>(value: ValueType): ValueType {
-  const valueRef = useRef<ValueType>(value)
-  if (!shallowEquals(valueRef.current, value)) {
-    valueRef.current = value
-  }
-  return valueRef.current
 }
 
 /**
@@ -112,7 +103,8 @@ export const PaneContainer = memo(function PaneContainer(
 
   const isSheetListLayout = layout === 'sheetList'
   const paneLayout = isSheetListLayout ? (
-    <DocumentSheetListPane {...props} key={props.pane.id} />
+    // key prop necessary to remount when switching document types, resetting table states/effects.
+    <DocumentSheetListPane {...props} sortOrder={sortOrderRaw} key={props.pane.id} />
   ) : (
     <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
   )
