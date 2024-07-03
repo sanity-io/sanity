@@ -1,10 +1,19 @@
-import {COLOR_HUES} from '@sanity/color'
+import {COLOR_HUES, type ColorHueKey} from '@sanity/color'
 import {icons, type IconSymbol, SearchIcon} from '@sanity/icons'
 import {Avatar, Box, Button, Flex, Popover, Stack, TextInput, useClickOutside} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleBadge} from '../BundleBadge'
+
+const StyledStack = styled(Stack)`
+  border-top: 1px solid var(--card-border-color);
+`
+const IconPickerFlex = styled(Flex)`
+  max-height: 269px;
+  max-width: 269px;
+`
 
 export function BundleIconEditorPicker(props: {
   onChange: (value: Partial<BundleDocument>) => void
@@ -16,9 +25,9 @@ export function BundleIconEditorPicker(props: {
 
   const [iconSearchQuery, setIconSearchQuery] = useState('')
 
-  const handleIconSearchQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIconSearchQueryChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setIconSearchQuery(event.target.value)
-  }
+  }, [])
 
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLDivElement | null>(null)
@@ -26,6 +35,20 @@ export function BundleIconEditorPicker(props: {
   const handleClickOutside = useCallback(() => {
     setOpen(false)
   }, [])
+
+  const handleOnPickerOpen = useCallback(() => {
+    setOpen((o) => !o)
+  }, [])
+
+  const handleHueChange = (hue: ColorHueKey) => (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    onChange({...value, hue})
+  }
+
+  const handleIconChange = (icon: IconSymbol) => (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    onChange({...value, icon})
+  }
 
   useClickOutside(handleClickOutside, [button, popover])
 
@@ -38,15 +61,15 @@ export function BundleIconEditorPicker(props: {
               <Button
                 key={hue}
                 mode="bleed"
-                onClick={() => onChange({...value, hue})}
+                onClick={handleHueChange(hue)}
                 padding={1}
                 selected={value.hue === hue}
               >
-                <Avatar color={hue} size={0} style={{margin: -1}} />
+                <Avatar color={hue} size={0} />
               </Button>
             ))}
           </Flex>
-          <Stack style={{borderTop: '1px solid var(--card-border-color)'}}>
+          <StyledStack>
             <Box padding={1}>
               <TextInput
                 fontSize={1}
@@ -58,13 +81,7 @@ export function BundleIconEditorPicker(props: {
                 value={iconSearchQuery}
               />
             </Box>
-            <Flex
-              gap={1}
-              overflow="auto"
-              padding={1}
-              style={{maxHeight: 269, maxWidth: 269}}
-              wrap="wrap"
-            >
+            <IconPickerFlex gap={1} overflow="auto" padding={1} wrap="wrap">
               {Object.entries(icons)
                 .filter(([key]) => !iconSearchQuery || key.includes(iconSearchQuery.toLowerCase()))
                 .map(([key, icon]) => (
@@ -72,12 +89,12 @@ export function BundleIconEditorPicker(props: {
                     icon={icon}
                     key={key}
                     mode="bleed"
-                    onClick={() => onChange({...value, icon: key as IconSymbol})}
+                    onClick={handleIconChange(key as IconSymbol)}
                     padding={2}
                   />
                 ))}
-            </Flex>
-          </Stack>
+            </IconPickerFlex>
+          </StyledStack>
         </>
       }
       open={open}
@@ -88,7 +105,7 @@ export function BundleIconEditorPicker(props: {
       <div>
         <Button
           mode="bleed"
-          onClick={() => setOpen((o) => !o)}
+          onClick={handleOnPickerOpen}
           padding={0}
           ref={setButton}
           selected={open}
