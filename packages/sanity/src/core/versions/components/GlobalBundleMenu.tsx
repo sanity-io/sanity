@@ -1,7 +1,6 @@
 import {AddIcon} from '@sanity/icons'
 import {Button, MenuItem} from '@sanity/ui'
 import {useCallback, useContext, useState} from 'react'
-import {RelativeTime} from 'sanity'
 
 import {
   VersionContext,
