@@ -66,7 +66,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   // We only wan't to show the spinner when the user interacts with the search input.
   const showSearchLoadingRef = useRef<boolean>(false)
 
-  const sortWithOrderingFn = useDocumentListSort(pane, sortOrderRaw)
+  const sortWithOrderingFn = useDocumentListSort(typeName, sortOrderRaw)
 
   const sortOrder = useUnique(sortWithOrderingFn)
 

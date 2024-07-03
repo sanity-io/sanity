@@ -143,7 +143,7 @@ function DocumentSheetListPaneInner(
   const {documentSchemaType, sortOrder: sortOrderRaw, ...paneProps} = props
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
-  const sortWithOrderingFn = useDocumentListSort(paneProps.pane, sortOrderRaw)
+  const sortWithOrderingFn = useDocumentListSort(documentSchemaType.name, sortOrderRaw)
 
   const {data, isLoading} = useDocumentSheetList(documentSchemaType, sortWithOrderingFn)
 

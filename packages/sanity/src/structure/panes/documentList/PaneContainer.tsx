@@ -103,6 +103,7 @@ export const PaneContainer = memo(function PaneContainer(
 
   const isSheetListLayout = layout === 'sheetList'
   const paneLayout = isSheetListLayout ? (
+    // key prop necessary to remount when switching document types, resetting table states/effects.
     <DocumentSheetListPane {...props} sortOrder={sortOrderRaw} key={props.pane.id} />
   ) : (
     <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
