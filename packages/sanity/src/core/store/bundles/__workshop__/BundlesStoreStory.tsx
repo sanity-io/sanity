@@ -8,7 +8,6 @@ import {BundleForm} from '../../../versions/components/dialog/BundleForm'
 import {BundlesProvider, useBundles} from '../BundlesProvider'
 import {type BundleDocument} from '../types'
 import {useBundleOperations} from '../useBundleOperations'
-import {useBundlesStore} from '../useBundlesStore'
 
 const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>): React.FC<P> => {
   const WrappedComponent: React.FC<P> = (props) => (
