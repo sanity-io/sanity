@@ -26,16 +26,15 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
 
   const {title, hue, icon} = currentVersion
 
-  const {data: bundles, loading} = useBundlesStore()
+  const {data: bundles} = useBundlesStore()
 
+  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const [documentVersions, setDocumentVersions] = useState<BundleDocument[]>([])
 
   const fetchVersions = useCallback(async () => {
-    if (!loading) {
-      const response = await getAllVersionsOfDocument(bundles, client, documentId)
-      setDocumentVersions(response)
-    }
-  }, [bundles, client, documentId, loading])
+    const response = await getAllVersionsOfDocument(bundles, client, documentId)
+    setDocumentVersions(response)
+  }, [bundles, client, documentId])
 
   // DUMMY FETCH -- NEEDS TO BE REPLACED -- USING GROQ from utils
   useEffect(() => {
@@ -60,7 +59,7 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
         <BundleMenu
           button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
           bundles={documentVersions}
-          loading={loading}
+          loading={!documentVersions}
         />
       </Box>
     </>
