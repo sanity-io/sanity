@@ -114,7 +114,7 @@ export function BundleForm(props: {
         {showTitleValidation && (
           <Card tone="critical" padding={3} radius={2}>
             <Text align="center" muted size={1}>
-              {/* localize text */}
+              {/* localize & validate copy & UI */}
               Title cannot be "drafts" or "published"
             </Text>
           </Card>
@@ -139,7 +139,14 @@ export function BundleForm(props: {
           {/* localize text */}
           Schedule for publishing at
         </Text>
-        {showDateValidation && 'abc'}
+        {showDateValidation && (
+          <Card tone="critical" padding={3} radius={2}>
+            <Text align="center" muted size={1}>
+              {/* localize & validate copy & UI */}
+              Should be an empty or valid date
+            </Text>
+          </Card>
+        )}
 
         {
           <TextInput
