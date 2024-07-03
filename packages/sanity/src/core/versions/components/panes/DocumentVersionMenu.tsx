@@ -11,8 +11,8 @@ import {
 import {useBundlesStore} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {getAllVersionsOfDocument} from '../../util/dummyGetters'
+import {BundleBadge} from '../BundleBadge'
 import {BundleMenu} from '../BundleMenu'
-import {VersionBadge} from '../VersionBadge'
 
 // eslint-disable-next-line no-warning-comments
 // TODO A LOT OF DOCUMENTED CODE IS RELATED TO SEARCH AND CREATING BUNDLE FROM HERE
@@ -50,7 +50,7 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
   return (
     <>
       {currentVersion && !isDraft && (
-        <VersionBadge hue={hue} title={title} icon={icon} padding={2} />
+        <BundleBadge hue={hue} title={title} icon={icon} padding={2} />
       )}
 
       {/**

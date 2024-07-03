@@ -4,7 +4,7 @@ import {Avatar, Box, Button, Flex, Popover, Stack, TextInput, useClickOutside} f
 import {useCallback, useState} from 'react'
 
 import {type BundleDocument} from '../../../store/bundles/types'
-import {VersionBadge} from '../VersionBadge'
+import {BundleBadge} from '../BundleBadge'
 
 export function BundleIconEditorPicker(props: {
   onChange: (value: Partial<BundleDocument>) => void
@@ -94,7 +94,7 @@ export function BundleIconEditorPicker(props: {
           selected={open}
           radius="full"
         >
-          <VersionBadge hue={value.hue} icon={value.icon} />
+          <BundleBadge hue={value.hue} icon={value.icon} />
         </Button>
       </div>
     </Popover>

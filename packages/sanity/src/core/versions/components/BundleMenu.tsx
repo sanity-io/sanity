@@ -11,7 +11,7 @@ import {
 import {type BundleDocument} from '../../store/bundles/types'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/dummyGetters'
-import {VersionBadge} from './VersionBadge'
+import {BundleBadge} from './BundleBadge'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -73,7 +73,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                           pressed={false}
                         >
                           <Flex>
-                            <VersionBadge hue={b.hue} icon={b.icon} padding={2} />
+                            <BundleBadge hue={b.hue} icon={b.icon} padding={2} />
 
                             <Box flex={1} padding={2} style={{minWidth: 100}}>
                               <Text size={1} weight="medium">

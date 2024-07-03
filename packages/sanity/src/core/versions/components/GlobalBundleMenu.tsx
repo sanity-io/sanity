@@ -8,9 +8,9 @@ import {
 } from '../../../_singletons/core/form/VersionContext'
 import {useBundlesStore} from '../../store/bundles'
 import {LATEST} from '../util/const'
+import {BundleBadge} from './BundleBadge'
 import {BundleMenu} from './BundleMenu'
 import {CreateBundleDialog} from './dialog/CreateBundleDialog'
-import {VersionBadge} from './VersionBadge'
 
 export function GlobalBundleMenu(): JSX.Element {
   const {data: bundles, loading} = useBundlesStore()
@@ -35,7 +35,7 @@ export function GlobalBundleMenu(): JSX.Element {
       <BundleMenu
         button={
           <Button mode="bleed" padding={0} radius="full">
-            <VersionBadge
+            <BundleBadge
               hue={currentVersion?.hue}
               icon={isDraft ? undefined : currentVersion?.icon}
               openButton
