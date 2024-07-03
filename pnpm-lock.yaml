@@ -1912,7 +1912,7 @@ importers:
         specifier: ^0.21.5
         version: 0.21.5
       ts-node:
-        specifier: ^10.9.1
+        specifier: ^10.9.2
         version: 10.9.2(@types/node@18.19.31)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
