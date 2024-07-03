@@ -70,7 +70,7 @@ export function GlobalBundleMenu(): JSX.Element {
             )}
             {bundles &&
               bundles
-                .filter((b) => !isDraftOrPublished(b.name))
+                .filter((b) => !isDraftOrPublished(b.name) || !b.archived)
                 .map((b) => (
                   <MenuItem
                     key={b.name}
