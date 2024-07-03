@@ -2,6 +2,7 @@ import {type Schema} from '@sanity/types'
 
 import {createSchema} from '../../../../schema'
 import {authorDocument} from './author'
+import {bookDocument} from './documents/book'
 import {objectsDocument} from './documents/objects'
 import {referencesDocument} from './documents/references'
 import {editorDocument} from './editor'
@@ -44,5 +45,6 @@ export const schema = createSchema({
     hotspotDocument,
     objectsDocument,
     referencesDocument,
+    bookDocument,
   ],
 }) as Schema

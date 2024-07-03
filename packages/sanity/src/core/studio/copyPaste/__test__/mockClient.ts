@@ -1,37 +1,53 @@
 import {jest} from '@jest/globals'
+import {evaluate, parse, type ParseOptions} from 'groq-js'
 import {type FIXME} from 'sanity'
 
 interface ClientWithFetch {
   fetch: <R = FIXME, Q = Record<string, unknown>>(query: string, params?: Q) => Promise<R>
 }
 
-function isNonNullObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
-}
-
-export function createMockClient(mockData: Record<string, FIXME> = {}): ClientWithFetch {
+export function createMockClient(mockData: FIXME[]): ClientWithFetch {
   return {
     fetch: jest.fn(
       async <R = FIXME, Q = Record<string, unknown>>(query: string, params?: Q): Promise<R> => {
-        // Simple mock implementation that returns data based on the ref
-        if (
-          query.includes('*[_type == $type &&_id == $ref][0]') &&
-          isNonNullObject(params) &&
-          'ref' in params
-        ) {
-          const ref = params.ref as string
-          if (typeof ref === 'string' && ref in mockData) {
-            return mockData[ref] as R
+        try {
+          const parseOptions: ParseOptions = {
+            params: params as Record<string, unknown>,
           }
-        }
-        if (query.includes('*[_id == $id][0]') && isNonNullObject(params) && 'id' in params) {
-          const id = params.id as string
-          if (typeof id === 'string' && id in mockData) {
-            return mockData[id] as R
+
+          const tree = parse(query, parseOptions)
+
+          const value = await evaluate(tree, {
+            dataset: mockData,
+            params: params || {},
+          })
+
+          const result = await value.get()
+
+          if (Array.isArray(result)) {
+            return (query.endsWith('[0]') ? result[0] : result) as R
           }
+
+          return result as R
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error('Error evaluating GROQ query:', error.message)
+            if ('position' in error) {
+              console.error('Error position:', (error as {position: number}).position)
+            }
+          }
+          throw new Error('Error in mock client query execution')
         }
-        throw new Error('Unexpected query or params in mock client')
       },
     ),
   }
 }
+
+// Example usage:
+// const mockData = [
+//   { _id: 'doc1', _type: 'post', title: 'Hello World' },
+//   { _id: 'doc2', _type: 'author', name: 'John Doe' }
+// ]
+// const client = createMockClient(mockData)
+// const result = await client.fetch('*[_type == "post"][0]')
+// console.log(result) // { _id: 'doc1', _type: 'post', title: 'Hello World' }

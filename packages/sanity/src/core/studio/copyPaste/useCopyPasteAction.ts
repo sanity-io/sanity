@@ -224,6 +224,10 @@ export function useCopyPasteAction(): CopyPasteHookValue {
           sourceValue: item.value,
           targetRootSchemaType: targetSchemaType,
           targetPath: [],
+          // This will mainly be used for validating references with filter callback that
+          // needs the document and absolute path to the field
+          targetRootPath: targetPath,
+          targetRootValue: value,
           options: {
             validateAssets: true,
             validateReferences: true,
