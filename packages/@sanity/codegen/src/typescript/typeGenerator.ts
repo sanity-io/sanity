@@ -113,24 +113,31 @@ export class TypeGenerator {
    * @beta
    */
   generateQueryMap(queries: QueryWithTypeNode[]): string {
+    const typesByQuerystring: {[query: string]: string[]} = {}
+
+    for (const query of queries) {
+      const name = this.typeNameMap.get(query.typeNode)
+      if (!name) {
+        continue
+      }
+
+      typesByQuerystring[query.query] ??= []
+      typesByQuerystring[query.query].push(name)
+    }
+
     const queryReturnInterface = t.tsInterfaceDeclaration(
       t.identifier('SanityQueries'),
       null,
       [],
       t.tsInterfaceBody(
-        queries
-          .map((query) => {
-            const name = this.typeNameMap.get(query.typeNode)
-            if (!name) {
-              return null
-            }
-
-            return t.tsPropertySignature(
-              t.stringLiteral(query.query),
-              t.tsTypeAnnotation(t.tsTypeReference(t.identifier(name))),
-            )
-          })
-          .filter((entry): entry is t.TSPropertySignature => entry !== null),
+        Object.entries(typesByQuerystring).map(([query, types]) => {
+          return t.tsPropertySignature(
+            t.stringLiteral(query),
+            t.tsTypeAnnotation(
+              t.tsUnionType(types.map((type) => t.tsTypeReference(t.identifier(type)))),
+            ),
+          )
+        }),
       ),
     )
 
