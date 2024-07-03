@@ -1,9 +1,11 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
+import {type ReactNode} from 'react'
 
 import {queryByDataUi} from '../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {useBundlesStore} from '../../../store/bundles'
+import {BundlesProvider} from '../../../store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {releasesUsEnglishLocaleBundle} from '../../i18n'
 import BundlesOverview from '../BundlesOverview'
@@ -22,12 +24,18 @@ jest.mock('sanity/router', () => ({
   useRouter: jest.fn().mockReturnValue({state: {}, navigate: jest.fn()}),
 }))
 
-jest.mock('sanity')
-
-const createWrapper = () =>
-  createTestProvider({
+const createWrapper = async () => {
+  const TestProvider = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
+  return function Wrapper({children}: {children: ReactNode}) {
+    return (
+      <TestProvider>
+        <BundlesProvider>{children}</BundlesProvider>
+      </TestProvider>
+    )
+  }
+}
 
 const mockUseBundleStore = useBundlesStore as jest.Mock<typeof useBundlesStore>
 
