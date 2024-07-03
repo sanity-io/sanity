@@ -120,8 +120,8 @@ export const diffMatchPatch = (value: string): DiffMatchPatchOp => ({
  *
  * @example
  * ```ts
- * const prependFoo = insert(['foo'], 'before')
- * const appendFooAndBar = insert(['foo', 'bar'], 'after')
+ * const prependFoo = insert(['foo'], 'before', 0)
+ * const appendFooAndBar = insert(['foo', 'bar'], 'after', someArray.length -1)
  * const insertObjAfterXYZ = insert({name: 'foo'}, 'after', {_key: 'xyz'}])
  * ```
  */
