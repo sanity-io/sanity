@@ -69,13 +69,6 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
 
-  // eslint-disable-next-line no-warning-comments
-  /* TODO - replace with real data
-   - needs to check for publish data
-   - if it's published
-   */
-  const isReady = false
-
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
@@ -102,7 +95,6 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
                   currentVersion={currentVersion}
                   documentId={documentId}
                   documentType={documentType}
-                  isReady={isReady}
                 />
               )}
             </Stack>

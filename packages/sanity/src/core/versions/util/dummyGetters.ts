@@ -43,7 +43,7 @@ export function getVersionName(documentId: string): string {
   return version
 }
 
-export function versionDocumentExists(documentVersions: Version[], name: string): boolean {
+export function versionDocumentExists(documentVersions: BundleDocument[], name: string): boolean {
   return documentVersions.some((version) => version.name === name)
 }
 
