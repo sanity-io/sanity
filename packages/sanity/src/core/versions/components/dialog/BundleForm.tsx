@@ -42,14 +42,6 @@ export function BundleForm(props: {
     [icon, hue],
   )
 
-  const iconValue: Partial<BundleDocument> = useMemo(
-    () => ({
-      icon: value.icon ?? 'cube',
-      hue: value.hue ?? 'gray',
-    }),
-    [value],
-  )
-
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
@@ -108,13 +100,6 @@ export function BundleForm(props: {
   const handleIconValueChange = useCallback(
     (pickedIcon: Partial<BundleDocument>) => {
       onChange({...value, icon: pickedIcon.icon, hue: pickedIcon.hue})
-    },
-    [onChange, value],
-  )
-
-  const handleIconValueChange = useCallback(
-    (icon: Partial<BundleDocument>) => {
-      onChange({...value, icon: icon.icon, hue: icon.hue})
     },
     [onChange, value],
   )
