@@ -36,6 +36,8 @@ describe('transferValue', () => {
       sourceValue,
       targetRootSchemaType: schema.get('editor')!,
       targetPath: ['bio'],
+      targetRootValue: {},
+      targetRootPath: [],
     })
     expect(transferValueResult.errors).not.toEqual([])
     expect(transferValueResult.errors[0].i18n.key).toEqual(
@@ -52,6 +54,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('author')!,
         targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual({_type: 'author', name: 'Knut'})
     })
@@ -76,6 +80,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toEqual({
@@ -101,6 +107,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['name'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual('Knut')
     })
@@ -113,6 +121,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['born'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors.length).toEqual(1)
     })
@@ -125,6 +135,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['testNumberWithListObjects'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors.length).toEqual(1)
     })
@@ -137,6 +149,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteStrings'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toEqual(['Knut'])
@@ -157,10 +171,64 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['bestAuthorFriend'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual({_type: 'reference', _ref: 'yyy'})
     })
-    test('cant copy reference into another that doesnt accept type', async () => {
+    test('can copy reference where referenced document does match string filter', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        reference: {_type: 'reference', _ref: 'yyy'},
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: ['reference'],
+        sourceValue,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['referenceWithFilter'],
+        targetRootValue: {},
+        targetRootPath: ['referenceWithFilter'],
+        options: {
+          validateReferences: true,
+          client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'yyy'}]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual({_ref: 'yyy', _type: 'reference'})
+    })
+
+    test('can copy reference where referenced document does match filter function', async () => {
+      const sourceValue = {_type: 'reference', _ref: 'book-1'}
+      const targetRootValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        decadeFilteredBook: {
+          decade: 1980,
+        },
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['decadeFilteredBook', 'book'],
+        targetRootValue,
+        targetRootPath: ['decadeFilteredBook', 'book'],
+        options: {
+          validateReferences: true,
+          client: createMockClient([
+            {_type: 'book', _id: 'book-1', title: 'Book 1', publicationYear: 1981},
+            {_type: 'book', _id: 'book-2', title: 'Book 2', publicationYear: 1991},
+          ]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual({_ref: 'book-1', _type: 'reference'})
+    })
+
+    test('will not copy reference into another that doesnt accept type', async () => {
       const sourceValue = {
         _type: 'author',
         _id: 'xxx',
@@ -172,14 +240,89 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['relatedEditor'],
+        targetRootValue: {},
+        targetRootPath: [],
         options: {
           validateReferences: true,
-          client: createMockClient({
-            yyy: {_type: 'author', _id: 'yyy'},
-          }),
+          client: createMockClient([{_type: 'author', _id: 'yyy'}]),
         },
       })
       expect(transferValueResult?.errors.length).toEqual(1)
+      expect(transferValueResult?.targetValue).toEqual(undefined)
+    })
+
+    test('will not copy reference where target does not accept string filter', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        reference: {_type: 'reference', _ref: 'yyy'},
+      }
+      const targetRootValue = {
+        _type: 'referencesDocument',
+        _id: 'zzz',
+      }
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: ['reference'],
+        sourceValue,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['referenceWithFilter'],
+        targetRootValue,
+        targetRootPath: ['referenceWithFilter'],
+        options: {
+          validateReferences: true,
+          client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([
+        {
+          level: 'error',
+          sourceValue: expect.any(Object),
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.reference-filter-incompatible.description',
+          },
+        },
+      ])
+      expect(transferValueResult?.targetValue).toEqual(undefined)
+    })
+
+    test('will not copy reference where reference does not match filter function', async () => {
+      const sourceValue = {_type: 'reference', _ref: 'book-2'}
+      const targetRootValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        decadeFilteredBook: {
+          decade: 1980,
+        },
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['decadeFilteredBook', 'book'],
+        targetRootValue,
+        targetRootPath: ['decadeFilteredBook', 'book'],
+        options: {
+          validateReferences: true,
+          client: createMockClient([
+            {_type: 'book', _id: 'book-1', title: 'Book 1', publicationYear: 1981},
+            {_type: 'book', _id: 'book-2', title: 'Book 2', publicationYear: 1991},
+          ]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([
+        {
+          level: 'error',
+          sourceValue: expect.any(Object),
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.reference-filter-incompatible.description',
+          },
+        },
+      ])
       expect(transferValueResult?.targetValue).toEqual(undefined)
     })
   })
@@ -193,6 +336,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['isVerified'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual(true)
     })
@@ -204,6 +349,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteBooleans'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toEqual([false])
@@ -224,6 +371,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['profile'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toMatchObject({
         _type: 'object',
@@ -243,6 +392,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toMatchObject({
@@ -261,6 +412,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteNumbers'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual([1, 2, 3])
     })
@@ -276,6 +429,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteStrings'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual(['Alice', 'Bob', 'Charlie'])
     })
@@ -377,6 +532,8 @@ describe('transferValue', () => {
           'content',
         ])!,
         targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(expectedOutput)
@@ -411,6 +568,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfPredefinedOptions'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual([
         {_key: expect.any(String), title: 'Red', name: 'red', _type: 'color'},
@@ -442,6 +601,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfPredefinedOptions'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual([
         {_key: expect.any(String), title: 'Red', name: 'red', _type: 'color'},
@@ -463,6 +624,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfMultipleNestedTypesWithoutColor'],
+        targetRootValue: {},
+        targetRootPath: [],
         // targetValue,
       })
       expect(transferValueResult?.errors).not.toEqual([])
@@ -483,6 +646,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfMultipleNestedTypes', {_key: '39fd2dd21625'}, 'nestedArray'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors).not.toEqual([])
       expect(transferValueResult?.targetValue).toEqual(undefined)
@@ -502,6 +667,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('objects')!,
         targetPath: ['events', {_key: 'c9b6815500b1'}, 'what'],
+        targetRootValue: {},
+        targetRootPath: [],
         targetValue,
       })
       expect(transferValueResult?.errors).not.toEqual([])
@@ -525,6 +692,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfMultipleNestedTypes', {_key: '39fd2dd21625'}, 'nestedArray'],
+        targetRootValue: {},
+        targetRootPath: [],
         //targetValue: [],
       })
       expect(transferValueResult?.errors).toEqual([])
@@ -558,6 +727,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfMultipleNestedTypes', {_key: 'color-1'}, 'nestedArray'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual([
@@ -623,6 +794,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('hotspotDocument')!,
         targetPath: ['hotspots'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(expectValue)
@@ -664,6 +837,8 @@ describe('transferValue', () => {
           'arrayOfReferences',
         ])!,
         targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(expectedOutput)
@@ -679,6 +854,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['born'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual(1984)
     })
@@ -691,6 +868,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['name'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toEqual('1984')
@@ -704,6 +883,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['born'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual(1984)
     })
@@ -716,6 +897,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['testNumberWithListObjects'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual(1)
     })
@@ -728,6 +911,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteStrings'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toEqual(['1'])
@@ -741,6 +926,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteNumbers'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual([1])
     })
@@ -753,6 +940,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['testNumberWithListObjects'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual(1)
     })
@@ -777,6 +966,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       const targetValue = transferValueResult?.targetValue as {
         bio: (TypedObject & {children: TypedObject[]})[]
@@ -809,6 +1000,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteNumbers'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual([1, 2, 3, 4])
     })
@@ -822,6 +1015,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['nestedTest'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toMatchObject({
         _type: 'nestedObject',
@@ -845,16 +1040,28 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['profileImage'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(sourceValue)
     })
 
     test('will validate image objects', async () => {
-      const mockClient = createMockClient({
-        'image-1': {mimeType: 'image/jpeg', originalFilename: 'test.jpg'},
-        'file-1': {mimeType: 'application/pdf', originalFilename: 'test.pdf'},
-      })
+      const mockClient = createMockClient([
+        {
+          _id: 'image-1',
+          _type: 'sanity.imageAsset',
+          mimeType: 'image/jpeg',
+          originalFilename: 'test.jpg',
+        },
+        {
+          _id: 'file-1',
+          _type: 'sanity.fileAsset',
+          mimeType: 'application/pdf',
+          originalFilename: 'test.pdf',
+        },
+      ])
 
       const sourceValue = {
         _type: 'image',
@@ -870,6 +1077,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['profileImagePNG'],
+        targetRootValue: {},
+        targetRootPath: [],
         options: {
           client: mockClient,
           validateAssets: true,
@@ -883,10 +1092,20 @@ describe('transferValue', () => {
     })
 
     test('will paste image into field that accepts same mime type', async () => {
-      const mockClient = createMockClient({
-        'image-1': {mimeType: 'image/jpeg', originalFilename: 'test.jpg'},
-        'file-1': {mimeType: 'application/pdf', originalFilename: 'test.pdf'},
-      })
+      const mockClient = createMockClient([
+        {
+          _id: 'image-1',
+          _type: 'sanity.imageAsset',
+          mimeType: 'image/jpeg',
+          originalFilename: 'test.jpg',
+        },
+        {
+          _id: 'file-1',
+          _type: 'sanity.fileAsset',
+          mimeType: 'application/pdf',
+          originalFilename: 'test.pdf',
+        },
+      ])
 
       const sourceValue = {
         _type: 'image',
@@ -902,6 +1121,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['profileImageJpeg'],
+        targetRootValue: {},
+        targetRootPath: [],
         options: {
           client: mockClient,
           validateAssets: true,
@@ -926,6 +1147,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: resolveSchemaTypeForPath(schema.get('author')!, ['profileCV'])!,
         targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult.errors).not.toEqual([])
       expect(transferValueResult.errors[0].i18n.key).toEqual(
@@ -948,6 +1171,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: resolveSchemaTypeForPath(schema.get('author')!, ['profileImage'])!,
         targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult.errors).not.toEqual([])
       expect(transferValueResult.errors[0].i18n.key).toEqual(
@@ -968,6 +1193,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['bestAuthorFriend'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual(omit(sourceValue, ['_weak']))
     })
@@ -984,6 +1211,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('author')!,
         targetPath: ['bestFriend'],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       expect(transferValueResult?.targetValue).toEqual({...sourceValue, _weak: true})
     })
@@ -1010,6 +1239,8 @@ describe('transferValue', () => {
         sourceValue,
         targetRootSchemaType: schema.get('author')!,
         targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
       })
       const targetValue = transferValueResult?.targetValue as {
         bio: (TypedObject & {children: TypedObject[]})[]

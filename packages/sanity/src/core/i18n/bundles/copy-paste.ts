@@ -27,7 +27,10 @@ const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
     'Source and target schema types are not compatible',
   /** The validation message that is shown when reference types are incompatible */
   'copy-paste.on-paste.validation.reference-type-incompatible.description':
-    'References of type "{{targetReferenceTypes}}" is not allowed in reference field to types "{{sourceReferenceTypes}}"',
+    'References of type "{{sourceReferenceType}}" is not allowed in reference field that accepts types "{{targetReferenceTypes}}"',
+  /** The validation message that is shown when reference is incompatible with filter */
+  'copy-paste.on-paste.validation.reference-filter-incompatible.description':
+    'Reference is not allowed in reference field according to filter',
   /** The validation message that is shown when image files are incompatible */
   'copy-paste.on-paste.validation.image-file-incompatible.description':
     'A "{{sourceSchemaType}}" is not allowed in a "{{targetSchemaType}}"',

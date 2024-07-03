@@ -21,14 +21,23 @@ import {
   isTypedObject,
   type NumberSchemaType,
   type ObjectSchemaType,
+  type SanityDocument,
   type StringSchemaType,
   type TypedObject,
 } from '@sanity/types'
-import {type FIXME, isRecord, type Path, type SchemaType} from 'sanity'
+import {
+  type FIXME,
+  getIdPair,
+  isRecord,
+  type Path,
+  type SanityClient,
+  type SchemaType,
+} from 'sanity'
 
 import {getValueAtPath} from '../../field/paths/helpers'
 import {accepts} from '../../form/studio/uploads/accepts'
 import {randomKey} from '../../form/utils/randomKey'
+import {documentMatchesGroqFilter} from './documentMatchesGroqFilter'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
 import {isEmptyValue} from './utils'
 
@@ -104,6 +113,8 @@ export async function transferValue({
   sourcePath,
   sourceValue,
   targetRootSchemaType,
+  targetRootValue,
+  targetRootPath,
   targetValue,
   targetPath,
   keyGenerator = defaultKeyGenerator,
@@ -118,6 +129,8 @@ export async function transferValue({
   sourceValue: unknown
   targetRootSchemaType: SchemaType
   targetPath: Path
+  targetRootValue?: unknown
+  targetRootPath: Path
   targetValue?: unknown
   keyGenerator?: () => string
   options?: TransferValueOptions
@@ -234,6 +247,8 @@ export async function transferValue({
     return collateObjectValue({
       sourceValue: sourceValueAtPath as TypedObject,
       targetSchemaType: targetSchemaTypeAtPath as ObjectSchemaType,
+      targetRootValue,
+      targetRootPath,
       targetPath: [],
       errors,
       keyGenerator,
@@ -246,6 +261,8 @@ export async function transferValue({
     return collateArrayValue({
       sourceValue: sourceValueAtPath as unknown[],
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
+      targetRootValue,
+      targetRootPath,
       errors,
       keyGenerator,
     })
@@ -256,6 +273,8 @@ export async function transferValue({
     return collateArrayValue({
       sourceValue: [sourceValueAtPath] as unknown[],
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
+      targetRootValue,
+      targetRootPath,
       errors,
       keyGenerator,
     })
@@ -278,12 +297,16 @@ async function collateObjectValue({
   sourceValue,
   targetSchemaType,
   targetPath,
+  targetRootValue,
+  targetRootPath,
   errors,
   keyGenerator,
   options,
 }: {
   sourceValue: unknown
   targetSchemaType: ObjectSchemaType
+  targetRootValue: unknown
+  targetRootPath: Path
   targetPath: Path
   errors: TransferValueError[]
   keyGenerator: () => string
@@ -413,11 +436,15 @@ async function collateObjectValue({
     const targetReferenceTypes = targetSchemaType.to.map((type) => type.name)
 
     // Validate the actual reference value
-    // TODO: take optional reference filter option into account
     if (options?.validateReferences && options.client && isReference(sourceValue)) {
       try {
-        const reference = await options.client.fetch(`*[_id == $id][0]{_id, _type}`, {
-          id: sourceValue._ref,
+        // We need to fetch the whole reference document if a filter is defined
+        const query = targetSchemaType.options?.filter
+          ? `*[_id in $ids]|order(_updatedAt)[0]`
+          : `*[_id in $ids]|order(_updatedAt)[0]{_id, _type}`
+        const {publishedId, draftId} = getIdPair(sourceValue._ref)
+        const reference = await (options.client as SanityClient).fetch(query, {
+          ids: [publishedId, draftId],
         })
 
         // Test that we have an actual referenced object if this is not a weak reference
@@ -436,6 +463,7 @@ async function collateObjectValue({
             errors,
           }
         }
+
         // Test that the actual referenced type is allowed by the schema.
         if (!targetReferenceTypes.includes(reference._type)) {
           errors.push({
@@ -445,8 +473,8 @@ async function collateObjectValue({
             i18n: {
               key: 'copy-paste.on-paste.validation.reference-type-incompatible.description',
               args: {
-                sourceReferenceTypes: [reference._type],
-                targetReferenceTypes,
+                sourceReferenceType: reference._type,
+                targetReferenceTypes: targetReferenceTypes.join(', '),
               },
             },
           })
@@ -454,6 +482,36 @@ async function collateObjectValue({
           return {
             targetValue: undefined,
             errors,
+          }
+        }
+
+        // Validate references against filter set on the target schema type
+        if (options.client && targetSchemaType.options?.filter) {
+          const getClient = (clientOptions: {apiVersion: string}) =>
+            (options.client as SanityClient).withConfig(clientOptions)
+          const isMatch = await documentMatchesGroqFilter(
+            (targetRootValue || {}) as SanityDocument,
+            reference,
+            targetSchemaType.options,
+            targetRootPath,
+            getClient,
+          )
+
+          // eslint-disable-next-line max-depth
+          if (!isMatch) {
+            errors.push({
+              level: 'error',
+              sourceValue: sourceValue,
+
+              i18n: {
+                key: 'copy-paste.on-paste.validation.reference-filter-incompatible.description',
+              },
+            })
+
+            return {
+              targetValue: undefined,
+              errors,
+            }
           }
         }
       } catch (error) {
@@ -531,6 +589,8 @@ async function collateObjectValue({
         ) as TypedObject,
         targetPath: [],
         targetSchemaType: memberSchemaType,
+        targetRootValue,
+        targetRootPath,
         errors,
         keyGenerator,
       })
@@ -547,6 +607,8 @@ async function collateObjectValue({
       const collated = await collateArrayValue({
         sourceValue: genericValue,
         targetSchemaType: memberSchemaType as ArraySchemaType,
+        targetRootValue,
+        targetRootPath,
         errors,
         keyGenerator,
       })
@@ -606,10 +668,14 @@ async function collateObjectValue({
 async function collateArrayValue({
   sourceValue,
   targetSchemaType,
+  targetRootValue,
+  targetRootPath,
   errors,
   keyGenerator,
 }: {
   sourceValue: unknown
+  targetRootValue: unknown
+  targetRootPath: Path
   targetSchemaType: ArraySchemaType
   errors: TransferValueError[]
   keyGenerator: () => string
@@ -700,6 +766,8 @@ async function collateArrayValue({
               (type) => type.name === item._type,
             )! as ObjectSchemaType,
             targetPath: [],
+            targetRootValue,
+            targetRootPath,
             errors,
             keyGenerator,
           }),
