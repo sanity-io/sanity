@@ -11,10 +11,9 @@ type Props = {
 }
 
 export const BundleMenuButton = ({bundle}: Props) => {
-  const {deleteBundle} = useBundleOperations()
+  const {deleteBundle, updateBundle} = useBundleOperations()
   const router = useRouter()
   const isBundleArchived = !!bundle?.archivedAt
-  const {updateBundle} = useBundleOperations()
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
 
   const bundleMenuDisabled = !bundle
@@ -63,7 +62,7 @@ export const BundleMenuButton = ({bundle}: Props) => {
             icon={isBundleArchived ? ArchiveIcon : ArchiveIcon}
             text={isBundleArchived ? 'Unarchive' : 'Archive'}
           />
-          <MenuItem onClick={handleOnDeleteBundle} icon={TrashIcon} text="Delete release" />
+          <MenuItem onClick={handleOnDeleteBundle} icon={TrashIcon} text="Delete" />
         </Menu>
       }
       popover={{
