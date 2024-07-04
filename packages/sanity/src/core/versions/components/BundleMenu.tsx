@@ -17,6 +17,11 @@ const StyledMenu = styled(Menu)`
   min-width: 200px;
 `
 
+const StyledBox = styled(Box)`
+  overflow: auto;
+  max-height: 200px;
+`
+
 interface BundleListProps {
   button: ReactElement
   bundles: BundleDocument[] | null
@@ -63,45 +68,47 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                 {bundles && bundles.length > 0 && (
                   <>
                     <MenuDivider />
-                    {bundles
-                      .filter((b) => !isDraftOrPublished(b.name) && !b.archived)
-                      .map((b) => (
-                        <MenuItem
-                          key={b.name}
-                          onClick={handleBundleChange(b)}
-                          padding={1}
-                          pressed={false}
-                        >
-                          <Flex>
-                            <BundleBadge hue={b.hue} icon={b.icon} padding={2} />
+                    <StyledBox>
+                      {bundles
+                        .filter((b) => !isDraftOrPublished(b.name) && !b.archived)
+                        .map((b) => (
+                          <MenuItem
+                            key={b.name}
+                            onClick={handleBundleChange(b)}
+                            padding={1}
+                            pressed={false}
+                          >
+                            <Flex>
+                              <BundleBadge hue={b.hue} icon={b.icon} padding={2} />
 
-                            <Box flex={1} padding={2} style={{minWidth: 100}}>
-                              <Text size={1} weight="medium">
-                                {b.title}
-                              </Text>
-                            </Box>
+                              <Box flex={1} padding={2} style={{minWidth: 100}}>
+                                <Text size={1} weight="medium">
+                                  {b.title}
+                                </Text>
+                              </Box>
 
-                            <Box padding={2}>
-                              <Text muted size={1}>
-                                {b.publishAt ? (
-                                  <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
-                                ) : (
-                                  /* localize text */
-                                  <span>{'No target date'}</span>
-                                )}
-                              </Text>
-                            </Box>
+                              <Box padding={2}>
+                                <Text muted size={1}>
+                                  {b.publishAt ? (
+                                    <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
+                                  ) : (
+                                    /* localize text */
+                                    <span>{'No target date'}</span>
+                                  )}
+                                </Text>
+                              </Box>
 
-                            <Box padding={2}>
-                              <Text size={1}>
-                                <CheckmarkIcon
-                                  style={{opacity: currentVersion.name === b.name ? 1 : 0}}
-                                />
-                              </Text>
-                            </Box>
-                          </Flex>
-                        </MenuItem>
-                      ))}
+                              <Box padding={2}>
+                                <Text size={1}>
+                                  <CheckmarkIcon
+                                    style={{opacity: currentVersion.name === b.name ? 1 : 0}}
+                                  />
+                                </Text>
+                              </Box>
+                            </Flex>
+                          </MenuItem>
+                        ))}
+                    </StyledBox>
                   </>
                 )}
 
