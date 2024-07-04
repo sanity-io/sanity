@@ -8,24 +8,26 @@ import {LATEST} from '../util/const'
  * @internal
  */
 export interface VersionContextValue {
-  currentBundle: Partial<BundleDocument>
+  /* Return the current global bundle */
+  currentGlobalBundle: Partial<BundleDocument>
+  /* Check if the current perspective is a draft */
   isDraft: boolean
-  setGlobalBundle: (bundle: Partial<BundleDocument>) => void
+  /* Change the perspective in the studio based on the perspective name */
+  setPerspective: (name: string) => void
 }
 
-export function useBundle(): VersionContextValue {
+export function usePerspective(): VersionContextValue {
   const router = useRouter()
   const {data: bundles} = useBundlesStore()
 
-  const setGlobalBundle = (version: Partial<BundleDocument>) => {
-    const {name} = version
+  const setPerspective = (name: string) => {
     if (name === 'drafts') {
       router.navigateStickyParam('perspective', '')
     } else {
       router.navigateStickyParam('perspective', `bundle.${name}`)
     }
   }
-  const selectedPerspective =
+  const selectedBundle =
     router.stickyParams?.perspective && bundles
       ? bundles.find((bundle: Partial<BundleDocument>) => {
           return (
@@ -35,13 +37,13 @@ export function useBundle(): VersionContextValue {
         })
       : LATEST
 
-  const currentBundle = selectedPerspective || LATEST
+  const currentGlobalBundle = selectedBundle || LATEST
 
-  const isDraft = currentBundle.name === 'drafts'
+  const isDraft = currentGlobalBundle.name === 'drafts'
 
   return {
     isDraft,
-    setGlobalBundle,
-    currentBundle,
+    setPerspective,
+    currentGlobalBundle,
   }
 }

@@ -5,7 +5,7 @@ import {RelativeTime} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../store/bundles/types'
-import {useBundle} from '../hooks/useBundle'
+import {usePerspective} from '../hooks/usePerspective'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/dummyGetters'
 import {BundleBadge} from './BundleBadge'
@@ -29,13 +29,13 @@ interface BundleListProps {
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
 
-  const {currentBundle, setGlobalBundle, isDraft} = useBundle()
+  const {currentGlobalBundle, setPerspective, isDraft} = usePerspective()
 
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
-      setGlobalBundle(bundle)
+      setPerspective(bundle.name)
     },
-    [setGlobalBundle],
+    [setPerspective],
   )
 
   return (
@@ -93,7 +93,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                               <Box padding={2}>
                                 <Text size={1}>
                                   <CheckmarkIcon
-                                    style={{opacity: currentBundle.name === b.name ? 1 : 0}}
+                                    style={{opacity: currentGlobalBundle.name === b.name ? 1 : 0}}
                                   />
                                 </Text>
                               </Box>

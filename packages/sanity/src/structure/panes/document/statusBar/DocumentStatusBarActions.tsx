@@ -11,7 +11,7 @@ import {
 } from 'sanity'
 
 import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
-import {useBundle} from '../../../../core/versions/hooks/useBundle'
+import {usePerspective} from '../../../../core/versions/hooks/usePerspective'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -63,7 +63,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   /* Version / Bundling handling */
 
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentBundle, isDraft} = useBundle()
+  const {currentGlobalBundle, isDraft} = usePerspective()
 
   return (
     <Flex align="center" gap={1}>
@@ -88,7 +88,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
               ) : (
                 /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
                 <BundleActions
-                  currentBundle={currentBundle}
+                  currentGlobalBundle={currentGlobalBundle}
                   documentId={documentId}
                   documentType={documentType}
                 />
