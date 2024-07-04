@@ -14,8 +14,6 @@ export function GlobalBundleMenu(): JSX.Element {
 
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
-  // eslint-disable-next-line no-warning-comments
-  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const {currentVersion, isDraft} = useVersion()
 
   /* create new bundle */

@@ -29,17 +29,13 @@ interface BundleListProps {
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
 
-  // eslint-disable-next-line no-warning-comments
-  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentVersion, setCurrentVersion, isDraft} = useVersion()
+  const {currentVersion, setGlobalBundle, isDraft} = useVersion()
 
-  // eslint-disable-next-line no-warning-comments
-  // FIXME REPLACE WHEN WE HAVE REAL DATA
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
-      setCurrentVersion(bundle)
+      setGlobalBundle(bundle)
     },
-    [setCurrentVersion],
+    [setGlobalBundle],
   )
 
   return (
