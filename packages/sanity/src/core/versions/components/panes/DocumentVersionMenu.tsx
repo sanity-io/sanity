@@ -1,4 +1,3 @@
-/* eslint-disable no-warning-comments */
 import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Button} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
@@ -11,8 +10,6 @@ import {getAllVersionsOfDocument} from '../../util/dummyGetters'
 import {BundleBadge} from '../BundleBadge'
 import {BundleMenu} from '../BundleMenu'
 
-// TODO A LOT OF DOCUMENTED CODE IS RELATED TO SEARCH AND CREATING BUNDLE FROM HERE
-// STILL NEED TO DECIDE IF WE KEEP IT OR NOT
 export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
   const {documentId} = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -40,7 +37,8 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
     fetchVersionsInner()
   }, [fetchVersions])
 
-  /* TODO Version Badge should only show when the current opened document is in a version */
+  /* TODO Version Badge should only show when the current opened document is in a version, 
+  RIGHT NOW IT'S USING THE GLOBAL */
 
   return (
     <>
@@ -48,8 +46,7 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
         <BundleBadge hue={hue} title={title} icon={icon} padding={2} />
       )}
 
-      {/**
-       * TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
+      {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
       <Box flex="none">
         <BundleMenu
           button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
