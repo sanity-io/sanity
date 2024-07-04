@@ -3,14 +3,14 @@ import {Box, Button} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
 
-import {useBundles} from '../../../store/bundles/BundlesProvider'
-import {type BundleDocument} from '../../../store/bundles/types'
-import {usePerspective} from '../../hooks/usePerspective'
-import {getAllVersionsOfDocument} from '../../util/dummyGetters'
-import {BundleBadge} from '../BundleBadge'
-import {BundleMenu} from '../BundleMenu'
+import {BundleBadge} from '../../../../../../core/bundles/components/BundleBadge'
+import {BundleMenu} from '../../../../../../core/bundles/components/BundleMenu'
+import {usePerspective} from '../../../../../../core/bundles/hooks/usePerspective'
+import {getAllVersionsOfDocument} from '../../../../../../core/bundles/util/dummyGetters'
+import {useBundles} from '../../../../../../core/store/bundles/BundlesProvider'
+import {type BundleDocument} from '../../../../../../core/store/bundles/types'
 
-export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
+export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Element {
   const {documentId} = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
