@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import {Card, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
@@ -51,7 +50,7 @@ export function BundlesTable({bundles, searchTerm, setSearchTerm}: BundlesTableP
   return (
     <Stack as="table" space={1}>
       <BundleHeader
-        searchDisabled={!bundles.length}
+        searchDisabled={!searchTerm && !bundles.length}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />

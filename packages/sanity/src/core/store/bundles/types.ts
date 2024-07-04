@@ -11,4 +11,5 @@ export interface BundleDocument extends SanityDocument {
   icon?: IconSymbol
   authorId: string
   publishedAt?: string
+  archivedAt?: string
 }
