@@ -84,7 +84,14 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
   const resolveIntentLink = useCallback(
     (intentName: string, parameters?: IntentParameters): string => {
       const [params, payload] = Array.isArray(parameters) ? parameters : [parameters]
-      return routerProp.encode({intent: intentName, params, payload})
+      // TODO: Is there a better way to do this?
+      const {perspective, ...restParams} = params || {}
+      let path = routerProp.encode({intent: intentName, params: restParams, payload})
+      if (perspective) {
+        path += `?perspective=${perspective}`
+      }
+
+      return path
     },
     [routerProp],
   )

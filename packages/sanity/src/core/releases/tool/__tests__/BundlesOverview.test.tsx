@@ -8,7 +8,7 @@ import {useBundlesStore} from '../../../store/bundles'
 import {BundlesProvider} from '../../../store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {releasesUsEnglishLocaleBundle} from '../../i18n'
-import BundlesOverview from '../BundlesOverview'
+import {ReleasesOverview} from '../ReleasesOverview'
 
 // TODO: move this to test for CreateBundleDialog
 jest.mock('../../../store/bundles/useBundleOperations', () => ({
@@ -39,11 +39,11 @@ const createWrapper = async () => {
 
 const mockUseBundleStore = useBundlesStore as jest.Mock<typeof useBundlesStore>
 
-describe('BundlesOverview', () => {
+describe('ReleasesOverview', () => {
   describe('when loading bundles', () => {
     beforeEach(async () => {
       mockUseBundleStore.mockReturnValue({
-        data: null,
+        data: [],
         loading: true,
         error: null,
         dispatch: jest.fn(),
@@ -51,7 +51,7 @@ describe('BundlesOverview', () => {
 
       const wrapper = await createWrapper()
 
-      return render(<BundlesOverview />, {wrapper})
+      return render(<ReleasesOverview />, {wrapper})
     })
 
     it('does not show bundles table but shows loader', () => {
@@ -83,7 +83,7 @@ describe('BundlesOverview', () => {
       })
       const wrapper = await createWrapper()
 
-      return render(<BundlesOverview />, {wrapper})
+      return render(<ReleasesOverview />, {wrapper})
     })
 
     it('shows a message that no bundles are available', () => {
@@ -120,7 +120,7 @@ describe('BundlesOverview', () => {
       })
       const wrapper = await createWrapper()
 
-      return render(<BundlesOverview />, {wrapper})
+      return render(<ReleasesOverview />, {wrapper})
     })
     it('shows each open bundle', () => {
       screen.getByText('Bundle 1')

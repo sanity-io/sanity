@@ -26,7 +26,7 @@ export function BundleRow({bundle}: Props) {
         >
           <Flex align="center" gap={2}>
             <Box flex="none">
-              <VersionBadge tone={bundle.tone} icon={bundle.icon} />
+              <VersionBadge hue={bundle.hue} icon={bundle.icon} />
             </Box>
             <Stack flex={1} space={2}>
               <Flex align="center" gap={2}>
