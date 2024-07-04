@@ -139,7 +139,6 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
             <Resizer
               onMouseDown={header.getResizeHandler()}
               onTouchStart={header.getResizeHandler()}
-              // eslint-disable-next-line react/jsx-no-bind
               onDoubleClick={() => header.column.resetSize()}
             />
           </>

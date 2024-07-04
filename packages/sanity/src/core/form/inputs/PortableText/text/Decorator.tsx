@@ -1,4 +1,4 @@
-import {type BlockDecoratorRenderProps} from '@sanity/portable-text-editor'
+import {type BlockDecoratorRenderProps} from '@portabletext/editor'
 import {type Theme} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'

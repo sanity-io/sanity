@@ -9,7 +9,6 @@
     "@sanity/codegen",
     "@sanity/mutator",
     "@sanity/diff",
-    "@sanity/portable-text-editor",
     "@sanity/codegen",
     "@sanity/schema",
     "@sanity/block-tools",

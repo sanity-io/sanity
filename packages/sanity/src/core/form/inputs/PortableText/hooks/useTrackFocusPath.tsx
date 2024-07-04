@@ -2,7 +2,7 @@ import {
   PortableTextEditor,
   usePortableTextEditor,
   usePortableTextEditorSelection,
-} from '@sanity/portable-text-editor'
+} from '@portabletext/editor'
 import {isKeyedObject, type KeyedObject, type Path} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
 import {useLayoutEffect} from 'react'

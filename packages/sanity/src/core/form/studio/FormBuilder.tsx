@@ -1,6 +1,3 @@
-/* eslint-disable camelcase */
-/* eslint-disable react/jsx-handler-names */
-
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {useCallback, useMemo, useRef} from 'react'
 
@@ -35,7 +32,12 @@ import {
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {TreeEditingDialog, TreeEditingEnabledProvider, useTreeEditingEnabled} from './tree-editing'
+import {
+  shouldArrayDialogOpen,
+  TreeEditingDialog,
+  TreeEditingEnabledProvider,
+  useTreeEditingEnabled,
+} from './tree-editing'
 
 /**
  * @alpha
@@ -306,10 +308,16 @@ function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
   const treeEditing = useTreeEditingEnabled()
 
+  const open = useMemo(
+    () => shouldArrayDialogOpen(rootInputProps.schemaType, openPath),
+    [openPath, rootInputProps.schemaType],
+  )
+
   const isRoot = rootInputProps.id === 'root'
 
-  const arrayEditingModal = treeEditing.enabled && isRoot && (
+  const arrayEditingModal = treeEditing.enabled && isRoot && open && (
     <TreeEditingDialog
+      // eslint-disable-next-line react/jsx-handler-names
       onPathFocus={rootInputProps.onPathFocus}
       onPathOpen={onPathOpen}
       openPath={openPath}
@@ -320,6 +328,7 @@ function RootInput(props: RootInputProps) {
 
   return renderInput({
     ...rootInputProps,
+    // eslint-disable-next-line camelcase
     __internal_arrayEditingModal: arrayEditingModal,
   })
 }

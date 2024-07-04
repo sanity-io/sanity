@@ -249,11 +249,19 @@ const FormInputInner = memo(function FormInputInner(
 
   if (isObjectInputProps(props)) {
     const childPath = trimLeft(props.path, absolutePath)
+
     const fieldMember = props.members.find(
       (member): member is FieldMember => member.kind == 'field' && childPath[0] === member.name,
     )
 
-    if (!fieldMember) {
+    const fieldSetMember = props.members
+      .filter((member) => member.kind === 'fieldSet')
+      .flatMap((member) => (member.kind === 'fieldSet' && member.fieldSet?.members) || [])
+      .find((m): m is FieldMember => m.kind === 'field' && m.name === childPath[0])
+
+    const member = fieldMember || fieldSetMember
+
+    if (!member) {
       const fieldName =
         typeof childPath[0] === 'string' ? childPath[0] : JSON.stringify(childPath[0])
 
@@ -262,7 +270,7 @@ const FormInputInner = memo(function FormInputInner(
 
     return (
       <MemberField
-        member={fieldMember}
+        member={member}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderInput={renderInput}

@@ -9,7 +9,7 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {
   SearchProvider,
   set,
@@ -25,6 +25,8 @@ import {css, styled} from 'styled-components'
 
 import {LoadingPane} from '../../loading'
 import {type BaseStructureToolPaneProps} from '../../types'
+import {type SortOrder} from '../types'
+import {useDocumentListSort} from '../useDocumentListSort'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetActions} from './DocumentSheetActions'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
@@ -38,13 +40,15 @@ import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 import {useDocumentSheetListOperations} from './useDocumentSheetListOperations'
 
-type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'>
-
 type GeneralDocumentOperation = (
   publishedDocumentId: string,
   fieldId: string,
   ...otherArgs: unknown[]
 ) => void
+
+type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'> & {
+  sortOrder?: SortOrder
+}
 
 const PaneContainer = styled(Flex)`
   height: 100%;
@@ -52,6 +56,7 @@ const PaneContainer = styled(Flex)`
 const TableContainer = styled.div`
   overflow: auto; //our scrollable table container
   position: relative; //needed for sticky header
+  height: 100%;
 `
 const Table = styled.table`
   border-collapse: separate;
@@ -135,10 +140,13 @@ function DocumentSheetListPaneInner(
   props: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType},
 ) {
   const {t} = useTranslation(SheetListLocaleNamespace)
-  const {documentSchemaType, ...paneProps} = props
+  const {documentSchemaType, sortOrder: sortOrderRaw, ...paneProps} = props
   const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
 
-  const {data} = useDocumentSheetList(documentSchemaType)
+  const sortWithOrderingFn = useDocumentListSort(documentSchemaType.name, sortOrderRaw)
+
+  const {data, isLoading} = useDocumentSheetList(documentSchemaType, sortWithOrderingFn)
+
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 
   const totalRows = data.length
@@ -257,6 +265,8 @@ function DocumentSheetListPaneInner(
   )
 
   const isReady = useMemo(() => {
+    if (isLoading) return false
+
     if (table.options.meta?.patchDocument && rowOperations) {
       const isSomeOperationsDisabled = Object.values(rowOperations).some(
         (operation) => operation.patch.disabled !== false || operation.commit.disabled !== false,
@@ -265,65 +275,64 @@ function DocumentSheetListPaneInner(
       return !isSomeOperationsDisabled
     }
     return false
-  }, [rowOperations, table.options.meta?.patchDocument])
+  }, [isLoading, rowOperations, table.options.meta?.patchDocument])
 
   const renderContent = () => {
-    if (!isReady) {
-      return <LoadingPane paneKey={paneProps.paneKey} />
-    }
+    if (!isReady)
+      return (
+        <Flex style={{height: '100%'}}>
+          <LoadingPane paneKey={paneProps.paneKey} />
+        </Flex>
+      )
 
     return (
-      <React.Fragment>
-        <TableActionsWrapper
-          direction="row"
-          align="center"
-          paddingY={3}
-          paddingX={1}
-          justify="space-between"
-        >
-          <Flex direction="row" align="center">
-            <DocumentSheetListFilter />
-            <Text size={0} muted>
-              {t('row-count.label', {
-                totalRows,
-                itemPlural: `item${totalRows === 1 ? '' : 's'}`,
-              })}
-            </Text>
-          </Flex>
-          <ColumnsControl table={table} />
-        </TableActionsWrapper>
-        <TableContainer>
-          <DocumentSheetListProvider table={table}>
-            <Table>
-              <thead>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <Box as="tr" key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <DocumentSheetListHeader
-                        key={header.id}
-                        header={header}
-                        headerGroup={headerGroup}
-                        table={table}
-                      />
-                    ))}
-                  </Box>
-                ))}
-              </thead>
-              <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
-            </Table>
-          </DocumentSheetListProvider>
-          <DocumentSheetActions table={table} schemaType={documentSchemaType} />
-        </TableContainer>
-        <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
-          <DocumentSheetListPaginator table={table} />
-        </Flex>
-      </React.Fragment>
+      <Table>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Box as="tr" key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <DocumentSheetListHeader
+                  key={header.id}
+                  header={header}
+                  headerGroup={headerGroup}
+                  table={table}
+                />
+              ))}
+            </Box>
+          ))}
+        </thead>
+        <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
+      </Table>
     )
   }
 
   return (
     <PaneContainer direction="column" paddingX={3} data-testid="document-sheet-list-pane">
-      {renderContent()}
+      <TableActionsWrapper
+        direction="row"
+        align="center"
+        paddingY={3}
+        paddingX={1}
+        justify="space-between"
+      >
+        <Flex direction="row" align="center">
+          <DocumentSheetListFilter />
+          <Text size={0} muted>
+            {t('row-count.label', {
+              totalRows,
+              itemPlural: `item${totalRows === 1 ? '' : 's'}`,
+            })}
+          </Text>
+        </Flex>
+        <ColumnsControl table={table} />
+      </TableActionsWrapper>
+      <TableContainer>
+        <DocumentSheetListProvider table={table}>{renderContent()}</DocumentSheetListProvider>
+        <DocumentSheetActions table={table} schemaType={documentSchemaType} />
+      </TableContainer>
+      <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
+        <DocumentSheetListPaginator table={table} />
+      </Flex>
     </PaneContainer>
   )
 }

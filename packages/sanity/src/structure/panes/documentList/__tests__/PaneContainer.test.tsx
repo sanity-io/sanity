@@ -85,7 +85,9 @@ describe('PaneContainer', () => {
       config,
       resources: [structureUsEnglishLocaleBundle, SheetListUsEnglishLocaleBundle],
     })
-    mockUseStructureToolSetting.mockReturnValue(['sheetList', jest.fn()])
+    mockUseStructureToolSetting
+      .mockReturnValueOnce(['sheetList', jest.fn()])
+      .mockReturnValueOnce([{by: []}, jest.fn()])
     // Mock return value for useSearchState
     mockUseSearchState.mockReturnValue({
       state: {

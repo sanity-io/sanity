@@ -1,3 +1,4 @@
+import {type RangeDecoration} from '@portabletext/editor'
 import {
   applyPatches,
   cleanupEfficiency,
@@ -9,7 +10,6 @@ import {
   makePatches,
   type Patch,
 } from '@sanity/diff-match-patch'
-import {type RangeDecoration} from '@sanity/portable-text-editor'
 import {
   isPortableTextSpan,
   isPortableTextTextBlock,

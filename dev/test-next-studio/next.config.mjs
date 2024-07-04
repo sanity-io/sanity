@@ -24,7 +24,6 @@ const config = {
     '@sanity/diff',
     '@sanity/migrate',
     '@sanity/mutator',
-    '@sanity/portable-text-editor',
     '@sanity/schema',
     '@sanity/types',
     '@sanity/util',
@@ -40,9 +39,6 @@ const config = {
       '@sanity/diff': requireResolve('../../packages/@sanity/diff/src/index.ts'),
       '@sanity/cli': requireResolve('../../packages/@sanity/cli/src/index.ts'),
       '@sanity/mutator': requireResolve('../../packages/@sanity/mutator/src/index.ts'),
-      '@sanity/portable-text-editor': requireResolve(
-        '../../packages/@sanity/portable-text-editor/src/index.ts',
-      ),
       '@sanity/schema/_internal': requireResolve(
         '../../packages/@sanity/schema/src/_exports/_internal.ts',
       ),
@@ -90,7 +86,6 @@ const config = {
         '@sanity/diff': '@sanity/diff/src/index.ts',
         '@sanity/cli': '@sanity/cli/src/index.ts',
         '@sanity/mutator': '@sanity/mutator/src/index.ts',
-        '@sanity/portable-text-editor': '@sanity/portable-text-editor/src/index.ts',
         '@sanity/schema/_internal': '@sanity/schema/src/_exports/_internal.ts',
         '@sanity/schema': '@sanity/schema/src/_exports/index.ts',
         '@sanity/migrate': '@sanity/migrate/src/_exports/index.ts',

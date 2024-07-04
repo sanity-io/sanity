@@ -2,15 +2,21 @@ import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo} from 'react'
 import {getDraftId, getPublishedId, useSearchState} from 'sanity'
 
+import {useShallowUnique} from '../helpers'
+import {type SortOrder} from '../types'
 import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetListStore} from './useDocumentSheetListStore'
 
-export function useDocumentSheetList(schemaType: ObjectSchemaType): {
+export function useDocumentSheetList(
+  schemaType: ObjectSchemaType,
+  sortWithOrderingFn?: SortOrder,
+): {
   data: DocumentSheetTableRow[]
   isLoading: boolean
 } {
   const typeName = schemaType.name
   const {state, dispatch} = useSearchState()
+  const nextSort = useShallowUnique(sortWithOrderingFn?.by[0])
 
   useEffect(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType})
@@ -19,9 +25,23 @@ export function useDocumentSheetList(schemaType: ObjectSchemaType): {
     }
   }, [schemaType, dispatch])
 
+  useEffect(() => {
+    if (nextSort) {
+      dispatch({
+        type: 'ORDERING_SET',
+        ordering: {
+          sort: nextSort,
+          titleKey: `search.ordering.${nextSort.field}-label`,
+        },
+      })
+    }
+  }, [dispatch, nextSort])
+
   const items = useMemo(() => {
     const map = new Map()
-    state.result.hits.forEach((h) => map.set(getPublishedId(h.hit._id), h.hit))
+    state.result.hits.forEach((h, resultIndex) =>
+      map.set(getPublishedId(h.hit._id), {...h.hit, resultIndex}),
+    )
     return map
   }, [state.result.hits])
 
@@ -51,6 +71,9 @@ export function useDocumentSheetList(schemaType: ObjectSchemaType): {
 
   // Only return the documents that match with the serverSide filter items.
   const documents: DocumentSheetTableRow[] = useMemo(() => {
+    const getSortIndexForId = (document: SanityDocument) =>
+      items.get(getPublishedId(document._id))?.resultIndex ?? Number.MAX_SAFE_INTEGER
+
     return data
       .filter((doc) => items.has(getPublishedId(doc._id)))
       .map((doc) => {
@@ -72,6 +95,7 @@ export function useDocumentSheetList(schemaType: ObjectSchemaType): {
           },
         }
       })
+      .sort((docA, docB) => getSortIndexForId(docA) - getSortIndexForId(docB))
   }, [data, items, allDocuments])
 
   return {data: documents, isLoading}

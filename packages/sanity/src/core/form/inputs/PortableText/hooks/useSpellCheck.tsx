@@ -1,4 +1,4 @@
-import {usePortableTextEditor} from '@sanity/portable-text-editor'
+import {usePortableTextEditor} from '@portabletext/editor'
 import {useMemo} from 'react'
 
 export function useSpellCheck(): boolean {
