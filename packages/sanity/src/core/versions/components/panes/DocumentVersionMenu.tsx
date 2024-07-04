@@ -6,7 +6,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
 
 import {useBundles} from '../../../store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {useVersion} from '../../context/useVersion'
+import {useVersion} from '../../hooks/useVersion'
 import {getAllVersionsOfDocument} from '../../util/dummyGetters'
 import {BundleBadge} from '../BundleBadge'
 import {BundleMenu} from '../BundleMenu'

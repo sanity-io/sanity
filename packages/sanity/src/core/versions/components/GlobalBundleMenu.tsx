@@ -3,7 +3,7 @@ import {Button, MenuItem} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {useBundles} from '../../store/bundles/BundlesProvider'
-import {useVersion} from '../context/useVersion'
+import {useVersion} from '../hooks/useVersion'
 import {LATEST} from '../util/const'
 import {BundleBadge} from './BundleBadge'
 import {BundleMenu} from './BundleMenu'

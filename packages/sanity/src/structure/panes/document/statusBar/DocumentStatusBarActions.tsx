@@ -11,7 +11,7 @@ import {
 } from 'sanity'
 
 import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
-import {useVersion} from '../../../../core/versions/context/useVersion'
+import {useVersion} from '../../../../core/versions/hooks/useVersion'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'

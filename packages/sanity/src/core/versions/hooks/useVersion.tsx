@@ -1,17 +1,19 @@
-import {type ReactElement} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {VersionContext} from '../../../_singletons/core/form/VersionContext'
 import {useBundlesStore} from '../../store/bundles'
 import {type BundleDocument} from '../../store/bundles/types'
 import {LATEST} from '../util/const'
-import {type VersionContextValue} from './useVersion'
 
-interface VersionProviderProps {
-  children: ReactElement
+/**
+ * @internal
+ */
+export interface VersionContextValue {
+  currentVersion: Partial<BundleDocument>
+  isDraft: boolean
+  setCurrentVersion: (bundle: Partial<BundleDocument>) => void
 }
 
-export function VersionProvider({children}: VersionProviderProps): JSX.Element {
+export function useVersion(): VersionContextValue {
   const router = useRouter()
   const {data: bundles} = useBundlesStore()
 
@@ -25,7 +27,7 @@ export function VersionProvider({children}: VersionProviderProps): JSX.Element {
   }
   const selectedVersion =
     router.stickyParams?.perspective && bundles
-      ? bundles.find((bundle) => {
+      ? bundles.find((bundle: Partial<BundleDocument>) => {
           return (
             `bundle.${bundle.name}`.toLocaleLowerCase() ===
             router.stickyParams.perspective?.toLocaleLowerCase()
@@ -37,11 +39,9 @@ export function VersionProvider({children}: VersionProviderProps): JSX.Element {
 
   const isDraft = currentVersion.name === 'drafts'
 
-  const contextValue: VersionContextValue = {
+  return {
     isDraft,
     setCurrentVersion,
     currentVersion,
   }
-
-  return <VersionContext.Provider value={contextValue}>{children}</VersionContext.Provider>
 }
