@@ -3,7 +3,7 @@ import {Button, MenuItem} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {useBundles} from '../../store/bundles/BundlesProvider'
-import {useVersion} from '../hooks/useVersion'
+import {useBundle} from '../hooks/useBundle'
 import {LATEST} from '../util/const'
 import {BundleBadge} from './BundleBadge'
 import {BundleMenu} from './BundleMenu'
@@ -14,7 +14,7 @@ export function GlobalBundleMenu(): JSX.Element {
 
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
-  const {currentVersion, isDraft} = useVersion()
+  const {currentVersion, isDraft} = useBundle()
 
   /* create new bundle */
   const handleCreateBundleClick = useCallback(() => {

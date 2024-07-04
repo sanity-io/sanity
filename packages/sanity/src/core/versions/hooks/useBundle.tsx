@@ -13,7 +13,7 @@ export interface VersionContextValue {
   setGlobalBundle: (bundle: Partial<BundleDocument>) => void
 }
 
-export function useVersion(): VersionContextValue {
+export function useBundle(): VersionContextValue {
   const router = useRouter()
   const {data: bundles} = useBundlesStore()
 

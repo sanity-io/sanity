@@ -5,7 +5,7 @@ import {RelativeTime} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../store/bundles/types'
-import {useVersion} from '../hooks/useVersion'
+import {useBundle} from '../hooks/useBundle'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/dummyGetters'
 import {BundleBadge} from './BundleBadge'
@@ -29,7 +29,7 @@ interface BundleListProps {
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
 
-  const {currentVersion, setGlobalBundle, isDraft} = useVersion()
+  const {currentVersion, setGlobalBundle, isDraft} = useBundle()
 
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {

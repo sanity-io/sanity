@@ -6,7 +6,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
 
 import {useBundles} from '../../../store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {useVersion} from '../../hooks/useVersion'
+import {useBundle} from '../../hooks/useBundle'
 import {getAllVersionsOfDocument} from '../../util/dummyGetters'
 import {BundleBadge} from '../BundleBadge'
 import {BundleMenu} from '../BundleMenu'
@@ -18,7 +18,7 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
   const {documentId} = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  const {currentVersion, isDraft} = useVersion()
+  const {currentVersion, isDraft} = useBundle()
 
   const {title, hue, icon} = currentVersion
 
