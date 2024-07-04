@@ -14,7 +14,6 @@ import {getAllVersionsOfDocument} from '../../util/dummyGetters'
 import {BundleBadge} from '../BundleBadge'
 import {BundleMenu} from '../BundleMenu'
 
-// eslint-disable-next-line no-warning-comments
 // TODO A LOT OF DOCUMENTED CODE IS RELATED TO SEARCH AND CREATING BUNDLE FROM HERE
 // STILL NEED TO DECIDE IF WE KEEP IT OR NOT
 export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
