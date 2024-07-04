@@ -11,7 +11,7 @@ import {
 } from 'sanity'
 
 import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
-import {useVersion} from '../../../../core/versions/hooks/useVersion'
+import {useBundle} from '../../../../core/versions/hooks/useBundle'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -63,7 +63,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   /* Version / Bundling handling */
 
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentVersion, isDraft} = useVersion()
+  const {currentVersion, isDraft} = useBundle()
 
   return (
     <Flex align="center" gap={1}>
