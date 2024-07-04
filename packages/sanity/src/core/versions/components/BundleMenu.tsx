@@ -31,6 +31,7 @@ interface BundleListProps {
 
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
+  const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0
 
   // eslint-disable-next-line no-warning-comments
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
@@ -65,7 +66,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                   pressed={false}
                   text={LATEST.title}
                 />
-                {bundles && bundles.length > 0 && (
+                {hasBundles && (
                   <>
                     <MenuDivider />
                     <StyledBox>
