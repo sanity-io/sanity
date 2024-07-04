@@ -1,4 +1,3 @@
-/* eslint-disable no-warning-comments */
 /* eslint-disable i18next/no-literal-string */
 import {CalendarIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'

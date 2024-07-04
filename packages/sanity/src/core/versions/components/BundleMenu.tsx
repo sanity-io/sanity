@@ -33,12 +33,10 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
   const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0
 
-  // eslint-disable-next-line no-warning-comments
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const {currentVersion, setCurrentVersion, isDraft} =
     useContext<VersionContextValue>(VersionContext)
 
-  // eslint-disable-next-line no-warning-comments
   // FIXME REPLACE WHEN WE HAVE REAL DATA
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
@@ -94,7 +92,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                     <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
                                   ) : (
                                     /* localize text */
-                                    <span>{'No target date'}</span>
+                                    'No target date'
                                   )}
                                 </Text>
                               </Box>

@@ -1,7 +1,11 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Flex} from '@sanity/ui'
-import {type FormEvent, useCallback, useState} from 'react'
+import {type FormEvent, useCallback, useContext, useState} from 'react'
 
+import {
+  VersionContext,
+  type VersionContextValue,
+} from '../../../../_singletons/core/form/VersionContext'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {isDraftOrPublished} from '../../util/dummyGetters'
@@ -25,6 +29,9 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
   })
   const [isCreating, setIsCreating] = useState(false)
 
+  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
+  const {setCurrentVersion} = useContext<VersionContextValue>(VersionContext)
+
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       try {
@@ -36,10 +43,11 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
         console.error(err)
       } finally {
         setIsCreating(false)
+        setCurrentVersion(value)
         onCreate()
       }
     },
-    [createBundle, value, onCreate],
+    [createBundle, value, setCurrentVersion, onCreate],
   )
 
   const handleOnChange = useCallback((changedValue: Partial<BundleDocument>) => {
@@ -65,7 +73,6 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
             iconRight={ArrowRightIcon}
             type="submit"
             // localize Text
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             text="Create release"
             loading={isCreating}
           />

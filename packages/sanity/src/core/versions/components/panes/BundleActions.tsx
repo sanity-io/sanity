@@ -87,14 +87,12 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
     toast,
   ])
 
-  // eslint-disable-next-line no-warning-comments
   /** TODO what should happen when you add a version if we don't have the ready button */
 
   return (
     <Button
       data-testid={`action-add-to-${name}`}
       // localize text
-      // eslint-disable-next-line @sanity/i18n/no-attribute-template-literals
       text={isInVersion ? `Already in release ${title}` : `Add to ${title}`}
       icon={isInVersion ? CheckmarkIcon : AddIcon}
       tone="primary"

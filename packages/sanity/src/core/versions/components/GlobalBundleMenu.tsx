@@ -17,7 +17,6 @@ export function GlobalBundleMenu(): JSX.Element {
 
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
-  // eslint-disable-next-line no-warning-comments
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
 
@@ -48,7 +47,6 @@ export function GlobalBundleMenu(): JSX.Element {
         loading={loading}
         actions={
           // localize text
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
           <MenuItem icon={AddIcon} onClick={handleCreateBundleClick} text="Create release" />
         }
       />
