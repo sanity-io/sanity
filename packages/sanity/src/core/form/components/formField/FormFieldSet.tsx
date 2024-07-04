@@ -94,8 +94,20 @@ const Content = styled(Box)<{
   return css`
     outline: none;
     border-left: ${$borderLeft ? '1px solid var(--card-border-color)' : undefined};
+    transition:
+      border-color 0.2s ease-in-out,
+      box-shadow 0.2s ease-in-out;
 
-    ${$borderLeft && $focused && `border-left: 1px solid var(--card-focus-ring-color);`}
+    ${$borderLeft &&
+    $focused &&
+    `border-left: 1px solid var(--card-focus-ring-color);
+    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`}
+
+    ${$borderLeft &&
+    !$focused &&
+    `
+      box-shadow: inset 0 0 0 transparent;
+    `}
 
     &:focus {
       box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
