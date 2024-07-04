@@ -1,7 +1,7 @@
 /* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useContext, useMemo, useState} from 'react'
+import {memo, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
@@ -10,11 +10,8 @@ import {
   useTimelineSelector,
 } from 'sanity'
 
-import {
-  VersionContext,
-  type VersionContextValue,
-} from '../../../../_singletons/core/form/VersionContext'
 import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
+import {useVersion} from '../../../../core/versions/context/useVersion'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -67,7 +64,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 
   // eslint-disable-next-line no-warning-comments
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
+  const {currentVersion, isDraft} = useVersion()
 
   return (
     <Flex align="center" gap={1}>

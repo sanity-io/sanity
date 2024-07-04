@@ -1,12 +1,9 @@
 import {AddIcon} from '@sanity/icons'
 import {Button, MenuItem} from '@sanity/ui'
-import {useCallback, useContext, useState} from 'react'
+import {useCallback, useState} from 'react'
 
-import {
-  VersionContext,
-  type VersionContextValue,
-} from '../../../_singletons/core/form/VersionContext'
 import {useBundles} from '../../store/bundles/BundlesProvider'
+import {useVersion} from '../context/useVersion'
 import {LATEST} from '../util/const'
 import {BundleBadge} from './BundleBadge'
 import {BundleMenu} from './BundleMenu'
@@ -19,7 +16,7 @@ export function GlobalBundleMenu(): JSX.Element {
 
   // eslint-disable-next-line no-warning-comments
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
+  const {currentVersion, isDraft} = useVersion()
 
   /* create new bundle */
   const handleCreateBundleClick = useCallback(() => {
