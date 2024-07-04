@@ -1,15 +1,12 @@
 /* eslint-disable no-warning-comments */
 import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Button} from '@sanity/ui'
-import {useCallback, useContext, useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
 
-import {
-  VersionContext,
-  type VersionContextValue,
-} from '../../../../_singletons/core/form/VersionContext'
 import {useBundles} from '../../../store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../../store/bundles/types'
+import {useVersion} from '../../context/useVersion'
 import {getAllVersionsOfDocument} from '../../util/dummyGetters'
 import {BundleBadge} from '../BundleBadge'
 import {BundleMenu} from '../BundleMenu'
@@ -21,7 +18,7 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
+  const {currentVersion, isDraft} = useVersion()
 
   const {title, hue, icon} = currentVersion
 
