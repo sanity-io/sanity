@@ -53,7 +53,9 @@ export function GlobalBundleMenu(): JSX.Element {
         }
       />
 
-      {createBundleDialogOpen && <CreateBundleDialog onClose={handleClose} />}
+      {createBundleDialogOpen && (
+        <CreateBundleDialog onCancel={handleClose} onCreate={handleClose} />
+      )}
     </>
   )
 }

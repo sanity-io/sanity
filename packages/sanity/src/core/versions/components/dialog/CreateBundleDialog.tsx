@@ -7,8 +7,13 @@ import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleForm} from './BundleForm'
 
-export function CreateBundleDialog(props: {onClose: () => void}): JSX.Element {
-  const {onClose} = props
+interface CreateBundleDialogProps {
+  onCancel: () => void
+  onCreate: () => void
+}
+
+export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element {
+  const {onCancel, onCreate} = props
   const {createBundle} = useBundleOperations()
 
   const [value, setValue] = useState<Partial<BundleDocument>>({
@@ -31,10 +36,10 @@ export function CreateBundleDialog(props: {onClose: () => void}): JSX.Element {
         console.error(err)
       } finally {
         setIsCreating(false)
-        onClose()
+        onCreate()
       }
     },
-    [createBundle, value, onClose],
+    [createBundle, value, onCreate],
   )
 
   const handleOnChange = useCallback((changedValue: Partial<BundleDocument>) => {
@@ -46,7 +51,7 @@ export function CreateBundleDialog(props: {onClose: () => void}): JSX.Element {
       animate
       header="Create release"
       id="create-bundle-dialog"
-      onClose={onClose}
+      onClose={onCancel}
       zOffset={5000}
       width={1}
     >
