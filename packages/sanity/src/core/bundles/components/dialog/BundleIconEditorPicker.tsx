@@ -16,8 +16,11 @@ const IconPickerFlex = styled(Flex)`
 `
 
 export function BundleIconEditorPicker(props: {
-  onChange: (value: Partial<BundleDocument>) => void
-  value: Partial<BundleDocument>
+  onChange: (value: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}) => void
+  value: {
+    hue: BundleDocument['hue']
+    icon: BundleDocument['icon']
+  }
 }): JSX.Element {
   const {onChange, value} = props
 
