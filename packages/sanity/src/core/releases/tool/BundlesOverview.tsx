@@ -4,10 +4,10 @@ import {isBefore} from 'date-fns'
 import {type MouseEventHandler, useCallback, useMemo, useState} from 'react'
 
 import {Button as StudioButton} from '../../../ui-components'
+import {CreateBundleDialog} from '../../bundles/components/dialog/CreateBundleDialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {useBundles} from '../../store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../store/bundles/types'
-import {CreateBundleDialog} from '../../versions/components/dialog/CreateBundleDialog'
 import {BundlesTable} from '../components/BundlesTable/BundlesTable'
 import {containsBundles} from '../types/bundle'
 
