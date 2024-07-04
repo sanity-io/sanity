@@ -14,12 +14,12 @@ type Screen = 'overview' | 'review'
 export const BundleDetail = () => {
   const router = useRouter()
   const [activeScreen, setActiveScreen] = useState<Screen>('overview')
-  const {bundleId}: ReleasesRouterState = router.state
-  const parsedBundleId = decodeURIComponent(bundleId || '')
+  const {bundleName}: ReleasesRouterState = router.state
+  const parsedBundleName = decodeURIComponent(bundleName || '')
   const {data, loading} = useBundles()
   const bundleDocuments = [] // TODO: fetch docs with bundle version
 
-  const bundle = data?.find((storeBundle) => storeBundle._id === parsedBundleId)
+  const bundle = data?.find((storeBundle) => storeBundle.name === parsedBundleName)
   const bundleHasDocuments = !!bundleDocuments.length
   const showPublishButton = loading || !bundle?.publishedAt
   const isPublishButtonDisabled = loading || !bundle || !bundleHasDocuments
