@@ -6,7 +6,6 @@ import javascript from 'refractor/lang/javascript.js'
 import json from 'refractor/lang/json.js'
 import jsx from 'refractor/lang/jsx.js'
 import typescript from 'refractor/lang/typescript.js'
-import {AddonDatasetProvider} from 'sanity'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {ErrorLogger} from '../error/ErrorLogger'
@@ -14,7 +13,6 @@ import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
 import {ResourceCacheProvider} from '../store'
 import {UserColorManagerProvider} from '../user-color'
-import {VersionProvider} from '../versions/context/VersionProvider'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
@@ -71,14 +69,10 @@ export function StudioProvider({
     <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       <StudioTelemetryProvider config={config}>
         <LocaleProvider>
-          <AddonDatasetProvider>
-            <VersionProvider>
-              <PackageVersionStatusProvider>
-                <EnableErrorReporting />
-                <ResourceCacheProvider>{children}</ResourceCacheProvider>
-              </PackageVersionStatusProvider>
-            </VersionProvider>
-          </AddonDatasetProvider>
+          <PackageVersionStatusProvider>
+            <EnableErrorReporting />
+            <ResourceCacheProvider>{children}</ResourceCacheProvider>
+          </PackageVersionStatusProvider>
         </LocaleProvider>
       </StudioTelemetryProvider>
     </WorkspaceLoader>

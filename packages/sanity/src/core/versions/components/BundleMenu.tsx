@@ -5,7 +5,7 @@ import {RelativeTime} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../store/bundles/types'
-import {useVersion} from '../context/useVersion'
+import {useVersion} from '../hooks/useVersion'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/dummyGetters'
 import {BundleBadge} from './BundleBadge'
