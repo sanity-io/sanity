@@ -10,8 +10,8 @@ import {
   useTimelineSelector,
 } from 'sanity'
 
-import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
-import {usePerspective} from '../../../../core/versions/hooks/usePerspective'
+import {BundleActions} from '../../../../core/bundles/components/panes/BundleActions'
+import {usePerspective} from '../../../../core/bundles/hooks/usePerspective'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
