@@ -148,39 +148,37 @@ export function BundleForm(props: {
           </Card>
         )}
 
-        {
-          <TextInput
-            suffix={
-              <Popover
-                constrainSize
-                content={
-                  <Box overflow="auto">
-                    <DatePicker
-                      onChange={handleBundlePublishAtChange}
-                      calendarLabels={calendarLabels}
-                      value={publishAt as Date}
-                      selectTime
-                    />
-                  </Box>
-                }
-                open={showDatePicker}
-                placement="bottom-end"
-                radius={2}
-              >
-                <Box padding={1} style={{border: '1px solid transparent'}}>
-                  <Button
-                    icon={CalendarIcon}
-                    mode="bleed"
-                    padding={2}
-                    onClick={handleOpenDatePicker}
+        <TextInput
+          suffix={
+            <Popover
+              constrainSize
+              content={
+                <Box overflow="auto">
+                  <DatePicker
+                    onChange={handleBundlePublishAtChange}
+                    calendarLabels={calendarLabels}
+                    value={publishAt as Date}
+                    selectTime
                   />
                 </Box>
-              </Popover>
-            }
-            value={displayDate}
-            onChange={handlePublishAtInputChange}
-          />
-        }
+              }
+              open={showDatePicker}
+              placement="bottom-end"
+              radius={2}
+            >
+              <Box padding={1} style={{border: '1px solid transparent'}}>
+                <Button
+                  icon={CalendarIcon}
+                  mode="bleed"
+                  padding={2}
+                  onClick={handleOpenDatePicker}
+                />
+              </Box>
+            </Popover>
+          }
+          value={displayDate}
+          onChange={handlePublishAtInputChange}
+        />
       </Stack>
     </Stack>
   )
