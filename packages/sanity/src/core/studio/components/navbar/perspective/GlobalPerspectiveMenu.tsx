@@ -2,14 +2,14 @@ import {AddIcon} from '@sanity/icons'
 import {Button, MenuItem} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {useBundles} from '../../store/bundles/BundlesProvider'
-import {usePerspective} from '../hooks/usePerspective'
-import {LATEST} from '../util/const'
-import {BundleBadge} from './BundleBadge'
-import {BundleMenu} from './BundleMenu'
-import {CreateBundleDialog} from './dialog/CreateBundleDialog'
+import {BundleBadge} from '../../../../bundles/components/BundleBadge'
+import {BundleMenu} from '../../../../bundles/components/BundleMenu'
+import {CreateBundleDialog} from '../../../../bundles/components/dialog/CreateBundleDialog'
+import {usePerspective} from '../../../../bundles/hooks/usePerspective'
+import {LATEST} from '../../../../bundles/util/const'
+import {useBundles} from '../../../../store/bundles/BundlesProvider'
 
-export function GlobalBundleMenu(): JSX.Element {
+export function GlobalPerspectiveMenu(): JSX.Element {
   const {data: bundles, loading} = useBundles()
 
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)

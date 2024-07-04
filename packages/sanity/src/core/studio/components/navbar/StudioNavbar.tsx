@@ -16,7 +16,6 @@ import {type RouterState, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
-import {GlobalBundleMenu} from '../../../bundles/components/GlobalBundleMenu'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
@@ -28,6 +27,7 @@ import {FreeTrialProvider} from './free-trial/FreeTrialProvider'
 import {HomeButton} from './home/HomeButton'
 import {NavDrawer} from './navDrawer'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
+import {GlobalPerspectiveMenu} from './perspective/GlobalPerspectiveMenu'
 import {PresenceMenu} from './presence'
 import {ResourcesButton} from './resources/ResourcesButton'
 import {SearchButton, SearchDialog} from './search'
@@ -215,7 +215,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                 </Flex>
                 {/* Versions button */}
                 <Flex gap={2}>
-                  <GlobalBundleMenu />
+                  <GlobalPerspectiveMenu />
                   {/* New document button */}
                   <NewDocumentButton
                     {...newDocumentOptions}
