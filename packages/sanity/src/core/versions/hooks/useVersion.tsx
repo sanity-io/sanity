@@ -10,14 +10,14 @@ import {LATEST} from '../util/const'
 export interface VersionContextValue {
   currentVersion: Partial<BundleDocument>
   isDraft: boolean
-  setCurrentVersion: (bundle: Partial<BundleDocument>) => void
+  setGlobalBundle: (bundle: Partial<BundleDocument>) => void
 }
 
 export function useVersion(): VersionContextValue {
   const router = useRouter()
   const {data: bundles} = useBundlesStore()
 
-  const setCurrentVersion = (version: Partial<BundleDocument>) => {
+  const setGlobalBundle = (version: Partial<BundleDocument>) => {
     const {name} = version
     if (name === 'drafts') {
       router.navigateStickyParam('perspective', '')
@@ -41,7 +41,7 @@ export function useVersion(): VersionContextValue {
 
   return {
     isDraft,
-    setCurrentVersion,
+    setGlobalBundle,
     currentVersion,
   }
 }

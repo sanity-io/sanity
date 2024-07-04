@@ -62,7 +62,6 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 
   /* Version / Bundling handling */
 
-  // eslint-disable-next-line no-warning-comments
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const {currentVersion, isDraft} = useVersion()
 

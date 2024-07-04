@@ -17,7 +17,6 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
   const {documentId} = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const {currentVersion, isDraft} = useVersion()
 
   const {title, hue, icon} = currentVersion

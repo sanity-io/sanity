@@ -30,15 +30,13 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
   const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0
 
-  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentVersion, setCurrentVersion, isDraft} = useVersion()
+  const {currentVersion, setGlobalBundle, isDraft} = useVersion()
 
-  // FIXME REPLACE WHEN WE HAVE REAL DATA
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
-      setCurrentVersion(bundle)
+      setGlobalBundle(bundle)
     },
-    [setCurrentVersion],
+    [setGlobalBundle],
   )
 
   return (
