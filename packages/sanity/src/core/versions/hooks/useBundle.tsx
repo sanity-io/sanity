@@ -8,7 +8,7 @@ import {LATEST} from '../util/const'
  * @internal
  */
 export interface VersionContextValue {
-  currentVersion: Partial<BundleDocument>
+  currentBundle: Partial<BundleDocument>
   isDraft: boolean
   setGlobalBundle: (bundle: Partial<BundleDocument>) => void
 }
@@ -25,7 +25,7 @@ export function useBundle(): VersionContextValue {
       router.navigateStickyParam('perspective', `bundle.${name}`)
     }
   }
-  const selectedVersion =
+  const selectedPerspective =
     router.stickyParams?.perspective && bundles
       ? bundles.find((bundle: Partial<BundleDocument>) => {
           return (
@@ -35,13 +35,13 @@ export function useBundle(): VersionContextValue {
         })
       : LATEST
 
-  const currentVersion = selectedVersion || LATEST
+  const currentBundle = selectedPerspective || LATEST
 
-  const isDraft = currentVersion.name === 'drafts'
+  const isDraft = currentBundle.name === 'drafts'
 
   return {
     isDraft,
     setGlobalBundle,
-    currentVersion,
+    currentBundle,
   }
 }

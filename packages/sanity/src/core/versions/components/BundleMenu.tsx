@@ -30,7 +30,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
   const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0
 
-  const {currentVersion, setGlobalBundle, isDraft} = useBundle()
+  const {currentBundle, setGlobalBundle, isDraft} = useBundle()
 
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
@@ -94,7 +94,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                               <Box padding={2}>
                                 <Text size={1}>
                                   <CheckmarkIcon
-                                    style={{opacity: currentVersion.name === b.name ? 1 : 0}}
+                                    style={{opacity: currentBundle.name === b.name ? 1 : 0}}
                                   />
                                 </Text>
                               </Box>

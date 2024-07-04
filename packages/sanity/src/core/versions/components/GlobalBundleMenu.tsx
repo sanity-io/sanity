@@ -14,7 +14,8 @@ export function GlobalBundleMenu(): JSX.Element {
 
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
-  const {currentVersion, isDraft} = useBundle()
+  const {currentBundle, isDraft} = useBundle()
+  const {title, hue, icon} = currentBundle
 
   /* create new bundle */
   const handleCreateBundleClick = useCallback(() => {
@@ -31,11 +32,11 @@ export function GlobalBundleMenu(): JSX.Element {
         button={
           <Button mode="bleed" padding={0} radius="full">
             <BundleBadge
-              hue={currentVersion?.hue}
-              icon={isDraft ? undefined : currentVersion?.icon}
+              hue={hue}
+              icon={isDraft ? undefined : icon}
               openButton
               padding={2}
-              title={isDraft ? LATEST.title : currentVersion?.title}
+              title={isDraft ? LATEST.title : title}
             />
           </Button>
         }

@@ -63,7 +63,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   /* Version / Bundling handling */
 
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentVersion, isDraft} = useBundle()
+  const {currentBundle, isDraft} = useBundle()
 
   return (
     <Flex align="center" gap={1}>
@@ -88,7 +88,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
               ) : (
                 /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
                 <BundleActions
-                  currentVersion={currentVersion}
+                  currentBundle={currentBundle}
                   documentId={documentId}
                   documentType={documentType}
                 />
