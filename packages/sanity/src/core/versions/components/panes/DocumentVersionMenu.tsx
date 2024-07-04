@@ -14,9 +14,9 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
   const {documentId} = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  const {currentVersion, isDraft} = useBundle()
+  const {currentBundle, isDraft} = useBundle()
 
-  const {title, hue, icon} = currentVersion
+  const {title, hue, icon} = currentBundle
 
   const {data: bundles} = useBundles()
 
@@ -42,9 +42,7 @@ export function DocumentVersionMenu(props: {documentId: string}): JSX.Element {
 
   return (
     <>
-      {currentVersion && !isDraft && (
-        <BundleBadge hue={hue} title={title} icon={icon} padding={2} />
-      )}
+      {currentBundle && !isDraft && <BundleBadge hue={hue} title={title} icon={icon} padding={2} />}
 
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
       <Box flex="none">

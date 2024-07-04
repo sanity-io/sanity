@@ -15,14 +15,14 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {getAllVersionsOfDocument, versionDocumentExists} from '../../util/dummyGetters'
 
 interface BundleActionsProps {
-  currentVersion: BundleDocument
+  currentBundle: Partial<BundleDocument>
   documentId: string
   documentType: string
 }
 
 export function BundleActions(props: BundleActionsProps): JSX.Element {
-  const {currentVersion, documentId, documentType} = props
-  const {name, title} = currentVersion
+  const {currentBundle, documentId, documentType} = props
+  const {name, title} = currentBundle
   const {data: bundles, loading} = useBundles()
   const documentStore = useDocumentStore()
 
