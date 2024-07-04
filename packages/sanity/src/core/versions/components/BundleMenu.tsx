@@ -70,7 +70,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                     <MenuDivider />
                     <StyledBox>
                       {bundles
-                        .filter((b) => !isDraftOrPublished(b.name) && !b.archived)
+                        .filter((b) => !isDraftOrPublished(b.name) && !b.archivedAt)
                         .map((b) => (
                           <MenuItem
                             key={b.name}
