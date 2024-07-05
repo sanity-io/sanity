@@ -1,14 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
-import {type ReactElement, useCallback, useContext} from 'react'
+import {type ReactElement, useCallback} from 'react'
 import {RelativeTime} from 'sanity'
 import {styled} from 'styled-components'
 
-import {
-  VersionContext,
-  type VersionContextValue,
-} from '../../../_singletons/core/form/VersionContext'
 import {type BundleDocument} from '../../store/bundles/types'
+import {usePerspective} from '../hooks/usePerspective'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/dummyGetters'
 import {BundleBadge} from './BundleBadge'
@@ -33,16 +30,15 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
   const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0
 
-  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentVersion, setCurrentVersion, isDraft} =
-    useContext<VersionContextValue>(VersionContext)
+  const {currentGlobalBundle, setPerspective} = usePerspective()
 
-  // FIXME REPLACE WHEN WE HAVE REAL DATA
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
-      setCurrentVersion(bundle)
+      if (bundle.name) {
+        setPerspective(bundle.name)
+      }
     },
-    [setCurrentVersion],
+    [setPerspective],
   )
 
   return (
@@ -59,7 +55,9 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
             ) : (
               <>
                 <MenuItem
-                  iconRight={isDraft ? <CheckmarkIcon /> : undefined}
+                  iconRight={
+                    currentGlobalBundle.name === LATEST.name ? <CheckmarkIcon /> : undefined
+                  }
                   onClick={handleBundleChange(LATEST)}
                   pressed={false}
                   text={LATEST.title}
@@ -100,7 +98,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                               <Box padding={2}>
                                 <Text size={1}>
                                   <CheckmarkIcon
-                                    style={{opacity: currentVersion.name === b.name ? 1 : 0}}
+                                    style={{opacity: currentGlobalBundle.name === b.name ? 1 : 0}}
                                   />
                                 </Text>
                               </Box>
