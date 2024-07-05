@@ -1,24 +1,20 @@
 import {AddIcon} from '@sanity/icons'
 import {Button, MenuItem} from '@sanity/ui'
-import {useCallback, useContext, useState} from 'react'
+import {useCallback, useState} from 'react'
 
-import {
-  VersionContext,
-  type VersionContextValue,
-} from '../../../_singletons/core/form/VersionContext'
-import {useBundles} from '../../store/bundles/BundlesProvider'
-import {LATEST} from '../util/const'
-import {BundleBadge} from './BundleBadge'
-import {BundleMenu} from './BundleMenu'
-import {CreateBundleDialog} from './dialog/CreateBundleDialog'
+import {BundleBadge} from '../../../../bundles/components/BundleBadge'
+import {BundleMenu} from '../../../../bundles/components/BundleMenu'
+import {CreateBundleDialog} from '../../../../bundles/components/dialog/CreateBundleDialog'
+import {usePerspective} from '../../../../bundles/hooks/usePerspective'
+import {useBundles} from '../../../../store/bundles/BundlesProvider'
 
-export function GlobalBundleMenu(): JSX.Element {
+export function GlobalPerspectiveMenu(): JSX.Element {
   const {data: bundles, loading} = useBundles()
 
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
-  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
+  const {currentGlobalBundle} = usePerspective()
+  const {title, hue, icon} = currentGlobalBundle
 
   /* create new bundle */
   const handleCreateBundleClick = useCallback(() => {
@@ -34,19 +30,14 @@ export function GlobalBundleMenu(): JSX.Element {
       <BundleMenu
         button={
           <Button mode="bleed" padding={0} radius="full">
-            <BundleBadge
-              hue={currentVersion?.hue}
-              icon={isDraft ? undefined : currentVersion?.icon}
-              openButton
-              padding={2}
-              title={isDraft ? LATEST.title : currentVersion?.title}
-            />
+            <BundleBadge hue={hue} icon={icon} openButton padding={2} title={title} />
           </Button>
         }
         bundles={bundles}
         loading={loading}
         actions={
           // localize text
+          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
           <MenuItem icon={AddIcon} onClick={handleCreateBundleClick} text="Create release" />
         }
       />
