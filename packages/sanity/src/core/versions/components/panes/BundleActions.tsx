@@ -1,32 +1,45 @@
-import {AddIcon} from '@sanity/icons'
+import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentOperation} from 'sanity'
+import {filter, firstValueFrom} from 'rxjs'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  useClient,
+  useDocumentOperation,
+  useDocumentStore,
+} from 'sanity'
 
 import {Button} from '../../../../ui-components'
-import {type Version} from '../../types'
+import {useBundles} from '../../../store/bundles/BundlesProvider'
+import {type BundleDocument} from '../../../store/bundles/types'
 import {getAllVersionsOfDocument, versionDocumentExists} from '../../util/dummyGetters'
 
 interface BundleActionsProps {
-  currentVersion: Version
+  currentVersion: BundleDocument
   documentId: string
   documentType: string
-  isReady: boolean
 }
 
 export function BundleActions(props: BundleActionsProps): JSX.Element {
-  const {currentVersion, documentId, documentType, isReady} = props
+  const {currentVersion, documentId, documentType} = props
   const {name, title} = currentVersion
+  const {data: bundles, loading} = useBundles()
+  const documentStore = useDocumentStore()
 
-  const [documentVersions, setDocumentVersions] = useState<Version[]>([])
+  const [documentVersions, setDocumentVersions] = useState<BundleDocument[]>([])
+  const [creatingVersion, setCreatingVersion] = useState(false)
+  const [isInVersion, setIsInVersion] = useState(false)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const {newVersion} = useDocumentOperation(documentId, documentType)
 
   const fetchVersions = useCallback(async () => {
-    const response = await getAllVersionsOfDocument(client, documentId)
-    setDocumentVersions(response)
-  }, [client, documentId])
+    if (!loading) {
+      const response = await getAllVersionsOfDocument(bundles, client, documentId)
+      setDocumentVersions(response)
+      setIsInVersion(versionDocumentExists(documentVersions, name))
+    }
+  }, [loading, bundles, client, documentId, documentVersions, name])
 
   // DUMMY FETCH -- NEEDS TO BE REPLACED -- USING GROQ from utils
   useEffect(() => {
@@ -35,9 +48,9 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
     }
 
     fetchVersionsInner()
-  }, [fetchVersions])
+  }, [bundles, documentId, fetchVersions])
 
-  const handleAddVersion = useCallback(() => {
+  const handleAddVersion = useCallback(async () => {
     // only add to version if there isn't already a version in that bundle of this doc
     if (versionDocumentExists(documentVersions, name)) {
       toast.push({
@@ -49,38 +62,42 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
 
     const bundleId = `${name}.${documentId}`
 
+    setCreatingVersion(true)
+
+    // set up the listener before executing
+    const createVersionSuccess = firstValueFrom(
+      documentStore.pair
+        .operationEvents(bundleId, documentType)
+        .pipe(filter((e) => e.op === 'newVersion' && e.type === 'success')),
+    )
+
     newVersion.execute(bundleId)
-  }, [documentId, documentVersions, name, newVersion, title, toast])
 
-  /* follow up
-  const handleReady = useCallback(() => {
-    // eslint-disable-next-line no-console
-    console.log('handle ready', name)
-  }, [name]) 
-  
-  isReady ? (
-    {<Button
-      data-testid={`action-ready-to-${name}`}
-      // localize text
-      // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-      text="Ready"
-      icon={CheckmarkIcon}
-      onClick={handleReady}
-    />
-  )*/
+    // only change if the version was created successfully
+    await createVersionSuccess
+    setIsInVersion(true)
+  }, [
+    documentId,
+    documentStore.pair,
+    documentType,
+    documentVersions,
+    name,
+    newVersion,
+    title,
+    toast,
+  ])
 
-  // eslint-disable-next-line no-warning-comments
   /** TODO what should happen when you add a version if we don't have the ready button */
 
   return (
     <Button
       data-testid={`action-add-to-${name}`}
       // localize text
-      // eslint-disable-next-line @sanity/i18n/no-attribute-template-literals
-      text={`Add to ${title}`}
-      icon={AddIcon}
+      text={isInVersion ? `Already in release ${title}` : `Add to ${title}`}
+      icon={isInVersion ? CheckmarkIcon : AddIcon}
       tone="primary"
       onClick={handleAddVersion}
+      disabled={isInVersion || creatingVersion}
     />
   )
 }
