@@ -12,6 +12,7 @@ import {
 
 import {BundleActions} from '../../../../core/bundles/components/panes/BundleActions'
 import {usePerspective} from '../../../../core/bundles/hooks/usePerspective'
+import {isDraft} from '../../../../core/bundles/util/dummyGetters'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -63,7 +64,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   /* Version / Bundling handling */
 
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentGlobalBundle, isDraft} = usePerspective()
+  const {currentGlobalBundle} = usePerspective()
 
   return (
     <Flex align="center" gap={1}>
@@ -72,7 +73,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              {isDraft ? (
+              {isDraft(currentGlobalBundle.name) ? (
                 <Button
                   data-testid={`action-${firstActionState.label}`}
                   disabled={
@@ -101,7 +102,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
        * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
        * SPECIFICALLY FOR ISDRAFT
        */}
-      {showMenu && menuActionStates.length > 0 && isDraft && (
+      {showMenu && menuActionStates.length > 0 && isDraft(currentGlobalBundle.name) && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (

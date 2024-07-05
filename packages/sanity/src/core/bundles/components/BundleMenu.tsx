@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 import {type BundleDocument} from '../../store/bundles/types'
 import {usePerspective} from '../hooks/usePerspective'
 import {LATEST} from '../util/const'
-import {isDraftOrPublished} from '../util/dummyGetters'
+import {isDraft, isDraftOrPublished} from '../util/dummyGetters'
 import {BundleBadge} from './BundleBadge'
 
 const StyledMenu = styled(Menu)`
@@ -30,11 +30,13 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
   const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0
 
-  const {currentGlobalBundle, setPerspective, isDraft} = usePerspective()
+  const {currentGlobalBundle, setPerspective} = usePerspective()
 
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
-      setPerspective(bundle.name)
+      if (bundle.name) {
+        setPerspective(bundle.name)
+      }
     },
     [setPerspective],
   )
@@ -53,7 +55,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
             ) : (
               <>
                 <MenuItem
-                  iconRight={isDraft ? <CheckmarkIcon /> : undefined}
+                  iconRight={isDraft(currentGlobalBundle.name) ? <CheckmarkIcon /> : undefined}
                   onClick={handleBundleChange(LATEST)}
                   pressed={false}
                   text={LATEST.title}

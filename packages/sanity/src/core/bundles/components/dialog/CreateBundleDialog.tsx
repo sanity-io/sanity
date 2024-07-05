@@ -1,13 +1,10 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Flex} from '@sanity/ui'
-import {type FormEvent, useCallback, useContext, useState} from 'react'
+import {type FormEvent, useCallback, useState} from 'react'
 
-import {
-  VersionContext,
-  type VersionContextValue,
-} from '../../../../_singletons/core/form/VersionContext'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
+import {usePerspective} from '../../hooks/usePerspective'
 import {isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleForm} from './BundleForm'
 
@@ -30,24 +27,26 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
   const [isCreating, setIsCreating] = useState(false)
 
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {setCurrentVersion} = useContext<VersionContextValue>(VersionContext)
+  const {setPerspective} = usePerspective()
 
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
-      try {
-        event.preventDefault()
-        setIsCreating(true)
-        await createBundle(value)
-        setValue(value)
-      } catch (err) {
-        console.error(err)
-      } finally {
-        setIsCreating(false)
-        setCurrentVersion(value)
-        onCreate()
+      if (value.name) {
+        try {
+          event.preventDefault()
+          setIsCreating(true)
+          await createBundle(value)
+          setValue(value)
+        } catch (err) {
+          console.error(err)
+        } finally {
+          setIsCreating(false)
+          setPerspective(value.name)
+          onCreate()
+        }
       }
     },
-    [createBundle, value, setCurrentVersion, onCreate],
+    [createBundle, value, setPerspective, onCreate],
   )
 
   const handleOnChange = useCallback((changedValue: Partial<BundleDocument>) => {

@@ -50,3 +50,8 @@ export function versionDocumentExists(documentVersions: BundleDocument[], name: 
 export function isDraftOrPublished(versionName: string): boolean {
   return speakingurl(versionName) === 'drafts' || speakingurl(versionName) === 'published'
 }
+
+export function isDraft(versionName: string | undefined): boolean {
+  if (!versionName) return false
+  return speakingurl(versionName) === 'drafts'
+}
