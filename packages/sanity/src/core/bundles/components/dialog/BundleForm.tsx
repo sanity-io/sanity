@@ -118,6 +118,8 @@ export function BundleForm(props: {
             </Text>
           </Card>
         )}
+
+        {/* TODO ADD CHECK FOR EXISTING NAMES AND AVOID DUPLICATES */}
         <Text size={1} weight="medium">
           {/* localize text */}
           Title
