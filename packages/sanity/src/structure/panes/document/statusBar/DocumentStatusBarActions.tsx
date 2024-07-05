@@ -58,14 +58,10 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   }, [firstActionState])
 
   /* Version / Bundling handling */
-  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
 
   // eslint-disable-next-line no-warning-comments
-  /* TODO - replace with real data
-   - needs to check for publish data
-   - if it's published
-   */
-  const isReady = false
+  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
+  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
 
   return (
     <Flex align="center" gap={1}>
@@ -91,7 +87,6 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                   currentVersion={currentVersion}
                   documentId={documentId}
                   documentType={documentType}
-                  isReady={isReady}
                 />
               )}
             </Stack>
