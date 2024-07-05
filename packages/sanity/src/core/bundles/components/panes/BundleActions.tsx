@@ -10,19 +10,16 @@ import {
 } from 'sanity'
 
 import {Button} from '../../../../ui-components'
-import {useBundles} from '../../../store/bundles'
+import {useBundles} from '../../../store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {getAllVersionsOfDocument, versionDocumentExists} from '../../util/dummyGetters'
 
 interface BundleActionsProps {
-  currentGlobalBundle: BundleDocument
+  currentGlobalBundle: Partial<BundleDocument>
   documentId: string
   documentType: string
 }
 
-/**
- * @internal
- */
 export function BundleActions(props: BundleActionsProps): JSX.Element {
   const {currentGlobalBundle, documentId, documentType} = props
   const {name, title} = currentGlobalBundle
