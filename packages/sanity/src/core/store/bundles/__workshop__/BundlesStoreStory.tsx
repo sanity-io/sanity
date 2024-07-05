@@ -4,10 +4,10 @@ import {type ComponentType, type FormEvent, useCallback, useState} from 'react'
 import {Button} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {AddonDatasetProvider} from '../../../studio/addonDataset/AddonDatasetProvider'
+import {BundleForm} from '../../../versions/components/dialog/BundleForm'
 import {BundlesProvider, useBundles} from '../BundlesProvider'
 import {type BundleDocument} from '../types'
 import {useBundleOperations} from '../useBundleOperations'
-import {ReleaseForm} from './ReleaseForm'
 
 const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>): React.FC<P> => {
   const WrappedComponent: React.FC<P> = (props) => (
@@ -66,7 +66,7 @@ const BundlesStoreStory = () => {
           <form onSubmit={handleCreateBundle}>
             <Stack space={4}>
               <Text weight="medium">Create a new release</Text>
-              <ReleaseForm onChange={setValue} value={value} />
+              <BundleForm onChange={setValue} value={value} />
               <Flex justify="flex-end">
                 <Button
                   text="Create"
