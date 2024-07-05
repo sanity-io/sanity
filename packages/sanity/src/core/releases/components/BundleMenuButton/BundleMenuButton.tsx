@@ -45,7 +45,7 @@ export const BundleMenuButton = ({bundle}: Props) => {
     <MenuButton
       button={
         <Button
-          disabled={bundleMenuDisabled}
+          disabled={bundleMenuDisabled || isPerformingOperation}
           icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
           mode="bleed"
           padding={2}
