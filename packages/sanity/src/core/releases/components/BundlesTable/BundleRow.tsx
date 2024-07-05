@@ -3,7 +3,7 @@ import {RelativeTime} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {type BundleDocument} from '../../../store/bundles/types'
-import {VersionBadge} from '../../../versions/components/VersionBadge'
+import {BundleBadge} from '../../../versions/components/BundleBadge'
 import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
 
 type Props = {
@@ -26,7 +26,7 @@ export function BundleRow({bundle}: Props) {
         >
           <Flex align="center" gap={2}>
             <Box flex="none">
-              <VersionBadge tone={bundle.tone} icon={bundle.icon} />
+              <BundleBadge tone={bundle.tone} icon={bundle.icon} />
             </Box>
             <Stack flex={1} space={2}>
               <Flex align="center" gap={2}>
