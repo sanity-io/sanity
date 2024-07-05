@@ -1,7 +1,7 @@
 /* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useCallback, useContext, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
@@ -10,8 +10,9 @@ import {
   useTimelineSelector,
 } from 'sanity'
 
-import {VersionContext, type VersionContextValue} from '../../../../_singletons/core/form/VersionContext'
-import {BundleActions} from '../../../../core/versions/components/panes/BundleActions'
+import {BundleActions} from '../../../../core/bundles/components/panes/BundleActions'
+import {usePerspective} from '../../../../core/bundles/hooks/usePerspective'
+import {LATEST} from '../../../../core/bundles/util/const'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -65,9 +66,8 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 
   /* Version / Bundling handling */
 
-  // eslint-disable-next-line no-warning-comments
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentVersion, isDraft} = useContext<VersionContextValue>(VersionContext)
+  const {currentGlobalBundle} = usePerspective()
 
   return (
     <Flex align="center" gap={1}>
@@ -76,7 +76,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              {isDraft ? (
+              {currentGlobalBundle.name === LATEST.name ? (
                 <Button
                   data-testid={`action-${firstActionState.label}`}
                   disabled={
@@ -92,7 +92,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
               ) : (
                 /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
                 <BundleActions
-                  currentVersion={currentVersion}
+                  currentGlobalBundle={currentGlobalBundle}
                   documentId={documentId}
                   documentType={documentType}
                 />
@@ -105,7 +105,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
        * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
        * SPECIFICALLY FOR ISDRAFT
        */}
-      {showMenu && menuActionStates.length > 0 && isDraft && (
+      {showMenu && menuActionStates.length > 0 && currentGlobalBundle.name === LATEST.name && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
