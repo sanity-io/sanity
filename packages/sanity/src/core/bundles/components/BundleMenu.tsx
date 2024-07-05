@@ -26,9 +26,6 @@ interface BundleListProps {
   actions?: ReactElement
 }
 
-/**
- * @internal
- */
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
   const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0
@@ -48,30 +45,27 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
     <>
       <MenuButton
         button={button}
-        id="bundle-menu"
+        id="global-version-menu"
         menu={
-          <StyledMenu data-testid="bundle-menu">
+          <StyledMenu>
             {loading ? (
-              <Flex padding={4} justify="center" data-testid="spinner">
+              <Flex padding={4} justify="center">
                 <Spinner muted />
               </Flex>
             ) : (
               <>
                 <MenuItem
                   iconRight={
-                    currentGlobalBundle.name === LATEST.name ? (
-                      <CheckmarkIcon data-testid="latest-checkmark-icon" />
-                    ) : undefined
+                    currentGlobalBundle.name === LATEST.name ? <CheckmarkIcon /> : undefined
                   }
                   onClick={handleBundleChange(LATEST)}
                   pressed={false}
                   text={LATEST.title}
-                  data-testid="latest-menu-item"
                 />
                 {hasBundles && (
                   <>
                     <MenuDivider />
-                    <StyledBox data-testid="bundles-list">
+                    <StyledBox>
                       {bundles
                         .filter((b) => !isDraftOrPublished(b.name) && !b.archivedAt)
                         .map((b) => (
@@ -80,7 +74,6 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                             onClick={handleBundleChange(b)}
                             padding={1}
                             pressed={false}
-                            data-testid={`bundle-${b.name}`}
                           >
                             <Flex>
                               <BundleBadge hue={b.hue} icon={b.icon} padding={2} />
@@ -106,7 +99,6 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                 <Text size={1}>
                                   <CheckmarkIcon
                                     style={{opacity: currentGlobalBundle.name === b.name ? 1 : 0}}
-                                    data-testid={`${b.name}-checkmark-icon`}
                                   />
                                 </Text>
                               </Box>

@@ -74,7 +74,6 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
             // localize Text
             text="Create release"
             loading={isCreating}
-            data-testid="create-release-button"
           />
         </Flex>
       </form>

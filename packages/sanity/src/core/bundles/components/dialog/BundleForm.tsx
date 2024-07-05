@@ -10,7 +10,7 @@ import {DatePicker} from '../../../form/inputs/DateInputs/base/DatePicker'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {isDraftOrPublished} from '../../util/dummyGetters'
-import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
+import {BundleIconEditorPicker} from './BundleIconEditorPicker'
 
 export function BundleForm(props: {
   onChange: (params: Partial<BundleDocument>) => void
@@ -34,7 +34,7 @@ export function BundleForm(props: {
   const {t: coreT} = useTranslation()
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
 
-  const iconValue: BundleIconEditorPickerValue = useMemo(
+  const iconValue: Partial<BundleDocument> = useMemo(
     () => ({
       icon: icon ?? 'cube',
       hue: hue ?? 'gray',
@@ -82,25 +82,23 @@ export function BundleForm(props: {
 
   const handlePublishAtInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const dateValue = event.target.value.trim()
-
       // there's likely a better way of doing this
       // needs to check that the date is not invalid & not empty
       // in which case it can update the input value but not the actual bundle value
-      if (new Date(event.target.value).toString() === 'Invalid Date' && dateValue !== '') {
+      if (new Date(event.target.value).toString() === 'Invalid Date' && event.target.value !== '') {
         setShowDateValidation(true)
-        setDisplayDate(dateValue)
+        setDisplayDate(event.target.value)
       } else {
         setShowDateValidation(false)
-        setDisplayDate(dateValue)
-        onChange({...value, publishAt: dateValue})
+        setDisplayDate(event.target.value)
+        onChange({...value, publishAt: event.target.value})
       }
     },
     [onChange, value],
   )
 
   const handleIconValueChange = useCallback(
-    (pickedIcon: BundleIconEditorPickerValue) => {
+    (pickedIcon: Partial<BundleDocument>) => {
       onChange({...value, icon: pickedIcon.icon, hue: pickedIcon.hue})
     },
     [onChange, value],
@@ -126,11 +124,7 @@ export function BundleForm(props: {
           {/* localize text */}
           Title
         </Text>
-        <TextInput
-          onChange={handleBundleTitleChange}
-          value={title}
-          data-testid="bundle-form-title"
-        />
+        <TextInput onChange={handleBundleTitleChange} value={title} />
       </Stack>
 
       <Stack space={3}>
@@ -138,11 +132,7 @@ export function BundleForm(props: {
           {/* localize text */}
           Description
         </Text>
-        <TextArea
-          onChange={handleBundleDescriptionChange}
-          value={description}
-          data-testid="bundle-form-description"
-        />
+        <TextArea onChange={handleBundleDescriptionChange} value={description} />
       </Stack>
 
       <Stack space={3}>
@@ -189,7 +179,6 @@ export function BundleForm(props: {
           }
           value={displayDate}
           onChange={handlePublishAtInputChange}
-          data-testid="bundle-form-publish-at"
         />
       </Stack>
     </Stack>

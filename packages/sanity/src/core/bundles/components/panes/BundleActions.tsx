@@ -1,6 +1,6 @@
 import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -10,19 +10,16 @@ import {
 } from 'sanity'
 
 import {Button} from '../../../../ui-components'
-import {useBundles} from '../../../store/bundles'
+import {useBundles} from '../../../store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {getAllVersionsOfDocument, versionDocumentExists} from '../../util/dummyGetters'
 
 interface BundleActionsProps {
-  currentGlobalBundle: BundleDocument
+  currentGlobalBundle: Partial<BundleDocument>
   documentId: string
   documentType: string
 }
 
-/**
- * @internal
- */
 export function BundleActions(props: BundleActionsProps): JSX.Element {
   const {currentGlobalBundle, documentId, documentType} = props
   const {name, title} = currentGlobalBundle
@@ -35,27 +32,23 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const {newVersion} = useDocumentOperation(documentId, documentType)
-  const dummyFetch = useRef<Promise<void> | undefined>()
 
   const fetchVersions = useCallback(async () => {
     if (!loading) {
       const response = await getAllVersionsOfDocument(bundles, client, documentId)
       setDocumentVersions(response)
+      setIsInVersion(versionDocumentExists(documentVersions, name))
     }
-  }, [loading, bundles, client, documentId])
+  }, [loading, bundles, client, documentId, documentVersions, name])
 
   // DUMMY FETCH -- NEEDS TO BE REPLACED -- USING GROQ from utils
   useEffect(() => {
     const fetchVersionsInner = async () => {
-      if (!dummyFetch.current) {
-        dummyFetch.current = fetchVersions()
-      }
-      await dummyFetch.current
-      setIsInVersion(versionDocumentExists(documentVersions, name))
+      fetchVersions()
     }
 
     fetchVersionsInner()
-  }, [bundles, documentId, fetchVersions, documentVersions, name])
+  }, [bundles, documentId, fetchVersions])
 
   const handleAddVersion = useCallback(async () => {
     // only add to version if there isn't already a version in that bundle of this doc
