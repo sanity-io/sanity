@@ -1,43 +1,58 @@
-/* eslint-disable no-warning-comments */
 /* eslint-disable i18next/no-literal-string */
 import {CalendarIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  type ButtonTone,
-  Card,
-  Flex,
-  Select,
-  Stack,
-  Text,
-  TextArea,
-  TextInput,
-} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {Box, Button, Card, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
+import {useDateTimeFormat, useTranslation} from 'sanity'
 import speakingurl from 'speakingurl'
 
-import {type Bundle} from '../../types'
-import {RANDOM_TONES} from '../../util/const'
+import {type CalendarLabels} from '../../../form/inputs/DateInputs/base/calendar/types'
+import {DatePicker} from '../../../form/inputs/DateInputs/base/DatePicker'
+import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
+import {type BundleDocument} from '../../../store/bundles/types'
 import {isDraftOrPublished} from '../../util/dummyGetters'
+import {BundleIconEditorPicker} from './BundleIconEditorPicker'
 
 export function BundleForm(props: {
-  onChange: (params: Bundle) => void
-  value: Bundle
+  onChange: (params: Partial<BundleDocument>) => void
+  value: Partial<BundleDocument>
 }): JSX.Element {
   const {onChange, value} = props
+  const {title, description, icon, hue, publishAt} = value
+
+  const dateFormatter = useDateTimeFormat()
+
   const [showTitleValidation, setShowTitleValidation] = useState(false)
+  const [showDateValidation, setShowDateValidation] = useState(false)
+  const [showDatePicker, setShowDatePicker] = useState(false)
+
+  const publishAtDisplayValue = useMemo(() => {
+    if (!publishAt) return ''
+    return dateFormatter.format(new Date(publishAt as Date))
+  }, [dateFormatter, publishAt])
+
+  const [displayDate, setDisplayDate] = useState(publishAtDisplayValue)
+  const {t: coreT} = useTranslation()
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
+
+  const iconValue: Partial<BundleDocument> = useMemo(
+    () => ({
+      icon: icon ?? 'cube',
+      hue: hue ?? 'gray',
+    }),
+    [icon, hue],
+  )
 
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const title = event.target.value
+      const pickedTitle = event.target.value
 
-      if (isDraftOrPublished(title)) {
+      if (isDraftOrPublished(pickedTitle)) {
         setShowTitleValidation(true)
       } else {
         setShowTitleValidation(false)
       }
 
-      onChange({...value, title: title, name: speakingurl(title)})
+      onChange({...value, title: pickedTitle, name: speakingurl(pickedTitle)})
     },
     [onChange, value],
   )
@@ -51,29 +66,54 @@ export function BundleForm(props: {
     [onChange, value],
   )
 
-  const handleBundleToneChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      onChange({...value, tone: (event.target.value || undefined) as ButtonTone | undefined})
+  const handleOpenDatePicker = useCallback(() => {
+    setShowDatePicker(!showDatePicker)
+  }, [showDatePicker])
+
+  const handleBundlePublishAtChange = useCallback(
+    (nextDate: Date | undefined) => {
+      onChange({...value, publishAt: nextDate})
+      setDisplayDate(dateFormatter.format(new Date(nextDate as Date)))
+
+      setShowDatePicker(false)
+    },
+    [dateFormatter, onChange, value],
+  )
+
+  const handlePublishAtInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      // there's likely a better way of doing this
+      // needs to check that the date is not invalid & not empty
+      // in which case it can update the input value but not the actual bundle value
+      if (new Date(event.target.value).toString() === 'Invalid Date' && event.target.value !== '') {
+        setShowDateValidation(true)
+        setDisplayDate(event.target.value)
+      } else {
+        setShowDateValidation(false)
+        setDisplayDate(event.target.value)
+        onChange({...value, publishAt: event.target.value})
+      }
     },
     [onChange, value],
   )
 
-  const handleBundlePublishAtChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const v = event.target.value
-
-      onChange({...value, publishAt: v})
+  const handleIconValueChange = useCallback(
+    (pickedIcon: Partial<BundleDocument>) => {
+      onChange({...value, icon: pickedIcon.icon, hue: pickedIcon.hue})
     },
     [onChange, value],
   )
 
   return (
     <Stack space={5}>
+      <Flex>
+        <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
+      </Flex>
       <Stack space={3}>
         {showTitleValidation && (
           <Card tone="critical" padding={3} radius={2}>
             <Text align="center" muted size={1}>
-              {/* localize text */}
+              {/* localize & validate copy & UI */}
               Title cannot be "drafts" or "published"
             </Text>
           </Card>
@@ -82,7 +122,7 @@ export function BundleForm(props: {
           {/* localize text */}
           Title
         </Text>
-        <TextInput onChange={handleBundleTitleChange} value={value.title} />
+        <TextInput onChange={handleBundleTitleChange} value={title} />
       </Stack>
 
       <Stack space={3}>
@@ -90,7 +130,7 @@ export function BundleForm(props: {
           {/* localize text */}
           Description
         </Text>
-        <TextArea onChange={handleBundleDescriptionChange} value={value.description} />
+        <TextArea onChange={handleBundleDescriptionChange} value={description} />
       </Stack>
 
       <Stack space={3}>
@@ -98,65 +138,46 @@ export function BundleForm(props: {
           {/* localize text */}
           Schedule for publishing at
         </Text>
-        {/** TODO UPDATE WITH REAL INPUT */}
-        <TextInput
-          onChange={handleBundlePublishAtChange}
-          suffix={
-            <Box padding={1} style={{border: '1px solid transparent'}}>
-              <Button icon={CalendarIcon} mode="bleed" padding={2} />
-            </Box>
-          }
-          value={value.publishAt || ''}
-        />
-      </Stack>
-
-      <Stack space={3}>
-        <Text size={1} weight="medium">
-          {/* localize text */}
-          Color
-        </Text>
-        <Flex>
-          <Card
-            borderTop
-            borderLeft
-            borderBottom
-            flex="none"
-            radius={2}
-            padding={2}
-            style={{
-              borderTopRightRadius: 0,
-              borderBottomRightRadius: 0,
-            }}
-          >
-            <div
-              style={{
-                borderRadius: 1,
-                width: 17,
-                height: 17,
-                backgroundColor: `var(--card-badge-${value.tone || 'default'}-icon-color)`,
-              }}
-            >
-              &nbsp;
-            </div>
+        {showDateValidation && (
+          <Card tone="critical" padding={3} radius={2}>
+            <Text align="center" muted size={1}>
+              {/* localize & validate copy & UI */}
+              Should be an empty or valid date
+            </Text>
           </Card>
-          <Stack flex={1}>
-            <Select
-              onChange={handleBundleToneChange}
-              style={{
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-                textTransform: 'capitalize',
-              }}
-              value={value.tone || ''}
+        )}
+
+        <TextInput
+          suffix={
+            <Popover
+              constrainSize
+              content={
+                <Box overflow="auto">
+                  <DatePicker
+                    onChange={handleBundlePublishAtChange}
+                    calendarLabels={calendarLabels}
+                    value={publishAt as Date}
+                    selectTime
+                  />
+                </Box>
+              }
+              open={showDatePicker}
+              placement="bottom-end"
+              radius={2}
             >
-              {RANDOM_TONES.map((tone) => (
-                <option key={tone} value={tone}>
-                  {tone}
-                </option>
-              ))}
-            </Select>
-          </Stack>
-        </Flex>
+              <Box padding={1} style={{border: '1px solid transparent'}}>
+                <Button
+                  icon={CalendarIcon}
+                  mode="bleed"
+                  padding={2}
+                  onClick={handleOpenDatePicker}
+                />
+              </Box>
+            </Popover>
+          }
+          value={displayDate}
+          onChange={handlePublishAtInputChange}
+        />
       </Stack>
     </Stack>
   )

@@ -1,15 +1,9 @@
 import {type SanityClient, type SanityDocument} from 'sanity'
 import speakingurl from 'speakingurl'
 
-import {type Version} from '../types'
-import {BUNDLES, RANDOM_SYMBOLS, RANDOM_TONES} from './const'
+import {type BundleDocument} from '../../store/bundles/types'
 
 /* MOSTLY TEMPORARY FUNCTIONS / DUMMY DATA */
-
-export const getRandomToneIcon = () => ({
-  tone: RANDOM_TONES[Math.floor(Math.random() * RANDOM_TONES.length)],
-  icon: RANDOM_SYMBOLS[Math.floor(Math.random() * RANDOM_SYMBOLS.length)],
-})
 
 /**
  * Returns all versions of a document
@@ -19,9 +13,10 @@ export const getRandomToneIcon = () => ({
  * @returns array of SanityDocuments versions from a specific doc
  */
 export async function getAllVersionsOfDocument(
+  bundles: BundleDocument[] | null,
   client: SanityClient,
   documentId: string,
-): Promise<Version[]> {
+): Promise<BundleDocument[]> {
   // remove all versions, get just id (anything anything after first .)
   const id = documentId.replace(/^[^.]*\./, '')
 
@@ -30,12 +25,13 @@ export async function getAllVersionsOfDocument(
   return await client.fetch(query, {}, {tag: 'document.list-versions'}).then((documents) => {
     return documents.map((doc: SanityDocument) => {
       const sluggedName = getVersionName(doc._id)
-      const bundle = BUNDLES.find((b) => b.name === sluggedName)
+      const bundle = bundles?.find((b) => b.name === sluggedName)
       return {
         name: speakingurl(sluggedName),
         title: bundle?.title || sluggedName,
-        tone: bundle?.tone || 'default',
+        hue: bundle?.hue || 'gray',
         icon: bundle?.icon || 'cube',
+        publishAt: bundle?.publishAt,
       }
     })
   })
@@ -47,7 +43,7 @@ export function getVersionName(documentId: string): string {
   return version
 }
 
-export function versionDocumentExists(documentVersions: Version[], name: string): boolean {
+export function versionDocumentExists(documentVersions: BundleDocument[], name: string): boolean {
   return documentVersions.some((version) => version.name === name)
 }
 
