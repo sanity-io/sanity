@@ -12,3 +12,7 @@ export interface BundleDocument extends SanityDocument {
   authorId: string
   publishedAt?: string
 }
+
+export function isBundleDocument(doc: unknown): doc is BundleDocument {
+  return typeof doc === 'object' && doc !== null && '_type' in doc && doc._type === 'bundle'
+}
