@@ -1,4 +1,3 @@
-/* eslint-disable no-warning-comments */
 /* eslint-disable i18next/no-literal-string */
 import {CalendarIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
@@ -119,6 +118,8 @@ export function BundleForm(props: {
             </Text>
           </Card>
         )}
+
+        {/* TODO ADD CHECK FOR EXISTING NAMES AND AVOID DUPLICATES */}
         <Text size={1} weight="medium">
           {/* localize text */}
           Title

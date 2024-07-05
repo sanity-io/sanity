@@ -4,6 +4,7 @@ import {type FormEvent, useCallback, useState} from 'react'
 
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
+import {usePerspective} from '../../hooks/usePerspective'
 import {isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleForm} from './BundleForm'
 
@@ -25,21 +26,27 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
   })
   const [isCreating, setIsCreating] = useState(false)
 
+  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
+  const {setPerspective} = usePerspective()
+
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
-      try {
-        event.preventDefault()
-        setIsCreating(true)
-        await createBundle(value)
-        setValue(value)
-      } catch (err) {
-        console.error(err)
-      } finally {
-        setIsCreating(false)
-        onCreate()
+      if (value.name) {
+        try {
+          event.preventDefault()
+          setIsCreating(true)
+          await createBundle(value)
+          setValue(value)
+        } catch (err) {
+          console.error(err)
+        } finally {
+          setIsCreating(false)
+          setPerspective(value.name)
+          onCreate()
+        }
       }
     },
-    [createBundle, value, onCreate],
+    [createBundle, value, setPerspective, onCreate],
   )
 
   const handleOnChange = useCallback((changedValue: Partial<BundleDocument>) => {
@@ -65,7 +72,6 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
             iconRight={ArrowRightIcon}
             type="submit"
             // localize Text
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             text="Create release"
             loading={isCreating}
           />

@@ -6,6 +6,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
 import {BundleBadge} from '../../../../../../core/bundles/components/BundleBadge'
 import {BundleMenu} from '../../../../../../core/bundles/components/BundleMenu'
 import {usePerspective} from '../../../../../../core/bundles/hooks/usePerspective'
+import {LATEST} from '../../../../../../core/bundles/util/const'
 import {getAllVersionsOfDocument} from '../../../../../../core/bundles/util/dummyGetters'
 import {useBundles} from '../../../../../../core/store/bundles/BundlesProvider'
 import {type BundleDocument} from '../../../../../../core/store/bundles/types'
@@ -14,7 +15,7 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
   const {documentId} = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  const {currentGlobalBundle, isDraft} = usePerspective()
+  const {currentGlobalBundle} = usePerspective()
 
   const {title, hue, icon} = currentGlobalBundle
 
@@ -41,7 +42,7 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
     <>
       {/* FIXME Version Badge should only show when the current opened document is in a version, RIGHT
       NOW IT'S USING THE GLOBAL */}
-      {currentGlobalBundle && !isDraft && (
+      {currentGlobalBundle && currentGlobalBundle.name === LATEST.name && (
         <BundleBadge hue={hue} title={title} icon={icon} padding={2} />
       )}
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}

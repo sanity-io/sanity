@@ -28,12 +28,15 @@ interface BundleListProps {
 
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
+  const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0
 
-  const {currentGlobalBundle, setPerspective, isDraft} = usePerspective()
+  const {currentGlobalBundle, setPerspective} = usePerspective()
 
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
-      setPerspective(bundle.name)
+      if (bundle.name) {
+        setPerspective(bundle.name)
+      }
     },
     [setPerspective],
   )
@@ -52,12 +55,14 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
             ) : (
               <>
                 <MenuItem
-                  iconRight={isDraft ? <CheckmarkIcon /> : undefined}
+                  iconRight={
+                    currentGlobalBundle.name === LATEST.name ? <CheckmarkIcon /> : undefined
+                  }
                   onClick={handleBundleChange(LATEST)}
                   pressed={false}
                   text={LATEST.title}
                 />
-                {bundles && bundles.length > 0 && (
+                {hasBundles && (
                   <>
                     <MenuDivider />
                     <StyledBox>
@@ -85,7 +90,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                     <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
                                   ) : (
                                     /* localize text */
-                                    <span>{'No target date'}</span>
+                                    'No target date'
                                   )}
                                 </Text>
                               </Box>
