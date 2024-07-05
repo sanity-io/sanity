@@ -77,7 +77,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   return (
     <>
       <Text size={1} muted>
-        {(version ?? draft ?? published)?._id}
+        {((version ?? draft ?? published) as SanityDocument)?._id}
       </Text>
       <SanityDefaultPreview
         {...getPreviewValueWithFallback({value, draft, published, version, perspective})}

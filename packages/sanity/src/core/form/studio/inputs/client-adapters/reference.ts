@@ -1,6 +1,10 @@
 import {type SanityClient} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
-import {type ReferenceFilterSearchOptions, type ReferenceSchemaType} from '@sanity/types'
+import {
+  type ReferenceFilterSearchOptions,
+  type ReferenceSchemaType,
+  type SanityDocumentLike,
+} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
 
@@ -200,8 +204,10 @@ export function referenceSearch(
     maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
   })
   return search(textTerm, {includeDrafts: true}).pipe(
-    map(({hits}) => hits.map(({hit}) => hit)),
-    map(collate),
+    map(({hits}) => hits.map(({hit}) => hit) as unknown as CollatedHit<SanityDocumentLike>[]),
+    map((collated: CollatedHit<SanityDocumentLike>[]) =>
+      collate(collated as unknown as SanityDocumentLike[]),
+    ),
     // pick the 100 best matches
     map((collated) => collated.slice(0, 100)),
     mergeMap((collated) => {

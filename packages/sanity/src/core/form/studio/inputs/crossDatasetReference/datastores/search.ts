@@ -2,12 +2,13 @@ import {type SanityClient} from '@sanity/client'
 import {
   type CrossDatasetReferenceSchemaType,
   type ReferenceFilterSearchOptions,
+  type SanityDocumentLike,
 } from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 
 import {createSearch} from '../../../../../search'
-import {collate} from '../../../../../util'
+import {collate, type CollatedHit} from '../../../../../util'
 
 interface SearchHit {
   id: string
@@ -31,7 +32,9 @@ export function search(
     isCrossDataset: true,
   }).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
-    map(collate),
+    map(
+      collate as (value: SanityDocumentLike[], index: number) => CollatedHit<SanityDocumentLike>[],
+    ),
     map((collated) =>
       collated.map((entry) => ({
         id: entry.id,
