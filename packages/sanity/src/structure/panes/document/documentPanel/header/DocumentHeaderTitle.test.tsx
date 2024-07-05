@@ -31,6 +31,9 @@ jest.mock('sanity', () => {
     unstable_useValuePreview: jest.fn(),
   }
 })
+jest.mock('../../../../../core/versions/util/dummyGetters', () => ({
+  getAllVersionsOfDocument: jest.fn(() => []),
+}))
 
 describe('DocumentHeaderTitle', () => {
   const mockUseDocumentPane = useDocumentPane as jest.MockedFunction<typeof useDocumentPane>
