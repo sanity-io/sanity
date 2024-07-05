@@ -8,14 +8,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 
 export function DocumentHeaderTitle(): ReactElement {
-  const {
-    documentId,
-    documentType,
-    connectionState,
-    schemaType,
-    title,
-    value: documentValue,
-  } = useDocumentPane()
+  const {documentId, connectionState, schemaType, title, value: documentValue} = useDocumentPane()
   const subscribed = Boolean(documentValue) && connectionState !== 'connecting'
 
   const {error, value} = useValuePreview({
@@ -66,7 +59,7 @@ export function DocumentHeaderTitle(): ReactElement {
       </Flex>
 
       <Flex flex="none" gap={1}>
-        <DocumentVersionMenu documentId={documentId} documentType={documentType} />
+        <DocumentVersionMenu documentId={documentId} />
       </Flex>
     </Flex>
   )
