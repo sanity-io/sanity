@@ -2,8 +2,8 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {RelativeTime} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {BundleBadge} from '../../../bundles/components/BundleBadge'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {BundleBadge} from '../../../versions/components/BundleBadge'
 import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
 
 type Props = {
