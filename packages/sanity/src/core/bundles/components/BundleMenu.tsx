@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 import {type BundleDocument} from '../../store/bundles/types'
 import {usePerspective} from '../hooks/usePerspective'
 import {LATEST} from '../util/const'
-import {isDraft, isDraftOrPublished} from '../util/dummyGetters'
+import {isDraftOrPublished} from '../util/dummyGetters'
 import {BundleBadge} from './BundleBadge'
 
 const StyledMenu = styled(Menu)`
@@ -55,7 +55,9 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
             ) : (
               <>
                 <MenuItem
-                  iconRight={isDraft(currentGlobalBundle.name) ? <CheckmarkIcon /> : undefined}
+                  iconRight={
+                    currentGlobalBundle.name === LATEST.name ? <CheckmarkIcon /> : undefined
+                  }
                   onClick={handleBundleChange(LATEST)}
                   pressed={false}
                   text={LATEST.title}

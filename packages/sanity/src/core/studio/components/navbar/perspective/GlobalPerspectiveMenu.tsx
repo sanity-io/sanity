@@ -7,7 +7,6 @@ import {BundleMenu} from '../../../../bundles/components/BundleMenu'
 import {CreateBundleDialog} from '../../../../bundles/components/dialog/CreateBundleDialog'
 import {usePerspective} from '../../../../bundles/hooks/usePerspective'
 import {LATEST} from '../../../../bundles/util/const'
-import {isDraft} from '../../../../bundles/util/dummyGetters'
 import {useBundles} from '../../../../store/bundles/BundlesProvider'
 
 export function GlobalPerspectiveMenu(): JSX.Element {
@@ -34,10 +33,10 @@ export function GlobalPerspectiveMenu(): JSX.Element {
           <Button mode="bleed" padding={0} radius="full">
             <BundleBadge
               hue={hue}
-              icon={isDraft(currentGlobalBundle.name) ? undefined : icon}
+              icon={currentGlobalBundle.name === LATEST.name ? undefined : icon}
               openButton
               padding={2}
-              title={isDraft(currentGlobalBundle.name) ? LATEST.title : title}
+              title={currentGlobalBundle.name === LATEST.name ? LATEST.title : title}
             />
           </Button>
         }
