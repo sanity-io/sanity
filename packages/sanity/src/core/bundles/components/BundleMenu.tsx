@@ -26,6 +26,9 @@ interface BundleListProps {
   actions?: ReactElement
 }
 
+/**
+ * @internal
+ */
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
   const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0

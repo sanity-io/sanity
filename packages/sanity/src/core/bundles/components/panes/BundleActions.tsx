@@ -20,6 +20,9 @@ interface BundleActionsProps {
   documentType: string
 }
 
+/**
+ * @internal
+ */
 export function BundleActions(props: BundleActionsProps): JSX.Element {
   const {currentGlobalBundle, documentId, documentType} = props
   const {name, title} = currentGlobalBundle

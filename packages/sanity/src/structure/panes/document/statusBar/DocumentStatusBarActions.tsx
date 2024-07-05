@@ -3,17 +3,17 @@
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
 import {
+  BundleActions,
   type DocumentActionComponent,
   type DocumentActionDescription,
+  isBundleDocument,
+  LATEST,
   shouldArrayDialogOpen,
+  usePerspective,
   useSource,
   useTimelineSelector,
 } from 'sanity'
 
-import {BundleActions} from '../../../../core/bundles/components/panes/BundleActions'
-import {usePerspective} from '../../../../core/bundles/hooks/usePerspective'
-import {LATEST} from '../../../../core/bundles/util/const'
-import {isBundleDocument} from '../../../../core/store/bundles/types'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'

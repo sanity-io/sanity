@@ -14,6 +14,9 @@ export interface PerspectiveValue {
   setPerspective: (name: string) => void
 }
 
+/**
+ * @internal
+ */
 export function usePerspective(): PerspectiveValue {
   const router = useRouter()
   const {data: bundles} = useBundles()

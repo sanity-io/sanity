@@ -11,6 +11,9 @@ interface BundlesProviderProps {
 
 const EMPTY_ARRAY: [] = []
 
+/**
+ * @internal
+ */
 export type BundlesContextValue = {
   dispatch: Dispatch<bundlesReducerAction>
   loading: boolean
@@ -38,6 +41,9 @@ export function BundlesProvider(props: BundlesProviderProps) {
   return <BundlesContext.Provider value={value}>{children}</BundlesContext.Provider>
 }
 
+/**
+ * @internal
+ */
 export function useBundles(): BundlesContextValue {
   const context = useContext(BundlesContext)
   if (!context) {
