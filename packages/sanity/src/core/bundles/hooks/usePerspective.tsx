@@ -1,25 +1,22 @@
 import {useRouter} from 'sanity/router'
 
-import {useBundles} from '../../store/bundles'
+import {useBundlesStore} from '../../store/bundles'
 import {type BundleDocument} from '../../store/bundles/types'
 import {LATEST} from '../util/const'
 
 /**
  * @internal
  */
-export interface PerspectiveValue {
+export interface VersionContextValue {
   /* Return the current global bundle */
   currentGlobalBundle: Partial<BundleDocument>
   /* Change the perspective in the studio based on the perspective name */
   setPerspective: (name: string) => void
 }
 
-/**
- * @internal
- */
-export function usePerspective(): PerspectiveValue {
+export function usePerspective(): VersionContextValue {
   const router = useRouter()
-  const {data: bundles} = useBundles()
+  const {data: bundles} = useBundlesStore()
 
   const setPerspective = (name: string | undefined) => {
     if (name === 'drafts') {

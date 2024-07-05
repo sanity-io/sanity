@@ -6,7 +6,7 @@ import {BundleBadge} from '../../../../bundles/components/BundleBadge'
 import {BundleMenu} from '../../../../bundles/components/BundleMenu'
 import {CreateBundleDialog} from '../../../../bundles/components/dialog/CreateBundleDialog'
 import {usePerspective} from '../../../../bundles/hooks/usePerspective'
-import {useBundles} from '../../../../store/bundles'
+import {useBundles} from '../../../../store/bundles/BundlesProvider'
 
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {data: bundles, loading} = useBundles()

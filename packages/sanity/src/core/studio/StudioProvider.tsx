@@ -6,9 +6,7 @@ import javascript from 'refractor/lang/javascript.js'
 import json from 'refractor/lang/json.js'
 import jsx from 'refractor/lang/jsx.js'
 import typescript from 'refractor/lang/typescript.js'
-import {AddonDatasetProvider} from 'sanity'
 
-import {VersionProvider} from '../../_singletons/core/form/VersionContext'
 import {LoadingBlock} from '../components/loadingBlock'
 import {ErrorLogger} from '../error/ErrorLogger'
 import {errorReporter} from '../error/errorReporter'
@@ -71,14 +69,10 @@ export function StudioProvider({
     <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       <StudioTelemetryProvider config={config}>
         <LocaleProvider>
-          <AddonDatasetProvider>
-            <VersionProvider>
-              <PackageVersionStatusProvider>
-                <EnableErrorReporting />
-                <ResourceCacheProvider>{children}</ResourceCacheProvider>
-              </PackageVersionStatusProvider>
-            </VersionProvider>
-          </AddonDatasetProvider>
+          <PackageVersionStatusProvider>
+            <EnableErrorReporting />
+            <ResourceCacheProvider>{children}</ResourceCacheProvider>
+          </PackageVersionStatusProvider>
         </LocaleProvider>
       </StudioTelemetryProvider>
     </WorkspaceLoader>

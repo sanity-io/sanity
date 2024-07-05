@@ -2,9 +2,6 @@
 
 import {type BundleDocument} from '../../store/bundles/types'
 
-/**
- * @internal
- */
 export const LATEST: Partial<BundleDocument> = {
   name: 'drafts',
   title: 'Latest',
