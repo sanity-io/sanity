@@ -4,14 +4,15 @@
 // eslint-disable-next-line import/consistent-type-specifier-style
 import {createContext, type ReactElement} from 'react'
 
-import type {Version} from '../../../core/versions/types'
-import {BUNDLES, LATEST} from '../../../core/versions/util/const'
+import {useBundlesStore} from '../../../core/store/bundles'
+import type {BundleDocument} from '../../../core/store/bundles/types'
+import {LATEST} from '../../../core/versions/util/const'
 import {useRouter} from '../../../router'
 
 export interface VersionContextValue {
-  currentVersion: Version
+  currentVersion: Partial<BundleDocument>
   isDraft: boolean
-  setCurrentVersion: (version: Version) => void
+  setCurrentVersion: (bundle: Partial<BundleDocument>) => void
 }
 
 export const VersionContext = createContext<VersionContextValue>({
@@ -27,7 +28,9 @@ interface VersionProviderProps {
 
 export function VersionProvider({children}: VersionProviderProps): JSX.Element {
   const router = useRouter()
-  const setCurrentVersion = (version: Version) => {
+  const {data: bundles} = useBundlesStore()
+
+  const setCurrentVersion = (version: Partial<BundleDocument>) => {
     const {name} = version
     if (name === 'drafts') {
       router.navigateStickyParam('perspective', '')
@@ -35,14 +38,15 @@ export function VersionProvider({children}: VersionProviderProps): JSX.Element {
       router.navigateStickyParam('perspective', `bundle.${name}`)
     }
   }
-  const selectedVersion = router.stickyParams?.perspective
-    ? BUNDLES.find((bundle) => {
-        return (
-          `bundle.${bundle.name}`.toLocaleLowerCase() ===
-          router.stickyParams.perspective?.toLocaleLowerCase()
-        )
-      })
-    : LATEST
+  const selectedVersion =
+    router.stickyParams?.perspective && bundles
+      ? bundles.find((bundle) => {
+          return (
+            `bundle.${bundle.name}`.toLocaleLowerCase() ===
+            router.stickyParams.perspective?.toLocaleLowerCase()
+          )
+        })
+      : LATEST
 
   const currentVersion = selectedVersion || LATEST
 
