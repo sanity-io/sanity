@@ -15,7 +15,7 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {getAllVersionsOfDocument, versionDocumentExists} from '../../util/dummyGetters'
 
 interface BundleActionsProps {
-  currentGlobalBundle: Partial<BundleDocument>
+  currentGlobalBundle: BundleDocument
   documentId: string
   documentType: string
 }
