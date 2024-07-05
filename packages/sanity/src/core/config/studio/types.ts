@@ -70,6 +70,10 @@ export interface ToolMenuProps {
 // Config
 export interface StudioComponents {
   layout: ComponentType<Omit<LayoutProps, 'renderDefault'>>
+  /**
+   * @deprecated Add custom icons on a per-workspace basis by customizing workspace `icon` instead.
+   * @see {@link https://www.sanity.io/docs/workspaces}
+   */
   logo: ComponentType<Omit<LogoProps, 'renderDefault'>>
   navbar: ComponentType<Omit<NavbarProps, 'renderDefault'>>
   toolMenu: ComponentType<Omit<ToolMenuProps, 'renderDefault'>>
