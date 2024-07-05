@@ -1,51 +1,58 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Flex} from '@sanity/ui'
-import {useCallback, useState} from 'react'
-import {useCurrentUser} from 'sanity'
+import {type FormEvent, useCallback, useContext, useState} from 'react'
 
+import {
+  VersionContext,
+  type VersionContextValue,
+} from '../../../../_singletons/core/form/VersionContext'
+import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
-import {type Bundle} from '../../types'
-import {getRandomToneIcon, isDraftOrPublished} from '../../util/dummyGetters'
+import {isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleForm} from './BundleForm'
 
-export function CreateBundleDialog(props: {
+interface CreateBundleDialogProps {
   onCancel: () => void
-  onCreate: (value: Bundle) => void
-}): JSX.Element {
+  onCreate: () => void
+}
+
+export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element {
   const {onCancel, onCreate} = props
   const {createBundle} = useBundleOperations()
-  const currentUser = useCurrentUser()
-  const [isCreating, setIsCreating] = useState(false)
 
-  const [value, setValue] = useState<Bundle>({
+  const [value, setValue] = useState<Partial<BundleDocument>>({
     name: '',
     title: '',
-    tone: undefined,
+    hue: 'gray',
+    icon: 'cube',
     publishAt: undefined,
   })
+  const [isCreating, setIsCreating] = useState(false)
+
+  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
+  const {setCurrentVersion} = useContext<VersionContextValue>(VersionContext)
 
   const handleOnSubmit = useCallback(
-    async (bundle: Bundle) => {
-      setIsCreating(true)
+    async (event: FormEvent<HTMLFormElement>) => {
       try {
-        await createBundle({
-          _type: 'bundle',
-          name: value.title,
-          authorId: currentUser?.id,
-          title: value.title,
-          description: value.description,
-          ...getRandomToneIcon(),
-        })
-
-        onCreate(bundle)
-      } catch (e) {
-        console.error(e)
+        event.preventDefault()
+        setIsCreating(true)
+        await createBundle(value)
+        setValue(value)
+      } catch (err) {
+        console.error(err)
       } finally {
         setIsCreating(false)
+        setCurrentVersion(value)
+        onCreate()
       }
     },
-    [createBundle, currentUser?.id, onCreate, value.description, value.title],
+    [createBundle, value, setCurrentVersion, onCreate],
   )
+
+  const handleOnChange = useCallback((changedValue: Partial<BundleDocument>) => {
+    setValue(changedValue)
+  }, [])
 
   return (
     <Dialog
@@ -56,20 +63,21 @@ export function CreateBundleDialog(props: {
       zOffset={5000}
       width={1}
     >
-      <Box padding={6}>
-        <BundleForm onChange={setValue} value={value} />
-      </Box>
-      <Flex justify="flex-end" padding={3}>
-        <Button
-          loading={isCreating}
-          disabled={!value.title || isDraftOrPublished(value.title) || isCreating}
-          iconRight={ArrowRightIcon}
-          onClick={() => handleOnSubmit(value)}
-          // localize Text
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          text="Create release"
-        />
-      </Flex>
+      <form onSubmit={handleOnSubmit}>
+        <Box padding={6}>
+          <BundleForm onChange={handleOnChange} value={value} />
+        </Box>
+        <Flex justify="flex-end" padding={3}>
+          <Button
+            disabled={!value.title || isDraftOrPublished(value.title) || isCreating}
+            iconRight={ArrowRightIcon}
+            type="submit"
+            // localize Text
+            text="Create release"
+            loading={isCreating}
+          />
+        </Flex>
+      </form>
     </Dialog>
   )
 }
