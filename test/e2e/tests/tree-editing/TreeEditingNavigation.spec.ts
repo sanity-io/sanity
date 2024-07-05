@@ -66,10 +66,10 @@ test.describe('navigation - tree sidebar', () => {
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
-    await expect(page.getByTestId('sidebar-tree-list')).toBeVisible()
+    await expect(page.getByTestId('tree-editing-menu')).toBeVisible()
 
     // click on second array item in the sidebar
-    await page.getByTestId('sidebar-tree-list').getByRole('button', {name: 'Lucy, the cat'}).click()
+    await page.getByTestId('tree-editing-menu').getByRole('button', {name: 'Lucy, the cat'}).click()
 
     // Wait for the animation to change form to finish
     const elementSelector = '[data-testid="tree-editing-dialog-content"]' // element that is animated
@@ -88,7 +88,9 @@ test.describe('navigation - tree sidebar', () => {
 
     // make sure that item is selected on nav tree
     await expect(
-      await page.getByRole('treeitem', {name: 'Lucy, the cat'}).getByTestId('side-menu-item'),
+      await page
+        .getByRole('treeitem', {name: 'Lucy, the cat'})
+        .getByTestId('tree-editing-menu-item-content'),
     ).toHaveAttribute('data-selected')
 
     // Wait for input not to be albert
@@ -175,11 +177,13 @@ test.describe('navigation - breadcrumb', () => {
 
     // open sidebar
     await page.getByTestId('tree-editing-sidebar-toggle').click()
-    await expect(page.getByTestId('sidebar-tree-list')).toBeVisible()
+    await expect(page.getByTestId('tree-editing-menu')).toBeVisible()
 
     // make sure that item is selected on nav tree
     await expect(
-      await page.getByRole('treeitem', {name: 'Lucy, the cat'}).getByTestId('side-menu-item'),
+      await page
+        .getByRole('treeitem', {name: 'Lucy, the cat'})
+        .getByTestId('tree-editing-menu-item-content'),
     ).toHaveAttribute('data-selected')
 
     // Wait for input not to be albert
