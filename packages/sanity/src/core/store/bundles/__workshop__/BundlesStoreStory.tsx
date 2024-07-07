@@ -5,16 +5,14 @@ import {Button} from '../../../../ui-components'
 import {BundleForm} from '../../../bundles/components/dialog/BundleForm'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {AddonDatasetProvider} from '../../../studio/addonDataset/AddonDatasetProvider'
-import {BundlesProvider, useBundles} from '../BundlesProvider'
 import {type BundleDocument} from '../types'
 import {useBundleOperations} from '../useBundleOperations'
+import {useBundles} from '../useBundles'
 
 const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>): React.FC<P> => {
   const WrappedComponent: React.FC<P> = (props) => (
     <AddonDatasetProvider>
-      <BundlesProvider>
-        <Component {...props} />
-      </BundlesProvider>
+      <Component {...props} />
     </AddonDatasetProvider>
   )
   WrappedComponent.displayName = `WithAddonDatasetProvider(${Component.displayName || Component.name || 'Component'})`
