@@ -1,5 +1,4 @@
 import {type LayoutProps} from '../../config'
-import { BundlesProvider } from '../../store/bundles/BundlesProvider'
 import {AddonDatasetProvider} from '../../studio'
 import {BundlesMetadataProvider} from '../contexts/BundlesMetadataProvider'
 
@@ -13,9 +12,7 @@ export function ReleasesStudioLayout(props: LayoutProps) {
 
   return (
     <AddonDatasetProvider>
-      <BundlesMetadataProvider>
-      <BundlesProvider>{props.renderDefault(props)}</BundlesProvider>
-      </BundlesMetadataProvider>
+      <BundlesMetadataProvider>{props.renderDefault(props)}</BundlesMetadataProvider>
     </AddonDatasetProvider>
   )
 }

@@ -3,7 +3,6 @@ import {
   BehaviorSubject,
   catchError,
   concatWith,
-  delay,
   EMPTY,
   filter,
   map,
@@ -177,7 +176,7 @@ export function createBundlesStore(context: {
         // After successful reconnection, fetch the list. Note that the first event is skipped, so
         // this will not occur upon initial connection.
         if (event.type === 'welcome') {
-          return listFetch$.pipe(delay(1_000))
+          return listFetch$
         }
 
         // The reconnect event means that we are trying to reconnect to the realtime listener.

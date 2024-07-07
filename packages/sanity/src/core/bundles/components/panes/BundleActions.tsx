@@ -10,7 +10,7 @@ import {
 } from 'sanity'
 
 import {Button} from '../../../../ui-components'
-import {useBundles} from '../../../store/bundles/BundlesProvider'
+import {useBundles} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {getAllVersionsOfDocument, versionDocumentExists} from '../../util/dummyGetters'
 
