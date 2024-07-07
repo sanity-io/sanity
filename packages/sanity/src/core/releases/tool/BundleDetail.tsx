@@ -5,7 +5,7 @@ import {LoadingBlock} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Button as StudioButton} from '../../../ui-components'
-import {useBundles} from '../../store/bundles/BundlesProvider'
+import {useBundles} from '../../store/bundles'
 import {BundleMenuButton} from '../components/BundleMenuButton/BundleMenuButton'
 import {type ReleasesRouterState} from '../types/router'
 
