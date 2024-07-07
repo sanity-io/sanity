@@ -4,6 +4,7 @@ import {type ReactNode} from 'react'
 
 import {
   CopyPasteProvider,
+  AddonDatasetProvider,
   LocaleProviderBase,
   type LocaleResourceBundle,
   ResourceCacheProvider,
@@ -48,7 +49,9 @@ export async function createTestProvider({
               <WorkspaceProvider workspace={workspace}>
                 <SourceProvider source={workspace.unstable_sources[0]}>
                   <CopyPasteProvider>
-                    <ResourceCacheProvider>{children}</ResourceCacheProvider>
+                    <ResourceCacheProvider>
+                      <AddonDatasetProvider>{children}</AddonDatasetProvider>
+                    </ResourceCacheProvider>
                   </CopyPasteProvider>
                 </SourceProvider>
               </WorkspaceProvider>
