@@ -16,7 +16,7 @@ type Mode = 'open' | 'archived'
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 
 export default function BundlesOverview() {
-  const {data, loading} = useBundles()
+  const {data, loading, error} = useBundles()
 
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
@@ -130,6 +130,7 @@ export default function BundlesOverview() {
                 <Heading as="h1" size={2} style={{margin: '1px 0'}}>
                   Releases
                 </Heading>
+                {error && <pre>{JSON.stringify(error, null, 2)}</pre>}
                 {!loading && !hasBundles && (
                   <Container style={{margin: 0}} width={0}>
                     <Stack space={5}>
@@ -146,7 +147,7 @@ export default function BundlesOverview() {
             </Flex>
             {loadingOrHasBundles && createReleaseButton}
           </Flex>
-          {loading ? (
+          {loading && !hasBundles ? (
             <LoadingBlock fill data-testid="bundle-table-loader" />
           ) : (
             <BundlesTable

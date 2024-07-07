@@ -1,8 +1,10 @@
-import {type ListenEvent} from '@sanity/client'
 import {type IconSymbol} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
+import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
+
+import {type bundlesReducerAction, type bundlesReducerState} from './reducer'
 
 export interface BundleDocument extends SanityDocument {
   _type: 'bundle'
@@ -16,6 +18,6 @@ export interface BundleDocument extends SanityDocument {
 }
 
 export interface BundlesStore {
-  initialFetch: () => Observable<BundleDocument[] | null>
-  listener: () => Observable<ListenEvent<Record<string, BundleDocument | null>>>
+  state$: Observable<bundlesReducerState>
+  dispatch: Dispatch<bundlesReducerAction>
 }

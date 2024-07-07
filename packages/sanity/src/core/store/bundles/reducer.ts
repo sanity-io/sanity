@@ -25,26 +25,40 @@ interface BundleReceivedAction {
   type: 'BUNDLE_RECEIVED'
 }
 
+interface LoadingStateChangedAction {
+  payload: {
+    loading: boolean
+    error: Error | undefined
+  }
+  type: 'LOADING_STATE_CHANGED'
+}
+
+// interface ErrorAction {
+//   payload: Error | undefined
+//   type: 'ERROR_STATE_CHANGED'
+// }
+
 export type bundlesReducerAction =
   | BundleAddedAction
   | BundleDeletedAction
   | BundleUpdatedAction
   | BundlesSetAction
   | BundleReceivedAction
+  // | LoadingAction
+  // | ErrorAction
+  | LoadingStateChangedAction
 
 export interface bundlesReducerState {
   bundles: Map<string, BundleDocument>
+  state: 'initialising' | 'loading' | 'loaded' | 'error'
+  error?: Error
 }
 
 function createBundlesSet(bundles: BundleDocument[] | null) {
-  if (!bundles) {
-    return new Map<string, BundleDocument>()
-  }
-  const bundlesById = bundles.reduce((acc, bundle) => {
+  return (bundles ?? []).reduce((acc, bundle) => {
     acc.set(bundle._id, bundle)
     return acc
   }, new Map<string, BundleDocument>())
-  return bundlesById
 }
 
 export function bundlesReducer(
@@ -52,6 +66,14 @@ export function bundlesReducer(
   action: bundlesReducerAction,
 ): bundlesReducerState {
   switch (action.type) {
+    case 'LOADING_STATE_CHANGED': {
+      return {
+        ...state,
+        state: action.payload.loading ? 'loading' : 'loaded',
+        error: action.payload.error,
+      }
+    }
+
     case 'BUNDLES_SET': {
       // Create an object with the BUNDLE id as key
       const bundlesById = createBundlesSet(action.payload)
