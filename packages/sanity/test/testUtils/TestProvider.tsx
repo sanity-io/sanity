@@ -6,6 +6,7 @@ import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {
   CopyPasteProvider,
+  AddonDatasetProvider,
   LocaleProviderBase,
   type LocaleResourceBundle,
   ResourceCacheProvider,
