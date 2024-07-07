@@ -8,10 +8,13 @@ import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getAllVersionsOfDocument,
   LATEST,
-  useBundles,
   useClient,
   usePerspective,
 } from 'sanity'
+
+// FIXME
+// eslint-disable-next-line boundaries/element-types
+import {useBundles} from '../../../../../../core/store/bundles/useBundles'
 
 export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Element {
   const {documentId} = props
