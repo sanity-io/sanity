@@ -6,7 +6,7 @@ import {type MouseEventHandler, useCallback, useEffect, useMemo, useState} from 
 import {Button as StudioButton} from '../../../ui-components'
 import {CreateBundleDialog} from '../../bundles/components/dialog/CreateBundleDialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
-import {useBundles} from '../../store/bundles/BundlesProvider'
+import {useBundles} from '../../store/bundles'
 import {type BundleDocument} from '../../store/bundles/types'
 import {BundlesTable} from '../components/BundlesTable/BundlesTable'
 import {containsBundles} from '../types/bundle'
