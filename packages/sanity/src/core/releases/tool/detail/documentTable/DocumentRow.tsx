@@ -1,4 +1,4 @@
-import {CheckmarkCircleIcon, EllipsisHorizontalIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon, EllipsisHorizontalIcon, EmptyIcon, Progress50Icon} from '@sanity/icons'
 import {AvatarStack, Box, Button, Card, Flex, Text} from '@sanity/ui'
 import {
   type Dispatch,
@@ -24,8 +24,6 @@ import {IntentLink} from 'sanity/router'
 
 import {Tooltip} from '../../../../../ui-components'
 import {type BundleDocument} from '../../../../store/bundles/types'
-import {EmptyIcon} from '../../../components/EmptyIcon'
-import {Progress50Icon} from '../../../components/Progress50Icon'
 import {useVersionHistory} from './useVersionHistory'
 
 const DOCUMENT_STATUS = {

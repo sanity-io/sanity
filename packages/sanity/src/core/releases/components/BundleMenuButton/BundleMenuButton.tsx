@@ -1,4 +1,4 @@
-import {ArchiveIcon, EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
+import {ArchiveIcon, EllipsisHorizontalIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
 import {Button, Menu, MenuButton, MenuItem, Spinner} from '@sanity/ui'
 import {useState} from 'react'
 import {useRouter} from 'sanity/router'
@@ -57,9 +57,7 @@ export const BundleMenuButton = ({bundle}: Props) => {
         <Menu>
           <MenuItem
             onClick={handleOnToggleArchive}
-            // TODO: swap line once UnaryIcon is available
-            // icon={isBundleArchived ? UnarchiveIcon : ArchiveIcon}
-            icon={isBundleArchived ? ArchiveIcon : ArchiveIcon}
+            icon={isBundleArchived ? UnarchiveIcon : ArchiveIcon}
             text={isBundleArchived ? 'Unarchive' : 'Archive'}
           />
           <MenuItem onClick={handleOnDeleteBundle} icon={TrashIcon} text="Delete" />
