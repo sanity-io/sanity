@@ -6,6 +6,9 @@ import {type CSSProperties} from 'react'
 
 import {type BundleDocument} from '../../store/bundles/types'
 
+/**
+ * @internal
+ */
 export function BundleBadge(
   props: Partial<BundleDocument> & {openButton?: boolean; padding?: number; title?: string},
 ): JSX.Element {
