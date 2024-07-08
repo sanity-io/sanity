@@ -1,7 +1,7 @@
 import {AddIcon} from '@sanity/icons'
 import {Box, Button, type ButtonMode, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {isBefore} from 'date-fns'
-import {type MouseEventHandler, useCallback, useMemo, useState} from 'react'
+import {type MouseEventHandler, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button as StudioButton} from '../../../ui-components'
 import {CreateBundleDialog} from '../../bundles/components/dialog/CreateBundleDialog'
@@ -28,19 +28,28 @@ export default function BundlesOverview() {
   const groupedBundles = useMemo(
     () =>
       data?.reduce<{open: BundleDocument[]; archived: BundleDocument[]}>((groups, bundle) => {
-        const group =
-          bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date())
-            ? 'archived'
-            : 'open'
+        const isBundleArchived =
+          bundle.archivedAt ||
+          (bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date()))
+        const group = isBundleArchived ? 'archived' : 'open'
 
         return {...groups, [group]: [...groups[group], bundle]}
       }, EMPTY_BUNDLE_GROUPS) || EMPTY_BUNDLE_GROUPS,
     [data],
   )
 
+  // switch to open mode if on archived mode and there are no archived bundles
+  useEffect(() => {
+    if (bundleGroupMode === 'archived' && !groupedBundles.archived.length) {
+      setBundleGroupMode('open')
+    }
+  }, [bundleGroupMode, groupedBundles.archived.length])
+
+  // clear search when mode changes
+  useEffect(() => setSearchTerm(''), [bundleGroupMode])
+
   const handleBundleGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
-      setSearchTerm('') // clear the table search applied
       setBundleGroupMode(groupMode as Mode)
     },
     [],
@@ -111,7 +120,8 @@ export default function BundlesOverview() {
   }
 
   const applySearchTermToBundles = useCallback(
-    (bundle: BundleDocument) => !searchTerm || bundle.title.includes(searchTerm),
+    (bundle: BundleDocument) =>
+      !searchTerm || bundle.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()),
     [searchTerm],
   )
 
