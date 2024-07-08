@@ -171,7 +171,7 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "pnpm@8.15.8",
+  "packageManager": "pnpm@9.5.0",
   "pnpm": {
     "peerDependencyRules": {
       "allowAny": [
