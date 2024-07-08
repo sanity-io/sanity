@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
 
 import {queryByDataUi} from '../../../../../test/setup/customQueries'
@@ -108,7 +108,8 @@ describe('BundlesOverview', () => {
     const bundles = [
       {title: 'Bundle 1'},
       {title: 'Bundle 2'},
-      {title: 'Bundle 3', publishedAt: new Date()},
+      {title: 'Bundle 3', publishedAt: new Date().toISOString()},
+      {title: 'Bundle 4', archivedAt: new Date().toISOString()},
     ] as unknown as BundleDocument[]
 
     beforeEach(async () => {
@@ -132,11 +133,14 @@ describe('BundlesOverview', () => {
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
     })
 
-    it('shows published bundles', () => {
+    it('shows published bundles', async () => {
       fireEvent.click(screen.getByText('Archived'))
 
-      screen.getByText('Bundle 3')
-      expect(screen.queryByText('Bundle 1')).toBeNull()
+      await waitFor(() => {
+        screen.getByText('Bundle 3')
+        screen.getByText('Bundle 4')
+        expect(screen.queryByText('Bundle 1')).toBeNull()
+      })
     })
 
     it('allows for searching bundles', () => {
