@@ -1,3 +1,3 @@
+export * from './BundlesProvider'
 export * from './types'
-export * from './useBundles'
-export * from './useBundlesStore'
+export {useBundlesStore} from './useBundlesStore'
