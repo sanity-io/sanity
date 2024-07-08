@@ -24,7 +24,6 @@
       "matchUpdateTypes": [
         "bump",
         "digest",
-        "lockfileUpdate",
         "minor",
         "patch",
         "pin",
@@ -47,5 +46,10 @@
       "semanticCommitType": "fix"
     }
   ],
-  "ignorePaths": ["packages/@sanity/cli/test/__fixtures__/v2/package.json"]
+  "ignorePaths": [
+    "packages/@sanity/cli/test/__fixtures__/v2/package.json",
+    "packages/sanity/fixtures/examples/prj-with-react-18/package.json",
+    "packages/sanity/fixtures/examples/prj-with-react-19/package.json",
+    "packages/sanity/fixtures/examples/prj-with-styled-components-5/package.json"
+  ]
 }
