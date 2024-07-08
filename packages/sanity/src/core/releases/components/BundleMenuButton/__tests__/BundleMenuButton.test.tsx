@@ -101,13 +101,8 @@ describe('BundleMenuButton', () => {
     await act(() => {
       fireEvent.click(screen.getByText('Delete'))
     })
-    expect(useBundleOperations().deleteBundle).not.toHaveBeenCalled()
 
-    await act(() => {
-      fireEvent.click(screen.getByText('Confirm'))
-    })
-
-    expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(activeBundle)
+    expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(activeBundle._id)
     expect(useRouter().navigate).not.toHaveBeenCalled()
   })
 })
