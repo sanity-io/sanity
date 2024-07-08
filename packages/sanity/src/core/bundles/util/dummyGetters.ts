@@ -7,6 +7,7 @@ import {type BundleDocument} from '../../store/bundles/types'
 
 /**
  * Returns all versions of a document
+ * @internal
  *
  * @param documentId - document id
  * @param client - sanity client
