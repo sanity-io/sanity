@@ -6,6 +6,7 @@ import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type DocumentFieldActionNode} from '../../../config'
 import {FieldPresence, type FormNodePresence} from '../../../presence'
 import {calcAvatarStackWidth} from '../../../presence/utils'
+import {resizeObserver} from '../../../util'
 import {FieldActionMenu} from '../../field'
 import {type FieldCommentsProps} from '../../types'
 
@@ -182,38 +183,31 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   // Determine if floating card with actions should be shown
   const shouldShowFloatingCard = focused || showFieldActions || hasComments
 
-  const handleSetFloatingCardElementWidth = useCallback(() => {
-    if (floatingCardElement) {
-      const {width} = floatingCardElement.getBoundingClientRect()
-      setFloatingCardWidth(width || 0)
-    }
-  }, [floatingCardElement])
-
   // When a focus or blur event occurs on the floating card, we need to recalculate its width.
   // This is because presence should be positioned relative to the floating card.
   // We need this because we don't conditionally render the floating card and rely on CSS to
   // show/hide it, and therefore the width calculation won't be triggered when the card is shown or hidden.
+  useEffect(() => {
+    if (!floatingCardElement) return undefined
+    return resizeObserver.observe(floatingCardElement, (event) => {
+      setFloatingCardWidth(event.borderBoxSize?.[0].inlineSize ?? 0)
+    })
+  }, [floatingCardElement])
+
   const handleFocusCapture = useCallback(() => {
-    handleSetFloatingCardElementWidth()
     setFocused(true)
-  }, [handleSetFloatingCardElementWidth])
+  }, [])
 
   const handleBlurCapture = useCallback(() => {
-    handleSetFloatingCardElementWidth()
     setFocused(false)
-  }, [handleSetFloatingCardElementWidth])
-
-  // Calculate floating card's width
-  useEffect(() => {
-    handleSetFloatingCardElementWidth()
-  }, [handleSetFloatingCardElementWidth, showFieldActions])
+  }, [])
 
   // Calculate slot element's width
   useEffect(() => {
-    if (slotElement) {
-      const {width} = slotElement.getBoundingClientRect()
-      setSlotWidth(width || 0)
-    }
+    if (!slotElement) return undefined
+    return resizeObserver.observe(slotElement, (event) => {
+      setSlotWidth(event.borderBoxSize?.[0].inlineSize ?? 0)
+    })
   }, [slotElement])
 
   // Construct the slot element if slot is provided

@@ -163,7 +163,6 @@ function AnnnotationWithDiff({
   const annotations = useMemo(() => (annotation ? [annotation] : []), [annotation])
 
   const value = useMemo(() => ({path: myPath}), [myPath])
-
   const popoverContent = (
     <DiffContext.Provider value={value}>
       <PopoverContainer padding={3}>

@@ -42,6 +42,7 @@ export const GUARDED: OperationsAPI = {
 const createEmitter =
   (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string) =>
   (...executeArgs: any[]) =>
+    // @TODO this causes a blocking render loop
     emitOperation(operationName, idPair, typeName, executeArgs)
 
 function wrap<ExtraArgs extends any[], DisabledReason extends string>(

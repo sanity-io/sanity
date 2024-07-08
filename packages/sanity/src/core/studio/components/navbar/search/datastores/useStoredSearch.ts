@@ -53,6 +53,7 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
         next: setValue,
       })
 
+    // @TODO see if it's better to useObservable here
     return () => sub?.unsubscribe()
   }, [settings, keyValueStore, keyValueStoreKey])
 

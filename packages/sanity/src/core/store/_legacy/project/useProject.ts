@@ -12,6 +12,7 @@ export function useProject(): {value: ProjectData | null} {
     const project$ = projectStore.get()
     const sub = project$.subscribe(setValue)
 
+    // @TODO see if it's better to useObservable here
     return () => sub.unsubscribe()
   }, [projectStore])
 

@@ -134,6 +134,7 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
     const sub = listener$.subscribe(handleListenerEvent)
 
     return () => {
+      // @TODO see if it's better to useObservable here
       sub?.unsubscribe()
     }
   }, [handleListenerEvent, listener$])

@@ -202,6 +202,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     const sub = queryResults$.subscribe(handleSetResult)
 
     return () => {
+      // @TODO see if it's better to useObservable here
       sub.unsubscribe()
     }
   }, [handleSetResult, queryResults$])

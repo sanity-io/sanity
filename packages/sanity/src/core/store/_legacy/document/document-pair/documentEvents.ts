@@ -17,6 +17,7 @@ export const documentEvents = memoize(
     typeName: string,
     serverActionsEnabled: Observable<boolean>,
   ): Observable<DocumentVersionEvent> => {
+    // @TODO test worker implementation here
     return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
       switchMap(({draft, published}) => merge(draft.events, published.events)),
     )

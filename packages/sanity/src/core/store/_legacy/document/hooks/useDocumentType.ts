@@ -50,6 +50,7 @@ export function useDocumentType(documentId: string, specifiedType = '*'): Docume
       .resolveTypeForDocument(publishedId, specifiedType)
       .subscribe((documentType: string) => setDocumentType({documentType, isLoaded: true}))
 
+    // @TODO see if it's better to useObservable here
     return () => sub.unsubscribe()
   }, [documentStore, publishedId, specifiedType, isResolved])
 

@@ -76,6 +76,7 @@ export type GrantsStoreOptions = GrantsStoreOptionsCurrentUser | GrantsStoreOpti
 
 /** @internal */
 export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
+  // @TODO perf test, somehow `evaluateQuery` from `groq-js` is called more often than it should be, as aresult of `matchesFilter`
   const {client} = opts
   const versionedClient = client.withConfig({apiVersion: '2021-06-07'})
   const userId = 'userId' in opts ? opts.userId : opts?.currentUser?.id || null

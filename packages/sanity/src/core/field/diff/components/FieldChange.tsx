@@ -82,7 +82,6 @@ export function FieldChange(
   const fieldPath = isArray ? change.path.slice(0, -1) : change.path
 
   const value = useMemo(() => ({path: change.path}), [change.path])
-
   const content = useMemo(
     () =>
       hidden ? null : (

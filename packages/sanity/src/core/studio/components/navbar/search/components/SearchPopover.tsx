@@ -4,7 +4,6 @@ import {useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../../i18n'
 import {supportsTouch} from '../../../../../util'
 import {
   POPOVER_INPUT_PADDING,
@@ -91,7 +90,6 @@ export function SearchPopover({
   const popoverElement = useRef<HTMLElement | null>(null)
 
   const {isTopLayer, zIndex} = useLayer()
-  const {t} = useTranslation()
 
   const {
     onClose: onSearchClose,

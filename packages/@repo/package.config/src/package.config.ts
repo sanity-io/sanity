@@ -1,4 +1,6 @@
 import {defineConfig} from '@sanity/pkg-utils'
+// @ts-expect-error -- missing types
+import {importMetaAssets} from '@web/rollup-plugin-import-meta-assets'
 
 export default defineConfig({
   define: {
@@ -29,6 +31,18 @@ export default defineConfig({
   legacyExports: true,
   rollup: {
     optimizeLodash: true,
+    plugins: ([t1, t2, t3, t4, t5, t6, ...plugins]) => [
+      t1,
+      t2,
+      t3,
+      t4,
+      t5,
+      t6,
+      importMetaAssets({
+        include: ['**/checkoutPair.mjs', '**/checkoutPair.ts'],
+      }),
+      ...plugins,
+    ],
   },
   tsconfig: 'tsconfig.lib.json',
   strictOptions: {

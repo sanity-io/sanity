@@ -10,7 +10,13 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type Template} from '../../../templates'
 import {getDraftId, isDraftId} from '../../../util'
 import {type HistoryStore} from '../history'
-import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pair/checkoutPair'
+import {
+  checkoutPair,
+  type DocumentVersionEvent,
+  type Pair,
+  // Test the worker implementation
+} from './document-pair/checkoutPairWithWorker'
+// } from './document-pair/checkoutPair'
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
@@ -114,6 +120,7 @@ export function createDocumentStore({
   return {
     // Public API
     checkoutPair(idPair) {
+      // @TODO test worker implementation here
       return checkoutPair(client, idPair, serverActionsEnabled)
     },
     initialValue(opts, context) {

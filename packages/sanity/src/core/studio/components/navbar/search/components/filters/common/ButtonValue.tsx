@@ -13,8 +13,6 @@ import {
 import {type OperatorButtonValueComponentProps} from '../../../definitions/operators/operatorTypes'
 import {ReferencePreviewTitle} from './ReferencePreviewTitle'
 
-const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
-
 export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentProps<boolean>) {
   const {t} = useTranslation()
   return <>{value ? t('search.filter-boolean-true') : t('search.filter-boolean-false')}</>
