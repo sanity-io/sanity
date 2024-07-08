@@ -57,8 +57,7 @@ export function DocumentTable(props: {
       <RowStack>
         {sortedDocuments.map((d) => (
           <DocumentRow
-            documentId={d._id}
-            documentTypeName={d._type}
+            document={d}
             key={d._id}
             release={release}
             setCollaborators={setCollaborators}
