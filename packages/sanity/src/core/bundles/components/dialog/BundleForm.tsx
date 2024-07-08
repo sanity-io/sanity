@@ -82,16 +82,18 @@ export function BundleForm(props: {
 
   const handlePublishAtInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      const dateValue = event.target.value.trim()
+
       // there's likely a better way of doing this
       // needs to check that the date is not invalid & not empty
       // in which case it can update the input value but not the actual bundle value
-      if (new Date(event.target.value).toString() === 'Invalid Date' && event.target.value !== '') {
+      if (new Date(event.target.value).toString() === 'Invalid Date' && dateValue !== '') {
         setShowDateValidation(true)
-        setDisplayDate(event.target.value)
+        setDisplayDate(dateValue)
       } else {
         setShowDateValidation(false)
-        setDisplayDate(event.target.value)
-        onChange({...value, publishAt: event.target.value})
+        setDisplayDate(dateValue)
+        onChange({...value, publishAt: dateValue})
       }
     },
     [onChange, value],
