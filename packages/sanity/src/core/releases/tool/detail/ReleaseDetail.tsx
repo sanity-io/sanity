@@ -5,7 +5,7 @@ import {LoadingBlock, useClient} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components'
-import {useBundles} from '../../../store/bundles/BundlesProvider'
+import {useBundles} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {API_VERSION} from '../../../tasks/constants'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
