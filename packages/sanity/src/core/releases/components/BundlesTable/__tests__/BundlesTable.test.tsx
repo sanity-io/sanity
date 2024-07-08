@@ -83,7 +83,7 @@ describe('BundlesTable', () => {
       const bundleRow = screen.getAllByTestId('bundle-row')[0]
       fireEvent.click(within(bundleRow).getByLabelText('Release menu'))
 
-      fireEvent.click(screen.getByText('Delete release'))
+      fireEvent.click(screen.getByText('Delete'))
 
       await waitFor(() => {
         expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith('123')
