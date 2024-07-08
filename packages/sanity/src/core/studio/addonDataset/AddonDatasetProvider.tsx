@@ -13,12 +13,6 @@ interface AddonDatasetSetupProviderProps {
   children: React.ReactNode
 }
 
-/**
- * This provider sets the addon dataset client, currently called `comments` dataset.
- * It also exposes a `createAddonDataset` function that can be used to create the addon dataset if it does not exist.
- * @beta
- * @hidden
- */
 function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
   const {children} = props
   const {dataset, projectId} = useWorkspace()
@@ -135,6 +129,12 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
   return <AddonDatasetContext.Provider value={ctxValue}>{children}</AddonDatasetContext.Provider>
 }
 
+/**
+ * This provider sets the addon dataset client, currently called `comments` dataset.
+ * It also exposes a `createAddonDataset` function that can be used to create the addon dataset if it does not exist.
+ * @beta
+ * @hidden
+ */
 export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
   const context = useContext(AddonDatasetContext)
   // Avoid mounting the provider if it's already provided by a parent

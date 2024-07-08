@@ -201,7 +201,7 @@ export function referenceSearch(
   })
   return search(textTerm, {includeDrafts: true}).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
-    map(collate),
+    map((docs) => collate(docs)),
     // pick the 100 best matches
     map((collated) => collated.slice(0, 100)),
     mergeMap((collated) => {
