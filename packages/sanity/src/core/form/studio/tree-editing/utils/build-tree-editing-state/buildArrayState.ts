@@ -3,6 +3,7 @@ import {
   type ArraySchemaType,
   EMPTY_ARRAY,
   getValueAtPath,
+  isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
   isObjectSchemaType,
   isPrimitiveSchemaType,
@@ -15,7 +16,6 @@ import {
 
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
-import {isPortableTextSchemaType} from '../asserters'
 import {findArrayTypePaths} from '../findArrayTypePaths'
 import {getSchemaField} from '../getSchemaField'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
@@ -149,7 +149,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         })
       }
 
-      const isPortableText = isPortableTextSchemaType(childField.type)
+      const isPortableText = isArrayOfBlocksSchemaType(childField.type)
       const isValid = isArrayOfObjectsSchemaType(childField.type) && childValue && !isPortableText
 
       if (isValid) {

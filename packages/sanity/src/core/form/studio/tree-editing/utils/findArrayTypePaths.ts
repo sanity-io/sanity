@@ -1,12 +1,11 @@
 import {
+  isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
   isObjectSchemaType,
   type ObjectField,
   type Path,
   type SchemaType,
 } from 'sanity'
-
-import {isPortableTextSchemaType} from './asserters'
 
 /**
  * Find the paths to array schema types in a list of fields
@@ -32,7 +31,7 @@ export function findArrayTypePaths(fields: ObjectField<SchemaType>[]): Path[] {
       const newPath = [...currentPath, field.name]
 
       // If the field type is an array, add the new path to the arrayPaths array
-      if (isArrayOfObjectsSchemaType(field.type) && !isPortableTextSchemaType(field.type)) {
+      if (isArrayOfObjectsSchemaType(field.type) && !isArrayOfBlocksSchemaType(field.type)) {
         arrayPaths.push(newPath)
       }
 
