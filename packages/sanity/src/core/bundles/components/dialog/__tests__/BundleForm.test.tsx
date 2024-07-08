@@ -1,5 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
+import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
+import {type ReactNode} from 'react'
 import {type BundleDocument} from 'sanity'
 
 import {BundleForm} from '../BundleForm'
@@ -29,8 +31,15 @@ describe('BundleForm', () => {
     onChangeMock.mockClear()
   })
 
+  const createWrapper = async () => {
+    return function Wrapper({children}: {children: ReactNode}) {
+      return <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
+    }
+  }
+
   it('should render the form fields', async () => {
-    render(<BundleForm onChange={onChangeMock} value={valueMock} />)
+    const wrapper = await createWrapper()
+    render(<BundleForm onChange={onChangeMock} value={valueMock} />, {wrapper})
 
     expect(screen.getByLabelText('Title')).toBeInTheDocument()
     expect(screen.getByLabelText('Description')).toBeInTheDocument()
