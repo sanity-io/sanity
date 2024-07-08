@@ -7,6 +7,7 @@ import {
   type Router,
   type RouterContextValue,
   type RouterState,
+  type SearchParam,
 } from './types'
 
 /**
@@ -80,9 +81,14 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
   const {onNavigate, router: routerProp, state} = props
 
   const resolveIntentLink = useCallback(
-    (intentName: string, parameters?: IntentParameters): string => {
+    (intentName: string, parameters?: IntentParameters, _searchParams?: SearchParam[]): string => {
       const [params, payload] = Array.isArray(parameters) ? parameters : [parameters]
-      return routerProp.encode({intent: intentName, params, payload})
+      return routerProp.encode({
+        intent: intentName,
+        params,
+        payload,
+        _searchParams,
+      })
     },
     [routerProp],
   )

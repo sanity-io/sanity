@@ -1,6 +1,6 @@
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
-import {type IntentParameters} from './types'
+import {type IntentParameters, type SearchParam} from './types'
 import {useIntentLink} from './useIntentLink'
 
 /**
@@ -24,6 +24,11 @@ export interface IntentLinkProps {
    * Whether to replace the current URL in the browser history instead of adding a new entry.
    */
   replace?: boolean
+
+  /**
+   * search params to include in the intent.
+   */
+  searchParams?: SearchParam[]
 }
 
 /**
@@ -43,12 +48,13 @@ export const IntentLink = forwardRef(function IntentLink(
   props: IntentLinkProps & HTMLProps<HTMLAnchorElement>,
   ref: ForwardedRef<HTMLAnchorElement>,
 ) {
-  const {intent, params, target, ...restProps} = props
+  const {intent, params, target, searchParams, ...restProps} = props
   const {onClick, href} = useIntentLink({
     intent,
     params,
     target,
     onClick: props.onClick,
+    searchParams,
   })
 
   return <a {...restProps} href={href} onClick={onClick} ref={ref} target={target} />
