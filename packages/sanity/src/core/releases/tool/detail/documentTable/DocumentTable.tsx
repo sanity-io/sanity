@@ -27,7 +27,8 @@ export function DocumentTable(props: {
   setCollaborators: Dispatch<SetStateAction<string[]>>
 }) {
   const {documents, release, setCollaborators} = props
-
+  // Filter will happen at the DocumentRow level because we don't have access here to the preview values.
+  const [searchTerm, setSearchTerm] = useState<string>('')
   const [sort, setSort] = useState<DocumentSort>({property: '_updatedAt', order: 'desc'})
 
   const sortedDocuments = useMemo(() => {
@@ -46,17 +47,22 @@ export function DocumentTable(props: {
 
       return bDate - aDate
     })
-
     return sorted
   }, [documents, sort])
 
   return (
     <Stack space={1}>
-      <DocumentHeader setSort={setSort} sort={sort} />
+      <DocumentHeader
+        setSort={setSort}
+        sort={sort}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
 
       <RowStack>
         {sortedDocuments.map((d) => (
           <DocumentRow
+            searchTerm={searchTerm}
             document={d}
             key={d._id}
             release={release}

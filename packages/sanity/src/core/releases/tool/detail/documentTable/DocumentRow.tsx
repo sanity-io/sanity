@@ -58,12 +58,23 @@ const DocumentStatus = ({status}: {status: keyof typeof DOCUMENT_STATUS}) => {
   )
 }
 
+const getDocumentStatus = (document: SanityDocument): keyof typeof DOCUMENT_STATUS => {
+  if (document._state === 'ready') {
+    return 'ready'
+  }
+  if (document._updatedAt === document._createdAt) {
+    return 'noChanges'
+  }
+  return 'edited'
+}
+
 export function DocumentRow(props: {
+  searchTerm: string
   document: SanityDocument
   release: BundleDocument
   setCollaborators: Dispatch<SetStateAction<string[]>>
 }) {
-  const {document, release, setCollaborators} = props
+  const {document, release, searchTerm, setCollaborators} = props
   const documentId = document._id
   const documentTypeName = document._type
   const schema = useSchema()
@@ -72,13 +83,19 @@ export function DocumentRow(props: {
     throw new Error(`Schema type "${documentTypeName}" not found`)
   }
 
-  const perspective = release.name
-  const title = 'Document'
+  const perspective = `bundle.${release.name}`
+
   const documentPreviewStore = useDocumentPreviewStore()
 
   const previewStateObservable = useMemo(
     () =>
-      getPreviewStateObservable(documentPreviewStore, schemaType, documentId, title, perspective),
+      getPreviewStateObservable(
+        documentPreviewStore,
+        schemaType,
+        documentId,
+        'Untitled',
+        perspective,
+      ),
     [documentId, documentPreviewStore, perspective, schemaType],
   )
 
@@ -86,6 +103,14 @@ export function DocumentRow(props: {
     draft: null,
     isLoading: true,
     published: null,
+  })
+
+  const previewValues = getPreviewValueWithFallback({
+    value: document,
+    draft,
+    published,
+    version,
+    perspective,
   })
 
   const history = useVersionHistory(documentId, document?._rev)
@@ -99,7 +124,6 @@ export function DocumentRow(props: {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
         return (
-          // eslint-disable-next-line react/jsx-no-undef
           <IntentLink
             {...linkProps}
             intent="edit"
@@ -115,29 +139,19 @@ export function DocumentRow(props: {
     [documentId, documentTypeName, release.name],
   )
 
-  const status =
-    // eslint-disable-next-line no-nested-ternary
-    document._state === 'ready'
-      ? 'ready'
-      : document._updatedAt === document._createdAt
-        ? 'noChanges'
-        : 'edited'
+  if (searchTerm) {
+    // Early return to filter out documents that don't match the search term
+    const fallbackTitle = typeof document.title === 'string' ? document.title : 'Untitled'
+    const title = typeof previewValues.title === 'string' ? previewValues.title : fallbackTitle
+    if (!title.toLowerCase().includes(searchTerm.toLowerCase())) return null
+  }
 
   return (
     <Card border radius={3}>
       <Flex style={{margin: -1}}>
         <Box flex={1} padding={1}>
           <Card as={LinkComponent} radius={2} data-as="a">
-            <SanityDefaultPreview
-              {...getPreviewValueWithFallback({
-                value: document,
-                draft,
-                published,
-                version,
-                perspective,
-              })}
-              isPlaceholder={isLoading}
-            />
+            <SanityDefaultPreview {...previewValues} isPlaceholder={isLoading} />
           </Card>
         </Box>
 
@@ -193,7 +207,7 @@ export function DocumentRow(props: {
 
         {/* Status */}
         <Flex align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 60}}>
-          <DocumentStatus status={status} />
+          <DocumentStatus status={getDocumentStatus(document)} />
         </Flex>
 
         {/* Actions is empty - don't render yet */}
