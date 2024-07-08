@@ -8,6 +8,47 @@ interface GetSchemaTypesOpts {
   legacyEditing?: boolean
 }
 
+const arrayWithNestedObjectsWithArray = defineField({
+  name: 'arrayWithNestedObjectsWithArray',
+  type: 'array',
+  title: 'Array with nested objects with array',
+  of: [
+    {
+      type: 'object',
+      name: 'firstObject',
+      title: 'First object',
+      fields: [
+        {
+          type: 'object',
+          name: 'secondObject',
+          title: 'Second object',
+          fields: [
+            {
+              type: 'array',
+              name: 'nestedArray',
+              title: 'Nested array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'nestedObject',
+                  title: 'Nested object',
+                  fields: [
+                    {
+                      type: 'string',
+                      name: 'nestedString',
+                      title: 'Nested string',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
 const blockField = defineField({
   type: 'array',
   name: 'pte',
@@ -59,6 +100,8 @@ function getSchemaTypes(opts: GetSchemaTypesOpts) {
         },
       ],
       fields: [
+        arrayWithNestedObjectsWithArray,
+
         defineField({
           type: 'array',
           name: 'myArrayOfObjects',

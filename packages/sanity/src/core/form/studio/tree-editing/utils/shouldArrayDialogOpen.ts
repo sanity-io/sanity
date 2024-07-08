@@ -1,6 +1,12 @@
 import {toString} from '@sanity/util/paths'
-import {isArrayOfObjectsSchemaType, type ObjectSchemaType, type Path} from 'sanity'
+import {
+  isArrayOfBlocksSchemaType,
+  isArrayOfObjectsSchemaType,
+  type ObjectSchemaType,
+  type Path,
+} from 'sanity'
 
+// import {isPortableTextSchemaType} from './asserters'
 import {getRootPath} from './getRootPath'
 import {getSchemaField} from './getSchemaField'
 
@@ -24,7 +30,7 @@ export function shouldArrayDialogOpen(schemaType: ObjectSchemaType, path: Path):
   if (isArrayOfObjectsSchemaType(field?.type)) {
     // Check if the array of objects is an array of references.
     const isArrayOfReferences = field.type.of.every((type) => type?.hasOwnProperty('to'))
-    const isPortableText = field.type.of.some((type) => type?.name === 'block')
+    const isPortableText = isArrayOfBlocksSchemaType(field.type)
 
     // Return false if the array of objects is an array of references
     // since these are edited inline and not in a dialog.

@@ -134,6 +134,47 @@ const schema = Schema.compile({
             },
           ],
         },
+
+        {
+          name: 'arrayWithArrayFieldInNestedObjects',
+          type: 'array',
+          of: [
+            {
+              type: 'object',
+              name: 'firstObject',
+              fields: [
+                {
+                  type: 'object',
+                  name: 'secondObject',
+                  fields: [
+                    {
+                      type: 'object',
+                      name: 'thirdObject',
+                      fields: [
+                        {
+                          type: 'array',
+                          name: 'nestedArray',
+                          of: [
+                            {
+                              type: 'object',
+                              name: 'nestedObject',
+                              fields: [
+                                {
+                                  type: 'string',
+                                  name: 'nestedString',
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ],
@@ -261,5 +302,44 @@ describe('tree-editing: buildTreeEditingState', () => {
       relativePath: [],
       rootTitle: 'Legacy array editing array',
     })
+  })
+
+  test('should build tree editing state for an array with array fields in nested objects', () => {
+    const documentValue: SanityDocumentLike = {
+      _id: 'testDocument',
+      _type: 'testDocument',
+      arrayWithArrayFieldInNestedObjects: [
+        {
+          _key: 'key1',
+          _type: 'firstObject',
+          secondObject: {
+            thirdObject: {
+              nestedArray: [
+                {
+                  _key: 'key2',
+                  _type: 'nestedObject',
+                  nestedString: 'Nested string',
+                },
+              ],
+            },
+          },
+        },
+      ],
+    }
+
+    const result = buildTreeEditingState({
+      documentValue,
+      openPath: [
+        'arrayWithArrayFieldInNestedObjects',
+        {_key: 'key1'},
+        'secondObject',
+        'thirdObject',
+        'nestedArray',
+        {_key: 'key2'},
+      ],
+      schemaType: schema.get('testDocument'),
+    })
+
+    expect(result).toMatchSnapshot()
   })
 })

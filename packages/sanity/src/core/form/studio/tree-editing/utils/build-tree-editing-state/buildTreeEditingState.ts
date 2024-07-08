@@ -29,24 +29,25 @@ export interface BuildTreeEditingStateProps {
 }
 
 export interface TreeEditingState {
+  /** The breadcrumbs for the tree editing state */
   breadcrumbs: TreeEditingBreadcrumb[]
+  /** The menu items for the tree editing state */
   menuItems: TreeEditingMenuItem[]
+  /**
+   * The relative path to the selected item in the tree editing state.
+   * It is used to determine which field to show in the form editor.
+   */
   relativePath: Path
+  /** The title of the root field */
   rootTitle: string
 }
 
 export interface RecursiveProps extends Omit<BuildTreeEditingStateProps, 'openPath'> {
   path: Path
-  initial: boolean
 }
 
 export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEditingState {
   const {openPath} = props
-
-  const menuItems: TreeEditingMenuItem[] = []
-  const breadcrumbs: TreeEditingBreadcrumb[] = []
-
-  let relativePath: Path = []
 
   const rootPath = getRootPath(openPath)
   const rootField = getSchemaField(props.schemaType, toString(rootPath)) as ObjectSchemaType
@@ -60,15 +61,17 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     return EMPTY_TREE_STATE
   }
 
-  recursive({
-    initial: true,
+  let relativePath: Path = []
+  const breadcrumbs: TreeEditingBreadcrumb[] = []
+
+  const result = recursive({
     schemaType: rootField,
     documentValue: props.documentValue,
     path: rootPath,
   })
 
   function recursive(recursiveProps: RecursiveProps): TreeEditingState {
-    const {schemaType, path, initial, documentValue} = recursiveProps
+    const {schemaType, path, documentValue} = recursiveProps
 
     const value = getValueAtPath(documentValue, path) as Array<Record<string, unknown>>
     const arrayValue = Array.isArray(value) ? value : EMPTY_ARRAY
@@ -91,17 +94,13 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
 
     breadcrumbs.unshift(...arrayState.breadcrumbs)
 
-    if (initial) {
-      menuItems.unshift(...arrayState.menuItems)
-    }
-
     return arrayState
   }
 
   return {
-    breadcrumbs,
-    menuItems,
     relativePath,
+    breadcrumbs,
+    menuItems: result.menuItems,
     rootTitle,
   }
 }

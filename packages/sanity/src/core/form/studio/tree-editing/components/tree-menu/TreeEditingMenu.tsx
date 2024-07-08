@@ -19,7 +19,7 @@ export const TreeEditingMenu = memo(function TreeEditingMenu(
   const {items, onPathSelect, selectedPath} = props
 
   return (
-    <Stack as="ul" role="tree" space={2} data-testid="sidebar-tree-list">
+    <Stack as="ul" data-testid="tree-editing-menu" role="tree" space={2}>
       {items.map((item) => {
         const siblingHasChildren = getSiblingHasChildren(items)
 

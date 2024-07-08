@@ -372,6 +372,238 @@ const arrayOfMixedTypes = defineField({
   ],
 })
 
+const arrayWithArrayInNestedObjects = defineField({
+  type: 'object',
+  name: 'rootObject',
+  fields: [
+    {
+      type: 'array',
+      name: 'level1Array',
+      title: 'Level 1 Array',
+      of: [
+        {
+          type: 'object',
+          name: 'level1Object',
+          fields: [
+            {
+              type: 'string',
+              name: 'title',
+              title: 'Title',
+            },
+            {
+              type: 'object',
+              name: 'level2Object',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+                {
+                  type: 'array',
+                  name: 'level2Array',
+                  title: 'Level 2 Array',
+                  of: [
+                    {
+                      type: 'object',
+                      name: 'level2ArrayObject',
+                      fields: [
+                        {
+                          type: 'string',
+                          name: 'title',
+                          title: 'Title',
+                        },
+                        {
+                          type: 'object',
+                          name: 'level3Object',
+                          fields: [
+                            {
+                              type: 'string',
+                              name: 'title',
+                              title: 'Title',
+                            },
+                            {
+                              type: 'object',
+                              name: 'level3NestedObject',
+                              title: 'Level 3 Nested Object',
+                              fields: [
+                                {
+                                  type: 'string',
+                                  name: 'title',
+                                  title: 'Title',
+                                },
+                                {
+                                  type: 'object',
+                                  name: 'level3NestedNestedObject',
+                                  title: 'Level 3 Nested Nested Object',
+                                  fields: [
+                                    {
+                                      type: 'string',
+                                      name: 'title',
+                                      title: 'Title',
+                                    },
+                                    {
+                                      type: 'object',
+                                      name: 'level3DeepNestedObject',
+                                      title: 'Level 3 Deep Nested Object',
+                                      fields: [
+                                        {
+                                          type: 'string',
+                                          name: 'title',
+                                          title: 'Title',
+                                        },
+                                        {
+                                          type: 'array',
+                                          name: 'level3DeepNestedArray1',
+                                          title: 'Level 3 Array 1',
+                                          of: [
+                                            {
+                                              type: 'object',
+                                              name: 'level3DeepNestedArrayObject1',
+                                              fields: [
+                                                {
+                                                  type: 'string',
+                                                  name: 'title',
+                                                  title: 'Title',
+                                                },
+                                                {
+                                                  type: 'array',
+                                                  name: 'level3DeepNestedArray1',
+                                                  title: 'Level 3 Nested Array 1',
+                                                  of: [
+                                                    {
+                                                      type: 'object',
+                                                      name: 'level3DeepNestedArrayObject1',
+                                                      fields: [
+                                                        {
+                                                          type: 'string',
+                                                          name: 'title',
+                                                          title: 'Title',
+                                                        },
+                                                      ],
+                                                    },
+                                                  ],
+                                                },
+                                                {
+                                                  type: 'array',
+                                                  name: 'level3DeepNestedArray2',
+                                                  title: 'Level 3 Nested Array 2',
+                                                  of: [
+                                                    {
+                                                      type: 'object',
+                                                      name: 'level3DeepNestedArrayObject2',
+                                                      fields: [
+                                                        {
+                                                          type: 'string',
+                                                          name: 'title',
+                                                          title: 'Title',
+                                                        },
+                                                      ],
+                                                    },
+                                                  ],
+                                                },
+                                              ],
+                                            },
+                                          ],
+                                        },
+                                        {
+                                          type: 'array',
+                                          name: 'level3DeepNestedArray2',
+                                          title: 'Level 3 Array 2',
+                                          of: [
+                                            {
+                                              type: 'object',
+                                              name: 'level3DeepNestedArrayObject2',
+                                              fields: [
+                                                {
+                                                  type: 'string',
+                                                  name: 'title',
+                                                  title: 'Title',
+                                                },
+                                              ],
+                                            },
+                                          ],
+                                        },
+                                      ],
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              name: 'level2AnotherArray',
+              type: 'array',
+              title: 'Level 2 Another Array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'level2AnotherObject',
+                  fields: [
+                    {
+                      type: 'string',
+                      name: 'level2AnotherObjectString',
+                      title: 'Level 2 Another Object String',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
+const arrayWithNestedObjectsWithArray = defineField({
+  name: 'arrayWithNestedObjectsWithArray',
+  type: 'array',
+  title: 'Array with nested objects with array',
+  of: [
+    {
+      type: 'object',
+      name: 'firstObject',
+      title: 'First object',
+      fields: [
+        {
+          type: 'object',
+          name: 'secondObject',
+          title: 'Second object',
+          fields: [
+            {
+              type: 'array',
+              name: 'nestedArray',
+              title: 'Nested array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'nestedObject',
+                  title: 'Nested object',
+                  fields: [
+                    {
+                      type: 'string',
+                      name: 'nestedString',
+                      title: 'Nested string',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
 export const objectsDebug = defineType({
   type: 'document',
   name: 'objectsDebug',
@@ -396,5 +628,7 @@ export const objectsDebug = defineType({
     arrayOfAnonymousObjects,
     arrayOfImages,
     arrayOfFiles,
+    arrayWithNestedObjectsWithArray,
+    arrayWithArrayInNestedObjects,
   ],
 })

@@ -68,10 +68,10 @@ const ItemFlex = styled(Flex)(({theme}) => {
     padding-right: 3px;
     box-sizing: border-box;
     transition: inherit;
+    border-radius: ${getTheme_v2(theme).radius[2]}px;
 
     &[data-selected='true'] {
       background-color: ${selectedBg};
-      border-radius: ${theme.sanity.radius[2]}px;
     }
 
     [data-ui='ExpandButton'],
@@ -111,36 +111,48 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Elemen
   const {item, onPathSelect, selectedPath, siblingHasChildren} = props
   const {children} = item
   const hasChildren = children && children.length > 0
-  const [open, setOpen] = useState<boolean>(false)
-  const {t} = useTranslation()
 
+  const [open, setOpen] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
 
-  const selected = useMemo(() => isEqual(item.path, selectedPath), [item.path, selectedPath])
-  const isArrayParent = useMemo(() => !isArrayItemPath(item.path), [item.path])
+  const {t} = useTranslation()
 
   const {value} = useValuePreviewWithFallback({
     schemaType: item.schemaType,
     value: item.value,
   })
 
+  const selected = useMemo(() => isEqual(item.path, selectedPath), [item.path, selectedPath])
+  const isArrayParent = useMemo(() => !isArrayItemPath(item.path), [item.path])
+  const stringPath = useMemo(() => toString(item.path), [item.path])
+
   const title = useMemo(() => {
     // If the item is an array parent, we want to show the schema type title
-    if (isArrayParent) return getSchemaTypeTitle(item.schemaType)
+    if (isArrayParent) {
+      return getSchemaTypeTitle(item.schemaType)
+    }
 
     // Else, we show the preview title
     return value.title
   }, [isArrayParent, item.schemaType, value.title])
-
-  const handleClick = useCallback(() => onPathSelect(item.path), [item.path, onPathSelect])
-
-  const handleExpandClick = useCallback(() => setOpen((v) => !v), [])
 
   const icon = useMemo(() => {
     if (!hasChildren) return null
 
     return <AnimateChevronIcon data-expanded={open ? 'true' : 'false'} />
   }, [hasChildren, open])
+
+  const media = useMemo(() => {
+    if (isArrayParent) {
+      return <StackCompactIcon />
+    }
+
+    return value.media
+  }, [isArrayParent, value.media])
+
+  const handleClick = useCallback(() => onPathSelect(item.path), [item.path, onPathSelect])
+
+  const handleExpandClick = useCallback(() => setOpen((v) => !v), [])
 
   useEffect(() => {
     const hasOpen = hasOpenChild(item, selectedPath)
@@ -161,16 +173,27 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Elemen
     <Stack
       aria-expanded={open}
       as="li"
-      key={toString(item.path)}
+      key={stringPath}
       ref={setRootElement}
       role="treeitem"
       space={1}
     >
-      <Card data-as="button" radius={2} tone="inherit">
-        <ItemFlex align="center" data-selected={selected} data-testid="side-menu-item">
+      <Card
+        data-as="button"
+        data-testid="tree-editing-menu-item"
+        overflow="hidden"
+        radius={2}
+        tone="inherit"
+      >
+        <ItemFlex
+          align="center"
+          data-selected={selected}
+          data-testid="tree-editing-menu-item-content"
+        >
           {icon && (
             <Button
               aria-label={`${open ? t('tree-editing-dialog.sidebar.action.collapse') : t('tree-editing-dialog.sidebar.action.expand')} ${title}`}
+              data-testid={`tree-editing-menu-expand-button-${stringPath}`}
               data-ui="ExpandButton"
               mode="bleed"
               onClick={handleExpandClick}
@@ -186,6 +209,7 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Elemen
 
           <Stack flex={1}>
             <Button
+              data-testid={`tree-editing-menu-navigate-button-${stringPath}`}
               data-ui="NavigateButton"
               mode="bleed"
               onClick={handleClick}
@@ -193,11 +217,7 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Elemen
               title={title}
             >
               <Flex align="center">
-                <SanityDefaultPreview
-                  layout="inline"
-                  media={isArrayParent ? <StackCompactIcon /> : value.media}
-                  title={title}
-                />
+                <SanityDefaultPreview layout="inline" media={media} title={title} />
               </Flex>
             </Button>
           </Stack>
