@@ -3,17 +3,18 @@
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
 import {
+  BundleActions,
   type DocumentActionComponent,
   type DocumentActionDescription,
   Hotkeys,
+  isBundleDocument,
+  LATEST,
   shouldArrayDialogOpen,
+  usePerspective,
   useSource,
   useTimelineSelector,
 } from 'sanity'
 
-import {BundleActions} from '../../../../core/bundles/components/panes/BundleActions'
-import {usePerspective} from '../../../../core/bundles/hooks/usePerspective'
-import {LATEST} from '../../../../core/bundles/util/const'
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -89,12 +90,23 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
                   tone={firstActionState.tone || 'primary'}
                 />
               ) : (
-                /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
-                <BundleActions
-                  currentGlobalBundle={currentGlobalBundle}
-                  documentId={documentId}
-                  documentType={documentType}
-                />
+                <>
+                  {
+                    /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
+                    isBundleDocument(currentGlobalBundle) ? (
+                      <BundleActions
+                        currentGlobalBundle={currentGlobalBundle}
+                        documentId={documentId}
+                        documentType={documentType}
+                      />
+                    ) : (
+                      <div>
+                        {/* eslint-disable-next-line i18next/no-literal-string */}
+                        <Text>Not a bundle</Text>
+                      </div>
+                    )
+                  }
+                </>
               )}
             </Stack>
           </Tooltip>
