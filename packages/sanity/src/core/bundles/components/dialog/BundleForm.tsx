@@ -124,7 +124,11 @@ export function BundleForm(props: {
           {/* localize text */}
           Title
         </Text>
-        <TextInput onChange={handleBundleTitleChange} value={title} />
+        <TextInput
+          onChange={handleBundleTitleChange}
+          value={title}
+          data-testid="bundle-form-title"
+        />
       </Stack>
 
       <Stack space={3}>
@@ -132,7 +136,11 @@ export function BundleForm(props: {
           {/* localize text */}
           Description
         </Text>
-        <TextArea onChange={handleBundleDescriptionChange} value={description} />
+        <TextArea
+          onChange={handleBundleDescriptionChange}
+          value={description}
+          data-testid="bundle-form-description"
+        />
       </Stack>
 
       <Stack space={3}>
@@ -179,6 +187,7 @@ export function BundleForm(props: {
           }
           value={displayDate}
           onChange={handlePublishAtInputChange}
+          data-testid="bundle-form-publish-at"
         />
       </Stack>
     </Stack>

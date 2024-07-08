@@ -1,9 +1,8 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
-import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {render, screen} from '@testing-library/react'
-import {type ReactNode} from 'react'
+import {fireEvent, render, screen} from '@testing-library/react'
 import {type BundleDocument} from 'sanity'
 
+import {createWrapper} from '../../../util/__tests__/createWrapper'
 import {BundleForm} from '../BundleForm'
 
 jest.mock('sanity', () => ({
@@ -11,11 +10,10 @@ jest.mock('sanity', () => ({
   useDateTimeFormat: jest.fn().mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')}),
 }))
 
-jest.mock('@sanity/ui', () => ({
-  ...(jest.requireActual('@sanity/ui') || {}),
-  // eslint-disable-next-line camelcase
-  useTheme_v2: jest.fn().mockReturnValue({color: {}}),
-}))
+const renderBundleForm = async (onChangeMock: jest.Mock, valueMock: Partial<BundleDocument>) => {
+  const wrapper = await createWrapper()
+  render(<BundleForm onChange={onChangeMock} value={valueMock} />, {wrapper})
+}
 
 describe('BundleForm', () => {
   const onChangeMock = jest.fn()
@@ -29,26 +27,17 @@ describe('BundleForm', () => {
 
   beforeEach(() => {
     onChangeMock.mockClear()
-  })
 
-  const createWrapper = async () => {
-    return function Wrapper({children}: {children: ReactNode}) {
-      return <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
-    }
-  }
+    renderBundleForm(onChangeMock, valueMock)
+  })
 
   it('should render the form fields', async () => {
-    const wrapper = await createWrapper()
-    render(<BundleForm onChange={onChangeMock} value={valueMock} />, {wrapper})
-
-    expect(screen.getByLabelText('Title')).toBeInTheDocument()
-    expect(screen.getByLabelText('Description')).toBeInTheDocument()
-    expect(screen.getByLabelText('Schedule for publishing at')).toBeInTheDocument()
+    expect(screen.getByTestId('bundle-form-title')).toBeInTheDocument()
+    expect(screen.getByTestId('bundle-form-description')).toBeInTheDocument()
+    expect(screen.getByTestId('bundle-form-publish-at')).toBeInTheDocument()
   })
 
-  /*it('should call onChange when title input value changes', () => {
-    renderBundleForm()
-
+  it('should call onChange when title input value changes', () => {
     const titleInput = screen.getByLabelText('Title')
     fireEvent.change(titleInput, {target: {value: 'Bundle 1'}})
 
@@ -56,8 +45,6 @@ describe('BundleForm', () => {
   })
 
   it('should call onChange when description textarea value changes', () => {
-    renderBundleForm()
-
     const descriptionTextarea = screen.getByLabelText('Description')
     fireEvent.change(descriptionTextarea, {target: {value: 'New Description'}})
 
@@ -65,8 +52,6 @@ describe('BundleForm', () => {
   })
 
   it('should call onChange when publishAt input value changes', () => {
-    renderBundleForm()
-
     const publishAtInput = screen.getByLabelText('Schedule for publishing at')
     fireEvent.change(publishAtInput, {target: {value: '2022-01-01'}})
 
@@ -74,11 +59,9 @@ describe('BundleForm', () => {
   })
 
   it('should call onChange with undefined when publishAt input value is empty', () => {
-    renderBundleForm()
-
     const publishAtInput = screen.getByLabelText('Schedule for publishing at')
     fireEvent.change(publishAtInput, {target: {value: ''}})
 
     expect(onChangeMock).toHaveBeenCalledWith({...valueMock, publishAt: undefined})
-  })*/
+  })
 })
