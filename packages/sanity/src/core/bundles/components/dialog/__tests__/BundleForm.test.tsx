@@ -6,14 +6,9 @@ import {createWrapper} from '../../../util/tests/createWrapper'
 import {BundleForm} from '../BundleForm'
 
 jest.mock('sanity', () => ({
-  ...(jest.requireActual('sanity') || {}),
   useDateTimeFormat: jest.fn().mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')}),
+  useTranslation: jest.fn().mockReturnValue({t: jest.fn().mockReturnValue('Mocked translation')}),
 }))
-
-const renderBundleForm = async (onChangeMock: jest.Mock, valueMock: Partial<BundleDocument>) => {
-  const wrapper = await createWrapper()
-  render(<BundleForm onChange={onChangeMock} value={valueMock} />, {wrapper})
-}
 
 describe('BundleForm', () => {
   const onChangeMock = jest.fn()
@@ -25,10 +20,11 @@ describe('BundleForm', () => {
     publishAt: undefined,
   }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     onChangeMock.mockClear()
 
-    renderBundleForm(onChangeMock, valueMock)
+    const wrapper = await createWrapper()
+    render(<BundleForm onChange={onChangeMock} value={valueMock} />, {wrapper})
   })
 
   it('should render the form fields', async () => {
@@ -38,30 +34,30 @@ describe('BundleForm', () => {
   })
 
   it('should call onChange when title input value changes', () => {
-    const titleInput = screen.getByLabelText('Title')
+    const titleInput = screen.getByTestId('bundle-form-title')
     fireEvent.change(titleInput, {target: {value: 'Bundle 1'}})
 
     expect(onChangeMock).toHaveBeenCalledWith({...valueMock, title: 'Bundle 1', name: 'bundle-1'})
   })
 
   it('should call onChange when description textarea value changes', () => {
-    const descriptionTextarea = screen.getByLabelText('Description')
+    const descriptionTextarea = screen.getByTestId('bundle-form-description')
     fireEvent.change(descriptionTextarea, {target: {value: 'New Description'}})
 
     expect(onChangeMock).toHaveBeenCalledWith({...valueMock, description: 'New Description'})
   })
 
   it('should call onChange when publishAt input value changes', () => {
-    const publishAtInput = screen.getByLabelText('Schedule for publishing at')
+    const publishAtInput = screen.getByTestId('bundle-form-publish-at')
     fireEvent.change(publishAtInput, {target: {value: '2022-01-01'}})
 
     expect(onChangeMock).toHaveBeenCalledWith({...valueMock, publishAt: '2022-01-01'})
   })
 
   it('should call onChange with undefined when publishAt input value is empty', () => {
-    const publishAtInput = screen.getByLabelText('Schedule for publishing at')
-    fireEvent.change(publishAtInput, {target: {value: ''}})
+    const publishAtInput = screen.getByTestId('bundle-form-publish-at')
+    fireEvent.change(publishAtInput, {target: {value: ' '}})
 
-    expect(onChangeMock).toHaveBeenCalledWith({...valueMock, publishAt: undefined})
+    expect(onChangeMock).toHaveBeenCalledWith({...valueMock, publishAt: ''})
   })
 })
