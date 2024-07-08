@@ -2,7 +2,7 @@ import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type BundleDocument} from 'sanity'
 
-import {createWrapper} from '../../../util/__tests__/createWrapper'
+import {createWrapper} from '../../../util/tests/createWrapper'
 import {BundleIconEditorPicker} from '../BundleIconEditorPicker'
 
 describe('BundleIconEditorPicker', () => {

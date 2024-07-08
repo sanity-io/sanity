@@ -1,5 +1,5 @@
 export * from './components'
 export * from './hooks'
-export * from './util/__tests__/createWrapper'
 export * from './util/const'
 export * from './util/dummyGetters'
+export * from './util/tests/createWrapper'
