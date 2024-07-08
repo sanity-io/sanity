@@ -8,8 +8,10 @@ import {type DocumentSort} from './types'
 export function DocumentHeader(props: {
   setSort: Dispatch<SetStateAction<DocumentSort>>
   sort: DocumentSort
+  searchTerm: string
+  setSearchTerm: Dispatch<SetStateAction<string>>
 }) {
-  const {setSort, sort} = props
+  const {setSort, sort, searchTerm, setSearchTerm} = props
 
   const sortIcon = sort.order === 'asc' ? ArrowUpIcon : ArrowDownIcon
 
@@ -23,6 +25,8 @@ export function DocumentHeader(props: {
             icon={SearchIcon}
             placeholder="Search documents"
             radius={3}
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.currentTarget.value)}
           />
         </Stack>
 
