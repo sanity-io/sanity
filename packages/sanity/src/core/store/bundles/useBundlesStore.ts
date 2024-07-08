@@ -39,6 +39,9 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 
 const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
+/**
+ * @internal
+ */
 export function useBundlesStore(): BundlesStoreReturnType {
   const {client} = useAddonDataset()
 
