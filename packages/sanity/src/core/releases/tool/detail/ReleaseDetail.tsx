@@ -17,7 +17,7 @@ type Screen = 'overview' | 'review'
 
 const useFetchBundleDocuments = (bundleName: string) => {
   const client = useClient({apiVersion: API_VERSION})
-  const query = `*[defined(_version) && _id match "${bundleName}*"]`
+  const query = `*[defined(_version) &&  _id in path("${bundleName}.*")]`
   return useListener<BundleDocument>({query, client})
 }
 

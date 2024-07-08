@@ -3,7 +3,10 @@ import {type SanityDocument} from '@sanity/types'
 import {AvatarStack, Card, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {BundleIconEditorPicker} from '../../../bundles/components/dialog/BundleIconEditorPicker'
+import {
+  BundleIconEditorPicker,
+  type BundleIconEditorPickerValue,
+} from '../../../bundles/components/dialog/BundleIconEditorPicker'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -18,10 +21,7 @@ export function ReleaseOverview(props: {documents: SanityDocument[]; release: Bu
    * This state is created here but will be updated by the DocumentRow component when fetching the history
    */
   const [collaborators, setCollaborators] = useState<string[]>([])
-  const [iconValue, setIconValue] = useState<{
-    hue: BundleDocument['hue']
-    icon: BundleDocument['icon']
-  }>({
+  const [iconValue, setIconValue] = useState<BundleIconEditorPickerValue>({
     hue: release.hue ?? 'gray',
     icon: release.icon ?? 'documents',
   })
