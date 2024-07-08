@@ -1197,8 +1197,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/package.config
       '@sanity/insert-menu':
-        specifier: 1.0.6
-        version: 1.0.6(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+        specifier: 1.0.7
+        version: 1.0.7(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -1424,8 +1424,8 @@ importers:
         specifier: ^3.37.3
         version: 3.37.5
       '@sanity/insert-menu':
-        specifier: 1.0.6
-        version: 1.0.6(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+        specifier: 1.0.7
+        version: 1.0.7(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/logos':
         specifier: ^2.1.4
         version: 2.1.12(@sanity/color@3.0.6)(react@18.3.1)
@@ -6730,11 +6730,11 @@ packages:
       react-dom: 18.3.1(react@18.3.1)
     dev: false
 
-  /@sanity/insert-menu@1.0.6(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
-    resolution: {integrity: sha512-qvDj/hX2bLulgkD8ksXRwJa/xxtck7UKTBwIVqmWS2jq5bLdG+1D5K8pIEb24KI6VFkgPCrIkygX/pU+2HatWA==}
+  /@sanity/insert-menu@1.0.7(@sanity/types@packages+@sanity+types)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
+    resolution: {integrity: sha512-KQTRl3T4nQSFDP2FEM85UBTaGdOEJVechSqChSmUohAoMiizRtLGP2CpeK8OMP0jE8Bjshs3Af+5LZ0NY7SVsA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@sanity/types': ^3.45.0
+      '@sanity/types': ^3.47.1
       react: '*'
       react-dom: '*'
       react-is: '*'
