@@ -11,6 +11,9 @@ interface BundlesProviderProps {
 
 const EMPTY_ARRAY: [] = []
 
+/**
+ * @internal
+ */
 export type BundlesContextValue = {
   dispatch: Dispatch<bundlesReducerAction>
   loading: boolean
@@ -38,10 +41,20 @@ export function BundlesProvider(props: BundlesProviderProps) {
   return <BundlesContext.Provider value={value}>{children}</BundlesContext.Provider>
 }
 
+/**
+ * @internal
+ */
 export function useBundles(): BundlesContextValue {
   const context = useContext(BundlesContext)
   if (!context) {
-    throw new Error('useBundles must be used within a BundlesProvider')
+    // TODO: Re consider this, the provider is added when the plugin is inserted
+    // if users opt out, they won't get the provider, but this return will be called in some core components.
+    return {
+      dispatch: () => {},
+      loading: false,
+      data: [],
+      error: null,
+    }
   }
   return context
 }

@@ -77,7 +77,12 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   return (
     <>
       <Text size={1} muted>
-        {(version ?? draft ?? published)?._id}
+        {
+          // This is temporary, will be removed.
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-expect-error
+          (version ?? draft ?? published)?._id
+        }
       </Text>
       <SanityDefaultPreview
         {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
