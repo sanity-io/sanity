@@ -15,12 +15,14 @@ const IconPickerFlex = styled(Flex)`
   max-width: 269px;
 `
 
+export interface BundleIconEditorPickerValue {
+  hue: BundleDocument['hue']
+  icon: BundleDocument['icon']
+}
+
 export function BundleIconEditorPicker(props: {
-  onChange: (value: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}) => void
-  value: {
-    hue: BundleDocument['hue']
-    icon: BundleDocument['icon']
-  }
+  onChange: (value: BundleIconEditorPickerValue) => void
+  value: BundleIconEditorPickerValue
 }): JSX.Element {
   const {onChange, value} = props
 
