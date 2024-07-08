@@ -1,6 +1,16 @@
 import {COLOR_HUES, type ColorHueKey} from '@sanity/color'
 import {icons, type IconSymbol, SearchIcon} from '@sanity/icons'
-import {Avatar, Box, Button, Flex, Popover, Stack, TextInput, useClickOutside} from '@sanity/ui'
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Flex,
+  Popover,
+  Stack,
+  TextInput,
+  useClickOutside,
+} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -55,7 +65,7 @@ export function BundleIconEditorPicker(props: {
   return (
     <Popover
       content={
-        <>
+        <Container data-testid="popover-content">
           <Flex gap={1} padding={1}>
             {COLOR_HUES.map((hue) => (
               <Button
@@ -64,6 +74,7 @@ export function BundleIconEditorPicker(props: {
                 onClick={handleHueChange(hue)}
                 padding={1}
                 selected={value.hue === hue}
+                data-testid={`hue-button-${hue}`}
               >
                 <Avatar color={hue} size={0} />
               </Button>
@@ -91,11 +102,12 @@ export function BundleIconEditorPicker(props: {
                     mode="bleed"
                     onClick={handleIconChange(key as IconSymbol)}
                     padding={2}
+                    data-testId={`icon-button-${key}`}
                   />
                 ))}
             </IconPickerFlex>
           </StyledStack>
-        </>
+        </Container>
       }
       open={open}
       placement="bottom-start"
@@ -110,6 +122,7 @@ export function BundleIconEditorPicker(props: {
           ref={setButton}
           selected={open}
           radius="full"
+          data-testid="icon-picker-button"
         >
           <BundleBadge hue={value.hue} icon={value.icon} />
         </Button>
