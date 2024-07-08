@@ -24,9 +24,9 @@ export const BundleMenuButton = ({bundle}: Props) => {
     setIsPerformingOperation(true)
     await deleteBundle(bundle._id)
     setIsPerformingOperation(false)
-    if (router.state.bundleId) {
+    if (router.state.bundleName) {
       // navigate back to bundle overview
-      router.navigate({bundleId: undefined})
+      router.navigate({bundleName: undefined})
     }
   }
 
