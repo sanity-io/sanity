@@ -1,15 +1,17 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Button} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
-
-import {BundleBadge} from '../../../../../../core/bundles/components/BundleBadge'
-import {BundleMenu} from '../../../../../../core/bundles/components/BundleMenu'
-import {usePerspective} from '../../../../../../core/bundles/hooks/usePerspective'
-import {LATEST} from '../../../../../../core/bundles/util/const'
-import {getAllVersionsOfDocument} from '../../../../../../core/bundles/util/dummyGetters'
-import {useBundles} from '../../../../../../core/store/bundles/BundlesProvider'
-import {type BundleDocument} from '../../../../../../core/store/bundles/types'
+import {
+  BundleBadge,
+  type BundleDocument,
+  BundleMenu,
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  getAllVersionsOfDocument,
+  LATEST,
+  useBundles,
+  useClient,
+  usePerspective,
+} from 'sanity'
 
 export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Element {
   const {documentId} = props
