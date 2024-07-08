@@ -31,6 +31,10 @@ jest.mock('sanity', () => {
     useSearchState: jest.fn(),
   }
 })
+jest.mock('sanity/router', () => ({
+  ...(jest.requireActual('sanity/router') || {}),
+  useRouter: jest.fn().mockReturnValue({stickyParams: {}, state: {}, navigate: jest.fn()}),
+}))
 
 const mockUseSearchState = useSearchState as jest.Mock
 
