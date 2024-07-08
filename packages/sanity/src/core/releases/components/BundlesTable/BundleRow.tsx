@@ -2,7 +2,7 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useRouter} from 'sanity/router'
 
 import {BundleBadge} from '../../../bundles/components/BundleBadge'
-import {RelativeTime} from '../../../components/RelativeTime'
+import {RelativeTime} from '../../../components'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
 
