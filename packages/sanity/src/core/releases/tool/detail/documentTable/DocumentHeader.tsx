@@ -27,7 +27,7 @@ export function DocumentHeader(props: {
         </Stack>
 
         {/* Created */}
-        <Flex paddingY={3} sizing="border" style={{width: 100}}>
+        <Flex paddingY={3} sizing="border" style={{width: 130}}>
           <Button
             iconRight={sort.property === '_createdAt' ? sortIcon : undefined}
             mode="bleed"
@@ -48,7 +48,7 @@ export function DocumentHeader(props: {
         </Flex>
 
         {/* Updated */}
-        <Flex paddingY={3} sizing="border" style={{width: 100}}>
+        <Flex paddingY={3} sizing="border" style={{width: 130}}>
           <Button
             iconRight={sort.property === '_updatedAt' ? sortIcon : undefined}
             mode="bleed"
@@ -69,7 +69,7 @@ export function DocumentHeader(props: {
         </Flex>
 
         {/* Published */}
-        <Flex paddingY={3} sizing="border" style={{width: 100}}>
+        <Flex paddingY={3} sizing="border" style={{width: 130}}>
           <Button
             iconRight={sort.property === '_publishedAt' ? sortIcon : undefined}
             mode="bleed"
@@ -107,14 +107,14 @@ export function DocumentHeader(props: {
           </Box>
         </Flex>
 
-        {/* Actions */}
-        <Flex paddingY={3} sizing="border" style={{width: 49}}>
+        {/* Actions is empty - don't render yet */}
+        {/* <Flex paddingY={3} sizing="border" style={{width: 49}}>
           <Box padding={2}>
             <Text muted size={1} weight="medium">
               &nbsp;
             </Text>
           </Box>
-        </Flex>
+        </Flex> */}
       </Flex>
     </Card>
   )

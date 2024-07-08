@@ -1,10 +1,13 @@
 import {DocumentsIcon} from '@sanity/icons'
+import {type SanityDocument} from '@sanity/types'
 import {AvatarStack, Card, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {type SanityDocument, useAddonDataset, UserAvatar, useRelativeTime} from 'sanity'
 
 import {BundleIconEditorPicker} from '../../../bundles/components/dialog/BundleIconEditorPicker'
+import {RelativeTime} from '../../../components/RelativeTime'
+import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {type BundleDocument} from '../../../store/bundles/types'
+import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {Chip} from '../../components/Chip'
 import {DocumentTable} from './documentTable'
 
@@ -25,30 +28,29 @@ export function ReleaseOverview(props: {documents: SanityDocument[]; release: Bu
   const toast = useToast()
   const handleIconValueChange = useCallback(
     async (value: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}) => {
-      setIconValue(value)
-      if (client) {
-        try {
-          await client?.patch(release._id).set(value).commit()
-        } catch (e) {
-          toast.push({
-            closable: true,
-            status: 'error',
-            title: 'Failed to save changes',
-          })
-        }
-      } else {
+      if (!client) {
         toast.push({
           closable: true,
           status: 'error',
           title: 'Failed to save changes',
           description: 'AddonDataset client not found',
         })
+        return
+      }
+
+      setIconValue(value)
+      try {
+        await client?.patch(release._id).set(value).commit()
+      } catch (e) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: 'Failed to save changes',
+        })
       }
     },
     [client, release._id, toast],
   )
-  const relativeCreatedAt = useRelativeTime(release._createdAt)
-  const relativePublishedAt = useRelativeTime(release.publishedAt || '')
 
   return (
     <Stack paddingX={4} space={5}>
@@ -81,7 +83,11 @@ export function ReleaseOverview(props: {documents: SanityDocument[]; release: Bu
             {/* Created */}
             <Chip
               avatar={<UserAvatar size={0} user={release.authorId} />}
-              text={`Created ${relativeCreatedAt}`}
+              text={
+                <span>
+                  Created <RelativeTime time={release._createdAt} useTemporalPhrase />
+                </span>
+              }
             />
 
             {/* Published */}
@@ -90,7 +96,15 @@ export function ReleaseOverview(props: {documents: SanityDocument[]; release: Bu
                 avatar={
                   release.publishedBy ? <UserAvatar size={0} user={release.publishedBy} /> : null
                 }
-                text={release.publishedAt ? `Published ${relativePublishedAt}` : 'Not published'}
+                text={
+                  release.publishedAt ? (
+                    <span>
+                      Published <RelativeTime time={release.publishedAt} useTemporalPhrase />
+                    </span>
+                  ) : (
+                    'Not published'
+                  )
+                }
               />
             )}
 
