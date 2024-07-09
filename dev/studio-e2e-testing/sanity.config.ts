@@ -1,7 +1,7 @@
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin} from 'sanity'
+import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {imageAssetSource} from 'sanity-test-studio/assetSources'
@@ -18,8 +18,15 @@ import {defaultDocumentNode, newDocumentOptions, structure} from 'sanity-test-st
 import {customComponents} from './components-api'
 import {schemaTypes} from './schemaTypes'
 
-const sharedSettings = definePlugin({
-  name: 'sharedSettings',
+export default defineConfig({
+  name: 'default',
+  title: 'studio-e2e-testing',
+
+  projectId: process.env.SANITY_E2E_PROJECT_ID!,
+  dataset: process.env.SANITY_E2E_DATASET!,
+
+  basePath: '/test',
+
   schema: {
     types: schemaTypes,
     templates: resolveInitialValueTemplates,
@@ -89,15 +96,4 @@ const sharedSettings = definePlugin({
       enabled: true,
     },
   },
-})
-
-export default defineConfig({
-  name: 'default',
-  title: 'studio-e2e-testing',
-
-  projectId: process.env.SANITY_E2E_PROJECT_ID!,
-  dataset: process.env.SANITY_E2E_DATASET!,
-
-  plugins: [sharedSettings()],
-  basePath: '/test',
 })
