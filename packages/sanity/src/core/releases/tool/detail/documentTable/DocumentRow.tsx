@@ -9,22 +9,13 @@ import {
   useEffect,
   useMemo,
 } from 'react'
-import {useObservable} from 'react-rx'
-import {
-  getPreviewStateObservable,
-  getPreviewValueWithFallback,
-  getPublishedId,
-  RelativeTime,
-  SanityDefaultPreview,
-  type SchemaType,
-  useDocumentPreviewStore,
-  UserAvatar,
-  useSchema,
-} from 'sanity'
+import {getPublishedId, RelativeTime, SanityDefaultPreview, UserAvatar} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
 import {Tooltip} from '../../../../../ui-components'
 import {type BundleDocument} from '../../../../store/bundles/types'
+import {DocumentActions} from './DocumentActions'
+import {useDocumentPreviewValues} from './useDocumentPreviewValues'
 import {useVersionHistory} from './useVersionHistory'
 
 const DOCUMENT_STATUS = {
@@ -77,41 +68,7 @@ export function DocumentRow(props: {
   const {document, release, searchTerm, setCollaborators} = props
   const documentId = document._id
   const documentTypeName = document._type
-  const schema = useSchema()
-  const schemaType = schema.get(documentTypeName) as SchemaType | undefined
-  if (!schemaType) {
-    throw new Error(`Schema type "${documentTypeName}" not found`)
-  }
-
-  const perspective = `bundle.${release.name}`
-
-  const documentPreviewStore = useDocumentPreviewStore()
-
-  const previewStateObservable = useMemo(
-    () =>
-      getPreviewStateObservable(
-        documentPreviewStore,
-        schemaType,
-        documentId,
-        'Untitled',
-        perspective,
-      ),
-    [documentId, documentPreviewStore, perspective, schemaType],
-  )
-
-  const {draft, published, version, isLoading} = useObservable(previewStateObservable, {
-    draft: null,
-    isLoading: true,
-    published: null,
-  })
-
-  const previewValues = getPreviewValueWithFallback({
-    value: document,
-    draft,
-    published,
-    version,
-    perspective,
-  })
+  const {previewValues, isLoading} = useDocumentPreviewValues({document, release})
 
   const history = useVersionHistory(documentId, document?._rev)
 
@@ -211,14 +168,9 @@ export function DocumentRow(props: {
         </Flex>
 
         {/* Actions is empty - don't render yet */}
-        {/* <Flex align="center" flex="none" padding={3}>
-          <Button
-            disabled={Boolean(release?.archived || release?.publishedAt)}
-            icon={EllipsisHorizontalIcon}
-            mode="bleed"
-            padding={2}
-          />
-        </Flex> */}
+        <Flex align="center" flex="none" padding={3}>
+          <DocumentActions document={document} />
+        </Flex>
       </Flex>
     </Card>
   )
