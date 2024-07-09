@@ -8,8 +8,9 @@ import {CreateBundleDialog} from '../../bundles/components/dialog/CreateBundleDi
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {useBundles} from '../../store/bundles'
 import {type BundleDocument} from '../../store/bundles/types'
-import {BundlesTable} from '../components/BundlesTable/BundlesTable'
+import {BundlesTable, type TableBundle} from '../components/BundlesTable/BundlesTable'
 import {containsBundles} from '../types/bundle'
+import {useBundlesMetadata} from './useBundlesMetadata'
 
 type Mode = 'open' | 'archived'
 
@@ -24,6 +25,10 @@ export default function BundlesOverview() {
 
   const hasBundles = data && containsBundles(data)
   const loadingOrHasBundles = loading || hasBundles
+
+  const bundleIds = useMemo(() => data?.map((bundle) => bundle.name) || [], [data])
+
+  const {bundlesMetadata} = useBundlesMetadata(bundleIds)
 
   const groupedBundles = useMemo(
     () =>
@@ -130,6 +135,11 @@ export default function BundlesOverview() {
     [applySearchTermToBundles, bundleGroupMode, groupedBundles],
   )
 
+  const visibleBundles: TableBundle[] = filteredBundles.map((bundle) => ({
+    ...bundle,
+    ...(bundlesMetadata?.[bundle.name] || {}),
+  }))
+
   return (
     <Card flex={1} overflow="auto">
       <Container width={3}>
@@ -160,7 +170,7 @@ export default function BundlesOverview() {
             <LoadingBlock fill data-testid="bundle-table-loader" />
           ) : (
             <BundlesTable
-              bundles={filteredBundles}
+              bundles={visibleBundles}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
             />

@@ -18,9 +18,11 @@ import {
   Subject,
   switchMap,
   tap,
+  throttleTime,
   timeout,
 } from 'rxjs'
 
+import {type BundlesMetadataMap} from '../../releases/tool/useBundlesMetadata'
 import {bundlesReducer, type bundlesReducerAction, type bundlesReducerState} from './reducer'
 import {type BundleDocument, type BundlesStore} from './types'
 
@@ -57,6 +59,7 @@ const INITIAL_STATE: bundlesReducerState = {
 
 const NOOP_BUNDLES_STORE: BundlesStore = {
   state$: EMPTY.pipe(startWith(INITIAL_STATE)),
+  aggState$: () => EMPTY,
   dispatch: () => undefined,
 }
 
@@ -68,8 +71,11 @@ const NOOP_BUNDLES_STORE: BundlesStore = {
  * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
  * given the latest state upon subscription.
  */
-export function createBundlesStore(context: {client: SanityClient | null}): BundlesStore {
-  const {client} = context
+export function createBundlesStore(context: {
+  addOnClient: SanityClient | null
+  studioClient: SanityClient | null
+}): BundlesStore {
+  const {addOnClient: client, studioClient} = context
 
   // While the comments dataset is initialising, this factory function will be called with an empty
   // `client` value. Return a noop store while the client is unavailable.
@@ -227,8 +233,68 @@ export function createBundlesStore(context: {client: SanityClient | null}): Bund
     shareReplay(1),
   )
 
+  const aggFetch$ = (bundleIds: string[]): Observable<BundlesMetadataMap> => {
+    if (!bundleIds?.length || !studioClient) return EMPTY
+
+    const getSafeId = (id: string) => `bundle_${id.replaceAll('-', '_')}`
+
+    const query = bundleIds.reduce(
+      ({subquery: accSubquery, projection: accProjection}, bundleId, index) => {
+        const safeId = getSafeId(bundleId)
+        const trailingComma = index === bundleIds.length - 1 ? '' : ','
+
+        const subquery = `${accSubquery}"${safeId}": *[_id in path("${bundleId}.*")]{
+          _updatedAt
+        } | order(_updatedAt desc)
+          ${trailingComma}`
+
+        const projection = `${accProjection}"${bundleId}": {
+          "lastEdited": ${safeId}[0]._updatedAt,
+          "matches": count(${safeId})
+        }${trailingComma}`
+
+        return {subquery, projection}
+      },
+      {subquery: '', projection: ''},
+    )
+
+    return studioClient.observable
+      .fetch<BundlesMetadataMap>(`{${query.subquery}}{${query.projection}}`)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to fetch bundle metadata', error)
+          return EMPTY
+        }),
+      )
+  }
+
+  const aggListener$ = (bundleIds: string[]) => {
+    if (!bundleIds?.length || !studioClient) return EMPTY
+
+    const query = `*[defined(_version) && (${bundleIds.reduce(
+      (accQuery, bundleId, index) =>
+        `${accQuery}${index === 0 ? '' : '||'} _id in path("${bundleId}.*")`,
+      '',
+    )})]`
+
+    return studioClient.observable
+      .listen(query, {}, {...LISTEN_OPTIONS, includeResult: false, tag: 'bundle-docs.listen'})
+      .pipe(
+        skip(1),
+        throttleTime(1_000),
+        switchMap(() => aggFetch$(bundleIds)?.pipe()),
+        catchError((error) => {
+          console.error('Failed to listen for bundle metadata', error)
+          return EMPTY
+        }),
+      )
+  }
+
+  const aggState$ = (bundleIds: string[]) => merge(aggFetch$(bundleIds), aggListener$(bundleIds))
+
   return {
     state$,
+    aggState$,
     dispatch,
   }
 }

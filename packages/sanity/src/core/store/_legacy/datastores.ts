@@ -280,21 +280,22 @@ export function useKeyValueStore(): KeyValueStore {
 export function useBundlesStore(): BundlesStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
-  const {client} = useAddonDataset()
+  const {client: addOnClient} = useAddonDataset()
+  const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   return useMemo(() => {
     const bundlesStore =
       resourceCache.get<BundlesStore>({
-        dependencies: [workspace, client],
+        dependencies: [workspace, addOnClient],
         namespace: 'BundlesStore',
-      }) || createBundlesStore({client})
+      }) || createBundlesStore({addOnClient, studioClient})
 
     resourceCache.set({
-      dependencies: [workspace, client],
+      dependencies: [workspace, addOnClient],
       namespace: 'BundlesStore',
       value: bundlesStore,
     })
 
     return bundlesStore
-  }, [client, resourceCache, workspace])
+  }, [addOnClient, resourceCache, studioClient, workspace])
 }

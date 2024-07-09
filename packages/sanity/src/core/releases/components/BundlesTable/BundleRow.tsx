@@ -3,11 +3,11 @@ import {useRouter} from 'sanity/router'
 
 import {BundleBadge} from '../../../bundles/components/BundleBadge'
 import {RelativeTime} from '../../../components'
-import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
+import {type TableBundle} from './BundlesTable'
 
 type Props = {
-  bundle: BundleDocument
+  bundle: TableBundle
 }
 
 export function BundleRow({bundle}: Props) {
@@ -43,6 +43,28 @@ export function BundleRow({bundle}: Props) {
         {!!bundle.publishedAt && (
           <Text muted size={1}>
             <RelativeTime time={bundle.publishedAt} />
+          </Text>
+        )}
+      </Flex>
+      {/* # of documents */}
+      <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 90}}>
+        <Text muted size={1}>
+          {bundle.matches}
+        </Text>
+      </Flex>
+      {/* Edited */}
+      <Flex
+        as="td"
+        align="center"
+        gap={2}
+        paddingX={2}
+        paddingY={3}
+        sizing="border"
+        style={{width: 100}}
+      >
+        {bundle.lastEdited && (
+          <Text muted size={1}>
+            <RelativeTime time={bundle.lastEdited} />
           </Text>
         )}
       </Flex>

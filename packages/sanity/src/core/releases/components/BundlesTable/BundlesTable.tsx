@@ -1,8 +1,8 @@
 import {Card, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
+import {type BundleDocument} from 'sanity'
 import {styled} from 'styled-components'
 
-import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleHeader, type BundleHeaderProps} from './BundleHeader'
 import {BundleRow} from './BundleRow'
 
@@ -19,8 +19,10 @@ const RowStack = styled(Stack)({
   },
 })
 
+export type TableBundle = BundleDocument & {matches: number; lastEdited: string}
+
 interface BundlesTableProps extends Omit<BundleHeaderProps, 'searchDisabled'> {
-  bundles: BundleDocument[]
+  bundles: TableBundle[]
 }
 
 export function BundlesTable({bundles, searchTerm, setSearchTerm}: BundlesTableProps) {
