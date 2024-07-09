@@ -1,12 +1,11 @@
-// TODO: Once https://github.com/sanity-io/sanity/pull/7047 is merged remove this
 import {COLOR_HUES, type ColorHueKey} from '@sanity/color'
 import {icons, type IconSymbol, SearchIcon} from '@sanity/icons'
 import {Avatar, Box, Button, Flex, Popover, Stack, TextInput, useClickOutside} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {BundleBadge} from 'sanity'
 import {styled} from 'styled-components'
 
-import {type BundleDocument} from '../../store/bundles/types'
+import {type BundleDocument} from '../../../store/bundles/types'
+import {BundleBadge} from '../BundleBadge'
 
 const StyledStack = styled(Stack)`
   border-top: 1px solid var(--card-border-color);
@@ -17,8 +16,8 @@ const IconPickerFlex = styled(Flex)`
 `
 
 export function BundleIconEditorPicker(props: {
-  onChange: (value: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}) => void
-  value: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}
+  onChange: (value: Partial<BundleDocument>) => void
+  value: Partial<BundleDocument>
 }): JSX.Element {
   const {onChange, value} = props
 

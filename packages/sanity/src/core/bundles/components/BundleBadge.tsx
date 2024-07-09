@@ -6,7 +6,10 @@ import {type CSSProperties} from 'react'
 
 import {type BundleDocument} from '../../store/bundles/types'
 
-export function VersionBadge(
+/**
+ * @internal
+ */
+export function BundleBadge(
   props: Partial<BundleDocument> & {openButton?: boolean; padding?: number; title?: string},
 ): JSX.Element {
   const {hue = 'gray', icon, openButton, padding = 3, title} = props

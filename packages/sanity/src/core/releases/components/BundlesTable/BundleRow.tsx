@@ -1,9 +1,9 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {RelativeTime} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {BundleBadge} from '../../../bundles/components/BundleBadge'
+import {RelativeTime} from '../../../components'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {VersionBadge} from '../../../versions/components/VersionBadge'
 import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
 
 type Props = {
@@ -26,7 +26,7 @@ export function BundleRow({bundle}: Props) {
         >
           <Flex align="center" gap={2}>
             <Box flex="none">
-              <VersionBadge hue={bundle.hue} icon={bundle.icon} />
+              <BundleBadge tone={bundle.tone} icon={bundle.icon} />
             </Box>
             <Stack flex={1} space={2}>
               <Flex align="center" gap={2}>

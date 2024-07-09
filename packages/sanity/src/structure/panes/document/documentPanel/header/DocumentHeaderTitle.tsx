@@ -3,19 +3,12 @@ import {Flex, Text} from '@sanity/ui'
 import {createElement, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
-import {DocumentVersionMenu} from '../../../../../core/versions/components/panes/DocumentVersionMenu'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
+import {DocumentPerspectiveMenu} from './perspective/DocumentPerspectiveMenu'
 
 export function DocumentHeaderTitle(): ReactElement {
-  const {
-    documentId,
-    documentType,
-    connectionState,
-    schemaType,
-    title,
-    value: documentValue,
-  } = useDocumentPane()
+  const {documentId, connectionState, schemaType, title, value: documentValue} = useDocumentPane()
   const subscribed = Boolean(documentValue) && connectionState !== 'connecting'
 
   const {error, value} = useValuePreview({
@@ -66,7 +59,7 @@ export function DocumentHeaderTitle(): ReactElement {
       </Flex>
 
       <Flex flex="none" gap={1}>
-        <DocumentVersionMenu documentId={documentId} documentType={documentType} />
+        <DocumentPerspectiveMenu documentId={documentId} />
       </Flex>
     </Flex>
   )

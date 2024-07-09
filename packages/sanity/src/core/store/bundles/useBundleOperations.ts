@@ -31,13 +31,22 @@ export function useBundleOperations() {
 
   const handleUpdateBundle = useCallback(
     async (bundle: BundleDocument) => {
+      if (!client) return null
+
       const document = {
         ...bundle,
         _type: 'bundle',
       } as BundleDocument
+      const unsetKeys = Object.entries(bundle)
+        .filter(([_, value]) => value === undefined)
+        .map(([key]) => key)
 
-      const res = await client?.patch(bundle._id).set(document).commit()
-      return res
+      let clientOperation = client.patch(bundle._id).set(document)
+      if (unsetKeys.length) {
+        clientOperation = clientOperation.unset(unsetKeys)
+      }
+
+      return clientOperation.commit()
     },
     [client],
   )
