@@ -106,7 +106,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/client": "^6.20.1",
-    "@sanity/eslint-config-i18n": "1.0.0",
+    "@sanity/eslint-config-i18n": "1.1.0",
     "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/pkg-utils": "6.9.3",
     "@sanity/prettier-config": "^1.0.2",
