@@ -1,4 +1,4 @@
-import {useMemo} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {useBundlesStore} from 'sanity'
 
@@ -16,8 +16,19 @@ const DEFAULT_METADATA_STATE: MetadataWrapper = {
 
 export const useBundlesMetadata = (bundleIds: string[]): MetadataWrapper => {
   const {aggState$: metadataState$} = useBundlesStore()
+  const [bundlesMetadata, setBundlesMetadata] = useState<MetadataWrapper['data']>(
+    DEFAULT_METADATA_STATE.data,
+  )
 
   const memoObservable = useMemo(() => metadataState$(bundleIds), [metadataState$, bundleIds])
 
-  return useObservable(memoObservable) || DEFAULT_METADATA_STATE
+  const observedResult = useObservable(memoObservable) || DEFAULT_METADATA_STATE
+
+  // patch metadata in local state
+  useEffect(
+    () => setBundlesMetadata((prev) => ({...prev, ...observedResult.data})),
+    [observedResult.data],
+  )
+
+  return {...observedResult, data: bundlesMetadata}
 }

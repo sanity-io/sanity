@@ -133,10 +133,12 @@ export default function BundlesOverview() {
     [applySearchTermToBundles, bundleGroupMode, groupedBundles],
   )
 
-  const visibleBundles: TableBundle[] = filteredBundles.map((bundle) => ({
-    ...bundle,
-    ...(bundlesMetadata?.[bundle.name] || {}),
-  }))
+  const visibleBundles: TableBundle[] = bundlesMetadata
+    ? filteredBundles.map((bundle) => ({
+        ...bundle,
+        ...(bundlesMetadata[bundle.name] || {}),
+      }))
+    : []
 
   return (
     <Card flex={1} overflow="auto">
