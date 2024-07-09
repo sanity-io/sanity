@@ -59,12 +59,12 @@ export function ReleaseOverview(props: {documents: SanityDocument[]; release: Bu
           <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
         </Flex>
 
-        <Heading as="h1" size={2} style={{margin: '1px 0'}}>
+        <Heading size={2} style={{margin: '1px 0'}} as="h1">
           {release.title}
         </Heading>
 
         {release.description && (
-          <Text muted size={3} style={{maxWidth: 600}}>
+          <Text muted size={2} style={{maxWidth: 600}}>
             {release.description}
           </Text>
         )}
