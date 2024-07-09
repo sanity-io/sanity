@@ -3,7 +3,7 @@ import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {getPublishedId} from 'sanity'
 import {CopyPasteContext} from 'sanity/_singletons'
 
-import {type CopyActionResult, type DocumentMeta} from './types'
+import {type DocumentMeta} from './types'
 
 /**
  * @beta
@@ -13,7 +13,6 @@ export const CopyPasteProvider: React.FC<{
   children: ReactNode
 }> = ({children}) => {
   const [documentMeta, setDocumentMetaState] = useState<DocumentMeta | null>(null)
-  const [copyResult, setCopyResult] = useState<CopyActionResult | null>(null)
 
   const setDocumentMeta = useCallback(
     ({documentId, documentType, schemaType, onChange}: Required<DocumentMeta>) => {
@@ -35,14 +34,12 @@ export const CopyPasteProvider: React.FC<{
   )
   const contextValue = useMemo(
     () => ({
-      copyResult,
       documentMeta,
       onChange: documentMeta?.onChange,
       getDocumentMeta: documentMeta,
-      setCopyResult,
       setDocumentMeta,
     }),
-    [copyResult, documentMeta, setDocumentMeta],
+    [documentMeta, setDocumentMeta],
   )
 
   return <CopyPasteContext.Provider value={contextValue}>{children}</CopyPasteContext.Provider>
