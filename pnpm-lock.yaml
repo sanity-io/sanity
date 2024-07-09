@@ -779,8 +779,8 @@ importers:
         specifier: ^3.4.1
         version: 3.5.0(esbuild@0.21.5)
       get-it:
-        specifier: ^8.6.2
-        version: 8.6.2(debug@4.3.5)
+        specifier: ^8.6.3
+        version: 8.6.3(debug@4.3.5)
       groq-js:
         specifier: ^1.10.0
         version: 1.10.0
@@ -1541,8 +1541,8 @@ importers:
         specifier: 11.0.8
         version: 11.0.8(react-dom@18.3.1)(react@18.3.1)
       get-it:
-        specifier: ^8.6.2
-        version: 8.6.2(debug@4.3.5)
+        specifier: ^8.6.3
+        version: 8.6.3(debug@4.3.5)
       get-random-values-esm:
         specifier: 1.0.2
         version: 1.0.2
@@ -6764,7 +6764,7 @@ packages:
     engines: {node: '>=14.18'}
     dependencies:
       '@sanity/eventsource': 5.0.2
-      get-it: 8.6.2(debug@4.3.5)
+      get-it: 8.6.3(debug@4.3.5)
       rxjs: 7.8.1
     transitivePeerDependencies:
       - debug
@@ -6860,7 +6860,7 @@ packages:
       '@sanity/util': 3.37.2(debug@4.3.5)
       archiver: 7.0.1
       debug: 4.3.5(supports-color@9.4.0)
-      get-it: 8.6.2(debug@4.3.5)
+      get-it: 8.6.3(debug@4.3.5)
       lodash: 4.17.21
       mississippi: 4.0.0
       p-queue: 2.4.2
@@ -6936,7 +6936,7 @@ packages:
       '@sanity/uuid': 3.0.2
       debug: 4.3.5(supports-color@9.4.0)
       file-url: 2.0.2
-      get-it: 8.6.2(debug@4.3.5)
+      get-it: 8.6.3(debug@4.3.5)
       get-uri: 2.0.4
       globby: 10.0.2
       gunzip-maybe: 1.4.2
@@ -12676,8 +12676,8 @@ packages:
       has-symbols: 1.0.3
       hasown: 2.0.2
 
-  /get-it@8.6.2(debug@4.3.5):
-    resolution: {integrity: sha512-yZNwjgWGc1bmu+NGlb834A5SpfJAlVubOmyMjnwMnGdO4dpCshAFahFTC9Ct123FSf9cY1aSVPLJS2/BKaQ+GA==}
+  /get-it@8.6.3(debug@4.3.5):
+    resolution: {integrity: sha512-I7AKP1Xl2q2j4ucvU0yMtiM+xZKgzD1Fvyh1YcZCT66i+wNrxJAonV+H1yynB3gerZ17uA00IXg61LVLdDeiCg==}
     engines: {node: '>=14.0.0'}
     dependencies:
       decompress-response: 7.0.0
@@ -12692,7 +12692,7 @@ packages:
     resolution: {integrity: sha512-Q6IBWr/zzw57zIkJmNhI23eRTw3nZ4BWWK034meLwOYU9L3J3IpXiyM73u2pYUwN6U7ahkerCwg2T0jlxiLwsw==}
     engines: {node: '>=14.18'}
     dependencies:
-      get-it: 8.6.2(debug@4.3.5)
+      get-it: 8.6.3(debug@4.3.5)
       registry-auth-token: 5.0.2
       registry-url: 5.1.0
       semver: 7.6.2
