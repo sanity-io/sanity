@@ -45,18 +45,19 @@ describeCliTest('CLI: `sanity dataset export` / `import`', () => {
     })
 
     testConcurrent('export, with mode', async () => {
+      const filename = `cursor-${testRunArgs.exportTarball}.tar.gz`
       const result = await runSanityCmdCommand(version, [
         'dataset',
         'export',
         'production',
-        testRunArgs.exportTarball,
+        filename,
         '--overwrite',
         '--mode cursor',
       ])
       expect(result.stdout).toMatch(/export finished/i)
       expect(result.code).toBe(0)
 
-      const tarballPath = path.join(studiosPath, version, testRunArgs.exportTarball)
+      const tarballPath = path.join(studiosPath, version, filename)
 
       const stats = await stat(tarballPath)
       expect(stats.isFile()).toBe(true)
