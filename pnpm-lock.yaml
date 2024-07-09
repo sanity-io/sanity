@@ -449,7 +449,7 @@ importers:
         specifier: 3.49.0
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
-        specifier: ^6.20.2
+        specifier: ^6.20.1
         version: 6.20.2(debug@4.3.5)
       '@sanity/color':
         specifier: ^3.0.0
@@ -489,7 +489,7 @@ importers:
         version: 1.6.18(@sanity/client@6.20.2)
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.10.4(@sanity/client@6.20.1)(react@18.3.1)
+        version: 1.10.4(@sanity/client@6.20.2)(react@18.3.1)
       '@sanity/tsdoc':
         specifier: 1.0.83
         version: 1.0.83(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
@@ -6749,7 +6749,7 @@ packages:
     resolution: {integrity: sha512-2TjYEvOftD0v7ukx3Csdh9QIu44P2z7NDJtlC3qITJRYV36J7R6Vfd3trVhFnN77/7CZrGjqngrtohv8VqO5nw==}
     engines: {node: '>=18.0.0'}
 
-  /@sanity/core-loader@1.6.20(@sanity/client@6.20.1):
+  /@sanity/core-loader@1.6.20(@sanity/client@6.20.2):
     resolution: {integrity: sha512-QmfpCtGFoa3WsGwCKZbkL/AnRYygqaVFucG4gQqo0s52YYVKA0bsAb/QOK1BvK27afFzr/BJ1jaD0tBuxxg/tg==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -7145,7 +7145,7 @@ packages:
     dependencies:
       '@sanity/client': 6.20.2(debug@4.3.5)
       '@sanity/icons': 3.3.0(react@18.3.1)
-      '@sanity/preview-url-secret': 1.6.18(@sanity/client@6.20.1)
+      '@sanity/preview-url-secret': 1.6.18(@sanity/client@6.20.2)
       '@sanity/ui': 2.6.3(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -7184,15 +7184,15 @@ packages:
       '@sanity/uuid': 3.0.2
     dev: false
 
-  /@sanity/react-loader@1.10.4(@sanity/client@6.20.1)(react@18.3.1):
+  /@sanity/react-loader@1.10.4(@sanity/client@6.20.2)(react@18.3.1):
     resolution: {integrity: sha512-C7KIkac62fmIspTuS3ao70VGaxc8RJEx+SHuIblBBnBGWZy8VZq64kg/RGbxmV5isfdBqkh5ASdwB7YrhUOyjA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.20.1
       react: '*'
     dependencies:
-      '@sanity/client': 6.20.1(debug@4.3.5)
-      '@sanity/core-loader': 1.6.20(@sanity/client@6.20.1)
+      '@sanity/client': 6.20.2(debug@4.3.5)
+      '@sanity/core-loader': 1.6.20(@sanity/client@6.20.2)
       react: 18.3.1
     dev: false
 
@@ -7297,7 +7297,7 @@ packages:
       '@microsoft/tsdoc-config': 0.17.0
       '@portabletext/react': 3.1.0(react@18.3.1)
       '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.20.1(debug@4.3.5)
+      '@sanity/client': 6.20.2(debug@4.3.5)
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.3.0(react@18.3.1)
       '@sanity/pkg-utils': 6.10.2(@types/node@18.19.31)(typescript@5.5.3)
