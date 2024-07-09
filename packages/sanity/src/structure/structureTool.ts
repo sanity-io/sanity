@@ -15,6 +15,7 @@ import {getIntentState} from './getIntentState'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {changesInspector} from './panes/document/inspectors/changes'
 import {validationInspector} from './panes/document/inspectors/validation'
+import {SheetListUsEnglishLocaleBundle} from './panes/documentList/sheetList/i18n'
 import {router} from './router'
 import {type StructureToolOptions} from './types'
 
@@ -120,7 +121,7 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
     ],
 
     i18n: {
-      bundles: [structureUsEnglishLocaleBundle],
+      bundles: [structureUsEnglishLocaleBundle, SheetListUsEnglishLocaleBundle],
     },
   }
 })

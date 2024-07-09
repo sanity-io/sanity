@@ -78,20 +78,12 @@ function documentsReducer(
     case 'DOCUMENT_UPDATED': {
       const updatedDocument = action.payload
       const id = updatedDocument._id as string
-      const document = state.documents[id]
-
-      const nextDocument = {
-        // Add existing document data
-        ...document,
-        // Add incoming document data
-        ...updatedDocument,
-      } satisfies SanityDocument
 
       return {
         ...state,
         documents: {
           ...state.documents,
-          [id]: nextDocument,
+          [id]: updatedDocument,
         },
       }
     }
@@ -117,12 +109,16 @@ export function useDocumentSheetListStore({
   filter,
   params,
   apiVersion,
+  onDocumentDeleted,
+  onDocumentAdded,
 }: {
   filter: string
   params?: Record<string, unknown>
   apiVersion?: string
+  onDocumentDeleted?: (id: string) => void
+  onDocumentAdded?: (document: SanityDocument) => void
 }) {
-  const QUERY = `*[${filter}][0...2000]`
+  const QUERY = `*[${filter}][0...1000]`
   const client = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
@@ -175,11 +171,13 @@ export function useDocumentSheetListStore({
               type: 'DOCUMENT_RECEIVED',
               payload: nextDocument,
             })
+            onDocumentAdded?.(nextDocument)
           }
         }
 
         if (event.transition === 'disappear') {
           dispatch({type: 'DOCUMENT_DELETED', id: event.documentId})
+          onDocumentDeleted?.(event.documentId)
         }
 
         if (event.transition === 'update') {
@@ -194,7 +192,7 @@ export function useDocumentSheetListStore({
         }
       }
     },
-    [initialFetch],
+    [initialFetch, onDocumentAdded, onDocumentDeleted],
   )
 
   const listener$ = useMemo(() => {
@@ -240,6 +238,7 @@ export function useDocumentSheetListStore({
   }, [state.documents])
 
   return {
+    documents: state.documents,
     data: dataAsArray,
     isLoading,
     error,

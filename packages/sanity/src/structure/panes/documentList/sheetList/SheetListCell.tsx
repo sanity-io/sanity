@@ -1,41 +1,150 @@
-/* eslint-disable i18next/no-literal-string */
-import {type ObjectFieldType} from '@sanity/types'
-import {Select, TextInput} from '@sanity/ui'
+import {
+  type BooleanSchemaType,
+  type FormNodeValidation,
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  type NumberSchemaType,
+  type StringSchemaType,
+} from '@sanity/types'
+import {Card, type CardTone, Flex} from '@sanity/ui'
 import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
-import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
-import {type SanityDocument} from 'sanity'
-import {styled} from 'styled-components'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {FormFieldValidationStatus, useChildValidation} from 'sanity'
+import {css, styled} from 'styled-components'
 
-import {useDocumentSheetListContext} from './DocumentSheetListProvider'
+import {type CellState, useDocumentSheetListContext} from './DocumentSheetListProvider'
+import {type DocumentSheetListSchemaTypes, type DocumentSheetTableRow} from './types'
+import {useOnMouseDownCell} from './useOnMouseDownCell'
+import {getBorderWidth} from './utils'
 
-const DataCell = styled.td<{width: number}>`
-  display: flex;
-  overflow: hidden;
-  box-sizing: border-box;
-  width: ${({width}) => width}px;
-  border-top: 1px solid var(--card-border-color);
-  background-color: var(--card-bg-color);
+export type CellInputType<TFieldType = DocumentSheetListSchemaTypes> = CellContext<
+  DocumentSheetTableRow,
+  unknown
+> & {
+  fieldType: TFieldType
+}
+
+const ValidationIconContainer = styled.div`
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  z-index: 2;
 `
+
+const CellValidation = ({validation}: {validation: FormNodeValidation[]}) => {
+  if (validation.length === 0) {
+    return null
+  }
+  return (
+    <ValidationIconContainer id="validation-icon">
+      <FormFieldValidationStatus validation={validation} fontSize={0} />
+    </ValidationIconContainer>
+  )
+}
+
+type ValidationLevel = 'error' | 'warning' | 'info'
+const validationLevelColors: {[key in ValidationLevel]: string} = {
+  error: 'var(--card-badge-critical-fg-color)',
+  warning: 'var(--card-badge-warning-fg-color)',
+  info: 'var(--card-badge-primary-fg-color)',
+}
+
+interface DataCellProps {
+  width: number
+  $cellState: CellState
+  $rightBorderWidth: number
+  $validationLevel?: ValidationLevel
+}
+
+const Root = styled(Card)`
+  width: 100%;
+`
+
+const DataCell = styled.td<DataCellProps>((props) => {
+  const {width, $cellState, $rightBorderWidth, $validationLevel} = props
+  const callOutColor = $validationLevel && validationLevelColors[$validationLevel]
+
+  return css`
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: ${width}px;
+    padding: 2px; // Allow space for the box shadow outline to show
+    background-color: var(--card-bg-color);
+    border-top: 1px solid var(--card-border-color);
+    border-right: ${$rightBorderWidth}px solid var(--card-border-color);
+    box-shadow: ${$validationLevel
+      ? `
+        inset 1px 0px 0px 0px var(--card-bg-color),
+        inset 0px 2px 0px 0px var(--card-bg-color),
+        inset 0px -2px 0px 0px var(--card-bg-color),
+        inset 2px 0px 0px 0px ${callOutColor};
+      `
+      : 'none'};
+
+    &[aria-selected='true'] {
+      transition: box-shadow 0.1s;
+      box-shadow: inset 0px 0px 0px ${$cellState === 'focused' ? 2 : 1}px
+        var(--card-focus-ring-color);
+    }
+
+    & #validation-icon {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    :hover {
+      & #validation-icon {
+        opacity: 1;
+      }
+    }
+  `
+})
 
 const PinnedDataCell = styled(DataCell)`
   position: sticky;
   z-index: 2;
 `
 
-interface SheetListCellInnerProps extends CellContext<SanityDocument, unknown> {
-  fieldType: ObjectFieldType
+const CellRoot = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+`
+
+const getFieldValueAsFieldType = (
+  providedValue: any,
+  fieldType: BooleanSchemaType | StringSchemaType | NumberSchemaType,
+) => {
+  if (isBooleanSchemaType(fieldType)) {
+    if (typeof providedValue === 'string') {
+      return providedValue === 'true'
+    }
+    return providedValue
+  }
+  if (isNumberSchemaType(fieldType)) {
+    return parseFloat(providedValue)
+  }
+
+  return String(providedValue)
 }
 
-type CellInputElement = HTMLInputElement | HTMLSelectElement
-type InputRef = CellInputElement | null
-
 /** @internal */
-export function SheetListCellInner(props: SheetListCellInnerProps) {
-  const {getValue, column, row, fieldType} = props
+export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
+  const isPinned = cell.column.getIsPinned()
+  const {column, row, getValue, getContext} = cell
+
+  const {fieldType, disableCellFocus} = column.columnDef.meta || {}
+  const cellContext = getContext()
   const cellId = `cell-${column.id}-${row.index}`
-  const [renderValue, setRenderValue] = useState<string>(getValue() as string)
-  const [isDirty, setIsDirty] = useState(false)
-  const inputRef = useRef<InputRef>(null)
+  const providedValueRef = useRef(getValue())
+  const [rawCellValue, setRawCellValue] = useState<string | number | boolean>(getValue() as string)
+  const fieldRef = useRef<HTMLElement | null>(null)
+
+  const Cell = isPinned ? PinnedDataCell : DataCell
   const {
     focusAnchorCell,
     resetFocusSelection,
@@ -43,175 +152,210 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     getStateByCellId,
     submitFocusedCell,
   } = useDocumentSheetListContext()
-  const cellState = getStateByCellId(column.id, row.index)
+  const setCellAsSelectedAnchor = useCallback(() => {
+    setSelectedAnchorCell(column.id, row.index)
+  }, [column.id, row.index, setSelectedAnchorCell])
+
+  const validation = useChildValidation([column.id], true)
+  const validationLevel = useMemo(() => {
+    if (validation.some((v) => v.level === 'error')) {
+      return 'error'
+    }
+    if (validation.some((v) => v.level === 'warning')) {
+      return 'warning'
+    }
+    if (validation.some((v) => v.level === 'info')) {
+      return 'info'
+    }
+    return undefined
+  }, [validation])
+
+  const cellState = getStateByCellId(cell.column.id, cell.row.index)
+  const {patchDocument, unsetDocumentValue} = cellContext.table.options.meta || {}
+
+  const setCellValue = useCallback(
+    (value: string | number | boolean) => {
+      if (!fieldType?.readOnly) {
+        setRawCellValue(value)
+      }
+    },
+    [fieldType?.readOnly],
+  )
+
+  const handleProgrammaticFocus = () => {
+    fieldRef.current?.focus()
+    if (fieldRef.current instanceof HTMLInputElement) {
+      fieldRef.current.select()
+    }
+  }
+  const {setShouldPreventDefaultMouseDown, handleOnMouseDown} = useOnMouseDownCell(
+    handleProgrammaticFocus,
+    setCellAsSelectedAnchor,
+  )
+
+  const handlePatchField = useCallback(
+    (value: any) => {
+      if (!fieldType) return
+
+      const typedValue = getFieldValueAsFieldType(value, fieldType)
+
+      setCellValue(typedValue)
+      patchDocument?.(row.original.__metadata.idPair.publishedId, column.id, typedValue)
+    },
+    [column.id, fieldType, patchDocument, row.original.__metadata.idPair.publishedId, setCellValue],
+  )
+
+  const handleUnsetField = useCallback(() => {
+    unsetDocumentValue?.(row.original.__metadata.idPair.publishedId, column.id)
+  }, [column.id, row.original.__metadata.idPair.publishedId, unsetDocumentValue])
+
+  const handleOnKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const {key} = event
+
+      switch (key) {
+        case 'Enter': {
+          if (cellState === 'selectedAnchor') handleProgrammaticFocus()
+          if (cellState === 'focused') submitFocusedCell()
+          break
+        }
+        case 'Escape': {
+          if (cellState === 'focused') {
+            setCellValue(providedValueRef.current as string)
+
+            // wait for state to settle before blurring
+            setTimeout(() => setCellAsSelectedAnchor())
+          }
+          break
+        }
+
+        case 'Delete':
+        case 'Backspace': {
+          if (cellState !== 'focused') {
+            setCellValue('')
+            handleUnsetField()
+          }
+          break
+        }
+
+        default:
+          break
+      }
+    },
+    [cellState, handleUnsetField, setCellAsSelectedAnchor, setCellValue, submitFocusedCell],
+  )
 
   const handleOnFocus = useCallback(() => {
     // reselect in cases where focus achieved without initial mousedown
-    setSelectedAnchorCell(column.id, row.index)
+    setCellAsSelectedAnchor()
     focusAnchorCell()
-  }, [column.id, focusAnchorCell, row.index, setSelectedAnchorCell])
-  const {patchDocument} = props.table.options.meta || {}
+  }, [focusAnchorCell, setCellAsSelectedAnchor])
 
-  const handleProgrammaticFocus = () => {
-    inputRef.current?.focus()
-    if (inputRef.current instanceof HTMLInputElement) {
-      inputRef.current.select()
-    }
-  }
-
-  const handleOnMouseDown: MouseEventHandler<CellInputElement> = (event) => {
-    if (event.detail === 2) {
-      handleProgrammaticFocus()
-    } else {
-      event.preventDefault()
-      setSelectedAnchorCell(column.id, row.index)
-    }
-  }
-
-  const handleOnEnterDown = useCallback(
-    (event: KeyboardEvent) => {
-      const {key} = event
-      if (key === 'Enter') {
-        if (cellState === 'selectedAnchor') handleProgrammaticFocus()
-        if (cellState === 'focused') submitFocusedCell()
-      }
-    },
-    [cellState, submitFocusedCell],
-  )
-
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsDirty(true)
-    setRenderValue(event.target.value)
-  }
-
-  const handleOnBlur = () => {
-    if (isDirty) {
-      patchDocument?.(row.id, column.id, renderValue)
-      setIsDirty(false)
+  const handleOnBlur = useCallback(() => {
+    if (rawCellValue !== providedValueRef.current) {
+      handlePatchField(rawCellValue)
     }
     resetFocusSelection()
-  }
+  }, [handlePatchField, rawCellValue, resetFocusSelection])
 
   const handlePaste = useCallback(
     (event: ClipboardEvent) => {
       const clipboardData = event.clipboardData?.getData('Text')
-
-      if (typeof clipboardData === 'string' || typeof clipboardData === 'number') {
-        setRenderValue(clipboardData)
-        // patch immediately when pasting
-        patchDocument?.(row.id, column.id, clipboardData)
+      if (!clipboardData || !fieldType) return
+      if (
+        isBooleanSchemaType(fieldType) &&
+        typeof clipboardData !== 'boolean' &&
+        !['true', 'false'].includes(clipboardData)
+      ) {
+        return
       }
+
+      const typedValue = getFieldValueAsFieldType(clipboardData, fieldType)
+      handlePatchField(typedValue)
     },
-    [column.id, patchDocument, row.id],
+    [handlePatchField, fieldType],
   )
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(renderValue.toString())
-  }, [renderValue])
+    if (typeof rawCellValue === 'undefined') return
+    navigator.clipboard.writeText(rawCellValue.toString())
+  }, [rawCellValue])
 
   useEffect(() => {
-    if (cellState === 'selectedAnchor' || cellState === 'focused')
-      // only listen for enter key when cell is focused or anchor
-      document.addEventListener('keydown', handleOnEnterDown)
+    if (cellState)
+      // only listen for key when cell is selected or focused
+      document.addEventListener('keydown', handleOnKeyDown)
     if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
       // if cell is selected, paste events should be handled
       document.addEventListener('paste', handlePaste)
 
-    if (cellState === 'selectedAnchor')
-      // only allow copying when cell is selected anchor
+    if (cellState === 'selectedAnchor' || cellState === 'focused')
+      // only allow copying when cell is selected anchor or focused
       document.addEventListener('copy', handleCopy)
 
     return () => {
-      if (cellState === 'selectedAnchor' || cellState === 'focused')
-        document.removeEventListener('keydown', handleOnEnterDown)
+      if (cellState) document.removeEventListener('keydown', handleOnKeyDown)
       if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
         document.removeEventListener('paste', handlePaste)
-      if (cellState === 'selectedAnchor') document.removeEventListener('copy', handleCopy)
+      if (cellState === 'selectedAnchor' || cellState === 'focused')
+        document.removeEventListener('copy', handleCopy)
     }
-  }, [
-    cellId,
-    cellState,
-    column.id,
-    getStateByCellId,
-    handleCopy,
-    handleOnEnterDown,
-    handlePaste,
-    row.index,
-  ])
+  }, [cellState, handleCopy, handleOnKeyDown, handlePaste])
 
-  const getBorderStyle = () => {
-    if (cellState === 'focused') return '2px solid blue'
-    if (cellState === 'selectedRange') return '1px solid green'
-    if (cellState === 'selectedAnchor') return '1px solid blue'
+  // Keep value of cell up to date with external changes
+  const realTimeValue = getValue()
+  useEffect(() => {
+    if (providedValueRef?.current !== realTimeValue) {
+      if (providedValueRef.current === rawCellValue) {
+        // only update the value if it's not current being edited
+        setRawCellValue(realTimeValue as string)
+      }
+      providedValueRef.current = realTimeValue
+    }
+  }, [realTimeValue, rawCellValue])
 
-    return '1px solid transparent'
+  const cellProps = {
+    'onFocus': disableCellFocus ? undefined : handleOnFocus,
+    'onBlur': handleOnBlur,
+    'aria-selected': !!cellState,
+    'id': cellId,
+    'data-testid': cellId,
+    'onMouseDown': handleOnMouseDown,
   }
 
   const inputProps = {
-    'onFocus': handleOnFocus,
-    'onBlur': handleOnBlur,
-    'onMouseDown': handleOnMouseDown,
-    'aria-selected': !!cellState,
-    'data-testid': cellId,
-    'id': cellId,
-    'ref': (ref: InputRef) => (inputRef.current = ref),
+    ...cellContext,
+    handlePatchField,
+    handleUnsetField,
+    'cellValue': rawCellValue,
+    setCellValue,
+    setShouldPreventDefaultMouseDown,
+    fieldRef,
+    'data-testid': `${cellId}-input-field`,
   }
 
-  if (fieldType.name === 'boolean') {
-    return (
-      <Select
-        {...inputProps}
-        onChange={() => null}
-        radius={0}
-        style={{
-          boxShadow: 'none',
-          border: getBorderStyle(),
-          padding: 0,
-        }}
-        value={JSON.stringify(renderValue)}
-      >
-        <option value="True">True</option>
-        <option value="False">False</option>
-      </Select>
-    )
-  }
-
-  return (
-    <TextInput
-      {...inputProps}
-      size={0}
-      radius={0}
-      border={false}
-      style={{
-        border: getBorderStyle(),
-        padding: '22px 16px',
-      }}
-      value={
-        typeof renderValue === 'string' || typeof renderValue === 'number'
-          ? renderValue
-          : JSON.stringify(renderValue)
-      }
-      onChange={handleOnChange}
-    />
-  )
-}
-
-/** @internal */
-export function SheetListCell(cell: Cell<SanityDocument, unknown>) {
-  const isPinned = cell.column.getIsPinned()
-  const Cell = isPinned ? PinnedDataCell : DataCell
-  const borderWidth = isPinned && cell.column.getIsLastColumn('left') ? 2 : 1
+  const tone: CardTone | undefined = fieldType?.readOnly ? 'transparent' : undefined
 
   return (
     <Cell
+      $cellState={cellState}
+      $validationLevel={validationLevel}
+      $rightBorderWidth={getBorderWidth(cell)}
       key={cell.row.original._id + cell.id}
       style={{
         left: cell.column.getStart('left') ?? undefined,
-        borderRight: `${borderWidth}px solid var(--card-border-color)`,
       }}
       width={cell.column.getSize()}
+      {...cellProps}
     >
-      {flexRender(cell.column.columnDef.cell, cell.getContext?.())}
+      <CellRoot>
+        <CellValidation validation={validation} />
+        <Root tone={tone} height="fill" width="full">
+          <Flex height="fill" justify="center" align="center">
+            {flexRender(cell.column.columnDef.cell, inputProps)}
+          </Flex>
+        </Root>
+      </CellRoot>
     </Cell>
   )
 }

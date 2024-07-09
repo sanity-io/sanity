@@ -1,5 +1,12 @@
-import {isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
-import {Box, Checkbox, Flex, Text} from '@sanity/ui'
+import {
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  isObjectSchemaType,
+  isPrimitiveSchemaType,
+  isStringSchemaType,
+  type ObjectSchemaType,
+} from '@sanity/types'
+import {Checkbox, Flex} from '@sanity/ui'
 import {
   type AccessorKeyColumnDef,
   createColumnHelper,
@@ -7,67 +14,29 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {
-  type DocumentPreviewStore,
-  DocumentStatusIndicator,
-  getPreviewStateObservable,
-  type SanityDocument,
-  type SchemaType,
-  useDocumentPreviewStore,
-} from 'sanity'
+import {useTranslation} from 'sanity'
 
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
-import {SheetListCellInner} from './SheetListCell'
+import {PreviewCell} from './DocumentSheetPreviewCell'
+import {BooleanCellInput} from './fields/BooleanCellInput'
+import {CellInput} from './fields/CellInput'
+import {DropdownCellInput, shouldDropdownRender} from './fields/DropdownCellInput'
+import {SheetListLocaleNamespace} from './i18n'
+import {type DocumentSheetTableRow} from './types'
 
 export const VISIBLE_COLUMN_LIMIT = 5
 
-const PreviewCell = (props: {
-  documentPreviewStore: DocumentPreviewStore
-  schemaType: SchemaType
-  row: {
-    original: SanityDocument
-  }
-}) => {
-  const {documentPreviewStore, row, schemaType} = props
-  const title = 'Document title'
-  const previewStateObservable = useMemo(
-    () => getPreviewStateObservable(documentPreviewStore, schemaType, row.original._id, title),
-    [documentPreviewStore, row.original._id, schemaType],
-  )
-  const {draft, published, isLoading} = useObservable(previewStateObservable, {
-    draft: null,
-    isLoading: true,
-    published: null,
-  })
-  if (isLoading) {
-    return (
-      <Text size={1} muted>
-        Loading...
-      </Text>
-    )
-  }
-  const displayValue = (draft?.title ?? published?.title ?? 'Untitled') as string
-  return (
-    <Flex align="center" gap={3}>
-      <DocumentStatusIndicator draft={draft} published={published} />
-      <Text size={1}>{displayValue}</Text>
-    </Flex>
-  )
-}
-
-const columnHelper = createColumnHelper<SanityDocument>()
-const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
+const columnHelper = createColumnHelper<DocumentSheetTableRow>()
 
 type Columns = (
-  | AccessorKeyColumnDef<SanityDocument, unknown>
-  | GroupColumnDef<SanityDocument, unknown>
+  | AccessorKeyColumnDef<DocumentSheetTableRow, unknown>
+  | GroupColumnDef<DocumentSheetTableRow, unknown>
 )[]
 
 const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: string): Columns => {
   return schemaType.fields.reduce<Columns>((tableColumns: Columns, field) => {
-    const {type, name} = field
-    if (SUPPORTED_FIELDS.includes(type.name)) {
+    const {type: fieldType, name} = field
+    if (isPrimitiveSchemaType(fieldType)) {
       const nextCol = columnHelper.accessor(
         // accessor must use dot notation for internal tanstack method of reading cell data
         parentalField ? `${parentalField}.${field.name}` : field.name,
@@ -75,7 +44,23 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
           id: parentalField ? `${parentalField}_${field.name}` : field.name,
           header: field.type.title,
           enableHiding: true,
-          cell: (info) => <SheetListCellInner {...info} fieldType={type} />,
+          meta: {
+            fieldType,
+          },
+          cell: (info) => {
+            if (isNumberSchemaType(fieldType) || isStringSchemaType(fieldType)) {
+              if (shouldDropdownRender(fieldType))
+                return <DropdownCellInput {...info} fieldType={fieldType} />
+
+              return <CellInput {...info} fieldType={fieldType} />
+            }
+
+            if (isBooleanSchemaType(fieldType)) {
+              return <BooleanCellInput {...info} fieldType={fieldType} />
+            }
+
+            return null
+          },
         },
       )
 
@@ -83,10 +68,10 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
     }
 
     // if first layer nested object
-    if (type.name === 'object' && isObjectSchemaType(type) && !parentalField) {
+    if (fieldType.name === 'object' && isObjectSchemaType(fieldType) && !parentalField) {
       return [
         ...tableColumns,
-        columnHelper.group({header: name, columns: getColsFromSchemaType(type, field.name)}),
+        columnHelper.group({header: name, columns: getColsFromSchemaType(fieldType, field.name)}),
       ]
     }
 
@@ -97,16 +82,18 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
 // Type guard function to check if a column is of type GroupColumnDef
 function isAccessorKeyColumnDef(
   column: Columns[number],
-): column is AccessorKeyColumnDef<SanityDocument, unknown> {
+): column is AccessorKeyColumnDef<DocumentSheetTableRow, unknown> {
   return 'accessorKey' in column
 }
 function isGroupColumnDef(
-  column: AccessorKeyColumnDef<SanityDocument, unknown> | GroupColumnDef<SanityDocument, unknown>,
-): column is GroupColumnDef<SanityDocument, unknown> {
+  column:
+    | AccessorKeyColumnDef<DocumentSheetTableRow, unknown>
+    | GroupColumnDef<DocumentSheetTableRow, unknown>,
+): column is GroupColumnDef<DocumentSheetTableRow, unknown> {
   return 'columns' in column
 }
 
-const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument, unknown>[] => {
+const flatColumns = (cols: Columns): AccessorKeyColumnDef<DocumentSheetTableRow, unknown>[] => {
   return cols.flatMap((col) => {
     if (isAccessorKeyColumnDef(col)) {
       return col
@@ -119,7 +106,7 @@ const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument, unknow
 }
 
 export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
-  const documentPreviewStore = useDocumentPreviewStore()
+  const {t} = useTranslation(SheetListLocaleNamespace)
 
   const columns: Columns = useMemo(() => {
     if (!documentSchemaType) {
@@ -129,35 +116,39 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
       columnHelper.display({
         id: 'selected',
         enableHiding: false,
-        header: (info) => (
-          <Box>
-            <Checkbox
-              style={{paddingLeft: 4}}
-              indeterminate={info.table.getIsSomeRowsSelected()}
-              onChange={info.table.getToggleAllPageRowsSelectedHandler()}
-            />
-            {/* eslint-disable-next-line i18next/no-literal-string */}
-            {info.table.getSelectedRowModel().rows.length} selected
-          </Box>
-        ),
+        size: 53,
+        meta: {
+          customHeader: true,
+          borderWidth: 0,
+          disableCellFocus: true,
+        },
+        header: (info) => {
+          if (info.header.depth > 1) return null
+          return (
+            <Flex justify="center">
+              <Checkbox
+                indeterminate={info.table.getIsSomeRowsSelected()}
+                onChange={info.table.getToggleAllPageRowsSelectedHandler()}
+              />
+            </Flex>
+          )
+        },
         cell: DocumentSheetListSelect,
       }),
-      columnHelper.accessor('Preview', {
+      columnHelper.accessor(t('preview-header'), {
         enableHiding: false,
+        size: 320,
         id: 'Preview',
+        meta: {
+          disableCellFocus: true,
+        },
         cell: (info) => {
-          return (
-            <PreviewCell
-              {...info}
-              documentPreviewStore={documentPreviewStore}
-              schemaType={documentSchemaType}
-            />
-          )
+          return <PreviewCell {...info} schemaType={documentSchemaType} />
         },
       }),
       ...getColsFromSchemaType(documentSchemaType),
     ]
-  }, [documentPreviewStore, documentSchemaType])
+  }, [documentSchemaType, t])
 
   const [initialColumnsVisibility]: [VisibilityState, number] = useMemo(
     () =>

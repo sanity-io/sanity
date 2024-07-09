@@ -1,6 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
-/* eslint-disable react/jsx-no-bind */
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -8,12 +5,15 @@ import {
   DoubleChevronRightIcon,
 } from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {type Table} from '@tanstack/react-table'
-import {type SanityDocument} from 'sanity'
+import {useTranslation} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {SheetListLocaleNamespace} from './i18n'
+import {type DocumentSheetListTable} from './types'
 
-export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument>}) {
+export function DocumentSheetListPaginator({table}: {table: DocumentSheetListTable}) {
+  const {t} = useTranslation(SheetListLocaleNamespace)
+
   return (
     <TooltipDelayGroupProvider>
       <Flex gap={3} align={'center'}>
@@ -22,7 +22,7 @@ export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument
           disabled={!table.getCanPreviousPage()}
           icon={DoubleChevronLeftIcon}
           tooltipProps={{
-            content: 'Go to first page',
+            content: t('pagination.first-page.tooltip'),
           }}
         />
         <Button
@@ -30,11 +30,14 @@ export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument
           disabled={!table.getCanPreviousPage()}
           icon={ChevronLeftIcon}
           tooltipProps={{
-            content: 'Go to previous page',
+            content: t('pagination.previous-page.tooltip'),
           }}
         />
         <Text style={{whiteSpace: 'nowrap'}}>
-          {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+          {t('pagination.page-count-label', {
+            currentPage: table.getState().pagination.pageIndex + 1,
+            pageCount: table.getPageCount(),
+          })}
         </Text>
 
         <Button
@@ -42,7 +45,7 @@ export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument
           disabled={!table.getCanNextPage()}
           icon={ChevronRightIcon}
           tooltipProps={{
-            content: 'Go to next page',
+            content: t('pagination.next-page.tooltip'),
           }}
         />
         <Button
@@ -50,7 +53,7 @@ export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument
           disabled={!table.getCanNextPage()}
           icon={DoubleChevronRightIcon}
           tooltipProps={{
-            content: 'Go to last page',
+            content: t('pagination.last-page.tooltip'),
           }}
         />
         <select

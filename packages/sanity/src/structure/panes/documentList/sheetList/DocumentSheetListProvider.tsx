@@ -1,11 +1,11 @@
-import {type SanityDocument} from '@sanity/types'
-import {type Table} from '@tanstack/react-table'
 import {type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {DocumentSheetListContext} from 'sanity/_singletons'
 
+import {type DocumentSheetListTable} from './types'
+
 interface DocumentSheetListProviderProps {
   children?: ReactNode
-  table: Table<SanityDocument>
+  table: DocumentSheetListTable
 }
 
 type SelectedCellDetails = {
@@ -14,15 +14,14 @@ type SelectedCellDetails = {
   state: 'focused' | 'selected'
 } | null
 
+export type CellState = 'focused' | 'selectedAnchor' | 'selectedRange' | null
+
 /** @internal */
 export interface DocumentSheetListContextValue {
   focusAnchorCell: () => void
   resetFocusSelection: () => void
   setSelectedAnchorCell: (colId: string, rowIndex: number) => void
-  getStateByCellId: (
-    colId: string,
-    rowIndex: number,
-  ) => 'focused' | 'selectedAnchor' | 'selectedRange' | null
+  getStateByCellId: (colId: string, rowIndex: number) => CellState
   submitFocusedCell: () => void
 }
 
@@ -139,7 +138,12 @@ export function DocumentSheetListProvider({
               ...selectedAnchorCellDetails,
               state: 'selected',
             }
-      clearAndSetFocusSelection(nextAnchorCellDetails)
+      if (selectedAnchorCellDetails.state !== 'focused') {
+        // escaping when anchor is focused should reset the cell value
+        // so the SheetListCell should manage this process
+        // - therefore only clear when not focused
+        clearAndSetFocusSelection(nextAnchorCellDetails)
+      }
     }
   }, [clearAndSetFocusSelection, selectedAnchorCellDetails, selectedRangeCellIndexes.length])
 

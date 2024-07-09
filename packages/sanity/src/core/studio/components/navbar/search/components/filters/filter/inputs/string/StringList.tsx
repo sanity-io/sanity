@@ -1,8 +1,9 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {isTitledListValue, type StringOptions, type TitledListValue} from '@sanity/types'
+import {type StringOptions, type TitledListValue} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {capitalize, uniq} from 'lodash'
+import {uniq} from 'lodash'
 import {useCallback, useId, useMemo} from 'react'
+import {toSelectItem} from 'sanity'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'
@@ -131,10 +132,4 @@ export function SearchFilterStringListInput({
       }}
     />
   )
-}
-
-function toSelectItem(
-  option: TitledListValue<string | number> | string | number,
-): TitledListValue<string | number> {
-  return isTitledListValue(option) ? option : {title: capitalize(`${option}`), value: option}
 }

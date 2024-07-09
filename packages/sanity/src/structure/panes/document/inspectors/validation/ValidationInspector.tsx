@@ -82,14 +82,14 @@ export function ValidationInspector(props: DocumentInspectorProps) {
   )
 }
 
-function ValidationCard(props: {
+export function ValidationCard(props: {
   marker: ValidationMarker
-  onOpen: (path: Path) => void
+  onOpen?: (path: Path) => void
   schemaType: ObjectSchemaType
   value: Partial<SanityDocument> | null
 }) {
   const {marker, onOpen, schemaType, value} = props
-  const handleOpen = useCallback(() => onOpen(marker.path), [marker, onOpen])
+  const handleOpen = useCallback(() => onOpen?.(marker.path), [marker, onOpen])
   const [errorInfo, setErrorInfo] = useState<{error: Error; info: ErrorInfo} | null>(null)
 
   return (

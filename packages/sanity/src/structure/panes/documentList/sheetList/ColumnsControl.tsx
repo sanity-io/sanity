@@ -1,16 +1,18 @@
 import {Box, Button, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
-import {type Column, type Table} from '@tanstack/react-table'
+import {type Column} from '@tanstack/react-table'
 import {useCallback} from 'react'
-import {type SanityDocument, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity'
 
+import {SheetListLocaleNamespace} from './i18n'
+import {type DocumentSheetListTable, type DocumentSheetTableRow} from './types'
 import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
 type ColumnsControlProps = {
-  table: Table<SanityDocument>
+  table: DocumentSheetListTable
 }
 
 export function ColumnsControl({table}: ColumnsControlProps) {
-  const {t} = useTranslation()
+  const {t} = useTranslation(SheetListLocaleNamespace)
   const isVisibleLimitReached =
     table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length >= VISIBLE_COLUMN_LIMIT
 
@@ -18,11 +20,11 @@ export function ColumnsControl({table}: ColumnsControlProps) {
     table.resetColumnVisibility()
   }, [table])
 
-  const handleColumnOnChange = (column: Column<SanityDocument, unknown>) => () => {
+  const handleColumnOnChange = (column: Column<DocumentSheetTableRow, unknown>) => () => {
     column.toggleVisibility()
   }
 
-  const getColumnVisibilityDisabled = (column: Column<SanityDocument, unknown>) => {
+  const getColumnVisibilityDisabled = (column: Column<DocumentSheetTableRow, unknown>) => {
     const isColumnVisible = column.getIsVisible()
     const isSingleColumnVisible =
       table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length === 1
@@ -32,13 +34,13 @@ export function ColumnsControl({table}: ColumnsControlProps) {
 
   return (
     <MenuButton
-      button={<Button mode="bleed" text={t('sheet-list.edit-columns')} size={1} />}
+      button={<Button mode="bleed" text={t('edit-columns')} size={1} />}
       id="columns-control"
       menu={
         <Menu padding={3} paddingTop={4} style={{width: 240}}>
           <Flex direction="column" height="fill" gap={3}>
             <Text weight="semibold" size={1}>
-              {t('sheet-list.select-fields')}
+              {t('select-fields')}
             </Text>
             <Flex style={{flex: '1 1 auto', maxHeight: 320, overflowY: 'scroll'}}>
               <Stack>
@@ -69,7 +71,7 @@ export function ColumnsControl({table}: ColumnsControlProps) {
               width="fill"
               mode="ghost"
               size={1}
-              text={t('sheet-list.reset-columns')}
+              text={t('reset-columns')}
               onClick={setInitialColumns}
             />
           </Flex>

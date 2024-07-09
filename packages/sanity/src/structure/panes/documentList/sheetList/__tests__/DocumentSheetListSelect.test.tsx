@@ -1,10 +1,10 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
-import {type SanityDocument} from '@sanity/types'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
 
 import {DocumentSheetListSelect} from '../DocumentSheetListSelect'
+import {type DocumentSheetTableRow} from '../types'
 
 const mockToggleSelected = jest.fn()
 const mockSetSelectedAnchor = jest.fn()
@@ -31,9 +31,9 @@ const props = {
     getIsSelected: () => null,
     toggleSelected: mockToggleSelected,
   },
-} as unknown as CellContext<SanityDocument, unknown>
+} as unknown as CellContext<DocumentSheetTableRow, unknown>
 
-const renderTest = (renderProps?: Partial<CellContext<SanityDocument, unknown>>) =>
+const renderTest = (renderProps?: Partial<CellContext<DocumentSheetTableRow, unknown>>) =>
   render(
     <ThemeProvider theme={studioTheme}>
       <DocumentSheetListSelect {...{...props, ...(renderProps || {})}} />
