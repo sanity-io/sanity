@@ -449,7 +449,7 @@ importers:
         specifier: 3.49.0
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
-        specifier: ^6.20.1
+        specifier: ^6.20.2
         version: 6.20.2(debug@4.3.5)
       '@sanity/color':
         specifier: ^3.0.0
