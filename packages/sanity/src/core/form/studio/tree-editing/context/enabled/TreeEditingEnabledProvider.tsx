@@ -12,7 +12,7 @@ interface TreeEditingEnabledProviderProps {
 export function TreeEditingEnabledProvider(props: TreeEditingEnabledProviderProps): JSX.Element {
   const {children, legacyEditing: legacyEditingProp} = props
 
-  const {features} = useSource()
+  const {beta} = useSource()
   const parentContextValue = useTreeEditingEnabled()
 
   const value = useMemo((): TreeEditingEnabledContextValue => {
@@ -26,14 +26,10 @@ export function TreeEditingEnabledProvider(props: TreeEditingEnabledProviderProp
       legacyEditingProp
 
     return {
-      enabled: features?.beta?.treeArrayEditing?.enabled === true,
+      enabled: beta?.treeArrayEditing?.enabled === true,
       legacyEditing: Boolean(legacyEditing),
     }
-  }, [
-    features?.beta?.treeArrayEditing?.enabled,
-    legacyEditingProp,
-    parentContextValue.legacyEditing,
-  ])
+  }, [beta?.treeArrayEditing?.enabled, legacyEditingProp, parentContextValue.legacyEditing])
 
   return (
     <TreeEditingEnabledContext.Provider value={value}>

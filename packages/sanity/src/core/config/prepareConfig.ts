@@ -627,11 +627,9 @@ function resolveSource({
       staticInitialValueTemplateItems,
       options: config,
     },
-    features: {
-      beta: {
-        treeArrayEditing: {
-          enabled: arrayEditingReducer({config, initialValue: false}),
-        },
+    beta: {
+      treeArrayEditing: {
+        enabled: arrayEditingReducer({config, initialValue: false}),
       },
     },
   }
