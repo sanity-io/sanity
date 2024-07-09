@@ -5,12 +5,12 @@ import {LoadingBlock, useClient} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components'
+import {useListener} from '../../../hooks/useListener'
 import {useBundles} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {API_VERSION} from '../../../tasks/constants'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {type ReleasesRouterState} from '../../types/router'
-import {useListener} from '../useListener'
 import {ReleaseOverview} from './ReleaseOverview'
 
 type Screen = 'overview' | 'review'
