@@ -388,10 +388,10 @@ export interface PluginOptions {
      */
     enableLegacySearch?: boolean
   }
-  /** Configuration for studio features.
+  /** Configuration for studio beta features.
    * @internal
    */
-  features?: Features
+  beta?: BetaFeatures
 }
 
 /** @internal */
@@ -784,7 +784,7 @@ export interface Source {
   /** Configuration for studio features.
    * @internal
    */
-  features?: Features
+  beta?: BetaFeatures
 }
 
 /** @internal */
@@ -902,20 +902,15 @@ export type DefaultPluginsWorkspaceOptions = {
 /**
  * Configuration for studio features.
  * */
-interface Features {
+interface BetaFeatures {
   /**
-   * Configuration for beta features.
-   */
-  beta?: {
+   * @beta
+   * @hidden
+   * */
+  treeArrayEditing?: {
     /**
-     * @beta
-     * @hidden
-     * */
-    treeArrayEditing?: {
-      /**
-       * Enables the tree array editing feature.
-       */
-      enabled: boolean
-    }
+     * Enables the tree array editing feature.
+     */
+    enabled: boolean
   }
 }
