@@ -4,7 +4,7 @@ import {type FormDocumentValue, useGetFormValue} from 'sanity'
 
 import {defineDocumentFieldAction} from '../../../config/document/fieldActions/define'
 import {useTranslation} from '../../../i18n'
-import {useCopyPasteAction} from '../../../studio/copyPaste/useCopyPasteAction'
+import {useCopyPaste} from '../../../studio'
 import {defineActionItem} from './define'
 
 export const pasteAction = defineDocumentFieldAction({
@@ -19,7 +19,7 @@ export const pasteAction = defineDocumentFieldAction({
     const fieldTitle = t('copy-paste.field-action-paste-button.field.title')
     const title = isDocument ? documentTitle : fieldTitle
 
-    const {onPaste} = useCopyPasteAction()
+    const {onPaste} = useCopyPaste()
 
     const onAction = useCallback(() => {
       const value = getFormValue([]) as FormDocumentValue

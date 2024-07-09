@@ -1,8 +1,9 @@
 import {type Path} from '@sanity/types'
 import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useEffect, useRef} from 'react'
-import {type FormDocumentValue, useCopyPasteAction} from 'sanity'
+import {type FormDocumentValue} from 'sanity'
 
+import {useCopyPaste} from '../studio/copyPaste'
 import {hasSelection, isEmptyFocusPath, isNativeEditableElement} from '../studio/copyPaste/utils'
 
 /** @internal */
@@ -29,7 +30,7 @@ export function useGlobalCopyPasteElementHandler({
     focusPathRef.current = focusPath || []
   }, [focusPath])
 
-  const {onCopy, onPaste} = useCopyPasteAction()
+  const {onCopy, onPaste} = useCopyPaste()
 
   const handleKeydown = useCallback(
     (event: KeyboardEvent) => {

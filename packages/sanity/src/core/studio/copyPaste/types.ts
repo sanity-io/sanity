@@ -1,4 +1,4 @@
-import {type ObjectSchemaType, type PatchEvent, type Path, type SchemaType} from 'sanity'
+import {type FormDocumentValue, type ObjectSchemaType, type PatchEvent, type Path} from 'sanity'
 
 /**
  * @beta
@@ -17,7 +17,6 @@ export interface DocumentMeta {
  */
 export interface SanityClipboardItem {
   type: 'sanityClipboardItem'
-  jsonType: SchemaType['jsonType']
   documentId?: string
   documentType?: string
   isDocument: boolean
@@ -34,6 +33,13 @@ export interface SanityClipboardItem {
 export interface CopyPasteContextType {
   documentMeta: DocumentMeta | null
   setDocumentMeta: (meta: Required<DocumentMeta>) => void
+  onCopy: (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => Promise<void>
+  onPaste: (
+    targetPath: Path,
+    value: FormDocumentValue | undefined,
+    options?: PasteOptions,
+  ) => Promise<void>
+  onChange: ((event: PatchEvent) => void) | undefined
 }
 
 /**
