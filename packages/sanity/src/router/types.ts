@@ -210,11 +210,6 @@ export interface BaseIntentParams {
   mode?: string
 
   /**
-   * Updates the perspective sticky param
-   */
-  perspective?: string
-
-  /**
    * Arbitrary/custom parameters are generally discouraged - try to keep them to a minimum,
    * or use `payload` (arbitrary JSON-serializable object) instead.
    */
