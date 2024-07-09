@@ -54,7 +54,6 @@ export function documentsReducer<T extends SanityDocument>(
 ): documentsReducerState<T> {
   switch (action.type) {
     case 'DOCUMENTS_SET': {
-      // Create an object with the BUNDLE id as key
       const documentsById = createDocumentsSet(action.payload)
 
       return {
@@ -177,7 +176,7 @@ export function useListener<T extends SanityDocument>({
       // The reconnect event means that we are trying to reconnect to the realtime listener.
       // In this case we set loading to true to indicate that we're trying to
       // reconnect. Once a connection has been established, the welcome event
-      // will be received and we'll fetch all bundles again (above)
+      // will be received and we'll fetch all documents again (above)
       if (event.type === 'reconnect') {
         setLoading(true)
         didInitialFetch.current = false
