@@ -660,7 +660,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.invalid-value.reset-button.text': 'Reset value',
   /** Invalid property value */
   'inputs.invalid-value.title': 'Invalid property value',
-  /** Field groups */
+  /** Title for the "All fields" field group */
+  'inputs.object.field-group-tabs.all-fields-title': 'All fields',
+  /** Aria label for the "Field groups" select control on smaller screens */
   'inputs.object.field-group-tabs.aria-label': 'Field groups',
   /** Read-only field description */
   'inputs.object.unknown-fields.read-only.description':
