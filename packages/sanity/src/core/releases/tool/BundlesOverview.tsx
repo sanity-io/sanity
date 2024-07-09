@@ -17,18 +17,16 @@ type Mode = 'open' | 'archived'
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 
 export default function BundlesOverview() {
-  const {data, loading} = useBundles()
+  const {data, loading: loadingBundles} = useBundles()
 
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>()
-
+  const bundleIds = useMemo(() => data?.map((bundle) => bundle.name) || [], [data])
+  const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleIds)
+  const loading = loadingBundles || loadingBundlesMetadata
   const hasBundles = data && containsBundles(data)
   const loadingOrHasBundles = loading || hasBundles
-
-  const bundleIds = useMemo(() => data?.map((bundle) => bundle.name) || [], [data])
-
-  const {bundlesMetadata} = useBundlesMetadata(bundleIds)
 
   const groupedBundles = useMemo(
     () =>
