@@ -1,7 +1,7 @@
 import {type Path} from '@sanity/types'
 import {isString} from 'sanity'
 
-import {type CopyActionResult} from './types'
+import {type SanityClipboardItem} from './types'
 
 /**
  * The custom mimetype used when populating a ClipboardItem. Note that this
@@ -37,7 +37,7 @@ const SUPPORTS_SANITY_CLIPBOARD_MIMETYPE =
  */
 const BASE64_ATTR = 'sanity-clipboard-base64'
 
-export async function getClipboardItem(): Promise<CopyActionResult | null> {
+export async function getClipboardItem(): Promise<SanityClipboardItem | null> {
   const items = await navigator.clipboard.read()
 
   for (const item of items) {
@@ -49,8 +49,8 @@ export async function getClipboardItem(): Promise<CopyActionResult | null> {
   return null
 }
 
-export async function writeClipboardItem(copyActionResult: CopyActionResult): Promise<boolean> {
-  const textValue = transformValueToText(copyActionResult.items[0].value)
+export async function writeClipboardItem(copyActionResult: SanityClipboardItem): Promise<boolean> {
+  const textValue = transformValueToText(copyActionResult.value)
   const escapedTextValue = escapeHtml(textValue)
   // we use a utf8-safe base64 encoded string to preserve the data as safely as
   // possible when serializing into HTML
@@ -81,7 +81,7 @@ export async function writeClipboardItem(copyActionResult: CopyActionResult): Pr
   }
 }
 
-export async function parseClipboardItem(item: ClipboardItem): Promise<CopyActionResult | null> {
+export async function parseClipboardItem(item: ClipboardItem): Promise<SanityClipboardItem | null> {
   if (item.types.includes(MIMETYPE_SANITY_CLIPBOARD)) {
     const blob = await item.getType(MIMETYPE_SANITY_CLIPBOARD)
     const text = await blob.text()

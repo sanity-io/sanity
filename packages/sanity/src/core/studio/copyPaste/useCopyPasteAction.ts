@@ -21,7 +21,7 @@ import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {useCopyPaste} from './CopyPasteProvider'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
 import {transferValue, type TransferValueOptions} from './transferValue'
-import {type CopyActionResult, type CopyOptions, type PasteOptions} from './types'
+import {type CopyOptions, type PasteOptions, type SanityClipboardItem} from './types'
 import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
 
 interface CopyPasteHookValue {
@@ -45,7 +45,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
   const toast = useToast()
   const {t} = useTranslation('copy-paste')
 
-  const {documentMeta, setCopyResult} = useCopyPaste()
+  const {documentMeta} = useCopyPaste()
   const {onChange} = documentMeta || {}
 
   const onCopy = useCallback(
@@ -87,8 +87,6 @@ export function useCopyPasteAction(): CopyPasteHookValue {
       }
 
       const isDocument = schemaTypeAtPath.type?.name === 'document'
-      const isArray = schemaTypeAtPath.jsonType === 'array'
-      const isObject = schemaTypeAtPath.jsonType === 'object'
       const valueAtPath = getValueAtPath(value, path)
 
       // Test if the value is empty (undefined, empty object or empty array)
@@ -100,21 +98,16 @@ export function useCopyPasteAction(): CopyPasteHookValue {
         return
       }
 
-      const payloadValue: CopyActionResult = {
-        _type: 'copyResult',
+      const payloadValue: SanityClipboardItem = {
+        type: 'sanityClipboardItem',
+        jsonType: schemaTypeAtPath.jsonType,
         documentId,
         documentType,
         isDocument,
-        isArray,
-        isObject,
-        items: [
-          {
-            schemaTypeName: schemaTypeAtPath.name || 'unknown',
-            schemaTypeTitle: schemaTypeAtPath.title || schemaType.name || 'unknown',
-            documentPath: path,
-            value: valueAtPath,
-          },
-        ],
+        schemaTypeName: schemaTypeAtPath.name || 'unknown',
+        schemaTypeTitle: schemaTypeAtPath.title || schemaType.name || 'unknown',
+        valuePath: path,
+        value: valueAtPath,
       }
 
       telemetry.log(FieldCopied, {
@@ -122,7 +115,6 @@ export function useCopyPasteAction(): CopyPasteHookValue {
         schemaTypes: [schemaTypeAtPath.jsonType],
       })
 
-      setCopyResult(payloadValue)
       const isWrittenToClipboard = await writeClipboardItem(payloadValue)
 
       if (!isWrittenToClipboard) {
@@ -133,7 +125,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
         return
       }
 
-      const fields = payloadValue.items.map((item) => item.schemaTypeTitle).join('", "')
+      const fields = payloadValue.schemaTypeTitle
 
       toast.push({
         status: 'success',
@@ -146,7 +138,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
             }),
       })
     },
-    [documentMeta, setCopyResult, telemetry, toast, t],
+    [documentMeta, telemetry, toast, t],
   )
 
   const onPaste = useCallback(
@@ -190,94 +182,92 @@ export function useCopyPasteAction(): CopyPasteHookValue {
       const updateItems: {patches: FormPatch[]; targetSchemaTypeTitle: string}[] = []
       const copiedJsonTypes: string[] = []
 
-      for (const item of clipboardItem.items) {
-        const sourceSchemaType = resolveSchemaTypeForPath(
-          sourceDocumentSchemaType,
-          item.documentPath,
-          value,
-        )
+      const sourceSchemaType = resolveSchemaTypeForPath(
+        sourceDocumentSchemaType,
+        clipboardItem.valuePath,
+        value,
+      )
 
-        if (!sourceSchemaType) {
+      if (!sourceSchemaType) {
+        toast.push({
+          status: 'error',
+          title: t('copy-paste.on-paste.validation.schema-type-incompatible.title', {
+            path: PathUtils.toString(clipboardItem.valuePath),
+          }),
+        })
+        return
+      }
+
+      if (!targetDocumentSchemaType) {
+        toast.push({
+          status: 'error',
+          title: t('copy-paste.on-paste.validation.schema-type-incompatible.title', {
+            path: PathUtils.toString(targetPath),
+          }),
+        })
+        return
+      }
+
+      const targetSchemaTypeTitle = targetSchemaType.title || targetSchemaType.name
+      const transferValueOptions = {
+        sourceRootSchemaType: sourceSchemaType,
+        sourcePath: [],
+        sourceValue: clipboardItem.value,
+        targetRootSchemaType: targetSchemaType,
+        targetPath: [],
+        // This will mainly be used for validating references with filter callback that
+        // needs the document and absolute path to the field
+        targetRootPath: targetPath,
+        targetRootValue: value,
+        options: {
+          validateAssets: true,
+          validateReferences: true,
+          client,
+        } as TransferValueOptions,
+      }
+      copiedJsonTypes.push(sourceSchemaType.jsonType)
+
+      try {
+        const {targetValue, errors} = await transferValue(transferValueOptions)
+        const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
+        const _isEmptyValue = isEmptyValue(targetValue)
+
+        if (nonWarningErrors.length > 0) {
+          const description = t(nonWarningErrors[0].i18n.key, nonWarningErrors[0].i18n.args)
+
           toast.push({
             status: 'error',
-            title: t('copy-paste.on-paste.validation.schema-type-incompatible.title', {
-              path: PathUtils.toString(item.documentPath),
-            }),
+            title: t('copy-paste.on-paste.validation.clipboard-invalid.title'),
+            description,
           })
           return
         }
 
-        if (!targetDocumentSchemaType) {
+        if (errors.length > 0 && !_isEmptyValue) {
+          const description = errors.map((error) => t(error.i18n.key, error.i18n.args)).join(', ')
+
           toast.push({
-            status: 'error',
-            title: t('copy-paste.on-paste.validation.schema-type-incompatible.title', {
-              path: PathUtils.toString(targetPath),
-            }),
+            status: 'warning',
+            title: t('copy-paste.on-paste.validation.partial-warning.title'),
+            description,
+          })
+        }
+
+        if (_isEmptyValue) {
+          toast.push({
+            status: 'warning',
+            title: t('copy-paste.on-paste.validation.clipboard-empty.title'),
           })
           return
         }
 
-        const targetSchemaTypeTitle = targetSchemaType.title || targetSchemaType.name
-        const transferValueOptions = {
-          sourceRootSchemaType: sourceSchemaType,
-          sourcePath: [],
-          sourceValue: item.value,
-          targetRootSchemaType: targetSchemaType,
-          targetPath: [],
-          // This will mainly be used for validating references with filter callback that
-          // needs the document and absolute path to the field
-          targetRootPath: targetPath,
-          targetRootValue: value,
-          options: {
-            validateAssets: true,
-            validateReferences: true,
-            client,
-          } as TransferValueOptions,
-        }
-        copiedJsonTypes.push(sourceSchemaType.jsonType)
-
-        try {
-          const {targetValue, errors} = await transferValue(transferValueOptions)
-          const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
-          const _isEmptyValue = isEmptyValue(targetValue)
-
-          if (nonWarningErrors.length > 0) {
-            const description = t(nonWarningErrors[0].i18n.key, nonWarningErrors[0].i18n.args)
-
-            toast.push({
-              status: 'error',
-              title: t('copy-paste.on-paste.validation.clipboard-invalid.title'),
-              description,
-            })
-            return
-          }
-
-          if (errors.length > 0 && !_isEmptyValue) {
-            const description = errors.map((error) => t(error.i18n.key, error.i18n.args)).join(', ')
-
-            toast.push({
-              status: 'warning',
-              title: t('copy-paste.on-paste.validation.partial-warning.title'),
-              description,
-            })
-          }
-
-          if (_isEmptyValue) {
-            toast.push({
-              status: 'warning',
-              title: t('copy-paste.on-paste.validation.clipboard-empty.title'),
-            })
-            return
-          }
-
-          updateItems.push({patches: [set(targetValue, targetPath)], targetSchemaTypeTitle})
-        } catch (error) {
-          toast.push({
-            status: 'error',
-            title: error.message,
-          })
-          return
-        }
+        updateItems.push({patches: [set(targetValue, targetPath)], targetSchemaTypeTitle})
+      } catch (error) {
+        toast.push({
+          status: 'error',
+          title: error.message,
+        })
+        return
       }
 
       telemetry.log(FieldPasted, {
@@ -287,9 +277,7 @@ export function useCopyPasteAction(): CopyPasteHookValue {
 
       if (updateItems.length) {
         const allPatches = flatten(updateItems.map(({patches}) => patches))
-        const allTargetNames = updateItems
-          .map(({targetSchemaTypeTitle}) => targetSchemaTypeTitle)
-          .join('", "')
+        const allTargetNames = updateItems.map((i) => i.targetSchemaTypeTitle).join('", "')
 
         if (!onChange) {
           console.warn(`Failed to resolve document onChange method when pasting.`)

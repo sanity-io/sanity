@@ -1,4 +1,4 @@
-import {type ObjectSchemaType, type PatchEvent, type Path} from 'sanity'
+import {type ObjectSchemaType, type PatchEvent, type Path, type SchemaType} from 'sanity'
 
 /**
  * @beta
@@ -15,21 +15,16 @@ export interface DocumentMeta {
  * @beta
  * @hidden
  */
-export interface CopyActionResult {
-  _type: 'copyResult'
+export interface SanityClipboardItem {
+  type: 'sanityClipboardItem'
+  jsonType: SchemaType['jsonType']
   documentId?: string
   documentType?: string
-  isArray: boolean
   isDocument: boolean
-  isObject: boolean
-  items: [
-    {
-      documentPath: Path
-      schemaTypeName: string
-      schemaTypeTitle?: string
-      value: unknown
-    },
-  ]
+  schemaTypeName: string
+  schemaTypeTitle?: string
+  valuePath: Path
+  value: unknown
 }
 
 /**
@@ -38,8 +33,6 @@ export interface CopyActionResult {
  */
 export interface CopyPasteContextType {
   documentMeta: DocumentMeta | null
-  copyResult: CopyActionResult | null
-  setCopyResult: (result: CopyActionResult) => void
   setDocumentMeta: (meta: Required<DocumentMeta>) => void
 }
 
