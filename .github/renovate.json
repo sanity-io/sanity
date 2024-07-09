@@ -24,7 +24,6 @@
       "matchUpdateTypes": [
         "bump",
         "digest",
-        "lockfileUpdate",
         "minor",
         "patch",
         "pin",
@@ -36,15 +35,48 @@
     {
       "matchDepTypes": ["dependencies"],
       "matchPackageNames": [
-        "get-it",
+        "@portabletext/editor",
+        "@sanity/bifur-client",
         "@sanity/client",
         "@sanity/export",
+        "@sanity/icons",
+        "@sanity/insert-menu",
         "@sanity/presentation",
         "@sanity/ui",
-        "groq-js"
+        "get-it",
+        "groq-js",
+        "react-rx"
       ],
       "rangeStrategy": "bump",
       "semanticCommitType": "fix"
+    },
+    {
+      "description": "Ensure internal and important packages open a PRs right away, without waiting for manual approval",
+      "matchPackageNames": [
+        "@portabletext/editor",
+        "@sanity/bifur-client",
+        "@sanity/client",
+        "@sanity/eslint-config-i18n",
+        "@sanity/export",
+        "@sanity/icons",
+        "@sanity/insert-menu",
+        "@sanity/pkg-utils",
+        "@sanity/presentation",
+        "@sanity/tsdoc",
+        "@sanity/ui",
+        "esbuild",
+        "get-it",
+        "groq-js",
+        "lerna",
+        "react-dom",
+        "react-is",
+        "react-rx",
+        "react",
+        "styled-components",
+        "typescript"
+      ],
+      "dependencyDashboardApproval": false,
+      "schedule": ["every weekday"]
     }
   ],
   "ignorePaths": ["packages/@sanity/cli/test/__fixtures__/v2/package.json"]
