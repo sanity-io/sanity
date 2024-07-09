@@ -295,12 +295,11 @@ export function createBundlesStore(context: {
       .listen(
         queryFilterAllDocumentsInBundleIds,
         {},
-        {...LISTEN_OPTIONS, includeResult: false, tag: 'bundle-docs.listen'},
+        {...LISTEN_OPTIONS, events: ['mutation'], includeResult: false, tag: 'bundle-docs.listen'},
       )
       .pipe(
-        skip(1),
         throttleTime(1_000),
-        switchMap(() => aggFetch$(bundleIds)?.pipe()),
+        switchMap(() => aggFetch$(bundleIds)),
         catchError((error) => {
           console.error('Failed to listen for bundle metadata', error)
           return EMPTY
