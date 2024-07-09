@@ -371,7 +371,7 @@ export default async function initSanity(
       const sanityConfigPath = path.join(workDir, `sanity.config.${fileExtension}`)
       await writeOrOverwrite(
         sanityConfigPath,
-        sanityConfigTemplate
+        sanityConfigTemplate(hasSrcFolder)
           .replace(':route:', embeddedStudioRouteFilePath.slice(workDir.length).replace('src/', ''))
           .replace(':basePath:', studioPath),
       )
@@ -470,8 +470,7 @@ export default async function initSanity(
       `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`,
     )
 
-    // eslint-disable-next-line no-process-exit
-    process.exit(0)
+    return
   }
 
   // eslint-disable-next-line @typescript-eslint/no-shadow

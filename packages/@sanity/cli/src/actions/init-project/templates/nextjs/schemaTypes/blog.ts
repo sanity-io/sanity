@@ -431,20 +431,20 @@ const postJS = `export const postType = {
 
 export const blogSchemaTS = `import { type SchemaTypeDefinition } from 'sanity'
 
-import {blockContentType} from './schemaTypes/blockContent'
-import {categoryType} from './schemaTypes/category'
-import {postType} from './schemaTypes/post'
-import {authorType} from './schemaTypes/author'
+import {blockContentType} from './schemaTypes/blockContentType'
+import {categoryType} from './schemaTypes/categoryType'
+import {postType} from './schemaTypes/postType'
+import {authorType} from './schemaTypes/authorType'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [blockContentType, categoryType, postType, authorType],
 }
 `
 
-export const blogSchemaJS = `import {blockContentType} from './schemaTypes/blockContent'
-import {categoryType} from './schemaTypes/category'
-import {postType} from './schemaTypes/post'
-import {authorType} from './schemaTypes/author'
+export const blogSchemaJS = `import {blockContentType} from './schemaTypes/blockContentType'
+import {categoryType} from './schemaTypes/categoryType'
+import {postType} from './schemaTypes/postType'
+import {authorType} from './schemaTypes/authorType'
 
 export const schema = {
   types: [blockContentType, categoryType, postType, authorType],
@@ -453,9 +453,9 @@ export const schema = {
 
 export const blogSchemaFolder = (useTypeScript: boolean): Record<string, string> => {
   return {
-    'author.': useTypeScript ? authorTS : authorJS,
-    'blockContent.': useTypeScript ? blockContentTS : blockContentJS,
-    'category.': useTypeScript ? categoryTS : categoryJS,
-    'post.': useTypeScript ? postTS : postJS,
+    'authorType.': useTypeScript ? authorTS : authorJS,
+    'blockContentType.': useTypeScript ? blockContentTS : blockContentJS,
+    'categoryType.': useTypeScript ? categoryTS : categoryJS,
+    'postType.': useTypeScript ? postTS : postJS,
   }
 }
