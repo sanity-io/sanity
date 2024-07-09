@@ -72,12 +72,6 @@ const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
 
   /** --- On copy --- */
 
-  /** The error message that is shown when there is an unknown error looking up document metadata */
-  'copy-paste.on-copy.validation.document-metadata-unknown-error.title':
-    "Can't lookup the document meta data due to unknown error",
-  /** The error message that is shown when there is an unknown error */
-  'copy-paste.on-copy.validation.unknown-error.title':
-    "Can't lookup the field due to unknown error",
   /** The error message that is shown when schema types are incompatible */
   'copy-paste.on-copy.validation.schema-type-incompatible.title':
     'Could not resolve schema type for path: {{path}}',

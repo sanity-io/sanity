@@ -46,7 +46,7 @@ export const CopyPasteProvider: React.FC<{
   const [documentMeta, setDocumentMetaState] = useState<DocumentMeta | null>(null)
 
   const setDocumentMeta = useCallback(
-    ({documentId, documentType, schemaType, onChange}: Required<DocumentMeta>) => {
+    ({documentId, documentType, schemaType, onChange}: DocumentMeta) => {
       const processedMeta = {
         documentId: getPublishedId(documentId),
         documentType,
@@ -65,33 +65,13 @@ export const CopyPasteProvider: React.FC<{
   )
 
   const onCopy = useCallback(
-    async (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => {
-      // Test that we got document meta first
-      if (!documentMeta) {
-        console.warn(`Failed to resolve document meta data for path ${PathUtils.toString(path)}.`)
-
-        toast.push({
-          status: 'error',
-          title: t('copy-paste.on-copy.validation.document-metadata-unknown-error.title'),
-        })
-        return
-      }
+    async (path: Path, value: FormDocumentValue | undefined, options: CopyOptions) => {
+      // guard against `documentMeta` having not been set yet
+      if (!documentMeta) return
 
       const {documentId, documentType, schemaType} = documentMeta
 
-      if (!schemaType) {
-        console.warn(`Failed to resolve schema type for path ${PathUtils.toString(path)}.`, {
-          schemaType,
-        })
-        toast.push({
-          status: 'error',
-          title: t('copy-paste.on-copy.validation.unknown-error.title'),
-        })
-        return
-      }
-
       const schemaTypeAtPath = resolveSchemaTypeForPath(schemaType, path, value)
-
       if (!schemaTypeAtPath) {
         toast.push({
           status: 'error',
@@ -119,8 +99,7 @@ export const CopyPasteProvider: React.FC<{
         documentId,
         documentType,
         isDocument,
-        schemaTypeName: schemaTypeAtPath.name || 'unknown',
-        schemaTypeTitle: schemaTypeAtPath.title || schemaType.name || 'unknown',
+        schemaTypeName: schemaTypeAtPath.name,
         valuePath: path,
         value: valueAtPath,
       }
@@ -140,7 +119,7 @@ export const CopyPasteProvider: React.FC<{
         return
       }
 
-      const fields = payloadValue.schemaTypeTitle
+      const fields = schemaTypeAtPath.title || schemaType.name || 'unknown'
 
       toast.push({
         status: 'success',
@@ -157,10 +136,13 @@ export const CopyPasteProvider: React.FC<{
   )
 
   const onPaste = useCallback(
-    async (targetPath: Path, value: FormDocumentValue | undefined, options?: PasteOptions) => {
-      const {schemaType: targetDocumentSchemaType} = documentMeta || {}
+    async (targetPath: Path, value: FormDocumentValue | undefined, options: PasteOptions) => {
+      // guard against `documentMeta` having not been set yet
+      if (!documentMeta) return
+
+      const {schemaType: targetDocumentSchemaType, onChange} = documentMeta
       const targetSchemaType = resolveSchemaTypeForPath(
-        targetDocumentSchemaType!,
+        targetDocumentSchemaType,
         targetPath,
         value,
       )!
@@ -294,17 +276,7 @@ export const CopyPasteProvider: React.FC<{
         const allPatches = flatten(updateItems.map(({patches}) => patches))
         const allTargetNames = updateItems.map((i) => i.targetSchemaTypeTitle).join('", "')
 
-        if (!documentMeta?.onChange) {
-          console.warn(`Failed to resolve document onChange method when pasting.`)
-
-          toast.push({
-            status: 'error',
-            title: t('copy-paste.on-copy.validation.document-metadata-unknown-error.title'),
-          })
-          return
-        }
-
-        documentMeta.onChange(PatchEvent.from(allPatches))
+        onChange(PatchEvent.from(allPatches))
 
         if (clipboardItem.isDocument) {
           toast.push({
@@ -327,6 +299,8 @@ export const CopyPasteProvider: React.FC<{
             }),
           })
         }
+
+        // TODO: missing case with multiple updated items?
       }
     },
     [documentMeta, schema, telemetry, toast, client, t],
@@ -334,14 +308,11 @@ export const CopyPasteProvider: React.FC<{
 
   const contextValue = useMemo(
     () => ({
-      documentMeta,
-      getDocumentMeta: documentMeta,
       setDocumentMeta,
-      onChange: documentMeta?.onChange,
       onCopy,
       onPaste,
     }),
-    [documentMeta, onCopy, onPaste, setDocumentMeta],
+    [onCopy, onPaste, setDocumentMeta],
   )
 
   return <CopyPasteContext.Provider value={contextValue}>{children}</CopyPasteContext.Provider>

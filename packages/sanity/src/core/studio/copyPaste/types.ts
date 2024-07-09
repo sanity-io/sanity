@@ -4,24 +4,12 @@ import {type FormDocumentValue, type ObjectSchemaType, type PatchEvent, type Pat
  * @beta
  * @hidden
  */
-export interface DocumentMeta {
-  documentId?: string
-  documentType?: string
-  schemaType: ObjectSchemaType | undefined
-  onChange?: (event: PatchEvent) => void
-}
-
-/**
- * @beta
- * @hidden
- */
 export interface SanityClipboardItem {
   type: 'sanityClipboardItem'
   documentId?: string
   documentType?: string
   isDocument: boolean
   schemaTypeName: string
-  schemaTypeTitle?: string
   valuePath: Path
   value: unknown
 }
@@ -30,16 +18,26 @@ export interface SanityClipboardItem {
  * @beta
  * @hidden
  */
+// TODO: lift this into its own provider
+export interface DocumentMeta {
+  documentId: string
+  documentType: string
+  schemaType: ObjectSchemaType
+  onChange: (event: PatchEvent) => void
+}
+
+/**
+ * @beta
+ * @hidden
+ */
 export interface CopyPasteContextType {
-  documentMeta: DocumentMeta | null
-  setDocumentMeta: (meta: Required<DocumentMeta>) => void
-  onCopy: (path: Path, value: FormDocumentValue | undefined, options?: CopyOptions) => Promise<void>
+  setDocumentMeta: (documentMeta: DocumentMeta) => void
+  onCopy: (path: Path, value: FormDocumentValue | undefined, options: CopyOptions) => Promise<void>
   onPaste: (
     targetPath: Path,
     value: FormDocumentValue | undefined,
-    options?: PasteOptions,
+    options: PasteOptions,
   ) => Promise<void>
-  onChange: ((event: PatchEvent) => void) | undefined
 }
 
 /**
@@ -47,7 +45,7 @@ export interface CopyPasteContextType {
  * @hidden
  */
 export interface BaseOptions {
-  context?: {
+  context: {
     source: 'fieldAction' | 'documentFieldAction' | 'keyboardShortcut' | 'unknown'
   }
 }

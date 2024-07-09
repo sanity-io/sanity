@@ -549,7 +549,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     setDocumentMeta({
       documentId,
       documentType,
-      schemaType,
+      schemaType: schemaType!,
       onChange: handleChange,
     })
   }, [documentId, documentType, schemaType, handleChange, setDocumentMeta])
