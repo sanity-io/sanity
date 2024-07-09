@@ -65,8 +65,8 @@ importers:
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
-        specifier: 1.0.75
-        version: 1.0.75(@types/node@18.19.31)(debug@4.3.5)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
+        specifier: 1.0.83
+        version: 1.0.83(@types/node@18.19.31)(debug@4.3.5)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -492,7 +492,7 @@ importers:
         version: 1.10.4(@sanity/client@6.20.2)(react@18.3.1)
       '@sanity/tsdoc':
         specifier: 1.0.83
-        version: 1.0.83(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
+        version: 1.0.83(@types/node@18.19.31)(debug@4.3.5)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -1728,8 +1728,8 @@ importers:
         specifier: 6.9.3
         version: 6.9.3(@types/node@18.19.31)(debug@4.3.5)(typescript@5.4.5)
       '@sanity/tsdoc':
-        specifier: 1.0.75
-        version: 1.0.75(@types/node@18.19.31)(debug@4.3.5)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
+        specifier: 1.0.83
+        version: 1.0.83(@types/node@18.19.31)(debug@4.3.5)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
         version: 1.2.11(@sanity/icons@3.3.0)(@sanity/ui@2.6.3)(@types/node@18.19.31)(react-dom@18.3.1)(react@18.3.1)(styled-components@6.1.11)
@@ -3531,7 +3531,6 @@ packages:
     cpu: [ppc64]
     os: [aix]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/android-arm64@0.18.20:
@@ -3564,7 +3563,6 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/android-arm@0.18.20:
@@ -3597,7 +3595,6 @@ packages:
     cpu: [arm]
     os: [android]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/android-x64@0.18.20:
@@ -3630,7 +3627,6 @@ packages:
     cpu: [x64]
     os: [android]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/darwin-arm64@0.18.20:
@@ -3663,7 +3659,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/darwin-x64@0.18.20:
@@ -3696,7 +3691,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/freebsd-arm64@0.18.20:
@@ -3729,7 +3723,6 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/freebsd-x64@0.18.20:
@@ -3762,7 +3755,6 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-arm64@0.18.20:
@@ -3795,7 +3787,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-arm@0.18.20:
@@ -3828,7 +3819,6 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-ia32@0.18.20:
@@ -3861,7 +3851,6 @@ packages:
     cpu: [ia32]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-loong64@0.18.20:
@@ -3894,7 +3883,6 @@ packages:
     cpu: [loong64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-mips64el@0.18.20:
@@ -3927,7 +3915,6 @@ packages:
     cpu: [mips64el]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-ppc64@0.18.20:
@@ -3960,7 +3947,6 @@ packages:
     cpu: [ppc64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-riscv64@0.18.20:
@@ -3993,7 +3979,6 @@ packages:
     cpu: [riscv64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-s390x@0.18.20:
@@ -4026,7 +4011,6 @@ packages:
     cpu: [s390x]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-x64@0.18.20:
@@ -4059,7 +4043,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/netbsd-x64@0.18.20:
@@ -4092,7 +4075,6 @@ packages:
     cpu: [x64]
     os: [netbsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/openbsd-arm64@0.23.0:
@@ -4101,7 +4083,6 @@ packages:
     cpu: [arm64]
     os: [openbsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/openbsd-x64@0.18.20:
@@ -4134,7 +4115,6 @@ packages:
     cpu: [x64]
     os: [openbsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/sunos-x64@0.18.20:
@@ -4167,7 +4147,6 @@ packages:
     cpu: [x64]
     os: [sunos]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/win32-arm64@0.18.20:
@@ -4200,7 +4179,6 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/win32-ia32@0.18.20:
@@ -4233,7 +4211,6 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/win32-x64@0.18.20:
@@ -4266,7 +4243,6 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@eslint-community/eslint-utils@4.4.0(eslint@8.57.0):
@@ -7048,7 +7024,7 @@ packages:
       - supports-color
     dev: false
 
-  /@sanity/pkg-utils@6.10.2(@types/node@18.19.31)(typescript@5.5.3):
+  /@sanity/pkg-utils@6.10.2(@types/node@18.19.31)(debug@4.3.5)(typescript@5.5.3):
     resolution: {integrity: sha512-Es/rF9Za/RA29aUNDEv+mU0eOnnX/XLRheDxPVezq1S8x4RFt4DuIRBYE4fpVcKj5nVtIrJkfwJCohI7ZCQXyQ==}
     engines: {node: '>=18.17.0'}
     hasBin: true
@@ -7103,7 +7079,6 @@ packages:
       - '@types/node'
       - debug
       - supports-color
-    dev: false
 
   /@sanity/pkg-utils@6.9.3(@types/node@18.19.31)(debug@4.3.5)(typescript@5.4.5):
     resolution: {integrity: sha512-AydMp57nHCVA2AYx2czLsdIan7EN1XVI/t/EDLDT6lPJKs4JDQOc7hkc8DcYMikNr6y6ryOfLbWeHjXVddRBKQ==}
@@ -7245,68 +7220,7 @@ packages:
       - debug
     dev: true
 
-  /@sanity/tsdoc@1.0.75(@types/node@18.19.31)(debug@4.3.5)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
-    resolution: {integrity: sha512-Ji9JLbcRc+91jOXIRSHfjSFZlqOVe2yY6weiii/epNmnIRWGlZJGBPNKCLJEhQmesbuLUvC6R6zh/ICK8tlvGg==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    peerDependencies:
-      react: '*'
-      react-dom: '*'
-      sanity: ^3
-      styled-components: ^5.2 || ^6
-    dependencies:
-      '@microsoft/api-extractor': 7.47.0(@types/node@18.19.31)
-      '@microsoft/api-extractor-model': 7.29.2(@types/node@18.19.31)
-      '@microsoft/tsdoc': 0.15.0
-      '@microsoft/tsdoc-config': 0.17.0
-      '@portabletext/react': 3.1.0(react@18.3.1)
-      '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.20.2(debug@4.3.5)
-      '@sanity/color': 3.0.6
-      '@sanity/icons': 3.3.0(react@18.3.1)
-      '@sanity/pkg-utils': 6.9.3(@types/node@18.19.31)(debug@4.3.5)(typescript@5.4.5)
-      '@sanity/ui': 2.6.3(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
-      '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.1(vite@5.3.3)
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      cors: 2.8.5
-      dotenv-flow: 3.3.0
-      esbuild: 0.21.5
-      esbuild-register: 3.5.0(esbuild@0.21.5)
-      express: 4.19.2
-      globby: 11.1.0
-      groq: 3.49.0
-      groq-js: 1.10.0
-      history: 5.3.0
-      jsonc-parser: 3.3.1
-      mkdirp: 1.0.4
-      pkg-up: 3.1.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-refractor: 2.2.0(react@18.3.1)
-      sanity: link:packages/sanity
-      slugify: 1.6.6
-      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
-      tmp: 0.2.3
-      typescript: 5.4.5
-      vite: 5.3.3(@types/node@18.19.31)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - less
-      - lightningcss
-      - react-is
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: true
-
-  /@sanity/tsdoc@1.0.83(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
+  /@sanity/tsdoc@1.0.83(@types/node@18.19.31)(debug@4.3.5)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
     resolution: {integrity: sha512-nIywYVkn6uwxuKOIzowLQM1/26Wq19OT4MMUBrUjjHsAutU9MyGfX7M5rM4rhfbP351N48dHvYCNpMYOWSadjg==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -7325,7 +7239,7 @@ packages:
       '@sanity/client': 6.20.2(debug@4.3.5)
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.3.0(react@18.3.1)
-      '@sanity/pkg-utils': 6.10.2(@types/node@18.19.31)(typescript@5.5.3)
+      '@sanity/pkg-utils': 6.10.2(@types/node@18.19.31)(debug@4.3.5)(typescript@5.5.3)
       '@sanity/ui': 2.6.3(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.1(vite@5.3.3)
@@ -7365,7 +7279,6 @@ packages:
       - sugarss
       - supports-color
       - terser
-    dev: false
 
   /@sanity/types@3.37.2(debug@4.3.5):
     resolution: {integrity: sha512-1EfKkNlJ86wIDtc7oFHb79JI8lKDOxKDYrkmwhvuHgJY83GpSABc1kFdbwAtWZfrWVWyqVXUv/KlNwA3b99y/g==}
@@ -11353,7 +11266,6 @@ packages:
       esbuild: 0.23.0
     transitivePeerDependencies:
       - supports-color
-    dev: false
 
   /esbuild@0.18.20:
     resolution: {integrity: sha512-ceqxoedUrcayh7Y7ZX6NdbbDzGROiyVBgC4PriJThBKSVPWnnFHZAkfI1lJT8QFkOwH4qOS2SJkS4wvpGl8BpA==}
@@ -11474,7 +11386,6 @@ packages:
       '@esbuild/win32-arm64': 0.23.0
       '@esbuild/win32-ia32': 0.23.0
       '@esbuild/win32-x64': 0.23.0
-    dev: false
 
   /escalade@3.1.2:
     resolution: {integrity: sha512-ErCHMCae19vR8vQGe50xIsVomy19rg6gFu3+r3jkEO46suLMWBksvVyoGgQV+jOfl84ZSOSlmv6Gxa89PmTGmA==}
@@ -18046,7 +17957,6 @@ packages:
       rollup: 4.18.0
     transitivePeerDependencies:
       - supports-color
-    dev: false
 
   /rollup@3.29.4:
     resolution: {integrity: sha512-oWzmBZwvYrU0iJHtDmhsm662rC15FRXmcjCk1xD771dFDx5jJ02ufAQQTn0etB2emNk4J9EZg/yWKpsn9BWGRw==}
