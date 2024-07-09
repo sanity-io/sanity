@@ -2,7 +2,7 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useRouter} from 'sanity/router'
 
 import {BundleBadge} from '../../../bundles/components/BundleBadge'
-import {RelativeTime} from '../../../components'
+import {RelativeTime, UserAvatar} from '../../../components'
 import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
 import {type TableBundle} from './BundlesTable'
 
@@ -38,18 +38,25 @@ export function BundleRow({bundle}: Props) {
           </Flex>
         </Card>
       </Box>
-      {/* Published */}
-      <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 100}}>
-        {!!bundle.publishedAt && (
-          <Text muted size={1}>
-            <RelativeTime time={bundle.publishedAt} />
-          </Text>
-        )}
-      </Flex>
       {/* # of documents */}
       <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 90}}>
         <Text muted size={1}>
           {bundle.matches}
+        </Text>
+      </Flex>
+      {/* Created */}
+      <Flex
+        as="td"
+        align="center"
+        gap={2}
+        paddingX={2}
+        paddingY={3}
+        sizing="border"
+        style={{width: 100}}
+      >
+        {bundle.authorId && <UserAvatar size={0} user={bundle.authorId} />}
+        <Text muted size={1}>
+          <RelativeTime time={bundle._createdAt} />
         </Text>
       </Flex>
       {/* Edited */}
@@ -65,6 +72,14 @@ export function BundleRow({bundle}: Props) {
         {bundle.lastEdited && (
           <Text muted size={1}>
             <RelativeTime time={bundle.lastEdited} />
+          </Text>
+        )}
+      </Flex>
+      {/* Published */}
+      <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 100}}>
+        {!!bundle.publishedAt && (
+          <Text muted size={1}>
+            <RelativeTime time={bundle.publishedAt} />
           </Text>
         )}
       </Flex>

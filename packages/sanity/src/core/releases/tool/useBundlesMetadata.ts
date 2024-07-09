@@ -1,6 +1,5 @@
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {tap} from 'rxjs'
 import {useBundlesStore} from 'sanity'
 
 import {type MetadataWrapper} from '../../store/bundles/createBundlesStore'
@@ -9,29 +8,16 @@ type BundlesMetadata = {matches: number; lastEdited: string}
 
 export type BundlesMetadataMap = Record<string, BundlesMetadata>
 
+const DEFAULT_METADATA_STATE: MetadataWrapper = {
+  data: null,
+  error: null,
+  loading: false,
+}
+
 export const useBundlesMetadata = (bundleIds: string[]): MetadataWrapper => {
-  const {aggState$} = useBundlesStore()
-  const [aggState, setAggState] = useState<MetadataWrapper>({
-    data: null,
-    error: null,
-    loading: false,
-  })
+  const {aggState$: metadataState$} = useBundlesStore()
 
-  const memoObservable = useMemo(
-    () => aggState$(bundleIds).pipe(tap(setAggState)),
-    [aggState$, bundleIds],
-  )
+  const memoObservable = useMemo(() => metadataState$(bundleIds), [metadataState$, bundleIds])
 
-  useObservable(memoObservable)
-
-  return aggState
-
-  return useMemo(
-    () => ({
-      bundlesMetadata: aggState?.data || {},
-      loading: false,
-      error: null,
-    }),
-    [aggState],
-  )
+  return useObservable(memoObservable) || DEFAULT_METADATA_STATE
 }

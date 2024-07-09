@@ -29,6 +29,22 @@ export function BundleHeader({searchDisabled, searchTerm, setSearchTerm}: Bundle
             clearButton={!!searchTerm}
           />
         </Stack>
+        {/* Number of documents */}
+        <Flex as="th" paddingY={3} sizing="border" style={{width: 90}}>
+          <Box padding={2}>
+            <Text muted size={1} weight="medium">
+              Documents
+            </Text>
+          </Box>
+        </Flex>
+        {/* Created */}
+        <Flex as="th" paddingY={3} sizing="border" style={{width: 100}}>
+          <Button mode="bleed" padding={2} radius={3} space={1} text="Created" />
+        </Flex>
+        {/* Edited */}
+        <Flex as="th" paddingY={3} sizing="border" style={{width: 100}}>
+          <Button mode="bleed" padding={2} radius={3} space={1} text="Edited" />
+        </Flex>
         {/* Published */}
         <Flex
           as="th"
@@ -40,18 +56,6 @@ export function BundleHeader({searchDisabled, searchTerm, setSearchTerm}: Bundle
           style={{width: 100}}
         >
           <Button mode="bleed" padding={1} space={1} text="Published" />
-        </Flex>
-        {/* Number of documents */}
-        <Flex as="th" paddingY={3} sizing="border" style={{width: 90}}>
-          <Box padding={2}>
-            <Text muted size={1} weight="medium">
-              Documents
-            </Text>
-          </Box>
-        </Flex>
-        {/* Edited */}
-        <Flex as="th" paddingY={3} sizing="border" style={{width: 100}}>
-          <Button mode="bleed" padding={2} radius={3} space={1} text="Edited" />
         </Flex>
         {/* Actions */}
         <Flex
