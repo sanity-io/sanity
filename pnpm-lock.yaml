@@ -1388,8 +1388,8 @@ importers:
         specifier: ^1.2.5
         version: 1.3.0
       '@sanity/bifur-client':
-        specifier: ^0.4.0
-        version: 0.4.0
+        specifier: ^0.4.1
+        version: 0.4.1
       '@sanity/block-tools':
         specifier: 3.49.0
         version: link:../@sanity/block-tools
@@ -6749,8 +6749,8 @@ packages:
       - react-is
     dev: false
 
-  /@sanity/bifur-client@0.4.0:
-    resolution: {integrity: sha512-5aXovw6//IGF/xOFl4q9hoq5kwHzYH1eJ88IS0AwPZEHmGEj8nuaWVu5SWUUOLYTMph+bVqHaDjB33MhWJ3hzQ==}
+  /@sanity/bifur-client@0.4.1:
+    resolution: {integrity: sha512-mHM8WR7pujbIw2qxuV0lzinS1izOoyLza/ejWV6quITTLpBhUoPIQGPER3Ar0SON5JV0VEEqkJGa1kjiYYgx2w==}
     dependencies:
       nanoid: 3.3.7
       rxjs: 7.8.1
