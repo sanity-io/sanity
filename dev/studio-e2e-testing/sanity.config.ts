@@ -16,6 +16,7 @@ import {presenceTool} from 'sanity-test-studio/plugins/presence'
 import {defaultDocumentNode, newDocumentOptions, structure} from 'sanity-test-studio/structure'
 
 import {customComponents} from './components-api'
+import {e2eI18nBundles} from './i18n/bundles'
 import {schemaTypes} from './schemaTypes'
 
 export default defineConfig({
@@ -35,6 +36,10 @@ export default defineConfig({
     image: {
       assetSources: [imageAssetSource],
     },
+  },
+
+  i18n: {
+    bundles: e2eI18nBundles,
   },
 
   document: {
