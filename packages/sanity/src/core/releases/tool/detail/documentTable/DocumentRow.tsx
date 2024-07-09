@@ -87,8 +87,8 @@ export function DocumentRow(props: {
             params={{
               id: getPublishedId(documentId, true),
               type: documentTypeName,
-              perspective: `bundle.${release.name}`,
             }}
+            searchParams={[['perspective', `bundle.${release.name}`]]}
             ref={ref}
           />
         )
