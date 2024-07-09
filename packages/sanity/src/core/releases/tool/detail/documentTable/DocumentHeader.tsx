@@ -111,14 +111,13 @@ export function DocumentHeader(props: {
           </Box>
         </Flex>
 
-        {/* Actions is empty - don't render yet */}
-        {/* <Flex paddingY={3} sizing="border" style={{width: 49}}>
+        <Flex paddingY={3} sizing="border" style={{width: 49}}>
           <Box padding={2}>
             <Text muted size={1} weight="medium">
               &nbsp;
             </Text>
           </Box>
-        </Flex> */}
+        </Flex>
       </Flex>
     </Card>
   )
