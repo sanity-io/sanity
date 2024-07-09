@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-next-studio",
-  "version": "3.48.1",
+  "version": "3.49.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,6 +20,6 @@
     "sanity": "workspace:*",
     "sanity-test-studio": "workspace:*",
     "styled-components": "^6.1.11",
-    "typescript": "5.4.5"
+    "typescript": "5.5.3"
   }
 }

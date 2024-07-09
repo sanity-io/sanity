@@ -20,6 +20,7 @@ Options
   --types                   Defines which document types to export
   --overwrite               Overwrite any file with the same name
   --asset-concurrency <num> Concurrent number of asset downloads
+  --mode <stream|cursor>    Uses a cursor when exporting, this might be more performant for larger datasets, but might not be as accurate if the dataset is being modified during export. Defaults to stream
 
 Examples
   sanity dataset export moviedb localPath.tar.gz
@@ -36,6 +37,7 @@ interface ExportFlags {
   'overwrite'?: boolean
   'types'?: string
   'asset-concurrency'?: string
+  'mode'?: string
 }
 
 interface ParsedExportFlags {
@@ -46,6 +48,7 @@ interface ParsedExportFlags {
   overwrite?: boolean
   types?: string[]
   assetConcurrency?: number
+  mode?: string
 }
 
 function parseFlags(rawFlags: ExportFlags): ParsedExportFlags {
@@ -76,6 +79,10 @@ function parseFlags(rawFlags: ExportFlags): ParsedExportFlags {
 
   if (typeof rawFlags.overwrite !== 'undefined') {
     flags.overwrite = Boolean(rawFlags.overwrite)
+  }
+
+  if (typeof rawFlags.mode !== 'undefined') {
+    flags.mode = rawFlags.mode
   }
 
   return flags

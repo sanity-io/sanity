@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import {type EditorSelection, type RangeDecoration} from '@sanity/portable-text-editor'
+import {type EditorSelection, type RangeDecoration} from '@portabletext/editor'
 import {defineArrayMember, defineField, defineType, type SanityDocument} from '@sanity/types'
 import {type PropsWithChildren, useEffect, useMemo, useState} from 'react'
 import {type InputProps, PortableTextInput, type PortableTextInputProps} from 'sanity'

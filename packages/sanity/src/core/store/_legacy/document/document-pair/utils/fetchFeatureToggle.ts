@@ -1,10 +1,14 @@
 import {type SanityClient} from '@sanity/client'
-import {map, type Observable, of, ReplaySubject, timeout, timer} from 'rxjs'
+import {map, type Observable, of, type OperatorFunction, ReplaySubject, timeout, timer} from 'rxjs'
 import {catchError, concatMap, share} from 'rxjs/operators'
+import {SANITY_VERSION} from 'sanity'
+import {satisfies} from 'semver'
 
-interface ActionsFeatureToggle {
-  actions: boolean
+export interface ActionsFeatureToggle {
+  enabled: boolean
+  compatibleStudioVersions: string
 }
+
 const CACHE = new WeakMap<SanityClient, Observable<boolean>>()
 
 // How often to refresh the feature toggle
@@ -24,7 +28,7 @@ function createFeatureToggle(client: SanityClient) {
           withCredentials: true,
         })
         .pipe(
-          map((res: ActionsFeatureToggle) => res.actions),
+          mapResponse(),
           timeout({first: 2000, with: () => of(false)}),
           catchError(() =>
             // If we fail to fetch the feature toggle, we'll just assume it's disabled and fallback to legacy mutations
@@ -40,6 +44,16 @@ function createFeatureToggle(client: SanityClient) {
       // keep it alive for some time after the last subscriber unsubscribes
       resetOnRefCountZero: () => RESET_TIMER,
     }),
+  )
+}
+
+export function mapResponse(): OperatorFunction<ActionsFeatureToggle, boolean> {
+  return map<ActionsFeatureToggle, boolean>(
+    (res) =>
+      res.enabled &&
+      satisfies(SANITY_VERSION, res.compatibleStudioVersions, {
+        includePrerelease: true,
+      }),
   )
 }
 

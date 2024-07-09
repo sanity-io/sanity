@@ -42,7 +42,7 @@ function TaskList(props: TaskListProps) {
 
   return (
     <DetailsFlex forwardedAs="details" direction="column" open={status === 'open'}>
-      <SummaryBox forwardedAs="summary">
+      <SummaryBox forwardedAs="summary" paddingY={1}>
         <Flex align="center" gap={1} paddingY={1}>
           <Text size={1} weight="medium" muted>
             {getLabelForStatus(status)}
@@ -54,7 +54,7 @@ function TaskList(props: TaskListProps) {
         </Flex>
       </SummaryBox>
 
-      <Stack space={4} marginTop={4} paddingBottom={5}>
+      <Stack space={4} marginTop={3} paddingBottom={5}>
         {tasks?.length > 0 ? (
           tasks.map((task, index) => {
             const showDivider = index < tasks.length - 1

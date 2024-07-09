@@ -1,5 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`generateSchemaTypes Adds a comment when missing referenced inline type 1`] = `
+"export type MyObject = unknown // Unable to locate the referenced type \\"test\\" in schema
+;"
+`;
+
 exports[`generateSchemaTypes can generate well known types 1`] = `"export declare const internalGroqTypeReferenceTo: unique symbol;"`;
 
 exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: boolean 1`] = `"export type Test_2 = boolean;"`;

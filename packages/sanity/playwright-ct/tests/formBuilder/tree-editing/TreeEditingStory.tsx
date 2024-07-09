@@ -8,6 +8,82 @@ interface GetSchemaTypesOpts {
   legacyEditing?: boolean
 }
 
+const arrayWithNestedObjectsWithArray = defineField({
+  name: 'arrayWithNestedObjectsWithArray',
+  type: 'array',
+  title: 'Array with nested objects with array',
+  of: [
+    {
+      type: 'object',
+      name: 'firstObject',
+      title: 'First object',
+      fields: [
+        {
+          type: 'object',
+          name: 'secondObject',
+          title: 'Second object',
+          fields: [
+            {
+              type: 'array',
+              name: 'nestedArray',
+              title: 'Nested array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'nestedObject',
+                  title: 'Nested object',
+                  fields: [
+                    {
+                      type: 'string',
+                      name: 'nestedString',
+                      title: 'Nested string',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
+const blockField = defineField({
+  type: 'array',
+  name: 'pte',
+  title: 'PTE',
+  of: [
+    {type: 'block'},
+    {
+      type: 'object',
+      name: 'myBlockObject',
+      title: 'My block object',
+      fields: [
+        {
+          type: 'array',
+          name: 'myBlockObjectArray',
+          title: 'My block object array',
+          of: [
+            {
+              type: 'object',
+              name: 'myBlockObjectArrayItem',
+              title: 'My block object array item',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
 function getSchemaTypes(opts: GetSchemaTypesOpts) {
   const {legacyEditing} = opts
 
@@ -18,7 +94,14 @@ function getSchemaTypes(opts: GetSchemaTypesOpts) {
       type: 'document',
       name: 'test',
       title: 'Test',
+      fieldsets: [
+        {
+          name: 'fieldset',
+        },
+      ],
       fields: [
+        arrayWithNestedObjectsWithArray,
+
         defineField({
           type: 'array',
           name: 'myArrayOfObjects',
@@ -36,10 +119,32 @@ function getSchemaTypes(opts: GetSchemaTypesOpts) {
                   name: 'title',
                   title: 'Title',
                 },
+                blockField,
               ],
             },
           ],
         }),
+        defineField({
+          type: 'array',
+          name: 'myFieldsetArray',
+          title: 'My fieldset array',
+          fieldset: 'fieldset',
+          of: [
+            {
+              type: 'object',
+              name: 'myObject',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+                blockField,
+              ],
+            },
+          ],
+        }),
+        blockField,
       ],
     }),
   ]

@@ -1,31 +1,62 @@
 {
   "$schema": "https://turbo.build/schema.json",
-   // All environment variables that should invalidate a cached build needs to be declared here
-  "globalEnv": ["OS", "RUNNER_OS", "PKG_FILE_PATH", "PKG_FORMAT", "PKG_RUNTIME", "PKG_VERSION", "DEBUG"],
-  // These root workspace files are reused in workspaces and may affect their build output
+  // All environment variables that should invalidate a cached build needs to be declared here
+  "globalEnv": [
+    "CI",
+    "DEBUG",
+    "NODE_ENV",
+    "PKG_FORMAT",
+    "PKG_RUNTIME",
+    "PKG_VERSION",
+    "SANITY_STUDIO_DATASET",
+    "SANITY_STUDIO_DEBUG_I18N",
+    "SANITY_STUDIO_MODE",
+    "SANITY_STUDIO_PROJECT_ID",
+    "EXTRACT_SANITY_PROJECT_ID",
+    "EXTRACT_SANITY_DATASET",
+    "EXTRACT_SANITY_API_TOKEN"
+  ],
+  // Variables that should be passed through but not invalidate the cache
+  "globalPassThroughEnv": [
+    "PKG_FILE_PATH",
+    "RUNNER_OS",
+    "SANITY_BASE_PATH",
+    "TZ"
+  ],
   "globalDependencies": [
     ".eslintrc.cjs",
     ".prettierrc",
-    "lerna.json" // some tools, like babel, reads from this file to identify other roots
+    "lerna.json"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
-      "outputs": ["lib/**", "*.js"],
-      "dependsOn": ["^build"],
-      "outputMode": "new-only"
+      "outputs": [
+        "lib/**",
+        "*.js"
+      ],
+      "dependsOn": [
+        "^build"
+      ],
+      "outputLogs": "new-only"
     },
     "build:bundle": {
-      "outputs": ["dist/**"],
-      "dependsOn": ["build"],
-      "outputMode": "new-only"
+      "outputs": [
+        "dist/**"
+      ],
+      "dependsOn": [
+        "build"
+      ],
+      "outputLogs": "new-only"
     },
     "check:types": {
       "outputs": [],
-      "dependsOn": ["^build"],
-      "outputMode": "errors-only"
+      "dependsOn": [
+        "^build"
+      ],
+      "outputLogs": "errors-only"
     },
     "lint": {
-      "outputMode": "errors-only"
+      "outputLogs": "errors-only"
     },
     "//#check:format": {}
   }

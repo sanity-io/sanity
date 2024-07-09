@@ -3,7 +3,7 @@ import {
   keyGenerator,
   PortableTextEditor,
   type RenderBlockFunction,
-} from '@sanity/portable-text-editor'
+} from '@portabletext/editor'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
 import {

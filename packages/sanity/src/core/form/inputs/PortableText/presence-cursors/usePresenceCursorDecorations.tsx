@@ -1,7 +1,4 @@
-import {
-  type RangeDecoration,
-  type RangeDecorationOnMovedDetails,
-} from '@sanity/portable-text-editor'
+import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
 import {isEqual} from 'lodash'

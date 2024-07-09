@@ -1,57 +1,113 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
-interface ActionsFeatureToggle {
-  actions: boolean
-}
+import {mockActionsFeatureToggle} from '../../helpers/mockActionsFeatureToggle'
 
-/* 
-  Test skipped due to on going developments around server actions that make them flaky 
-  Re-enable this test when the server actions are stable 
-  */
-test.skip(`document actions follow appropriate logic after receiving response from feature toggle endpoint`, async ({
+test('Actions API should be used if the feature toggle is enabled and the Studio version satisfies the `compatibleStudioVersions` constraint', async ({
   page,
   createDraftDocument,
 }) => {
-  await createDraftDocument('/test/content/book')
-
-  const featureToggleRequest = page.waitForResponse(async (response) => {
-    return response.url().includes('/data/actions') && response.request().method() === 'GET'
+  await mockActionsFeatureToggle({
+    response: {
+      enabled: true,
+      compatibleStudioVersions: '>= 3',
+    },
+    page,
   })
 
-  const featureToggleResponse: ActionsFeatureToggle = await (await featureToggleRequest).json()
+  const actionsEditRequest = page.waitForResponse(
+    (response) =>
+      response.url().includes('/data/actions') && response.request().method() === 'POST',
+    {
+      timeout: 20_000,
+    },
+  )
 
-  await page.getByTestId('field-title').getByTestId('string-input').fill('Test title')
+  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
-  if (featureToggleResponse.actions) {
-    const actionsEditRequest = page.waitForResponse(async (response) => {
-      return response.url().includes('/data/actions') && response.request().method() === 'POST'
-    })
+  await createDraftDocument('/test/content/book')
+  await titleInput.fill('Test title')
+  const actionsEditResponse = await (await actionsEditRequest).json()
 
-    const actionsEditResponse = await (await actionsEditRequest).json()
+  expect(actionsEditResponse).toEqual(
+    expect.objectContaining({
+      transactionId: expect.any(String),
+    }),
+  )
+})
 
-    expect(actionsEditResponse).toEqual(
-      expect.objectContaining({
-        transactionId: expect.any(String),
-      }),
-    )
-  } else {
-    const mutateEditRequest = page.waitForResponse(async (response) => {
-      return response.url().includes('/data/mutate') && response.request().method() === 'POST'
-    })
+test('Actions API should not be used if the feature toggle is enabled, but the Studio version does not satisfy the `compatibleStudioVersions` constraint', async ({
+  page,
+  createDraftDocument,
+}) => {
+  await mockActionsFeatureToggle({
+    response: {
+      enabled: true,
+      compatibleStudioVersions: '< 3.0.0',
+    },
+    page,
+  })
 
-    const mutateEditResponse = await (await mutateEditRequest).json()
+  const mutateEditRequest = page.waitForResponse(
+    (response) => response.url().includes('/data/mutate') && response.request().method() === 'POST',
+    {
+      timeout: 20_000,
+    },
+  )
 
-    expect(mutateEditResponse).toEqual(
-      expect.objectContaining({
-        transactionId: expect.any(String),
-        results: [
-          {
-            id: expect.any(String),
-            operation: expect.any(String),
-          },
-        ],
-      }),
-    )
-  }
+  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+
+  await createDraftDocument('/test/content/book')
+  await titleInput.fill('Test title')
+  const mutateEditResponse = await (await mutateEditRequest).json()
+
+  expect(mutateEditResponse).toEqual(
+    expect.objectContaining({
+      transactionId: expect.any(String),
+      results: [
+        {
+          id: expect.any(String),
+          operation: expect.any(String),
+        },
+      ],
+    }),
+  )
+})
+
+test('Actions API should not be used if the feature toggle is not enabled, regardless of whether the Studio version satisfies the `compatibleStudioVersions` constraint', async ({
+  page,
+  createDraftDocument,
+}) => {
+  await mockActionsFeatureToggle({
+    response: {
+      enabled: false,
+      compatibleStudioVersions: '>= 3',
+    },
+    page,
+  })
+
+  const mutateEditRequest = page.waitForResponse(
+    (response) => response.url().includes('/data/mutate') && response.request().method() === 'POST',
+    {
+      timeout: 20_000,
+    },
+  )
+
+  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+
+  await createDraftDocument('/test/content/book')
+  await titleInput.fill('Test title')
+  const mutateEditResponse = await (await mutateEditRequest).json()
+
+  expect(mutateEditResponse).toEqual(
+    expect.objectContaining({
+      transactionId: expect.any(String),
+      results: [
+        {
+          id: expect.any(String),
+          operation: expect.any(String),
+        },
+      ],
+    }),
+  )
 })

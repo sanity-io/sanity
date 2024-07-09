@@ -1,30 +1,45 @@
+import {toString} from '@sanity/util/paths'
 import {
   type ArraySchemaType,
   EMPTY_ARRAY,
   getValueAtPath,
-  isArrayOfPrimitivesSchemaType,
-  isArraySchemaType,
+  isArrayOfBlocksSchemaType,
+  isArrayOfObjectsSchemaType,
+  isObjectSchemaType,
   isPrimitiveSchemaType,
   isReferenceSchemaType,
+  type ObjectField,
   type ObjectSchemaType,
   type Path,
+  type SchemaType,
 } from 'sanity'
 
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
+import {findArrayTypePaths} from '../findArrayTypePaths'
+import {getSchemaField} from '../getSchemaField'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
 import {getRelativePath, isArrayItemSelected, shouldBeInBreadcrumb} from './utils'
 
 interface BuildArrayState {
-  arrayValue: Record<string, unknown>[]
+  /** The schema type of the array field  */
   arraySchemaType: ArraySchemaType
+  /** The value of the array field */
+  arrayValue: Record<string, unknown>[]
+  /**  The value of the document */
   documentValue: unknown
+  /** The current `openPath` */
   openPath: Path
-  rootPath: Path
+  /** The recursive function to build the tree editing state for nested fields */
   recursive: (props: RecursiveProps) => TreeEditingState
+  /** The root path of the array */
+  rootPath: Path
 }
 
+/**
+ * Build the tree editing state for an array field.
+ */
 export function buildArrayState(props: BuildArrayState): TreeEditingState {
   const {arraySchemaType, arrayValue, documentValue, openPath, rootPath, recursive} = props
 
@@ -32,6 +47,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   const menuItems: TreeEditingMenuItem[] = []
   const breadcrumbs: TreeEditingBreadcrumb[] = []
 
+  // If tree editing is disabled for the array field, return early.
   if (arraySchemaType.options?.treeEditing === false) {
     return {
       breadcrumbs,
@@ -41,22 +57,20 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     }
   }
 
+  // Iterate over the values of the array field.
   arrayValue.forEach((item) => {
+    // Construct the path to the array item.
     const itemPath = [...rootPath, {_key: item._key}] as Path
 
+    // Get the schema field for the array item.
     const itemSchemaField = getItemType(arraySchemaType, item) as ObjectSchemaType
 
     if (!itemSchemaField) return
+    if (isReferenceSchemaType(itemSchemaField)) return
+    if (itemSchemaField?.options?.treeEditing === false) return
 
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: TreeEditingMenuItem[] = []
-
-    const isReference = isReferenceSchemaType(itemSchemaField)
-
-    // Do not include references
-    if (isReference) return
-
-    if (itemSchemaField?.options?.treeEditing === false) return
 
     if (shouldBeInBreadcrumb(itemPath, openPath)) {
       const breadcrumbsResult = buildBreadcrumbsState({
@@ -69,32 +83,74 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       breadcrumbs.push(breadcrumbsResult)
     }
 
+    // Iterate over the fields of the array item to resolve any nested fields.
     childrenFields.forEach((childField) => {
-      const childPath = [...itemPath, childField.name] as Path
-      const childValue = getValueAtPath(documentValue, childPath)
-
-      const isPrimitive = isPrimitiveSchemaType(childField?.type)
-      const isPortableText =
-        isArraySchemaType(childField.type) && childField.type.of.some((t) => t.name === 'block')
-
       if (childField?.type?.options?.treeEditing === false) return
+
+      // Construct the path to the child field.
+      const childPath = [...itemPath, childField.name] as Path
+
+      // Get the value of the child field.
+      const childValue = getValueAtPath(documentValue, childPath)
 
       if (isArrayItemSelected(childPath, openPath)) {
         relativePath = getRelativePath(childPath)
       }
 
-      // Proceed with adding the child item to the menu item and breadcrumbs if:
-      // - The child is not a primitive
-      // - The child is not an array of primitives
-      // - The child is an array
-      // - The child has a value
-      // - The child is not a portable text
-      const isValid =
-        !isPrimitive &&
-        !isArrayOfPrimitivesSchemaType(childField.type) &&
-        isArraySchemaType(childField.type) &&
-        childValue &&
-        !isPortableText
+      // If the child field is an object field, check if it contains any array fields.
+      // If there are array fields within the child field, recursively build the tree
+      // editing state for them.
+      if (isObjectSchemaType(childField.type)) {
+        // Find the paths of any array fields within the child field.
+        const arrayPaths = findArrayTypePaths(childField.type.fields)
+
+        // If there are no array fields within the child field, return early.
+        if (arrayPaths.length === 0) return
+
+        // Iterate over the paths of the array fields within the child field.
+        arrayPaths.forEach((arrayPath) => {
+          // Construct the path to the array field.
+          const fieldPath = [...childPath, ...arrayPath] as Path
+
+          // Get the schema field for the array field.
+          const nestedArrayField = getSchemaField(
+            childField.type,
+            toString(arrayPath),
+          ) as ObjectField<SchemaType>
+
+          // Get the value of the array field.
+          const arrayFieldValue_ = getValueAtPath(documentValue, fieldPath)
+          const arrayFieldValue = Array.isArray(arrayFieldValue_) ? arrayFieldValue_ : []
+
+          // If the array field has no value or tree editing is disabled, return early.
+          if (!arrayFieldValue.length) return
+          if (nestedArrayField.type.options?.treeEditing === false) return
+
+          // Update the relative path if the array field is selected.
+          if (isArrayItemSelected(fieldPath, openPath)) {
+            relativePath = getRelativePath(fieldPath)
+          }
+
+          // Recursively build the tree editing state for the array field.
+          const nestedArrayState = recursive({
+            documentValue,
+            path: fieldPath,
+            schemaType: nestedArrayField as ObjectSchemaType,
+          })
+
+          // Add the state of the array field to the children menu items.
+          childrenMenuItems.push({
+            children: nestedArrayState.menuItems,
+            parentSchemaType: childField.type,
+            path: fieldPath,
+            schemaType: nestedArrayField.type,
+            value: arrayFieldValue,
+          })
+        })
+      }
+
+      const isPortableText = isArrayOfBlocksSchemaType(childField.type)
+      const isValid = isArrayOfObjectsSchemaType(childField.type) && childValue && !isPortableText
 
       if (isValid) {
         if (shouldBeInBreadcrumb(childPath, openPath)) {
@@ -109,10 +165,9 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         }
 
         const childState = recursive({
-          schemaType: childField as ObjectSchemaType,
           documentValue,
           path: childPath,
-          initial: false,
+          schemaType: childField as ObjectSchemaType,
         })
 
         childrenMenuItems.push({
@@ -122,16 +177,27 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           schemaType: childField as ObjectSchemaType,
           value: childValue,
         })
+
+        return
+      }
+
+      // If `openPath` points to an array field within a portable text field,
+      // set `relativePath` to the parent of the portable text field.
+      // This ensures that the tree editing dialog opens at the parent level
+      // of the portable text field.
+      // Portable text fields manage their own dialogs, so we open the tree editing
+      // dialog for the parent item and let the portable text field handle its
+      // dialogs via `openPath`.
+      if (isPortableText && toString(openPath).startsWith(toString(childPath))) {
+        relativePath = getRelativePath(childPath)
       }
     })
-
-    const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
 
     if (isArrayItemSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
     }
 
-    if (!isPrimitive) {
+    if (!isPrimitiveSchemaType(itemSchemaField?.type)) {
       menuItems.push({
         children: childrenMenuItems,
         parentSchemaType: arraySchemaType,

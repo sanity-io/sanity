@@ -5,8 +5,10 @@ import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
-import {useSource, useWorkspace} from '../../studio'
+import {useAddonDataset, useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {createBundlesStore} from '../bundles/createBundlesStore'
+import {type BundlesStore} from '../bundles/types'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
 import {useCurrentUser} from '../user'
 import {
@@ -271,5 +273,28 @@ export function useKeyValueStore(): KeyValueStore {
     })
 
     return keyValueStore
+  }, [client, resourceCache, workspace])
+}
+
+/** @internal */
+export function useBundlesStore(): BundlesStore {
+  const resourceCache = useResourceCache()
+  const workspace = useWorkspace()
+  const {client} = useAddonDataset()
+
+  return useMemo(() => {
+    const bundlesStore =
+      resourceCache.get<BundlesStore>({
+        dependencies: [workspace, client],
+        namespace: 'BundlesStore',
+      }) || createBundlesStore({client})
+
+    resourceCache.set({
+      dependencies: [workspace, client],
+      namespace: 'BundlesStore',
+      value: bundlesStore,
+    })
+
+    return bundlesStore
   }, [client, resourceCache, workspace])
 }

@@ -20,7 +20,7 @@ export function BundleRow({bundle}: Props) {
         <Card
           as="a"
           // navigate to bundle detail
-          onClick={() => router.navigate({bundleName: bundle.name})}
+          onClick={() => router.navigate({bundleId: bundle._id})}
           padding={2}
           radius={2}
         >

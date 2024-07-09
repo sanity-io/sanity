@@ -4,19 +4,18 @@ import {type ReactNode} from 'react'
 
 import {queryByDataUi} from '../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {useBundlesStore} from '../../../store/bundles'
-import {BundlesProvider} from '../../../store/bundles/BundlesProvider'
+import {useBundles} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {releasesUsEnglishLocaleBundle} from '../../i18n'
-import {ReleasesOverview} from '../ReleasesOverview'
+import BundlesOverview from '../BundlesOverview'
 
 // TODO: move this to test for CreateBundleDialog
 jest.mock('../../../store/bundles/useBundleOperations', () => ({
   useBundleOperations: jest.fn().mockReturnValue({deleteBundle: jest.fn()}),
 }))
 
-jest.mock('../../../store/bundles/useBundlesStore', () => ({
-  useBundlesStore: jest.fn(),
+jest.mock('../../../store/bundles', () => ({
+  useBundles: jest.fn(),
 }))
 
 jest.mock('sanity/router', () => ({
@@ -29,29 +28,24 @@ const createWrapper = async () => {
     resources: [releasesUsEnglishLocaleBundle],
   })
   return function Wrapper({children}: {children: ReactNode}) {
-    return (
-      <TestProvider>
-        <BundlesProvider>{children}</BundlesProvider>
-      </TestProvider>
-    )
+    return <TestProvider>{children}</TestProvider>
   }
 }
 
-const mockUseBundleStore = useBundlesStore as jest.Mock<typeof useBundlesStore>
+const mockUseBundleStore = useBundles as jest.Mock<typeof useBundles>
 
-describe('ReleasesOverview', () => {
+describe('BundlesOverview', () => {
   describe('when loading bundles', () => {
     beforeEach(async () => {
       mockUseBundleStore.mockReturnValue({
-        data: [],
+        data: null,
         loading: true,
-        error: null,
         dispatch: jest.fn(),
       })
 
       const wrapper = await createWrapper()
 
-      return render(<ReleasesOverview />, {wrapper})
+      return render(<BundlesOverview />, {wrapper})
     })
 
     it('does not show bundles table but shows loader', () => {
@@ -78,12 +72,11 @@ describe('ReleasesOverview', () => {
       mockUseBundleStore.mockReturnValue({
         data: [],
         loading: false,
-        error: null,
         dispatch: jest.fn(),
       })
       const wrapper = await createWrapper()
 
-      return render(<ReleasesOverview />, {wrapper})
+      return render(<BundlesOverview />, {wrapper})
     })
 
     it('shows a message that no bundles are available', () => {
@@ -116,12 +109,11 @@ describe('ReleasesOverview', () => {
       mockUseBundleStore.mockReturnValue({
         data: bundles,
         loading: false,
-        error: null,
         dispatch: jest.fn(),
       })
       const wrapper = await createWrapper()
 
-      return render(<ReleasesOverview />, {wrapper})
+      return render(<BundlesOverview />, {wrapper})
     })
     it('shows each open bundle', () => {
       screen.getByText('Bundle 1')

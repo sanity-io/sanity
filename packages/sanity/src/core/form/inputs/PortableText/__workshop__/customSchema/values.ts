@@ -1,4 +1,4 @@
-import {keyGenerator as createKey} from '@sanity/portable-text-editor'
+import {keyGenerator as createKey} from '@portabletext/editor'
 import {type PortableTextBlock} from '@sanity/types'
 
 import {words} from './words'

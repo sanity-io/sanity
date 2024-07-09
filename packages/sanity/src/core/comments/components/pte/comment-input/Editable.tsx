@@ -3,7 +3,7 @@ import {
   PortableTextEditable,
   type RenderBlockFunction,
   usePortableTextEditorSelection,
-} from '@sanity/portable-text-editor'
+} from '@portabletext/editor'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {useClickOutside} from '@sanity/ui'
 // eslint-disable-next-line camelcase

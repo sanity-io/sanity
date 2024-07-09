@@ -5,7 +5,7 @@ import {
   PortableTextEditor,
   type RangeDecoration,
   type RangeDecorationOnMovedDetails,
-} from '@sanity/portable-text-editor'
+} from '@portabletext/editor'
 import {isPortableTextTextBlock} from '@sanity/types'
 import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'

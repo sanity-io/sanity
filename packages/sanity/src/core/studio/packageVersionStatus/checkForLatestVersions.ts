@@ -14,8 +14,8 @@ const MODULES_URL = `${MODULES_HOST}/${MODULES_URL_VERSION}/modules/`
 const fetchLatestVersionForPackage = async (pkg: string, version: string) => {
   try {
     // On every request it should be a new timestamp, so we can actually get a new version notification
-    const timestamp = Date.now() / 1000
-    const res = await fetch(`${MODULES_URL}${pkg}/default/^${version}/t${timestamp}`, {
+    const timestamp = `t${Math.floor(Date.now() / 1000)}`
+    const res = await fetch(`${MODULES_URL}${pkg}/default/^${version}/${timestamp}`, {
       headers: {
         accept: 'application/json',
       },
