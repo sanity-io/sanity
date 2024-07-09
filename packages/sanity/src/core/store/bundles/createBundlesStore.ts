@@ -1,6 +1,7 @@
 import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
 import {
   BehaviorSubject,
+  buffer,
   catchError,
   concat,
   concatWith,
@@ -20,9 +21,10 @@ import {
   startWith,
   Subject,
   switchMap,
+  takeUntil,
   tap,
-  throttleTime,
   timeout,
+  timer,
 } from 'rxjs'
 
 import {type BundlesMetadataMap} from '../../releases/tool/useBundlesMetadata'
@@ -291,21 +293,39 @@ export function createBundlesStore(context: {
       '',
     )})]`
 
-    return studioClient.observable
-      .listen(
-        queryFilterAllDocumentsInBundleIds,
-        {},
-        {...LISTEN_OPTIONS, events: ['mutation'], includeResult: false, tag: 'bundle-docs.listen'},
-      )
-      .pipe(
-        throttleTime(1_000),
-        switchMap(() => aggFetch$(bundleIds)),
-        catchError((error) => {
-          console.error('Failed to listen for bundle metadata', error)
-          return EMPTY
-        }),
-        finalize(() => console.log('closing')),
-      )
+    const queryListen = studioClient.observable.listen(
+      queryFilterAllDocumentsInBundleIds,
+      {},
+      {...LISTEN_OPTIONS, events: ['mutation'], tag: 'bundle-docs.listen'},
+    )
+
+    const bufferedSwitchMap = switchMap(() => timer(1_000))
+
+    return queryListen.pipe(
+      catchError((error) => {
+        console.error('Failed to listen for bundle metadata', error)
+        return EMPTY
+      }),
+      // Start buffering when the first event is emitted and stop buffering after 1 second
+      buffer(queryListen.pipe(bufferedSwitchMap, takeUntil(queryListen.pipe(bufferedSwitchMap)))),
+      switchMap((entriesArray) => {
+        const mutatedBundleSlugs = entriesArray.reduce<string[]>((accBundleIds, event) => {
+          if ('type' in event && event.type === 'mutation') {
+            const bundleId = event.documentId.split('.')[0]
+            return [...accBundleIds, bundleId]
+          }
+          return accBundleIds
+        }, [])
+
+        if (mutatedBundleSlugs.length) {
+          // de-dup mutated bundle slugs
+          return aggFetch$([...new Set(mutatedBundleSlugs)])
+        }
+
+        return EMPTY
+      }),
+      finalize(() => console.log('closing')),
+    )
   }
 
   const aggState$ = (bundleIds: string[]) =>
