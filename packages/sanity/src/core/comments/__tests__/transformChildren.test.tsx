@@ -3,11 +3,28 @@ import {describe, expect, test} from '@jest/globals'
 import {transformChildren} from '../utils'
 
 describe('comments: transformChildren', () => {
-  test('should create link elements of link', () => {
-    const result = transformChildren(['My link', 'https://www.sanity.io'])
+  test('should create link element of link', () => {
+    const result = transformChildren(['My link https://www.sanity.io'])
 
     expect(result).toEqual([
-      'My link',
+      'My link ',
+      <a
+        key="https://www.sanity.io"
+        href="https://www.sanity.io"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        https://www.sanity.io
+      </a>,
+      '',
+    ])
+  })
+
+  test('should create link with multiple items in the array', () => {
+    const result = transformChildren(['My link ', 'https://www.sanity.io'])
+
+    expect(result).toEqual([
+      'My link ',
       '',
       <a
         key="https://www.sanity.io"
@@ -35,6 +52,23 @@ describe('comments: transformChildren', () => {
         https://www.sanity.io
       </a>,
       ')',
+    ])
+  })
+
+  test('should create link element when link is inside brackets', () => {
+    const result = transformChildren(['My link [https://www.sanity.io]'])
+
+    expect(result).toEqual([
+      'My link [',
+      <a
+        key="https://www.sanity.io"
+        href="https://www.sanity.io"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        https://www.sanity.io
+      </a>,
+      ']',
     ])
   })
 
@@ -191,6 +225,252 @@ describe('comments: transformChildren', () => {
       'Check this link ',
       <a key="www.sanity.io" href="https://www.sanity.io" rel="noopener noreferrer" target="_blank">
         www.sanity.io
+      </a>,
+      '',
+    ])
+  })
+
+  test('should handle multiple links with varying protocols', () => {
+    const result = transformChildren(['Visit http://example.com and https://sanity.io'])
+
+    expect(result).toEqual([
+      'Visit ',
+      <a
+        key="http://example.com"
+        href="http://example.com"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        http://example.com
+      </a>,
+      ' and ',
+      <a key="https://sanity.io" href="https://sanity.io" rel="noopener noreferrer" target="_blank">
+        https://sanity.io
+      </a>,
+      '',
+    ])
+  })
+
+  test('should handle links with subdomains', () => {
+    const result = transformChildren(['Check this link https://blog.sanity.io'])
+
+    expect(result).toEqual([
+      'Check this link ',
+      <a
+        key="https://blog.sanity.io"
+        href="https://blog.sanity.io"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        https://blog.sanity.io
+      </a>,
+      '',
+    ])
+  })
+
+  test('should handle links with ports', () => {
+    const result = transformChildren(['Visit http://localhost:3000 for local development'])
+
+    expect(result).toEqual([
+      'Visit ',
+      <a
+        key="http://localhost:3000"
+        href="http://localhost:3000"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        http://localhost:3000
+      </a>,
+      ' for local development',
+    ])
+  })
+
+  test('should handle links with fragments', () => {
+    const result = transformChildren(['Go to https://sanity.io#features'])
+
+    expect(result).toEqual([
+      'Go to ',
+      <a
+        key="https://sanity.io#features"
+        href="https://sanity.io#features"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        https://sanity.io#features
+      </a>,
+      '',
+    ])
+  })
+
+  test('should handle mixed content with multiple links', () => {
+    const result = transformChildren([
+      'Check https://sanity.io for info and http://example.com for examples',
+    ])
+
+    expect(result).toEqual([
+      'Check ',
+      <a key="https://sanity.io" href="https://sanity.io" rel="noopener noreferrer" target="_blank">
+        https://sanity.io
+      </a>,
+      ' for info and ',
+      <a
+        key="http://example.com"
+        href="http://example.com"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        http://example.com
+      </a>,
+      ' for examples',
+    ])
+  })
+
+  test('should handle links with hyphens', () => {
+    const result = transformChildren(['Check this link https://example-site.com'])
+
+    expect(result).toEqual([
+      'Check this link ',
+      <a
+        key="https://example-site.com"
+        href="https://example-site.com"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        https://example-site.com
+      </a>,
+      '',
+    ])
+  })
+
+  test('should handle links with underscores', () => {
+    const result = transformChildren(['Check this link https://example_site.com'])
+
+    expect(result).toEqual([
+      'Check this link ',
+      <a
+        key="https://example_site.com"
+        href="https://example_site.com"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        https://example_site.com
+      </a>,
+      '',
+    ])
+  })
+
+  test('should handle links with tld longer than 2 characters', () => {
+    const result = transformChildren(['Check this link https://example.website'])
+
+    expect(result).toEqual([
+      'Check this link ',
+      <a
+        key="https://example.website"
+        href="https://example.website"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        https://example.website
+      </a>,
+      '',
+    ])
+  })
+
+  test('should handle multiple links with mixed content', () => {
+    const result = transformChildren([
+      'Visit http://example.com, https://sanity.io and www.google.com',
+    ])
+
+    expect(result).toEqual([
+      'Visit ',
+      <a
+        key="http://example.com"
+        href="http://example.com"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        http://example.com
+      </a>,
+      ', ',
+      <a key="https://sanity.io" href="https://sanity.io" rel="noopener noreferrer" target="_blank">
+        https://sanity.io
+      </a>,
+      ' and ',
+      <a
+        key="www.google.com"
+        href="https://www.google.com"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        www.google.com
+      </a>,
+      '',
+    ])
+  })
+
+  test('should handle multiple items in the array with a mix of links and text', () => {
+    const result = transformChildren([
+      'Hey, check out this cool site: https://www.example.com.',
+      'I found some useful info here as well, ',
+      'www.another-example.com',
+      'Let me know what you think!',
+    ])
+
+    expect(result).toEqual([
+      'Hey, check out this cool site: ',
+      <a
+        key="https://www.example.com"
+        href="https://www.example.com"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        https://www.example.com
+      </a>,
+      '.',
+      'I found some useful info here as well, ',
+      '',
+      <a
+        key="www.another-example.com"
+        href="https://www.another-example.com"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        www.another-example.com
+      </a>,
+      '',
+      'Let me know what you think!',
+    ])
+  })
+
+  test('should handle links with query parameters and fragments', () => {
+    const result = transformChildren(['Check this out https://example.com/path?query=1#section'])
+
+    expect(result).toEqual([
+      'Check this out ',
+      <a
+        key="https://example.com/path?query=1#section"
+        href="https://example.com/path?query=1#section"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        https://example.com/path?query=1#section
+      </a>,
+      '',
+    ])
+  })
+
+  test('should handle links with IP addresses', () => {
+    const result = transformChildren(['Check server at http://192.168.1.1'])
+
+    expect(result).toEqual([
+      'Check server at ',
+      <a
+        key="http://192.168.1.1"
+        href="http://192.168.1.1"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        http://192.168.1.1
       </a>,
       '',
     ])
