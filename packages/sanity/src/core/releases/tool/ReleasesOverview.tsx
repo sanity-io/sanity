@@ -1,7 +1,8 @@
 import {AddIcon} from '@sanity/icons'
 import {Box, Button, type ButtonMode, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {isBefore} from 'date-fns'
-import {type MouseEventHandler, useCallback, useMemo, useState} from 'react'
+import {type MouseEventHandler, useCallback, useEffect, useMemo, useState} from 'react'
+import {useClient} from 'sanity'
 
 import {Button as StudioButton} from '../../../ui-components'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
@@ -10,6 +11,7 @@ import {type BundleDocument} from '../../store/bundles/types'
 import {CreateBundleDialog} from '../../versions/components/dialog/CreateBundleDialog'
 import {BundlesTable} from '../components/BundlesTable/BundlesTable'
 import {containsBundles} from '../types/bundle'
+import {useListenerPolling} from './useListenerPolling'
 
 type Mode = 'open' | 'archived'
 
@@ -21,26 +23,65 @@ export function ReleasesOverview() {
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>()
+  const c = useClient()
 
   const hasBundles = data && containsBundles(data)
   const loadingOrHasBundles = loading || hasBundles
 
+  useListenerPolling(['pedro-summer', ...(data.map((b) => b._id) || [])], c)
+
+  useEffect(() => {
+    if (hasBundles) {
+      const runQuery = async () => {
+        const query = `{
+        "results": *[_id match $bundleId + ".*"]{
+          _updatedAt
+        } | order(_updatedAt desc),
+      }{
+         "lastEdited": results[0]._updatedAt,
+         "versionDocuments": count(results)
+      }`
+        const mappedBundles = await Promise.all(
+          data.map((bundle) => c.fetch(query, {bundleId: 'pedro-summer'})),
+        )
+
+        const result = data.map((bundle, index) => ({
+          ...bundle,
+          ...mappedBundles[index],
+        }))
+
+        console.log({result})
+      }
+
+      runQuery()
+    }
+  }, [c, data, hasBundles])
+
   const groupedBundles = useMemo(
     () =>
       data?.reduce<{open: BundleDocument[]; archived: BundleDocument[]}>((groups, bundle) => {
-        const group =
-          bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date())
-            ? 'archived'
-            : 'open'
+        const isBundleArchived =
+          bundle.archivedAt ||
+          (bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date()))
+        const group = isBundleArchived ? 'archived' : 'open'
 
         return {...groups, [group]: [...groups[group], bundle]}
       }, EMPTY_BUNDLE_GROUPS) || EMPTY_BUNDLE_GROUPS,
     [data],
   )
 
+  // switch to open mode if on archived mode and there are no archived bundles
+  useEffect(() => {
+    if (bundleGroupMode === 'archived' && !groupedBundles.archived.length) {
+      setBundleGroupMode('open')
+    }
+  }, [bundleGroupMode, groupedBundles.archived.length])
+
+  // clear search when mode changes
+  useEffect(() => setSearchTerm(''), [bundleGroupMode])
+
   const handleBundleGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
-      setSearchTerm('') // clear the table search applied
       setBundleGroupMode(groupMode as Mode)
     },
     [],
@@ -111,7 +152,8 @@ export function ReleasesOverview() {
   }
 
   const applySearchTermToBundles = useCallback(
-    (bundle: BundleDocument) => !searchTerm || bundle.title.includes(searchTerm),
+    (bundle: BundleDocument) =>
+      !searchTerm || bundle.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()),
     [searchTerm],
   )
 
