@@ -55,12 +55,12 @@ const components: PortableTextComponents = {
 
   // Since we do not offer any formatting options, we can just use the normal block for all of these.
   marks: {
-    strong: NormalBlockTransformed,
-    em: NormalBlockTransformed,
-    code: NormalBlockTransformed,
-    underline: NormalBlockTransformed,
-    strikeThrough: NormalBlockTransformed,
-    link: NormalBlockTransformed,
+    strong: Fragment,
+    em: Fragment,
+    code: Fragment,
+    underline: Fragment,
+    strikeThrough: Fragment,
+    link: Fragment,
   },
 
   types: {
