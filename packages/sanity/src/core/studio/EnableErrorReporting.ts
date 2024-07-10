@@ -10,7 +10,7 @@ async function fetchTelemetryConsent(client: SanityClient) {
 }
 
 export function EnableErrorReporting() {
-  const client = useClient().withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   useEffect(() => {
     async function checkConsent() {
