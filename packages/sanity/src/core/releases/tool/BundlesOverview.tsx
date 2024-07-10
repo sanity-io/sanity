@@ -31,7 +31,10 @@ export default function BundlesOverview() {
   const tableBundles = useMemo<TableBundle[]>(() => {
     if (!bundles || !bundlesMetadata) return []
 
-    return bundles.map((bundle) => ({...bundle, ...(bundlesMetadata[bundle.name] || {})}))
+    return bundles.map((bundle) => ({
+      ...bundle,
+      documentsMetadata: bundlesMetadata[bundle.name] || {},
+    }))
   }, [bundles, bundlesMetadata])
 
   const groupedBundles = useMemo(

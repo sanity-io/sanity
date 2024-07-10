@@ -30,7 +30,7 @@ const getFetchQuery = (bundleSlugs: string[]) => {
 
       // conforms to BundlesMetadata
       const projection = `${accProjection}"${bundleSlug}": {
-              "editedAt": ${safeSlug}[0]._updatedAt,
+              "updatedAt": ${safeSlug}[0]._updatedAt,
               "documentCount": count(${safeSlug})
             },`
 
