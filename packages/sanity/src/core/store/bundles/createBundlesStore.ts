@@ -1,14 +1,13 @@
 import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
 import {
   BehaviorSubject,
-  buffer,
+  bufferTime,
   catchError,
   concat,
   concatWith,
   delay,
   EMPTY,
   filter,
-  finalize,
   iif,
   map,
   merge,
@@ -21,10 +20,8 @@ import {
   startWith,
   Subject,
   switchMap,
-  takeUntil,
   tap,
   timeout,
-  timer,
 } from 'rxjs'
 
 import {type BundlesMetadataMap} from '../../releases/tool/useBundlesMetadata'
@@ -299,15 +296,13 @@ export function createBundlesStore(context: {
       {...LISTEN_OPTIONS, events: ['mutation'], tag: 'bundle-docs.listen'},
     )
 
-    const bufferedSwitchMap = switchMap(() => timer(1_000))
-
     return queryListen.pipe(
       catchError((error) => {
         console.error('Failed to listen for bundle metadata', error)
         return EMPTY
       }),
-      // Start buffering when the first event is emitted and stop buffering after 1 second
-      buffer(queryListen.pipe(bufferedSwitchMap, takeUntil(queryListen.pipe(bufferedSwitchMap)))),
+      bufferTime(1_000),
+      filter((entriesArray) => entriesArray.length > 0),
       switchMap((entriesArray) => {
         const mutatedBundleSlugs = entriesArray.reduce<string[]>((accBundleIds, event) => {
           if ('type' in event && event.type === 'mutation') {
@@ -324,7 +319,6 @@ export function createBundlesStore(context: {
 
         return EMPTY
       }),
-      finalize(() => console.log('closing')),
     )
   }
 
