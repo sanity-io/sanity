@@ -21,19 +21,15 @@ const getFetchQuery = (bundleSlugs: string[]) => {
   const getSafeSlug = (slug: string) => `bundle_${slug.replaceAll('-', '_')}`
 
   return bundleSlugs.reduce(
-    ({subquery: accSubquery, projection: accProjection}, bundleSlug, index) => {
+    ({subquery: accSubquery, projection: accProjection}, bundleSlug) => {
       const safeSlug = getSafeSlug(bundleSlug)
-      const trailingComma = index === bundleSlugs.length - 1 ? '' : ','
 
-      const subquery = `${accSubquery}"${safeSlug}": *[_id in path("${bundleSlug}.*")]{
-              _updatedAt
-            } | order(_updatedAt desc)
-              ${trailingComma}`
+      const subquery = `${accSubquery}"${safeSlug}": *[_id in path("${bundleSlug}.*")]{_updatedAt } | order(_updatedAt desc),`
 
       const projection = `${accProjection}"${bundleSlug}": {
               "lastEdited": ${safeSlug}[0]._updatedAt,
               "matches": count(${safeSlug})
-            }${trailingComma}`
+            },`
 
       return {subquery, projection}
     },
