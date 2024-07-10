@@ -20,6 +20,7 @@ export const useBundlesMetadata = (bundlesIds: string[]) => {
 
   useEffect(() => {
     if (!data) return
+
     const hasUpdatedMetadata =
       !responseData || Object.entries(responseData).some(([key, value]) => value !== data[key])
 
@@ -30,13 +31,13 @@ export const useBundlesMetadata = (bundlesIds: string[]) => {
 
       setResponseData(nextResponseData)
     }
-  }, [bundlesIds, data, responseData, state.data])
+  }, [bundlesIds, data, responseData])
 
   return {
     error: state.error,
     // loading is only for initial load
     // changing bundleIds will not cause a re-load
-    loading: !state.data,
+    loading: !responseData,
     // fetching is true when performing initial load for a given set of bundle metadata
     // changing bundleIds will cause a re-fetch
     fetching: state.loading,
