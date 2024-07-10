@@ -41,7 +41,7 @@ export function BundleRow({bundle}: Props) {
       {/* # of documents */}
       <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 90}}>
         <Text muted size={1}>
-          {bundle.matches}
+          {bundle.documentCount}
         </Text>
       </Flex>
       {/* Created */}
@@ -69,9 +69,9 @@ export function BundleRow({bundle}: Props) {
         sizing="border"
         style={{width: 100}}
       >
-        {bundle.lastEdited && (
+        {bundle.editedAt && (
           <Text muted size={1}>
-            <RelativeTime time={bundle.lastEdited} />
+            <RelativeTime time={bundle.editedAt} />
           </Text>
         )}
       </Flex>

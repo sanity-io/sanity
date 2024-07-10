@@ -12,7 +12,9 @@ import {
 } from 'rxjs'
 import {type SanityClient} from 'sanity'
 
-import {type BundlesMetadataMap} from '../../releases/tool/useBundlesMetadata'
+import {type BundlesMetadata} from '../../releases/tool/useBundlesMetadata'
+
+export type BundlesMetadataMap = Record<string, BundlesMetadata>
 
 export type MetadataWrapper = {data: BundlesMetadataMap | null; error: null; loading: boolean}
 
@@ -27,8 +29,8 @@ const getFetchQuery = (bundleSlugs: string[]) => {
       const subquery = `${accSubquery}"${safeSlug}": *[_id in path("${bundleSlug}.*")]{_updatedAt } | order(_updatedAt desc),`
 
       const projection = `${accProjection}"${bundleSlug}": {
-              "lastEdited": ${safeSlug}[0]._updatedAt,
-              "matches": count(${safeSlug})
+              "editedAt": ${safeSlug}[0]._updatedAt,
+              "documentCount": count(${safeSlug})
             },`
 
       return {subquery, projection}

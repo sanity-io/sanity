@@ -2,9 +2,16 @@ import {useEffect, useState} from 'react'
 
 import {useBundlesMetadataProvider} from '../contexts/BundlesMetadataProvider'
 
-export type BundlesMetadata = {matches: number; lastEdited: string}
-
-export type BundlesMetadataMap = Record<string, BundlesMetadata>
+export type BundlesMetadata = {
+  /**
+   * The number of documents with the bundle version as a prefix
+   */
+  documentCount: number
+  /**
+   * The last time a document in the bundle was edited
+   */
+  editedAt: string | null
+}
 
 export const useBundlesMetadata = (bundleSlugs: string[]) => {
   const {addBundleSlugsToListener, removeBundleSlugsFromListener, state} =
@@ -17,7 +24,7 @@ export const useBundlesMetadata = (bundleSlugs: string[]) => {
     return () => removeBundleSlugsFromListener([...new Set(bundleSlugs)])
   }, [addBundleSlugsToListener, bundleSlugs, removeBundleSlugsFromListener])
 
-  const {data} = state || {}
+  const {data} = state
 
   useEffect(() => {
     if (!data) return
