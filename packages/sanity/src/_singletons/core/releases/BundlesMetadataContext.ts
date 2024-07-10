@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-import type {MetadataWrapper} from '../../../core/store/bundles/createBundlesStore'
+import type {MetadataWrapper} from '../../../core/store/bundles/createBundlesMetadataAggregator'
 
 export const DEFAULT_METADATA_STATE: MetadataWrapper = {
   data: null,
@@ -10,10 +10,10 @@ export const DEFAULT_METADATA_STATE: MetadataWrapper = {
 
 export const BundlesMetadataContext = createContext<{
   state: MetadataWrapper
-  addBundleIds: (bundleIds: string[]) => void
-  removeBundleIds: (bundleIds: string[]) => void
+  addBundleSlugsToListener: (slugs: string[]) => void
+  removeBundleSlugsFromListener: (slugs: string[]) => void
 }>({
   state: DEFAULT_METADATA_STATE,
-  addBundleIds: () => null,
-  removeBundleIds: () => null,
+  addBundleSlugsToListener: () => null,
+  removeBundleSlugsFromListener: () => null,
 })

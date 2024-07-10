@@ -4,7 +4,7 @@ import {type SanityDocument} from '@sanity/types'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
-import {type MetadataWrapper} from './createBundlesStore'
+import {type MetadataWrapper} from './createBundlesMetadataAggregator'
 import {type bundlesReducerAction, type bundlesReducerState} from './reducer'
 
 /**
@@ -34,6 +34,6 @@ export function isBundleDocument(doc: unknown): doc is BundleDocument {
  */
 export interface BundlesStore {
   state$: Observable<bundlesReducerState>
-  aggState$: (bundleIds: string[]) => Observable<MetadataWrapper>
+  getMetadataStateForSlugs$: (bundleIds: string[]) => Observable<MetadataWrapper>
   dispatch: Dispatch<bundlesReducerAction>
 }
