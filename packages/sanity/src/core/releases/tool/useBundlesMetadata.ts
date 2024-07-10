@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 
 import {useBundlesMetadataProvider} from '../contexts/BundlesMetadataProvider'
 
-export type BundlesMetadata = {
+export interface BundlesMetadata {
   /**
    * The number of documents with the bundle version as a prefix
    */
