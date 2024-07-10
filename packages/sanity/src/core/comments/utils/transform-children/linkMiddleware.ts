@@ -1,13 +1,18 @@
-import {createElement, type ReactNode} from 'react'
+import {createElement, type MouseEvent, type ReactNode} from 'react'
 
 import {type Middleware} from './types'
 
 const URL_REGEX = /\b(https?:\/\/[^\s,()]+(?:\.[^\s,()]+)*|www\.[^\s,()]+\.[^\s,()]{2,})\b/g
 
+function onClick(event: MouseEvent<HTMLAnchorElement>) {
+  event.stopPropagation()
+}
+
 function createLinkElement(url: string): ReactNode {
   const href = url.startsWith('http') ? url : `https://${url}`
+  const props = {href, target: '_blank', rel: 'noopener noreferrer', key: url, onClick}
 
-  return createElement('a', {href, target: '_blank', rel: 'noopener noreferrer', key: url}, url)
+  return createElement('a', props, url)
 }
 
 /**
