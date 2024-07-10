@@ -115,7 +115,8 @@ export function resolveConsent({env}: Options): Promise<ConsentInformation> {
       store: getUserConfig(),
       key: TELEMETRY_CONSENT_CONFIG_KEY,
       ttl: FIVE_MINUTES,
-      fetchValue: () => client.request({uri: '/intake/telemetry-status'}),
+      fetchValue: () =>
+        client.request({uri: '/intake/telemetry-status', tag: 'telemetry-consent.cli'}),
       onRevalidate() {
         debug('Revalidating cached telemetry consent status...')
       },

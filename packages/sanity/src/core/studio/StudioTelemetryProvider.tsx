@@ -21,7 +21,8 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
       flushInterval: 30000,
 
       // implements user consent resolving
-      resolveConsent: () => client.request({uri: '/intake/telemetry-status'}),
+      resolveConsent: () =>
+        client.request({uri: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
 
       // implements sending events to backend
       sendEvents: (batch) =>
