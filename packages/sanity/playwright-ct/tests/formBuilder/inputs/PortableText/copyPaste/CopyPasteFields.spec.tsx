@@ -72,12 +72,6 @@ test.describe('Copy and pasting fields', () => {
       await expect(page.getByRole('menuitem', {name: 'Copy field'})).toBeVisible()
       await page.getByRole('menuitem', {name: 'Copy field'}).press('Enter')
 
-      if (browserName === 'firefox') {
-        await expect(page.getByText(`Your browser doesn't support this action (yet)`)).toBeVisible()
-
-        return
-      }
-
       await expect(page.getByText(`Field "Object with columns" copied`)).toBeVisible()
 
       // Check that the plain text version is set
@@ -139,12 +133,6 @@ test.describe('Copy and pasting fields', () => {
       await expect($object).toBeFocused()
       await $object.press('ControlOrMeta+C')
 
-      if (browserName === 'firefox') {
-        await expect(page.getByText(`Your browser doesn't support this action (yet)`)).toBeVisible()
-
-        return
-      }
-
       await expect(page.getByText(`Field "Object with columns" copied`)).toBeVisible()
 
       // Check that the plain text version is set
@@ -189,12 +177,6 @@ test.describe('Copy and pasting fields', () => {
       await expect(page.getByRole('menuitem', {name: 'Copy field'})).toBeVisible()
       await page.getByRole('menuitem', {name: 'Copy field'}).press('Enter')
 
-      if (browserName === 'firefox') {
-        await expect(page.getByText(`Your browser doesn't support this action (yet)`)).toBeVisible()
-
-        return
-      }
-
       await expect(page.getByText(`Field "Title" copied`)).toBeVisible()
 
       // Check that the plain text version is set
@@ -237,12 +219,6 @@ test.describe('Copy and pasting fields', () => {
 
       await expect(page.getByRole('menuitem', {name: 'Copy field'})).toBeVisible()
       await page.getByRole('menuitem', {name: 'Copy field'}).press('Enter')
-
-      if (browserName === 'firefox') {
-        await expect(page.getByText(`Your browser doesn't support this action (yet)`)).toBeVisible()
-
-        return
-      }
 
       await expect(page.getByText(`Field "Array of primitives" copied`)).toBeVisible()
 
