@@ -1,34 +1,45 @@
-import {useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {useBundlesStore} from 'sanity'
+import {useEffect, useState} from 'react'
 
-import {type MetadataWrapper} from '../../store/bundles/createBundlesStore'
+import {useBundlesMetadataProvider} from '../contexts/BundlesMetadataProvider'
 
-type BundlesMetadata = {matches: number; lastEdited: string}
+export type BundlesMetadata = {matches: number; lastEdited: string}
 
 export type BundlesMetadataMap = Record<string, BundlesMetadata>
 
-const DEFAULT_METADATA_STATE: MetadataWrapper = {
-  data: null,
-  error: null,
-  loading: false,
-}
+export const useBundlesMetadata = (bundlesIds: string[]) => {
+  const {addBundleIds, removeBundleIds, state} = useBundlesMetadataProvider()
+  const [responseData, setResponseData] = useState<Record<string, BundlesMetadata> | null>(null)
 
-export const useBundlesMetadata = (bundleIds: string[]): MetadataWrapper => {
-  const {aggState$: metadataState$} = useBundlesStore()
-  const [bundlesMetadata, setBundlesMetadata] = useState<MetadataWrapper['data']>(
-    DEFAULT_METADATA_STATE.data,
-  )
+  useEffect(() => {
+    addBundleIds([...new Set(bundlesIds)])
 
-  const memoObservable = useMemo(() => metadataState$(bundleIds), [metadataState$, bundleIds])
+    return () => removeBundleIds([...new Set(bundlesIds)])
+  }, [addBundleIds, bundlesIds, removeBundleIds])
 
-  const observedResult = useObservable(memoObservable) || DEFAULT_METADATA_STATE
+  const {data} = state || {}
 
-  // patch metadata in local state
-  useEffect(
-    () => setBundlesMetadata((prev) => ({...prev, ...observedResult.data})),
-    [observedResult.data],
-  )
+  useEffect(() => {
+    if (!data) return
+    const hasUpdatedMetadata =
+      !responseData || Object.entries(responseData).some(([key, value]) => value !== data[key])
 
-  return {...observedResult, data: bundlesMetadata}
+    if (hasUpdatedMetadata) {
+      const nextResponseData = Object.fromEntries(
+        bundlesIds.map((bundleId) => [bundleId, data[bundleId]]),
+      )
+
+      setResponseData(nextResponseData)
+    }
+  }, [bundlesIds, data, responseData, state.data])
+
+  return {
+    error: state.error,
+    // loading is only for initial load
+    // changing bundleIds will not cause a re-load
+    loading: !state.data,
+    // fetching is true when performing initial load for a given set of bundle metadata
+    // changing bundleIds will cause a re-fetch
+    fetching: state.loading,
+    data: responseData,
+  }
 }
