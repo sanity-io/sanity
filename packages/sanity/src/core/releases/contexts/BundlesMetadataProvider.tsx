@@ -22,7 +22,12 @@ export const BundlesMetadataProvider = ({children}: {children: React.ReactNode})
 
   // patch metadata in local state
   useEffect(
-    () => setBundlesMetadata((prev) => ({...prev, ...observedResult.data})),
+    () =>
+      setBundlesMetadata((prev) => {
+        if (!observedResult.data) return prev
+
+        return {...(prev || {}), ...observedResult.data}
+      }),
     [observedResult.data],
   )
 
