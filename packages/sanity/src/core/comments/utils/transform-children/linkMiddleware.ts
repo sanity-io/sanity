@@ -4,7 +4,7 @@ import {type Middleware} from './types'
 
 const URL_REGEX = /\b(https?:\/\/[^\s,()]+(?:\.[^\s,()]+)*|www\.[^\s,()]+\.[^\s,()]{2,})\b/g
 
-function onClick(event: MouseEvent<HTMLAnchorElement>) {
+export function onClick(event: MouseEvent<HTMLAnchorElement>): void {
   event.stopPropagation()
 }
 

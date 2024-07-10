@@ -1,6 +1,7 @@
 import {describe, expect, test} from '@jest/globals'
 
 import {transformChildren} from '../utils'
+import {onClick} from '../utils/transform-children/linkMiddleware'
 
 describe('comments: transformChildren', () => {
   test('should create link element of link', () => {
@@ -11,6 +12,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://www.sanity.io"
         href="https://www.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -29,6 +31,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://www.sanity.io"
         href="https://www.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -46,6 +49,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://www.sanity.io"
         href="https://www.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -63,6 +67,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://www.sanity.io"
         href="https://www.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -80,6 +85,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://www.sanity.io"
         href="https://www.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -103,6 +109,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://www.sanity.io"
         href="https://www.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -120,6 +127,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://www.sanity.io"
         href="https://www.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -137,6 +145,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://www.sanity.io"
         href="https://www.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -154,6 +163,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://www.sanity.io"
         href="https://www.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -163,6 +173,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://example.com"
         href="https://example.com"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -180,6 +191,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://example.com/?query=1&sort=asc"
         href="https://example.com/?query=1&sort=asc"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -209,6 +221,7 @@ describe('comments: transformChildren', () => {
       <a
         key="http://www.sanity.io"
         href="http://www.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -223,7 +236,13 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check this link ',
-      <a key="www.sanity.io" href="https://www.sanity.io" rel="noopener noreferrer" target="_blank">
+      <a
+        key="www.sanity.io"
+        href="https://www.sanity.io"
+        onClick={onClick}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
         www.sanity.io
       </a>,
       '',
@@ -238,13 +257,20 @@ describe('comments: transformChildren', () => {
       <a
         key="http://example.com"
         href="http://example.com"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
         http://example.com
       </a>,
       ' and ',
-      <a key="https://sanity.io" href="https://sanity.io" rel="noopener noreferrer" target="_blank">
+      <a
+        key="https://sanity.io"
+        href="https://sanity.io"
+        onClick={onClick}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
         https://sanity.io
       </a>,
       '',
@@ -259,6 +285,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://blog.sanity.io"
         href="https://blog.sanity.io"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -276,6 +303,7 @@ describe('comments: transformChildren', () => {
       <a
         key="http://localhost:3000"
         href="http://localhost:3000"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -293,6 +321,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://sanity.io#features"
         href="https://sanity.io#features"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -309,13 +338,20 @@ describe('comments: transformChildren', () => {
 
     expect(result).toEqual([
       'Check ',
-      <a key="https://sanity.io" href="https://sanity.io" rel="noopener noreferrer" target="_blank">
+      <a
+        key="https://sanity.io"
+        href="https://sanity.io"
+        onClick={onClick}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
         https://sanity.io
       </a>,
       ' for info and ',
       <a
         key="http://example.com"
         href="http://example.com"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -333,6 +369,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://example-site.com"
         href="https://example-site.com"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -350,6 +387,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://example_site.com"
         href="https://example_site.com"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -367,6 +405,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://example.website"
         href="https://example.website"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -386,19 +425,27 @@ describe('comments: transformChildren', () => {
       <a
         key="http://example.com"
         href="http://example.com"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
         http://example.com
       </a>,
       ', ',
-      <a key="https://sanity.io" href="https://sanity.io" rel="noopener noreferrer" target="_blank">
+      <a
+        key="https://sanity.io"
+        href="https://sanity.io"
+        onClick={onClick}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
         https://sanity.io
       </a>,
       ' and ',
       <a
         key="www.google.com"
         href="https://www.google.com"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -421,6 +468,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://www.example.com"
         href="https://www.example.com"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -432,6 +480,7 @@ describe('comments: transformChildren', () => {
       <a
         key="www.another-example.com"
         href="https://www.another-example.com"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -450,6 +499,7 @@ describe('comments: transformChildren', () => {
       <a
         key="https://example.com/path?query=1#section"
         href="https://example.com/path?query=1#section"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -467,6 +517,7 @@ describe('comments: transformChildren', () => {
       <a
         key="http://192.168.1.1"
         href="http://192.168.1.1"
+        onClick={onClick}
         rel="noopener noreferrer"
         target="_blank"
       >
