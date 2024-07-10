@@ -20,7 +20,9 @@ const RowStack = styled(Stack)({
   },
 })
 
-export type TableBundle = BundleDocument & BundlesMetadata
+export interface TableBundle extends BundleDocument {
+  documentsMetadata: BundlesMetadata
+}
 
 interface BundlesTableProps extends Omit<BundleHeaderProps, 'searchDisabled'> {
   bundles: TableBundle[]

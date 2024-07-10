@@ -11,6 +11,7 @@ type Props = {
 }
 
 export function BundleRow({bundle}: Props) {
+  const {documentsMetadata} = bundle
   const router = useRouter()
 
   return (
@@ -41,7 +42,7 @@ export function BundleRow({bundle}: Props) {
       {/* # of documents */}
       <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 90}}>
         <Text muted size={1}>
-          {bundle.documentCount}
+          {documentsMetadata.documentCount}
         </Text>
       </Flex>
       {/* Created */}
@@ -69,9 +70,9 @@ export function BundleRow({bundle}: Props) {
         sizing="border"
         style={{width: 100}}
       >
-        {bundle.editedAt && (
+        {documentsMetadata.updatedAt && (
           <Text muted size={1}>
-            <RelativeTime time={bundle.editedAt} />
+            <RelativeTime time={documentsMetadata.updatedAt} />
           </Text>
         )}
       </Flex>

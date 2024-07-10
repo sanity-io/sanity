@@ -10,7 +10,7 @@ export interface BundlesMetadata {
   /**
    * The last time a document in the bundle was edited
    */
-  editedAt: string | null
+  updatedAt: string | null
 }
 
 export const useBundlesMetadata = (bundleSlugs: string[]) => {
