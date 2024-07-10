@@ -3,7 +3,7 @@ import {useEffect} from 'react'
 import {type ErrorReporter} from '../error/errorReporter'
 import {useClient} from '../hooks'
 
-const CONSENT_CLIENT_OPTIONS = {apiVersion: '2024-05-28'}
+const CONSENT_CLIENT_OPTIONS = {apiVersion: '2023-12-18'}
 
 /**
  * React component that checks for the users' telemetry consent, enabling or disabling error reporting
@@ -20,18 +20,20 @@ export function MaybeEnableErrorReporting(props: {errorReporter: ErrorReporter})
   const client = useClient(CONSENT_CLIENT_OPTIONS)
 
   useEffect(() => {
-    const request = client.observable.request({uri: '/intake/telemetry-status'}).subscribe({
-      next: (res) => {
-        if (res?.status === 'granted') {
-          errorReporter.enable()
-        } else {
-          errorReporter.disable()
-        }
-      },
-      error: (err) => {
-        console.error('Error fetching telemetry status', err)
-      },
-    })
+    const request = client.observable
+      .request({uri: '/intake/telemetry-status', tag: 'telemetry-consent.error-reporting'})
+      .subscribe({
+        next: (res) => {
+          if (res?.status === 'granted') {
+            errorReporter.enable()
+          } else {
+            errorReporter.disable()
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching telemetry status', err)
+        },
+      })
 
     return () => request.unsubscribe()
   }, [client, errorReporter])
