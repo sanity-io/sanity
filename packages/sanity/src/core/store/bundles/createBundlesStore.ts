@@ -1,14 +1,11 @@
 import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
 import {
   BehaviorSubject,
-  bufferTime,
   catchError,
-  concat,
   concatWith,
   delay,
   EMPTY,
   filter,
-  iif,
   map,
   merge,
   type Observable,
@@ -24,15 +21,13 @@ import {
   timeout,
 } from 'rxjs'
 
-import {type BundlesMetadataMap} from '../../releases/tool/useBundlesMetadata'
+import {createBundlesMetadataAggregator} from './createBundlesMetadataAggregator'
 import {bundlesReducer, type bundlesReducerAction, type bundlesReducerState} from './reducer'
 import {type BundleDocument, type BundlesStore} from './types'
 
 type ActionWrapper = {action: bundlesReducerAction}
 type EventWrapper = {event: ListenEvent<BundleDocument>}
 type ResponseWrapper = {response: BundleDocument[]}
-
-export type MetadataWrapper = {data: BundlesMetadataMap | null; error: null; loading: boolean}
 
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'
@@ -63,7 +58,7 @@ const INITIAL_STATE: bundlesReducerState = {
 
 const NOOP_BUNDLES_STORE: BundlesStore = {
   state$: EMPTY.pipe(startWith(INITIAL_STATE)),
-  aggState$: () => EMPTY,
+  getMetadataStateForSlugs$: () => EMPTY,
   dispatch: () => undefined,
 }
 
@@ -237,97 +232,11 @@ export function createBundlesStore(context: {
     shareReplay(1),
   )
 
-  const aggFetch$ = (
-    bundleIds: string[],
-    isInitialLoad: boolean = false,
-  ): Observable<MetadataWrapper> => {
-    if (!bundleIds?.length || !studioClient) return EMPTY
-
-    const getSafeId = (id: string) => `bundle_${id.replaceAll('-', '_')}`
-
-    const {subquery: queryAllDocumentsInBundleIds, projection: projectionToBundleMetadata} =
-      bundleIds.reduce(
-        ({subquery: accSubquery, projection: accProjection}, bundleId, index) => {
-          const safeId = getSafeId(bundleId)
-          const trailingComma = index === bundleIds.length - 1 ? '' : ','
-
-          const subquery = `${accSubquery}"${safeId}": *[_id in path("${bundleId}.*")]{
-          _updatedAt
-        } | order(_updatedAt desc)
-          ${trailingComma}`
-
-          const projection = `${accProjection}"${bundleId}": {
-          "lastEdited": ${safeId}[0]._updatedAt,
-          "matches": count(${safeId})
-        }${trailingComma}`
-
-          return {subquery, projection}
-        },
-        {subquery: '', projection: ''},
-      )
-
-    const initialLoading$ = of({loading: true, data: null, error: null})
-    const fetchData$ = studioClient.observable
-      .fetch<BundlesMetadataMap>(`{${queryAllDocumentsInBundleIds}}{${projectionToBundleMetadata}}`)
-      .pipe(
-        switchMap((response) => of({data: response, error: null, loading: false})),
-        catchError((error) => {
-          console.error('Failed to fetch bundle metadata', error)
-          return of({data: null, error, loading: false})
-        }),
-      )
-
-    // initially emit loading empty state if first fetch
-    return iif(() => isInitialLoad, concat(initialLoading$, fetchData$), fetchData$)
-  }
-
-  const aggListener$ = (bundleIds: string[]) => {
-    if (!bundleIds?.length || !studioClient) return EMPTY
-
-    const queryFilterAllDocumentsInBundleIds = `*[defined(_version) && (${bundleIds.reduce(
-      (accQuery, bundleId, index) =>
-        `${accQuery}${index === 0 ? '' : '||'} _id in path("${bundleId}.*")`,
-      '',
-    )})]`
-
-    const queryListen = studioClient.observable.listen(
-      queryFilterAllDocumentsInBundleIds,
-      {},
-      {...LISTEN_OPTIONS, events: ['mutation'], tag: 'bundle-docs.listen'},
-    )
-
-    return queryListen.pipe(
-      catchError((error) => {
-        console.error('Failed to listen for bundle metadata', error)
-        return EMPTY
-      }),
-      bufferTime(1_000),
-      filter((entriesArray) => entriesArray.length > 0),
-      switchMap((entriesArray) => {
-        const mutatedBundleSlugs = entriesArray.reduce<string[]>((accBundleIds, event) => {
-          if ('type' in event && event.type === 'mutation') {
-            const bundleId = event.documentId.split('.')[0]
-            return [...accBundleIds, bundleId]
-          }
-          return accBundleIds
-        }, [])
-
-        if (mutatedBundleSlugs.length) {
-          // de-dup mutated bundle slugs
-          return aggFetch$([...new Set(mutatedBundleSlugs)])
-        }
-
-        return EMPTY
-      }),
-    )
-  }
-
-  const aggState$ = (bundleIds: string[]) =>
-    merge(aggFetch$(bundleIds, true), aggListener$(bundleIds))
+  const getMetadataStateForSlugs$ = createBundlesMetadataAggregator(studioClient)
 
   return {
     state$,
-    aggState$,
+    getMetadataStateForSlugs$,
     dispatch,
   }
 }

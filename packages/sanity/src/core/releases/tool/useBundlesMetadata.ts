@@ -6,15 +6,16 @@ export type BundlesMetadata = {matches: number; lastEdited: string}
 
 export type BundlesMetadataMap = Record<string, BundlesMetadata>
 
-export const useBundlesMetadata = (bundlesIds: string[]) => {
-  const {addBundleIds, removeBundleIds, state} = useBundlesMetadataProvider()
+export const useBundlesMetadata = (bundleSlugs: string[]) => {
+  const {addBundleSlugsToListener, removeBundleSlugsFromListener, state} =
+    useBundlesMetadataProvider()
   const [responseData, setResponseData] = useState<Record<string, BundlesMetadata> | null>(null)
 
   useEffect(() => {
-    addBundleIds([...new Set(bundlesIds)])
+    addBundleSlugsToListener([...new Set(bundleSlugs)])
 
-    return () => removeBundleIds([...new Set(bundlesIds)])
-  }, [addBundleIds, bundlesIds, removeBundleIds])
+    return () => removeBundleSlugsFromListener([...new Set(bundleSlugs)])
+  }, [addBundleSlugsToListener, bundleSlugs, removeBundleSlugsFromListener])
 
   const {data} = state || {}
 
@@ -25,21 +26,19 @@ export const useBundlesMetadata = (bundlesIds: string[]) => {
       !responseData || Object.entries(responseData).some(([key, value]) => value !== data[key])
 
     if (hasUpdatedMetadata) {
-      const nextResponseData = Object.fromEntries(
-        bundlesIds.map((bundleId) => [bundleId, data[bundleId]]),
-      )
+      const nextResponseData = Object.fromEntries(bundleSlugs.map((slug) => [slug, data[slug]]))
 
       setResponseData(nextResponseData)
     }
-  }, [bundlesIds, data, responseData])
+  }, [bundleSlugs, data, responseData])
 
   return {
     error: state.error,
     // loading is only for initial load
-    // changing bundleIds will not cause a re-load
+    // changing listened to bundle slugs will not cause a re-load
     loading: !responseData,
     // fetching is true when performing initial load for a given set of bundle metadata
-    // changing bundleIds will cause a re-fetch
+    // changing listened to bundle slugs will cause a re-fetch
     fetching: state.loading,
     data: responseData,
   }

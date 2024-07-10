@@ -6,50 +6,55 @@ import {
   BundlesMetadataContext,
   DEFAULT_METADATA_STATE,
 } from '../../../_singletons/core/releases/BundlesMetadataContext'
-import {type MetadataWrapper} from '../../store/bundles/createBundlesStore'
+import {type MetadataWrapper} from '../../store/bundles/createBundlesMetadataAggregator'
 import {type BundlesMetadata} from '../tool/useBundlesMetadata'
 
 export const BundlesMetadataProvider = ({children}: {children: React.ReactNode}) => {
-  const [bundleIds, setBundleIds] = useState<string[]>([])
-  const {aggState$: metadataState$} = useBundlesStore()
+  const [listenerBundleSlugs, setListenerBundleSlugs] = useState<string[]>([])
+  const {getMetadataStateForSlugs$} = useBundlesStore()
   const [bundlesMetadata, setBundlesMetadata] = useState<Record<string, BundlesMetadata> | null>(
     null,
   )
 
-  const memoObservable = useMemo(() => metadataState$(bundleIds), [metadataState$, bundleIds])
+  const memoObservable = useMemo(
+    () => getMetadataStateForSlugs$(listenerBundleSlugs),
+    [getMetadataStateForSlugs$, listenerBundleSlugs],
+  )
 
   const observedResult = useObservable(memoObservable) || DEFAULT_METADATA_STATE
 
   // patch metadata in local state
   useEffect(
     () =>
-      setBundlesMetadata((prev) => {
-        if (!observedResult.data) return prev
+      setBundlesMetadata((prevBundleMetadata) => {
+        if (!observedResult.data) return prevBundleMetadata
 
-        return {...(prev || {}), ...observedResult.data}
+        return {...(prevBundleMetadata || {}), ...observedResult.data}
       }),
     [observedResult.data],
   )
 
-  const addBundleIds = useCallback((ids: string[]) => {
-    setBundleIds((prev) => [...prev, ...ids])
+  const addBundleSlugsToListener = useCallback((addBundleSlugs: string[]) => {
+    setListenerBundleSlugs((prevSlugs) => [...prevSlugs, ...addBundleSlugs])
   }, [])
 
-  const removeBundleIds = useCallback((ids: string[]) => {
-    setBundleIds((prev) => prev.filter((id) => !ids.includes(id)))
+  const removeBundleSlugsFromListener = useCallback((removeBundleSlugs: string[]) => {
+    setListenerBundleSlugs((prevSlugs) =>
+      prevSlugs.filter((listenerBundleSlug) => !removeBundleSlugs.includes(listenerBundleSlug)),
+    )
   }, [])
 
   const context = useMemo<{
-    addBundleIds: (ids: string[]) => void
-    removeBundleIds: (ids: string[]) => void
+    addBundleSlugsToListener: (slugs: string[]) => void
+    removeBundleSlugsFromListener: (slugs: string[]) => void
     state: MetadataWrapper
   }>(
     () => ({
-      addBundleIds,
-      removeBundleIds,
+      addBundleSlugsToListener,
+      removeBundleSlugsFromListener,
       state: {...observedResult, data: bundlesMetadata},
     }),
-    [addBundleIds, bundlesMetadata, observedResult, removeBundleIds],
+    [addBundleSlugsToListener, bundlesMetadata, observedResult, removeBundleSlugsFromListener],
   )
 
   return (

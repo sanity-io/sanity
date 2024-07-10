@@ -22,8 +22,8 @@ export default function BundlesOverview() {
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>()
-  const bundleIds = useMemo(() => data?.map((bundle) => bundle.name) || [], [data])
-  const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleIds)
+  const bundleSlugs = useMemo(() => data?.map((bundle) => bundle.name) || [], [data])
+  const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
   const loading = loadingBundles || loadingBundlesMetadata
   const hasBundles = data && containsBundles(data)
   const loadingOrHasBundles = loading || hasBundles
