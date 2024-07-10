@@ -252,7 +252,11 @@ export interface RouterContextValue {
    * Resolves the intent link for the given intent name and parameters.
    * See {@link IntentParameters}
    */
-  resolveIntentLink: (intentName: string, params?: IntentParameters) => string
+  resolveIntentLink: (
+    intentName: string,
+    params?: IntentParameters,
+    searchParams?: SearchParam[],
+  ) => string
 
   /**
    * Navigates to the given URL.

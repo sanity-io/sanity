@@ -705,13 +705,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Click or press space to activate',
   /** Label for activate on focus with context of tap and not focused */
   'inputs.portable-text.activate-on-focus-message_tap': 'Tap to activate',
-  /**Aria label for the annotation object */
+  /** Aria label for the annotation object */
   'inputs.portable-text.annotation-aria-label': 'Annotation object',
   /** Title for dialog that allows editing an annotation */
   'inputs.portable-text.annotation-editor.title': 'Edit {{schemaType}}',
   /** Title of the default "link" annotation */
   'inputs.portable-text.annotation.link': 'Link',
-  /**Aria label for the block object */
+  /** Aria label for the block object */
   'inputs.portable-text.block.aria-label': 'Block object',
   /** Label for action to edit a block item, in the case where it is editable */
   'inputs.portable-text.block.edit': 'Edit',
@@ -735,7 +735,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.decorator.underline': 'Underline',
   /** Placeholder text for when the editor is empty */
   'inputs.portable-text.empty-placeholder': 'Empty',
-  /**Aria label for the block object */
+  /** Aria label for the block object */
   'inputs.portable-text.inline-block.aria-label': 'Inline object',
   /** Label for action to edit an inline object item */
   'inputs.portable-text.inline-object.edit': 'Edit object',
@@ -1641,9 +1641,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.since': 'Since: {{timestamp, datetime}}',
   /** Label for missing change version for timeline menu dropdown are showing */
   'timeline.since-version-missing': 'Since: unknown version',
-  /**Aria label for the action buttons in the PTE toolbar */
+  /** Aria label for the action buttons in the PTE toolbar */
   'toolbar.portable-text.action-button-aria-label': '{{action}}',
-  /** Accesibility label for the breadcrumb menu */
+  /** Accessibility label for the breadcrumb menu */
   'tree-editing-dialog.breadcrumbs.menu': 'Breadcrumb menu',
   /** Title placeholder for search input in array of objects */
   'tree-editing-dialog.search-placeholder': 'Search',

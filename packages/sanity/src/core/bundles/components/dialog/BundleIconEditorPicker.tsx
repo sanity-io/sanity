@@ -108,6 +108,7 @@ export function BundleIconEditorPicker(props: {
             </IconPickerFlex>
           </StyledStack>
         </Container>
+        </>
       }
       open={open}
       placement="bottom-start"

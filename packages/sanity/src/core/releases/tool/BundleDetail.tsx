@@ -37,6 +37,7 @@ export const BundleDetail = () => {
       _updatedAt: '2024-07-09T12:15:17Z',
     },
   ] // TODO get real data
+
   const bundle = data?.find((storeBundle) => storeBundle._id === parsedBundleId)
   const bundleHasDocuments = !!bundleDocuments.length
   const showPublishButton = loading || !bundle?.publishedAt

@@ -1,8 +1,9 @@
 import {type BrowserHistory, type HashHistory, type History, type MemoryHistory} from 'history'
+import {type RouterState} from 'sanity/router'
 
 export interface RouterStateEvent {
   type: 'state'
-  state: Record<string, unknown> // | null
+  state: RouterState
   isNotFound: boolean
 }
 

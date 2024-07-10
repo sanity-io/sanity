@@ -21,7 +21,7 @@ jest.mock('sanity/router', () => ({
   ...(jest.requireActual('sanity/router') || {}),
   useRouter: jest.fn().mockReturnValue({state: {}, navigate: jest.fn()}),
 }))
-
+  
 const mockUseBundleStore = useBundles as jest.Mock<typeof useBundles>
 
 describe('BundlesOverview', () => {
