@@ -85,3 +85,30 @@ test(`navigating document creates only one listener connection`, async ({page}) 
   expect(bookListenersCount).toBe(1)
   await bookRequest
 })
+
+test.describe('search strategy', () => {
+  test('uses Text Search API search strategy if filter is supported', async ({page}) => {
+    // Wait for Text Search API request.
+    const searchRequest = page.waitForRequest((request) =>
+      request.url().includes('data/textsearch'),
+    )
+
+    await page.goto('/test/content/book')
+    await expect(page.locator('#book-book-0')).toBeVisible()
+    await searchRequest
+  })
+
+  test('falls back to GROQ Query API search strategy if filter is not supported by Text Search API', async ({
+    page,
+  }) => {
+    // Wait for GROQ Query API request.
+    const searchRequest = page.waitForRequest(
+      (request) =>
+        request.url().includes('data/query') && request.url().includes('*%5Bdefined%28title%29%5D'),
+    )
+
+    await page.goto('/test/content/custom;anythingWithATitle')
+    await expect(page.locator('#title-list-anythingWithATitle-0')).toBeVisible()
+    await searchRequest
+  })
+})

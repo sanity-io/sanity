@@ -29,7 +29,9 @@ const sharedSettings = definePlugin({
       assetSources: [imageAssetSource],
     },
   },
-
+  search: {
+    enableLegacySearch: false,
+  },
   document: {
     actions: documentActions,
     inspectors: (prev, ctx) => {

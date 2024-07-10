@@ -68,6 +68,9 @@ const sharedSettings = definePlugin({
       assetSources: [imageAssetSource],
     },
   },
+  search: {
+    enableLegacySearch: false,
+  },
 
   i18n: {
     bundles: testStudioLocaleBundles,
