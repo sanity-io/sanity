@@ -62,6 +62,14 @@ export const BundlesMetadataProvider = ({children}: {children: React.ReactNode})
   )
 }
 
+// export const BundlesMetadataProvider = ({children}: {children: React.ReactNode}) => {
+//   const context = useBundlesMetadataProvider()
+
+//   // Avoid mounting the provider if it's already provided by a parent
+//   if (context) return children
+//   return <BundlesMetadataProviderInner>{children}</BundlesMetadataProviderInner>
+// }
+
 export const useBundlesMetadataProvider = () => {
   const contextValue = useContext(BundlesMetadataContext)
 
