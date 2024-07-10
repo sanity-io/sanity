@@ -465,19 +465,19 @@ importers:
         version: 1.0.2
       '@sanity/locale-ko-kr':
         specifier: ^1.0.1
-        version: 1.1.4(sanity@packages+sanity)
+        version: 1.1.5(sanity@packages+sanity)
       '@sanity/locale-nb-no':
         specifier: ^1.0.1
-        version: 1.1.7(sanity@packages+sanity)
+        version: 1.1.8(sanity@packages+sanity)
       '@sanity/locale-nn-no':
         specifier: ^1.0.1
-        version: 1.1.6(sanity@packages+sanity)
+        version: 1.1.7(sanity@packages+sanity)
       '@sanity/locale-pt-pt':
         specifier: ^1.0.1
-        version: 1.1.3(sanity@packages+sanity)
+        version: 1.1.4(sanity@packages+sanity)
       '@sanity/locale-sv-se':
         specifier: ^1.0.1
-        version: 1.2.4(sanity@packages+sanity)
+        version: 1.2.5(sanity@packages+sanity)
       '@sanity/logos':
         specifier: ^2.1.2
         version: 2.1.12(@sanity/color@3.0.6)(react@18.3.1)
@@ -6962,40 +6962,40 @@ packages:
     transitivePeerDependencies:
       - styled-components
 
-  /@sanity/locale-ko-kr@1.1.4(sanity@packages+sanity):
-    resolution: {integrity: sha512-o3v/QfYXApPkDV35efY7Bl9U4iV9A3pUnypKhX1Aelx8JKFlMKFbD99N3wOHymwNQX0dTkbHi4xAbudO3L15zg==}
+  /@sanity/locale-ko-kr@1.1.5(sanity@packages+sanity):
+    resolution: {integrity: sha512-4qrR6eBg8LuCsIQa+Jgv0H2ZJ75PQ4tfkNfWsdYAy/QAdJbn9SUrcb94qN0kwiyA8vv7CA4uZeRsLEg2q5tI4A==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/locale-nb-no@1.1.7(sanity@packages+sanity):
-    resolution: {integrity: sha512-e39TCO+Ok3a/pLSIXb83uk1zFtjYUUUnYALlYDbKMMNPo+1RX5qTaDHUfH/pQsfI4j+oxMl/AAHbzMDoaikcsg==}
+  /@sanity/locale-nb-no@1.1.8(sanity@packages+sanity):
+    resolution: {integrity: sha512-9NL6pt4jq1TN4yVqOFMpG63jaeEvQgtx3EsfNN849iztcFDUrYxrqK01lV9iFvyxr9GULk1HxpC03CA1T9ft+w==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/locale-nn-no@1.1.6(sanity@packages+sanity):
-    resolution: {integrity: sha512-pykN8gG2CoaFIby0BczryZFZAhhvpeJ+3Q0qNN1nqTc55GK0TOuGbI0uGGQBAHn7UKNIpx0zm+EW49x5DAw/ZQ==}
+  /@sanity/locale-nn-no@1.1.7(sanity@packages+sanity):
+    resolution: {integrity: sha512-NJM5zBWOOQ7qOWAMT1RMivcSUaKDO/wufh7UCEKwbV8uGiL+Bptw6rL0CflE3c+xzPWgBIml5lrnjF1aceXIPg==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/locale-pt-pt@1.1.3(sanity@packages+sanity):
-    resolution: {integrity: sha512-IOdFJBuARIJXIbpmcPYy+ZJYhqq3GKK5n1xlipJSBk4+rH0zUq/avo8PAY+PwRdhxI034VjmANfEK4PGNm7VBg==}
+  /@sanity/locale-pt-pt@1.1.4(sanity@packages+sanity):
+    resolution: {integrity: sha512-jv4KkjPUJw3wJnrIOROL1D986sXvEp6vPOFBD7pIFQJ2hjBMF+bEJVczELpfLnrajXxho0O+SfkWGm4Ao+GCWw==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/locale-sv-se@1.2.4(sanity@packages+sanity):
-    resolution: {integrity: sha512-u2dZZdzWpsqyqDDFeUGd+PwWZrLYHPL/72Qr/JecnZU2ze+fKx0E1eQgaLqUBjQwni1MxBzfwlJq9LWTOyPG9Q==}
+  /@sanity/locale-sv-se@1.2.5(sanity@packages+sanity):
+    resolution: {integrity: sha512-14w0pLYEFPBGc8OBnrKgXZPsa/SIMV+McNw1VKJk/Y+Nx0Q9lNwXQyl1qmeDQI8u4Ard5DSvmJWAPWsTqNxNvQ==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
