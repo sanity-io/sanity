@@ -77,6 +77,11 @@
       ],
       "dependencyDashboardApproval": false,
       "schedule": ["every weekday"]
+    },
+    {
+      "description": "ESBuild 0.23 drops support for Windows 7 and 8, for now we don't want renovate to open PRs to bump them",
+      "allowedVersions": "<=0.21",
+      "matchPackageNames": ["esbuild"]
     }
   ],
   "ignorePaths": [
