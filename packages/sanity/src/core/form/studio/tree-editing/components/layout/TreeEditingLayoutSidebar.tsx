@@ -1,9 +1,9 @@
 import {PanelLeftIcon} from '@sanity/icons'
+import {type Path} from '@sanity/types'
 import {Box, Card, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {memo, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
-import {type Path} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components'

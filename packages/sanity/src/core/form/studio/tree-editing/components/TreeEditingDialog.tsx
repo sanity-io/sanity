@@ -1,3 +1,4 @@
+import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
 import {Button, Card, Dialog, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
@@ -5,17 +6,11 @@ import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {
-  FormInput,
-  type InputProps,
-  isKeySegment,
-  type ObjectInputProps,
-  type ObjectSchemaType,
-  type Path,
-  useTranslation,
-} from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {FormInput} from '../../../components/FormInput'
+import {type InputProps, type ObjectInputProps} from '../../../types/inputProps'
 import {
   buildTreeEditingState,
   type BuildTreeEditingStateProps,

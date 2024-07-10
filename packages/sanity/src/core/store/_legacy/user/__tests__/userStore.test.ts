@@ -1,6 +1,6 @@
 import {describe, expect, it, jest} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
-import {type CurrentUser} from 'sanity'
+import {type CurrentUser} from '@sanity/types'
 
 import {createUserStore} from '../userStore'
 

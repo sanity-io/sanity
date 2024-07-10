@@ -1,9 +1,9 @@
 import {describe, expect, jest, test} from '@jest/globals'
 import {renderHook} from '@testing-library/react'
 import {type PropsWithChildren} from 'react'
-import {useSource, useTreeEditingEnabled} from 'sanity'
 
-import {TreeEditingEnabledProvider} from '../context'
+import {useSource} from '../../../../studio/source'
+import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../context'
 
 // Mock the entire module
 jest.mock('../../../../studio/source')

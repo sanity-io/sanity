@@ -1,16 +1,13 @@
 import {CheckmarkIcon} from '@sanity/icons'
+import {type Path, type PreviewValue} from '@sanity/types'
 import {Button, Flex, Stack, Text} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
-import {
-  CommandList,
-  type Path,
-  type PreviewValue,
-  SanityDefaultPreview,
-  supportsTouch,
-  useTranslation,
-} from 'sanity'
 
+import {CommandList} from '../../../../../components/commandList/CommandList'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
+import {supportsTouch} from '../../../../../util/supportsTouch'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {ITEM_HEIGHT} from './constants'

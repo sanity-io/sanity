@@ -1,8 +1,8 @@
 import {describe, it} from '@jest/globals'
 import {expect} from '@playwright/experimental-ct-react'
-import {type Tool} from 'sanity'
 import {type RouterState} from 'sanity/router'
 
+import {type Tool} from '../../config/types'
 import {resolveIntentState} from './helpers'
 
 describe('resolveIntentState', () => {

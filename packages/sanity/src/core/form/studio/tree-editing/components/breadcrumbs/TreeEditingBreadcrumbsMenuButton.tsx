@@ -1,8 +1,8 @@
+import {type Path} from '@sanity/types'
 import {Box, Card, Flex, Popover, type PopoverProps, Text, useClickOutside} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {cloneElement, type KeyboardEvent, type ReactElement, useCallback, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
-import {type Path} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {type TreeEditingBreadcrumb} from '../../types'

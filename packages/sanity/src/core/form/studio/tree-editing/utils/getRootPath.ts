@@ -1,4 +1,4 @@
-import {type Path} from 'sanity'
+import {type Path} from '@sanity/types'
 
 /**
  * Get the root path of the focus path.

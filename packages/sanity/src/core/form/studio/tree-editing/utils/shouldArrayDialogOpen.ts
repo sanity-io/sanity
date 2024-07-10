@@ -1,10 +1,10 @@
-import {toString} from '@sanity/util/paths'
 import {
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
   type ObjectSchemaType,
   type Path,
-} from 'sanity'
+} from '@sanity/types'
+import {toString} from '@sanity/util/paths'
 
 // import {isPortableTextSchemaType} from './asserters'
 import {getRootPath} from './getRootPath'

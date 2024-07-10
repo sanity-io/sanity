@@ -1,8 +1,5 @@
-import {toString} from '@sanity/util/paths'
 import {
   type ArraySchemaType,
-  EMPTY_ARRAY,
-  getValueAtPath,
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
   isObjectSchemaType,
@@ -12,8 +9,11 @@ import {
   type ObjectSchemaType,
   type Path,
   type SchemaType,
-} from 'sanity'
+} from '@sanity/types'
+import {toString} from '@sanity/util/paths'
 
+import {getValueAtPath} from '../../../../../field/paths/helpers'
+import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {findArrayTypePaths} from '../findArrayTypePaths'

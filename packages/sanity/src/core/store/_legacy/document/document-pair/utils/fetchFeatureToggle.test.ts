@@ -3,7 +3,7 @@ import {firstValueFrom, from} from 'rxjs'
 
 import {type ActionsFeatureToggle, mapResponse} from './fetchFeatureToggle'
 
-jest.mock('sanity', () => ({
+jest.mock('../../../../../version', () => ({
   SANITY_VERSION: '3.47.0',
 }))
 

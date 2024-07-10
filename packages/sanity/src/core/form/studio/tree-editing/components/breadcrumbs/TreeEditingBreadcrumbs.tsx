@@ -1,4 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
+import {type Path} from '@sanity/types'
 import {Box, Button, Flex, Text, useElementSize} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
@@ -11,9 +12,10 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {getSchemaTypeTitle, type Path, SanityDefaultPreview} from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
+import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'

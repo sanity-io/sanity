@@ -1,7 +1,9 @@
+import {type Path} from '@sanity/types'
 import {Card, Container, Flex} from '@sanity/ui'
 import {memo, type ReactNode, useCallback, useRef, useState} from 'react'
-import {type Path, PresenceOverlay, VirtualizerScrollInstanceProvider} from 'sanity'
 
+import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
+import {VirtualizerScrollInstanceProvider} from '../../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {TreeEditingBreadcrumbs} from '../breadcrumbs'
 import {FixedHeightFlex} from './styles'
