@@ -52,5 +52,5 @@ export const useDocumentPreviewValues = ({
     version,
     perspective,
   })
-  return {previewValues, isLoading}
+  return {previewValues, isLoading: !!isLoading}
 }

@@ -68,7 +68,7 @@ export function DocumentRow(props: {
   const {document, release, searchTerm, setCollaborators} = props
   const documentId = document._id
   const documentTypeName = document._type
-  const {previewValues, isLoading} = useDocumentPreviewValues({document, release})
+  const {previewValues, isLoading: isPreviewLoading} = useDocumentPreviewValues({document, release})
 
   const history = useVersionHistory(documentId, document?._rev)
 
@@ -108,7 +108,7 @@ export function DocumentRow(props: {
       <Flex style={{margin: -1}}>
         <Box flex={1} padding={1}>
           <Card as={LinkComponent} radius={2} data-as="a">
-            <SanityDefaultPreview {...previewValues} isPlaceholder={isLoading} />
+            <SanityDefaultPreview {...previewValues} isPlaceholder={isPreviewLoading} />
           </Card>
         </Box>
 
@@ -169,7 +169,12 @@ export function DocumentRow(props: {
 
         {/* Actions is empty - don't render yet */}
         <Flex align="center" flex="none" padding={3}>
-          <DocumentActions document={document} />
+          <DocumentActions
+            document={document}
+            previewValues={previewValues}
+            isPreviewLoading={isPreviewLoading}
+            versionTitle={release.title}
+          />
         </Flex>
       </Flex>
     </Card>
