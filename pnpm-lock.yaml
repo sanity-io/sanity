@@ -113,11 +113,11 @@ importers:
         specifier: ^3.2.0
         version: 3.3.0
       esbuild:
-        specifier: 0.21.5
-        version: 0.21.5
+        specifier: 0.23.0
+        version: 0.23.0
       esbuild-register:
         specifier: ^3.5.0
-        version: 3.5.0(esbuild@0.21.5)
+        version: 3.5.0(esbuild@0.23.0)
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -773,11 +773,11 @@ importers:
         specifier: ^4.2.0
         version: 4.2.1
       esbuild:
-        specifier: 0.21.5
-        version: 0.21.5
+        specifier: 0.23.0
+        version: 0.23.0
       esbuild-register:
         specifier: ^3.5.0
-        version: 3.5.0(esbuild@0.21.5)
+        version: 3.5.0(esbuild@0.23.0)
       get-it:
         specifier: ^8.6.3
         version: 8.6.3(debug@4.3.5)
@@ -1526,11 +1526,11 @@ importers:
         specifier: ^4.3.4
         version: 4.3.5(supports-color@9.4.0)
       esbuild:
-        specifier: 0.21.5
-        version: 0.21.5
+        specifier: 0.23.0
+        version: 0.23.0
       esbuild-register:
         specifier: ^3.5.0
-        version: 3.5.0(esbuild@0.21.5)
+        version: 3.5.0(esbuild@0.23.0)
       execa:
         specifier: ^2.0.0
         version: 2.1.0
@@ -1909,8 +1909,8 @@ importers:
         specifier: ^18.15.3
         version: 18.19.31
       esbuild:
-        specifier: 0.21.5
-        version: 0.21.5
+        specifier: 0.23.0
+        version: 0.23.0
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@18.19.31)(typescript@5.4.5)
@@ -11256,6 +11256,7 @@ packages:
       esbuild: 0.21.5
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /esbuild-register@3.5.0(esbuild@0.23.0):
     resolution: {integrity: sha512-+4G/XmakeBAsvJuDugJvtyF1x+XJT4FMocynNpxrvEBViirpfUn2PgNpCHedfWhF4WokNsO/OvMKrmJOIJsI5A==}
