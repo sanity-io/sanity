@@ -36,9 +36,24 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
   }, [])
 
   const removeBundleSlugsFromListener = useCallback((removeBundleSlugs: string[]) => {
-    setListenerBundleSlugs((prevSlugs) =>
-      prevSlugs.filter((listenerBundleSlug) => !removeBundleSlugs.includes(listenerBundleSlug)),
-    )
+    setListenerBundleSlugs((prevSlugs) => {
+      const {nextSlugs} = prevSlugs.reduce<{removedSlugs: string[]; nextSlugs: string[]}>(
+        (acc, slug) => {
+          const {removedSlugs, nextSlugs: accNextSlugs} = acc
+          /**
+           * In cases where multiple consumers are listening to the same slug
+           * the slug will appear multiple times in listenerBundleSlugs array
+           * removing should only remove 1 instance of the slug and retain all others
+           */
+          if (removeBundleSlugs.includes(slug) && !removedSlugs.includes(slug)) {
+            return {removedSlugs: [...removedSlugs, slug], nextSlugs: accNextSlugs}
+          }
+          return {removedSlugs, nextSlugs: [...accNextSlugs, slug]}
+        },
+        {removedSlugs: [], nextSlugs: []},
+      )
+      return nextSlugs
+    })
   }, [])
 
   const context = useMemo<{
