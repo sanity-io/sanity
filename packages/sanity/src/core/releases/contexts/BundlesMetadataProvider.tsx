@@ -1,11 +1,8 @@
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {useBundlesStore} from 'sanity'
+import {BundlesMetadataContext, DEFAULT_METADATA_STATE} from 'sanity/_singletons'
 
-import {
-  BundlesMetadataContext,
-  DEFAULT_METADATA_STATE,
-} from '../../../_singletons/core/releases/BundlesMetadataContext'
 import {type MetadataWrapper} from '../../store/bundles/createBundlesMetadataAggregator'
 import {type BundlesMetadata} from '../tool/useBundlesMetadata'
 
