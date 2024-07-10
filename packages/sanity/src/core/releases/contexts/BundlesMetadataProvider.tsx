@@ -9,7 +9,7 @@ import {
 import {type MetadataWrapper} from '../../store/bundles/createBundlesMetadataAggregator'
 import {type BundlesMetadata} from '../tool/useBundlesMetadata'
 
-export const BundlesMetadataProvider = ({children}: {children: React.ReactNode}) => {
+const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) => {
   const [listenerBundleSlugs, setListenerBundleSlugs] = useState<string[]>([])
   const {getMetadataStateForSlugs$} = useBundlesStore()
   const [bundlesMetadata, setBundlesMetadata] = useState<Record<string, BundlesMetadata> | null>(
@@ -62,16 +62,22 @@ export const BundlesMetadataProvider = ({children}: {children: React.ReactNode})
   )
 }
 
-// export const BundlesMetadataProvider = ({children}: {children: React.ReactNode}) => {
-//   const context = useBundlesMetadataProvider()
+export const BundlesMetadataProvider = ({children}: {children: React.ReactNode}) => {
+  const context = useContext(BundlesMetadataContext)
 
-//   // Avoid mounting the provider if it's already provided by a parent
-//   if (context) return children
-//   return <BundlesMetadataProviderInner>{children}</BundlesMetadataProviderInner>
-// }
+  // Avoid mounting the provider if it's already provided by a parent
+  if (context) return children
+  return <BundlesMetadataProviderInner>{children}</BundlesMetadataProviderInner>
+}
 
 export const useBundlesMetadataProvider = () => {
   const contextValue = useContext(BundlesMetadataContext)
 
-  return contextValue
+  return (
+    contextValue || {
+      state: DEFAULT_METADATA_STATE,
+      addBundleSlugsToListener: () => null,
+      removeBundleSlugsFromListener: () => null,
+    }
+  )
 }

@@ -12,8 +12,4 @@ export const BundlesMetadataContext = createContext<{
   state: MetadataWrapper
   addBundleSlugsToListener: (slugs: string[]) => void
   removeBundleSlugsFromListener: (slugs: string[]) => void
-}>({
-  state: DEFAULT_METADATA_STATE,
-  addBundleSlugsToListener: () => null,
-  removeBundleSlugsFromListener: () => null,
-})
+} | null>(null)
