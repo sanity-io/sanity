@@ -28,6 +28,7 @@ const getFetchQuery = (bundleSlugs: string[]) => {
 
       const subquery = `${accSubquery}"${safeSlug}": *[_id in path("${bundleSlug}.*")]{_updatedAt } | order(_updatedAt desc),`
 
+      // conforms to BundlesMetadata
       const projection = `${accProjection}"${bundleSlug}": {
               "editedAt": ${safeSlug}[0]._updatedAt,
               "documentCount": count(${safeSlug})
@@ -40,11 +41,15 @@ const getFetchQuery = (bundleSlugs: string[]) => {
 }
 
 /**
- *
  * @internal
+ *
+ * An initial fetch is made. This fetch is polled whenever a listener even is emitted
+ * Only bundles that have been mutated are re-fetched
+ *
+ * @returns an Observable that accepts a list of bundle slugs and returns a stream of metadata
  */
 export const createBundlesMetadataAggregator = (client: SanityClient | null) => {
-  const aggFetch$ = (
+  const aggregatorFetch$ = (
     bundleSlugs: string[],
     isInitialLoad: boolean = false,
   ): Observable<MetadataWrapper> => {
@@ -70,7 +75,7 @@ export const createBundlesMetadataAggregator = (client: SanityClient | null) => 
     return iif(() => isInitialLoad, concat(initialLoading$, fetchData$), fetchData$)
   }
 
-  const aggListener$ = (bundleSlugs: string[]) => {
+  const aggregatorListener$ = (bundleSlugs: string[]) => {
     if (!bundleSlugs?.length || !client) return EMPTY
 
     return client.observable
@@ -103,7 +108,7 @@ export const createBundlesMetadataAggregator = (client: SanityClient | null) => 
           }, [])
 
           if (mutatedBundleSlugs.length) {
-            return aggFetch$(mutatedBundleSlugs)
+            return aggregatorFetch$(mutatedBundleSlugs)
           }
 
           return EMPTY
@@ -111,8 +116,6 @@ export const createBundlesMetadataAggregator = (client: SanityClient | null) => 
       )
   }
 
-  const aggState$ = (bundleSlugs: string[]) =>
-    merge(aggFetch$(bundleSlugs, true), aggListener$(bundleSlugs))
-
-  return aggState$
+  return (bundleSlugs: string[]) =>
+    merge(aggregatorFetch$(bundleSlugs, true), aggregatorListener$(bundleSlugs))
 }
