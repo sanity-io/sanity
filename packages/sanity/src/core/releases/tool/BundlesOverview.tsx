@@ -7,10 +7,10 @@ import {Button as StudioButton} from '../../../ui-components'
 import {CreateBundleDialog} from '../../bundles/components/dialog/CreateBundleDialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {type BundleDocument} from '../../store/bundles/types'
+import {useBundles} from '../../store/bundles/useBundles'
 import {BundlesTable, type TableBundle} from '../components/BundlesTable/BundlesTable'
 import {containsBundles} from '../types/bundle'
 import {useBundlesMetadata} from './useBundlesMetadata'
-import { useBundles } from '../../store/bundles/useBundles'
 
 type Mode = 'open' | 'archived'
 
