@@ -144,7 +144,7 @@ function escapeHtml(text: string) {
 export function transformValueToText(value: unknown): string {
   if (!value) return ''
   if (isString(value)) return value
-  if (Number.isFinite(value)) value.toString()
+  if (Number.isFinite(value)) return value.toString()
 
   if (Array.isArray(value)) {
     return value.map(transformValueToText).filter(Boolean).join(', ')
