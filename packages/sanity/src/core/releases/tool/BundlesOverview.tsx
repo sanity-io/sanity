@@ -17,20 +17,26 @@ type Mode = 'open' | 'archived'
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 
 export default function BundlesOverview() {
-  const {data, loading: loadingBundles} = useBundles()
+  const {data: bundles, loading: loadingBundles} = useBundles()
 
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>()
-  const bundleSlugs = useMemo(() => data?.map((bundle) => bundle.name) || [], [data])
+  const bundleSlugs = useMemo(() => bundles?.map((bundle) => bundle.name) || [], [bundles])
   const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
   const loading = loadingBundles || loadingBundlesMetadata
-  const hasBundles = data && containsBundles(data)
+  const hasBundles = bundles && containsBundles(bundles)
   const loadingOrHasBundles = loading || hasBundles
+
+  const tableBundles = useMemo<TableBundle[]>(() => {
+    if (!bundles || !bundlesMetadata) return []
+
+    return bundles.map((bundle) => ({...bundle, ...(bundlesMetadata[bundle.name] || {})}))
+  }, [bundles, bundlesMetadata])
 
   const groupedBundles = useMemo(
     () =>
-      data?.reduce<{open: BundleDocument[]; archived: BundleDocument[]}>((groups, bundle) => {
+      tableBundles.reduce<{open: TableBundle[]; archived: TableBundle[]}>((groups, bundle) => {
         const isBundleArchived =
           bundle.archivedAt ||
           (bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date()))
@@ -38,7 +44,7 @@ export default function BundlesOverview() {
 
         return {...groups, [group]: [...groups[group], bundle]}
       }, EMPTY_BUNDLE_GROUPS) || EMPTY_BUNDLE_GROUPS,
-    [data],
+    [tableBundles],
   )
 
   // switch to open mode if on archived mode and there are no archived bundles
@@ -133,13 +139,6 @@ export default function BundlesOverview() {
     [applySearchTermToBundles, bundleGroupMode, groupedBundles],
   )
 
-  const visibleBundles: TableBundle[] = bundlesMetadata
-    ? filteredBundles.map((bundle) => ({
-        ...bundle,
-        ...(bundlesMetadata[bundle.name] || {}),
-      }))
-    : []
-
   return (
     <Card flex={1} overflow="auto">
       <Container width={3}>
@@ -170,7 +169,7 @@ export default function BundlesOverview() {
             <LoadingBlock fill data-testid="bundle-table-loader" />
           ) : (
             <BundlesTable
-              bundles={visibleBundles}
+              bundles={filteredBundles}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
             />
