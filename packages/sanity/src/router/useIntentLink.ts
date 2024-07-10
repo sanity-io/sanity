@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 
-import {type IntentParameters} from './types'
+import {type IntentParameters, type SearchParam} from './types'
 import {useLink} from './useLink'
 import {useRouter} from './useRouter'
 
@@ -32,6 +32,7 @@ export interface UseIntentLinkOptions {
    * The target window or frame to open the link in.
    */
   target?: string
+  searchParams?: SearchParam[]
 }
 
 /**
@@ -59,9 +60,12 @@ export function useIntentLink(options: UseIntentLinkOptions): {
   onClick: React.MouseEventHandler<HTMLElement>
   href: string
 } {
-  const {intent, onClick: onClickProp, params, replace, target} = options
+  const {intent, onClick: onClickProp, params, replace, target, searchParams} = options
   const {resolveIntentLink} = useRouter()
-  const href = useMemo(() => resolveIntentLink(intent, params), [intent, params, resolveIntentLink])
+  const href = useMemo(
+    () => resolveIntentLink(intent, params, searchParams),
+    [intent, params, searchParams, resolveIntentLink],
+  )
   const {onClick} = useLink({href, onClick: onClickProp, replace, target})
 
   return {onClick, href}
