@@ -74,9 +74,9 @@ describe('BundlesTable', () => {
     bundles.forEach((bundle, index) => {
       within(bundleRows[index]).getByText(bundle.title)
       within(bundleRows[index]).getByText(bundle.documentsMetadata.documentCount.toString())
-      within(bundleRows[index]).getByText('Just now')
+      within(bundleRows[index]).getByText('just now')
       if (bundle.documentsMetadata.updatedAt) {
-        within(bundleRows[index]).getByText('1 day ago')
+        within(bundleRows[index]).getByText('yesterday')
       }
     })
   })
@@ -126,7 +126,7 @@ describe('BundlesTable', () => {
       expect(useRouter().navigate).toHaveBeenCalledWith({bundleId: '123'})
     })
 
-    it.only('should delete bundle when menu button is clicked', async () => {
+    it('should delete bundle when menu button is clicked', async () => {
       const bundles = [
         {
           _id: '123',
