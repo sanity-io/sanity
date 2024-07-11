@@ -5,13 +5,7 @@ import type {MetadataWrapper} from '../../../core/store/bundles/createBundlesMet
 /**
  * @internal
  */
-export const DEFAULT_METADATA_STATE: MetadataWrapper = {
-  data: null,
-  error: null,
-  loading: false,
-}
-
-interface BundlesMetadataContextValue {
+export interface BundlesMetadataContextValue {
   state: MetadataWrapper
   addBundleSlugsToListener: (slugs: string[]) => void
   removeBundleSlugsFromListener: (slugs: string[]) => void

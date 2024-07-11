@@ -1,10 +1,16 @@
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {useBundlesStore} from 'sanity'
-import {BundlesMetadataContext, DEFAULT_METADATA_STATE} from 'sanity/_singletons'
+import {BundlesMetadataContext} from 'sanity/_singletons'
 
 import {type MetadataWrapper} from '../../store/bundles/createBundlesMetadataAggregator'
 import {type BundlesMetadata} from '../tool/useBundlesMetadata'
+
+const DEFAULT_METADATA_STATE: MetadataWrapper = {
+  data: null,
+  error: null,
+  loading: false,
+}
 
 const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) => {
   const [listenerBundleSlugs, setListenerBundleSlugs] = useState<string[]>([])
