@@ -24,7 +24,14 @@ possible/practical for writing an automated test
 ### Notes for release
 
 <!--
-A description of the change(s) that should be used in the release notes.
-If this is PR is a partial implementation of a feature and is not enabled by default, please
-call this out explicitly here so that it does not get included in the release notes.
+Engineers do not need to worry about the final copy,
+but they must provide the docs team with enough context on:
+
+* What changed
+* How does one use it (code snippets, etc)
+* Are there limitations we should be aware of
+
+If this is PR is a partial implementation of a feature and is not enabled by default or if
+this PR does not contain changes that needs mention in the release notes (tooling chores etc),
+please call this out explicitly by writing "Part of feature X" or "Not required" in this section.
 -->
