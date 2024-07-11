@@ -1,5 +1,5 @@
 import {ArchiveIcon, EllipsisHorizontalIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
-import {Button, Menu, MenuButton, MenuItem, Spinner, useToast} from '@sanity/ui'
+import {Button, Menu, MenuButton, MenuItem, Spinner, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -28,9 +28,9 @@ export const BundleMenuButton = ({bundle}: Props) => {
       setDiscardStatus('discarding')
       await deleteBundle(bundle)
       setDiscardStatus('idle')
-      if (router.state.bundleId) {
+      if (router.state.bundleName) {
         // navigate back to bundle overview
-        router.navigate({bundleId: undefined})
+        router.navigate({bundleName: undefined})
       }
     } catch (e) {
       setDiscardStatus('error')

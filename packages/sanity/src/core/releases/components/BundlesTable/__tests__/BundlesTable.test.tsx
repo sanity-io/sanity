@@ -84,9 +84,14 @@ describe('BundlesTable', () => {
       fireEvent.click(within(bundleRow).getByLabelText('Release menu'))
 
       fireEvent.click(screen.getByText('Delete'))
+      fireEvent.click(screen.getByText('Confirm'))
 
       await waitFor(() => {
-        expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith('123')
+        expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith({
+          _id: '123',
+          name: 'bundle-1',
+          title: 'Bundle 1',
+        })
         expect(useRouter().navigate).toHaveBeenCalledWith({bundleName: undefined})
       })
     })
