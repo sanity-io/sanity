@@ -4,16 +4,11 @@ import {type ReactNode} from 'react'
 
 import {queryByDataUi} from '../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {useBundles} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
+import {useBundles} from '../../../store/bundles/useBundles'
 import {releasesUsEnglishLocaleBundle} from '../../i18n'
-import BundlesOverview from '../BundlesOverview'
+import {ReleasesOverview} from '../ReleasesOverview'
 import {type BundlesMetadata, useBundlesMetadata} from '../useBundlesMetadata'
-
-// TODO: move this to test for CreateBundleDialog
-jest.mock('../../../store/bundles/useBundleOperations', () => ({
-  useBundleOperations: jest.fn().mockReturnValue({deleteBundle: jest.fn()}),
-}))
 
 jest.mock('../useBundlesMetadata', () => ({
   useBundlesMetadata: jest.fn(),
@@ -40,7 +35,7 @@ const createWrapper = async () => {
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 const mockUseBundlesMetadata = useBundlesMetadata as jest.Mock<typeof useBundlesMetadata>
 
-describe('BundlesOverview', () => {
+describe('ReleasesOverview', () => {
   describe('when loading bundles', () => {
     beforeEach(async () => {
       mockUseBundles.mockReturnValue({
@@ -57,7 +52,7 @@ describe('BundlesOverview', () => {
 
       const wrapper = await createWrapper()
 
-      return render(<BundlesOverview />, {wrapper})
+      return render(<ReleasesOverview />, {wrapper})
     })
 
     it('does not show bundles table but shows loader', () => {
@@ -94,7 +89,7 @@ describe('BundlesOverview', () => {
       })
       const wrapper = await createWrapper()
 
-      return render(<BundlesOverview />, {wrapper})
+      return render(<ReleasesOverview />, {wrapper})
     })
 
     it('shows a message that no bundles are available', () => {
@@ -154,7 +149,7 @@ describe('BundlesOverview', () => {
       })
       const wrapper = await createWrapper()
 
-      return render(<BundlesOverview />, {wrapper})
+      return render(<ReleasesOverview />, {wrapper})
     })
     it('shows each open bundle', () => {
       screen.getByText('Bundle 1')

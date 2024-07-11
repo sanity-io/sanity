@@ -16,9 +16,8 @@ type Mode = 'open' | 'archived'
 
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 
-export default function BundlesOverview() {
+export function ReleasesOverview() {
   const {data: bundles, loading: loadingBundles} = useBundles()
-
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>()

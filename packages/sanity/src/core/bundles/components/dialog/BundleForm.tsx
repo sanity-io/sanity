@@ -10,7 +10,7 @@ import {DatePicker} from '../../../form/inputs/DateInputs/base/DatePicker'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {isDraftOrPublished} from '../../util/dummyGetters'
-import {BundleIconEditorPicker} from './BundleIconEditorPicker'
+import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
 
 export function BundleForm(props: {
   onChange: (params: Partial<BundleDocument>) => void
@@ -34,7 +34,7 @@ export function BundleForm(props: {
   const {t: coreT} = useTranslation()
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
 
-  const iconValue: Partial<BundleDocument> = useMemo(
+  const iconValue: BundleIconEditorPickerValue = useMemo(
     () => ({
       icon: icon ?? 'cube',
       hue: hue ?? 'gray',
@@ -98,7 +98,7 @@ export function BundleForm(props: {
   )
 
   const handleIconValueChange = useCallback(
-    (pickedIcon: Partial<BundleDocument>) => {
+    (pickedIcon: BundleIconEditorPickerValue) => {
       onChange({...value, icon: pickedIcon.icon, hue: pickedIcon.hue})
     },
     [onChange, value],

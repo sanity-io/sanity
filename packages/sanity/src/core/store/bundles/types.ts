@@ -15,11 +15,12 @@ export interface BundleDocument extends SanityDocument {
   title: string
   name: string
   description?: string
-  hue?: ColorHueKey
-  icon?: IconSymbol
+  hue: ColorHueKey
+  icon: IconSymbol
   authorId: string
   publishedAt?: string
   archivedAt?: string
+  publishedBy?: string
 }
 
 /**

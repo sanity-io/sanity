@@ -8,7 +8,7 @@ import {BundlesTable, type TableBundle} from '../BundlesTable'
 
 jest.mock('sanity/router', () => ({
   ...(jest.requireActual('sanity/router') || {}),
-  useRouter: jest.fn().mockReturnValue({state: {bundleId: '123'}, navigate: jest.fn()}),
+  useRouter: jest.fn().mockReturnValue({state: {bundleName: '123'}, navigate: jest.fn()}),
 }))
 
 jest.mock('../../../../store/bundles/useBundleOperations', () => ({
@@ -123,7 +123,7 @@ describe('BundlesTable', () => {
       const bundleRow = screen.getAllByTestId('bundle-row')[0]
       fireEvent.click(within(bundleRow).getByText('Bundle 1'))
 
-      expect(useRouter().navigate).toHaveBeenCalledWith({bundleId: '123'})
+      expect(useRouter().navigate).toHaveBeenCalledWith({bundleName: 'bundle-1'})
     })
 
     it('should delete bundle when menu button is clicked', async () => {
@@ -148,7 +148,7 @@ describe('BundlesTable', () => {
 
       await waitFor(() => {
         expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(bundles[0])
-        expect(useRouter().navigate).toHaveBeenCalledWith({bundleId: undefined})
+        expect(useRouter().navigate).toHaveBeenCalledWith({bundleName: undefined})
       })
     })
   })
