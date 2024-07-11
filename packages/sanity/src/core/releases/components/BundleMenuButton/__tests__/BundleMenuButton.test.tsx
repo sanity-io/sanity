@@ -40,6 +40,8 @@ describe('BundleMenuButton', () => {
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
       _rev: '',
+      hue: 'gray',
+      icon: 'cube',
     }
 
     await renderTest(activeBundle)
@@ -67,6 +69,8 @@ describe('BundleMenuButton', () => {
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
       _rev: '',
+      hue: 'gray',
+      icon: 'cube',
     }
     await renderTest(archivedBundle)
 
@@ -93,6 +97,8 @@ describe('BundleMenuButton', () => {
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
       _rev: '',
+      hue: 'gray',
+      icon: 'cube',
     }
     await renderTest(activeBundle)
 
