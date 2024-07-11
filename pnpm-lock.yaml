@@ -7,6 +7,7 @@ settings:
 overrides:
   '@typescript-eslint/eslint-plugin': ^7.11.0
   '@typescript-eslint/parser': ^7.11.0
+  '@npmcli/arborist': ^7.5.4
 
 importers:
 
@@ -4880,7 +4881,7 @@ packages:
     resolution: {integrity: sha512-z7CjDSWFKS6cqydxP2XDrnmp1MYavSk2sU70ku1uo/38SZvFeUlEAkV6evxc2QJOqWQFsGKOO26zX2DBnQ45YQ==}
     engines: {node: '>=18.0.0'}
     dependencies:
-      '@npmcli/arborist': 7.5.3
+      '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
       '@nx/devkit': 18.2.4(nx@18.2.4)
@@ -5297,8 +5298,8 @@ packages:
       - supports-color
     dev: true
 
-  /@npmcli/arborist@7.5.3:
-    resolution: {integrity: sha512-7gbMdDNSYUzi0j2mpb6FoXRg3BxXWplMQZH1MZlvNjSdWFObaUz2Ssvo0Nlh2xmWks1OPo+gpsE6qxpT/5M7lQ==}
+  /@npmcli/arborist@7.5.4:
+    resolution: {integrity: sha512-nWtIc6QwwoUORCRNzKx4ypHqCk3drI+5aeYdMTQQiRCcn4lOOgfQh7WyZobGYTxXPSq1VwV53lkpN/BRlRk08g==}
     engines: {node: ^16.14.0 || >=18.0.0}
     hasBin: true
     dependencies:
@@ -14883,7 +14884,7 @@ packages:
     hasBin: true
     dependencies:
       '@lerna/create': 8.1.6(typescript@5.5.3)
-      '@npmcli/arborist': 7.5.3
+      '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
       '@nx/devkit': 18.2.4(nx@18.2.4)

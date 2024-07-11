@@ -182,7 +182,8 @@
     },
     "overrides": {
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
-      "@typescript-eslint/parser": "$@typescript-eslint/parser"
+      "@typescript-eslint/parser": "$@typescript-eslint/parser",
+      "@npmcli/arborist": "^7.5.4"
     }
   },
   "isSanityMonorepo": true
