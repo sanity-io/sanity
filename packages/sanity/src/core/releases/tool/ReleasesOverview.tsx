@@ -15,7 +15,7 @@ type Mode = 'open' | 'archived'
 
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 
-export default function BundlesOverview() {
+export function ReleasesOverview() {
   const {data, loading} = useBundles()
 
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
