@@ -4,13 +4,13 @@ import {Box, Button, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 /**
  * @internal
  */
-export interface BundleHeaderProps {
+export interface ReleaseHeaderProps {
   searchDisabled?: boolean
   searchTerm?: string
   setSearchTerm: (value?: string) => void
 }
 
-export function BundleHeader({searchDisabled, searchTerm, setSearchTerm}: BundleHeaderProps) {
+export function ReleaseHeader({searchDisabled, searchTerm, setSearchTerm}: ReleaseHeaderProps) {
   return (
     <Card as="thead" radius={3}>
       <Flex as="tr">

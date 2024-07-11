@@ -8,7 +8,7 @@ import {CreateBundleDialog} from '../../bundles/components/dialog/CreateBundleDi
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {type BundleDocument} from '../../store/bundles/types'
 import {useBundles} from '../../store/bundles/useBundles'
-import {BundlesTable, type TableBundle} from '../components/BundlesTable/BundlesTable'
+import {ReleasesTable, type TableBundle} from '../components/ReleasesTable/ReleasesTable'
 import {containsBundles} from '../types/bundle'
 import {useBundlesMetadata} from './useBundlesMetadata'
 
@@ -170,7 +170,7 @@ export function ReleasesOverview() {
           {loading ? (
             <LoadingBlock fill data-testid="bundle-table-loader" />
           ) : (
-            <BundlesTable
+            <ReleasesTable
               bundles={filteredBundles}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}

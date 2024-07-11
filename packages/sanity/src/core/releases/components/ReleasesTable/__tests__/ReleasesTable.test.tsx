@@ -4,7 +4,7 @@ import {useRouter} from 'sanity/router'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
-import {BundlesTable, type TableBundle} from '../BundlesTable'
+import {ReleasesTable, type TableBundle} from '../ReleasesTable'
 
 jest.mock('sanity/router', () => ({
   ...(jest.requireActual('sanity/router') || {}),
@@ -17,14 +17,14 @@ jest.mock('../../../../store/bundles/useBundleOperations', () => ({
 
 const mockSetSearchTerm = jest.fn()
 
-const renderBundlesTable = async (bundles: TableBundle[]) => {
+const renderReleasesTable = async (bundles: TableBundle[]) => {
   const wrapper = await createTestProvider()
-  return render(<BundlesTable bundles={bundles} setSearchTerm={mockSetSearchTerm} />, {wrapper})
+  return render(<ReleasesTable bundles={bundles} setSearchTerm={mockSetSearchTerm} />, {wrapper})
 }
 
-describe('BundlesTable', () => {
+describe('ReleasesTable', () => {
   it('should render the table headers', async () => {
-    await renderBundlesTable([])
+    await renderReleasesTable([])
 
     screen.getByPlaceholderText('Search releases')
     screen.getByText('Published')
@@ -33,7 +33,7 @@ describe('BundlesTable', () => {
   })
 
   it('should display "No Releases" when there are no bundles', async () => {
-    await renderBundlesTable([])
+    await renderReleasesTable([])
     screen.getByText('No Releases')
   })
 
@@ -67,7 +67,7 @@ describe('BundlesTable', () => {
       },
     ] as TableBundle[]
 
-    await renderBundlesTable(bundles)
+    await renderReleasesTable(bundles)
 
     const bundleRows = screen.getAllByTestId('bundle-row')
     expect(bundleRows).toHaveLength(bundles.length)
@@ -82,13 +82,13 @@ describe('BundlesTable', () => {
   })
 
   it('should disable search when no bundles in table', async () => {
-    await renderBundlesTable([])
+    await renderReleasesTable([])
 
     expect(screen.getByPlaceholderText('Search releases')).toBeDisabled()
   })
 
   it('should enable and trigger a search when there are bundles in the table', async () => {
-    await renderBundlesTable([
+    await renderReleasesTable([
       {
         title: 'Bundle 1',
         name: 'bundle-1',
@@ -105,8 +105,8 @@ describe('BundlesTable', () => {
     expect(mockSetSearchTerm).toHaveBeenCalledWith('Bundle 1')
   })
 
-  describe('A bundle row', () => {
-    it('should navigate to the bundle detail when clicked', async () => {
+  describe('A release row', () => {
+    it('should navigate to the release detail when clicked', async () => {
       const bundles = [
         {
           _id: '123',
@@ -118,7 +118,7 @@ describe('BundlesTable', () => {
           },
         },
       ] as TableBundle[]
-      await renderBundlesTable(bundles)
+      await renderReleasesTable(bundles)
 
       const bundleRow = screen.getAllByTestId('bundle-row')[0]
       fireEvent.click(within(bundleRow).getByText('Bundle 1'))
@@ -138,7 +138,7 @@ describe('BundlesTable', () => {
           },
         },
       ] as TableBundle[]
-      await renderBundlesTable(bundles)
+      await renderReleasesTable(bundles)
 
       const bundleRow = screen.getAllByTestId('bundle-row')[0]
       fireEvent.click(within(bundleRow).getByLabelText('Release menu'))

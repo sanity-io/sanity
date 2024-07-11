@@ -4,13 +4,13 @@ import {useRouter} from 'sanity/router'
 import {BundleBadge} from '../../../bundles/components/BundleBadge'
 import {RelativeTime, UserAvatar} from '../../../components'
 import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
-import {type TableBundle} from './BundlesTable'
+import {type TableBundle} from './ReleasesTable'
 
-type Props = {
+type ReleaseRowProps = {
   bundle: TableBundle
 }
 
-export function BundleRow({bundle}: Props) {
+export function ReleaseRow({bundle}: ReleaseRowProps) {
   const {documentsMetadata} = bundle
   const router = useRouter()
 
