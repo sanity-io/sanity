@@ -181,9 +181,9 @@
       ]
     },
     "overrides": {
+      "@npmcli/arborist": "^7.5.4",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
-      "@typescript-eslint/parser": "$@typescript-eslint/parser",
-      "@npmcli/arborist": "^7.5.4"
+      "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }
   },
   "isSanityMonorepo": true
