@@ -27,11 +27,9 @@ const nestedWrapper = ({children}: PropsWithChildren) => (
 describe('useTreeEditingEnabled', () => {
   test('should return enabled: false when config is not enabled', () => {
     const features = {
-      features: {
-        beta: {
-          treeArrayEditing: {
-            enabled: false,
-          },
+      beta: {
+        treeArrayEditing: {
+          enabled: false,
         },
       },
     }
@@ -44,11 +42,9 @@ describe('useTreeEditingEnabled', () => {
 
   test('should return enabled: true when config is enabled', () => {
     const features = {
-      features: {
-        beta: {
-          treeArrayEditing: {
-            enabled: true,
-          },
+      beta: {
+        treeArrayEditing: {
+          enabled: true,
         },
       },
     }

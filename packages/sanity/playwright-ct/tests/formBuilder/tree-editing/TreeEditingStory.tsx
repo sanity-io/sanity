@@ -150,11 +150,9 @@ function getSchemaTypes(opts: GetSchemaTypesOpts) {
   ]
 }
 
-const FEATURES: WorkspaceOptions['features'] = {
-  beta: {
-    treeArrayEditing: {
-      enabled: true,
-    },
+const FEATURES: WorkspaceOptions['beta'] = {
+  treeArrayEditing: {
+    enabled: true,
   },
 }
 
@@ -170,7 +168,7 @@ export function TreeEditingStory(props: TreeEditingStoryProps): JSX.Element {
   const types = getSchemaTypes({legacyEditing})
 
   return (
-    <TestWrapper schemaTypes={types} features={FEATURES}>
+    <TestWrapper schemaTypes={types} betaFeatures={FEATURES}>
       <VirtualizerScrollInstanceProvider
         containerElement={{current: document.body}}
         scrollElement={document.body}
