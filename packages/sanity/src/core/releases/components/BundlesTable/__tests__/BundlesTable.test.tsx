@@ -28,6 +28,8 @@ describe('BundlesTable', () => {
 
     screen.getByPlaceholderText('Search releases')
     screen.getByText('Published')
+    screen.getByText('Edited')
+    screen.getByText('Created')
   })
 
   it('should display "No Releases" when there are no bundles', async () => {
@@ -58,6 +60,8 @@ describe('BundlesTable', () => {
         name: 'bundle-3',
         _createdAt: new Date().toISOString(),
         documentsMetadata: {
+          // 24 hours ago
+          updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
           documentCount: 3,
         },
       },
@@ -67,7 +71,14 @@ describe('BundlesTable', () => {
 
     const bundleRows = screen.getAllByTestId('bundle-row')
     expect(bundleRows).toHaveLength(bundles.length)
-    bundles.forEach((bundle, index) => within(bundleRows[index]).getByText(bundle.title))
+    bundles.forEach((bundle, index) => {
+      within(bundleRows[index]).getByText(bundle.title)
+      within(bundleRows[index]).getByText(bundle.documentsMetadata.documentCount.toString())
+      within(bundleRows[index]).getByText('Just now')
+      if (bundle.documentsMetadata.updatedAt) {
+        within(bundleRows[index]).getByText('1 day ago')
+      }
+    })
   })
 
   it('should disable search when no bundles in table', async () => {
