@@ -8,13 +8,18 @@ import {useBundles} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {releasesUsEnglishLocaleBundle} from '../../i18n'
 import BundlesOverview from '../BundlesOverview'
+import {type BundlesMetadata, useBundlesMetadata} from '../useBundlesMetadata'
 
 // TODO: move this to test for CreateBundleDialog
 jest.mock('../../../store/bundles/useBundleOperations', () => ({
   useBundleOperations: jest.fn().mockReturnValue({deleteBundle: jest.fn()}),
 }))
 
-jest.mock('../../../store/bundles', () => ({
+jest.mock('../useBundlesMetadata', () => ({
+  useBundlesMetadata: jest.fn(),
+}))
+
+jest.mock('../../../store/bundles/useBundles', () => ({
   useBundles: jest.fn(),
 }))
 
@@ -32,15 +37,22 @@ const createWrapper = async () => {
   }
 }
 
-const mockUseBundleStore = useBundles as jest.Mock<typeof useBundles>
+const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
+const mockUseBundlesMetadata = useBundlesMetadata as jest.Mock<typeof useBundlesMetadata>
 
 describe('BundlesOverview', () => {
   describe('when loading bundles', () => {
     beforeEach(async () => {
-      mockUseBundleStore.mockReturnValue({
+      mockUseBundles.mockReturnValue({
         data: null,
         loading: true,
         dispatch: jest.fn(),
+      })
+      mockUseBundlesMetadata.mockReturnValue({
+        loading: true,
+        fetching: true,
+        error: null,
+        data: null,
       })
 
       const wrapper = await createWrapper()
@@ -69,10 +81,16 @@ describe('BundlesOverview', () => {
 
   describe('when no bundles are available', () => {
     beforeEach(async () => {
-      mockUseBundleStore.mockReturnValue({
+      mockUseBundles.mockReturnValue({
         data: [],
         loading: false,
         dispatch: jest.fn(),
+      })
+      mockUseBundlesMetadata.mockReturnValue({
+        loading: false,
+        fetching: false,
+        error: null,
+        data: null,
       })
       const wrapper = await createWrapper()
 
@@ -99,17 +117,40 @@ describe('BundlesOverview', () => {
 
   describe('when bundles are loaded', () => {
     const bundles = [
-      {title: 'Bundle 1'},
-      {title: 'Bundle 2'},
-      {title: 'Bundle 3', publishedAt: new Date().toISOString()},
-      {title: 'Bundle 4', archivedAt: new Date().toISOString()},
-    ] as unknown as BundleDocument[]
+      {title: 'Bundle 1', name: 'bundle-1', _createdAt: new Date().toISOString()},
+      {title: 'Bundle 2', name: 'bundle-2', _createdAt: new Date().toISOString()},
+      {
+        title: 'Bundle 3',
+        publishedAt: new Date().toISOString(),
+        name: 'bundle-3',
+        _createdAt: new Date().toISOString(),
+      },
+      {
+        title: 'Bundle 4',
+        archivedAt: new Date().toISOString(),
+        name: 'bundle-4',
+        _createdAt: new Date().toISOString(),
+      },
+    ] as BundleDocument[]
 
     beforeEach(async () => {
-      mockUseBundleStore.mockReturnValue({
+      mockUseBundles.mockReturnValue({
         data: bundles,
         loading: false,
         dispatch: jest.fn(),
+      })
+      mockUseBundlesMetadata.mockReturnValue({
+        loading: false,
+        fetching: false,
+        error: null,
+        data: Object.fromEntries(
+          bundles.map((bundle) => [
+            bundle.name,
+            {
+              documentCount: 1,
+            } as BundlesMetadata,
+          ]),
+        ),
       })
       const wrapper = await createWrapper()
 
