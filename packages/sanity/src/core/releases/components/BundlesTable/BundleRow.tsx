@@ -86,7 +86,7 @@ export function BundleRow({bundle}: Props) {
       </Flex>
       {/* Actions */}
       <Flex as="td" align="center" flex="none" padding={3}>
-        <BundleMenuButton bundle={bundle} />
+        <BundleMenuButton bundle={bundle} documentCount={bundle.documentsMetadata.documentCount} />
       </Flex>
     </Card>
   )
