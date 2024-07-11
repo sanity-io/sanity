@@ -18,6 +18,10 @@ jest.mock('../../../store/bundles/useBundles', () => ({
   useBundles: jest.fn(),
 }))
 
+jest.mock('sanity', () => ({
+  useCurrentUser: jest.fn().mockReturnValue({id: 'user-id'}),
+}))
+
 jest.mock('sanity/router', () => ({
   ...(jest.requireActual('sanity/router') || {}),
   useRouter: jest.fn().mockReturnValue({state: {}, navigate: jest.fn()}),
