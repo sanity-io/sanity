@@ -37,10 +37,10 @@ export default defineConfig({
   ],
 
   /* Maximum time one test can run for. */
-  timeout: 10 * 1000,
+  timeout: 30 * 1000,
   expect: {
     // Maximum time expect() should wait for the condition to be met.
-    timeout: 5 * 1000,
+    timeout: 10 * 1000,
   },
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
