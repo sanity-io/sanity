@@ -125,6 +125,7 @@ export function resolveIntentState(
 
     const nextUrlState: Record<string, unknown> = {
       ...prevState,
+      _searchParams: nextState._searchParams,
       tool: matchingTool.name,
       [matchingTool.name]: toolState,
     }

@@ -32,7 +32,6 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
       title: t('package-version.new-package-available.title'),
       description: (
         <Stack space={2} paddingBottom={2}>
-          <Box>{t('package-version.new-package-available.description')}</Box>
           <Box>
             <Button
               aria-label={t('package-version.new-package-available.reload-button')}

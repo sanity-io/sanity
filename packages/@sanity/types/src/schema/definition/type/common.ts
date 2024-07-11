@@ -1,6 +1,6 @@
 import {type ComponentType, type ReactElement, type ReactNode} from 'react'
 
-import {type ConditionalProperty, type DeprecatedProperty} from '../../types'
+import {type ConditionalProperty, type DeprecatedProperty, type I18nTextRecord} from '../../types'
 import {type ObjectOptions} from './object'
 
 /** @public */
@@ -21,6 +21,7 @@ export type FieldGroupDefinition = {
   hidden?: ConditionalProperty
   icon?: ComponentType
   default?: boolean
+  i18n?: I18nTextRecord<'title'>
 }
 
 /** @public */

@@ -660,7 +660,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.invalid-value.reset-button.text': 'Reset value',
   /** Invalid property value */
   'inputs.invalid-value.title': 'Invalid property value',
-  /** Field groups */
+  /** Title for the "All fields" field group */
+  'inputs.object.field-group-tabs.all-fields-title': 'All fields',
+  /** Aria label for the "Field groups" select control on smaller screens */
   'inputs.object.field-group-tabs.aria-label': 'Field groups',
   /** Read-only field description */
   'inputs.object.unknown-fields.read-only.description':
@@ -705,13 +707,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Click or press space to activate',
   /** Label for activate on focus with context of tap and not focused */
   'inputs.portable-text.activate-on-focus-message_tap': 'Tap to activate',
-  /**Aria label for the annotation object */
+  /** Aria label for the annotation object */
   'inputs.portable-text.annotation-aria-label': 'Annotation object',
   /** Title for dialog that allows editing an annotation */
   'inputs.portable-text.annotation-editor.title': 'Edit {{schemaType}}',
   /** Title of the default "link" annotation */
   'inputs.portable-text.annotation.link': 'Link',
-  /**Aria label for the block object */
+  /** Aria label for the block object */
   'inputs.portable-text.block.aria-label': 'Block object',
   /** Label for action to edit a block item, in the case where it is editable */
   'inputs.portable-text.block.edit': 'Edit',
@@ -735,7 +737,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.decorator.underline': 'Underline',
   /** Placeholder text for when the editor is empty */
   'inputs.portable-text.empty-placeholder': 'Empty',
-  /**Aria label for the block object */
+  /** Aria label for the block object */
   'inputs.portable-text.inline-block.aria-label': 'Inline object',
   /** Label for action to edit an inline object item */
   'inputs.portable-text.inline-object.edit': 'Edit object',
@@ -1085,12 +1087,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'new-document.open-dialog-aria-label': 'Create new document',
   /** Title for "Create new document" dialog */
   'new-document.title': 'Create new document',
-  /** More detailed alert text letting user know they have an out-of-date version and should reload */
-  'package-version.new-package-available.description': 'Simply reload to use the new version.',
   /** Label for button that will make the browser reload when users' studio version is out-of-date */
-  'package-version.new-package-available.reload-button': 'Reload',
+  'package-version.new-package-available.reload-button': 'Push to reload',
   /** Title of the alert for studio users when packages in their studio are out-of-date */
-  'package-version.new-package-available.title': 'Sanity Studio was updated',
+  'package-version.new-package-available.title': 'Sanity Studio is ready to update!',
   /** Label for action to manage members of the current studio project */
   'presence.action.manage-members': 'Manage members',
   /** Accessibility label for presence menu button */
@@ -1641,9 +1641,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.since': 'Since: {{timestamp, datetime}}',
   /** Label for missing change version for timeline menu dropdown are showing */
   'timeline.since-version-missing': 'Since: unknown version',
-  /**Aria label for the action buttons in the PTE toolbar */
+  /** Aria label for the action buttons in the PTE toolbar */
   'toolbar.portable-text.action-button-aria-label': '{{action}}',
-  /** Accesibility label for the breadcrumb menu */
+  /** Accessibility label for the breadcrumb menu */
   'tree-editing-dialog.breadcrumbs.menu': 'Breadcrumb menu',
   /** Title placeholder for search input in array of objects */
   'tree-editing-dialog.search-placeholder': 'Search',

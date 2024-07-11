@@ -19,7 +19,7 @@ import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromC
 
 interface TestWrapperProps {
   children?: ReactNode
-  features?: WorkspaceOptions['features']
+  betaFeatures?: WorkspaceOptions['beta']
   schemaTypes: SchemaTypeDefinition[]
 }
 
@@ -28,7 +28,7 @@ interface TestWrapperProps {
  * It provides a mock Sanity client and a mock workspace.
  */
 export const TestWrapper = (props: TestWrapperProps): JSX.Element | null => {
-  const {children, schemaTypes, features} = props
+  const {children, schemaTypes, betaFeatures} = props
   const [mockWorkspace, setMockWorkspace] = useState<Workspace | null>(null)
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export const TestWrapper = (props: TestWrapperProps): JSX.Element | null => {
           types: schemaTypes,
         },
 
-        features,
+        beta: betaFeatures,
       })
 
       const workspace = await getMockWorkspace({client, config})
@@ -51,7 +51,7 @@ export const TestWrapper = (props: TestWrapperProps): JSX.Element | null => {
     }
 
     getWorkspace()
-  }, [schemaTypes, features])
+  }, [schemaTypes, betaFeatures])
 
   if (!mockWorkspace) {
     return null

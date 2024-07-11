@@ -105,7 +105,7 @@ export interface SortOrderingItem {
   direction: 'asc' | 'desc'
 }
 
-/** @beta */
+/** @public */
 export type I18nTextRecord<K extends string> = {[P in K]?: {key: string; ns: string}}
 
 /** @beta */
@@ -388,6 +388,7 @@ export interface FieldGroup {
   icon?: ComponentType
   title?: string
   description?: string
+  i18n?: I18nTextRecord<'title'>
   hidden?: ConditionalProperty
   default?: boolean
   fields?: ObjectField[]

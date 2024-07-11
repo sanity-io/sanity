@@ -318,13 +318,13 @@ export const arrayEditingReducer = (opts: {
   const flattenedConfig = flattenConfig(config, [])
 
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver = innerConfig.features?.beta?.treeArrayEditing?.enabled
+    const resolver = innerConfig.beta?.treeArrayEditing?.enabled
 
     if (!resolver && typeof resolver !== 'boolean') return acc
     if (typeof resolver === 'boolean') return resolver
 
     throw new Error(
-      `Expected \`features.beta.treeArrayEditing.enabled\` to be a boolean, but received ${getPrintableType(
+      `Expected \`beta.treeArrayEditing.enabled\` to be a boolean, but received ${getPrintableType(
         resolver,
       )}`,
     )

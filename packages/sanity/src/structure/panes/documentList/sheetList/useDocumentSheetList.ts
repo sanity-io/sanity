@@ -4,7 +4,7 @@ import {getPublishedId, useSearchState} from 'sanity'
 import {useDocumentSheetListStore} from './useDocumentSheetListStore'
 
 interface DocumentSheetListOptions {
-  /**The schemaType.name  */
+  /** The schemaType.name  */
   typeName: string
 }
 
