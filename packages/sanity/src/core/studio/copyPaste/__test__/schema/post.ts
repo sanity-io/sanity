@@ -10,7 +10,7 @@ export const postDocument = defineType({
       type: 'string',
     },
     {
-      name: 'body',
+      name: 'content',
       type: 'array',
       of: [{type: 'customNamedBlock'}],
     },

@@ -225,7 +225,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
             }),
             defineField({
               title: 'Box Content',
-              name: 'body',
+              name: 'content',
               type: 'array',
               of: [{type: 'block'}],
               validation: (rule) => rule.required().error('Must have content'),
