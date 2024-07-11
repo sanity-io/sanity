@@ -31,7 +31,7 @@ export const DocumentStatusPulse = (props: ReviewChangesButtonProps) => {
   const currentStatus = STATUS_DICTIONARY[status]
 
   return (
-    <Flex align="center" gap={2}>
+    <Flex align="center" gap={2} data-testid="pane-footer-document-status-pulse">
       <TextWithTone size={1} tone={currentStatus.tone}>
         <AnimatedStatusIcon status={status} />
       </TextWithTone>

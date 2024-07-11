@@ -38,8 +38,8 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0
       '@playwright/test':
-        specifier: 1.41.2
-        version: 1.41.2
+        specifier: 1.44.1
+        version: 1.44.1
       '@repo/package.config':
         specifier: workspace:*
         version: link:packages/@repo/package.config
@@ -315,7 +315,7 @@ importers:
     dependencies:
       next:
         specifier: ^14.0.0
-        version: 14.2.5(@babel/core@7.24.8)(@playwright/test@1.41.2)(react-dom@18.3.1)(react@18.3.1)
+        version: 14.2.5(@babel/core@7.24.8)(@playwright/test@1.44.1)(react-dom@18.3.1)(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -402,7 +402,7 @@ importers:
         version: 0.0.0-experimental-938cd9a-20240601
       next:
         specifier: 15.0.0-rc.0
-        version: 15.0.0-rc.0(@babel/core@7.24.8)(@playwright/test@1.41.2)(babel-plugin-react-compiler@0.0.0-experimental-938cd9a-20240601)(react-dom@19.0.0-rc-38e3b23483-20240529)(react@19.0.0-rc-38e3b23483-20240529)
+        version: 15.0.0-rc.0(@babel/core@7.24.8)(@playwright/test@1.44.1)(babel-plugin-react-compiler@0.0.0-experimental-938cd9a-20240601)(react-dom@19.0.0-rc-38e3b23483-20240529)(react@19.0.0-rc-38e3b23483-20240529)
       react:
         specifier: 19.0.0-rc-38e3b23483-20240529
         version: 19.0.0-rc-38e3b23483-20240529
@@ -1710,11 +1710,11 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0
       '@playwright/experimental-ct-react':
-        specifier: 1.41.2
-        version: 1.41.2(@types/node@18.19.31)(vite@4.5.3)
+        specifier: 1.44.1
+        version: 1.44.1(@types/node@18.19.31)(vite@4.5.3)
       '@playwright/test':
-        specifier: 1.41.2
-        version: 1.41.2
+        specifier: 1.44.1
+        version: 1.44.1
       '@repo/package.config':
         specifier: workspace:*
         version: link:../@repo/package.config
@@ -1872,8 +1872,8 @@ importers:
   perf/tests:
     dependencies:
       '@playwright/test':
-        specifier: 1.41.2
-        version: 1.41.2
+        specifier: 1.44.1
+        version: 1.44.1
       '@sanity/client':
         specifier: ^6.21.0
         version: 6.21.0(debug@4.3.5)
@@ -5739,14 +5739,13 @@ packages:
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
     dev: true
 
-  /@playwright/experimental-ct-core@1.41.2(@types/node@18.19.31):
-    resolution: {integrity: sha512-JtW7gjmBCeHWKmZcOPuoJ15i2ergVX9PnyYUrAvBbWL8l4X9B7Sblro8nE49hO9baANfEGl4BbRUaj+pA67F6w==}
+  /@playwright/experimental-ct-core@1.44.1(@types/node@18.19.31):
+    resolution: {integrity: sha512-IqeXzfmpHH8yHA0fGQ//l/tDJHzUmg2dQj3t28E1tCshvnYc9fVr53Na9+/B8ME//vw0UFpv+CSKcOTHwWrhQg==}
     engines: {node: '>=16'}
-    hasBin: true
     dependencies:
-      playwright: 1.41.2
-      playwright-core: 1.41.2
-      vite: 4.5.3(@types/node@18.19.31)
+      playwright: 1.44.1
+      playwright-core: 1.44.1
+      vite: 5.3.3(@types/node@18.19.31)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -5757,12 +5756,12 @@ packages:
       - terser
     dev: true
 
-  /@playwright/experimental-ct-react@1.41.2(@types/node@18.19.31)(vite@4.5.3):
-    resolution: {integrity: sha512-BMcxh2DM3t8nMgUJKWMWAXGIzcYY/4w1ibckGP48edHU/cmZCbI5W7mUXfxMhYCt4mQJ1NuYcFIg5Jt+QVIuRQ==}
+  /@playwright/experimental-ct-react@1.44.1(@types/node@18.19.31)(vite@4.5.3):
+    resolution: {integrity: sha512-qRhv2zmZVwtzAYWwQO4j+It0S5zLUuZg/7Ke61ymCC5jGqlwf2kYqogFxBiDdhAO1sz/dN0UtdU+6df0HK5yzw==}
     engines: {node: '>=16'}
     hasBin: true
     dependencies:
-      '@playwright/experimental-ct-core': 1.41.2(@types/node@18.19.31)
+      '@playwright/experimental-ct-core': 1.44.1(@types/node@18.19.31)
       '@vitejs/plugin-react': 4.3.1(vite@4.5.3)
     transitivePeerDependencies:
       - '@types/node'
@@ -5776,12 +5775,12 @@ packages:
       - vite
     dev: true
 
-  /@playwright/test@1.41.2:
-    resolution: {integrity: sha512-qQB9h7KbibJzrDpkXkYvsmiDJK14FULCCZgEcoe2AvFAS64oCirWTwzTlAYEbKaRxWs5TFesE1Na6izMv3HfGg==}
+  /@playwright/test@1.44.1:
+    resolution: {integrity: sha512-1hZ4TNvD5z9VuhNJ/walIjvMVvYkZKf71axoF/uiAqpntQJXpG64dlXhoDXE3OczPuTuvjf/M5KWFg5VAVUS3Q==}
     engines: {node: '>=16'}
     hasBin: true
     dependencies:
-      playwright: 1.41.2
+      playwright: 1.44.1
 
   /@pmndrs/cannon-worker-api@2.4.0(three@0.166.1):
     resolution: {integrity: sha512-oJA1Bboc+WObksRaGDKJG0Wna9Q75xi1MdXVAZ9qXzBOyPsadmAnrmiKOEF0R8v/4zsuJElvscNZmyo3msbZjA==}
@@ -7212,7 +7211,7 @@ packages:
     resolution: {integrity: sha512-o2X2Veh9YWyVK/Iou/cToSS6ufcTLREoCVMcvBQbSqCFUIGaN1Ko3zxChJMWdf39dyaJ/ixMKtc8pciF/tL6Sw==}
     hasBin: true
     dependencies:
-      '@playwright/test': 1.41.2
+      '@playwright/test': 1.44.1
       '@sanity/client': 6.21.0(debug@4.3.5)
       '@sanity/uuid': 3.0.2
       cac: 6.7.14
@@ -15834,7 +15833,7 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: true
 
-  /next@14.2.5(@babel/core@7.24.8)(@playwright/test@1.41.2)(react-dom@18.3.1)(react@18.3.1):
+  /next@14.2.5(@babel/core@7.24.8)(@playwright/test@1.44.1)(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-0f8aRfBVL+mpzfBjYfQuLWh2WyAwtJXCRfkPF4UJ5qd2YwrHczsrSzXU4tRMV0OAxR8ZJZWPFn6uhSC56UTsLA==}
     engines: {node: '>=18.17.0'}
     hasBin: true
@@ -15853,7 +15852,7 @@ packages:
         optional: true
     dependencies:
       '@next/env': 14.2.5
-      '@playwright/test': 1.41.2
+      '@playwright/test': 1.44.1
       '@swc/helpers': 0.5.5
       busboy: 1.6.0
       caniuse-lite: 1.0.30001641
@@ -15877,7 +15876,7 @@ packages:
       - babel-plugin-macros
     dev: false
 
-  /next@15.0.0-rc.0(@babel/core@7.24.8)(@playwright/test@1.41.2)(babel-plugin-react-compiler@0.0.0-experimental-938cd9a-20240601)(react-dom@19.0.0-rc-38e3b23483-20240529)(react@19.0.0-rc-38e3b23483-20240529):
+  /next@15.0.0-rc.0(@babel/core@7.24.8)(@playwright/test@1.44.1)(babel-plugin-react-compiler@0.0.0-experimental-938cd9a-20240601)(react-dom@19.0.0-rc-38e3b23483-20240529)(react@19.0.0-rc-38e3b23483-20240529):
     resolution: {integrity: sha512-IWcCvxUSCAuOK5gig4+9yiyt/dLKpIa+WT01Qcx4CBE4TtwJljyTDnCVVn64jDZ4qmSzsaEYXpb4DTI8qbk03A==}
     engines: {node: '>=18.17.0'}
     hasBin: true
@@ -15899,7 +15898,7 @@ packages:
         optional: true
     dependencies:
       '@next/env': 15.0.0-rc.0
-      '@playwright/test': 1.41.2
+      '@playwright/test': 1.44.1
       '@swc/helpers': 0.5.11
       babel-plugin-react-compiler: 0.0.0-experimental-938cd9a-20240601
       busboy: 1.6.0
@@ -16887,17 +16886,17 @@ packages:
     dependencies:
       find-up: 3.0.0
 
-  /playwright-core@1.41.2:
-    resolution: {integrity: sha512-VaTvwCA4Y8kxEe+kfm2+uUUw5Lubf38RxF7FpBxLPmGe5sdNkSg5e3ChEigaGrX7qdqT3pt2m/98LiyvU2x6CA==}
+  /playwright-core@1.44.1:
+    resolution: {integrity: sha512-wh0JWtYTrhv1+OSsLPgFzGzt67Y7BE/ZS3jEqgGBlp2ppp1ZDj8c+9IARNW4dwf1poq5MgHreEM2KV/GuR4cFA==}
     engines: {node: '>=16'}
     hasBin: true
 
-  /playwright@1.41.2:
-    resolution: {integrity: sha512-v0bOa6H2GJChDL8pAeLa/LZC4feoAMbSQm1/jF/ySsWWoaNItvrMP7GEkvEEFyCTUYKMxjQKaTSg5up7nR6/8A==}
+  /playwright@1.44.1:
+    resolution: {integrity: sha512-qr/0UJ5CFAtloI3avF95Y0L1xQo6r3LQArLIg/z/PoGJ6xa+EwzrwO5lpNr/09STxdHuUoP2mvuELJS+hLdtgg==}
     engines: {node: '>=16'}
     hasBin: true
     dependencies:
-      playwright-core: 1.41.2
+      playwright-core: 1.44.1
     optionalDependencies:
       fsevents: 2.3.2
 

@@ -25,6 +25,7 @@ import {
   type StateTree,
   toMutationPatches,
   useConnectionState,
+  useCopyPaste,
   useDocumentOperation,
   useDocumentValuePermissions,
   useEditState,
@@ -65,6 +66,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {children, index, pane, paneKey, onFocusPath} = props
   const schema = useSchema()
   const templates = useTemplates()
+  const {setDocumentMeta} = useCopyPaste()
   const {
     __internal_tasks,
     document: {
@@ -542,6 +544,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     fieldGroupState,
     changesOpen,
   })
+
+  useEffect(() => {
+    setDocumentMeta({
+      documentId,
+      documentType,
+      schemaType: schemaType!,
+      onChange: handleChange,
+    })
+  }, [documentId, documentType, schemaType, handleChange, setDocumentMeta])
 
   const formStateRef = useRef(formState)
   formStateRef.current = formState

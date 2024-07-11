@@ -1,9 +1,10 @@
 /* eslint-disable max-nested-callbacks */
 import path from 'node:path'
 
-import {expect, test} from '@playwright/experimental-ct-react'
+// import {expect, test} from '@playwright/experimental-ct-react'
 import {type Path, type SanityDocument} from '@sanity/types'
 
+import {expect, test} from '../../../../fixtures'
 import {testHelpers} from '../../../../utils/testHelpers'
 import CopyPasteStory from './CopyPasteStory'
 import {

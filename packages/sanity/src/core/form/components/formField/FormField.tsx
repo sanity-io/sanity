@@ -85,6 +85,7 @@ export const FormField = memo(function FormField(
           fieldFocused={Boolean(focused)}
           fieldHovered={hovered}
           presence={presence}
+          inputId={inputId}
           content={
             <FormFieldHeaderText
               description={description}
