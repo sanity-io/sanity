@@ -110,21 +110,14 @@ export function BundleForm(props: {
     [icon, hue],
   )
 
-  const titleHasErrors = useCallback(
-    (pickedTitle: string) => {
-      return Boolean(
-        isDraftOrPublished(pickedTitle) || // title cannot be "drafts" or "published"
-          data?.find((bundle) => bundle.name === speakingurl(pickedTitle)), // bundle already exists
-      )
-    },
-    [data],
-  )
-
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
 
-      if (titleHasErrors(pickedTitle)) {
+      if (
+        isDraftOrPublished(pickedTitle) ||
+        data?.find((bundle) => bundle.name === speakingurl(pickedTitle))
+      ) {
         if (isDraftOrPublished(pickedTitle)) {
           setShowIsDraftPublishError(true)
         } else {
@@ -146,7 +139,7 @@ export function BundleForm(props: {
       setIsInitialRender(false)
       onChange({...value, title: pickedTitle, name: speakingurl(pickedTitle)})
     },
-    [data, onChange, onError, titleHasErrors, value],
+    [data, onChange, onError, value],
   )
 
   const handleBundleDescriptionChange = useCallback(
