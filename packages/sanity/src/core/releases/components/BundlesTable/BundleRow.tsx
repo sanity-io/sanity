@@ -53,11 +53,11 @@ export function BundleRow({bundle}: Props) {
         paddingX={2}
         paddingY={3}
         sizing="border"
-        style={{width: 100}}
+        style={{width: 120}}
       >
         {bundle.authorId && <UserAvatar size={0} user={bundle.authorId} />}
         <Text muted size={1}>
-          <RelativeTime time={bundle._createdAt} />
+          <RelativeTime time={bundle._createdAt} useTemporalPhrase minimal />
         </Text>
       </Flex>
       {/* Edited */}
@@ -72,7 +72,7 @@ export function BundleRow({bundle}: Props) {
       >
         {documentsMetadata.updatedAt && (
           <Text muted size={1}>
-            <RelativeTime time={documentsMetadata.updatedAt} />
+            <RelativeTime time={documentsMetadata.updatedAt} useTemporalPhrase minimal />
           </Text>
         )}
       </Flex>

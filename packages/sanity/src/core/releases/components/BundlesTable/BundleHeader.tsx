@@ -38,7 +38,7 @@ export function BundleHeader({searchDisabled, searchTerm, setSearchTerm}: Bundle
           </Box>
         </Flex>
         {/* Created */}
-        <Flex as="th" paddingY={3} sizing="border" style={{width: 100}}>
+        <Flex as="th" paddingY={3} sizing="border" style={{width: 120}}>
           <Button mode="bleed" padding={2} radius={3} space={1} text="Created" />
         </Flex>
         {/* Edited */}
