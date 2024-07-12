@@ -75,8 +75,6 @@ export const projectId = assertValue(
   'Missing environment variable: NEXT_PUBLIC_SANITY_PROJECT_ID'
 )
 
-export const useCdn = false
-
 function assertValue<T>(v: T | undefined, errorMessage: string): T {
   if (v === undefined) {
     throw new Error(errorMessage)
@@ -91,7 +89,6 @@ const envJS = `export const apiVersion =
 
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-export const useCdn = false
 `
 
 const schemaTS = `import { type SchemaTypeDefinition } from 'sanity'
@@ -108,14 +105,13 @@ const schemaJS = `export const schema = {
 
 const client = `import { createClient } from 'next-sanity'
 
-import { apiVersion, dataset, projectId, useCdn } from '../env'
+import { apiVersion, dataset, projectId } from '../env'
 
 export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn,
-  perspective: 'published',
+  useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
 })
 `
 
