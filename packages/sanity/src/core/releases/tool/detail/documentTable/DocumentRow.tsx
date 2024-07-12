@@ -1,14 +1,7 @@
 import {CheckmarkCircleIcon, EmptyIcon, Progress50Icon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {AvatarStack, Box, Card, Flex, Text} from '@sanity/ui'
-import {
-  type Dispatch,
-  type ForwardedRef,
-  forwardRef,
-  type SetStateAction,
-  useEffect,
-  useMemo,
-} from 'react'
+import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {getPublishedId, RelativeTime, SanityDefaultPreview, UserAvatar} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
@@ -16,7 +9,7 @@ import {Tooltip} from '../../../../../ui-components'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {DocumentActions} from './DocumentActions'
 import {useDocumentPreviewValues} from './useDocumentPreviewValues'
-import {useVersionHistory} from './useVersionHistory'
+import {type DocumentHistory} from './useReleaseHistory'
 
 const DOCUMENT_STATUS = {
   ready: {
@@ -63,18 +56,21 @@ export function DocumentRow(props: {
   searchTerm: string
   document: SanityDocument
   release: BundleDocument
-  setCollaborators: Dispatch<SetStateAction<string[]>>
+  history: DocumentHistory | undefined
 }) {
-  const {document, release, searchTerm, setCollaborators} = props
+  const {
+    document,
+    release,
+    searchTerm,
+    history = {
+      editors: [],
+      createdBy: undefined,
+      lastEditedBy: undefined,
+    },
+  } = props
   const documentId = document._id
   const documentTypeName = document._type
   const {previewValues, isLoading} = useDocumentPreviewValues({document, release})
-
-  const history = useVersionHistory(documentId, document?._rev)
-
-  useEffect(() => {
-    setCollaborators((pre) => Array.from(new Set([...pre, ...history.editors])))
-  }, [history.editors, setCollaborators])
 
   const LinkComponent = useMemo(
     () =>
