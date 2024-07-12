@@ -17,7 +17,7 @@ import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
-interface TestProviderOptions {
+export interface TestProviderOptions {
   config?: SingleWorkspace
   client?: SanityClient
   resources?: LocaleResourceBundle[]
