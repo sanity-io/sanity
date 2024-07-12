@@ -1,13 +1,12 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
-import {type BundleDocument} from 'sanity'
 
 import {createWrapper} from '../../../util/tests/createWrapper'
-import {BundleIconEditorPicker} from '../BundleIconEditorPicker'
+import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from '../BundleIconEditorPicker'
 
 describe('BundleIconEditorPicker', () => {
   const onChangeMock = jest.fn()
-  const valueMock: Partial<BundleDocument> = {
+  const valueMock: BundleIconEditorPickerValue = {
     hue: 'gray',
     icon: 'cube',
   }
