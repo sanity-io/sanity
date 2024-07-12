@@ -44,6 +44,7 @@ export function BundleForm(props: {
     const newDateErrors: FormNodeValidation[] = []
 
     // if the title is 'drafts' or 'published', show an error
+    // TODO localize text
     if (showIsDraftPublishError) {
       newTitleErrors.push({
         level: 'error',
@@ -53,6 +54,7 @@ export function BundleForm(props: {
     }
 
     // if the bundle already exists, show an error
+    // TODO localize text
     if (showBundleExists) {
       newTitleErrors.push({
         level: 'error',
@@ -62,6 +64,7 @@ export function BundleForm(props: {
     }
 
     // if the title is empty (but on not first render), show an error
+    // TODO localize text
     if (!isInitialRender && title?.length === 0) {
       newTitleErrors.push({
         level: 'error',
@@ -70,6 +73,8 @@ export function BundleForm(props: {
       })
     }
 
+    // if the date is invalid, show an error
+    // TODO localize text
     if (showDateValidation) {
       newDateErrors.push({
         level: 'error',
