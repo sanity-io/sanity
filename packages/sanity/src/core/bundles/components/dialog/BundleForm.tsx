@@ -1,8 +1,14 @@
 /* eslint-disable i18next/no-literal-string */
 import {CalendarIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
-import {useBundles, useDateTimeFormat, useTranslation} from 'sanity'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  FormFieldHeaderText,
+  type FormNodeValidation,
+  useBundles,
+  useDateTimeFormat,
+  useTranslation,
+} from 'sanity'
 import speakingurl from 'speakingurl'
 
 import {type CalendarLabels} from '../../../form/inputs/DateInputs/base/calendar/types'
@@ -22,12 +28,47 @@ export function BundleForm(props: {
 
   const dateFormatter = useDateTimeFormat()
 
-  const [showTitleValidation, setShowTitleValidation] = useState(false)
   const [showDateValidation, setShowDateValidation] = useState(false)
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [showBundleExists, setShowBundleExists] = useState(false)
   const [showIsDraftPublishError, setShowIsDraftPublishError] = useState(false)
+
+  const [isInitialRender, setIsInitialRender] = useState(true)
   const {data} = useBundles()
+
+  const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
+
+  useEffect(() => {
+    const newTitleErrors: FormNodeValidation[] = []
+
+    // if the title is 'drafts' or 'published', show an error
+    if (showIsDraftPublishError) {
+      newTitleErrors.push({
+        level: 'error',
+        message: "Title cannot be 'drafts' or 'published'",
+        path: [],
+      })
+    }
+
+    // if the bundle already exists, show an error
+    if (showBundleExists) {
+      newTitleErrors.push({
+        level: 'error',
+        message: 'Bundle already exists',
+        path: [],
+      })
+    }
+
+    // if the title is empty (but on not first render), show an error
+    if (!isInitialRender && title?.length === 0) {
+      newTitleErrors.push({
+        level: 'error',
+        message: 'Bundle needs a name',
+        path: [],
+      })
+    }
+    setTitleErrors(newTitleErrors)
+  }, [isInitialRender, showBundleExists, showIsDraftPublishError, title?.length])
 
   const publishAtDisplayValue = useMemo(() => {
     if (!publishAt) return ''
@@ -46,12 +87,12 @@ export function BundleForm(props: {
     [icon, hue],
   )
 
-  const hasErrors = useCallback(
+  const titleHasErrors = useCallback(
     (pickedTitle: string) => {
-      return (
+      return Boolean(
         isDraftOrPublished(pickedTitle) || // title cannot be "drafts" or "published"
-        data?.find((bundle) => bundle.name === speakingurl(pickedTitle))
-      ) // bundle already exists
+          data?.find((bundle) => bundle.name === speakingurl(pickedTitle)), // bundle already exists
+      )
     },
     [data],
   )
@@ -60,9 +101,7 @@ export function BundleForm(props: {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
 
-      if (hasErrors(pickedTitle)) {
-        setShowTitleValidation(true)
-
+      if (titleHasErrors(pickedTitle)) {
         if (isDraftOrPublished(pickedTitle)) {
           setShowIsDraftPublishError(true)
         } else {
@@ -76,13 +115,15 @@ export function BundleForm(props: {
         }
         onError(true)
       } else {
-        setShowTitleValidation(false)
+        setShowIsDraftPublishError(false)
+        setShowBundleExists(false)
         onError(false)
       }
 
+      setIsInitialRender(false)
       onChange({...value, title: pickedTitle, name: speakingurl(pickedTitle)})
     },
-    [data, hasErrors, onChange, onError, value],
+    [data, onChange, onError, titleHasErrors, value],
   )
 
   const handleBundleDescriptionChange = useCallback(
@@ -140,25 +181,13 @@ export function BundleForm(props: {
         <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
       </Flex>
       <Stack space={3}>
-        {showTitleValidation && (
-          <Card tone="critical" padding={3} radius={2}>
-            <Text align="center" muted size={1}>
-              {/* localize & validate copy & UI */}
-              {showIsDraftPublishError && "Title cannot be 'drafts' or 'published'"}
-              {showBundleExists && 'Bundle already exists'}
-            </Text>
-          </Card>
-        )}
-
-        {/* TODO ADD CHECK FOR EXISTING NAMES AND AVOID DUPLICATES */}
-        <Text size={1} weight="medium">
-          {/* localize text */}
-          Title
-        </Text>
+        {/* localize text */}
+        <FormFieldHeaderText title="Title" validation={titleErrors} />
         <TextInput
-          onChange={handleBundleTitleChange}
-          value={title}
           data-testid="bundle-form-title"
+          onChange={handleBundleTitleChange}
+          customValidity={titleErrors.length > 0 ? 'error' : undefined}
+          value={title}
         />
       </Stack>
 
