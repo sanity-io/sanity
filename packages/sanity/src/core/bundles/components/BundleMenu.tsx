@@ -48,27 +48,30 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
     <>
       <MenuButton
         button={button}
-        id="global-version-menu"
+        id="bundle-menu"
         menu={
-          <StyledMenu>
+          <StyledMenu data-testid="bundle-menu">
             {loading ? (
-              <Flex padding={4} justify="center">
+              <Flex padding={4} justify="center" data-testid="spinner">
                 <Spinner muted />
               </Flex>
             ) : (
               <>
                 <MenuItem
                   iconRight={
-                    currentGlobalBundle.name === LATEST.name ? <CheckmarkIcon /> : undefined
+                    currentGlobalBundle.name === LATEST.name ? (
+                      <CheckmarkIcon data-testid="latest-checkmark-icon" />
+                    ) : undefined
                   }
                   onClick={handleBundleChange(LATEST)}
                   pressed={false}
                   text={LATEST.title}
+                  data-testid="latest-menu-item"
                 />
                 {hasBundles && (
                   <>
                     <MenuDivider />
-                    <StyledBox>
+                    <StyledBox data-testid="bundles-list">
                       {bundles
                         .filter((b) => !isDraftOrPublished(b.name) && !b.archivedAt)
                         .map((b) => (
@@ -77,6 +80,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                             onClick={handleBundleChange(b)}
                             padding={1}
                             pressed={false}
+                            data-testid={`bundle-${b.name}`}
                           >
                             <Flex>
                               <BundleBadge hue={b.hue} icon={b.icon} padding={2} />
@@ -102,6 +106,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                 <Text size={1}>
                                   <CheckmarkIcon
                                     style={{opacity: currentGlobalBundle.name === b.name ? 1 : 0}}
+                                    data-testid={`${b.name}-checkmark-icon`}
                                   />
                                 </Text>
                               </Box>

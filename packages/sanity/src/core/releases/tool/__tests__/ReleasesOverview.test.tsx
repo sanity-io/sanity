@@ -1,11 +1,10 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
-import {type ReactNode} from 'react'
 
 import {queryByDataUi} from '../../../../../test/setup/customQueries'
-import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {createWrapper} from '../../../bundles/util/tests/createWrapper'
+import {useBundles} from '../../../store/bundles'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {useBundles} from '../../../store/bundles/useBundles'
 import {releasesUsEnglishLocaleBundle} from '../../i18n'
 import {ReleasesOverview} from '../ReleasesOverview'
 import {type BundlesMetadata, useBundlesMetadata} from '../useBundlesMetadata'
@@ -27,15 +26,6 @@ jest.mock('sanity/router', () => ({
   useRouter: jest.fn().mockReturnValue({state: {}, navigate: jest.fn()}),
 }))
 
-const createWrapper = async () => {
-  const TestProvider = await createTestProvider({
-    resources: [releasesUsEnglishLocaleBundle],
-  })
-  return function Wrapper({children}: {children: ReactNode}) {
-    return <TestProvider>{children}</TestProvider>
-  }
-}
-
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 const mockUseBundlesMetadata = useBundlesMetadata as jest.Mock<typeof useBundlesMetadata>
 
@@ -54,7 +44,9 @@ describe('ReleasesOverview', () => {
         data: null,
       })
 
-      const wrapper = await createWrapper()
+      const wrapper = await createWrapper({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
 
       return render(<ReleasesOverview />, {wrapper})
     })
