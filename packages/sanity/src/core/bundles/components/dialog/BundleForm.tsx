@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Box, Button, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   FormFieldHeaderText,
@@ -37,9 +37,11 @@ export function BundleForm(props: {
   const {data} = useBundles()
 
   const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
+  const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
 
   useEffect(() => {
     const newTitleErrors: FormNodeValidation[] = []
+    const newDateErrors: FormNodeValidation[] = []
 
     // if the title is 'drafts' or 'published', show an error
     if (showIsDraftPublishError) {
@@ -67,8 +69,24 @@ export function BundleForm(props: {
         path: [],
       })
     }
+
+    if (showDateValidation) {
+      newDateErrors.push({
+        level: 'error',
+        message: 'Should be an empty or valid date',
+        path: [],
+      })
+    }
+
     setTitleErrors(newTitleErrors)
-  }, [isInitialRender, showBundleExists, showIsDraftPublishError, title?.length])
+    setDateErrors(newDateErrors)
+  }, [
+    isInitialRender,
+    showBundleExists,
+    showDateValidation,
+    showIsDraftPublishError,
+    title?.length,
+  ])
 
   const publishAtDisplayValue = useMemo(() => {
     if (!publishAt) return ''
@@ -204,18 +222,8 @@ export function BundleForm(props: {
       </Stack>
 
       <Stack space={3}>
-        <Text size={1} weight="medium">
-          {/* localize text */}
-          Schedule for publishing at
-        </Text>
-        {showDateValidation && (
-          <Card tone="critical" padding={3} radius={2}>
-            <Text align="center" muted size={1}>
-              {/* localize & validate copy & UI */}
-              Should be an empty or valid date
-            </Text>
-          </Card>
-        )}
+        {/* localize text */}
+        <FormFieldHeaderText title="Schedule for publishing at" validation={dateErrors} />
 
         <TextInput
           suffix={
@@ -248,6 +256,7 @@ export function BundleForm(props: {
           value={displayDate}
           onChange={handlePublishAtInputChange}
           data-testid="bundle-form-publish-at"
+          customValidity={dateErrors.length > 0 ? 'error' : undefined}
         />
       </Stack>
     </Stack>
