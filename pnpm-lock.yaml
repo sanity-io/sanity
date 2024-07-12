@@ -242,7 +242,7 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0(react@18.3.1)
       '@sanity/ui':
-        specifier: ^2.6.7
+        specifier: ^2.6.8
         version: 2.6.8(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       react:
         specifier: ^18.3.1
@@ -260,7 +260,7 @@ importers:
   dev/embedded-studio:
     dependencies:
       '@sanity/ui':
-        specifier: ^2.6.7
+        specifier: ^2.6.8
         version: 2.6.8(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       react:
         specifier: ^18.3.1
@@ -369,7 +369,7 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0(react@18.3.1)
       '@sanity/ui':
-        specifier: ^2.6.7
+        specifier: ^2.6.8
         version: 2.6.8(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/vision':
         specifier: 3.50.0
@@ -469,13 +469,13 @@ importers:
         version: 1.1.5(sanity@packages+sanity)
       '@sanity/locale-nb-no':
         specifier: ^1.0.1
-        version: 1.1.8(sanity@packages+sanity)
+        version: 1.1.9(sanity@packages+sanity)
       '@sanity/locale-nn-no':
         specifier: ^1.0.1
-        version: 1.1.7(sanity@packages+sanity)
+        version: 1.1.8(sanity@packages+sanity)
       '@sanity/locale-pt-pt':
         specifier: ^1.0.1
-        version: 1.1.4(sanity@packages+sanity)
+        version: 1.1.5(sanity@packages+sanity)
       '@sanity/locale-sv-se':
         specifier: ^1.0.1
         version: 1.2.5(sanity@packages+sanity)
@@ -498,7 +498,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: ^2.6.7
+        specifier: ^2.6.8
         version: 2.6.8(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/ui-workshop':
         specifier: ^1.0.0
@@ -6970,24 +6970,24 @@ packages:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/locale-nb-no@1.1.8(sanity@packages+sanity):
-    resolution: {integrity: sha512-9NL6pt4jq1TN4yVqOFMpG63jaeEvQgtx3EsfNN849iztcFDUrYxrqK01lV9iFvyxr9GULk1HxpC03CA1T9ft+w==}
+  /@sanity/locale-nb-no@1.1.9(sanity@packages+sanity):
+    resolution: {integrity: sha512-jKWmffsaGgADTXK1tOULBZlH8QA5g1QJh6QBUxdawRP7rcU6GL2n5826oBOIxeEfU4bdsOL4BGEgO8eWWRG11w==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/locale-nn-no@1.1.7(sanity@packages+sanity):
-    resolution: {integrity: sha512-NJM5zBWOOQ7qOWAMT1RMivcSUaKDO/wufh7UCEKwbV8uGiL+Bptw6rL0CflE3c+xzPWgBIml5lrnjF1aceXIPg==}
+  /@sanity/locale-nn-no@1.1.8(sanity@packages+sanity):
+    resolution: {integrity: sha512-co9DPjVl7kUifCZpjLTIXeoo5ijctX4lXYmlslOCpZ9IBv+IA8H8i3tqqji82iYIPtUPDhXY68p/xyvW2ia8gA==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/locale-pt-pt@1.1.4(sanity@packages+sanity):
-    resolution: {integrity: sha512-jv4KkjPUJw3wJnrIOROL1D986sXvEp6vPOFBD7pIFQJ2hjBMF+bEJVczELpfLnrajXxho0O+SfkWGm4Ao+GCWw==}
+  /@sanity/locale-pt-pt@1.1.5(sanity@packages+sanity):
+    resolution: {integrity: sha512-QhLWicBLtzpJsGrBubUmbuBFWrlMSmYrzrHJ4Nt/TO9td6nU1asOy7x9ZY80n7np/vUK+pc6Qby0K7iADyPNIQ==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
@@ -7252,7 +7252,7 @@ packages:
       esbuild-register: 3.5.0(esbuild@0.23.0)
       express: 4.19.2
       globby: 11.1.0
-      groq: 3.49.0
+      groq: 3.50.0
       groq-js: 1.10.0
       history: 5.3.0
       jsonc-parser: 3.3.1
@@ -13023,8 +13023,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /groq@3.49.0:
-    resolution: {integrity: sha512-P6qK4/3qSKwjL8WfR5o4wChQkIpjVqrkBKRmgLj2jjW2f6xQN8ZJPhYhrNOuelBa5HSDMaKO7CsGr3hnd2FLeQ==}
+  /groq@3.50.0:
+    resolution: {integrity: sha512-nnlnjqmGbi5G9dSWmgObVMBh/3nZgA1jhj8lHuMzGfpXkQuI1gR+X4MwyvOq96PSk50XQX1lCm0N0zRcHbiskg==}
     engines: {node: '>=18'}
 
   /growly@1.3.0:
