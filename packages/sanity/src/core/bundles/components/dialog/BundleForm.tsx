@@ -82,16 +82,18 @@ export function BundleForm(props: {
 
   const handlePublishAtInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      const dateValue = event.target.value.trim()
+
       // there's likely a better way of doing this
       // needs to check that the date is not invalid & not empty
       // in which case it can update the input value but not the actual bundle value
-      if (new Date(event.target.value).toString() === 'Invalid Date' && event.target.value !== '') {
+      if (new Date(event.target.value).toString() === 'Invalid Date' && dateValue !== '') {
         setShowDateValidation(true)
-        setDisplayDate(event.target.value)
+        setDisplayDate(dateValue)
       } else {
         setShowDateValidation(false)
-        setDisplayDate(event.target.value)
-        onChange({...value, publishAt: event.target.value})
+        setDisplayDate(dateValue)
+        onChange({...value, publishAt: dateValue})
       }
     },
     [onChange, value],
@@ -124,7 +126,11 @@ export function BundleForm(props: {
           {/* localize text */}
           Title
         </Text>
-        <TextInput onChange={handleBundleTitleChange} value={title} />
+        <TextInput
+          onChange={handleBundleTitleChange}
+          value={title}
+          data-testid="bundle-form-title"
+        />
       </Stack>
 
       <Stack space={3}>
@@ -132,7 +138,11 @@ export function BundleForm(props: {
           {/* localize text */}
           Description
         </Text>
-        <TextArea onChange={handleBundleDescriptionChange} value={description} />
+        <TextArea
+          onChange={handleBundleDescriptionChange}
+          value={description}
+          data-testid="bundle-form-description"
+        />
       </Stack>
 
       <Stack space={3}>
@@ -179,6 +189,7 @@ export function BundleForm(props: {
           }
           value={displayDate}
           onChange={handlePublishAtInputChange}
+          data-testid="bundle-form-publish-at"
         />
       </Stack>
     </Stack>
