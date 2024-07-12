@@ -9,10 +9,10 @@ import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 
 type Props = {
   bundle?: BundleDocument
-  documentCount?: number
+  documentCount: number
 }
 
-export const BundleMenuButton = ({bundle, documentCount = 2}: Props) => {
+export const BundleMenuButton = ({bundle, documentCount}: Props) => {
   const {deleteBundle, updateBundle} = useBundleOperations()
   const router = useRouter()
   const isBundleArchived = !!bundle?.archivedAt
@@ -106,7 +106,7 @@ export const BundleMenuButton = ({bundle, documentCount = 2}: Props) => {
           }}
         >
           {bundleHasDocuments && (
-            <Text muted size={1}>
+            <Text data-testid="confirm-delete-body" muted size={1}>
               This will also delete {documentCount} document version{documentCount > 1 ? 's' : ''}.
             </Text>
           )}
