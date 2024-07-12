@@ -2,7 +2,7 @@
 import {CalendarIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {useDateTimeFormat, useTranslation} from 'sanity'
+import {useBundles, useDateTimeFormat, useTranslation} from 'sanity'
 import speakingurl from 'speakingurl'
 
 import {type CalendarLabels} from '../../../form/inputs/DateInputs/base/calendar/types'
@@ -14,9 +14,10 @@ import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './Bundle
 
 export function BundleForm(props: {
   onChange: (params: Partial<BundleDocument>) => void
+  onError: (errorsExist: boolean) => void
   value: Partial<BundleDocument>
 }): JSX.Element {
-  const {onChange, value} = props
+  const {onChange, onError, value} = props
   const {title, description, icon, hue, publishAt} = value
 
   const dateFormatter = useDateTimeFormat()
@@ -24,6 +25,9 @@ export function BundleForm(props: {
   const [showTitleValidation, setShowTitleValidation] = useState(false)
   const [showDateValidation, setShowDateValidation] = useState(false)
   const [showDatePicker, setShowDatePicker] = useState(false)
+  const [showBundleExists, setShowBundleExists] = useState(false)
+  const [showIsDraftPublishError, setShowIsDraftPublishError] = useState(false)
+  const {data} = useBundles()
 
   const publishAtDisplayValue = useMemo(() => {
     if (!publishAt) return ''
@@ -42,19 +46,43 @@ export function BundleForm(props: {
     [icon, hue],
   )
 
+  const hasErrors = useCallback(
+    (pickedTitle: string) => {
+      return (
+        isDraftOrPublished(pickedTitle) || // title cannot be "drafts" or "published"
+        data?.find((bundle) => bundle.name === speakingurl(pickedTitle))
+      ) // bundle already exists
+    },
+    [data],
+  )
+
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
 
-      if (isDraftOrPublished(pickedTitle)) {
+      if (hasErrors(pickedTitle)) {
         setShowTitleValidation(true)
+
+        if (isDraftOrPublished(pickedTitle)) {
+          setShowIsDraftPublishError(true)
+        } else {
+          setShowIsDraftPublishError(false)
+        }
+
+        if (data?.find((bundle) => bundle.name === speakingurl(pickedTitle))) {
+          setShowBundleExists(true)
+        } else {
+          setShowBundleExists(false)
+        }
+        onError(true)
       } else {
         setShowTitleValidation(false)
+        onError(false)
       }
 
       onChange({...value, title: pickedTitle, name: speakingurl(pickedTitle)})
     },
-    [onChange, value],
+    [data, hasErrors, onChange, onError, value],
   )
 
   const handleBundleDescriptionChange = useCallback(
@@ -116,7 +144,8 @@ export function BundleForm(props: {
           <Card tone="critical" padding={3} radius={2}>
             <Text align="center" muted size={1}>
               {/* localize & validate copy & UI */}
-              Title cannot be "drafts" or "published"
+              {showIsDraftPublishError && "Title cannot be 'drafts' or 'published'"}
+              {showBundleExists && 'Bundle already exists'}
             </Text>
           </Card>
         )}
