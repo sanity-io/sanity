@@ -38,8 +38,6 @@ import {
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
-import {copyAction} from './fieldActions/copyAction'
-import {pasteAction} from './fieldActions/pasteAction'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
@@ -89,11 +87,13 @@ const sharedSettings = definePlugin({
       return prev
     },
     unstable_fieldActions: (prev, ctx) => {
+      const defaultActions = [...prev]
+
       if (['fieldActionsTest', 'stringsTest'].includes(ctx.documentType)) {
-        return [...prev, assistFieldActionGroup, copyAction, pasteAction]
+        return [...defaultActions, assistFieldActionGroup]
       }
 
-      return prev
+      return defaultActions
     },
     newDocumentOptions,
     comments: {

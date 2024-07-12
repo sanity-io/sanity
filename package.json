@@ -102,10 +102,10 @@
     "@bjoerge/mutiny": "^0.5.3",
     "@google-cloud/storage": "^7.11.0",
     "@jest/globals": "^29.7.0",
-    "@playwright/test": "1.41.2",
+    "@playwright/test": "1.44.1",
     "@repo/package.config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/client": "^6.20.2",
+    "@sanity/client": "^6.21.0",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/pkg-utils": "6.9.3",
@@ -181,6 +181,7 @@
       ]
     },
     "overrides": {
+      "@npmcli/arborist": "^7.5.4",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }
