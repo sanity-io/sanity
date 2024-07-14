@@ -1,6 +1,6 @@
 import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -35,23 +35,27 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const {newVersion} = useDocumentOperation(documentId, documentType)
+  const dummyFetch = useRef<Promise<void> | undefined>()
 
   const fetchVersions = useCallback(async () => {
     if (!loading) {
       const response = await getAllVersionsOfDocument(bundles, client, documentId)
       setDocumentVersions(response)
-      setIsInVersion(versionDocumentExists(documentVersions, name))
     }
-  }, [loading, bundles, client, documentId, documentVersions, name])
+  }, [loading, bundles, client, documentId])
 
   // DUMMY FETCH -- NEEDS TO BE REPLACED -- USING GROQ from utils
   useEffect(() => {
     const fetchVersionsInner = async () => {
-      fetchVersions()
+      if (!dummyFetch.current) {
+        dummyFetch.current = fetchVersions()
+      }
+      await dummyFetch.current
+      setIsInVersion(versionDocumentExists(documentVersions, name))
     }
 
     fetchVersionsInner()
-  }, [bundles, documentId, fetchVersions])
+  }, [bundles, documentId, fetchVersions, documentVersions, name])
 
   const handleAddVersion = useCallback(async () => {
     // only add to version if there isn't already a version in that bundle of this doc
