@@ -13,6 +13,7 @@ import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButt
 import {type ReleasesRouterState} from '../../types/router'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseOverview} from './ReleaseOverview'
+import {ReleaseReview} from './ReleaseReview'
 
 type Screen = 'overview' | 'review'
 
@@ -24,6 +25,7 @@ const useFetchBundleDocuments = (bundleName: string) => {
 
 export const ReleaseDetail = () => {
   const router = useRouter()
+  // TODO: Move this activeScreen state to the router
   const [activeScreen, setActiveScreen] = useState<Screen>('overview')
   const {bundleName}: ReleasesRouterState = router.state
   const parsedBundleName = decodeURIComponent(bundleName || '')
@@ -140,7 +142,9 @@ export const ReleaseDetail = () => {
                 )}
               </>
             )}
-            {/* {activeScreen === 'review' && <ReleaseReview documents={documents} release={release} />} */}
+            {activeScreen === 'review' && (
+              <ReleaseReview documents={bundleDocuments} release={bundle} />
+            )}
           </Box>
         </Container>
       </Card>

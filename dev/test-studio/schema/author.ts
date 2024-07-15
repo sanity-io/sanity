@@ -113,6 +113,23 @@ export default defineType({
       description: 'Used for testing the "locked" permissions pattern',
       type: 'boolean',
     },
+    {
+      name: 'address',
+      title: 'Address',
+      type: 'object',
+      fields: [
+        {
+          name: 'street',
+          title: 'Street',
+          type: 'string',
+        },
+        {
+          name: 'zip',
+          title: 'Zip',
+          type: 'string',
+        },
+      ],
+    },
   ],
 
   initialValue: () => ({
