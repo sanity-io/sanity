@@ -29,6 +29,9 @@ describe('BundleForm', () => {
   }
 
   beforeEach(async () => {
+    onChangeMock.mockClear()
+    onErrorMock.mockClear()
+
     mockUseBundleStore.mockReturnValue({
       data: [],
       loading: true,
