@@ -113,18 +113,17 @@ export function BundleForm(props: {
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
+      const pickedNameExists =
+        data && data.find((bundle) => bundle.name === speakingurl(pickedTitle))
 
-      if (
-        isDraftOrPublished(pickedTitle) ||
-        data?.find((bundle) => bundle.name === speakingurl(pickedTitle))
-      ) {
+      if (isDraftOrPublished(pickedTitle) || pickedNameExists) {
         if (isDraftOrPublished(pickedTitle)) {
           setShowIsDraftPublishError(true)
         } else {
           setShowIsDraftPublishError(false)
         }
 
-        if (data?.find((bundle) => bundle.name === speakingurl(pickedTitle))) {
+        if (pickedNameExists) {
           setShowBundleExists(true)
         } else {
           setShowBundleExists(false)
