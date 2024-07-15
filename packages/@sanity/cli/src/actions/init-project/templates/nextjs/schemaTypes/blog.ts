@@ -2,19 +2,17 @@
 
 const authorTS = `import {defineField, defineType} from 'sanity'
 
-export default defineType({
+export const authorType = defineType({
   name: 'author',
   title: 'Author',
   type: 'document',
   fields: [
     defineField({
       name: 'name',
-      title: 'Name',
       type: 'string',
     }),
     defineField({
       name: 'slug',
-      title: 'Slug',
       type: 'slug',
       options: {
         source: 'name',
@@ -23,7 +21,6 @@ export default defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Image',
       type: 'image',
       options: {
         hotspot: true,
@@ -38,11 +35,9 @@ export default defineType({
     }),
     defineField({
       name: 'bio',
-      title: 'Bio',
       type: 'array',
       of: [
         {
-          title: 'Block',
           type: 'block',
           styles: [{title: 'Normal', value: 'normal'}],
           lists: [],
@@ -59,19 +54,17 @@ export default defineType({
 })
 `
 
-const authorJS = `export const author = {
+const authorJS = `export const authorType = {
   name: 'author',
   title: 'Author',
   type: 'document',
   fields: [
     {
       name: 'name',
-      title: 'Name',
       type: 'string',
     },
     {
       name: 'slug',
-      title: 'Slug',
       type: 'slug',
       options: {
         source: 'name',
@@ -80,7 +73,6 @@ const authorJS = `export const author = {
     },
     {
       name: 'image',
-      title: 'Image',
       type: 'image',
       options: {
         hotspot: true,
@@ -95,11 +87,9 @@ const authorJS = `export const author = {
     },
     {
       name: 'bio',
-      title: 'Bio',
       type: 'array',
       of: [
         {
-          title: 'Block',
           type: 'block',
           styles: [{title: 'Normal', value: 'normal'}],
           lists: [],
@@ -117,6 +107,7 @@ const authorJS = `export const author = {
 `
 
 const blockContentTS = `import {defineType, defineArrayMember} from 'sanity'
+import {ImageIcon} from '@sanity/icons'
 
 /**
  * This is the schema type for block content used in the post document type
@@ -129,13 +120,12 @@ const blockContentTS = `import {defineType, defineArrayMember} from 'sanity'
  *  }
  */
 
-export default defineType({
+export const blockContentType = defineType({
   title: 'Block Content',
   name: 'blockContent',
   type: 'array',
   of: [
     defineArrayMember({
-      title: 'Block',
       type: 'block',
       // Styles let you define what blocks can be marked up as. The default
       // set corresponds with HTML tags, but you can set any title or value
@@ -180,6 +170,7 @@ export default defineType({
     // as a block type.
     defineArrayMember({
       type: 'image',
+      icon: ImageIcon,
       options: {hotspot: true},
       fields: [
         {
@@ -193,7 +184,9 @@ export default defineType({
 })
 `
 
-const blockContentJS = `/**
+const blockContentJS = `import {ImageIcon} from '@sanity/icons'
+
+/**
  * This is the schema type for block content used in the post document type
  * Importing this type into the studio configuration's \`schema\` property
  * lets you reuse it in other document types with:
@@ -204,7 +197,7 @@ const blockContentJS = `/**
  *  }
  */
 
-export const blockContent = {
+export const blockContentType = {
   title: 'Block Content',
   name: 'blockContent',
   type: 'array',
@@ -255,6 +248,7 @@ export const blockContent = {
     // as a block type.
     {
       type: 'image',
+      icon: ImageIcon,
       options: {hotspot: true},
       fields: [
         {
@@ -270,38 +264,33 @@ export const blockContent = {
 
 const categoryTS = `import {defineField, defineType} from 'sanity'
 
-export default defineType({
+export const categoryType = defineType({
   name: 'category',
-  title: 'Category',
   type: 'document',
   fields: [
     defineField({
       name: 'title',
-      title: 'Title',
       type: 'string',
     }),
     defineField({
       name: 'description',
-      title: 'Description',
       type: 'text',
     }),
   ],
 })
 `
 
-const categoryJS = `export const category = {
+const categoryJS = `export const categoryType = {
   name: 'category',
   title: 'Category',
   type: 'document',
   fields: [
     {
       name: 'title',
-      title: 'Title',
       type: 'string',
     },
     {
       name: 'description',
-      title: 'Description',
       type: 'text',
     },
   ],
@@ -310,19 +299,17 @@ const categoryJS = `export const category = {
 
 const postTS = `import {defineField, defineType} from 'sanity'
 
-export default defineType({
+export const postType = defineType({
   name: 'post',
   title: 'Post',
   type: 'document',
   fields: [
     defineField({
       name: 'title',
-      title: 'Title',
       type: 'string',
     }),
     defineField({
       name: 'slug',
-      title: 'Slug',
       type: 'slug',
       options: {
         source: 'title',
@@ -331,13 +318,11 @@ export default defineType({
     }),
     defineField({
       name: 'author',
-      title: 'Author',
       type: 'reference',
       to: {type: 'author'},
     }),
     defineField({
       name: 'mainImage',
-      title: 'Main image',
       type: 'image',
       options: {
         hotspot: true,
@@ -346,28 +331,24 @@ export default defineType({
         {
           name: 'alt',
           type: 'string',
-          title: 'Alternative Text',
+          title: 'Alternative text',
         }
       ]
     }),
     defineField({
       name: 'categories',
-      title: 'Categories',
       type: 'array',
       of: [{type: 'reference', to: {type: 'category'}}],
     }),
     defineField({
       name: 'publishedAt',
-      title: 'Published at',
       type: 'datetime',
     }),
     defineField({
       name: 'body',
-      title: 'Body',
       type: 'blockContent',
     }),
   ],
-
   preview: {
     select: {
       title: 'title',
@@ -382,19 +363,17 @@ export default defineType({
 })
 `
 
-const postJS = `export const post = {
+const postJS = `export const postType = {
   name: 'post',
   title: 'Post',
   type: 'document',
   fields: [
     {
       name: 'title',
-      title: 'Title',
       type: 'string',
     },
     {
       name: 'slug',
-      title: 'Slug',
       type: 'slug',
       options: {
         source: 'title',
@@ -403,13 +382,11 @@ const postJS = `export const post = {
     },
     {
       name: 'author',
-      title: 'Author',
       type: 'reference',
       to: {type: 'author'},
     },
     {
       name: 'mainImage',
-      title: 'Main image',
       type: 'image',
       options: {
         hotspot: true,
@@ -418,28 +395,24 @@ const postJS = `export const post = {
         {
           name: 'alt',
           type: 'string',
-          title: 'Alternative Text',
+          title: 'Alternative text',
         }
       ]
     },
     {
       name: 'categories',
-      title: 'Categories',
       type: 'array',
       of: [{type: 'reference', to: {type: 'category'}}],
     },
     {
       name: 'publishedAt',
-      title: 'Published at',
       type: 'datetime',
     },
     {
       name: 'body',
-      title: 'Body',
       type: 'blockContent',
     },
   ],
-
   preview: {
     select: {
       title: 'title',
@@ -458,31 +431,31 @@ const postJS = `export const post = {
 
 export const blogSchemaTS = `import { type SchemaTypeDefinition } from 'sanity'
 
-import blockContent from './schemaTypes/blockContent'
-import category from './schemaTypes/category'
-import post from './schemaTypes/post'
-import author from './schemaTypes/author'
+import {blockContentType} from './schemaTypes/blockContentType'
+import {categoryType} from './schemaTypes/categoryType'
+import {postType} from './schemaTypes/postType'
+import {authorType} from './schemaTypes/authorType'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [post, author, category, blockContent],
+  types: [blockContentType, categoryType, postType, authorType],
 }
 `
 
-export const blogSchemaJS = `import {blockContent} from './schemaTypes/blockContent'
-import {category} from './schemaTypes/category'
-import {post} from './schemaTypes/post'
-import {author} from './schemaTypes/author'
+export const blogSchemaJS = `import {blockContentType} from './schemaTypes/blockContentType'
+import {categoryType} from './schemaTypes/categoryType'
+import {postType} from './schemaTypes/postType'
+import {authorType} from './schemaTypes/authorType'
 
 export const schema = {
-  types: [post, author, category, blockContent],
+  types: [blockContentType, categoryType, postType, authorType],
 }
 `
 
 export const blogSchemaFolder = (useTypeScript: boolean): Record<string, string> => {
   return {
-    'author.': useTypeScript ? authorTS : authorJS,
-    'blockContent.': useTypeScript ? blockContentTS : blockContentJS,
-    'category.': useTypeScript ? categoryTS : categoryJS,
-    'post.': useTypeScript ? postTS : postJS,
+    'authorType.': useTypeScript ? authorTS : authorJS,
+    'blockContentType.': useTypeScript ? blockContentTS : blockContentJS,
+    'categoryType.': useTypeScript ? categoryTS : categoryJS,
+    'postType.': useTypeScript ? postTS : postJS,
   }
 }
