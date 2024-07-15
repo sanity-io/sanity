@@ -1,13 +1,13 @@
 import {
   bufferTime,
   catchError,
-  concat,
   EMPTY,
   filter,
   iif,
   merge,
   type Observable,
   of,
+  startWith,
   switchMap,
 } from 'rxjs'
 import {type SanityClient} from 'sanity'
@@ -58,7 +58,6 @@ export const createBundlesMetadataAggregator = (client: SanityClient | null) => 
     const {subquery: queryAllDocumentsInBundleSlugs, projection: projectionToBundleMetadata} =
       getFetchQuery(bundleSlugs)
 
-    const initialLoading$ = of({loading: true, data: null, error: null})
     const fetchData$ = client.observable
       .fetch<BundlesMetadataMap>(
         `{${queryAllDocumentsInBundleSlugs}}{${projectionToBundleMetadata}}`,
@@ -72,7 +71,11 @@ export const createBundlesMetadataAggregator = (client: SanityClient | null) => 
       )
 
     // initially emit loading empty state if first fetch
-    return iif(() => isInitialLoad, concat(initialLoading$, fetchData$), fetchData$)
+    return iif(
+      () => isInitialLoad,
+      fetchData$.pipe(startWith({loading: true, data: null, error: null})),
+      fetchData$,
+    )
   }
 
   const aggregatorListener$ = (bundleSlugs: string[]) => {
