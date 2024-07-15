@@ -1,14 +1,79 @@
-name: End-to-End Tests
+name: End-to-End Tests with upcoming @sanity/ui changes
 permissions:
   contents: read # for checkout
 on:
-  # Build on pushes branches that have a PR (including drafts)
-  pull_request:
-  # Build on commits pushed to branches without a PR if it's in the allowlist
-  push:
-    branches: [next]
+  # Can only be called remotely
+  workflow_call:
+    secrets:
+      TURBO_TOKEN:
+      SANITY_E2E_SESSION_TOKEN_NEW:
+        required: true
+      SANITY_E2E_PROJECT_ID:
+        required: true
+
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - run: pnpm install
+      - name: Patch increment version in package.json
+        id: npm-version
+        shell: bash
+        run: |
+          echo "NPM_VERSION=$(npm version --no-git-commit-hooks --no-git-tag-version patch)" >> $GITHUB_OUTPUT
+      - name: Namespace version with build run id
+        run: npm version --no-git-commit-hooks --no-git-tag-version "${{ steps.npm-version.outputs.NPM_VERSION }}-gh.${{ github.run_id }}"
+      - run: pnpm pack --pack-destination ./artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pack-sanity-ui
+          path: artifacts
+          if-no-files-found: error
+          overwrite: true
+
+  cache-cli:
+    needs: [prepare]
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: sanity-io/sanity
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pack-sanity-ui
+          path: artifacts
+      - name: Install project dependencies
+        run: pnpm install
+      - run: pnpm add -w ./artifacts/sanity-ui-*.tgz
+
+      - name: Build CLI
+        run: pnpm build:cli --output-logs=full --log-order=grouped
+
   install:
+    needs: [prepare, cache-cli]
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
@@ -21,6 +86,8 @@ jobs:
         project: [chromium, firefox]
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: sanity-io/sanity
       - uses: actions/setup-node@v4
         with:
           node-version: 18
@@ -50,8 +117,13 @@ jobs:
             v1-${{ runner.os }}-pnpm-store-
             v1-${{ runner.os }}-
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: pack-sanity-ui
+          path: artifacts
       - name: Install project dependencies
         run: pnpm install
+      - run: pnpm add -w ./artifacts/sanity-ui-*.tgz
 
       - name: Store Playwright's Version
         run: |
@@ -73,19 +145,20 @@ jobs:
       - name: Build CLI
         run: pnpm build:cli --output-logs=full --log-order=grouped
 
-      - name: Build E2E test studio on next
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
-        env:
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
-        run: pnpm e2e:setup && pnpm e2e:build
+      # - name: Build E2E test studio on next
+      #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
+      #   env:
+      #     # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
+      #     # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
+      #     # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
+      #     SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+      #     SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+      #     SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
+      #   run: pnpm e2e:setup && pnpm e2e:build
 
       - name: Build E2E test studio on PR
-        if: ${{ github.event_name == 'pull_request' }}
+        # Always run with PRs logic, to ensure tests run by the UI repo doesn't conflict with tests run by the sanity repo
+        # if: ${{ github.event_name == 'pull_request' }}
         env:
           # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
@@ -125,6 +198,8 @@ jobs:
         shardTotal: [2]
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: sanity-io/sanity
       - uses: actions/setup-node@v4
         with:
           node-version: 18
@@ -154,6 +229,10 @@ jobs:
             v1-${{ runner.os }}-pnpm-store-
             v1-${{ runner.os }}-
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: pack-sanity-ui
+          path: artifacts
       - name: Install project dependencies
         run: pnpm install
 
@@ -187,22 +266,23 @@ jobs:
           # If the cached build from the pervious step is not available. Fail the build
           fail-on-cache-miss: true
 
-      - name: Run E2E tests on next
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
-        env:
-          # Missing in docs but in use
-          # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
-          PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
-        run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      # - name: Run E2E tests on next
+      #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
+      #   env:
+      #     # Missing in docs but in use
+      #     # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
+      #     PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
+      #     # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
+      #     # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
+      #     # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
+      #     SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+      #     SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+      #     SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
+      #   run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Run E2E tests on PR
-        if: ${{ github.event_name == 'pull_request' }}
+        # Always run with PRs logic, to ensure tests run by the UI repo doesn't conflict with tests run by the sanity repo
+        # if: ${{ github.event_name == 'pull_request' }}
         env:
           # Missing in docs but in use
           # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
@@ -227,6 +307,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: sanity-io/sanity
       - uses: actions/setup-node@v4
         with:
           node-version: 18

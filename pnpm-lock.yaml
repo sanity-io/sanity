@@ -5,9 +5,10 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  '@npmcli/arborist': ^7.5.4
+  '@sanity/ui@2': ^2.6.8
   '@typescript-eslint/eslint-plugin': ^7.11.0
   '@typescript-eslint/parser': ^7.11.0
-  '@npmcli/arborist': ^7.5.4
 
 importers:
 
@@ -68,6 +69,9 @@ importers:
       '@sanity/tsdoc':
         specifier: 1.0.83
         version: 1.0.83(@types/node@18.19.31)(debug@4.3.5)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
+      '@sanity/ui':
+        specifier: ^2.6.8
+        version: 2.6.8(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -18079,7 +18083,7 @@ packages:
     resolution: {integrity: sha512-y+FP4JgRaIKO17cBMyzCCVcxwl3fh7DXEp99QlvZSWUFi3NJJg2ZXFIXc2Om66HNkprfH2ORzEmEZMuDShtlTg==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/ui': ^2.0.0
+      '@sanity/ui': ^2.6.8
       react: '*'
       sanity: ^3.0.0
       styled-components: ^6.1
