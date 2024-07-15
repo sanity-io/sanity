@@ -19,7 +19,7 @@ import {css, styled} from 'styled-components'
 
 import {buildChangeList} from '../../../../field/diff/changes/buildChangeList'
 import {useDocumentPreviewValues} from '../documentTable/useDocumentPreviewValues'
-import {useVersionHistory} from '../documentTable/useVersionHistory'
+import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {DocumentReviewHeader} from '../review/DocumentReviewHeader'
 
 const ChangesWrapper = styled(Container)((props) => {
@@ -118,14 +118,15 @@ const buildDocumentForDiffInput = (document: SanityDocument) => {
 export function DocumentDiff({
   document,
   release,
+  history,
 }: {
   document: SanityDocument
   release: BundleDocument
+  history?: DocumentHistory
 }) {
   const [baseDocument, setBaseDocument] = useState<SanityDocument | null>(null)
   const [fetchingBaseDocument, setFetchingBaseDocument] = useState(false)
-  // TODO: Replace this once https://github.com/sanity-io/sanity/pull/7150 is merged
-  const history = useVersionHistory(document._id, document?._rev)
+
   const client = useClient({...DEFAULT_STUDIO_CLIENT_OPTIONS})
   const schema = useSchema()
   const schemaType = schema.get(document._type) as ObjectSchemaType

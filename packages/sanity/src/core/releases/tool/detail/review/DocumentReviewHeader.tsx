@@ -18,7 +18,7 @@ export function DocumentReviewHeader({
   previewValues: PreviewValue
   isLoading: boolean
   release: BundleDocument
-  history: {
+  history?: {
     createdBy: string
     lastEditedBy: string
     editors: string[]
@@ -36,25 +36,29 @@ export function DocumentReviewHeader({
         />
       </Box>
       <Flex gap={2} padding={3} style={{flexShrink: 0}}>
-        <Chip
-          avatar={<UserAvatar size={0} user={history.createdBy} />}
-          text={
-            <span>
-              Created <RelativeTime time={document._createdAt} useTemporalPhrase />
-            </span>
-          }
-        />
-        <Chip
-          avatar={<UserAvatar size={0} user={history.lastEditedBy} />}
-          text={
-            <span>
-              Edited <RelativeTime time={document._updatedAt} useTemporalPhrase />
-            </span>
-          }
-        />
+        {history?.createdBy && (
+          <Chip
+            avatar={<UserAvatar size={0} user={history?.createdBy} />}
+            text={
+              <span>
+                Created <RelativeTime time={document._createdAt} useTemporalPhrase />
+              </span>
+            }
+          />
+        )}
+        {history?.lastEditedBy && (
+          <Chip
+            avatar={<UserAvatar size={0} user={history?.lastEditedBy} />}
+            text={
+              <span>
+                Edited <RelativeTime time={document._updatedAt} useTemporalPhrase />
+              </span>
+            }
+          />
+        )}
         <Box padding={1}>
           <AvatarStack size={0} style={{margin: -1}}>
-            {history.editors?.map((userId) => <UserAvatar key={userId} user={userId} />)}
+            {history?.editors?.map((userId) => <UserAvatar key={userId} user={userId} />)}
           </AvatarStack>
         </Box>
       </Flex>

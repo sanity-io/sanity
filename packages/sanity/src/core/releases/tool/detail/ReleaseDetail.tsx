@@ -143,7 +143,11 @@ export const ReleaseDetail = () => {
               </>
             )}
             {activeScreen === 'review' && (
-              <ReleaseReview documents={bundleDocuments} release={bundle} />
+              <ReleaseReview
+                documents={bundleDocuments}
+                release={bundle}
+                documentsHistory={history.documentsHistory}
+              />
             )}
           </Box>
         </Container>
