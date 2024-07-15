@@ -5,7 +5,6 @@ import {type FormEvent, useCallback, useState} from 'react'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../hooks/usePerspective'
-import {isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleForm} from './BundleForm'
 
 interface CreateBundleDialogProps {
@@ -16,6 +15,7 @@ interface CreateBundleDialogProps {
 export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element {
   const {onCancel, onCreate} = props
   const {createBundle} = useBundleOperations()
+  const [hasErrors, setHasErrors] = useState(false)
 
   const [value, setValue] = useState<Partial<BundleDocument>>({
     name: '',
@@ -53,6 +53,10 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
     setValue(changedValue)
   }, [])
 
+  const handleOnError = useCallback((errorsExist: boolean) => {
+    setHasErrors(errorsExist)
+  }, [])
+
   return (
     <Dialog
       animate
@@ -64,11 +68,11 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
     >
       <form onSubmit={handleOnSubmit}>
         <Box padding={6}>
-          <BundleForm onChange={handleOnChange} value={value} />
+          <BundleForm onChange={handleOnChange} onError={handleOnError} value={value} />
         </Box>
         <Flex justify="flex-end" padding={3}>
           <Button
-            disabled={!value.title || isDraftOrPublished(value.title) || isCreating}
+            disabled={!value.title || isCreating || hasErrors}
             iconRight={ArrowRightIcon}
             type="submit"
             // localize Text
