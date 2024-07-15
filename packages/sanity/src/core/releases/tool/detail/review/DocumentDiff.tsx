@@ -4,14 +4,13 @@ import {Card, Container, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {
   type BundleDocument,
   ChangeResolver,
   getPublishedId,
   LoadingBlock,
   type ObjectDiff,
-  useDocumentPreviewStore,
+  useObserveDocument,
   useSchema,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
@@ -119,23 +118,6 @@ const buildDocumentForDiffInput = (document: SanityDocument) => {
   )
 
   return rest
-}
-
-function useObserveDocument(documentId: string, schemaType: ObjectSchemaType) {
-  const documentPreviewStore = useDocumentPreviewStore()
-  const observePaths = documentPreviewStore.observePaths(
-    {_id: documentId},
-    schemaType.fields.map((field) => [field.name]),
-  )
-  const baseDocument = useObservable(observePaths, 'loading') as
-    | SanityDocument
-    | 'loading'
-    | undefined
-
-  return {
-    baseDocument: baseDocument === 'loading' ? null : baseDocument,
-    loading: baseDocument === 'loading',
-  }
 }
 
 export function DocumentDiff({
