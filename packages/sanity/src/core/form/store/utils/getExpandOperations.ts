@@ -107,19 +107,21 @@ function getObjectFieldsetAndFieldGroupOperations(
   // Group handling
   const schemaField = node.schemaType.fields.find((field) => field.name === fieldName)
   const selectedGroupName = node.groups.find((group) => group.selected)?.name
-  const defaultGroupName = (node.schemaType.groups || []).find((group) => group.default)?.name
+  const schemaFieldGroup = (schemaField && castArray(schemaField.group)) || []
   const inSelectedGroup =
     selectedGroupName &&
-    (selectedGroupName === ALL_FIELDS_GROUP.name ||
-      (schemaField && castArray(schemaField.group).includes(selectedGroupName)))
+    (selectedGroupName === ALL_FIELDS_GROUP.name || schemaFieldGroup.includes(selectedGroupName))
 
   const ops: (ExpandFieldSetOperation | SetActiveGroupOperation)[] = []
 
   if (!inSelectedGroup) {
+    const groupName =
+      node.groups.find((group) => schemaFieldGroup.includes(group.name))?.name ||
+      ALL_FIELDS_GROUP.name
     ops.push({
       type: 'setSelectedGroup',
       path: node.path,
-      groupName: defaultGroupName || ALL_FIELDS_GROUP.name,
+      groupName,
     })
   }
 

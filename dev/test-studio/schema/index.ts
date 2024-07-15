@@ -32,6 +32,7 @@ import fieldGroupsDefault from './debug/fieldGroupsDefault'
 import fieldGroupsMany from './debug/fieldGroupsMany'
 import fieldGroupsWithFieldsets from './debug/fieldGroupsWithFieldsets'
 import fieldGroupsWithFieldsetsAndValidation from './debug/fieldGroupsWithFieldsetsAndValidation'
+import fieldGroupsWithFieldsetsHidden from './debug/fieldGroupsWithFieldsetsHidden'
 import fieldGroupsWithI18n from './debug/fieldGroupsWithI18n'
 import fieldGroupsWithValidation from './debug/fieldGroupsWithValidation'
 import fieldsets from './debug/fieldsets'
@@ -252,6 +253,7 @@ export const schemaTypes = [
   fieldGroupsWithI18n,
   fieldGroupsWithValidation,
   fieldGroupsWithFieldsetsAndValidation,
+  fieldGroupsWithFieldsetsHidden,
   virtualizationInObject,
   virtualizationDebug,
 
