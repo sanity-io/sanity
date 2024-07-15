@@ -18,9 +18,6 @@
   "dependencies": {
     "@portabletext/editor": "^1.0.8",
     "@portabletext/react": "^3.0.0",
-    "@react-three/cannon": "^6.5.2",
-    "@react-three/drei": "^9.80.1",
-    "@react-three/fiber": "^8.13.6",
     "@sanity/assist": "^3.0.2",
     "@sanity/block-tools": "3.50.0",
     "@sanity/client": "^6.21.0",
@@ -47,14 +44,11 @@
     "@sanity/visual-editing": "2.1.6",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
-    "@types/three": "^0.166.0",
     "@vercel/stega": "0.1.2",
     "chokidar": "^3.5.3",
     "globby": "^10.0.0",
     "history": "^5.3.0",
-    "lamina": "^1.1.23",
     "lodash": "^4.17.21",
-    "polished": "^4.2.2",
     "qs": "^6.10.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -64,9 +58,7 @@
     "sanity": "workspace:*",
     "sanity-plugin-hotspot-array": "^2.0.0",
     "sanity-plugin-mux-input": "^2.2.1",
-    "styled-components": "^6.1.11",
-    "three": "^0.166.0",
-    "three-stdlib": "^2.24.2"
+    "styled-components": "^6.1.11"
   },
   "devDependencies": {
     "chokidar": "^3.6.0",

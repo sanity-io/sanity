@@ -43,7 +43,6 @@ import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test'
 import {languageFilter} from './plugins/language-filter'
-import {presenceTool} from './plugins/presence'
 import {routerDebugTool} from './plugins/router-debug'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {schemaTypes} from './schema'
@@ -140,7 +139,6 @@ const sharedSettings = definePlugin({
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
     imageHotspotArrayPlugin(),
-    presenceTool(),
     routerDebugTool(),
     errorReportingTestPlugin(),
     tsdoc(),

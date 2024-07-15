@@ -76,7 +76,6 @@ import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
 import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
-import {demos3d} from './demos/3d'
 import {v3docs} from './docs/v3'
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
@@ -290,7 +289,4 @@ export const schemaTypes = [
 
   // Test documents for docs
   ...v3docs.types,
-
-  // Demo documents for 3d experiments
-  ...demos3d.types,
 ]

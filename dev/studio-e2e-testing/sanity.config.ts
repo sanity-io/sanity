@@ -10,7 +10,6 @@ import {assistFieldActionGroup} from 'sanity-test-studio/fieldActions/assistFiel
 import {resolveInitialValueTemplates} from 'sanity-test-studio/initialValueTemplates'
 import {customInspector} from 'sanity-test-studio/inspectors/custom'
 import {languageFilter} from 'sanity-test-studio/plugins/language-filter'
-import {presenceTool} from 'sanity-test-studio/plugins/presence'
 import {defaultDocumentNode, newDocumentOptions, structure} from 'sanity-test-studio/structure'
 
 import {customComponents} from './components-api'
@@ -92,7 +91,6 @@ export default defineConfig({
     }),
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
-    presenceTool(),
   ],
   beta: {
     treeArrayEditing: {
