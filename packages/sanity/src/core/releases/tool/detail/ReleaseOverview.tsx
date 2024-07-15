@@ -13,14 +13,17 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {Chip} from '../../components/Chip'
 import {DocumentTable} from './documentTable'
+import {type DocumentHistory} from './documentTable/useReleaseHistory'
 
-export function ReleaseOverview(props: {documents: SanityDocument[]; release: BundleDocument}) {
-  const {documents, release} = props
+export function ReleaseOverview(props: {
+  documents: SanityDocument[]
+  documentsHistory: Map<string, DocumentHistory>
+  collaborators: string[]
+  release: BundleDocument
+}) {
+  const {documents, documentsHistory, release, collaborators} = props
   const {client} = useAddonDataset()
-  /**
-   * This state is created here but will be updated by the DocumentRow component when fetching the history
-   */
-  const [collaborators, setCollaborators] = useState<string[]>([])
+
   const [iconValue, setIconValue] = useState<BundleIconEditorPickerValue>({
     hue: release.hue ?? 'gray',
     icon: release.icon ?? 'documents',
@@ -132,7 +135,7 @@ export function ReleaseOverview(props: {documents: SanityDocument[]; release: Bu
         <DocumentTable
           documents={documents}
           release={release}
-          setCollaborators={setCollaborators}
+          documentsHistory={documentsHistory}
         />
       )}
     </Stack>
