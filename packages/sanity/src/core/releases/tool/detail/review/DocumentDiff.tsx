@@ -3,15 +3,15 @@ import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {
   type BundleDocument,
   ChangeResolver,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
   LoadingBlock,
   type ObjectDiff,
-  useClient,
+  useDocumentPreviewStore,
   useSchema,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
@@ -60,6 +60,7 @@ const FieldWrapper = styled.div`
   [data-changed] {
     cursor: default;
   }
+
   [data-diff-action='removed'] {
     background-color: var(--card-badge-critical-bg-color);
     color: var(--card-badge-critical-fg-color);
@@ -99,20 +100,42 @@ const FieldWrapper = styled.div`
   del {
     text-decoration: none;
     &:hover {
+      // Hides the border bottom added to the text differences when hovering
       background-image: none;
     }
   }
   ins {
     &:hover {
+      // Hides the border bottom added to the text differences when hovering
       background-image: none;
     }
   }
 `
 
 const buildDocumentForDiffInput = (document: SanityDocument) => {
-  // Remove internal fields
-  const {_id, _rev, _createdAt, _updatedAt, _type, _version, ...rest} = document
+  // Remove internal fields and undefined values
+  const {_id, _rev, _createdAt, _updatedAt, _type, _version, ...rest} = JSON.parse(
+    JSON.stringify(document),
+  )
+
   return rest
+}
+
+function useObserveDocument(documentId: string, schemaType: ObjectSchemaType) {
+  const documentPreviewStore = useDocumentPreviewStore()
+  const observePaths = documentPreviewStore.observePaths(
+    {_id: documentId},
+    schemaType.fields.map((field) => [field.name]),
+  )
+  const baseDocument = useObservable(observePaths, 'loading') as
+    | SanityDocument
+    | 'loading'
+    | undefined
+
+  return {
+    baseDocument: baseDocument === 'loading' ? null : baseDocument,
+    loading: baseDocument === 'loading',
+  }
 }
 
 export function DocumentDiff({
@@ -124,45 +147,26 @@ export function DocumentDiff({
   release: BundleDocument
   history?: DocumentHistory
 }) {
-  const [baseDocument, setBaseDocument] = useState<SanityDocument | null>(null)
-  const [fetchingBaseDocument, setFetchingBaseDocument] = useState(false)
-
-  const client = useClient({...DEFAULT_STUDIO_CLIENT_OPTIONS})
+  const publishedId = getPublishedId(document._id, true)
   const schema = useSchema()
   const schemaType = schema.get(document._type) as ObjectSchemaType
   if (!schemaType) {
     throw new Error(`Schema type "${document._type}" not found`)
   }
-
-  const fetchBaseDocument = useCallback(async () => {
-    setFetchingBaseDocument(true)
-    const publishedId = getPublishedId(document._id, true)
-    const query = ` *[_id == "${publishedId}"][0]`
-    const response = await client.fetch(query)
-    setBaseDocument(response)
-    setFetchingBaseDocument(false)
-  }, [client, document])
-
-  useEffect(() => {
-    fetchBaseDocument()
-  }, [fetchBaseDocument])
-
+  const {baseDocument, loading} = useObserveDocument(publishedId, schemaType)
   const {previewValues, isLoading} = useDocumentPreviewValues({document, release})
-  const {changesList, loading, rootDiff} = useMemo(() => {
-    if (!baseDocument) return {changesList: [], loading: fetchingBaseDocument, rootDiff: null}
+
+  const {changesList, rootDiff} = useMemo(() => {
+    if (!baseDocument?._type) return {changesList: [], rootDiff: null}
     const diff = diffInput(
       wrap(buildDocumentForDiffInput(baseDocument), null),
       wrap(buildDocumentForDiffInput(document), null),
     ) as ObjectDiff
 
-    if (!diff.isChanged) return {changesList: [], loading: fetchingBaseDocument, rootDiff: null}
+    if (!diff.isChanged) return {changesList: [], rootDiff: null}
     const changeList = buildChangeList(schemaType, diff, [], [], {})
-    return {
-      changesList: changeList,
-      loading: false,
-      rootDiff: diff,
-    }
-  }, [baseDocument, document, schemaType, fetchingBaseDocument])
+    return {changesList: changeList, rootDiff: diff}
+  }, [baseDocument, document, schemaType])
 
   if (loading) return <LoadingBlock />
 
