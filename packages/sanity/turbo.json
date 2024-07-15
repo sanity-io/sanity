@@ -6,6 +6,7 @@
       "outputs": [
         "lib/**",
         "_singletons.js",
+        "_createContext.js",
         "desk.js",
         "presentation.js",
         "router.js",
