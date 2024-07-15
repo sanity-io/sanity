@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {CalendarIcon} from '@sanity/icons'
 import {Box, Button, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {
   FormFieldHeaderText,
   type FormNodeValidation,
@@ -27,71 +27,12 @@ export function BundleForm(props: {
   const {title, description, icon, hue, publishAt} = value
 
   const dateFormatter = useDateTimeFormat()
-
-  const [showDateValidation, setShowDateValidation] = useState(false)
   const [showDatePicker, setShowDatePicker] = useState(false)
-  const [showBundleExists, setShowBundleExists] = useState(false)
-  const [showIsDraftPublishError, setShowIsDraftPublishError] = useState(false)
 
-  const [isInitialRender, setIsInitialRender] = useState(true)
   const {data} = useBundles()
 
   const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
   const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
-
-  useEffect(() => {
-    const newTitleErrors: FormNodeValidation[] = []
-    const newDateErrors: FormNodeValidation[] = []
-
-    // if the title is 'drafts' or 'published', show an error
-    // TODO localize text
-    if (showIsDraftPublishError) {
-      newTitleErrors.push({
-        level: 'error',
-        message: "Title cannot be 'drafts' or 'published'",
-        path: [],
-      })
-    }
-
-    // if the bundle already exists, show an error
-    // TODO localize text
-    if (showBundleExists) {
-      newTitleErrors.push({
-        level: 'error',
-        message: 'Bundle already exists',
-        path: [],
-      })
-    }
-
-    // if the title is empty (but on not first render), show an error
-    // TODO localize text
-    if (!isInitialRender && title?.length === 0) {
-      newTitleErrors.push({
-        level: 'error',
-        message: 'Bundle needs a name',
-        path: [],
-      })
-    }
-
-    // if the date is invalid, show an error
-    // TODO localize text
-    if (showDateValidation) {
-      newDateErrors.push({
-        level: 'error',
-        message: 'Should be an empty or valid date',
-        path: [],
-      })
-    }
-
-    setTitleErrors(newTitleErrors)
-    setDateErrors(newDateErrors)
-  }, [
-    isInitialRender,
-    showBundleExists,
-    showDateValidation,
-    showIsDraftPublishError,
-    title?.length,
-  ])
 
   const publishAtDisplayValue = useMemo(() => {
     if (!publishAt) return ''
@@ -116,26 +57,31 @@ export function BundleForm(props: {
       const pickedNameExists =
         data && data.find((bundle) => bundle.name === speakingurl(pickedTitle))
 
-      if (isDraftOrPublished(pickedTitle) || pickedNameExists) {
+      if (isDraftOrPublished(pickedTitle) || pickedNameExists || !pickedTitle) {
+        if (!pickedTitle) {
+          // if the title is empty, show an error
+          // TODO localize text
+          setTitleErrors([{level: 'error', message: 'Bundle needs a name', path: []}])
+        }
         if (isDraftOrPublished(pickedTitle)) {
-          setShowIsDraftPublishError(true)
-        } else {
-          setShowIsDraftPublishError(false)
+          // if the title is 'drafts' or 'published', show an error
+          // TODO localize text
+          setTitleErrors([
+            {level: 'error', message: "Title cannot be 'drafts' or 'published'", path: []},
+          ])
+        }
+        if (pickedNameExists) {
+          // if the bundle already exists, show an error
+          // TODO localize text
+          setTitleErrors([{level: 'error', message: 'Bundle already exists', path: []}])
         }
 
-        if (pickedNameExists) {
-          setShowBundleExists(true)
-        } else {
-          setShowBundleExists(false)
-        }
         onError(true)
       } else {
-        setShowIsDraftPublishError(false)
-        setShowBundleExists(false)
+        setTitleErrors([])
         onError(false)
       }
 
-      setIsInitialRender(false)
       onChange({...value, title: pickedTitle, name: speakingurl(pickedTitle)})
     },
     [data, onChange, onError, value],
@@ -172,15 +118,25 @@ export function BundleForm(props: {
       // needs to check that the date is not invalid & not empty
       // in which case it can update the input value but not the actual bundle value
       if (new Date(event.target.value).toString() === 'Invalid Date' && dateValue !== '') {
-        setShowDateValidation(true)
+        // if the date is invalid, show an error
+        // TODO localize text
+        setDateErrors([
+          {
+            level: 'error',
+            message: 'Should be an empty or valid date',
+            path: [],
+          },
+        ])
         setDisplayDate(dateValue)
+        onError(true)
       } else {
-        setShowDateValidation(false)
+        setDateErrors([])
         setDisplayDate(dateValue)
         onChange({...value, publishAt: dateValue})
+        onError(false)
       }
     },
-    [onChange, value],
+    [onChange, value, onError],
   )
 
   const handleIconValueChange = useCallback(
