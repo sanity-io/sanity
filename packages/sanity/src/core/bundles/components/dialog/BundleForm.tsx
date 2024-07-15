@@ -1,8 +1,14 @@
 /* eslint-disable i18next/no-literal-string */
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Box, Button, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {useDateTimeFormat, useTranslation} from 'sanity'
+import {
+  FormFieldHeaderText,
+  type FormNodeValidation,
+  useBundles,
+  useDateTimeFormat,
+  useTranslation,
+} from 'sanity'
 import speakingurl from 'speakingurl'
 
 import {type CalendarLabels} from '../../../form/inputs/DateInputs/base/calendar/types'
@@ -14,16 +20,24 @@ import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './Bundle
 
 export function BundleForm(props: {
   onChange: (params: Partial<BundleDocument>) => void
+  onError: (errorsExist: boolean) => void
   value: Partial<BundleDocument>
 }): JSX.Element {
-  const {onChange, value} = props
+  const {onChange, onError, value} = props
   const {title, description, icon, hue, publishAt} = value
 
   const dateFormatter = useDateTimeFormat()
 
-  const [showTitleValidation, setShowTitleValidation] = useState(false)
   const [showDateValidation, setShowDateValidation] = useState(false)
   const [showDatePicker, setShowDatePicker] = useState(false)
+  const [showBundleExists, setShowBundleExists] = useState(false)
+  const [showIsDraftPublishError, setShowIsDraftPublishError] = useState(false)
+
+  const [isInitialRender, setIsInitialRender] = useState(true)
+  const {data} = useBundles()
+
+  const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
+  const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
 
   const publishAtDisplayValue = useMemo(() => {
     if (!publishAt) return ''
@@ -45,16 +59,44 @@ export function BundleForm(props: {
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
+      const pickedNameExists =
+        data && data.find((bundle) => bundle.name === speakingurl(pickedTitle))
+      const isEmptyTitle = pickedTitle.trim() === '' && !isInitialRender
 
-      if (isDraftOrPublished(pickedTitle)) {
-        setShowTitleValidation(true)
+      if (
+        isDraftOrPublished(pickedTitle) ||
+        pickedNameExists ||
+        (isEmptyTitle && !isInitialRender)
+      ) {
+        if (isEmptyTitle && !isInitialRender) {
+          // if the title is empty and it's not the first opening of the dialog, show an error
+          // TODO localize text
+
+          setTitleErrors([{level: 'error', message: 'Bundle needs a name', path: []}])
+        }
+        if (isDraftOrPublished(pickedTitle)) {
+          // if the title is 'drafts' or 'published', show an error
+          // TODO localize text
+          setTitleErrors([
+            {level: 'error', message: "Title cannot be 'drafts' or 'published'", path: []},
+          ])
+        }
+        if (pickedNameExists) {
+          // if the bundle already exists, show an error
+          // TODO localize text
+          setTitleErrors([{level: 'error', message: 'Bundle already exists', path: []}])
+        }
+
+        onError(true)
       } else {
-        setShowTitleValidation(false)
+        setTitleErrors([])
+        onError(false)
       }
 
+      setIsInitialRender(false)
       onChange({...value, title: pickedTitle, name: speakingurl(pickedTitle)})
     },
-    [onChange, value],
+    [data, isInitialRender, onChange, onError, value],
   )
 
   const handleBundleDescriptionChange = useCallback(
@@ -88,15 +130,25 @@ export function BundleForm(props: {
       // needs to check that the date is not invalid & not empty
       // in which case it can update the input value but not the actual bundle value
       if (new Date(event.target.value).toString() === 'Invalid Date' && dateValue !== '') {
-        setShowDateValidation(true)
+        // if the date is invalid, show an error
+        // TODO localize text
+        setDateErrors([
+          {
+            level: 'error',
+            message: 'Should be an empty or valid date',
+            path: [],
+          },
+        ])
         setDisplayDate(dateValue)
+        onError(true)
       } else {
-        setShowDateValidation(false)
+        setDateErrors([])
         setDisplayDate(dateValue)
         onChange({...value, publishAt: dateValue})
+        onError(false)
       }
     },
-    [onChange, value],
+    [onChange, value, onError],
   )
 
   const handleIconValueChange = useCallback(
@@ -112,24 +164,13 @@ export function BundleForm(props: {
         <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
       </Flex>
       <Stack space={3}>
-        {showTitleValidation && (
-          <Card tone="critical" padding={3} radius={2}>
-            <Text align="center" muted size={1}>
-              {/* localize & validate copy & UI */}
-              Title cannot be "drafts" or "published"
-            </Text>
-          </Card>
-        )}
-
-        {/* TODO ADD CHECK FOR EXISTING NAMES AND AVOID DUPLICATES */}
-        <Text size={1} weight="medium">
-          {/* localize text */}
-          Title
-        </Text>
+        {/* localize text */}
+        <FormFieldHeaderText title="Title" validation={titleErrors} />
         <TextInput
-          onChange={handleBundleTitleChange}
-          value={title}
           data-testid="bundle-form-title"
+          onChange={handleBundleTitleChange}
+          customValidity={titleErrors.length > 0 ? 'error' : undefined}
+          value={title}
         />
       </Stack>
 
@@ -146,18 +187,8 @@ export function BundleForm(props: {
       </Stack>
 
       <Stack space={3}>
-        <Text size={1} weight="medium">
-          {/* localize text */}
-          Schedule for publishing at
-        </Text>
-        {showDateValidation && (
-          <Card tone="critical" padding={3} radius={2}>
-            <Text align="center" muted size={1}>
-              {/* localize & validate copy & UI */}
-              Should be an empty or valid date
-            </Text>
-          </Card>
-        )}
+        {/* localize text */}
+        <FormFieldHeaderText title="Schedule for publishing at" validation={dateErrors} />
 
         <TextInput
           suffix={
@@ -190,6 +221,7 @@ export function BundleForm(props: {
           value={displayDate}
           onChange={handlePublishAtInputChange}
           data-testid="bundle-form-publish-at"
+          customValidity={dateErrors.length > 0 ? 'error' : undefined}
         />
       </Stack>
     </Stack>

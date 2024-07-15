@@ -11,6 +11,7 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {API_VERSION} from '../../../tasks/constants'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {type ReleasesRouterState} from '../../types/router'
+import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseOverview} from './ReleaseOverview'
 
 type Screen = 'overview' | 'review'
@@ -29,6 +30,8 @@ export const ReleaseDetail = () => {
   const {data, loading} = useBundles()
   const {documents: bundleDocuments, loading: documentsLoading} =
     useFetchBundleDocuments(parsedBundleName)
+  const history = useReleaseHistory(bundleDocuments)
+
   const bundle = data?.find((storeBundle) => storeBundle.name === parsedBundleName)
   const bundleHasDocuments = !!bundleDocuments.length
   const showPublishButton = loading || !bundle?.publishedAt
@@ -128,7 +131,12 @@ export const ReleaseDetail = () => {
             ) : (
               <>
                 {activeScreen === 'overview' && (
-                  <ReleaseOverview documents={bundleDocuments} release={bundle} />
+                  <ReleaseOverview
+                    documents={bundleDocuments}
+                    release={bundle}
+                    documentsHistory={history.documentsHistory}
+                    collaborators={history.collaborators}
+                  />
                 )}
               </>
             )}
