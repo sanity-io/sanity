@@ -1,12 +1,13 @@
 import {type SanityDocument} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import {type Dispatch, type SetStateAction, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {DocumentHeader} from './DocumentHeader'
 import {DocumentRow} from './DocumentRow'
 import {type DocumentSort} from './types'
+import {type DocumentHistory} from './useReleaseHistory'
 
 const RowStack = styled(Stack)({
   '& > *:not(:first-child)': {
@@ -23,10 +24,10 @@ const RowStack = styled(Stack)({
 
 export function DocumentTable(props: {
   documents: SanityDocument[]
+  documentsHistory: Map<string, DocumentHistory>
   release: BundleDocument
-  setCollaborators: Dispatch<SetStateAction<string[]>>
 }) {
-  const {documents, release, setCollaborators} = props
+  const {documents, release, documentsHistory} = props
   // Filter will happen at the DocumentRow level because we don't have access here to the preview values.
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [sort, setSort] = useState<DocumentSort>({property: '_updatedAt', order: 'desc'})
@@ -66,7 +67,7 @@ export function DocumentTable(props: {
             document={d}
             key={d._id}
             release={release}
-            setCollaborators={setCollaborators}
+            history={documentsHistory.get(d._id)}
           />
         ))}
       </RowStack>
