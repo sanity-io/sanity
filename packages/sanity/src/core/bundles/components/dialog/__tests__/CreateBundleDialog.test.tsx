@@ -1,15 +1,18 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
-import {type BundleDocument} from 'sanity'
+import {type BundleDocument, useBundles, useDateTimeFormat} from 'sanity'
 
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../../hooks/usePerspective'
 import {createWrapper} from '../../../util/tests/createWrapper'
 import {CreateBundleDialog} from '../CreateBundleDialog'
 
-jest.mock('sanity', () => ({
-  useDateTimeFormat: jest.fn().mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')}),
-  useTranslation: jest.fn().mockReturnValue({t: jest.fn().mockReturnValue('Mocked translation')}),
+jest.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
+  useDateTimeFormat: jest.fn(),
+}))
+
+jest.mock('../../../../store/bundles', () => ({
+  useBundles: jest.fn(),
 }))
 
 jest.mock('../../../../store/bundles/useBundleOperations', () => ({
@@ -24,6 +27,9 @@ jest.mock('../../../hooks/usePerspective', () => ({
   }),
 }))
 
+const mockUseBundleStore = useBundles as jest.Mock<typeof useBundles>
+const mockUseDateTimeFormat = useDateTimeFormat as jest.Mock
+
 describe('CreateBundleDialog', () => {
   const onCancelMock = jest.fn()
   const onCreateMock = jest.fn()
@@ -31,6 +37,14 @@ describe('CreateBundleDialog', () => {
   beforeEach(async () => {
     onCancelMock.mockClear()
     onCreateMock.mockClear()
+
+    mockUseBundleStore.mockReturnValue({
+      data: [],
+      loading: true,
+      dispatch: jest.fn(),
+    })
+
+    mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
     const wrapper = await createWrapper()
     render(<CreateBundleDialog onCancel={onCancelMock} onCreate={onCreateMock} />, {wrapper})
