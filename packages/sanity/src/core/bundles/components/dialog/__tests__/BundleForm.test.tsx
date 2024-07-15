@@ -32,11 +32,24 @@ describe('BundleForm', () => {
     onChangeMock.mockClear()
     onErrorMock.mockClear()
 
-    mockUseBundleStore.mockReturnValue({
-      data: [],
-      loading: true,
-      dispatch: jest.fn(),
-    })
+    // Mock the data returned by useBundles hook
+    const mockData: BundleDocument[] = [
+      {
+        description: 'What a spring drop, allergies galore 🌸',
+        _updatedAt: '2024-07-12T10:39:32Z',
+        _rev: 'HdJONGqRccLIid3oECLjYZ',
+        authorId: 'pzAhBTkNX',
+        title: 'Spring Drop',
+        icon: 'heart-filled',
+        _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
+        _type: 'bundle',
+        name: 'spring-drop',
+        hue: 'magenta',
+        _createdAt: '2024-07-02T11:37:51Z',
+      },
+      // Add more mock data if needed
+    ]
+    mockUseBundleStore.mockReturnValue({data: mockData, loading: false, dispatch: jest.fn()})
 
     mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
@@ -96,34 +109,16 @@ describe('BundleForm', () => {
   })
 
   it('should show an error when the bundle already exists', () => {
-    // Mock the data returned by useBundles hook
-    const mockData: BundleDocument[] = [
-      {
-        _type: 'bundle',
-        _id: 'existing-bundle',
-        _createdAt: '2022-01-01T00:00:00Z',
-        authorId: 'author-id',
-        name: 'existing-bundle',
-        title: 'Existing Bundle',
-        icon: 'cube',
-        hue: 'gray',
-        publishAt: '2022-01-01',
-        _updatedAt: '',
-        _rev: '',
-      },
-      // Add more mock data if needed
-    ]
-    mockUseBundleStore.mockReturnValue({data: mockData, loading: false, dispatch: jest.fn()})
-
     const titleInput = screen.getByTestId('bundle-form-title')
-    fireEvent.change(titleInput, {target: {value: 'existing-bundle'}})
+    fireEvent.change(titleInput, {target: {value: 'Spring Drop'}})
 
     expect(screen.getByTestId('input-validation-icon-error')).toBeInTheDocument()
   })
 
   it('should show an error when the title is empty', () => {
     const titleInput = screen.getByTestId('bundle-form-title')
-    fireEvent.change(titleInput, {target: {value: ' '}})
+    fireEvent.change(titleInput, {target: {value: 'test'}}) // Set a valid title first
+    fireEvent.change(titleInput, {target: {value: ' '}}) // remove the title
 
     expect(screen.getByTestId('input-validation-icon-error')).toBeInTheDocument()
   })
