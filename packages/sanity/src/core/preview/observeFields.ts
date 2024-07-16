@@ -187,8 +187,7 @@ export function createObserveFields(options: {
     )
   }
 
-  // API
-  return {observeFields: cachedObserveFields}
+  return cachedObserveFields
 
   function pickFrom(objects: Record<string, any>[], fields: string[]) {
     return [...INCLUDE_FIELDS, ...fields].reduce((result, fieldName) => {
