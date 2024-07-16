@@ -40,8 +40,8 @@ Other useful helper commands
 - "e2e:dev": Starts the E2E studio using `sanity dev`
 - "e2e:build": Runs `sanity build` on E2E studio
 - "e2e:codegen": Runs [playwright codegen](https://playwright.dev/docs/codegen). **Note: Requires the studio to be running. Run `pnpm e2e:dev` in another terminal first**
-- "e2e:start": Runs `sanity build` on E2E studio
-- "e2e:preview": Runs builds and runs`sanity start` on E2E studio
+- "e2e:start": Runs `sanity preview` on E2E studio (preview server, requires a build)
+- "e2e:preview": Runs `sanity build`, then `sanity preview` on E2E studio
 
 For more useful commands, see the [Playwright Command Line](https://playwright.dev/docs/test-cli) documentation.
 

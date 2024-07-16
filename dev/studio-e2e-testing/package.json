@@ -11,7 +11,8 @@
     "build": "sanity build",
     "dev": "sanity dev --port 3339",
     "lint": "eslint .",
-    "start": "sanity start --port 3339"
+    "preview": "sanity preview --port 3339",
+    "start": "sanity preview --port 3339"
   },
   "dependencies": {
     "@sanity/google-maps-input": "^4.0.0",
