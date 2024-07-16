@@ -3,8 +3,9 @@ import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../../store/bundles/types'
-import {BundleHeader, type BundleHeaderProps} from './BundleHeader'
-import {BundleRow} from './BundleRow'
+import {type BundlesMetadata} from '../../tool/useBundlesMetadata'
+import {ReleaseHeader, type ReleaseHeaderProps} from './ReleaseHeader'
+import {ReleaseRow} from './ReleaseRow'
 
 const RowStack = styled(Stack)({
   '& > *:not(:first-child)': {
@@ -19,11 +20,15 @@ const RowStack = styled(Stack)({
   },
 })
 
-interface BundlesTableProps extends Omit<BundleHeaderProps, 'searchDisabled'> {
-  bundles: BundleDocument[]
+export interface TableBundle extends BundleDocument {
+  documentsMetadata: BundlesMetadata
 }
 
-export function BundlesTable({bundles, searchTerm, setSearchTerm}: BundlesTableProps) {
+interface ReleasesTableProps extends Omit<ReleaseHeaderProps, 'searchDisabled'> {
+  bundles: TableBundle[]
+}
+
+export function ReleasesTable({bundles, searchTerm, setSearchTerm}: ReleasesTableProps) {
   const tableContent = useMemo(() => {
     if (bundles.length === 0) {
       return (
@@ -44,12 +49,12 @@ export function BundlesTable({bundles, searchTerm, setSearchTerm}: BundlesTableP
       )
     }
 
-    return bundles.map((bundle) => <BundleRow key={bundle.name} bundle={bundle} />)
+    return bundles.map((bundle) => <ReleaseRow key={bundle.name} bundle={bundle} />)
   }, [bundles])
 
   return (
     <Stack as="table" space={1}>
-      <BundleHeader
+      <ReleaseHeader
         searchDisabled={!searchTerm && !bundles.length}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
