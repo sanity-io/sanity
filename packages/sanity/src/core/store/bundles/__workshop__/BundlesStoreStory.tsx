@@ -20,7 +20,7 @@ const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>)
   return WrappedComponent
 }
 
-const initialValue = {name: '', title: '', tone: undefined, publishAt: undefined}
+const initialValue = {name: '', title: '', tone: undefined /*, publishAt: undefined*/}
 
 const BundlesStoreStory = () => {
   const {data, loading} = useBundles()

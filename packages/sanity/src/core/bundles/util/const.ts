@@ -10,5 +10,5 @@ export const LATEST: Partial<BundleDocument> = {
   title: 'Latest',
   icon: undefined,
   tone: 'gray',
-  publishAt: '',
+  //publishAt: '',
 }
