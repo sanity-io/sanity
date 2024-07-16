@@ -72,6 +72,8 @@ etc
 /test/e2e/results
 /test/e2e/state
 blob-report
+/artifacts
+
 
 # Temporary files made when running canary releases
 .turbo
