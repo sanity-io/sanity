@@ -215,7 +215,7 @@ export function ArrayEditingDialog(props: ArrayEditingDialogProps): JSX.Element 
             <Flex align="center" justify="flex-end" paddingX={3} paddingY={2} sizing="border">
               <Button
                 data-testid="array-editing-done"
-                text={t('array-editing-dialog.sidebar.action.done')}
+                text={t('array-editing-dialog.footer.action.done')}
                 onClick={onClose}
               />
             </Flex>

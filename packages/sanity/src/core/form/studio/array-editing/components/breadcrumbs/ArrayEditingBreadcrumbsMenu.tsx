@@ -120,9 +120,9 @@ export function ArrayEditingBreadcrumbsMenu(props: ArrayEditingBreadcrumbsMenuPr
   return (
     <CommandList
       activeItemDataAttr="data-hovered"
-      ariaLabel={t('Array-editing-dialog.breadcrumbs.menu')}
+      ariaLabel={t('array-editing-dialog.breadcrumbs.menu')}
       autoFocus={supportsTouch ? undefined : 'input'}
-      data-testid="Array-editing-breadcrumbs-menu"
+      data-testid="array-editing-breadcrumbs-menu"
       getItemDisabled={getItemDisabled}
       itemHeight={ITEM_HEIGHT}
       items={items}

@@ -51,7 +51,7 @@ const DOCUMENT_VALUE: SanityDocument = {
   ],
 }
 
-test.describe('Tree Editing with nested objects', () => {
+test.describe('Array editing with nested objects', () => {
   // test('should navigate and display nested objects correctly', async ({mount, page}) => {
   //   // Mount the TreeEditingStory component with initial open path
   //   await mount(

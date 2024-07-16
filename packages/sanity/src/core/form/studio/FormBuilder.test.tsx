@@ -30,7 +30,7 @@ const schemaTypes = [
   }),
 ]
 
-jest.mock('./tree-editing/context/enabled/useTreeEditingEnabled')
+jest.mock('./array-editing/context/enabled/useTreeEditingEnabled')
 
 describe('FormBuilder', () => {
   const mockedUseTreeEditingEnabled = useTreeEditingEnabled as jest.Mock

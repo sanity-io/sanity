@@ -152,7 +152,7 @@ const schema = Schema.compile({
   ],
 })
 
-describe('tree-editing: findArrayTypePaths', () => {
+describe('array-editing: findArrayTypePaths', () => {
   test('should find array type paths in nested objects', () => {
     const rootObject = schema.get('testDocument').fields[0]
 
