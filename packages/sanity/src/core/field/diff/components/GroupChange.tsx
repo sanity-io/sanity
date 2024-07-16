@@ -81,10 +81,11 @@ export function GroupChange(
         <Stack
           space={1}
           as={GroupChangeContainer}
+          data-ui="group-change-content"
           data-revert-group-hover={isRevertButtonHovered ? '' : undefined}
           data-portable-text={isPortableText ? '' : undefined}
         >
-          <Stack as={ChangeListWrapper} space={5}>
+          <Stack as={ChangeListWrapper} space={5} data-ui="group-change-list">
             {changes.map((change) => (
               <ChangeResolver
                 key={change.key}
