@@ -1,6 +1,5 @@
 import {type ColorHueKey} from '@sanity/color'
 import {type IconSymbol} from '@sanity/icons'
-import {type SanityDocument} from '@sanity/types'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
@@ -10,10 +9,10 @@ import {type bundlesReducerAction, type bundlesReducerState} from './reducer'
 /**
  * @internal
  */
-export interface BundleDocument extends SanityDocument {
+export interface BundleDocument {
   _type: 'bundle'
   title: string
-  name: string
+  slug: string
   description?: string
   hue: ColorHueKey
   icon: IconSymbol
@@ -21,6 +20,12 @@ export interface BundleDocument extends SanityDocument {
   publishedAt?: string
   archivedAt?: string
   publishedBy?: string
+
+  _id: string
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  _version?: Record<string, never>
 }
 
 /**

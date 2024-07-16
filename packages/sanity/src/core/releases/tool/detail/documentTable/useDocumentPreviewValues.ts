@@ -24,7 +24,7 @@ export const useDocumentPreviewValues = ({
   if (!schemaType) {
     throw new Error(`Schema type "${document._type}" not found`)
   }
-  const perspective = `bundle.${release.name}`
+  const perspective = `bundle.${release.slug}`
 
   const documentPreviewStore = useDocumentPreviewStore()
 

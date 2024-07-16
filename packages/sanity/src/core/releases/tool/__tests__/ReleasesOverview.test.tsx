@@ -108,18 +108,18 @@ describe('ReleasesOverview', () => {
 
   describe('when bundles are loaded', () => {
     const bundles = [
-      {title: 'Bundle 1', name: 'bundle-1', _createdAt: new Date().toISOString()},
-      {title: 'Bundle 2', name: 'bundle-2', _createdAt: new Date().toISOString()},
+      {title: 'Bundle 1', slug: 'bundle-1', _createdAt: new Date().toISOString()},
+      {title: 'Bundle 2', slug: 'bundle-2', _createdAt: new Date().toISOString()},
       {
         title: 'Bundle 3',
         publishedAt: new Date().toISOString(),
-        name: 'bundle-3',
+        slug: 'bundle-3',
         _createdAt: new Date().toISOString(),
       },
       {
         title: 'Bundle 4',
         archivedAt: new Date().toISOString(),
-        name: 'bundle-4',
+        slug: 'bundle-4',
         _createdAt: new Date().toISOString(),
       },
     ] as BundleDocument[]
@@ -136,7 +136,7 @@ describe('ReleasesOverview', () => {
         error: null,
         data: Object.fromEntries(
           bundles.map((bundle) => [
-            bundle.name,
+            bundle.slug,
             {
               documentCount: 1,
             } as BundlesMetadata,
