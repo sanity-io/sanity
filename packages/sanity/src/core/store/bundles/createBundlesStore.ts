@@ -20,6 +20,7 @@ import {
   timeout,
 } from 'rxjs'
 
+import {createBundlesMetadataAggregator} from './createBundlesMetadataAggregator'
 import {bundlesReducer, type bundlesReducerAction, type bundlesReducerState} from './reducer'
 import {type BundleDocument, type BundlesStore} from './types'
 
@@ -56,6 +57,7 @@ const INITIAL_STATE: bundlesReducerState = {
 
 const NOOP_BUNDLES_STORE: BundlesStore = {
   state$: EMPTY.pipe(startWith(INITIAL_STATE)),
+  getMetadataStateForSlugs$: () => EMPTY,
   dispatch: () => undefined,
 }
 
@@ -67,8 +69,11 @@ const NOOP_BUNDLES_STORE: BundlesStore = {
  * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
  * given the latest state upon subscription.
  */
-export function createBundlesStore(context: {client: SanityClient | null}): BundlesStore {
-  const {client} = context
+export function createBundlesStore(context: {
+  addOnClient: SanityClient | null
+  studioClient: SanityClient | null
+}): BundlesStore {
+  const {addOnClient: client, studioClient} = context
 
   // While the comments dataset is initialising, this factory function will be called with an empty
   // `client` value. Return a noop store while the client is unavailable.
@@ -226,8 +231,11 @@ export function createBundlesStore(context: {client: SanityClient | null}): Bund
     shareReplay(1),
   )
 
+  const getMetadataStateForSlugs$ = createBundlesMetadataAggregator(studioClient)
+
   return {
     state$,
+    getMetadataStateForSlugs$,
     dispatch,
   }
 }

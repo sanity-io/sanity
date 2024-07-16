@@ -9,9 +9,10 @@ import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 
 type Props = {
   bundle?: BundleDocument
+  documentCount: number
 }
 
-export const BundleMenuButton = ({bundle}: Props) => {
+export const BundleMenuButton = ({bundle, documentCount}: Props) => {
   const {deleteBundle, updateBundle} = useBundleOperations()
   const router = useRouter()
   const isBundleArchived = !!bundle?.archivedAt
@@ -56,8 +57,7 @@ export const BundleMenuButton = ({bundle}: Props) => {
     setIsPerformingOperation(false)
   }
 
-  // TODO: Replace this with the count once it's available. Wait for @jordanl17 change on that.
-  const count = 2
+  const bundleHasDocuments = !!documentCount
 
   return (
     <>
@@ -92,8 +92,10 @@ export const BundleMenuButton = ({bundle}: Props) => {
       {showDiscardDialog && (
         <Dialog
           id="discard-version-dialog"
-          header={`Are you sure you want to delete the ${bundle?.title} release?`}
+          header={`Are you sure you want to delete the '${bundle?.title}' release?`}
           onClose={() => setShowDiscardDialog(false)}
+          // remove body padding if no documents in release
+          padding={bundleHasDocuments}
           footer={{
             confirmButton: {
               tone: 'default',
@@ -103,9 +105,11 @@ export const BundleMenuButton = ({bundle}: Props) => {
             },
           }}
         >
-          <Text muted size={1}>
-            This will also delete {count} document version{count > 1 ? 's' : ''}.
-          </Text>
+          {bundleHasDocuments && (
+            <Text data-testid="confirm-delete-body" muted size={1}>
+              This will also delete {documentCount} document version{documentCount > 1 ? 's' : ''}.
+            </Text>
+          )}
         </Dialog>
       )}
     </>
