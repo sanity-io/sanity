@@ -42,7 +42,7 @@ export function DocumentDiff({
     return {changesList: changeList, rootDiff: diff}
   }, [baseDocument, document, schemaType])
 
-  const isChanged = rootDiff?.isChanged || false
+  const isChanged = !!rootDiff?.isChanged
 
   if (!baseDocument) {
     return <Text>New document</Text>
