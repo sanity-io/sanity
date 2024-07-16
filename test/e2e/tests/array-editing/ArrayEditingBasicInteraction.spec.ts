@@ -11,13 +11,13 @@ test.describe('basic - open and close', () => {
     })
   })
 
-  test(`opening - when creating new array item, the tree editing modal should open`, async ({
+  test(`opening - when creating new array item, the array editing modal should open`, async ({
     page,
   }) => {
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
 
-    const modal = await page.getByTestId('tree-editing-dialog')
-    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
+    const modal = await page.getByTestId('array-editing-dialog')
+    await expect(page.getByTestId('array-editing-dialog')).toBeAttached()
     await expect(modal).toBeVisible()
   })
 
@@ -29,12 +29,12 @@ test.describe('basic - open and close', () => {
     test.skip(browserName !== 'chromium')
 
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-    const modal = await page.getByTestId('tree-editing-dialog')
+    const modal = await page.getByTestId('array-editing-dialog')
 
-    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
+    await expect(page.getByTestId('array-editing-dialog')).toBeAttached()
     await page.getByRole('button', {name: 'Done'}).click()
 
-    await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
+    await expect(page.getByTestId('array-editing-dialog')).not.toBeVisible()
 
     await expect(modal).not.toBeVisible()
   })
@@ -51,7 +51,7 @@ test.describe('basic - main document action', () => {
 
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
 
-    await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
+    await expect(page.getByTestId('array-editing-dialog')).toBeAttached()
   })
 
   test(`actions - blocked main document action when modal is open`, async ({page}) => {
@@ -65,9 +65,9 @@ test.describe('basic - main document action', () => {
     // For now, only test in Chromium due to flakiness in Firefox and WebKit
     test.skip(browserName !== 'chromium')
 
-    await page.getByTestId('tree-editing-done').click()
+    await page.getByTestId('array-editing-done').click()
 
-    await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
+    await expect(page.getByTestId('array-editing-dialog')).not.toBeVisible()
     await expect(page.getByTestId('action-Publish')).not.toBeDisabled()
   })
 })

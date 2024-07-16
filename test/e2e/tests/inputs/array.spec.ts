@@ -42,17 +42,17 @@ test(`file drop event should not propagate to dialog parent`, async ({
 
   // Open the dialog.
   await page.getByRole('button', {name: fileName}).click()
-  await expect(page.locator('#tree-editing-dialog')).toBeVisible()
+  await expect(page.locator('#array-editing-dialog')).toBeVisible()
 
   // Drop the file again; this time, while the dialog is open.
   //
   // - The drop event should not propagate to the parent.
   // - Therefore, the drop event should not cause the image to be added to the list again.
-  await page.locator('#tree-editing-dialog').dispatchEvent('drop', {dataTransfer})
+  await page.locator('#array-editing-dialog').dispatchEvent('drop', {dataTransfer})
 
   // Close the dialog.
-  await page.getByTestId('tree-editing-done').click()
-  await expect(await page.locator('#tree-editing-dialog')).not.toBeVisible()
+  await page.getByTestId('array-editing-done').click()
+  await expect(await page.locator('#array-editing-dialog')).not.toBeVisible()
 
   // Ensure the list still contains one item.
   expect(item).toHaveCount(1)
@@ -217,9 +217,9 @@ function createArrayFieldLocators(page: Page) {
   const popover = page.getByTestId('document-panel-portal')
   const popoverMenu = popover.getByRole('menu')
   const popoverMenuItem = (name: string) => popoverMenu.getByRole('menuitem', {name})
-  const insertDialog = page.locator('#tree-editing-dialog')
+  const insertDialog = page.locator('#array-editing-dialog')
   const input = (label: string) => insertDialog.getByLabel(label)
-  const closeDialogButton = page.getByTestId('tree-editing-done')
+  const closeDialogButton = page.getByTestId('array-editing-done')
 
   return {
     items,
