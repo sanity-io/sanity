@@ -1,11 +1,10 @@
-import {type SanityClient} from '@sanity/client'
+import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
 import {difference, flatten, memoize} from 'lodash'
 import {
   combineLatest,
   concat,
   defer,
   EMPTY,
-  from,
   fromEvent,
   merge,
   type Observable,
@@ -41,55 +40,14 @@ type Cache = {
   [id: string]: CachedFieldObserver[]
 }
 
-export function create_preview_observeFields(context: {versionedClient: SanityClient}) {
-  const {versionedClient} = context
-
-  let _globalListener: any
-
-  const getGlobalEvents = () => {
-    if (!_globalListener) {
-      const allEvents$ = from(
-        versionedClient.listen(
-          '*[!(_id in path("_.**"))]',
-          {},
-          {
-            events: ['welcome', 'mutation'],
-            includeResult: false,
-            visibility: 'query',
-            tag: 'preview.global',
-          },
-        ),
-      ).pipe(share())
-
-      // This is a stream of welcome events from the server, each telling us that we have established listener connection
-      // We map these to snapshot fetch/sync. It is good to wait for the first welcome event before fetching any snapshots as, we may miss
-      // events that happens in the time period after initial fetch and before the listener is established.
-      const welcome$ = allEvents$.pipe(
-        filter((event: any) => event.type === 'welcome'),
-        shareReplay({refCount: true, bufferSize: 1}),
-      )
-
-      // This will keep the listener active forever and in turn reduce the number of initial fetches
-      // as less 'welcome' events will be emitted.
-      // @todo: see if we can delay unsubscribing or connect with some globally defined shared listener
-      welcome$.subscribe()
-
-      const mutations$ = allEvents$.pipe(filter((event: any) => event.type === 'mutation'))
-
-      _globalListener = {
-        welcome$,
-        mutations$,
-      }
-    }
-
-    return _globalListener
-  }
-
+export function createObserveFields(context: {
+  versionedClient: SanityClient
+  globalListener: Observable<WelcomeEvent | MutationEvent>
+}) {
+  const {versionedClient, globalListener} = context
   function listen(id: Id) {
-    const globalEvents = getGlobalEvents()
-    return merge(
-      globalEvents.welcome$,
-      globalEvents.mutations$.pipe(filter((event: any) => event.documentId === id)),
+    return globalListener.pipe(
+      filter((event) => event.type === 'welcome' || event.documentId === id),
     )
   }
 
@@ -107,7 +65,7 @@ export function create_preview_observeFields(context: {versionedClient: SanityCl
 
   function currentDatasetListenFields(id: Id, fields: PreviewPath[]) {
     return listen(id).pipe(
-      switchMap((event: any) => {
+      switchMap((event) => {
         if (event.type === 'welcome' || event.visibility === 'query') {
           return fetchDocumentPathsFast(id, fields as any).pipe(
             mergeMap((result) => {
