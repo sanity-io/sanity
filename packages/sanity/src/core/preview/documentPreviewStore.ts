@@ -5,10 +5,11 @@ import {distinctUntilChanged, map} from 'rxjs/operators'
 
 import {isRecord} from '../util'
 import {create_preview_availability} from './availability'
+import {createGlobalListener} from './createGlobalListener'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {create_preview_documentPair} from './documentPair'
-import {create_preview_observeFields} from './observeFields'
+import {createObserveFields} from './observeFields'
 import {
   type ApiConfig,
   type DraftsModelDocument,
@@ -62,9 +63,8 @@ export function createDocumentPreviewStore({
   client,
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
   const versionedClient = client.withConfig({apiVersion: '1'})
-
-  const {observeFields} = create_preview_observeFields({versionedClient})
-
+  const globalListener = createGlobalListener(versionedClient)
+  const {observeFields} = createObserveFields({versionedClient, globalListener})
   const {observePaths} = createPathObserver({observeFields})
 
   function observeDocumentTypeFromId(
