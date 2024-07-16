@@ -156,13 +156,13 @@ const FEATURES: WorkspaceOptions['beta'] = {
   },
 }
 
-interface TreeEditingStoryProps {
+interface ArrayEditingStoryProps {
   legacyEditing?: boolean
   openPath?: Path
   value?: SanityDocument
 }
 
-export function TreeEditingStory(props: TreeEditingStoryProps): JSX.Element {
+export function ArrayEditingStory(props: ArrayEditingStoryProps): JSX.Element {
   const {legacyEditing, openPath, value} = props
 
   const types = getSchemaTypes({legacyEditing})
@@ -179,4 +179,4 @@ export function TreeEditingStory(props: TreeEditingStoryProps): JSX.Element {
   )
 }
 
-export default TreeEditingStory
+export default ArrayEditingStory

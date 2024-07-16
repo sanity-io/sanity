@@ -1,7 +1,7 @@
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type SanityDocument} from '@sanity/types'
 
-import {TreeEditingStory} from './TreeEditingStory'
+import {ArrayEditingStory} from './ArrayEditingStory'
 
 const ANIMATION_DURATION = 400
 
@@ -86,12 +86,12 @@ const DOCUMENT_VALUE: SanityDocument = {
   ],
 }
 
-test.describe('Tree editing', () => {
-  test('should open tree editing dialog when adding an item and close it when clicking done', async ({
+test.describe('Array editing', () => {
+  test('should open array editing dialog when adding an item and close it when clicking done', async ({
     mount,
     page,
   }) => {
-    await mount(<TreeEditingStory />)
+    await mount(<ArrayEditingStory />)
 
     const field = page.getByTestId('field-myArrayOfObjects')
 
@@ -99,74 +99,33 @@ test.describe('Tree editing', () => {
     await field.getByTestId('add-single-object-button').click()
 
     // Wait for the dialog to be visible
-    await expect(page.getByTestId('tree-editing-dialog')).toBeVisible()
+    await expect(page.getByTestId('array-editing-dialog')).toBeVisible()
 
     // Click done
-    await page.getByTestId('tree-editing-done').click()
+    await page.getByTestId('array-editing-done').click()
 
     // Wait for the dialog to be hidden
-    await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
+    await expect(page.getByTestId('array-editing-dialog')).not.toBeVisible()
   })
 
-  test('should open edit portal dialog when tree editing is disabled in schema', async ({
+  test('should open edit portal dialog when array editing is disabled in schema', async ({
     mount,
     page,
   }) => {
-    await mount(<TreeEditingStory legacyEditing />)
+    await mount(<ArrayEditingStory legacyEditing />)
 
     const field = page.getByTestId('field-myArrayOfObjects')
 
     // Add an item
     await field.getByTestId('add-single-object-button').click()
 
-    // Test that the legacy dialog is visible and the tree editing dialog is not
-    await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
+    // Test that the legacy dialog is visible and the array editing dialog is not
+    await expect(page.getByTestId('array-editing-dialog')).not.toBeVisible()
     await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
   })
 
-  test('should navigate using tree menu in the sidebar', async ({mount, page}) => {
-    await mount(<TreeEditingStory value={DOCUMENT_VALUE} />)
-
-    const field = page.getByTestId('field-myArrayOfObjects')
-
-    // Click on the first item in the array inputs
-    const firstArrayItemButton = field.getByRole('button', {name: 'My object 1'})
-    await firstArrayItemButton.click()
-
-    // Expect the dialog to open
-    const dialog = page.getByTestId('tree-editing-dialog')
-    await expect(dialog).toBeVisible()
-
-    // Expect the string input to have the value of the first item
-    const firstObjectStringInput = dialog.getByTestId('string-input')
-    await expect(firstObjectStringInput).toHaveValue('My object 1')
-
-    // Click on the sidebar toggle button in the dialog to open the sidebar
-    const sidebarButton = dialog.getByTestId('tree-editing-sidebar-toggle')
-    await sidebarButton.click()
-
-    // Expect the sidebar to be opened
-    const sidebar = dialog.getByTestId('tree-editing-sidebar')
-    await expect(sidebar).toBeVisible()
-
-    // Expect all three items to be in the tree menu in the sidebar
-    await expect(sidebar.getByRole('button', {name: 'My object 1'})).toBeVisible()
-    await expect(sidebar.getByRole('button', {name: 'My object 2'})).toBeVisible()
-    await expect(sidebar.getByRole('button', {name: 'My object 3'})).toBeVisible()
-
-    // Click on the second item in the tree menu in the sidebar
-    const secondTreeMenuItem = sidebar.getByRole('button', {name: 'My object 2'})
-    await secondTreeMenuItem.click()
-
-    await page.waitForTimeout(ANIMATION_DURATION)
-
-    // Expect the form view to have changed to the second item
-    const secondObjectStringInput = dialog.getByTestId('string-input')
-    await expect(secondObjectStringInput).toHaveValue('My object 2')
-  })
-
   test('should navigate using breadcrumbs menu', async ({mount, page}) => {
-    await mount(<TreeEditingStory value={DOCUMENT_VALUE} />)
+    await mount(<ArrayEditingStory value={DOCUMENT_VALUE} />)
 
     const field = page.getByTestId('field-myArrayOfObjects')
 
@@ -175,7 +134,7 @@ test.describe('Tree editing', () => {
     await firstArrayItemButton.click()
 
     // Expect the dialog to open
-    const dialog = page.getByTestId('tree-editing-dialog')
+    const dialog = page.getByTestId('array-editing-dialog')
     await expect(dialog).toBeVisible()
 
     // Expect the string input to have the value of the first item
@@ -183,13 +142,13 @@ test.describe('Tree editing', () => {
     await expect(firstObjectStringInput).toHaveValue('My object 1')
 
     // Open the breadcrumb menu
-    const breadcrumbMenuButton = dialog.getByTestId('tree-editing-breadcrumb-menu-button')
+    const breadcrumbMenuButton = dialog.getByTestId('array-editing-breadcrumb-menu-button')
     await breadcrumbMenuButton.click()
 
     await page.waitForTimeout(ANIMATION_DURATION)
 
     // Expect the breadcrumb menu to be opened
-    const breadcrumbMenuPopover = page.getByTestId('tree-editing-breadcrumbs-menu-popover')
+    const breadcrumbMenuPopover = page.getByTestId('array-editing-breadcrumbs-menu-popover')
     await expect(breadcrumbMenuPopover).toBeVisible()
 
     // Expect all three items to be in the breadcrumb menu
@@ -216,15 +175,15 @@ test.describe('Tree editing', () => {
     await expect(thirdObjectStringInput).toHaveValue('My object 3')
   })
 
-  test('should open tree editing dialog with correct form view based on the openPath', async ({
+  test('should open array editing dialog with correct form view based on the openPath', async ({
     mount,
     page,
   }) => {
     await mount(
-      <TreeEditingStory value={DOCUMENT_VALUE} openPath={['myArrayOfObjects', {_key: 'key-2'}]} />,
+      <ArrayEditingStory value={DOCUMENT_VALUE} openPath={['myArrayOfObjects', {_key: 'key-2'}]} />,
     )
 
-    const dialog = page.getByTestId('tree-editing-dialog')
+    const dialog = page.getByTestId('array-editing-dialog')
     await expect(dialog).toBeVisible()
 
     const stringInput = dialog.getByTestId('string-input')
@@ -236,10 +195,10 @@ test.describe('Tree editing', () => {
     page,
   }) => {
     await mount(
-      <TreeEditingStory value={DOCUMENT_VALUE} openPath={['myFieldsetArray', {_key: 'key-2'}]} />,
+      <ArrayEditingStory value={DOCUMENT_VALUE} openPath={['myFieldsetArray', {_key: 'key-2'}]} />,
     )
 
-    const dialog = page.getByTestId('tree-editing-dialog')
+    const dialog = page.getByTestId('array-editing-dialog')
     await expect(dialog).toBeVisible()
 
     const stringInput = dialog.getByTestId('string-input')
@@ -251,22 +210,22 @@ test.describe('Tree editing', () => {
     page,
   }) => {
     await mount(
-      <TreeEditingStory
+      <ArrayEditingStory
         value={DOCUMENT_VALUE}
         openPath={['myArrayOfObjects', {_key: 'NOT_FOUND_KEY'}]}
       />,
     )
 
-    const dialog = page.getByTestId('tree-editing-dialog')
+    const dialog = page.getByTestId('array-editing-dialog')
     await expect(dialog).not.toBeVisible()
   })
 
-  test('should open both tree editing dialog and portable text dialog when the openPath points to an array field nested inside a portable text field', async ({
+  test('should open both array editing dialog and portable text dialog when the openPath points to an array field nested inside a portable text field', async ({
     mount,
     page,
   }) => {
     await mount(
-      <TreeEditingStory
+      <ArrayEditingStory
         value={DOCUMENT_VALUE}
         openPath={[
           'myArrayOfObjects',
@@ -278,7 +237,7 @@ test.describe('Tree editing', () => {
         ]}
       />,
     )
-    const dialog = page.getByTestId('tree-editing-dialog')
+    const dialog = page.getByTestId('array-editing-dialog')
     await expect(dialog).toBeVisible()
 
     const editPortalDialog = page.getByTestId('edit-portal-dialog')
@@ -293,21 +252,21 @@ test.describe('Tree editing', () => {
     page,
   }) => {
     await mount(
-      <TreeEditingStory
+      <ArrayEditingStory
         value={DOCUMENT_VALUE}
         openPath={['pte', {_key: 'key-1'}, 'myBlockObjectArray', {_key: 'key-2-2'}]}
       />,
     )
 
-    const dialog = page.getByTestId('tree-editing-dialog')
+    const dialog = page.getByTestId('array-editing-dialog')
     await expect(dialog).not.toBeVisible()
 
     const editPortalDialog = page.getByTestId('edit-portal-dialog')
     await expect(editPortalDialog).toBeVisible()
   })
 
-  test('should focus root array item when closing tree editing dialog', async ({mount, page}) => {
-    await mount(<TreeEditingStory value={DOCUMENT_VALUE} />)
+  test('should focus root array item when closing array editing dialog', async ({mount, page}) => {
+    await mount(<ArrayEditingStory value={DOCUMENT_VALUE} />)
 
     const field = page.getByTestId('field-myArrayOfObjects')
 
@@ -316,14 +275,14 @@ test.describe('Tree editing', () => {
     await firstArrayItemButton.click()
 
     // Expect the dialog to open
-    const dialog = page.getByTestId('tree-editing-dialog')
+    const dialog = page.getByTestId('array-editing-dialog')
     await expect(dialog).toBeVisible()
 
     // Focus first field
     await dialog.getByTestId('string-input').focus()
 
     // Click done
-    await page.getByTestId('tree-editing-done').click()
+    await page.getByTestId('array-editing-done').click()
 
     // Wait for the dialog to be hidden
     await expect(dialog).not.toBeVisible()
