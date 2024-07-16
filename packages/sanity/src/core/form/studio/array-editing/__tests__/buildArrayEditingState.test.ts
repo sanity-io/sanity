@@ -180,8 +180,8 @@ const schema = Schema.compile({
   ],
 })
 
-describe('tree-editing: buildArrayEditingState', () => {
-  test('should build tree editing state for an array of objects', () => {
+describe('array-editing: buildArrayEditingState', () => {
+  test('should build array editing state for an array of objects', () => {
     // implement
 
     const documentValue: SanityDocumentLike = {
@@ -214,7 +214,7 @@ describe('tree-editing: buildArrayEditingState', () => {
     expect(result).toMatchSnapshot()
   })
 
-  test('should build tree editing state for an object with an array', () => {
+  test('should build array editing state for an object with an array', () => {
     const documentValue: SanityDocumentLike = {
       _id: 'testDocument',
       _type: 'testDocument',
@@ -229,6 +229,7 @@ describe('tree-editing: buildArrayEditingState', () => {
         ],
       },
     }
+
     // Path to the array item
     const result1 = buildArrayEditingState({
       documentValue,
@@ -248,7 +249,7 @@ describe('tree-editing: buildArrayEditingState', () => {
     expect(result2).toMatchSnapshot()
   })
 
-  test('should build tree editing state for an object with an array of references', () => {
+  test('should build array editing state for an object with an array of references', () => {
     const documentValue: SanityDocumentLike = {
       _id: 'testDocument',
       _type: 'testDocument',
@@ -298,13 +299,11 @@ describe('tree-editing: buildArrayEditingState', () => {
 
     expect(result).toEqual({
       breadcrumbs: [],
-      menuItems: [],
       relativePath: [],
-      rootTitle: 'Legacy array editing array',
     })
   })
 
-  test('should build tree editing state for an array with array fields in nested objects', () => {
+  test('should build array editing state for an array with array fields in nested objects', () => {
     const documentValue: SanityDocumentLike = {
       _id: 'testDocument',
       _type: 'testDocument',
