@@ -25,14 +25,7 @@ import {
 } from 'rxjs/operators'
 
 import {INCLUDE_FIELDS} from './constants'
-import {
-  type ApiConfig,
-  type FieldName,
-  type Id,
-  type ObservePathsFn,
-  type PreviewPath,
-  type Selection,
-} from './types'
+import {type ApiConfig, type FieldName, type Id, type PreviewPath, type Selection} from './types'
 import {debounceCollect} from './utils/debounceCollect'
 import {hasEqualFields} from './utils/hasEqualFields'
 import {isUniqueBy} from './utils/isUniqueBy'
@@ -48,11 +41,8 @@ type Cache = {
   [id: string]: CachedFieldObserver[]
 }
 
-export function create_preview_observeFields(context: {
-  observePaths: ObservePathsFn
-  versionedClient: SanityClient
-}) {
-  const {observePaths, versionedClient} = context
+export function create_preview_observeFields(context: {versionedClient: SanityClient}) {
+  const {versionedClient} = context
 
   let _globalListener: any
 
