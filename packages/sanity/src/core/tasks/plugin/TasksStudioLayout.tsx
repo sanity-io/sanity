@@ -1,6 +1,5 @@
 import {ConditionalWrapper} from '../../../ui-components'
 import {type LayoutProps} from '../../config'
-import {AddonDatasetProvider} from '../../studio'
 import {
   TasksEnabledProvider,
   TasksNavigationProvider,
@@ -16,17 +15,15 @@ const TasksStudioLayoutInner = (props: LayoutProps) => {
     return props.renderDefault(props)
   }
   return (
-    <AddonDatasetProvider>
-      <ConditionalWrapper
-        condition={mode === 'upsell'}
-        // eslint-disable-next-line react/jsx-no-bind
-        wrapper={(children) => <TasksUpsellProvider>{children}</TasksUpsellProvider>}
-      >
-        <TasksProvider>
-          <TasksNavigationProvider>{props.renderDefault(props)}</TasksNavigationProvider>
-        </TasksProvider>
-      </ConditionalWrapper>
-    </AddonDatasetProvider>
+    <ConditionalWrapper
+      condition={mode === 'upsell'}
+      // eslint-disable-next-line react/jsx-no-bind
+      wrapper={(children) => <TasksUpsellProvider>{children}</TasksUpsellProvider>}
+    >
+      <TasksProvider>
+        <TasksNavigationProvider>{props.renderDefault(props)}</TasksNavigationProvider>
+      </TasksProvider>
+    </ConditionalWrapper>
   )
 }
 

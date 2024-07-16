@@ -1,7 +1,7 @@
-import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type SchemaType} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo} from 'react'
+import {useAddonDatasetStore} from 'sanity'
 import {useRouterState} from 'sanity/router'
 
 import {useTools} from '../../../hooks'
@@ -26,7 +26,6 @@ export interface CommentOperationsHookValue {
 }
 
 export interface CommentOperationsHookOptions {
-  client: SanityClient | null
   currentUser: CurrentUser | null
   dataset: string
   documentId: string
@@ -40,7 +39,6 @@ export interface CommentOperationsHookOptions {
   onTransactionStart: (commentDocumentId: string, transactionId: string) => void
   onUpdate?: (id: string, comment: CommentUpdatePayload) => void
   projectId: string
-  createAddonDataset: () => Promise<SanityClient | null>
   schemaType: SchemaType | undefined
   workspace: string
   getCommentLink?: (commentId: string) => string
@@ -50,7 +48,6 @@ export function useCommentOperations(
   opts: CommentOperationsHookOptions,
 ): CommentOperationsHookValue {
   const {
-    client,
     currentUser,
     dataset,
     documentId,
@@ -64,7 +61,6 @@ export function useCommentOperations(
     onTransactionStart,
     onUpdate,
     projectId,
-    createAddonDataset,
     workspace,
     getCommentLink,
   } = opts
@@ -85,17 +81,14 @@ export function useCommentOperations(
   )
   const {getNotificationValue} = useNotificationTarget({documentId, documentType, getCommentLink})
 
+  const addonDatasetStore = useAddonDatasetStore()
+
   const handleCreate = useCallback(
     async (comment: CommentCreatePayload) => {
-      // Unlike the other operations, we want to proceed with create operation even
-      // though there is no client available. This is because if there is no client for the
-      // comments addon dataset, it will be created in the `createOperation`, and the
-      // comment will be created in that dataset when the client is eventually created.
       if (!currentUser?.id) return
 
       await createOperation({
         activeTool,
-        client,
         comment,
         currentUser,
         dataset,
@@ -108,13 +101,12 @@ export function useCommentOperations(
         onCreate,
         onCreateError,
         projectId,
-        createAddonDataset,
         workspace,
+        addonDatasetStore,
       })
     },
     [
       activeTool,
-      client,
       currentUser,
       dataset,
       documentId,
@@ -126,22 +118,20 @@ export function useCommentOperations(
       onCreate,
       onCreateError,
       projectId,
-      createAddonDataset,
       workspace,
+      addonDatasetStore,
     ],
   )
 
   const handleRemove = useCallback(
     async (id: string) => {
-      if (!client) return
-
       await removeOperation({
-        client,
         id,
         onRemove,
+        addonDatasetStore,
       })
     },
-    [client, onRemove],
+    [addonDatasetStore, onRemove],
   )
 
   const handleUpdate = useCallback(
@@ -150,7 +140,6 @@ export function useCommentOperations(
       comment: CommentUpdatePayload,
       updateOpts?: CommentUpdateOperationOptions,
     ) => {
-      if (!client) return
       const {throttled} = updateOpts || {}
 
       // Generate a new transaction ID to use for the update operation transaction
@@ -166,31 +155,31 @@ export function useCommentOperations(
       onTransactionStart(id, nextTransactionId)
 
       await updateOperation({
-        client,
         comment,
         throttled,
         id,
         onUpdate,
         transactionId: nextTransactionId,
+        addonDatasetStore,
       })
     },
-    [client, onTransactionStart, onUpdate],
+    [addonDatasetStore, onTransactionStart, onUpdate],
   )
 
   const handleReact = useCallback(
     async (id: string, reaction: CommentReactionOption) => {
-      if (!client || !currentUser?.id) return
+      if (!currentUser?.id) return
 
       await reactOperation({
-        client,
         currentUser,
         id,
         reaction,
         getComment,
         onUpdate,
+        addonDatasetStore,
       })
     },
-    [client, currentUser, getComment, onUpdate],
+    [addonDatasetStore, currentUser, getComment, onUpdate],
   )
 
   return useMemo(

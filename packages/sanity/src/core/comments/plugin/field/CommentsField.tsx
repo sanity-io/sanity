@@ -90,16 +90,8 @@ function CommentFieldInner(
 
   const rootRef = useRef<HTMLDivElement | null>(null)
 
-  const {
-    comments,
-    isCommentsOpen,
-    isCreatingDataset,
-    mentionOptions,
-    onCommentsOpen,
-    operation,
-    setStatus,
-    status,
-  } = useComments()
+  const {comments, isCommentsOpen, mentionOptions, onCommentsOpen, operation, setStatus, status} =
+    useComments()
   const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {authoringPath, setAuthoringPath} = useCommentsAuthoringPath()
@@ -285,7 +277,6 @@ function CommentFieldInner(
           count={Number(count)}
           currentUser={currentUser}
           fieldTitle={fieldTitle}
-          isCreatingDataset={isCreatingDataset}
           mentionOptions={mentionOptions}
           onChange={handleOnChange}
           onClick={handleClick}
@@ -303,7 +294,6 @@ function CommentFieldInner(
       currentUser,
       count,
       fieldTitle,
-      isCreatingDataset,
       mentionOptions,
       handleOnChange,
       handleClick,

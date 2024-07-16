@@ -1,8 +1,9 @@
-import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
+import {filter, switchMap, tap} from 'rxjs'
 
 import {type Tool} from '../../../config'
+import {type AddonDatasetStore} from '../../../studio'
 import {
   type CommentContext,
   type CommentCreatePayload,
@@ -14,7 +15,6 @@ import {weakenReferencesInContentSnapshot} from '../../utils'
 
 interface CreateOperationProps {
   activeTool: Tool | undefined
-  client: SanityClient | null
   comment: CommentCreatePayload
   currentUser: CurrentUser
   dataset: string
@@ -28,14 +28,13 @@ interface CreateOperationProps {
   onCreate?: (comment: CommentPostPayload) => void
   onCreateError: (id: string, error: Error) => void
   projectId: string
-  createAddonDataset: () => Promise<SanityClient | null>
   workspace: string
+  addonDatasetStore: AddonDatasetStore
 }
 
 export async function createOperation(props: CreateOperationProps): Promise<void> {
   const {
     activeTool,
-    client,
     comment,
     currentUser,
     dataset,
@@ -48,8 +47,8 @@ export async function createOperation(props: CreateOperationProps): Promise<void
     onCreate,
     onCreateError,
     projectId,
-    createAddonDataset,
     workspace,
+    addonDatasetStore,
   } = props
 
   // The comment payload might already have an id if, for example, the comment was created
@@ -162,28 +161,13 @@ export async function createOperation(props: CreateOperationProps): Promise<void
 
   onCreate?.(nextComment)
 
-  // If we don't have a client, that means that the dataset doesn't have an addon dataset.
-  // Therefore, when the first comment is created, we need to create the addon dataset and create
-  // a client for it and then post the comment. We do this here, since we know that we have a
-  // comment to create.
-  if (!client) {
-    try {
-      const newAddonClient = await createAddonDataset()
-      if (!newAddonClient) {
-        throw new Error('Failed to create addon dataset client')
-      }
-      await newAddonClient.create(nextComment)
-    } catch (err) {
-      onCreateError?.(nextComment._id, err)
-      throw err
-    }
-    return
-  }
-
-  try {
-    await client.create(nextComment)
-  } catch (err) {
-    onCreateError?.(nextComment._id, err)
-    throw err
-  }
+  addonDatasetStore.client$
+    .pipe(
+      filter((clientStore) => clientStore.state === 'ready'),
+      switchMap(({client}) => client.observable.create(nextComment)),
+      tap({
+        error: (error) => onCreateError?.(nextComment._id, error),
+      }),
+    )
+    .subscribe()
 }

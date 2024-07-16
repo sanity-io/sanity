@@ -1,8 +1,9 @@
 import {type ListenEvent, type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {catchError, of} from 'rxjs'
+import {useAddonDatasetStore} from 'sanity'
 
-import {useAddonDataset} from '../../studio'
 import {getPublishedId} from '../../util'
 import {type Loadable, type TaskDocument} from '../types'
 import {tasksReducer, type TasksReducerAction, type TasksReducerState} from './reducer'
@@ -40,7 +41,8 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
 export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
-  const {client} = useAddonDataset()
+  const {lazyClient$} = useAddonDatasetStore()
+  const {client} = useObservable(lazyClient$)!
   const {documentId} = opts
 
   const [state, dispatch] = useReducer(tasksReducer, INITIAL_STATE)

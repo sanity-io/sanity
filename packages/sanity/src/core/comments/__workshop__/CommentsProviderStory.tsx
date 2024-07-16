@@ -4,7 +4,6 @@ import {useMemo} from 'react'
 
 import {ConditionalWrapper} from '../../../ui-components'
 import {useCurrentUser} from '../../store'
-import {AddonDatasetProvider} from '../../studio'
 import {CommentsList, CommentsUpsellPanel} from '../components'
 import {CommentsEnabledProvider, CommentsProvider, CommentsUpsellProvider} from '../context'
 import {useComments, useCommentsUpsell} from '../hooks'
@@ -24,19 +23,17 @@ export default function CommentsProviderStory() {
   const _mode = useSelect('_mode', MODES) || ('default' as keyof typeof MODES)
 
   return (
-    <AddonDatasetProvider>
-      <CommentsEnabledProvider documentType={_type} documentId={_id}>
-        <CommentsProvider documentType={_type} documentId={_id} type="field" sortOrder="desc">
-          <ConditionalWrapper
-            condition={_mode === 'upsell'}
-            // eslint-disable-next-line react/jsx-no-bind
-            wrapper={(children) => <CommentsUpsellProvider>{children}</CommentsUpsellProvider>}
-          >
-            <Inner mode={_mode} />
-          </ConditionalWrapper>
-        </CommentsProvider>
-      </CommentsEnabledProvider>
-    </AddonDatasetProvider>
+    <CommentsEnabledProvider documentType={_type} documentId={_id}>
+      <CommentsProvider documentType={_type} documentId={_id} type="field" sortOrder="desc">
+        <ConditionalWrapper
+          condition={_mode === 'upsell'}
+          // eslint-disable-next-line react/jsx-no-bind
+          wrapper={(children) => <CommentsUpsellProvider>{children}</CommentsUpsellProvider>}
+        >
+          <Inner mode={_mode} />
+        </ConditionalWrapper>
+      </CommentsProvider>
+    </CommentsEnabledProvider>
   )
 }
 

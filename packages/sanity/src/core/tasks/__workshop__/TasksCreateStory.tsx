@@ -1,7 +1,6 @@
 import {useMemo} from 'react'
 import {TasksNavigationContext} from 'sanity/_singletons'
 
-import {AddonDatasetProvider} from '../../studio'
 import {TasksFormBuilder} from '../components'
 import {TasksProvider} from '../context'
 
@@ -25,12 +24,10 @@ export default function TasksCreateStory() {
     [],
   )
   return (
-    <AddonDatasetProvider>
-      <TasksProvider>
-        <TasksNavigationContext.Provider value={value}>
-          <TasksFormBuilder />
-        </TasksNavigationContext.Provider>
-      </TasksProvider>
-    </AddonDatasetProvider>
+    <TasksProvider>
+      <TasksNavigationContext.Provider value={value}>
+        <TasksFormBuilder />
+      </TasksNavigationContext.Provider>
+    </TasksProvider>
   )
 }

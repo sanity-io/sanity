@@ -79,7 +79,6 @@ function CommentsInspectorInner(
   const {
     comments,
     getComment,
-    isCreatingDataset,
     mentionOptions,
     setStatus,
     status,
@@ -448,7 +447,6 @@ function CommentsInspectorInner(
             onReactionSelect={handleReactionSelect}
             onReply={handleReply}
             onStatusChange={handleStatusChange}
-            readOnly={isCreatingDataset}
             selectedPath={selectedPath}
             status={status}
           />

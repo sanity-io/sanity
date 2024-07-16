@@ -1,16 +1,11 @@
-import {useEffect, useMemo} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 
 import {LoadingBlock} from '../../../../components'
 import {type Config, prepareConfig} from '../../../../config'
 import {useClient} from '../../../../hooks'
-import {ResourceCacheProvider} from '../../../../store'
-import {
-  SourceProvider,
-  useAddonDataset,
-  useSource,
-  useWorkspaceLoader,
-  WorkspaceProvider,
-} from '../../../../studio'
+import {ResourceCacheProvider, useAddonDatasetStore} from '../../../../store'
+import {SourceProvider, useSource, useWorkspaceLoader, WorkspaceProvider} from '../../../../studio'
 import {API_VERSION} from '../../../constants'
 import {type FormMode} from '../../../types'
 import {taskSchema} from './taskSchema'
@@ -65,16 +60,9 @@ function TasksAddonWorkspaceProviderInner({
  * It also, creates the addon dataset if it doesn't exist.
  */
 export function TasksAddonWorkspaceProvider(props: {children: React.ReactNode; mode: FormMode}) {
-  const {client: addonDatasetClient, ready, createAddonDataset} = useAddonDataset()
+  const {client$} = useAddonDatasetStore()
+  const {client: addonDatasetClient} = useObservable(client$)!
   const addonDataset = addonDatasetClient?.config().dataset
-
-  useEffect(() => {
-    if (!addonDataset && ready) {
-      // The user is trying to use the addon dataset form, but it hasn't been created yet.
-      // We should create it.
-      createAddonDataset()
-    }
-  }, [addonDataset, ready, createAddonDataset])
 
   if (!addonDataset) {
     return <LoadingBlock />

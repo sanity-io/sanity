@@ -1,11 +1,12 @@
 import {type Path} from '@sanity/types'
 import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {CommentsContext} from 'sanity/_singletons'
 
 import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
-import {useCurrentUser} from '../../../store'
-import {useAddonDataset, useWorkspace} from '../../../studio'
+import {useAddonDatasetStore, useCurrentUser} from '../../../store'
+import {useWorkspace} from '../../../studio'
 import {getPublishedId} from '../../../util'
 import {
   type CommentOperationsHookOptions,
@@ -81,11 +82,12 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   } = props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
-  const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
+  const {lazyClient$} = useAddonDatasetStore()
   const publishedId = getPublishedId(documentId)
   const editState = useEditState(publishedId, documentType, 'low')
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
+  const {client} = useObservable(lazyClient$)!
 
   const {name: workspaceName, dataset, projectId} = useWorkspace()
 
@@ -226,7 +228,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const {operation} = useCommentOperations(
     useMemo(
       (): CommentOperationsHookOptions => ({
-        client,
         currentUser,
         dataset,
         documentId: publishedId,
@@ -237,10 +238,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         projectId,
         schemaType,
         workspace: workspaceName,
-        // This function runs when the first comment creation is executed.
-        // It is used to create the addon dataset and configure a client for
-        // the addon dataset.
-        createAddonDataset,
         // The following callbacks runs when the comment operation are executed.
         // They are used to update the local state of the comments immediately after
         // a comment operation has been executed. This is done to avoid waiting for
@@ -254,7 +251,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         getCommentLink,
       }),
       [
-        client,
         currentUser,
         dataset,
         publishedId,
@@ -265,7 +261,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         projectId,
         schemaType,
         workspaceName,
-        createAddonDataset,
         handleOnCreate,
         handleOnCreateError,
         handleOnUpdate,
@@ -280,7 +275,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       documentId,
       documentType,
 
-      isCreatingDataset,
       status,
       setStatus: handleSetStatus,
       getComment,
@@ -298,7 +292,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       comments: {
         data: threadItemsByStatus,
         error,
-        loading: loading || isCreatingDataset || isConnecting || false,
+        loading: loading || isConnecting || false,
       },
 
       operation: {
@@ -312,7 +306,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     [
       documentId,
       documentType,
-      isCreatingDataset,
       status,
       handleSetStatus,
       getComment,

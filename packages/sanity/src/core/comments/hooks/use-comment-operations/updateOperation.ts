@@ -1,6 +1,7 @@
-import {type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
-import {throttle, type ThrottleSettings} from 'lodash'
+import {type ThrottleSettings} from 'lodash'
+import {filter, firstValueFrom, map, throttle} from 'rxjs'
+import {type AddonDatasetStore} from 'sanity'
 
 import {type CommentUpdatePayload} from '../../types'
 
@@ -32,20 +33,27 @@ function getThrottledFunction(id: string) {
 }
 
 interface UpdateOperationProps {
-  client: SanityClient
   comment: CommentUpdatePayload
   throttled: boolean | undefined
   id: string
   onUpdate?: (id: string, comment: CommentUpdatePayload) => void
   transactionId: string | undefined
+  addonDatasetStore: AddonDatasetStore
 }
 
 async function postCommentUpdate(props: UpdateOperationProps) {
-  const {client, id, comment, transactionId: transactionIdProp, onUpdate} = props
+  const {id, comment, transactionId: transactionIdProp, onUpdate, addonDatasetStore} = props
+
+  const client = await firstValueFrom(
+    addonDatasetStore.client$.pipe(
+      filter((clientStore) => clientStore.state === 'ready'),
+      map((clientStore) => clientStore.client),
+    ),
+  )
 
   // Fall back to generating a new transaction id if none is provided
   const transactionId = transactionIdProp || uuid()
-  const patch = client?.patch(id).set(comment)
+  const patch = client.patch(id).set(comment)
   const transaction = client.transaction().transactionId(transactionId).patch(patch)
 
   onUpdate?.(id, comment)

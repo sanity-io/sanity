@@ -1,6 +1,7 @@
-import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
+import {filter, firstValueFrom, switchMap} from 'rxjs'
 
+import {type AddonDatasetStore} from '../../../studio'
 import {
   type CommentDocument,
   type CommentReactionItem,
@@ -18,16 +19,16 @@ function createReactionKey(userId: string, shortName: CommentReactionShortNames)
 }
 
 interface ReactOperationProps {
-  client: SanityClient
   currentUser: CurrentUser
   id: string
   reaction: CommentReactionOption
   getComment?: (id: string) => CommentDocument | undefined
   onUpdate?: (id: string, comment: CommentUpdatePayload) => void
+  addonDatasetStore: AddonDatasetStore
 }
 
 export async function reactOperation(props: ReactOperationProps): Promise<void> {
-  const {client, currentUser, id, reaction, getComment, onUpdate} = props
+  const {currentUser, id, reaction, getComment, onUpdate, addonDatasetStore} = props
 
   const reactions = getComment?.(id)?.reactions || []
   const currentUserReactions = reactions.filter((r) => r.userId === currentUser.id)
@@ -55,10 +56,17 @@ export async function reactOperation(props: ReactOperationProps): Promise<void> 
     onUpdate?.(id, {reactions: next})
 
     // Unset the reaction
-    await client
-      .patch(id)
-      .unset([`reactions[_key=="${_key}"]`])
-      .commit()
+    await firstValueFrom(
+      addonDatasetStore.client$.pipe(
+        filter((clientStore) => clientStore.state === 'ready'),
+        switchMap(({client}) =>
+          client.observable
+            .patch(id)
+            .unset([`reactions[_key=="${_key}"]`])
+            .commit(),
+        ),
+      ),
+    )
 
     return
   }
@@ -83,10 +91,17 @@ export async function reactOperation(props: ReactOperationProps): Promise<void> 
     onUpdate?.(id, {reactions: next})
 
     // Append the new reaction to the comment
-    await client
-      .patch(id)
-      .setIfMissing({reactions: []})
-      .append('reactions', [reactionItem])
-      .commit()
+    await firstValueFrom(
+      addonDatasetStore.client$.pipe(
+        filter((clientStore) => clientStore.state === 'ready'),
+        switchMap(({client}) =>
+          client
+            .patch(id)
+            .setIfMissing({reactions: []})
+            .append('reactions', [reactionItem])
+            .commit(),
+        ),
+      ),
+    )
   }
 }
