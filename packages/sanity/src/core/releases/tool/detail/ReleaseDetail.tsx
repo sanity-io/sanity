@@ -87,12 +87,20 @@ export const ReleaseDetail = () => {
             {showPublishButton && (
               <Button icon={PublishIcon} disabled={isPublishButtonDisabled} text="Publish all" />
             )}
-            <BundleMenuButton bundle={bundle} />
+            <BundleMenuButton bundle={bundle} documentCount={bundleDocuments.length} />
           </Flex>
         </Flex>
       </Card>
     ),
-    [activeScreen, bundle, bundleHasDocuments, isPublishButtonDisabled, router, showPublishButton],
+    [
+      activeScreen,
+      bundle,
+      bundleDocuments.length,
+      bundleHasDocuments,
+      isPublishButtonDisabled,
+      router,
+      showPublishButton,
+    ],
   )
 
   if (loading) {
