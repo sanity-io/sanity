@@ -1,7 +1,9 @@
 import path from 'node:path'
 
 import {describe, expect, it, jest} from '@jest/globals'
+import {escapeRegExp} from 'lodash'
 import resolve from 'resolve.exports'
+import {type Alias} from 'vite'
 
 import {browserCompatibleSanityPackageSpecifiers, getAliases} from '../aliases'
 
@@ -49,24 +51,28 @@ describe('getAliases', () => {
     const aliases = getAliases({
       sanityPkgPath,
       conditions: ['import', 'browser'],
-      browser: true,
     })
 
-    const expectedAliases = browserCompatibleSanityPackageSpecifiers.reduce<Record<string, string>>(
-      (acc, specifier) => {
-        const dest = resolve.exports(pkg, specifier, {
+    // Prepare expected aliases
+    const dirname = path.dirname(sanityPkgPath)
+    const expectedAliases = browserCompatibleSanityPackageSpecifiers.reduce<Alias[]>(
+      (acc, next) => {
+        const dest = resolve.exports(pkg, next, {
           browser: true,
           conditions: ['import', 'browser'],
         })?.[0]
         if (dest) {
-          acc[specifier] = path.resolve(path.dirname(sanityPkgPath), dest)
+          acc.push({
+            find: new RegExp(`^${escapeRegExp(next)}$`),
+            replacement: path.resolve(dirname, dest),
+          })
         }
         return acc
       },
-      {},
+      [],
     )
 
-    expect(aliases).toMatchObject(expectedAliases)
+    expect(aliases).toEqual(expectedAliases)
   })
 
   it('returns the correct aliases for the monorepo', () => {
@@ -89,5 +95,11 @@ describe('getAliases', () => {
     )
 
     expect(aliases).toMatchObject(expectedAliases)
+  })
+
+  it('returns an empty object if no conditions are met', () => {
+    const aliases = getAliases({})
+
+    expect(aliases).toEqual({})
   })
 })

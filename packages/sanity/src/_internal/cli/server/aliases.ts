@@ -1,7 +1,8 @@
 import path from 'node:path'
 
+import {escapeRegExp} from 'lodash'
 import resolve from 'resolve.exports'
-import {type AliasOptions} from 'vite'
+import {type Alias, type AliasOptions} from 'vite'
 
 import {type SanityMonorepo} from './sanityMonorepo'
 
@@ -83,17 +84,21 @@ export function getAliases({monorepo, sanityPkgPath, conditions}: GetAliasesOpti
     const dirname = path.dirname(sanityPkgPath)
 
     // Resolve the entry points for each allowed specifier
-    const unifiedSanityAliases = browserCompatibleSanityPackageSpecifiers.reduce<
-      Record<string, string>
-    >((acc, next) => {
-      // Resolve the export path for the specifier using resolve.exports
-      const dest = resolve.exports(pkg, next, {browser: true, conditions})?.[0]
-      if (!dest) return acc
+    const unifiedSanityAliases = browserCompatibleSanityPackageSpecifiers.reduce<Alias[]>(
+      (acc, next) => {
+        // Resolve the export path for the specifier using resolve.exports
+        const dest = resolve.exports(pkg, next, {browser: true, conditions})?.[0]
+        if (!dest) return acc
 
-      // Map the specifier to its resolved path
-      acc[next] = path.resolve(dirname, dest)
-      return acc
-    }, {})
+        // Map the specifier to its resolved path
+        acc.push({
+          find: new RegExp(`^${escapeRegExp(next)}$`),
+          replacement: path.resolve(dirname, dest),
+        })
+        return acc
+      },
+      [],
+    )
 
     // Return the aliases configuration for external projects
     return unifiedSanityAliases
