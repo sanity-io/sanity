@@ -2,15 +2,16 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useRouter} from 'sanity/router'
 
 import {BundleBadge} from '../../../bundles/components/BundleBadge'
-import {RelativeTime} from '../../../components'
-import {type BundleDocument} from '../../../store/bundles/types'
+import {RelativeTime, UserAvatar} from '../../../components'
 import {BundleMenuButton} from '../BundleMenuButton/BundleMenuButton'
+import {type TableBundle} from './ReleasesTable'
 
-type Props = {
-  bundle: BundleDocument
+type ReleaseRowProps = {
+  bundle: TableBundle
 }
 
-export function BundleRow({bundle}: Props) {
+export function ReleaseRow({bundle}: ReleaseRowProps) {
+  const {documentsMetadata} = bundle
   const router = useRouter()
 
   return (
@@ -38,6 +39,43 @@ export function BundleRow({bundle}: Props) {
           </Flex>
         </Card>
       </Box>
+      {/* # of documents */}
+      <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 90}}>
+        <Text muted size={1}>
+          {documentsMetadata.documentCount}
+        </Text>
+      </Flex>
+      {/* Created */}
+      <Flex
+        as="td"
+        align="center"
+        gap={2}
+        paddingX={2}
+        paddingY={3}
+        sizing="border"
+        style={{width: 120}}
+      >
+        {bundle.authorId && <UserAvatar size={0} user={bundle.authorId} />}
+        <Text muted size={1}>
+          <RelativeTime time={bundle._createdAt} useTemporalPhrase minimal />
+        </Text>
+      </Flex>
+      {/* Edited */}
+      <Flex
+        as="td"
+        align="center"
+        gap={2}
+        paddingX={2}
+        paddingY={3}
+        sizing="border"
+        style={{width: 100}}
+      >
+        {documentsMetadata.updatedAt && (
+          <Text muted size={1}>
+            <RelativeTime time={documentsMetadata.updatedAt} useTemporalPhrase minimal />
+          </Text>
+        )}
+      </Flex>
       {/* Published */}
       <Flex as="td" align="center" paddingX={2} paddingY={3} sizing="border" style={{width: 100}}>
         {!!bundle.publishedAt && (
@@ -48,7 +86,7 @@ export function BundleRow({bundle}: Props) {
       </Flex>
       {/* Actions */}
       <Flex as="td" align="center" flex="none" padding={3}>
-        <BundleMenuButton bundle={bundle} />
+        <BundleMenuButton bundle={bundle} documentCount={bundle.documentsMetadata.documentCount} />
       </Flex>
     </Card>
   )
