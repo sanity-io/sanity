@@ -1,7 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
 import {type ReactElement, useCallback} from 'react'
-import {RelativeTime} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../store/bundles/types'
@@ -91,16 +90,15 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                 </Text>
                               </Box>
 
-                              <Box padding={2}>
+                              {/*<Box padding={2}>
                                 <Text muted size={1}>
                                   {b.publishAt ? (
                                     <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
                                   ) : (
-                                    /* localize text */
                                     'No target date'
                                   )}
                                 </Text>
-                              </Box>
+                              </Box>*/}
 
                               <Box padding={2}>
                                 <Text size={1}>
