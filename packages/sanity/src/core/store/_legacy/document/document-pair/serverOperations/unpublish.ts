@@ -1,4 +1,5 @@
 import {type OperationImpl} from '../operations/types'
+import {actionsApiClient} from '../utils/actionsApiClient'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'
@@ -11,7 +12,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
   execute: ({client, idPair}) =>
-    client.observable.action(
+    actionsApiClient(client).observable.action(
       {
         // This operation is run when "unpublish anyway" is clicked
         actionType: 'sanity.action.document.unpublish',
