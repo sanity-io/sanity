@@ -1,6 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 import {useCallback} from 'react'
+import {useCurrentUser} from 'sanity'
 
 import {useClient} from '../../hooks'
 import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
@@ -11,18 +12,20 @@ import {type BundleDocument} from './types'
 export function useBundleOperations() {
   const {client} = useAddonDataset()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const currentUser = useCurrentUser()
 
   const handleCreateBundle = useCallback(
     async (bundle: Partial<BundleDocument>) => {
       const document = {
         ...bundle,
         _type: 'bundle',
+        authorId: currentUser?.id,
         _id: bundle._id ?? uuid(),
       } as BundleDocument
       const res = await client?.createIfNotExists(document)
       return res
     },
-    [client],
+    [client, currentUser?.id],
   )
 
   const handleDeleteBundle = useCallback(
