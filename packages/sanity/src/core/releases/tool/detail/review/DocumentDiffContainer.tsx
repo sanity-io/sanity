@@ -1,13 +1,11 @@
 import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Card, Flex} from '@sanity/ui'
-import {
-  type BundleDocument,
-  getPublishedId,
-  LoadingBlock,
-  unstable_useObserveDocument,
-  useSchema,
-} from 'sanity'
 
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useObserveDocument} from '../../../../preview/useObserveDocument'
+import {type BundleDocument} from '../../../../store/bundles/types'
+import {getPublishedId} from '../../../../util/draftUtils'
 import {useDocumentPreviewValues} from '../documentTable/useDocumentPreviewValues'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {DocumentReviewHeader} from '../review/DocumentReviewHeader'
@@ -28,7 +26,7 @@ export function DocumentDiffContainer({
   if (!schemaType) {
     throw new Error(`Schema type "${document._type}" not found`)
   }
-  const {document: baseDocument, loading: baseDocumentLoading} = unstable_useObserveDocument(
+  const {document: baseDocument, loading: baseDocumentLoading} = useObserveDocument(
     publishedId,
     schemaType,
   )

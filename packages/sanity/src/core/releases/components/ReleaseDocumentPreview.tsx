@@ -1,7 +1,10 @@
+import {type PreviewValue} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
-import {getPublishedId, type PreviewValue, SanityDefaultPreview} from 'sanity'
 import {IntentLink} from 'sanity/router'
+
+import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
+import {getPublishedId} from '../../util/draftUtils'
 
 interface ReleaseDocumentPreviewProps {
   documentId: string

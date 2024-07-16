@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import {type BundleDocument} from 'sanity'
 
+import {type BundleDocument} from '../../../store/bundles/types'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
 import {DocumentDiffContainer} from './review/DocumentDiffContainer'
 
