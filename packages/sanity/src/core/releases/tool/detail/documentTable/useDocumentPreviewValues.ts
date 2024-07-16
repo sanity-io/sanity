@@ -4,6 +4,7 @@ import {useObservable} from 'react-rx'
 import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
+  prepareForPreview,
   type SchemaType,
   useDocumentPreviewStore,
   useSchema,
@@ -52,5 +53,6 @@ export const useDocumentPreviewValues = ({
     version,
     perspective,
   })
-  return {previewValues, isLoading}
+
+  return {previewValues: prepareForPreview(previewValues, schemaType), isLoading}
 }
