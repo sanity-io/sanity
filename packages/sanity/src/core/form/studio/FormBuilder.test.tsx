@@ -12,8 +12,8 @@ import {EMPTY_ARRAY} from '../../util'
 import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
 import {type FormDocumentValue} from '../types'
+import {useTreeEditingEnabled} from './array-editing'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
-import {useTreeEditingEnabled} from './tree-editing'
 
 const schemaTypes = [
   defineType({

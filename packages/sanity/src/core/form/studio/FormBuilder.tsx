@@ -29,15 +29,15 @@ import {
   type ObjectInputProps,
   type RenderPreviewCallbackProps,
 } from '../types'
+import {
+  ArrayEditingDialog,
+  shouldArrayDialogOpen,
+  TreeEditingEnabledProvider,
+  useTreeEditingEnabled,
+} from './array-editing'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {
-  shouldArrayDialogOpen,
-  TreeEditingDialog,
-  TreeEditingEnabledProvider,
-  useTreeEditingEnabled,
-} from './tree-editing'
 
 /**
  * @alpha
@@ -316,7 +316,7 @@ function RootInput(props: RootInputProps) {
   const isRoot = rootInputProps.id === 'root'
 
   const arrayEditingModal = treeEditing.enabled && isRoot && open && (
-    <TreeEditingDialog
+    <ArrayEditingDialog
       // eslint-disable-next-line react/jsx-handler-names
       onPathFocus={rootInputProps.onPathFocus}
       onPathOpen={onPathOpen}

@@ -1,7 +1,7 @@
+export {shouldArrayDialogOpen, useTreeEditingEnabled} from './array-editing'
 export * from './contexts'
 export * from './defaults'
 export * from './FormBuilder'
 export * from './FormProvider'
 export * from './inputs'
-export {shouldArrayDialogOpen, useTreeEditingEnabled} from './tree-editing'
 export * from './uploads'

@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-import type {TreeEditingEnabledContextValue} from '../../../../core/form/studio/tree-editing/context/enabled/useTreeEditingEnabled'
+import type {TreeEditingEnabledContextValue} from '../../../../core/form/studio/array-editing/context/enabled/useTreeEditingEnabled'
 
 /**
  * @internal

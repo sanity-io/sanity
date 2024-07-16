@@ -16,7 +16,7 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {TreeEditingEnabledProvider} from '../../studio/tree-editing'
+import {TreeEditingEnabledProvider} from '../../studio/array-editing'
 import {
   type ArrayOfObjectsInputProps,
   type PortableTextInputProps,
