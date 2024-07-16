@@ -32,7 +32,7 @@ export async function getAllVersionsOfDocument(
         title: bundle?.title || sluggedName,
         hue: bundle?.hue || 'gray',
         icon: bundle?.icon || 'cube',
-        publishAt: bundle?.publishAt,
+        //publishAt: bundle?.publishAt,
       }
     })
   })
