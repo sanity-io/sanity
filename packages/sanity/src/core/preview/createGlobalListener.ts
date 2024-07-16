@@ -1,5 +1,5 @@
 import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
-import {merge, timer} from 'rxjs'
+import {defer, merge, timer} from 'rxjs'
 import {filter, share, shareReplay} from 'rxjs/operators'
 
 /**
@@ -7,8 +7,8 @@ import {filter, share, shareReplay} from 'rxjs/operators'
  * Creates a listener that will emit 'welcome' for all new subscribers immediately, and thereafter emit at every mutation event
  */
 export function createGlobalListener(client: SanityClient) {
-  const allEvents$ = client
-    .listen(
+  const allEvents$ = defer(() =>
+    client.listen(
       '*[!(_id in path("_.**"))]',
       {},
       {
@@ -19,19 +19,19 @@ export function createGlobalListener(client: SanityClient) {
         effectFormat: 'mendoza',
         tag: 'preview.global',
       },
-    )
-    .pipe(
-      filter(
-        (event): event is WelcomeEvent | MutationEvent =>
-          event.type === 'welcome' || event.type === 'mutation',
-      ),
-      share({resetOnRefCountZero: () => timer(2000)}),
-    )
+    ),
+  ).pipe(
+    filter(
+      (event): event is WelcomeEvent | MutationEvent =>
+        event.type === 'welcome' || event.type === 'mutation',
+    ),
+    share({resetOnRefCountZero: () => timer(2000), resetOnComplete: true}),
+  )
 
   const welcome$ = allEvents$.pipe(
     filter((event) => event.type === 'welcome'),
-    shareReplay(1),
+    shareReplay({refCount: true, bufferSize: 1}),
   )
-  const mutations$ = allEvents$.pipe(filter((event) => event.type === 'mutation'))
+  const mutations$ = allEvents$.pipe(filter((event) => event.type === 'mutation')).pipe(share())
   return merge(welcome$, mutations$)
 }
