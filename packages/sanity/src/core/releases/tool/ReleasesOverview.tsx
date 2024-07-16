@@ -6,28 +6,39 @@ import {type MouseEventHandler, useCallback, useEffect, useMemo, useState} from 
 import {Button as StudioButton} from '../../../ui-components'
 import {CreateBundleDialog} from '../../bundles/components/dialog/CreateBundleDialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
-import {useBundles} from '../../store/bundles'
 import {type BundleDocument} from '../../store/bundles/types'
-import {BundlesTable} from '../components/BundlesTable/BundlesTable'
+import {useBundles} from '../../store/bundles/useBundles'
+import {ReleasesTable, type TableBundle} from '../components/ReleasesTable/ReleasesTable'
 import {containsBundles} from '../types/bundle'
+import {useBundlesMetadata} from './useBundlesMetadata'
 
 type Mode = 'open' | 'archived'
 
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 
 export function ReleasesOverview() {
-  const {data, loading} = useBundles()
-
+  const {data: bundles, loading: loadingBundles} = useBundles()
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>()
-
-  const hasBundles = data && containsBundles(data)
+  const bundleSlugs = useMemo(() => bundles?.map((bundle) => bundle.name) || [], [bundles])
+  const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
+  const loading = loadingBundles || loadingBundlesMetadata
+  const hasBundles = bundles && containsBundles(bundles)
   const loadingOrHasBundles = loading || hasBundles
+
+  const tableBundles = useMemo<TableBundle[]>(() => {
+    if (!bundles || !bundlesMetadata) return []
+
+    return bundles.map((bundle) => ({
+      ...bundle,
+      documentsMetadata: bundlesMetadata[bundle.name] || {},
+    }))
+  }, [bundles, bundlesMetadata])
 
   const groupedBundles = useMemo(
     () =>
-      data?.reduce<{open: BundleDocument[]; archived: BundleDocument[]}>((groups, bundle) => {
+      tableBundles.reduce<{open: TableBundle[]; archived: TableBundle[]}>((groups, bundle) => {
         const isBundleArchived =
           bundle.archivedAt ||
           (bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date()))
@@ -35,7 +46,7 @@ export function ReleasesOverview() {
 
         return {...groups, [group]: [...groups[group], bundle]}
       }, EMPTY_BUNDLE_GROUPS) || EMPTY_BUNDLE_GROUPS,
-    [data],
+    [tableBundles],
   )
 
   // switch to open mode if on archived mode and there are no archived bundles
@@ -159,7 +170,7 @@ export function ReleasesOverview() {
           {loading ? (
             <LoadingBlock fill data-testid="bundle-table-loader" />
           ) : (
-            <BundlesTable
+            <ReleasesTable
               bundles={filteredBundles}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
