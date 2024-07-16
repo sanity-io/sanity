@@ -171,3 +171,16 @@ test('returns new array when previous and next has different length', () => {
 
   expect(immutableReconcile(lessItems, moreItems)).not.toBe(lessItems)
 })
+
+test('returns latest non-enumerable value', () => {
+  const prev = {enumerable: true}
+  const next = {enumerable: true}
+  Object.defineProperty(next, 'nonEnumerable', {
+    value: {foo: 'bar'},
+    enumerable: false,
+  })
+  // @ts-expect-error Object.defineProperty
+  expect(immutableReconcile(next, prev).nonEnumerable).toBeUndefined()
+  // @ts-expect-error Object.defineProperty
+  expect(immutableReconcile(prev, next).nonEnumerable).toBe(next.nonEnumerable)
+})
