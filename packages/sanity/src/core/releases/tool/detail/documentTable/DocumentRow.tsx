@@ -1,12 +1,11 @@
 import {CheckmarkCircleIcon, EmptyIcon, Progress50Icon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {AvatarStack, Box, Card, Flex, Text} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useMemo} from 'react'
-import {getPublishedId, RelativeTime, SanityDefaultPreview, UserAvatar} from 'sanity'
-import {IntentLink} from 'sanity/router'
+import {RelativeTime, UserAvatar} from 'sanity'
 
 import {Tooltip} from '../../../../../ui-components'
 import {type BundleDocument} from '../../../../store/bundles/types'
+import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
 import {DocumentActions} from './DocumentActions'
 import {useDocumentPreviewValues} from './useDocumentPreviewValues'
 import {type DocumentHistory} from './useReleaseHistory'
@@ -72,26 +71,6 @@ export function DocumentRow(props: {
   const documentTypeName = document._type
   const {previewValues, isLoading} = useDocumentPreviewValues({document, release})
 
-  const LinkComponent = useMemo(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
-        return (
-          <IntentLink
-            {...linkProps}
-            intent="edit"
-            params={{
-              id: getPublishedId(documentId, true),
-              type: documentTypeName,
-            }}
-            searchParams={[['perspective', `bundle.${release.name}`]]}
-            ref={ref}
-          />
-        )
-      }),
-    [documentId, documentTypeName, release.name],
-  )
-
   if (searchTerm) {
     // Early return to filter out documents that don't match the search term
     const fallbackTitle = typeof document.title === 'string' ? document.title : 'Untitled'
@@ -103,9 +82,13 @@ export function DocumentRow(props: {
     <Card border radius={3}>
       <Flex style={{margin: -1}}>
         <Box flex={1} padding={1}>
-          <Card as={LinkComponent} radius={2} data-as="a">
-            <SanityDefaultPreview {...previewValues} isPlaceholder={isLoading} />
-          </Card>
+          <ReleaseDocumentPreview
+            documentId={documentId}
+            documentTypeName={documentTypeName}
+            releaseName="releaseName"
+            previewValues={previewValues}
+            isLoading={!!isLoading}
+          />
         </Box>
 
         {/* Created */}
