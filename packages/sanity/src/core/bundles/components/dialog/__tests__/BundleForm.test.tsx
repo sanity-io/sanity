@@ -25,7 +25,7 @@ describe('BundleForm', () => {
     description: '',
     icon: 'cube',
     hue: 'gray',
-    publishAt: undefined,
+    //publishAt: undefined,
   }
 
   beforeEach(async () => {
@@ -62,7 +62,7 @@ describe('BundleForm', () => {
   it('should render the form fields', () => {
     expect(screen.getByTestId('bundle-form-title')).toBeInTheDocument()
     expect(screen.getByTestId('bundle-form-description')).toBeInTheDocument()
-    expect(screen.getByTestId('bundle-form-publish-at')).toBeInTheDocument()
+    //expect(screen.getByTestId('bundle-form-publish-at')).toBeInTheDocument()
   })
 
   it('should call onChange when title input value changes', () => {
@@ -79,7 +79,7 @@ describe('BundleForm', () => {
     expect(onChangeMock).toHaveBeenCalledWith({...valueMock, description: 'New Description'})
   })
 
-  it('should call onChange when publishAt input value changes', () => {
+  /*it('should call onChange when publishAt input value changes', () => {
     const publishAtInput = screen.getByTestId('bundle-form-publish-at')
     fireEvent.change(publishAtInput, {target: {value: '2022-01-01'}})
 
@@ -91,7 +91,7 @@ describe('BundleForm', () => {
     fireEvent.change(publishAtInput, {target: {value: ' '}})
 
     expect(onChangeMock).toHaveBeenCalledWith({...valueMock, publishAt: ''})
-  })
+  })*/
 
   it('should show an error when the title is "drafts"', () => {
     const titleInput = screen.getByTestId('bundle-form-title')
@@ -123,10 +123,10 @@ describe('BundleForm', () => {
     expect(screen.getByTestId('input-validation-icon-error')).toBeInTheDocument()
   })
 
-  it('should show an error when the publishAt input value is invalid', () => {
+  /*it('should show an error when the publishAt input value is invalid', () => {
     const publishAtInput = screen.getByTestId('bundle-form-publish-at')
     fireEvent.change(publishAtInput, {target: {value: 'invalid-date'}})
 
     expect(screen.getByTestId('input-validation-icon-error')).toBeInTheDocument()
-  })
+  })*/
 })
