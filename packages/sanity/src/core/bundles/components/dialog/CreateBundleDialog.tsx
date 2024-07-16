@@ -22,7 +22,7 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
     title: '',
     hue: 'gray',
     icon: 'cube',
-    publishAt: undefined,
+    //publishAt: undefined,
   })
   const [isCreating, setIsCreating] = useState(false)
 
