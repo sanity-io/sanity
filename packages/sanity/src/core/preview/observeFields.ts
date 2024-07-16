@@ -1,4 +1,4 @@
-import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {difference, flatten, memoize} from 'lodash'
 import {
   combineLatest,
@@ -24,7 +24,14 @@ import {
 } from 'rxjs/operators'
 
 import {INCLUDE_FIELDS} from './constants'
-import {type ApiConfig, type FieldName, type Id, type PreviewPath, type Selection} from './types'
+import {
+  type ApiConfig,
+  type FieldName,
+  type Id,
+  type InvalidationChannelEvent,
+  type PreviewPath,
+  type Selection,
+} from './types'
 import {debounceCollect} from './utils/debounceCollect'
 import {hasEqualFields} from './utils/hasEqualFields'
 import {isUniqueBy} from './utils/isUniqueBy'
@@ -40,14 +47,19 @@ type Cache = {
   [id: string]: CachedFieldObserver[]
 }
 
-export function createObserveFields(context: {
-  versionedClient: SanityClient
-  globalListener: Observable<WelcomeEvent | MutationEvent>
+/**
+ * Creates a function that allows observing individual fields on a document.
+ * It will automatically debounce and batch requests, and maintain an in-memory cache of the latest field values
+ * @param options - Options to use when creating the observer
+ */
+export function createObserveFields(options: {
+  client: SanityClient
+  invalidationChannel: Observable<InvalidationChannelEvent>
 }) {
-  const {versionedClient, globalListener} = context
+  const {client: currentDatasetClient, invalidationChannel} = options
   function listen(id: Id) {
-    return globalListener.pipe(
-      filter((event) => event.type === 'welcome' || event.documentId === id),
+    return invalidationChannel.pipe(
+      filter((event) => event.type === 'connected' || event.documentId === id),
     )
   }
 
@@ -60,13 +72,20 @@ export function createObserveFields(context: {
     }
   }
 
-  const fetchDocumentPathsFast = debounceCollect(fetchAllDocumentPathsWith(versionedClient), 100)
-  const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPathsWith(versionedClient), 1000)
+  const fetchDocumentPathsFast = debounceCollect(
+    fetchAllDocumentPathsWith(currentDatasetClient),
+    100,
+  )
+
+  const fetchDocumentPathsSlow = debounceCollect(
+    fetchAllDocumentPathsWith(currentDatasetClient),
+    1000,
+  )
 
   function currentDatasetListenFields(id: Id, fields: PreviewPath[]) {
     return listen(id).pipe(
       switchMap((event) => {
-        if (event.type === 'welcome' || event.visibility === 'query') {
+        if (event.type === 'connected' || event.visibility === 'query') {
           return fetchDocumentPathsFast(id, fields as any).pipe(
             mergeMap((result) => {
               return concat(
@@ -85,17 +104,11 @@ export function createObserveFields(context: {
     )
   }
 
-  // keep for debugging purposes for now
-  // function fetchDocumentPaths(id, selection) {
-  //   return client.observable.fetch(`*[_id==$id]{_id,_type,${selection.join(',')}}`, {id})
-  //     .map(result => result[0])
-  // }
-
   const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
   const getBatchFetcherForDataset = memoize(
     function getBatchFetcherForDataset(apiConfig: ApiConfig) {
-      const client = versionedClient.withConfig(apiConfig)
+      const client = currentDatasetClient.withConfig(apiConfig)
       const fetchAll = fetchAllDocumentPathsWith(client)
       return debounceCollect(fetchAll, 10)
     },

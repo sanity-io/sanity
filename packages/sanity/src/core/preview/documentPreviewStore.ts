@@ -4,7 +4,7 @@ import {type Observable} from 'rxjs'
 import {distinctUntilChanged, map} from 'rxjs/operators'
 
 import {isRecord} from '../util'
-import {create_preview_availability} from './availability'
+import {createPreviewAvailabilityObserver} from './availability'
 import {createGlobalListener} from './createGlobalListener'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
@@ -64,7 +64,16 @@ export function createDocumentPreviewStore({
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
   const versionedClient = client.withConfig({apiVersion: '1'})
   const globalListener = createGlobalListener(versionedClient)
-  const {observeFields} = createObserveFields({versionedClient, globalListener})
+
+  const invalidationChannel = globalListener.pipe(
+    map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
+  )
+
+  const {observeFields} = createObserveFields({
+    client: versionedClient,
+    invalidationChannel,
+  })
+
   const {observePaths} = createPathObserver({observeFields})
 
   function observeDocumentTypeFromId(
@@ -77,15 +86,16 @@ export function createDocumentPreviewStore({
     )
   }
 
-  // const {createPreviewObserver} = create_preview_createPreviewObserver(observeDocumentTypeFromId)
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
-  const {observeDocumentPairAvailability} = create_preview_availability(
+  const {observeDocumentPairAvailability} = createPreviewAvailabilityObserver(
     versionedClient,
     observePaths,
   )
   const {observePathsDocumentPair} = create_preview_documentPair(versionedClient, observePaths)
 
   // @todo: explain why the API is like this now, and that it should not be like this in the future!
+  const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
+
   return {
     observePaths,
     observeForPreview,
