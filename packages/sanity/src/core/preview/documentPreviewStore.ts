@@ -63,17 +63,7 @@ export function createDocumentPreviewStore({
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
   const versionedClient = client.withConfig({apiVersion: '1'})
 
-  // NOTE: this is workaroudn for circumventing a circular dependency between `observePaths` and
-  // `observeFields`.
-  // eslint-disable-next-line camelcase
-  const __proxy_observePaths: ObservePathsFn = (value, paths, apiConfig) => {
-    return observePaths(value, paths, apiConfig)
-  }
-
-  const {observeFields} = create_preview_observeFields({
-    observePaths: __proxy_observePaths,
-    versionedClient,
-  })
+  const {observeFields} = create_preview_observeFields({versionedClient})
 
   const {observePaths} = createPathObserver({observeFields})
 
