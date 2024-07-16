@@ -4,7 +4,7 @@ import {Stack} from '@sanity/ui'
 import {type BundleDocument} from 'sanity'
 
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
-import {DocumentDiff} from './review/DocumentDiff'
+import {DocumentDiffContainer} from './review/DocumentDiffContainer'
 
 export function ReleaseReview({
   documents,
@@ -18,7 +18,7 @@ export function ReleaseReview({
   return (
     <Stack space={[5, 6]}>
       {documents.map((document) => (
-        <DocumentDiff
+        <DocumentDiffContainer
           key={document._id}
           document={document}
           release={release}
