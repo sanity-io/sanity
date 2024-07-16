@@ -1,6 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {type BundleDocument} from 'sanity'
 
 import {type DocumentHistory} from './documentTable/useReleaseHistory'

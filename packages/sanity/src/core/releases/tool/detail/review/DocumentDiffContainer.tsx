@@ -4,7 +4,7 @@ import {
   type BundleDocument,
   getPublishedId,
   LoadingBlock,
-  useObserveDocument,
+  unstable_useObserveDocument,
   useSchema,
 } from 'sanity'
 
@@ -28,7 +28,10 @@ export function DocumentDiffContainer({
   if (!schemaType) {
     throw new Error(`Schema type "${document._type}" not found`)
   }
-  const {baseDocument, loading: baseDocumentLoading} = useObserveDocument(publishedId, schemaType)
+  const {document: baseDocument, loading: baseDocumentLoading} = unstable_useObserveDocument(
+    publishedId,
+    schemaType,
+  )
   const {previewValues, isLoading} = useDocumentPreviewValues({document, release})
 
   return (
