@@ -37,8 +37,10 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
     [observedResult.data],
   )
 
-  const addBundleSlugsToListener = useCallback((addBundleSlugs: string[]) => {
-    setListenerBundleSlugs((prevSlugs) => [...prevSlugs, ...addBundleSlugs])
+  const addBundleSlugsToListener = useCallback((addBundleSlugs: (string | undefined)[]) => {
+    const isString = (slug: string | undefined): slug is string => !!slug
+
+    setListenerBundleSlugs((prevSlugs) => [...prevSlugs, ...addBundleSlugs.filter(isString)])
   }, [])
 
   const removeBundleSlugsFromListener = useCallback((removeBundleSlugs: string[]) => {

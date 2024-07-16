@@ -75,7 +75,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                         .filter((b) => !isDraftOrPublished(b.name) && !b.archivedAt)
                         .map((b) => (
                           <MenuItem
-                            key={b.name}
+                            key={b._id}
                             onClick={handleBundleChange(b)}
                             padding={1}
                             pressed={false}
