@@ -3,17 +3,16 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {
   BundleBadge,
   type BundleDocument,
+  createWrapper,
   getAllVersionsOfDocument,
+  getBundleSlug,
   type SanityClient,
+  useBundles,
   useClient,
   usePerspective,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
-import {getBundleSlug} from '../../../../../../core/bundles/util/dummyGetters'
-import {createWrapper} from '../../../../../../core/bundles/util/tests/createWrapper'
-import {useBundles} from '../../../../../../core/store/bundles/useBundles'
 import {DocumentPerspectiveMenu} from './DocumentPerspectiveMenu'
 
 type getBundleSlugType = (documentId: string) => string
@@ -40,6 +39,8 @@ jest.mock('sanity', () => ({
     ]),
   ),
   BundleBadge: jest.fn(),
+  useBundles: jest.fn(),
+  getBundleSlug: jest.fn(() => ''),
 }))
 
 jest.mock('sanity/router', () => ({
@@ -52,15 +53,7 @@ jest.mock('sanity/router', () => ({
   IntentLink: jest.fn(),
 }))
 
-jest.mock('../../../../../../core/store/bundles/useBundles', () => ({
-  useBundles: jest.fn(),
-}))
-
-jest.mock('../../../../../../core/bundles/util/dummyGetters', () => ({
-  getBundleSlug: jest.fn(() => ''),
-}))
-
-const mockUseClient = useClient as jest.Mock<typeof useClient>
+const mockUseClient = useClient as jest.Mock
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const navigateIntent = mockUseRouter().navigateIntent as jest.Mock
 
@@ -89,8 +82,7 @@ describe('DocumentPerspectiveMenu', () => {
   beforeEach(() => {
     jest.clearAllMocks()
 
-    const client = createMockSanityClient() as unknown as SanityClient
-    mockUseClient.mockReturnValue(client)
+    mockUseClient.mockReturnValue({})
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

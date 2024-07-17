@@ -7,14 +7,13 @@ import {
   BundleMenu,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getAllVersionsOfDocument,
+  getBundleSlug,
+  useBundles,
   useClient,
   usePerspective,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
-
-import {getBundleSlug} from '../../../../../../core/bundles'
-import {useBundles} from '../../../../../../core/store/bundles/useBundles'
 
 const BadgeButton = styled(Button)({
   cursor: 'pointer',
