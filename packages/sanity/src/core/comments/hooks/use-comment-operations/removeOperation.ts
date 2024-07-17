@@ -1,6 +1,6 @@
 import {filter, firstValueFrom, switchMap, zip} from 'rxjs'
 
-import {type AddonDatasetStore} from '../../../studio'
+import {type AddonDatasetStore, isClientStoreReady} from '../../../studio'
 
 interface RemoveOperationProps {
   id: string
@@ -14,7 +14,7 @@ export async function removeOperation(props: RemoveOperationProps): Promise<void
 
   await firstValueFrom(
     addonDatasetStore.client$.pipe(
-      filter((clientStore) => clientStore.state === 'ready'),
+      filter(isClientStoreReady),
       switchMap(({client}) =>
         zip(
           client.observable.delete({query: `*[_type == "comment" && parentCommentId == "${id}"]`}),

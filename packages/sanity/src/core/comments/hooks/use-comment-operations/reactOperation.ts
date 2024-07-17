@@ -1,7 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
 import {filter, firstValueFrom, switchMap} from 'rxjs'
 
-import {type AddonDatasetStore} from '../../../studio'
+import {type AddonDatasetStore, isClientStoreReady} from '../../../studio'
 import {
   type CommentDocument,
   type CommentReactionItem,
@@ -58,7 +58,7 @@ export async function reactOperation(props: ReactOperationProps): Promise<void> 
     // Unset the reaction
     await firstValueFrom(
       addonDatasetStore.client$.pipe(
-        filter((clientStore) => clientStore.state === 'ready'),
+        filter(isClientStoreReady),
         switchMap(({client}) =>
           client.observable
             .patch(id)
@@ -93,7 +93,7 @@ export async function reactOperation(props: ReactOperationProps): Promise<void> 
     // Append the new reaction to the comment
     await firstValueFrom(
       addonDatasetStore.client$.pipe(
-        filter((clientStore) => clientStore.state === 'ready'),
+        filter(isClientStoreReady),
         switchMap(({client}) =>
           client
             .patch(id)

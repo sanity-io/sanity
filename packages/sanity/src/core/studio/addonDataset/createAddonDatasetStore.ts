@@ -155,3 +155,9 @@ export function createAddonDatasetStore({client}: Context): AddonDatasetStore {
     lazyClient$,
   }
 }
+
+export function isClientStoreReady(
+  clientStore: ClientStore,
+): clientStore is ClientStore & {state: 'ready'} {
+  return clientStore.state === 'ready'
+}

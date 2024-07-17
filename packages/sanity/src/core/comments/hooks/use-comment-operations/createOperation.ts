@@ -3,7 +3,7 @@ import {uuid} from '@sanity/uuid'
 import {filter, switchMap, tap} from 'rxjs'
 
 import {type Tool} from '../../../config'
-import {type AddonDatasetStore} from '../../../studio'
+import {type AddonDatasetStore, isClientStoreReady} from '../../../studio'
 import {
   type CommentContext,
   type CommentCreatePayload,
@@ -163,7 +163,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
 
   addonDatasetStore.client$
     .pipe(
-      filter((clientStore) => clientStore.state === 'ready'),
+      filter(isClientStoreReady),
       switchMap(({client}) => client.observable.create(nextComment)),
       tap({
         error: (error) => onCreateError?.(nextComment._id, error),

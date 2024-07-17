@@ -1,7 +1,7 @@
 import {uuid} from '@sanity/uuid'
 import {throttle as lodashThrottle, type ThrottleSettings} from 'lodash'
 import {filter, firstValueFrom, map} from 'rxjs'
-import {type AddonDatasetStore} from 'sanity'
+import {type AddonDatasetStore, isClientStoreReady} from 'sanity'
 
 import {type CommentUpdatePayload} from '../../types'
 
@@ -46,7 +46,7 @@ async function postCommentUpdate(props: UpdateOperationProps) {
 
   const client = await firstValueFrom(
     addonDatasetStore.client$.pipe(
-      filter((clientStore) => clientStore.state === 'ready'),
+      filter(isClientStoreReady),
       map((clientStore) => clientStore.client),
     ),
   )

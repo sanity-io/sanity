@@ -1,5 +1,6 @@
 import {useCallback, useMemo} from 'react'
 import {filter, firstValueFrom, map} from 'rxjs'
+import {isClientStoreReady} from 'sanity'
 
 import {useAddonDatasetStore, useCurrentUser} from '../../store'
 import {type TaskCreatePayload, type TaskDocument, type TaskEditPayload} from '../types'
@@ -37,7 +38,7 @@ export function useTaskOperations(): TaskOperations {
       try {
         const client = await firstValueFrom(
           client$.pipe(
-            filter((clientStore) => clientStore.state === 'ready'),
+            filter(isClientStoreReady),
             map((clientStore) => clientStore.client),
           ),
         )
@@ -57,7 +58,7 @@ export function useTaskOperations(): TaskOperations {
       try {
         const client = await firstValueFrom(
           client$.pipe(
-            filter((clientStore) => clientStore.state === 'ready'),
+            filter(isClientStoreReady),
             map((clientStore) => clientStore.client),
           ),
         )
@@ -76,7 +77,7 @@ export function useTaskOperations(): TaskOperations {
       try {
         const client = await firstValueFrom(
           client$.pipe(
-            filter((clientStore) => clientStore.state === 'ready'),
+            filter(isClientStoreReady),
             map((clientStore) => clientStore.client),
           ),
         )
