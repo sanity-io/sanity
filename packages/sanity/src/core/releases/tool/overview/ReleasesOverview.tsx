@@ -174,7 +174,7 @@ export function ReleasesOverview() {
               {loadingOrHasBundles && createReleaseButton}
             </Flex>
             <Table<TableBundle>
-              // for reset of filter and sort on table when mode changed
+              // for resetting filter and sort on table when mode changed
               key={bundleGroupMode}
               loading={loading}
               data={groupedBundles[bundleGroupMode]}

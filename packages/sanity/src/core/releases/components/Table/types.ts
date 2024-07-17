@@ -4,10 +4,14 @@ export interface InjectedTableProps {
   style: {width?: number}
 }
 
-export interface Column<D = any> {
+export interface Column<TableData = any> {
   header: (props: HeaderProps) => JSX.Element
-  cell: (props: {datum: D; cellProps: InjectedTableProps; sorting: boolean}) => React.ReactNode
-  id: keyof D | string
+  cell: (props: {
+    datum: TableData
+    cellProps: InjectedTableProps
+    sorting: boolean
+  }) => React.ReactNode
+  id: keyof TableData | string
   width: number | null
   sorting?: boolean
 }

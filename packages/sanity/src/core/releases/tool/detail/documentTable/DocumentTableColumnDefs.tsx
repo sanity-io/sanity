@@ -2,7 +2,7 @@ import {AvatarStack, Box, Flex, Text} from '@sanity/ui'
 import {type BundleDocument, RelativeTime, UserAvatar} from 'sanity'
 
 import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
-import {SortHeaderButton, TableHeaderSearch} from '../../../components/Table/TableHeader'
+import {Headers} from '../../../components/Table/TableHeader'
 import {type Column} from '../../../components/Table/types'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 
@@ -12,7 +12,7 @@ export const getDocumentTableColumnDefs: (
   {
     id: 'search',
     width: null,
-    header: (props) => <TableHeaderSearch {...props} placeholder="Search documents" />,
+    header: (props) => <Headers.TableHeaderSearch {...props} placeholder="Search documents" />,
     cell: ({cellProps, datum: document}) => (
       <Box {...cellProps} flex={1} padding={1}>
         <ReleaseDocumentPreview
@@ -31,7 +31,7 @@ export const getDocumentTableColumnDefs: (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <SortHeaderButton text="Created" {...props} />
+        <Headers.SortHeaderButton text="Created" {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: document}) => (
@@ -55,7 +55,7 @@ export const getDocumentTableColumnDefs: (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <SortHeaderButton text="Edited" {...props} />
+        <Headers.SortHeaderButton text="Edited" {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: document}) => (
@@ -79,7 +79,7 @@ export const getDocumentTableColumnDefs: (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <SortHeaderButton text="Published" {...props} />
+        <Headers.SortHeaderButton text="Published" {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: document}) => (

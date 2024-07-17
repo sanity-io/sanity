@@ -9,19 +9,25 @@ import {TableHeader} from './TableHeader'
 import {TableProvider} from './TableProvider'
 import {type Column} from './types'
 
-export interface TableProps<D, AdditionalRowD> {
-  columnDefs: AdditionalRowD extends undefined ? Column<D>[] : Column<D & AdditionalRowD>[]
-  searchFilter?: (data: D[], searchTerm: string) => D[]
-  Row?: ({datum, children}: {datum: D; children: (rowData: D) => JSX.Element}) => JSX.Element | null
-  data: D[]
+type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extends undefined
+  ? TableData
+  : TableData & AdditionalRowTableData
+
+export interface TableProps<TableData, AdditionalRowTableData> {
+  columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
+  searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
+  Row?: ({
+    datum,
+    children,
+  }: {
+    datum: TableData
+    children: (rowData: TableData) => JSX.Element
+  }) => JSX.Element | null
+  data: TableData[]
   emptyState: (() => JSX.Element) | string
   loading?: boolean
-  rowId: keyof D
-  rowActions?: ({
-    datum,
-  }: {
-    datum: AdditionalRowD extends undefined ? D : D & AdditionalRowD
-  }) => JSX.Element
+  rowId: keyof TableData
+  rowActions?: ({datum}: {datum: RowDatum<TableData, AdditionalRowTableData>}) => JSX.Element
 }
 
 const RowStack = styled(Stack)({
@@ -37,7 +43,7 @@ const RowStack = styled(Stack)({
   },
 })
 
-const TableInner = <D, AdditionalRowD>({
+const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
   data,
   emptyState,
@@ -46,7 +52,7 @@ const TableInner = <D, AdditionalRowD>({
   rowId,
   rowActions,
   loading = false,
-}: TableProps<D, AdditionalRowD>) => {
+}: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
 
   const filteredData = useMemo(() => {
@@ -96,7 +102,7 @@ const TableInner = <D, AdditionalRowD>({
 
   const renderRow = useMemo(
     () =>
-      function TableRow(datum: D | (D & AdditionalRowD)) {
+      function TableRow(datum: TableData | (TableData & AdditionalRowTableData)) {
         return (
           <Card
             key={String(datum[rowId])}
@@ -110,7 +116,7 @@ const TableInner = <D, AdditionalRowD>({
             {_columnDefs.map(({cell: Cell, width, id, sorting = false}) => (
               <Fragment key={String(id)}>
                 <Cell
-                  datum={datum as D & AdditionalRowD}
+                  datum={datum as RowDatum<TableData, AdditionalRowTableData>}
                   cellProps={{
                     as: 'td',
                     id: String(id),
@@ -173,10 +179,12 @@ const TableInner = <D, AdditionalRowD>({
   )
 }
 
-export const Table = <D, AdditionalRowD = undefined>(props: TableProps<D, AdditionalRowD>) => {
+export const Table = <TableData, AdditionalRowTableData = undefined>(
+  props: TableProps<TableData, AdditionalRowTableData>,
+) => {
   return (
     <TableProvider>
-      <TableInner<D, AdditionalRowD> {...props} />
+      <TableInner<TableData, AdditionalRowTableData> {...props} />
     </TableProvider>
   )
 }

@@ -3,7 +3,7 @@ import {useRouter} from 'sanity/router'
 
 import {BundleBadge} from '../../../bundles'
 import {RelativeTime, UserAvatar} from '../../../components'
-import {SortHeaderButton, TableHeaderSearch} from '../../components/Table/TableHeader'
+import {Headers} from '../../components/Table/TableHeader'
 import {type Column} from '../../components/Table/types'
 import {type TableBundle} from './ReleasesOverview'
 
@@ -42,7 +42,7 @@ export const releasesOverviewColumnDefs: Column<TableBundle>[] = [
     id: 'search',
     sorting: false,
     width: null,
-    header: (props) => <TableHeaderSearch {...props} placeholder="Search releases" />,
+    header: (props) => <Headers.TableHeaderSearch {...props} placeholder="Search releases" />,
     cell: ReleaseNameCell,
   },
   {
@@ -72,7 +72,7 @@ export const releasesOverviewColumnDefs: Column<TableBundle>[] = [
     width: 120,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <SortHeaderButton text="Created" {...props} />
+        <Headers.SortHeaderButton text="Created" {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: bundle}) => (
@@ -90,7 +90,7 @@ export const releasesOverviewColumnDefs: Column<TableBundle>[] = [
     width: 100,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <SortHeaderButton text="Edited" {...props} />
+        <Headers.SortHeaderButton text="Edited" {...props} />
       </Flex>
     ),
     cell: ({datum: {documentsMetadata}, cellProps}) => (
@@ -109,7 +109,7 @@ export const releasesOverviewColumnDefs: Column<TableBundle>[] = [
     width: 100,
     header: (props) => (
       <Flex {...props.headerProps} align="center" gap={1} paddingX={1} paddingY={0} sizing="border">
-        <SortHeaderButton text="Published" {...props} />
+        <Headers.SortHeaderButton text="Published" {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: bundle}) => (

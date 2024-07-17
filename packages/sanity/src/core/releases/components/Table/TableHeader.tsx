@@ -4,11 +4,7 @@ import {useTableContext} from 'sanity/_singletons'
 
 import {type HeaderProps, type TableHeaderProps} from './types'
 
-/**
- *
- * @internal
- */
-export const SortHeaderButton = ({header, text}: ButtonProps & HeaderProps) => {
+const SortHeaderButton = ({header, text}: ButtonProps & HeaderProps) => {
   const {sort, setSearchColumn} = useTableContext()
   const sortIcon = sort?.direction === 'asc' ? ArrowUpIcon : ArrowDownIcon
 
@@ -25,11 +21,7 @@ export const SortHeaderButton = ({header, text}: ButtonProps & HeaderProps) => {
   )
 }
 
-/**
- *
- * @internal
- */
-export const TableHeaderSearch = ({
+const TableHeaderSearch = ({
   headerProps,
   searchDisabled,
   placeholder,
@@ -77,4 +69,9 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
       </Flex>
     </Card>
   )
+}
+
+export const Headers = {
+  SortHeaderButton,
+  TableHeaderSearch,
 }
