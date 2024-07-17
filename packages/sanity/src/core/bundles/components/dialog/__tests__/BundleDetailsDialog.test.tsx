@@ -5,7 +5,7 @@ import {type BundleDocument, useBundles} from 'sanity'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../../hooks/usePerspective'
 import {createWrapper} from '../../../util/tests/createWrapper'
-import {CreateBundleDialog} from '../CreateBundleDialog'
+import {BundleDetailsDialog} from '../BundleDetailsDialog'
 
 /*jest.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
   useDateTimeFormat: jest.fn(),
@@ -30,13 +30,13 @@ jest.mock('../../../hooks/usePerspective', () => ({
 const mockUseBundleStore = useBundles as jest.Mock<typeof useBundles>
 //const mockUseDateTimeFormat = useDateTimeFormat as jest.Mock
 
-describe('CreateBundleDialog', () => {
+describe('BundleDetailsDialog', () => {
   const onCancelMock = jest.fn()
-  const onCreateMock = jest.fn()
+  const onSubmitMock = jest.fn()
 
   beforeEach(async () => {
     onCancelMock.mockClear()
-    onCreateMock.mockClear()
+    onSubmitMock.mockClear()
 
     mockUseBundleStore.mockReturnValue({
       data: [],
@@ -47,7 +47,7 @@ describe('CreateBundleDialog', () => {
     //mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
     const wrapper = await createWrapper()
-    render(<CreateBundleDialog onCancel={onCancelMock} onCreate={onCreateMock} />, {wrapper})
+    render(<BundleDetailsDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
   })
 
   it('should render the dialog', () => {
@@ -72,12 +72,12 @@ describe('CreateBundleDialog', () => {
     const titleInput = screen.getByTestId('bundle-form-title')
     fireEvent.change(titleInput, {target: {value: value.title}})
 
-    const submitButton = screen.getByTestId('create-release-button')
+    const submitButton = screen.getByTestId('submit-release-button')
     fireEvent.click(submitButton)
 
     await expect(useBundleOperations().createBundle).toHaveBeenCalledWith(value)
 
     expect(usePerspective().setPerspective).toHaveBeenCalledWith(value.slug)
-    expect(onCreateMock).toHaveBeenCalled()
+    expect(onSubmitMock).toHaveBeenCalled()
   })
 })

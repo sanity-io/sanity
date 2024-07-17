@@ -4,8 +4,9 @@ import {isBefore} from 'date-fns'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button as StudioButton} from '../../../../ui-components'
-import {CreateBundleDialog} from '../../../bundles/components/dialog/CreateBundleDialog'
-import {type BundleDocument, useBundles} from '../../../store'
+import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
+import {type BundleDocument} from '../../../store/bundles/types'
+import {useBundles} from '../../../store/bundles/useBundles'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {Table} from '../../components/Table/Table'
 import {containsBundles} from '../../types/bundle'
@@ -123,9 +124,9 @@ export function ReleasesOverview() {
     if (!isCreateBundleDialogOpen) return null
 
     return (
-      <CreateBundleDialog
+      <BundleDetailsDialog
         onCancel={() => setIsCreateBundleDialogOpen(false)}
-        onCreate={() => setIsCreateBundleDialogOpen(false)}
+        onSubmit={() => setIsCreateBundleDialogOpen(false)}
       />
     )
   }

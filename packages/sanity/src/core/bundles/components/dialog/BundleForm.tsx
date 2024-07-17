@@ -21,8 +21,10 @@ export function BundleForm(props: {
   onChange: (params: Partial<BundleDocument>) => void
   onError: (errorsExist: boolean) => void
   value: Partial<BundleDocument>
+  action: 'edit' | 'create'
 }): JSX.Element {
-  const {onChange, onError, value} = props
+  const {onChange, onError, value, action} = props
+  const isEditing = action === 'edit'
   const {title, description, icon, hue /*, publishAt*/} = value
 
   //const dateFormatter = useDateTimeFormat()
@@ -52,11 +54,25 @@ export function BundleForm(props: {
     [icon, hue],
   )
 
+  const generateSlugFromTitle = useCallback(
+    (pickedTitle: string) => {
+      if (isEditing) {
+        // value will have defined slug when editing
+        const slug = value.slug as BundleDocument['slug']
+        return {slug, slugExists: false}
+      }
+      const newSlug = speakingurl(pickedTitle)
+      const slugExists = Boolean(data && data.find((bundle) => bundle.slug === newSlug))
+
+      return {slug: newSlug, slugExists}
+    },
+    [isEditing, value, data],
+  )
+
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
-      const newSlug = speakingurl(pickedTitle)
-      const slugExists = data && data.find((bundle) => bundle.slug === newSlug)
+      const {slug: newSlug, slugExists} = generateSlugFromTitle(pickedTitle)
       const isEmptyTitle = pickedTitle.trim() === '' && !isInitialRender
 
       if (isDraftOrPublished(pickedTitle) || slugExists || (isEmptyTitle && !isInitialRender)) {
@@ -88,7 +104,7 @@ export function BundleForm(props: {
       setIsInitialRender(false)
       onChange({...value, title: pickedTitle, slug: newSlug})
     },
-    [data, isInitialRender, onChange, onError, value],
+    [generateSlugFromTitle, isInitialRender, onChange, onError, value],
   )
 
   const handleBundleDescriptionChange = useCallback(
