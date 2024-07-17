@@ -3,6 +3,7 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {
   BundleBadge,
   type BundleDocument,
+  createWrapper,
   getAllVersionsOfDocument,
   getBundleSlug,
   type SanityClient,
@@ -12,7 +13,6 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {createWrapper} from '../../../../../../core'
 import {DocumentPerspectiveMenu} from './DocumentPerspectiveMenu'
 
 type getBundleSlugType = (documentId: string) => string
@@ -23,6 +23,7 @@ type GetAllVersionsOfDocumentType = (
 ) => Promise<Partial<BundleDocument>[]>
 
 jest.mock('sanity', () => ({
+  ...(jest.requireActual('sanity') || {}),
   useClient: jest.fn(),
   usePerspective: jest.fn().mockReturnValue({
     currentGlobalBundle: {},
