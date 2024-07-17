@@ -7,7 +7,6 @@ import {type RouterContextValue, useRouter} from 'sanity/router'
 import {Button} from '../../../../ui-components'
 import {useListener} from '../../../hooks/useListener'
 import {useBundles} from '../../../store/bundles'
-import {type BundleDocument} from '../../../store/bundles/types'
 import {API_VERSION} from '../../../tasks/constants'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {type ReleasesRouterState} from '../../types/router'
@@ -18,10 +17,10 @@ import {ReleaseReview} from './ReleaseReview'
 const SUPPORTED_SCREENS = ['overview', 'review'] as const
 type Screen = (typeof SUPPORTED_SCREENS)[number]
 
-const useFetchBundleDocuments = (bundleName: string) => {
+const useFetchBundleDocuments = (bundleSlug: string) => {
   const client = useClient({apiVersion: API_VERSION})
-  const query = `*[defined(_version) &&  _id in path("${bundleName}.*")]`
-  return useListener<BundleDocument>({query, client})
+  const query = `*[defined(_version) &&  _id in path("${bundleSlug}.*")]`
+  return useListener({query, client})
 }
 
 const getActiveScreen = (router: RouterContextValue): Screen => {
@@ -40,14 +39,14 @@ export const ReleaseDetail = () => {
 
   const activeScreen = getActiveScreen(router)
 
-  const {bundleName}: ReleasesRouterState = router.state
-  const parsedBundleName = decodeURIComponent(bundleName || '')
+  const {bundleSlug}: ReleasesRouterState = router.state
+  const parsedSlug = decodeURIComponent(bundleSlug || '')
   const {data, loading} = useBundles()
   const {documents: bundleDocuments, loading: documentsLoading} =
-    useFetchBundleDocuments(parsedBundleName)
+    useFetchBundleDocuments(parsedSlug)
   const history = useReleaseHistory(bundleDocuments)
 
-  const bundle = data?.find((storeBundle) => storeBundle.name === parsedBundleName)
+  const bundle = data?.find((storeBundle) => storeBundle.slug === parsedSlug)
   const bundleHasDocuments = !!bundleDocuments.length
   const showPublishButton = loading || !bundle?.publishedAt
   const isPublishButtonDisabled = loading || !bundle || !bundleHasDocuments
@@ -143,7 +142,7 @@ export const ReleaseDetail = () => {
       <Card flex={1} tone="critical">
         <Container width={0}>
           <Stack paddingX={4} paddingY={6} space={1}>
-            <Heading>Release not found: {bundleName}</Heading>
+            <Heading>Release not found: {bundleSlug}</Heading>
           </Stack>
         </Container>
       </Card>

@@ -30,7 +30,7 @@ export function DocumentReviewHeader({
         <ReleaseDocumentPreview
           documentId={document._id}
           documentTypeName={document._type}
-          releaseName={release.name}
+          releaseSlug={release.slug}
           previewValues={previewValues}
           isLoading={isLoading}
         />
