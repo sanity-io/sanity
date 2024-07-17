@@ -25,7 +25,7 @@ interface BundleActionsProps {
  */
 export function BundleActions(props: BundleActionsProps): JSX.Element {
   const {currentGlobalBundle, documentId, documentType} = props
-  const {name, title} = currentGlobalBundle
+  const {slug, title} = currentGlobalBundle
   const {data: bundles, loading} = useBundles()
   const documentStore = useDocumentStore()
 
@@ -51,15 +51,15 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
         dummyFetch.current = fetchVersions()
       }
       await dummyFetch.current
-      setIsInVersion(versionDocumentExists(documentVersions, name))
+      setIsInVersion(versionDocumentExists(documentVersions, slug))
     }
 
     fetchVersionsInner()
-  }, [bundles, documentId, fetchVersions, documentVersions, name])
+  }, [bundles, documentId, fetchVersions, documentVersions, slug])
 
   const handleAddVersion = useCallback(async () => {
     // only add to version if there isn't already a version in that bundle of this doc
-    if (versionDocumentExists(documentVersions, name)) {
+    if (versionDocumentExists(documentVersions, slug)) {
       toast.push({
         status: 'error',
         title: `There's already a version of this document in the bundle ${title}`,
@@ -67,7 +67,7 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
       return
     }
 
-    const bundleId = `${name}.${documentId}`
+    const bundleId = `${slug}.${documentId}`
 
     setCreatingVersion(true)
 
@@ -88,7 +88,7 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
     documentStore.pair,
     documentType,
     documentVersions,
-    name,
+    slug,
     newVersion,
     title,
     toast,
@@ -98,7 +98,7 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
 
   return (
     <Button
-      data-testid={`action-add-to-${name}`}
+      data-testid={`action-add-to-${slug}`}
       // localize text
       text={isInVersion ? `Already in release ${title}` : `Add to ${title}`}
       icon={isInVersion ? CheckmarkIcon : AddIcon}
