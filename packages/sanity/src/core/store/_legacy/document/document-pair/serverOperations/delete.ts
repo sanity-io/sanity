@@ -1,4 +1,5 @@
 import {type OperationImpl} from '../operations/types'
+import {actionsApiClient} from '../utils/actionsApiClient'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
@@ -11,7 +12,7 @@ export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
 
     //the delete action requires a published doc -- discard if not present
     if (!snapshots.published) {
-      return client.observable.action(
+      return actionsApiClient(client).observable.action(
         {
           actionType: 'sanity.action.document.discard',
           draftId: idPair.draftId,
@@ -20,7 +21,7 @@ export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
       )
     }
 
-    return client.observable.action(
+    return actionsApiClient(client).observable.action(
       {
         actionType: 'sanity.action.document.delete',
         includeDrafts: snapshots.draft ? [idPair.draftId] : [],
