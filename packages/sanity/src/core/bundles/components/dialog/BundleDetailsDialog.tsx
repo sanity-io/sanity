@@ -17,6 +17,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
   const {onCancel, onSubmit, bundle} = props
   const {createBundle, updateBundle} = useBundleOperations()
   const [hasErrors, setHasErrors] = useState(false)
+  const formAction = bundle ? 'edit' : 'create'
 
   const [value, setValue] = useState<Partial<BundleDocument>>(() => {
     if (bundle) {
@@ -69,12 +70,14 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
           console.error(err)
         } finally {
           setIsSubmitting(false)
-          setPerspective(value.slug)
+          if (formAction === 'create') {
+            setPerspective(value.slug)
+          }
           onSubmit()
         }
       }
     },
-    [bundleOperation, onSubmit, setPerspective, value],
+    [bundleOperation, formAction, onSubmit, setPerspective, value],
   )
 
   const handleOnChange = useCallback((changedValue: Partial<BundleDocument>) => {
@@ -85,7 +88,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
     setHasErrors(errorsExist)
   }, [])
 
-  const dialogTitle = bundle ? 'Edit release' : 'Create release'
+  const dialogTitle = formAction === 'edit' ? 'Edit release' : 'Create release'
 
   return (
     <Dialog
@@ -102,7 +105,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
             onChange={handleOnChange}
             onError={handleOnError}
             value={value}
-            action={bundle ? 'edit' : 'create'}
+            action={formAction}
           />
         </Box>
         <Flex justify="flex-end" padding={3}>
