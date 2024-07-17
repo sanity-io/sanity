@@ -1,6 +1,6 @@
 import {uuid} from '@sanity/uuid'
-import {type ThrottleSettings} from 'lodash'
-import {filter, firstValueFrom, map, throttle} from 'rxjs'
+import {throttle as lodashThrottle, type ThrottleSettings} from 'lodash'
+import {filter, firstValueFrom, map} from 'rxjs'
 import {type AddonDatasetStore} from 'sanity'
 
 import {type CommentUpdatePayload} from '../../types'
@@ -25,7 +25,7 @@ const throttleFunctionsMap = new Map()
  */
 function getThrottledFunction(id: string) {
   if (!throttleFunctionsMap.has(id)) {
-    const throttledFunction = throttle(postCommentUpdate, THROTTLE_TIME_MS, THROTTLE_SETTINGS)
+    const throttledFunction = lodashThrottle(postCommentUpdate, THROTTLE_TIME_MS, THROTTLE_SETTINGS)
     throttleFunctionsMap.set(id, throttledFunction)
     return throttledFunction
   }
