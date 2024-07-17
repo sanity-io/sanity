@@ -164,7 +164,7 @@
     "sanity": "workspace:*",
     "semver": "^7.3.5",
     "turbo": "^2.0.6",
-    "typescript": "5.4.5",
+    "typescript": "5.5.3",
     "vite": "^4.5.3",
     "vite-tsconfig-paths": "^4.3.2",
     "yargs": "^17.3.0"
