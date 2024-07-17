@@ -20,7 +20,7 @@ const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>)
   return WrappedComponent
 }
 
-const initialValue = {name: '', title: '', tone: undefined, publishAt: undefined}
+const initialValue = {name: '', title: '', tone: undefined /*, publishAt: undefined*/}
 
 const BundlesStoreStory = () => {
   const {data, loading} = useBundles()
@@ -61,10 +61,10 @@ const BundlesStoreStory = () => {
   )
 
   const handleDeleteBundle = useCallback(
-    async (id: string) => {
+    async (bundle: BundleDocument) => {
       try {
-        setDeleting(id)
-        await deleteBundle(id)
+        setDeleting(bundle._id)
+        await deleteBundle(bundle)
       } catch (err) {
         console.error(err)
       } finally {
@@ -81,7 +81,7 @@ const BundlesStoreStory = () => {
           <form onSubmit={handleCreateBundle}>
             <Stack space={4}>
               <Text weight="medium">Create a new release</Text>
-              <BundleForm onChange={setValue} value={value} />
+              <BundleForm onChange={setValue} value={value} onError={() => {}} />
               <Flex justify="flex-end">
                 <Button
                   text="Create"
@@ -106,14 +106,14 @@ const BundlesStoreStory = () => {
           {data?.map((bundle) => (
             <Card key={bundle._id} padding={3} border radius={3}>
               <Flex align="center" gap={3} justify={'space-between'}>
-                <Text>{bundle.name}</Text>
+                <Text>{bundle.slug}</Text>
                 <Flex align="center" gap={2}>
                   <Button
                     text="Delete"
                     mode="bleed"
                     tone="critical"
                     // eslint-disable-next-line react/jsx-no-bind
-                    onClick={() => handleDeleteBundle(bundle._id)}
+                    onClick={() => handleDeleteBundle(bundle)}
                     disabled={deleting === bundle._id}
                     loading={deleting === bundle._id}
                   />
@@ -146,6 +146,7 @@ const BundlesStoreStory = () => {
         >
           {editing && (
             <BundleForm
+              onError={() => {}}
               // eslint-disable-next-line react/jsx-no-bind
               onChange={(bundle) =>
                 setEditing((prev) => ({

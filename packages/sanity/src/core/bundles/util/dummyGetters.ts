@@ -26,13 +26,13 @@ export async function getAllVersionsOfDocument(
   return await client.fetch(query, {}, {tag: 'document.list-versions'}).then((documents) => {
     return documents.map((doc: SanityDocument) => {
       const sluggedName = getVersionName(doc._id)
-      const bundle = bundles?.find((b) => b.name === sluggedName)
+      const bundle = bundles?.find((b) => b.slug === sluggedName)
       return {
         name: speakingurl(sluggedName),
         title: bundle?.title || sluggedName,
         hue: bundle?.hue || 'gray',
         icon: bundle?.icon || 'cube',
-        publishAt: bundle?.publishAt,
+        //publishAt: bundle?.publishAt,
       }
     })
   })
@@ -44,8 +44,8 @@ export function getVersionName(documentId: string): string {
   return version
 }
 
-export function versionDocumentExists(documentVersions: BundleDocument[], name: string): boolean {
-  return documentVersions.some((version) => version.name === name)
+export function versionDocumentExists(documentVersions: BundleDocument[], slug: string): boolean {
+  return documentVersions.some((version) => version.slug === slug)
 }
 
 export function isDraftOrPublished(versionName: string): boolean {

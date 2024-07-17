@@ -4,6 +4,7 @@ import {useObservable} from 'react-rx'
 import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
+  prepareForPreview,
   type SchemaType,
   useDocumentPreviewStore,
   useSchema,
@@ -23,7 +24,7 @@ export const useDocumentPreviewValues = ({
   if (!schemaType) {
     throw new Error(`Schema type "${document._type}" not found`)
   }
-  const perspective = `bundle.${release.name}`
+  const perspective = `bundle.${release.slug}`
 
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -52,5 +53,6 @@ export const useDocumentPreviewValues = ({
     version,
     perspective,
   })
-  return {previewValues, isLoading}
+
+  return {previewValues: prepareForPreview(previewValues, schemaType), isLoading}
 }

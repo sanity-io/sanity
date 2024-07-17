@@ -1,7 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
 import {type ReactElement, useCallback} from 'react'
-import {RelativeTime} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../store/bundles/types'
@@ -31,14 +30,14 @@ interface BundleListProps {
  */
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
-  const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0
+  const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.slug)).length > 0
 
   const {currentGlobalBundle, setPerspective} = usePerspective()
 
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
-      if (bundle.name) {
-        setPerspective(bundle.name)
+      if (bundle.slug) {
+        setPerspective(bundle.slug)
       }
     },
     [setPerspective],
@@ -59,7 +58,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
               <>
                 <MenuItem
                   iconRight={
-                    currentGlobalBundle.name === LATEST.name ? (
+                    currentGlobalBundle.slug === LATEST.slug ? (
                       <CheckmarkIcon data-testid="latest-checkmark-icon" />
                     ) : undefined
                   }
@@ -73,14 +72,14 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                     <MenuDivider />
                     <StyledBox data-testid="bundles-list">
                       {bundles
-                        .filter((b) => !isDraftOrPublished(b.name) && !b.archivedAt)
+                        .filter((b) => !isDraftOrPublished(b.slug) && !b.archivedAt)
                         .map((b) => (
                           <MenuItem
-                            key={b.name}
+                            key={b.slug}
                             onClick={handleBundleChange(b)}
                             padding={1}
                             pressed={false}
-                            data-testid={`bundle-${b.name}`}
+                            data-testid={`bundle-${b.slug}`}
                           >
                             <Flex>
                               <BundleBadge hue={b.hue} icon={b.icon} padding={2} />
@@ -91,22 +90,21 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                 </Text>
                               </Box>
 
-                              <Box padding={2}>
+                              {/*<Box padding={2}>
                                 <Text muted size={1}>
                                   {b.publishAt ? (
                                     <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
                                   ) : (
-                                    /* localize text */
                                     'No target date'
                                   )}
                                 </Text>
-                              </Box>
+                              </Box>*/}
 
                               <Box padding={2}>
                                 <Text size={1}>
                                   <CheckmarkIcon
-                                    style={{opacity: currentGlobalBundle.name === b.name ? 1 : 0}}
-                                    data-testid={`${b.name}-checkmark-icon`}
+                                    style={{opacity: currentGlobalBundle.slug === b.slug ? 1 : 0}}
+                                    data-testid={`${b.slug}-checkmark-icon`}
                                   />
                                 </Text>
                               </Box>

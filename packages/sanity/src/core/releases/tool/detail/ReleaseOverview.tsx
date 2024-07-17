@@ -1,6 +1,6 @@
 import {DocumentsIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
-import {AvatarStack, Card, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
+import {AvatarStack, Box, Card, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {
@@ -94,7 +94,7 @@ export function ReleaseOverview(props: {
             />
 
             {/* Published */}
-            {!release.archived && (
+            {!release.archivedAt && (
               <Chip
                 avatar={
                   release.publishedBy ? <UserAvatar size={0} user={release.publishedBy} /> : null
@@ -112,13 +112,11 @@ export function ReleaseOverview(props: {
             )}
 
             {/* Contributors */}
-            <div>
-              <Card as="button" padding={1} radius="full">
-                <AvatarStack size={0} style={{margin: -1}}>
-                  {collaborators?.map((userId) => <UserAvatar key={userId} user={userId} />)}
-                </AvatarStack>
-              </Card>
-            </div>
+            <Box padding={1}>
+              <AvatarStack size={0} style={{margin: -1}}>
+                {collaborators?.map((userId) => <UserAvatar key={userId} user={userId} />)}
+              </AvatarStack>
+            </Box>
           </Flex>
         </Flex>
       </Stack>

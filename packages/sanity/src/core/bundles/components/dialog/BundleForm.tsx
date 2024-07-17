@@ -1,19 +1,18 @@
 /* eslint-disable i18next/no-literal-string */
-import {CalendarIcon} from '@sanity/icons'
-import {Box, Button, Flex, Popover, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+//import {CalendarIcon} from '@sanity/icons'
+import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {
   FormFieldHeaderText,
   type FormNodeValidation,
   useBundles,
-  useDateTimeFormat,
-  useTranslation,
+  //useDateTimeFormat,
+  //useTranslation,
 } from 'sanity'
 import speakingurl from 'speakingurl'
 
-import {type CalendarLabels} from '../../../form/inputs/DateInputs/base/calendar/types'
-import {DatePicker} from '../../../form/inputs/DateInputs/base/DatePicker'
-import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
+//import {type CalendarLabels} from '../../../form/inputs/DateInputs/base/calendar/types'
+//import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {isDraftOrPublished} from '../../util/dummyGetters'
 import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
@@ -24,29 +23,26 @@ export function BundleForm(props: {
   value: Partial<BundleDocument>
 }): JSX.Element {
   const {onChange, onError, value} = props
-  const {title, description, icon, hue, publishAt} = value
+  const {title, description, icon, hue /*, publishAt*/} = value
 
-  const dateFormatter = useDateTimeFormat()
+  //const dateFormatter = useDateTimeFormat()
 
-  const [showDateValidation, setShowDateValidation] = useState(false)
   const [showDatePicker, setShowDatePicker] = useState(false)
-  const [showBundleExists, setShowBundleExists] = useState(false)
-  const [showIsDraftPublishError, setShowIsDraftPublishError] = useState(false)
 
   const [isInitialRender, setIsInitialRender] = useState(true)
   const {data} = useBundles()
 
   const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
-  const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
+  /*const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
 
-  const publishAtDisplayValue = useMemo(() => {
+  /*const publishAtDisplayValue = useMemo(() => {
     if (!publishAt) return ''
     return dateFormatter.format(new Date(publishAt as Date))
   }, [dateFormatter, publishAt])
 
   const [displayDate, setDisplayDate] = useState(publishAtDisplayValue)
   const {t: coreT} = useTranslation()
-  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])*/
 
   const iconValue: BundleIconEditorPickerValue = useMemo(
     () => ({
@@ -59,15 +55,11 @@ export function BundleForm(props: {
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
-      const pickedNameExists =
-        data && data.find((bundle) => bundle.name === speakingurl(pickedTitle))
+      const newSlug = speakingurl(pickedTitle)
+      const slugExists = data && data.find((bundle) => bundle.slug === newSlug)
       const isEmptyTitle = pickedTitle.trim() === '' && !isInitialRender
 
-      if (
-        isDraftOrPublished(pickedTitle) ||
-        pickedNameExists ||
-        (isEmptyTitle && !isInitialRender)
-      ) {
+      if (isDraftOrPublished(pickedTitle) || slugExists || (isEmptyTitle && !isInitialRender)) {
         if (isEmptyTitle && !isInitialRender) {
           // if the title is empty and it's not the first opening of the dialog, show an error
           // TODO localize text
@@ -81,7 +73,7 @@ export function BundleForm(props: {
             {level: 'error', message: "Title cannot be 'drafts' or 'published'", path: []},
           ])
         }
-        if (pickedNameExists) {
+        if (slugExists) {
           // if the bundle already exists, show an error
           // TODO localize text
           setTitleErrors([{level: 'error', message: 'Bundle already exists', path: []}])
@@ -94,7 +86,7 @@ export function BundleForm(props: {
       }
 
       setIsInitialRender(false)
-      onChange({...value, title: pickedTitle, name: speakingurl(pickedTitle)})
+      onChange({...value, title: pickedTitle, slug: newSlug})
     },
     [data, isInitialRender, onChange, onError, value],
   )
@@ -112,7 +104,7 @@ export function BundleForm(props: {
     setShowDatePicker(!showDatePicker)
   }, [showDatePicker])
 
-  const handleBundlePublishAtChange = useCallback(
+  /*const handleBundlePublishAtChange = useCallback(
     (nextDate: Date | undefined) => {
       onChange({...value, publishAt: nextDate})
       setDisplayDate(dateFormatter.format(new Date(nextDate as Date)))
@@ -131,7 +123,6 @@ export function BundleForm(props: {
       // in which case it can update the input value but not the actual bundle value
       if (new Date(event.target.value).toString() === 'Invalid Date' && dateValue !== '') {
         // if the date is invalid, show an error
-        // TODO localize text
         setDateErrors([
           {
             level: 'error',
@@ -149,7 +140,7 @@ export function BundleForm(props: {
       }
     },
     [onChange, value, onError],
-  )
+  )*/
 
   const handleIconValueChange = useCallback(
     (pickedIcon: BundleIconEditorPickerValue) => {
@@ -186,8 +177,7 @@ export function BundleForm(props: {
         />
       </Stack>
 
-      <Stack space={3}>
-        {/* localize text */}
+      {/*<Stack space={3}>
         <FormFieldHeaderText title="Schedule for publishing at" validation={dateErrors} />
 
         <TextInput
@@ -223,7 +213,7 @@ export function BundleForm(props: {
           data-testid="bundle-form-publish-at"
           customValidity={dateErrors.length > 0 ? 'error' : undefined}
         />
-      </Stack>
+      </Stack>*/}
     </Stack>
   )
 }

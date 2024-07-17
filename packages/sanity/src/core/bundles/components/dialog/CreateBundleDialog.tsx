@@ -18,11 +18,11 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
   const [hasErrors, setHasErrors] = useState(false)
 
   const [value, setValue] = useState<Partial<BundleDocument>>({
-    name: '',
+    slug: '',
     title: '',
     hue: 'gray',
     icon: 'cube',
-    publishAt: undefined,
+    //publishAt: undefined,
   })
   const [isCreating, setIsCreating] = useState(false)
 
@@ -31,7 +31,7 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
 
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
-      if (value.name) {
+      if (value.slug) {
         try {
           event.preventDefault()
           setIsCreating(true)
@@ -41,7 +41,7 @@ export function CreateBundleDialog(props: CreateBundleDialogProps): JSX.Element 
           console.error(err)
         } finally {
           setIsCreating(false)
-          setPerspective(value.name)
+          setPerspective(value.slug)
           onCreate()
         }
       }

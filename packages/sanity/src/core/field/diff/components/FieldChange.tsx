@@ -93,6 +93,7 @@ export function FieldChange(
               data-revert-field-hover={revertHovered ? '' : undefined}
               data-error={change.error ? '' : undefined}
               data-revert-all-hover
+              data-ui="field-diff-inspect-wrapper"
             >
               {change.error ? (
                 <ValueError error={change.error} />
