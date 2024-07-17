@@ -29,9 +29,9 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
       setDiscardStatus('discarding')
       await deleteBundle(bundle)
       setDiscardStatus('idle')
-      if (router.state.bundleName) {
+      if (router.state.bundleSlug) {
         // navigate back to bundle overview
-        router.navigate({bundleName: undefined})
+        router.navigate({bundleSlug: undefined})
       }
     } catch (e) {
       setDiscardStatus('error')

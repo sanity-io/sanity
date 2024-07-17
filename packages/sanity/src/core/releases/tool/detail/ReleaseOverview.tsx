@@ -94,7 +94,7 @@ export function ReleaseOverview(props: {
             />
 
             {/* Published */}
-            {!release.archived && (
+            {!release.archivedAt && (
               <Chip
                 avatar={
                   release.publishedBy ? <UserAvatar size={0} user={release.publishedBy} /> : null
