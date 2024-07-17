@@ -38,6 +38,10 @@ export async function getAllVersionsOfDocument(
   })
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export function getBundleSlug(documentId: string): string {
   if (documentId.indexOf('.') === -1) return 'Published'
   const version = documentId.slice(0, documentId.indexOf('.'))
