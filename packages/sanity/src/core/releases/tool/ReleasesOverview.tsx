@@ -21,7 +21,7 @@ export function ReleasesOverview() {
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>()
-  const bundleSlugs = useMemo(() => bundles?.map((bundle) => bundle.name) || [], [bundles])
+  const bundleSlugs = useMemo(() => bundles?.map((bundle) => bundle.slug) || [], [bundles])
   const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
   const loading = loadingBundles || loadingBundlesMetadata
   const hasBundles = bundles && containsBundles(bundles)
@@ -32,7 +32,7 @@ export function ReleasesOverview() {
 
     return bundles.map((bundle) => ({
       ...bundle,
-      documentsMetadata: bundlesMetadata[bundle.name] || {},
+      documentsMetadata: bundlesMetadata[bundle.slug] || {},
     }))
   }, [bundles, bundlesMetadata])
 
