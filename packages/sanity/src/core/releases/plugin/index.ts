@@ -30,7 +30,7 @@ export const releases = definePlugin({
       },
       getIntentState(intent, params) {
         if (intent === 'release') {
-          return {bundleName: params.slug}
+          return {bundleSlug: params.slug}
         }
         return null
       },
