@@ -11,7 +11,7 @@ export interface PerspectiveValue {
   /* Return the current global bundle */
   currentGlobalBundle: Partial<BundleDocument>
   /* Change the perspective in the studio based on the perspective name */
-  setPerspective: (name: string) => void
+  setPerspective: (slug: string) => void
 }
 
 /**
@@ -21,18 +21,18 @@ export function usePerspective(): PerspectiveValue {
   const router = useRouter()
   const {data: bundles} = useBundles()
 
-  const setPerspective = (name: string | undefined) => {
-    if (name === 'drafts') {
+  const setPerspective = (slug: string | undefined) => {
+    if (slug === 'drafts') {
       router.navigateStickyParam('perspective', '')
     } else {
-      router.navigateStickyParam('perspective', `bundle.${name}`)
+      router.navigateStickyParam('perspective', `bundle.${slug}`)
     }
   }
   const selectedBundle =
     router.stickyParams?.perspective && bundles
       ? bundles.find((bundle: Partial<BundleDocument>) => {
           return (
-            `bundle.${bundle.name}`.toLocaleLowerCase() ===
+            `bundle.${bundle.slug}`.toLocaleLowerCase() ===
             router.stickyParams.perspective?.toLocaleLowerCase()
           )
         })

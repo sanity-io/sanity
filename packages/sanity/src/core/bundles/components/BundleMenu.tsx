@@ -30,14 +30,14 @@ interface BundleListProps {
  */
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
-  const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.name)).length > 0
+  const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.slug)).length > 0
 
   const {currentGlobalBundle, setPerspective} = usePerspective()
 
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
-      if (bundle.name) {
-        setPerspective(bundle.name)
+      if (bundle.slug) {
+        setPerspective(bundle.slug)
       }
     },
     [setPerspective],
@@ -58,7 +58,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
               <>
                 <MenuItem
                   iconRight={
-                    currentGlobalBundle.name === LATEST.name ? (
+                    currentGlobalBundle.slug === LATEST.slug ? (
                       <CheckmarkIcon data-testid="latest-checkmark-icon" />
                     ) : undefined
                   }
@@ -72,14 +72,14 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                     <MenuDivider />
                     <StyledBox data-testid="bundles-list">
                       {bundles
-                        .filter((b) => !isDraftOrPublished(b.name) && !b.archivedAt)
+                        .filter((b) => !isDraftOrPublished(b.slug) && !b.archivedAt)
                         .map((b) => (
                           <MenuItem
-                            key={b.name}
+                            key={b.slug}
                             onClick={handleBundleChange(b)}
                             padding={1}
                             pressed={false}
-                            data-testid={`bundle-${b.name}`}
+                            data-testid={`bundle-${b.slug}`}
                           >
                             <Flex>
                               <BundleBadge hue={b.hue} icon={b.icon} padding={2} />
@@ -103,8 +103,8 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                               <Box padding={2}>
                                 <Text size={1}>
                                   <CheckmarkIcon
-                                    style={{opacity: currentGlobalBundle.name === b.name ? 1 : 0}}
-                                    data-testid={`${b.name}-checkmark-icon`}
+                                    style={{opacity: currentGlobalBundle.slug === b.slug ? 1 : 0}}
+                                    data-testid={`${b.slug}-checkmark-icon`}
                                   />
                                 </Text>
                               </Box>
