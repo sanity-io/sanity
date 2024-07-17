@@ -1,6 +1,11 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {render, waitFor} from '@testing-library/react'
-import {defineConfig, type SanityClient, unstable_useValuePreview as useValuePreview} from 'sanity'
+import {
+  defineConfig,
+  type SanityClient,
+  unstable_useValuePreview as useValuePreview,
+  useBundles,
+} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
@@ -31,6 +36,8 @@ jest.mock('sanity', () => {
   return {
     ...actual,
     unstable_useValuePreview: jest.fn(),
+    useBundles: jest.fn(),
+    getBundleSlug: jest.fn(() => ''),
   }
 })
 
@@ -38,6 +45,8 @@ jest.mock('sanity/router')
 jest.mock('../../../../../core/bundles/util/dummyGetters', () => ({
   getAllVersionsOfDocument: jest.fn(() => []),
 }))
+
+const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 
 describe('DocumentHeaderTitle', () => {
   const mockUseDocumentPane = useDocumentPane as jest.MockedFunction<typeof useDocumentPane>
@@ -59,6 +68,11 @@ describe('DocumentHeaderTitle', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: jest.fn()})
+    mockUseBundles.mockReturnValue({
+      data: [],
+      loading: false,
+      dispatch: jest.fn(),
+    })
   })
 
   afterEach(() => {
