@@ -1,9 +1,10 @@
 import {type SanityClient} from '@sanity/client'
-import {isReference, type Schema, type ValidationMarker} from '@sanity/types'
+import {isReference, SanityDocument, type Schema, type ValidationMarker} from '@sanity/types'
 import {reduce as reduceJSON} from 'json-reduce'
 import {omit} from 'lodash'
 import {
   asyncScheduler,
+  BehaviorSubject,
   combineLatest,
   concat,
   defer,
@@ -99,10 +100,22 @@ export const validation = memoize(
     },
     {draftIds, publishedId}: IdPair,
     typeName: string,
+    doc?: Observable<SanityDocument>,
   ): Observable<ValidationStatus> => {
-    const document$ = editState(ctx, {draftIds, publishedId}, typeName).pipe(
-      map(({draft, published}) => draft || published),
-      throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
+    let source$
+
+    if (doc) {
+      // const documentSubject = new BehaviorSubject(doc)
+      // source$ = documentSubject.asObservable()
+      source$ = doc
+    } else {
+      source$ = editState(ctx, {draftIds, publishedId}, typeName).pipe(
+        map(({draft, published}) => draft || published),
+        throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
+      )
+    }
+
+    const document$ = source$.pipe(
       distinctUntilChanged((prev, next) => {
         if (prev?._rev === next?._rev) {
           return true
