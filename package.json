@@ -163,7 +163,7 @@
     "rxjs": "^7.8.1",
     "sanity": "workspace:*",
     "semver": "^7.3.5",
-    "turbo": "^2.0.6",
+    "turbo": "^2.0.7",
     "typescript": "5.4.5",
     "vite": "^4.5.3",
     "vite-tsconfig-paths": "^4.3.2",
