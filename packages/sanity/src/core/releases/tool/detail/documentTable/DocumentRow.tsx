@@ -85,7 +85,7 @@ export function DocumentRow(props: {
           <ReleaseDocumentPreview
             documentId={documentId}
             documentTypeName={documentTypeName}
-            releaseName="releaseName"
+            releaseSlug={release.slug}
             previewValues={previewValues}
             isLoading={!!isLoading}
           />

@@ -60,9 +60,9 @@ describe('CreateBundleDialog', () => {
     expect(onCancelMock).toHaveBeenCalled()
   })
 
-  it('should call createBundle, setPerspective, and onCreate when form is submitted with a valid name', async () => {
+  it('should call createBundle, setPerspective, and onCreate when form is submitted with a valid slug', async () => {
     const value: Partial<BundleDocument> = {
-      name: 'bundle-1',
+      slug: 'bundle-1',
       title: 'Bundle 1',
       hue: 'gray',
       icon: 'cube',
@@ -77,7 +77,7 @@ describe('CreateBundleDialog', () => {
 
     await expect(useBundleOperations().createBundle).toHaveBeenCalledWith(value)
 
-    expect(usePerspective().setPerspective).toHaveBeenCalledWith(value.name)
+    expect(usePerspective().setPerspective).toHaveBeenCalledWith(value.slug)
     expect(onCreateMock).toHaveBeenCalled()
   })
 })

@@ -9,7 +9,7 @@ import {getPublishedId} from '../../util/draftUtils'
 interface ReleaseDocumentPreviewProps {
   documentId: string
   documentTypeName: string
-  releaseName: string
+  releaseSlug: string
   previewValues: PreviewValue
   isLoading: boolean
 }
@@ -17,7 +17,7 @@ interface ReleaseDocumentPreviewProps {
 export function ReleaseDocumentPreview({
   documentId,
   documentTypeName,
-  releaseName,
+  releaseSlug,
   previewValues,
   isLoading,
 }: ReleaseDocumentPreviewProps) {
@@ -33,12 +33,12 @@ export function ReleaseDocumentPreview({
               id: getPublishedId(documentId, true),
               type: documentTypeName,
             }}
-            searchParams={[['perspective', `bundle.${releaseName}`]]}
+            searchParams={[['perspective', `bundle.${releaseSlug}`]]}
             ref={ref}
           />
         )
       }),
-    [documentId, documentTypeName, releaseName],
+    [documentId, documentTypeName, releaseSlug],
   )
 
   return (
