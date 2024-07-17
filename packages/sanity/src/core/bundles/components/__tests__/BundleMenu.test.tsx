@@ -29,7 +29,7 @@ describe('BundleMenu', () => {
       hue: 'magenta',
       _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
       _type: 'bundle',
-      name: 'spring-drop',
+      slug: 'spring-drop',
       _rev: '6z08CvvPnPe5pWSKJ5zPRR',
       icon: 'heart-filled',
       description: 'What a spring drop, allergies galore 🌸',
@@ -47,7 +47,7 @@ describe('BundleMenu', () => {
       _createdAt: '2024-07-02T11:37:06Z',
       _rev: '6z08CvvPnPe5pWSKJ5zJiK',
       _updatedAt: '2024-07-02T11:37:06Z',
-      name: 'autumn-drop',
+      slug: 'autumn-drop',
       authorId: '',
     },
     {
@@ -60,7 +60,7 @@ describe('BundleMenu', () => {
       _type: 'bundle',
       hue: 'red',
       _id: 'f6b2c2cc-1732-4465-bfb3-dd205b5d78e9',
-      name: 'summer-drop',
+      slug: 'summer-drop',
       authorId: '',
     },
   ]
@@ -133,7 +133,7 @@ describe('BundleMenu', () => {
 
     act(() => {
       expect(screen.getByText(mockBundles[0].title)).toBeInTheDocument()
-      expect(screen.getByTestId(`${mockBundles[0].name}-checkmark-icon`)).toBeInTheDocument()
+      expect(screen.getByTestId(`${mockBundles[0].slug}-checkmark-icon`)).toBeInTheDocument()
     })
   })
 
