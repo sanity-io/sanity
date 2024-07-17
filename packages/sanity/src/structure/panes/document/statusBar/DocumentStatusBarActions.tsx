@@ -12,7 +12,7 @@ import {
   shouldArrayDialogOpen,
   usePerspective,
   useSource,
-  useTimelineSelector
+  useTimelineSelector,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
