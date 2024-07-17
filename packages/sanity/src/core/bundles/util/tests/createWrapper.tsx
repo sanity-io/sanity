@@ -6,6 +6,10 @@ import {
   type TestProviderOptions,
 } from '../../../../../test/testUtils/TestProvider'
 
+/**
+ * @internal
+ * @hidden
+ */
 export const createWrapper = async (options?: TestProviderOptions) => {
   const TestProvider = await createTestProvider(options)
   return function Wrapper({children}: {children: ReactNode}): JSX.Element {
