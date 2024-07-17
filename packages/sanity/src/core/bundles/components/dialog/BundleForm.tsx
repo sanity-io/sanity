@@ -55,15 +55,11 @@ export function BundleForm(props: {
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
-      const pickedNameExists =
-        data && data.find((bundle) => bundle.name === speakingurl(pickedTitle))
+      const newSlug = speakingurl(pickedTitle)
+      const slugExists = data && data.find((bundle) => bundle.slug === newSlug)
       const isEmptyTitle = pickedTitle.trim() === '' && !isInitialRender
 
-      if (
-        isDraftOrPublished(pickedTitle) ||
-        pickedNameExists ||
-        (isEmptyTitle && !isInitialRender)
-      ) {
+      if (isDraftOrPublished(pickedTitle) || slugExists || (isEmptyTitle && !isInitialRender)) {
         if (isEmptyTitle && !isInitialRender) {
           // if the title is empty and it's not the first opening of the dialog, show an error
           // TODO localize text
@@ -77,7 +73,7 @@ export function BundleForm(props: {
             {level: 'error', message: "Title cannot be 'drafts' or 'published'", path: []},
           ])
         }
-        if (pickedNameExists) {
+        if (slugExists) {
           // if the bundle already exists, show an error
           // TODO localize text
           setTitleErrors([{level: 'error', message: 'Bundle already exists', path: []}])
@@ -90,7 +86,7 @@ export function BundleForm(props: {
       }
 
       setIsInitialRender(false)
-      onChange({...value, title: pickedTitle, name: speakingurl(pickedTitle)})
+      onChange({...value, title: pickedTitle, slug: newSlug})
     },
     [data, isInitialRender, onChange, onError, value],
   )

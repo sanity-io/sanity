@@ -43,7 +43,7 @@ describe('BundleForm', () => {
         icon: 'heart-filled',
         _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
         _type: 'bundle',
-        name: 'spring-drop',
+        slug: 'spring-drop',
         hue: 'magenta',
         _createdAt: '2024-07-02T11:37:51Z',
       },
@@ -69,7 +69,7 @@ describe('BundleForm', () => {
     const titleInput = screen.getByTestId('bundle-form-title')
     fireEvent.change(titleInput, {target: {value: 'Bundle 1'}})
 
-    expect(onChangeMock).toHaveBeenCalledWith({...valueMock, title: 'Bundle 1', name: 'bundle-1'})
+    expect(onChangeMock).toHaveBeenCalledWith({...valueMock, title: 'Bundle 1', slug: 'bundle-1'})
   })
 
   it('should call onChange when description textarea value changes', () => {

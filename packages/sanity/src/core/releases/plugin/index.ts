@@ -24,7 +24,7 @@ export const releases = definePlugin({
       name: 'releases',
       title: 'Releases',
       component: ReleasesTool,
-      router: route.create('/', [route.create('/:bundleName')]),
+      router: route.create('/', [route.create('/:bundleSlug')]),
     },
   ],
 })
