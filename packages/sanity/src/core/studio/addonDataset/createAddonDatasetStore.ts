@@ -35,6 +35,9 @@ type ClientStore =
       error: AddonDatasetError
     }
 
+/**
+ * @internal
+ */
 export interface AddonDatasetStore {
   /**
    * Get a client instance for the addon dataset, always ensuring first that the addon dataset has
@@ -50,6 +53,9 @@ export interface AddonDatasetStore {
   lazyClient$: Observable<ClientStore>
 }
 
+/**
+ * @internal
+ */
 export function createAddonDatasetStore({client}: Context): AddonDatasetStore {
   const {dataset, projectId} = client.config()
 
@@ -156,6 +162,9 @@ export function createAddonDatasetStore({client}: Context): AddonDatasetStore {
   }
 }
 
+/**
+ * @internal
+ */
 export function isClientStoreReady(
   clientStore: ClientStore,
 ): clientStore is ClientStore & {state: 'ready'} {
