@@ -1,30 +1,35 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Button} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   BundleBadge,
   type BundleDocument,
   BundleMenu,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getAllVersionsOfDocument,
-  LATEST,
+  getBundleSlug,
+  useBundles,
   useClient,
   usePerspective,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
+import {styled} from 'styled-components'
 
-// FIXME
-// eslint-disable-next-line boundaries/element-types
-import {useBundles} from '../../../../../../core/store/bundles/useBundles'
+const BadgeButton = styled(Button)({
+  cursor: 'pointer',
+})
 
 export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Element {
   const {documentId} = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
+  const {data} = useBundles()
   const {currentGlobalBundle} = usePerspective()
+  const bundles = useMemo(() => data ?? [], [data])
 
-  const {title, hue, icon} = currentGlobalBundle
+  const existsInBundle = bundles.some((bundle) => bundle.slug === getBundleSlug(documentId))
+  const {title, hue, icon, slug} = currentGlobalBundle
 
-  const {data: bundles} = useBundles()
+  const router = useRouter()
 
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const [documentVersions, setDocumentVersions] = useState<BundleDocument[]>([])
@@ -43,21 +48,33 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
     fetchVersionsInner()
   }, [fetchVersions])
 
+  const handleBundleClick = useCallback(() => {
+    router.navigateIntent('release', {slug})
+  }, [router, slug])
+
   return (
     <>
-      {/* FIXME Version Badge should only show when the current opened document is in a version, RIGHT
-      NOW IT'S USING THE GLOBAL */}
-      {currentGlobalBundle && currentGlobalBundle.slug === LATEST.slug && (
-        <BundleBadge hue={hue} title={title} icon={icon} padding={2} />
+      {currentGlobalBundle && existsInBundle && (
+        <BadgeButton
+          onClick={handleBundleClick}
+          mode="bleed"
+          padding={0}
+          radius="full"
+          data-testid="button-document-release"
+        >
+          <BundleBadge hue={hue} title={title} icon={icon} padding={2} />
+        </BadgeButton>
       )}
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
-      <Box flex="none">
-        <BundleMenu
-          button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
-          bundles={documentVersions}
-          loading={!documentVersions}
-        />
-      </Box>
+      {documentVersions.length > 0 && (
+        <Box flex="none">
+          <BundleMenu
+            button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
+            bundles={documentVersions}
+            loading={!documentVersions}
+          />
+        </Box>
+      )}
     </>
   )
 }
