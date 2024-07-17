@@ -47,7 +47,7 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
     <>
       {/* FIXME Version Badge should only show when the current opened document is in a version, RIGHT
       NOW IT'S USING THE GLOBAL */}
-      {currentGlobalBundle && currentGlobalBundle.name === LATEST.name && (
+      {currentGlobalBundle && currentGlobalBundle.slug === LATEST.slug && (
         <BundleBadge hue={hue} title={title} icon={icon} padding={2} />
       )}
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
