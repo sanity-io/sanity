@@ -25,6 +25,15 @@ export const releases = definePlugin({
       title: 'Releases',
       component: ReleasesTool,
       router: route.create('/', [route.create('/:bundleSlug')]),
+      canHandleIntent: (intent, params) => {
+        return Boolean(intent === 'release' && params.slug)
+      },
+      getIntentState(intent, params) {
+        if (intent === 'release') {
+          return {bundleSlug: params.slug}
+        }
+        return null
+      },
     },
   ],
 })
