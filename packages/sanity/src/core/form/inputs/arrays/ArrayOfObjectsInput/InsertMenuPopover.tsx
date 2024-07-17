@@ -34,12 +34,9 @@ export function useInsertMenuPopover(props: {
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const referenceElement = props.popoverProps.referenceElement ?? null
 
-  useClickOutside(
-    useCallback(() => {
-      send({type: 'close'})
-    }, []),
-    [popoverElement, referenceElement],
-  )
+  useClickOutside(() => {
+    send({type: 'close'})
+  }, [popoverElement, referenceElement])
 
   useGlobalKeyDown(
     useCallback(
