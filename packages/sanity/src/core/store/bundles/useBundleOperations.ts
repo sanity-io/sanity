@@ -32,7 +32,7 @@ export function useBundleOperations() {
     async (bundle: BundleDocument) => {
       // Fetch the related version documents from the main dataset, this documents will be removed
       const versionDocuments = await studioClient.fetch<SanityDocument[]>(
-        `*[defined(_version) && _id in path("${bundle.name}.*")]`,
+        `*[defined(_version) && _id in path("${bundle.slug}.*")]`,
       )
       // Starts the transaction to remove the documents.
       const transaction = studioClient.transaction()

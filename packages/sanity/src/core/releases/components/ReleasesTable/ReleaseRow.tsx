@@ -21,13 +21,14 @@ export function ReleaseRow({bundle}: ReleaseRowProps) {
         <Card
           as="a"
           // navigate to bundle detail
-          onClick={() => router.navigate({bundleName: bundle.name})}
+          // eslint-disable-next-line react/jsx-no-bind
+          onClick={() => router.navigate({bundleSlug: bundle.slug})}
           padding={2}
           radius={2}
         >
           <Flex align="center" gap={2}>
             <Box flex="none">
-              <BundleBadge tone={bundle.tone} icon={bundle.icon} />
+              <BundleBadge hue={bundle.hue} icon={bundle.icon} />
             </Box>
             <Stack flex={1} space={2}>
               <Flex align="center" gap={2}>

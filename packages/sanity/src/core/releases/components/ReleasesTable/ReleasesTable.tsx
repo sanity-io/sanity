@@ -49,7 +49,7 @@ export function ReleasesTable({bundles, searchTerm, setSearchTerm}: ReleasesTabl
       )
     }
 
-    return bundles.map((bundle) => <ReleaseRow key={bundle.name} bundle={bundle} />)
+    return bundles.map((bundle) => <ReleaseRow key={bundle.slug} bundle={bundle} />)
   }, [bundles])
 
   return (
