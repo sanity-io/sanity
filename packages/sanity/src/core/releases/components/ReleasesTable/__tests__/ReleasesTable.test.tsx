@@ -8,7 +8,7 @@ import {ReleasesTable, type TableBundle} from '../ReleasesTable'
 
 jest.mock('sanity/router', () => ({
   ...(jest.requireActual('sanity/router') || {}),
-  useRouter: jest.fn().mockReturnValue({state: {bundleName: '123'}, navigate: jest.fn()}),
+  useRouter: jest.fn().mockReturnValue({state: {bundleSlug: '123'}, navigate: jest.fn()}),
 }))
 
 jest.mock('../../../../store/bundles/useBundleOperations', () => ({
@@ -41,7 +41,7 @@ describe('ReleasesTable', () => {
     const bundles = [
       {
         title: 'Bundle 1',
-        name: 'bundle-1',
+        slug: 'bundle-1',
         _createdAt: new Date().toISOString(),
         documentsMetadata: {
           documentCount: 1,
@@ -49,7 +49,7 @@ describe('ReleasesTable', () => {
       },
       {
         title: 'Bundle 2',
-        name: 'bundle-2',
+        slug: 'bundle-2',
         _createdAt: new Date().toISOString(),
         documentsMetadata: {
           documentCount: 0,
@@ -57,7 +57,7 @@ describe('ReleasesTable', () => {
       },
       {
         title: 'Bundle 3',
-        name: 'bundle-3',
+        slug: 'bundle-3',
         _createdAt: new Date().toISOString(),
         documentsMetadata: {
           // 24 hours ago
@@ -91,7 +91,7 @@ describe('ReleasesTable', () => {
     await renderReleasesTable([
       {
         title: 'Bundle 1',
-        name: 'bundle-1',
+        slug: 'bundle-1',
         _createdAt: new Date().toISOString(),
         documentsMetadata: {
           documentCount: 0,
@@ -111,7 +111,7 @@ describe('ReleasesTable', () => {
         {
           _id: '123',
           title: 'Bundle 1',
-          name: 'bundle-1',
+          slug: 'bundle-1',
           _createdAt: new Date().toISOString(),
           documentsMetadata: {
             documentCount: 1,
@@ -123,7 +123,7 @@ describe('ReleasesTable', () => {
       const bundleRow = screen.getAllByTestId('bundle-row')[0]
       fireEvent.click(within(bundleRow).getByText('Bundle 1'))
 
-      expect(useRouter().navigate).toHaveBeenCalledWith({bundleName: 'bundle-1'})
+      expect(useRouter().navigate).toHaveBeenCalledWith({bundleSlug: 'bundle-1'})
     })
 
     it('should delete bundle when menu button is clicked', async () => {
@@ -131,7 +131,7 @@ describe('ReleasesTable', () => {
         {
           _id: '123',
           title: 'Bundle 1',
-          name: 'bundle-1',
+          slug: 'bundle-1',
           _createdAt: new Date().toISOString(),
           documentsMetadata: {
             documentCount: 1,
@@ -148,7 +148,7 @@ describe('ReleasesTable', () => {
 
       await waitFor(() => {
         expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(bundles[0])
-        expect(useRouter().navigate).toHaveBeenCalledWith({bundleName: undefined})
+        expect(useRouter().navigate).toHaveBeenCalledWith({bundleSlug: undefined})
       })
     })
   })

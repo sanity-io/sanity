@@ -1,10 +1,6 @@
+import {type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  type BundleDocument,
-  getPublishedId,
-  type TransactionLogEventWithEffects,
-  useClient,
-} from 'sanity'
+import {getPublishedId, type TransactionLogEventWithEffects, useClient} from 'sanity'
 
 import {getJsonStream} from '../../../../store/_legacy/history/history/getJsonStream'
 import {API_VERSION} from '../../../../tasks/constants'
@@ -17,7 +13,7 @@ export type DocumentHistory = {
 }
 
 // TODO: Update this to contemplate the _revision change on any of the internal bundle documents, and fetch only the history of that document if changes.
-export function useReleaseHistory(bundleDocuments: BundleDocument[]): {
+export function useReleaseHistory(bundleDocuments: SanityDocument[]): {
   documentsHistory: Map<string, DocumentHistory>
   collaborators: string[]
   loading: boolean
