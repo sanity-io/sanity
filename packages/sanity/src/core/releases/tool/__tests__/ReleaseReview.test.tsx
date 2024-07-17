@@ -62,7 +62,7 @@ const MOCKED_PROPS = {
     title: 'Differences',
     _createdAt: '2024-07-10T12:09:56Z',
     icon: 'cube',
-    name: 'differences',
+    slug: 'differences',
     _id: 'd3137faf-ece6-44b5-a2b1-1090967f868e',
     _rev: 'j9BPWHem9m3oUugvhMXEGV',
   } as const,
@@ -83,7 +83,7 @@ jest.mock('sanity/router', () => ({
   ...(jest.requireActual('sanity/router') || {}),
   IntentLink: jest.fn().mockImplementation((props: any) => <a> {props.children}</a>),
   useRouter: jest.fn().mockReturnValue({
-    state: {bundleName: 'differences'},
+    state: {bundleSlug: 'differences'},
     navigate: jest.fn(),
   }),
 }))
