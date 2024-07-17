@@ -1,4 +1,5 @@
 import {type OperationImpl} from '../operations/index'
+import {actionsApiClient} from '../utils/actionsApiClient'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 type DisabledReason = 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES'
@@ -19,7 +20,7 @@ export const publish: OperationImpl<[], DisabledReason> = {
       throw new Error('cannot execute "publish" when draft is missing')
     }
 
-    return client.observable.action(
+    return actionsApiClient(client).observable.action(
       {
         actionType: 'sanity.action.document.publish',
         draftId: idPair.draftId,
