@@ -11,12 +11,12 @@ import {
 import {useRouter} from 'sanity/router'
 
 import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
-import {getVersionName} from '../../../../../../core/bundles/util/dummyGetters'
+import {getBundleSlug} from '../../../../../../core/bundles/util/dummyGetters'
 import {createWrapper} from '../../../../../../core/bundles/util/tests/createWrapper'
 import {useBundles} from '../../../../../../core/store/bundles/useBundles'
 import {DocumentPerspectiveMenu} from './DocumentPerspectiveMenu'
 
-type GetVersionNameType = (documentId: string) => string
+type getBundleSlugType = (documentId: string) => string
 type GetAllVersionsOfDocumentType = (
   bundles: BundleDocument[] | null,
   client: SanityClient,
@@ -57,7 +57,7 @@ jest.mock('../../../../../../core/store/bundles/useBundles', () => ({
 }))
 
 jest.mock('../../../../../../core/bundles/util/dummyGetters', () => ({
-  getVersionName: jest.fn(() => ''),
+  getBundleSlug: jest.fn(() => ''),
 }))
 
 const mockUseClient = useClient as jest.Mock<typeof useClient>
@@ -66,7 +66,7 @@ const navigateIntent = mockUseRouter().navigateIntent as jest.Mock
 
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 const mockUsePerspective = usePerspective as jest.Mock
-const mockGetVersionName = getVersionName as jest.MockedFunction<GetVersionNameType>
+const mockGetBundleSlug = getBundleSlug as jest.MockedFunction<getBundleSlugType>
 const mockGetAllVersionsOfDocument =
   getAllVersionsOfDocument as jest.MockedFunction<GetAllVersionsOfDocumentType>
 const mockBundleBadge = BundleBadge as jest.Mock
@@ -81,7 +81,7 @@ describe('DocumentPerspectiveMenu', () => {
     icon: 'heart-filled',
     _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
     _type: 'bundle',
-    name: 'spring-drop',
+    slug: 'spring-drop',
     hue: 'magenta',
     _createdAt: '2024-07-02T11:37:51Z',
   }
@@ -114,7 +114,7 @@ describe('DocumentPerspectiveMenu', () => {
 
   it('should render the bundle badge if the document exists in the global bundle', async () => {
     // Dummy Getters
-    mockGetVersionName.mockReturnValue('spring-drop')
+    mockGetBundleSlug.mockReturnValue('spring-drop')
 
     mockGetAllVersionsOfDocument.mockImplementationOnce(
       (): Promise<any> =>
@@ -136,7 +136,7 @@ describe('DocumentPerspectiveMenu', () => {
 
   it('should not render the bundle badge if the document does not exist in the bundle', async () => {
     // Dummy Getters
-    mockGetVersionName.mockReturnValue('no-bundle')
+    mockGetBundleSlug.mockReturnValue('no-bundle')
 
     const wrapper = await createWrapper()
     render(<DocumentPerspectiveMenu documentId="document-id" />, {wrapper})
@@ -146,7 +146,7 @@ describe('DocumentPerspectiveMenu', () => {
 
   it('should navigate to the release intent when the bundle badge is clicked', async () => {
     // Dummy Getters
-    mockGetVersionName.mockReturnValue('spring-drop')
+    mockGetBundleSlug.mockReturnValue('spring-drop')
 
     mockGetAllVersionsOfDocument.mockImplementationOnce(
       (): Promise<any> =>
@@ -167,6 +167,6 @@ describe('DocumentPerspectiveMenu', () => {
     fireEvent.click(screen.getByTestId('button-document-release'))
 
     expect(navigateIntent).toHaveBeenCalledTimes(1)
-    expect(navigateIntent).toHaveBeenCalledWith('release', {name: 'spring-drop'})
+    expect(navigateIntent).toHaveBeenCalledWith('release', {slug: 'spring-drop'})
   })
 })

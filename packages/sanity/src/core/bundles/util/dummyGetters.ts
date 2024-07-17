@@ -25,7 +25,7 @@ export async function getAllVersionsOfDocument(
 
   return await client.fetch(query, {}, {tag: 'document.list-versions'}).then((documents) => {
     return documents.map((doc: SanityDocument) => {
-      const sluggedName = getVersionName(doc._id)
+      const sluggedName = getBundleSlug(doc._id)
       const bundle = bundles?.find((b) => b.slug === sluggedName)
       return {
         name: speakingurl(sluggedName),
@@ -38,7 +38,7 @@ export async function getAllVersionsOfDocument(
   })
 }
 
-export function getVersionName(documentId: string): string {
+export function getBundleSlug(documentId: string): string {
   if (documentId.indexOf('.') === -1) return 'Published'
   const version = documentId.slice(0, documentId.indexOf('.'))
   return version

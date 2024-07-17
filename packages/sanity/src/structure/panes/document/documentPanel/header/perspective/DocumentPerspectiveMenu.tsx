@@ -13,7 +13,7 @@ import {
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {getVersionName} from '../../../../../../core/bundles'
+import {getBundleSlug} from '../../../../../../core/bundles'
 import {useBundles} from '../../../../../../core/store/bundles/useBundles'
 
 const BadgeButton = styled(Button)({
@@ -26,8 +26,8 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
   const {data: bundles} = useBundles()
   const {currentGlobalBundle} = usePerspective()
 
-  const existsInBundle = bundles?.some((bundle) => bundle.name === getVersionName(documentId))
-  const {title, hue, icon, name} = currentGlobalBundle
+  const existsInBundle = bundles?.some((bundle) => bundle.slug === getBundleSlug(documentId))
+  const {title, hue, icon, slug} = currentGlobalBundle
 
   const router = useRouter()
 
@@ -49,8 +49,8 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
   }, [fetchVersions])
 
   const handleBundleClick = useCallback(() => {
-    router.navigateIntent('release', {name})
-  }, [router, name])
+    router.navigateIntent('release', {slug})
+  }, [router, slug])
 
   return (
     <>
