@@ -76,7 +76,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              {currentGlobalBundle.name === LATEST.name ? (
+              {currentGlobalBundle.slug === LATEST.slug ? (
                 <Button
                   data-testid={`action-${firstActionState.label}`}
                   disabled={
@@ -116,7 +116,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
        * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
        * SPECIFICALLY FOR ISDRAFT
        */}
-      {showMenu && menuActionStates.length > 0 && currentGlobalBundle.name === LATEST.name && (
+      {showMenu && menuActionStates.length > 0 && currentGlobalBundle.slug === LATEST.slug && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
