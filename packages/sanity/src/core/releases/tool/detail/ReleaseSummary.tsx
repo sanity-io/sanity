@@ -1,7 +1,8 @@
 import {DocumentsIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
-import {AvatarStack, Box, Card, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {AvatarStack, Box, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
+import {useTableContext} from 'sanity/_singletons'
 
 import {
   BundleIconEditorPicker,
@@ -12,10 +13,34 @@ import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {Chip} from '../../components/Chip'
-import {DocumentTable} from './documentTable'
+import {Table, type TableProps} from '../../components/Table/Table'
+import {DocumentActions} from './documentTable/DocumentActions'
+import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
+import {useDocumentPreviewValues} from './documentTable/useDocumentPreviewValues'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
 
-export function ReleaseOverview(props: {
+export type DocumentWithHistory = SanityDocument & {history: DocumentHistory | undefined}
+export type BundleDocumentRow = DocumentWithHistory & ReturnType<typeof useDocumentPreviewValues>
+
+const getRow =
+  (
+    release: BundleDocument,
+  ): TableProps<DocumentWithHistory, ReturnType<typeof useDocumentPreviewValues>>['Row'] =>
+  ({children, datum}) => {
+    const {searchTerm} = useTableContext()
+    const {previewValues, isLoading} = useDocumentPreviewValues({document: datum, release})
+
+    if (searchTerm) {
+      // Early return to filter out documents that don't match the search term
+      const fallbackTitle = typeof document.title === 'string' ? document.title : 'Untitled'
+      const title = typeof previewValues.title === 'string' ? previewValues.title : fallbackTitle
+      if (!title.toLowerCase().includes(searchTerm.toLowerCase())) return null
+    }
+
+    return children({...datum, previewValues, isLoading})
+  }
+
+export function ReleaseSummary(props: {
   documents: SanityDocument[]
   documentsHistory: Map<string, DocumentHistory>
   collaborators: string[]
@@ -53,6 +78,27 @@ export function ReleaseOverview(props: {
       }
     },
     [client, release._id, toast],
+  )
+
+  const aggregatedData = useMemo(
+    () =>
+      documents.map((document) => ({
+        ...document,
+        history: documentsHistory.get(document._id),
+      })),
+    [documents, documentsHistory],
+  )
+
+  const Row = useMemo(() => getRow(release), [release])
+
+  const renderRowActions: ({datum}: {datum: BundleDocumentRow}) => JSX.Element = useCallback(
+    ({datum: document}) => <DocumentActions document={document} bundleTitle={release.title} />,
+    [release.title],
+  )
+
+  const documentTableColumnDefs = useMemo(
+    () => getDocumentTableColumnDefs(release.slug),
+    [release.slug],
   )
 
   return (
@@ -113,29 +159,24 @@ export function ReleaseOverview(props: {
 
             {/* Contributors */}
             <Box padding={1}>
-              <AvatarStack size={0} style={{margin: -1}}>
-                {collaborators?.map((userId) => <UserAvatar key={userId} user={userId} />)}
-              </AvatarStack>
+              {collaborators?.length && (
+                <AvatarStack size={0} style={{margin: -1}}>
+                  {collaborators?.map((userId) => <UserAvatar key={userId} user={userId} />)}
+                </AvatarStack>
+              )}
             </Box>
           </Flex>
         </Flex>
       </Stack>
 
-      {documents.length === 0 && (
-        <Card border padding={4} radius={3}>
-          <Text align="center" muted size={1}>
-            No documents
-          </Text>
-        </Card>
-      )}
-
-      {documents.length > 0 && (
-        <DocumentTable
-          documents={documents}
-          release={release}
-          documentsHistory={documentsHistory}
-        />
-      )}
+      <Table<DocumentWithHistory, ReturnType<typeof useDocumentPreviewValues>>
+        data={aggregatedData}
+        emptyState="No documents"
+        rowId="_id"
+        Row={Row}
+        columnDefs={documentTableColumnDefs}
+        rowActions={renderRowActions}
+      />
     </Stack>
   )
 }
