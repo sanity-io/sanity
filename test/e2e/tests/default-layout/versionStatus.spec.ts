@@ -41,7 +41,7 @@ test.describe('auto-updating studio behavior', () => {
         }),
       })
     })
-    await expect(page.getByText('Sanity Studio was updated')).toBeVisible()
+    await expect(page.getByText('Sanity Studio is ready to update')).toBeVisible()
   })
 
   test('should show nothing if in auto-updating studio, and version is lower', async ({page}) => {
@@ -56,6 +56,6 @@ test.describe('auto-updating studio behavior', () => {
       })
     })
 
-    await expect(page.getByText('Sanity Studio was updated')).not.toBeVisible()
+    await expect(page.getByText('Sanity Studio is ready to update')).not.toBeVisible()
   })
 })

@@ -3,6 +3,7 @@ import {Stack, Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, useMemo} from 'react'
 import {
+  CopyPasteProvider,
   ReferenceInputOptionsProvider,
   SourceProvider,
   Translate,
@@ -33,7 +34,9 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 
   return (
     <SourceProvider name={props.pane.source || parentSourceName}>
-      <DocumentPaneInner {...props} />
+      <CopyPasteProvider>
+        <DocumentPaneInner {...props} />
+      </CopyPasteProvider>
     </SourceProvider>
   )
 })

@@ -38,14 +38,11 @@ import {
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
-import {copyAction} from './fieldActions/copyAction'
-import {pasteAction} from './fieldActions/pasteAction'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test'
 import {languageFilter} from './plugins/language-filter'
-import {presenceTool} from './plugins/presence'
 import {routerDebugTool} from './plugins/router-debug'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {schemaTypes} from './schema'
@@ -89,11 +86,13 @@ const sharedSettings = definePlugin({
       return prev
     },
     unstable_fieldActions: (prev, ctx) => {
+      const defaultActions = [...prev]
+
       if (['fieldActionsTest', 'stringsTest'].includes(ctx.documentType)) {
-        return [...prev, assistFieldActionGroup, copyAction, pasteAction]
+        return [...defaultActions, assistFieldActionGroup]
       }
 
-      return prev
+      return defaultActions
     },
     newDocumentOptions,
     comments: {
@@ -140,7 +139,6 @@ const sharedSettings = definePlugin({
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
     imageHotspotArrayPlugin(),
-    presenceTool(),
     routerDebugTool(),
     errorReportingTestPlugin(),
     tsdoc(),

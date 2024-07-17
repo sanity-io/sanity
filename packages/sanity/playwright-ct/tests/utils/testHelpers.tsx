@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs'
 import path from 'node:path'
 
-import {type Locator, type PlaywrightTestArgs} from '@playwright/test'
+import {expect, type Locator, type PlaywrightTestArgs} from '@playwright/test'
 
 export const DEFAULT_TYPE_DELAY = 20
 
@@ -10,9 +10,10 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
     const $overlay = $pteField.getByTestId('activate-overlay')
     if (await $overlay.isVisible()) {
       await $overlay.focus()
-      await page.keyboard.press('Space')
+      await $overlay.press('Space')
     }
-    await $overlay.waitFor({state: 'detached', timeout: 1000})
+
+    await expect($overlay).not.toBeVisible({timeout: 1500})
   }
   return {
     /**
@@ -287,6 +288,40 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      */
     toggleHotkey: async (hotkey: string, modifierKey?: string) => {
       await page.keyboard.press(modifierKey ? `${modifierKey}+${hotkey}` : hotkey)
+    },
+    mockClipboard: async () => {
+      await page.evaluate(() => {
+        const clipboardData = {text: ''}
+
+        // Mock the clipboard writeText method
+        navigator.clipboard.writeText = async (text) => {
+          clipboardData.text = text
+          return Promise.resolve()
+        }
+
+        // Mock the clipboard readText method
+        navigator.clipboard.readText = async () => {
+          return Promise.resolve(clipboardData.text)
+        }
+      })
+    },
+    setClipboardText: async (text: string) => {
+      await page.evaluate((checkText) => {
+        navigator.clipboard.writeText(checkText)
+      }, text)
+    },
+
+    getClipboardText: async () => {
+      return await page.evaluate(() => {
+        return navigator.clipboard.readText()
+      })
+    },
+    hasClipboardText: async (text: string) => {
+      const value = await page.evaluate(() => {
+        return navigator.clipboard.readText()
+      })
+
+      return value === text
     },
     /**
      * Will wait for the documentState evaulate callback to be true before the docmueentState is returned

@@ -136,6 +136,7 @@ interface FormFieldBaseHeaderProps {
   actions?: DocumentFieldActionNode[]
   content: ReactNode
   fieldFocused: boolean
+  inputId?: string
   fieldHovered: boolean
   presence?: FormNodePresence[]
 }
@@ -149,6 +150,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
     fieldFocused,
     fieldHovered,
     presence,
+    inputId,
   } = props
   const [focused, setFocused] = useState<boolean>(false)
   // State for if an actions menu is open
@@ -268,7 +270,11 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
             sizing="border"
           >
             {hasActions && (
-              <FieldActionsFlex align="center" data-ui="FieldActionsFlex">
+              <FieldActionsFlex
+                align="center"
+                data-ui="FieldActionsFlex"
+                data-testid={inputId ? `field-actions-menu-${inputId}` : `field-actions-menu`}
+              >
                 <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
               </FieldActionsFlex>
             )}

@@ -11,6 +11,10 @@ const enUSStrings = {
   'translate.with-formatter': 'This value has a list-formatter: {{countries, list}}',
   'use-translation.with-html': 'Apparently, <code>code</code> is an HTML element?',
   'use-translation.interpolation-example': 'This has {{ spaces }} around it, this one {{doesNot}}',
+
+  // Used by `fieldGroupsWithI18n` debug schema type
+  'field-groups.group-1': '🇺🇸 Group 1',
+  'field-groups.group-2': '🇺🇸 Group 2',
 }
 
 const enUS = defineLocaleResourceBundle({
@@ -29,6 +33,10 @@ const nbNO = defineLocaleResourceBundle({
     'translate.with-xml-in-value':
       'Denne verdien har XML i en interpolert verdi: <strong>{{value}}</strong>',
     'use-translation.with-html': 'Faktisk er <code>code</code> et HTML-element?',
+
+    // Used by `fieldGroupsWithI18n` debug schema type
+    'field-groups.group-1': '🇳🇴 Gruppe 1',
+    'field-groups.group-2': '🇳🇴 Gruppe 2',
   },
 })
 
@@ -40,6 +48,14 @@ const nbNOBStructureOverrides = defineLocaleResourceBundle({
   },
 })
 
+const enUSStudioOverrides = defineLocaleResourceBundle({
+  locale: 'en-US',
+  namespace: 'studio',
+  resources: {
+    //'inputs.object.field-group-tabs.all-fields-title': 'அனைத்து துறைகள்',
+  },
+})
+
 export type TestStudioLocaleResourceKeys = keyof typeof enUSStrings
 
-export const testStudioLocaleBundles = [enUS, nbNO, nbNOBStructureOverrides]
+export const testStudioLocaleBundles = [enUS, nbNO, nbNOBStructureOverrides, enUSStudioOverrides]

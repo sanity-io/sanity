@@ -24,6 +24,39 @@ const playwrightConfig = createPlaywrightConfig({
   projectId: readEnv('SANITY_E2E_PROJECT_ID'),
   token: readEnv('SANITY_E2E_SESSION_TOKEN'),
   playwrightOptions(config): PlaywrightTestConfig {
+    const projects = [
+      ...(config?.projects?.map((project) => {
+        const projectConfig = {
+          ...project,
+        }
+
+        if (project.name === 'chromium') {
+          return {
+            ...projectConfig,
+            permissions: ['clipboard-read', 'clipboard-write'],
+            contextOptions: {
+              // chromium-specific permissions
+              permissions: ['clipboard-read', 'clipboard-write'],
+            },
+          }
+        }
+
+        if (project.name === 'firefox') {
+          return {
+            ...projectConfig,
+            launchOptions: {
+              firefoxUserPrefs: {
+                'dom.events.asyncClipboard.readText': true,
+                'dom.events.testing.asyncClipboard': true,
+              },
+            },
+          }
+        }
+
+        return projectConfig
+      }) || []),
+    ]
+
     return {
       ...config,
       reporter: excludeGithub(config.reporter),
@@ -32,6 +65,7 @@ const playwrightConfig = createPlaywrightConfig({
         baseURL: 'http://localhost:3339',
         headless: HEADLESS,
       },
+      projects,
       webServer: {
         ...config.webServer,
         command: CI ? 'pnpm e2e:start' : 'pnpm e2e:dev',

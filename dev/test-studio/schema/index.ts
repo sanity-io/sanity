@@ -32,6 +32,8 @@ import fieldGroupsDefault from './debug/fieldGroupsDefault'
 import fieldGroupsMany from './debug/fieldGroupsMany'
 import fieldGroupsWithFieldsets from './debug/fieldGroupsWithFieldsets'
 import fieldGroupsWithFieldsetsAndValidation from './debug/fieldGroupsWithFieldsetsAndValidation'
+import fieldGroupsWithFieldsetsHidden from './debug/fieldGroupsWithFieldsetsHidden'
+import fieldGroupsWithI18n from './debug/fieldGroupsWithI18n'
 import fieldGroupsWithValidation from './debug/fieldGroupsWithValidation'
 import fieldsets from './debug/fieldsets'
 import {
@@ -75,7 +77,6 @@ import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
 import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
-import {demos3d} from './demos/3d'
 import {v3docs} from './docs/v3'
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
@@ -249,8 +250,10 @@ export const schemaTypes = [
   fieldGroups,
   fieldGroupsDefault,
   fieldGroupsMany,
+  fieldGroupsWithI18n,
   fieldGroupsWithValidation,
   fieldGroupsWithFieldsetsAndValidation,
+  fieldGroupsWithFieldsetsHidden,
   virtualizationInObject,
   virtualizationDebug,
 
@@ -288,7 +291,4 @@ export const schemaTypes = [
 
   // Test documents for docs
   ...v3docs.types,
-
-  // Demo documents for 3d experiments
-  ...demos3d.types,
 ]

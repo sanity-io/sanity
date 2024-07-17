@@ -329,14 +329,16 @@ export default async function initSanity(
     const fileExtension = useTypeScript ? 'ts' : 'js'
 
     const embeddedStudio = unattended ? true : await promptForEmbeddedStudio(prompt)
+    let hasSrcFolder = false
 
     if (embeddedStudio) {
       // find source path (app or src/app)
-      const srcDir = 'app'
-      let srcPath = path.join(workDir, srcDir)
+      const appDir = 'app'
+      let srcPath = path.join(workDir, appDir)
 
       if (!existsSync(srcPath)) {
-        srcPath = path.join(workDir, 'src', srcDir)
+        srcPath = path.join(workDir, 'src', appDir)
+        hasSrcFolder = true
         if (!existsSync(srcPath)) {
           await fs
             .mkdir(srcPath, {recursive: true})
@@ -369,7 +371,7 @@ export default async function initSanity(
       const sanityConfigPath = path.join(workDir, `sanity.config.${fileExtension}`)
       await writeOrOverwrite(
         sanityConfigPath,
-        sanityConfigTemplate
+        sanityConfigTemplate(hasSrcFolder)
           .replace(':route:', embeddedStudioRouteFilePath.slice(workDir.length).replace('src/', ''))
           .replace(':basePath:', studioPath),
       )
@@ -382,18 +384,27 @@ export default async function initSanity(
     const writeSourceFiles = async (
       files: Record<string, string | Record<string, string>>,
       folderPath?: string,
+      srcFolderPrefix?: boolean,
     ) => {
       for (const [filePath, content] of Object.entries(files)) {
         // check if file ends with full stop to indicate it's file and not directory (this only works with our template tree structure)
         if (filePath.includes('.') && typeof content === 'string') {
           await writeOrOverwrite(
-            path.join(workDir, 'sanity', folderPath || '', `${filePath}${fileExtension}`),
+            path.join(
+              workDir,
+              srcFolderPrefix ? 'src' : '',
+              'sanity',
+              folderPath || '',
+              `${filePath}${fileExtension}`,
+            ),
             content,
           )
         } else {
-          await fs.mkdir(path.join(workDir, 'sanity', filePath), {recursive: true})
+          await fs.mkdir(path.join(workDir, srcFolderPrefix ? 'src' : '', 'sanity', filePath), {
+            recursive: true,
+          })
           if (typeof content === 'object') {
-            await writeSourceFiles(content, filePath)
+            await writeSourceFiles(content, filePath, srcFolderPrefix)
           }
         }
       }
@@ -402,7 +413,7 @@ export default async function initSanity(
     // ask what kind of schema setup the user wants
     const templateToUse = unattended ? 'clean' : await promptForNextTemplate(prompt)
 
-    await writeSourceFiles(sanityFolder(useTypeScript, templateToUse))
+    await writeSourceFiles(sanityFolder(useTypeScript, templateToUse), undefined, hasSrcFolder)
 
     // set tsconfig.json target to ES2017
     const tsConfigPath = path.join(workDir, 'tsconfig.json')
@@ -459,8 +470,7 @@ export default async function initSanity(
       `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`,
     )
 
-    // eslint-disable-next-line no-process-exit
-    process.exit(0)
+    return
   }
 
   // eslint-disable-next-line @typescript-eslint/no-shadow

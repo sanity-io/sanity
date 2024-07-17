@@ -49,7 +49,10 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   // The studio _must_ now declare `styled-components` as a dependency. If it's not there,
   // we'll want to automatically _add it_ to the manifest and tell the user to reinstall
   // dependencies before running whatever command was being run
-  const declaredStyledComponentsVersion = studioPackageManifest.dependencies['styled-components']
+  const declaredStyledComponentsVersion =
+    studioPackageManifest.dependencies['styled-components'] ||
+    studioPackageManifest.devDependencies['styled-components']
+
   if (!declaredStyledComponentsVersion) {
     const [file, ...args] = process.argv
     const deps = {'styled-components': wantedStyledComponentsVersionRange}

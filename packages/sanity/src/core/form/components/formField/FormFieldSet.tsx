@@ -84,15 +84,30 @@ const Content = styled(Box)<{
    * https://styled-components.com/docs/api#transient-props
    */
   $borderLeft: boolean
+  $focused?: boolean
   theme: Theme
 }>((props) => {
-  const {$borderLeft, theme} = props
+  const {$borderLeft, $focused, theme} = props
   const {focusRing} = theme.sanity
   const {base} = theme.sanity.color
 
   return css`
     outline: none;
     border-left: ${$borderLeft ? '1px solid var(--card-border-color)' : undefined};
+    transition:
+      border-color 0.2s ease-in-out,
+      box-shadow 0.2s ease-in-out;
+
+    ${$borderLeft &&
+    $focused &&
+    `border-left: 1px solid var(--card-focus-ring-color);
+    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`}
+
+    ${$borderLeft &&
+    !$focused &&
+    `
+      box-shadow: inset 0 0 0 transparent;
+    `}
 
     &:focus {
       box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
@@ -183,6 +198,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         fieldFocused={Boolean(focused)}
         fieldHovered={hovered}
         presence={presence}
+        inputId={inputId}
         content={
           <Stack space={3}>
             <Flex align="center">
@@ -225,6 +241,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
 
       <Content
         $borderLeft={level > 0}
+        $focused={Boolean(focused)}
         hidden={collapsed}
         paddingLeft={level === 0 ? 0 : 3}
         onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}

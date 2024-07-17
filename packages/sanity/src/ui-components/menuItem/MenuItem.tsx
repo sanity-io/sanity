@@ -3,7 +3,6 @@ import {
   Badge,
   Box,
   Flex,
-  Hotkeys,
   MenuItem as UIMenuItem,
   type MenuItemProps as UIMenuItemProps,
   Stack,
@@ -23,6 +22,7 @@ import {
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 
+import {Hotkeys} from '../../core/components/Hotkeys'
 import {Tooltip, type TooltipProps} from '..'
 import {
   ConditionalWrapper,

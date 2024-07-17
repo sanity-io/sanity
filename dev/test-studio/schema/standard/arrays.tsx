@@ -1,5 +1,5 @@
 import {ImageIcon, OlistIcon} from '@sanity/icons'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const topLevelArrayType = defineType({
   name: 'topLevelArrayType',
@@ -143,7 +143,7 @@ export default defineType({
         },
       ],
     },
-    {
+    defineField({
       name: 'arrayOfMultipleTypes',
       title: 'Array of multiple types',
       type: 'array',
@@ -155,7 +155,7 @@ export default defineType({
         {
           type: 'book',
         },
-        {
+        defineArrayMember({
           type: 'object',
           name: 'color',
           title: 'Color with a long title',
@@ -174,10 +174,32 @@ export default defineType({
               name: 'name',
               type: 'string',
             },
+            defineField({
+              name: 'nestedArray',
+              title: 'Nested array',
+              type: 'array',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  name: 'color',
+                  title: 'Color with a long title',
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'string',
+                    },
+                    {
+                      name: 'name',
+                      type: 'string',
+                    },
+                  ],
+                }),
+              ],
+            }),
           ],
-        },
+        }),
       ],
-    },
+    }),
     {
       name: 'arrayOfMultipleTypesPopover',
       title: 'Array of multiple types (modal.type=popover)',

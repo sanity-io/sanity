@@ -14,6 +14,8 @@ import {
   type DocumentInspectorMenuItem,
   FieldActionsProvider,
   FieldActionsResolver,
+  GetFormValueProvider,
+  useGlobalCopyPasteElementHandler,
   useZIndex,
 } from 'sanity'
 import {type Path} from 'sanity-diff-patch'
@@ -64,6 +66,7 @@ export function DocumentLayout() {
     documentId,
     documentType,
     fieldActions,
+    focusPath,
     inspectOpen,
     inspector,
     inspectors,
@@ -90,6 +93,12 @@ export function DocumentLayout() {
   const [documentPanelPortalElement, setDocumentPanelPortalElement] = useState<HTMLElement | null>(
     null,
   )
+
+  useGlobalCopyPasteElementHandler({
+    element: rootElement,
+    focusPath,
+    value,
+  })
 
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
@@ -160,7 +169,7 @@ export function DocumentLayout() {
   }
 
   return (
-    <>
+    <GetFormValueProvider value={value}>
       {inspectors.length > 0 && (
         <DocumentInspectorMenuItemsResolver
           documentId={documentId}
@@ -230,6 +239,6 @@ export function DocumentLayout() {
           <DocumentOperationResults />
         </DocumentActionShortcuts>
       </FieldActionsProvider>
-    </>
+    </GetFormValueProvider>
   )
 }

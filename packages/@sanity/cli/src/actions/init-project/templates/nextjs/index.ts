@@ -1,6 +1,6 @@
 import {blogSchemaFolder, blogSchemaJS, blogSchemaTS} from './schemaTypes/blog'
 
-export const sanityConfigTemplate = `'use client'
+export const sanityConfigTemplate = (hasSrcFolder = false): string => `'use client'
 
 /**
  * This configuration is used to for the Sanity Studio that’s mounted on the \`:route:\` route
@@ -11,8 +11,8 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
-import {apiVersion, dataset, projectId} from './sanity/env'
-import {schema} from './sanity/schema'
+import {apiVersion, dataset, projectId} from ${hasSrcFolder ? "'./src/sanity/env'" : "'./sanity/env'"}
+import {schema} from ${hasSrcFolder ? "'./src/sanity/schema'" : "'./sanity/schema'"}
 
 export default defineConfig({
   basePath: ':basePath:',
@@ -75,8 +75,6 @@ export const projectId = assertValue(
   'Missing environment variable: NEXT_PUBLIC_SANITY_PROJECT_ID'
 )
 
-export const useCdn = false
-
 function assertValue<T>(v: T | undefined, errorMessage: string): T {
   if (v === undefined) {
     throw new Error(errorMessage)
@@ -91,7 +89,6 @@ const envJS = `export const apiVersion =
 
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-export const useCdn = false
 `
 
 const schemaTS = `import { type SchemaTypeDefinition } from 'sanity'
@@ -108,29 +105,26 @@ const schemaJS = `export const schema = {
 
 const client = `import { createClient } from 'next-sanity'
 
-import { apiVersion, dataset, projectId, useCdn } from '../env'
+import { apiVersion, dataset, projectId } from '../env'
 
 export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn,
-  perspective: 'published',
+  useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
 })
 `
 
 const imageTS = `import createImageUrlBuilder from '@sanity/image-url'
-import type { Image } from 'sanity'
+import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 import { dataset, projectId } from '../env'
 
-const imageBuilder = createImageUrlBuilder({
-  projectId: projectId || '',
-  dataset: dataset || '',
-})
+// https://www.sanity.io/docs/image-url
+const builder = createImageUrlBuilder({ projectId, dataset })
 
-export const urlForImage = (source: Image) => {
-  return imageBuilder?.image(source).auto('format').fit('max').url()
+export const urlFor = (source: SanityImageSource) => {
+  return builder.image(source)
 }
 `
 
@@ -138,13 +132,11 @@ const imageJS = `import createImageUrlBuilder from '@sanity/image-url'
 
 import { dataset, projectId } from '../env'
 
-const imageBuilder = createImageUrlBuilder({
-  projectId: projectId || '',
-  dataset: dataset || '',
-})
+// https://www.sanity.io/docs/image-url
+const builder = createImageUrlBuilder({ projectId, dataset })
 
-export const urlForImage = (source) => {
-  return imageBuilder?.image(source).auto('format').fit('max').url()
+export const urlFor = (source) => {
+  return builder.image(source)
 }
 `
 

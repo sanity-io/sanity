@@ -1,4 +1,6 @@
 name: End-to-End Tests
+permissions:
+  contents: read # for checkout
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
@@ -274,6 +276,9 @@ jobs:
           retention-days: 30
 
   cleanup:
+    permissions:
+      contents: read
+      actions: write # needed to delete the cache
     timeout-minutes: 30
     name: Cleanup (${{ matrix.project }})
     runs-on: ubuntu-latest

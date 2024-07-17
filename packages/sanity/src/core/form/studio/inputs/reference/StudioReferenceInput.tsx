@@ -1,13 +1,5 @@
-import {
-  type Path,
-  type Reference,
-  type ReferenceFilterSearchOptions,
-  type ReferenceOptions,
-  type ReferenceSchemaType,
-  type SanityDocument,
-} from '@sanity/types'
+import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {get} from '@sanity/util/paths'
 import {
   type ComponentProps,
   type ForwardedRef,
@@ -19,7 +11,6 @@ import {
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 
-import {type Source} from '../../../../config'
 import {type FIXME} from '../../../../FIXME'
 import {useSchema} from '../../../../hooks'
 import {useDocumentPreviewStore} from '../../../../store'
@@ -36,29 +27,7 @@ import {
 import {type ObjectInputProps} from '../../../types'
 import {useReferenceInputOptions} from '../../contexts'
 import * as adapter from '../client-adapters/reference'
-
-async function resolveUserDefinedFilter(
-  options: ReferenceOptions | undefined,
-  document: SanityDocument,
-  valuePath: Path,
-  getClient: Source['getClient'],
-): Promise<ReferenceFilterSearchOptions> {
-  if (!options) {
-    return {}
-  }
-
-  if (typeof options.filter === 'function') {
-    const parentPath = valuePath.slice(0, -1)
-    const parent = get(document, parentPath) as Record<string, unknown>
-    const resolvedFilter = await options.filter({document, parentPath, parent, getClient})
-    return resolvedFilter
-  }
-
-  return {
-    filter: options.filter,
-    params: 'filterParams' in options ? options.filterParams : undefined,
-  }
-}
+import {resolveUserDefinedFilter} from './resolveUserDefinedFilter'
 
 /**
  *

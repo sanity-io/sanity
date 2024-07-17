@@ -575,6 +575,7 @@ function prepareObjectInputState<T>(
             name: group.name,
             selected,
             title: group.title,
+            i18n: group.i18n,
           },
         ]
   })

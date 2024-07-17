@@ -1,11 +1,22 @@
 import {Stack} from '@sanity/ui'
-import {Fragment, memo, useCallback, useMemo} from 'react'
+import {last} from 'lodash'
+import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
+import {EMPTY_ARRAY, isKeySegment} from 'sanity'
+import {styled} from 'styled-components'
 
 import {ObjectInputMembers} from '../../members'
 import {type ObjectInputProps} from '../../types'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {UnknownFields} from './UnknownFields'
+
+const RootStack = styled(Stack)`
+  // Disable focus ring for the object block. We instead highlight the left border on the fieldset
+  // for level > 0 to signal that you have focused on the object
+  &:focus {
+    outline: none;
+  }
+`
 
 /**
  * @hidden
@@ -15,7 +26,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     __internal_arrayEditingModal: arrayEditingModal = null,
     groups,
     id,
-    level,
     members,
     onChange,
     onFieldGroupSelect,
@@ -27,10 +37,20 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     renderItem,
     renderPreview,
     schemaType,
+    path,
+    level,
     value,
+    onPathFocus,
   } = props
 
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const {columns} = schemaType.options || {}
+
+  // Object inputs should only be focusable if they are not the root object input
+  // This includes if they are in the root of a array block
+  const isFocusable = useMemo(() => {
+    return id !== 'root' && !(path.length > 0 && isKeySegment(last(path)!))
+  }, [id, path])
 
   const renderedUnknownFields = useMemo(() => {
     if (!schemaType.fields) {
@@ -50,6 +70,20 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   }, [onChange, schemaType.fields, value])
 
   const selectedGroup = useMemo(() => groups.find(({selected}) => selected), [groups])
+
+  const handleFocus = useCallback(
+    (event: FocusEvent) => {
+      if (!isFocusable) {
+        return
+      }
+
+      // Since the focus event will bubble up to the wrapper, we need to check if the object input is the actual target
+      if (event.target === wrapperRef.current) {
+        onPathFocus(EMPTY_ARRAY)
+      }
+    },
+    [isFocusable, onPathFocus],
+  )
 
   const renderObjectMembers = useCallback(
     () => (
@@ -79,11 +113,17 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   if (members.length === 0) {
     return null
   }
+
   return (
     <>
       {arrayEditingModal}
 
-      <Stack space={6}>
+      <RootStack
+        space={6}
+        tabIndex={isFocusable ? 0 : undefined}
+        onFocus={handleFocus}
+        ref={wrapperRef}
+      >
         {groups.length > 0 ? (
           <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
             <FieldGroupTabs
@@ -111,7 +151,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         </Fragment>
 
         {renderedUnknownFields}
-      </Stack>
+      </RootStack>
     </>
   )
 })

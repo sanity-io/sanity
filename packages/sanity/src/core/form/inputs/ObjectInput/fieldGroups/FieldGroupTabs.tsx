@@ -38,25 +38,32 @@ const GroupTabs = ({
   onClick,
   shouldAutoFocus = true,
   disabled,
-}: FieldGroupTabsProps) => (
-  <TabList space={2} data-testid="field-group-tabs">
-    {groups.map((group) => {
-      return (
-        <GroupTab
-          aria-controls={`${inputId}-field-group-fields`}
-          autoFocus={shouldAutoFocus && group.selected}
-          disabled={disabled || group.disabled}
-          icon={group?.icon}
-          key={`${inputId}-${group.name}-tab`}
-          name={group.name}
-          onClick={onClick}
-          selected={Boolean(group.selected)}
-          title={group.title || group.name}
-        />
-      )
-    })}
-  </TabList>
-)
+}: FieldGroupTabsProps) => {
+  const {t} = useTranslation()
+  return (
+    <TabList space={2} data-testid="field-group-tabs">
+      {groups.map((group) => {
+        const title = group.i18n?.title
+          ? t(group.i18n.title.key, {ns: group.i18n.title.ns})
+          : group.title || group.name
+
+        return (
+          <GroupTab
+            aria-controls={`${inputId}-field-group-fields`}
+            autoFocus={shouldAutoFocus && group.selected}
+            disabled={disabled || group.disabled}
+            icon={group?.icon}
+            key={`${inputId}-${group.name}-tab`}
+            name={group.name}
+            onClick={onClick}
+            selected={Boolean(group.selected)}
+            title={title}
+          />
+        )
+      })}
+    </TabList>
+  )
+}
 
 /* For small screens, use Select from Sanity UI  */
 const GroupSelect = ({
@@ -87,7 +94,10 @@ const GroupSelect = ({
       value={groups.find((g) => g.selected)?.name}
     >
       {groups.map((group) => {
-        // Separate hidden in order to resolve it to a boolean type
+        const title = group.i18n?.title
+          ? t(group.i18n.title.key, {ns: group.i18n.title.ns})
+          : group.title || group.name
+
         return (
           <GroupOption
             aria-controls={`${inputId}-field-group-fields`}
@@ -95,7 +105,7 @@ const GroupSelect = ({
             key={`${inputId}-${group.name}-tab`}
             name={group.name}
             selected={Boolean(group.selected)}
-            title={group.title || group.name}
+            title={title}
           />
         )
       })}

@@ -1,8 +1,10 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Stack} from '@sanity/ui'
+import {Fragment, type PropsWithChildren, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {type CommentMessage} from '../../types'
+import {transformChildren} from '../../utils'
 import {MentionInlineBlock, NormalBlock} from './blocks'
 
 const PortableTextWrap = styled(Stack)(() => {
@@ -19,39 +21,48 @@ const PortableTextWrap = styled(Stack)(() => {
 
 const EMPTY_ARRAY: [] = []
 
-const components: PortableTextComponents = {
-  block: {
-    normal: ({children}) => <NormalBlock>{children}</NormalBlock>,
+function NormalBlockTransformed(props: PropsWithChildren) {
+  const children = useMemo(() => transformChildren(props.children), [props.children])
 
-    // Since we do not offer any formatting options, we can just use the normal block for all of these.
-    h1: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    h2: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    h3: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    h4: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    h5: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    h6: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    blockquote: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    code: ({children}) => <NormalBlock>{children}</NormalBlock>,
+  return <NormalBlock>{children}</NormalBlock>
+}
+
+const components: PortableTextComponents = {
+  // Since we do not offer any formatting options, we can just use the normal block for all of these.
+  block: {
+    normal: NormalBlockTransformed,
+    h1: NormalBlockTransformed,
+    h2: NormalBlockTransformed,
+    h3: NormalBlockTransformed,
+    h4: NormalBlockTransformed,
+    h5: NormalBlockTransformed,
+    h6: NormalBlockTransformed,
+    blockquote: NormalBlockTransformed,
+    code: NormalBlockTransformed,
   },
+
   list: {
-    bullet: ({children}) => children,
-    number: ({children}) => <>{children}</>,
-    checkmarks: ({children}) => <>{children}</>,
+    bullet: Fragment,
+    number: Fragment,
+    checkmarks: Fragment,
   },
+
   listItem: {
-    bullet: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    number: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    checkmarks: ({children}) => <NormalBlock>{children}</NormalBlock>,
+    bullet: NormalBlockTransformed,
+    number: NormalBlockTransformed,
+    checkmarks: NormalBlockTransformed,
   },
+
+  // Since we do not offer any formatting options, we can just use the normal block for all of these.
   marks: {
-    // Since we do not offer any formatting options, we can just use the normal block for all of these.
-    strong: ({children}) => <>{children}</>,
-    em: ({children}) => <>{children}</>,
-    code: ({children}) => <>{children}</>,
-    underline: ({children}) => <>{children}</>,
-    strikeThrough: ({children}) => <>{children}</>,
-    link: ({children}) => <>{children}</>,
+    strong: Fragment,
+    em: Fragment,
+    code: Fragment,
+    underline: Fragment,
+    strikeThrough: Fragment,
+    link: Fragment,
   },
+
   types: {
     mention: (props) => {
       return <MentionInlineBlock userId={props?.value?.userId} selected={false} />
@@ -67,7 +78,7 @@ interface CommentMessageSerializerProps {
  * @beta
  * @hidden
  */
-export function CommentMessageSerializer(props: CommentMessageSerializerProps) {
+export function CommentMessageSerializer(props: CommentMessageSerializerProps): JSX.Element {
   const {blocks} = props
 
   return (

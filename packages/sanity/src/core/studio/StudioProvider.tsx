@@ -17,7 +17,7 @@ import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
-import {EnableErrorReporting} from './EnableErrorReporting'
+import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
 import {
   AuthenticateScreen,
@@ -70,7 +70,7 @@ export function StudioProvider({
       <StudioTelemetryProvider config={config}>
         <LocaleProvider>
           <PackageVersionStatusProvider>
-            <EnableErrorReporting />
+            <MaybeEnableErrorReporting errorReporter={errorReporter} />
             <ResourceCacheProvider>{children}</ResourceCacheProvider>
           </PackageVersionStatusProvider>
         </LocaleProvider>

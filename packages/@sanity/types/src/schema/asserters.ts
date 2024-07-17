@@ -10,6 +10,8 @@ import {
   type BooleanSchemaType,
   type DeprecatedSchemaType,
   type DeprecationConfiguration,
+  type FileSchemaType,
+  type ImageSchemaType,
   type NumberSchemaType,
   type ObjectSchemaType,
   type ReferenceSchemaType,
@@ -106,6 +108,16 @@ export function isPrimitiveSchemaType(
 /** @internal */
 export function isReferenceSchemaType(type: unknown): type is ReferenceSchemaType {
   return isRecord(type) && (type.name === 'reference' || isReferenceSchemaType(type.type))
+}
+
+/** @internal */
+export function isImageSchemaType(type: unknown): type is ImageSchemaType {
+  return isRecord(type) && (type.name === 'image' || isImageSchemaType(type.type))
+}
+
+/** @internal */
+export function isFileSchemaType(type: unknown): type is FileSchemaType {
+  return isRecord(type) && (type.name === 'file' || isFileSchemaType(type.type))
 }
 
 /** @internal */

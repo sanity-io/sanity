@@ -1,5 +1,4 @@
-import {expect, test} from '@playwright/experimental-ct-react'
-
+import {expect, test} from '../../../fixtures'
 import {testHelpers} from '../../../utils/testHelpers'
 import {ObjectBlockStory} from './ObjectBlockStory'
 
@@ -140,19 +139,20 @@ test.describe('Portable Text Input', () => {
       await expect($closeButton.or($closeButtonSvg).first()).toBeFocused()
 
       // Tab to the input
-      await page.keyboard.press('Tab')
-
-      const $dialogInput = await page.getByTestId('default-edit-object-dialog').locator('input')
+      await page.keyboard.press('Tab+Tab')
 
       // Assertion: Dialog should not be closed when you tab to input
-      await expect($dialog).not.toBeHidden()
+      await expect(page.getByTestId('default-edit-object-dialog')).not.toBeHidden()
 
       // Check that we have focus on the input
-      await expect($dialogInput).toBeFocused()
+      await expect(page.getByTestId('default-edit-object-dialog').locator('input')).toBeFocused()
 
       // Assertion: Focus should be locked
-      await page.keyboard.press('Tab+Tab')
-      await expect($dialogInput).toBeFocused()
+      await page.keyboard.press('Tab+Tab+Tab')
+
+      await expect(page.getByTestId('default-edit-object-dialog')).not.toBeHidden()
+
+      await expect(page.getByTestId('default-edit-object-dialog').locator('input')).toBeFocused()
     })
 
     test('Blocks that appear in the menu bar should always display a title', async ({

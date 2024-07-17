@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.49.0",
+  "version": "3.51.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -63,7 +63,7 @@
     "@rexxars/react-split-pane": "^0.1.93",
     "@sanity/color": "^3.0.0",
     "@sanity/icons": "^3.3.0",
-    "@sanity/ui": "^2.6.3",
+    "@sanity/ui": "^2.7.0",
     "@uiw/react-codemirror": "^4.11.4",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.1",
@@ -75,7 +75,7 @@
     "@repo/package.config": "workspace:*",
     "@sanity/block-tools": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^6.20.2",
+    "@sanity/client": "^6.21.0",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",

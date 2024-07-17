@@ -1,17 +1,18 @@
 /* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
-import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
+import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
 import {
   BundleActions,
   type DocumentActionComponent,
   type DocumentActionDescription,
+  Hotkeys,
   isBundleDocument,
   LATEST,
   shouldArrayDialogOpen,
   usePerspective,
   useSource,
-  useTimelineSelector,
+  useTimelineSelector
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
@@ -51,6 +52,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
         {firstActionState.title && <Text size={1}>{firstActionState.title}</Text>}
         {firstActionState.shortcut && (
           <Hotkeys
+            data-testid="document-status-bar-hotkeys"
             fontSize={1}
             style={{marginTop: -4, marginBottom: -4}}
             keys={String(firstActionState.shortcut)

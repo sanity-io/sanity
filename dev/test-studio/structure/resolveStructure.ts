@@ -3,7 +3,6 @@ import {
   CogIcon,
   EarthGlobeIcon,
   ImagesIcon,
-  JoystickIcon,
   PlugIcon,
   RocketIcon,
   SyncIcon,
@@ -401,14 +400,6 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
         types: typesInOptionGroup(S, schema, 'v3'),
       }),
 
-      _buildTypeGroup(S, schema, {
-        id: '3d',
-        title: '3D Demos',
-        icon: JoystickIcon,
-        types: typesInOptionGroup(S, schema, '3d'),
-        defaultLayout: 'detail',
-      }),
-
       S.divider(),
 
       _buildTypeGroup(S, schema, {
@@ -434,7 +425,6 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
             !EXTERNAL_PLUGIN_INPUT_TYPES.includes(id) &&
             !DEBUG_FIELD_GROUP_TYPES.includes(id) &&
             !typesInOptionGroup(S, schema, 'v3').includes(id) &&
-            !typesInOptionGroup(S, schema, '3d').includes(id) &&
             !TS_DOC_TYPES.includes(id)
           )
         })

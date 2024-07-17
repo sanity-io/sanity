@@ -3,7 +3,7 @@ import path from 'node:path'
 import {jest} from '@jest/globals'
 import dotenv from 'dotenv'
 
-// eslint-disable-next-line no-process-env
+// eslint-disable-next-line no-process-env, turbo/no-undeclared-env-vars
 process.env.FORCE_COLOR = '0'
 
 dotenv.config({path: path.resolve(__dirname, '../.env')})
@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
   // https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: jest.fn().mockImplementation((query) => ({
+    value: (query: string) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -21,7 +21,7 @@ if (typeof window !== 'undefined') {
       addEventListener: jest.fn(),
       removeEventListener: jest.fn(),
       dispatchEvent: jest.fn(),
-    })),
+    }),
   })
 
   Object.defineProperty(window, 'IntersectionObserver', {

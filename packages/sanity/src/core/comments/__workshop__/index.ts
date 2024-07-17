@@ -2,7 +2,7 @@ import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
 export default defineScope({
-  name: 'structure/comments',
+  name: 'core/comments',
   title: 'comments',
   stories: [
     {
@@ -79,6 +79,11 @@ export default defineScope({
       name: 'comments-list-item-layout',
       title: 'CommentsListItemLayoutStory',
       component: lazy(() => import('./CommentsListItemLayoutStory')),
+    },
+    {
+      name: 'comments-message-url-serializer',
+      title: 'CommentsMessageURLSerializer',
+      component: lazy(() => import('./CommentsMessageURLSerializerStory')),
     },
   ],
 })

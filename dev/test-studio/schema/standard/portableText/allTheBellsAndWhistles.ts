@@ -225,10 +225,30 @@ export const ptAllTheBellsAndWhistlesType = defineType({
             }),
             defineField({
               title: 'Box Content',
-              name: 'body',
+              name: 'content',
               type: 'array',
               of: [{type: 'block'}],
               validation: (rule) => rule.required().error('Must have content'),
+            }),
+            defineField({
+              title: 'Nested object',
+              name: 'nestedObject',
+              type: 'object',
+              fields: [
+                defineField({
+                  name: 'title',
+                  title: 'Title',
+                  type: 'string',
+                  validation: (rule) => rule.required().warning('Should have a title'),
+                }),
+                defineField({
+                  title: 'Box Content',
+                  name: 'body',
+                  type: 'array',
+                  of: [{type: 'block'}],
+                  validation: (rule) => rule.required().error('Must have content'),
+                }),
+              ],
             }),
           ],
           components: {

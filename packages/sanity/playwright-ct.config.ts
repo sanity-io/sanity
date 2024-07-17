@@ -6,6 +6,7 @@ import {defineConfig, devices} from '@playwright/experimental-ct-react'
 const TESTS_PATH = path.join(__dirname, 'playwright-ct', 'tests')
 const HTML_REPORT_PATH = path.join(__dirname, 'playwright-ct', 'report')
 const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'playwright-ct', 'results')
+const isCI = !!process.env.CI
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -36,10 +37,10 @@ export default defineConfig({
   ],
 
   /* Maximum time one test can run for. */
-  timeout: 10 * 1000,
+  timeout: 30 * 1000,
   expect: {
     // Maximum time expect() should wait for the condition to be met.
-    timeout: 5 * 1000,
+    timeout: 10 * 1000,
   },
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -47,7 +48,8 @@ export default defineConfig({
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 40 * 1000,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    trace: isCI ? 'on-all-retries' : 'retain-on-failure',
+    video: isCI ? 'on-first-retry' : 'retain-on-failure',
     /* Port to use for Playwright component endpoint. */
     ctPort: 3100,
     /* Configure Playwright vite config */
@@ -69,8 +71,29 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    {name: 'chromium', use: {...devices['Desktop Chrome']}},
-    {name: 'firefox', use: {...devices['Desktop Firefox']}},
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        permissions: ['clipboard-read', 'clipboard-write'],
+        contextOptions: {
+          // chromium-specific permissions
+          permissions: ['clipboard-read', 'clipboard-write'],
+        },
+      },
+    },
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: {
+            'dom.events.asyncClipboard.readText': true,
+            'dom.events.testing.asyncClipboard': true,
+          },
+        },
+      },
+    },
     {name: 'webkit', use: {...devices['Desktop Safari']}},
   ],
 })
