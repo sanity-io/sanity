@@ -2,7 +2,9 @@ export {
   BundleActions,
   BundleBadge,
   BundleMenu,
+  createWrapper,
   getAllVersionsOfDocument,
+  getBundleSlug,
   LATEST,
   usePerspective,
 } from './bundles'
