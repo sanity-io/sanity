@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 import {useCallback} from 'react'
-import {useCurrentUser} from 'sanity'
+import {getPublishedId, useCurrentUser} from 'sanity'
 
 import {useClient} from '../../hooks'
 import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
@@ -69,9 +69,28 @@ export function useBundleOperations() {
     [client],
   )
 
+  const handlePublishBundle = useCallback(
+    async (bundleId: string, bundleDocuments: SanityDocument[]) => {
+      if (!client) return null
+
+      const transaction = studioClient.transaction()
+      bundleDocuments.forEach(({_version, ...document}) => {
+        transaction.createOrReplace({
+          ...document,
+          _id: getPublishedId(document._id, true),
+        })
+      })
+
+      await transaction.commit()
+      return await client.patch(bundleId).set({publishedAt: new Date().toISOString()}).commit()
+    },
+    [client, studioClient],
+  )
+
   return {
     createBundle: handleCreateBundle,
     deleteBundle: handleDeleteBundle,
     updateBundle: handleUpdateBundle,
+    publishBundle: handlePublishBundle,
   }
 }

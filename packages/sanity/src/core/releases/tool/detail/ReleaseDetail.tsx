@@ -1,12 +1,13 @@
-import {ArrowLeftIcon, PublishIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {ArrowLeftIcon, ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
+import {Box, Card, Container, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
 import {LoadingBlock, useClient} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components'
 import {useListener} from '../../../hooks/useListener'
 import {useBundles} from '../../../store/bundles'
+import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {API_VERSION} from '../../../tasks/constants'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {type ReleasesRouterState} from '../../types/router'
@@ -20,7 +21,7 @@ type Screen = (typeof SUPPORTED_SCREENS)[number]
 
 const useFetchBundleDocuments = (bundleSlug: string) => {
   const client = useClient({apiVersion: API_VERSION})
-  const query = `*[defined(_version) &&  _id in path("${bundleSlug}.*")]`
+  const query = `*[defined(_version) && _id in path("${bundleSlug}.*")]`
   return useListener({query, client})
 }
 
@@ -43,15 +44,22 @@ export const ReleaseDetail = () => {
   const {bundleSlug}: ReleasesRouterState = router.state
   const parsedSlug = decodeURIComponent(bundleSlug || '')
   const {data, loading} = useBundles()
+  const {publishBundle} = useBundleOperations()
   const {documents: bundleDocuments, loading: documentsLoading} =
     useFetchBundleDocuments(parsedSlug)
+  const [isPublishingBundle, setIsPublishingBundle] = useState(false)
   const history = useReleaseHistory(bundleDocuments)
   const validation = useBundleDocumentsValidation(bundleDocuments)
 
   const bundle = data?.find((storeBundle) => storeBundle.slug === parsedSlug)
   const bundleHasDocuments = !!bundleDocuments.length
   const showPublishButton = loading || !bundle?.publishedAt
-  const isPublishButtonDisabled = loading || !bundle || !bundleHasDocuments
+  const isValidatingDocuments = Object.values(validation).some(({isValidating}) => isValidating)
+  const hasDocumentValidationErrors = Object.values(validation).some(({hasError}) => hasError)
+  const isPublishButtonDisabled =
+    loading || !bundle || !bundleHasDocuments || isPublishingBundle || hasDocumentValidationErrors
+
+  const toast = useToast()
 
   const navigateToReview = useCallback(() => {
     router.navigate({
@@ -66,6 +74,61 @@ export const ReleaseDetail = () => {
       _searchParams: [],
     })
   }, [router])
+
+  const publishTooltipContent = useMemo(() => {
+    if (!hasDocumentValidationErrors && !isValidatingDocuments) return null
+
+    const tooltipText = () => {
+      if (isValidatingDocuments) {
+        return 'Validating documents...'
+      }
+
+      if (hasDocumentValidationErrors) {
+        return 'Some documents have validation errors'
+      }
+
+      return null
+    }
+
+    return (
+      <Flex gap={1} align="center">
+        <ErrorOutlineIcon />
+        <Text muted size={1}>
+          {tooltipText()}
+        </Text>
+      </Flex>
+    )
+  }, [hasDocumentValidationErrors, isValidatingDocuments])
+
+  const handlePublishAll = useCallback(async () => {
+    if (!bundle) return
+
+    try {
+      setIsPublishingBundle(true)
+      await publishBundle(bundle._id, bundleDocuments)
+      toast.push({
+        closable: true,
+        status: 'success',
+        title: (
+          <Text muted size={1}>
+            The <strong>{bundle.title}</strong> release was published
+          </Text>
+        ),
+      })
+    } catch (publishingError) {
+      toast.push({
+        status: 'error',
+        title: (
+          <Text muted size={1}>
+            Failed to publish the <strong>{bundle.title}</strong> release
+          </Text>
+        ),
+      })
+    } finally {
+      setIsPublishingBundle(false)
+    }
+  }, [bundle, bundleDocuments, publishBundle, toast])
+
   const header = useMemo(
     () => (
       <Card
@@ -124,7 +187,17 @@ export const ReleaseDetail = () => {
 
           <Flex flex="none" gap={2}>
             {showPublishButton && (
-              <Button icon={PublishIcon} disabled={isPublishButtonDisabled} text="Publish all" />
+              <Button
+                tooltipProps={{
+                  disabled: !isPublishButtonDisabled && !isValidatingDocuments,
+                  content: publishTooltipContent,
+                  placement: 'bottom',
+                }}
+                icon={PublishIcon}
+                disabled={isPublishButtonDisabled}
+                text="Publish all"
+                onClick={handlePublishAll}
+              />
             )}
             <BundleMenuButton bundle={bundle} documentCount={bundleDocuments.length} />
           </Flex>
@@ -136,9 +209,12 @@ export const ReleaseDetail = () => {
       bundle,
       bundleDocuments.length,
       bundleHasDocuments,
+      handlePublishAll,
       isPublishButtonDisabled,
+      isValidatingDocuments,
       navigateToReview,
       navigateToSummary,
+      publishTooltipContent,
       router,
       showPublishButton,
     ],
