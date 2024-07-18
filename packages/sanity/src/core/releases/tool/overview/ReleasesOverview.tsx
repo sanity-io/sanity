@@ -139,12 +139,13 @@ export function ReleasesOverview() {
     [],
   )
 
-  const renderRowActions = useCallback(
-    ({datum: bundle}: {datum: TableBundle}) => (
+  const renderRowActions = useCallback(({datum}: {datum: TableBundle | unknown}) => {
+    const bundle = datum as TableBundle
+
+    return (
       <BundleMenuButton bundle={bundle} documentCount={bundle.documentsMetadata.documentCount} />
-    ),
-    [],
-  )
+    )
+  }, [])
 
   return (
     <Container width={2}>

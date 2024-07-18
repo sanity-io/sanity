@@ -27,7 +27,14 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   emptyState: (() => JSX.Element) | string
   loading?: boolean
   rowId: keyof TableData
-  rowActions?: ({datum}: {datum: RowDatum<TableData, AdditionalRowTableData>}) => JSX.Element
+  rowActions?: ({
+    datum,
+  }: {
+    datum: RowDatum<TableData, AdditionalRowTableData> | unknown
+    // datum: TableData extends unknown
+    // RowDatum<TableData, AdditionalRowTableData>
+    // : DefaultTableData
+  }) => JSX.Element
 }
 
 const RowStack = styled(Stack)({
@@ -95,7 +102,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
     [rowActions],
   )
 
-  const _columnDefs = useMemo(
+  const amalgamatedColumnDefs = useMemo(
     () => (rowActions ? [...columnDefs, rowActionColumnDef] : columnDefs),
     [columnDefs, rowActionColumnDef, rowActions],
   )
@@ -113,7 +120,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
             display="flex"
             margin={-1}
           >
-            {_columnDefs.map(({cell: Cell, width, id, sorting = false}) => (
+            {amalgamatedColumnDefs.map(({cell: Cell, width, id, sorting = false}) => (
               <Fragment key={String(id)}>
                 <Cell
                   datum={datum as RowDatum<TableData, AdditionalRowTableData>}
@@ -129,7 +136,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
           </Card>
         )
       },
-    [_columnDefs, rowId],
+    [amalgamatedColumnDefs, rowId],
   )
 
   const tableContent = useMemo(() => {
@@ -165,7 +172,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
     })
   }, [Row, emptyState, filteredData, renderRow, rowId])
 
-  const headers = useMemo(() => _columnDefs.map(({cell, ...header}) => header), [_columnDefs])
+  const headers = useMemo(
+    () => amalgamatedColumnDefs.map(({cell, ...header}) => ({...header, id: String(header.id)})),
+    [amalgamatedColumnDefs],
+  )
 
   if (loading) {
     return <LoadingBlock fill data-testid="table-loading" />

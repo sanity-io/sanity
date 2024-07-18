@@ -91,10 +91,15 @@ export function ReleaseSummary(props: {
 
   const Row = useMemo(() => getRow(release), [release])
 
-  const renderRowActions: ({datum}: {datum: BundleDocumentRow}) => JSX.Element = useCallback(
-    ({datum: document}) => <DocumentActions document={document} bundleTitle={release.title} />,
-    [release.title],
-  )
+  const renderRowActions: ({datum}: {datum: BundleDocumentRow | unknown}) => JSX.Element =
+    useCallback(
+      ({datum}) => {
+        const document = datum as BundleDocumentRow
+
+        return <DocumentActions document={document} bundleTitle={release.title} />
+      },
+      [release.title],
+    )
 
   const documentTableColumnDefs = useMemo(
     () => getDocumentTableColumnDefs(release.slug),

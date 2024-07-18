@@ -1,10 +1,10 @@
-import {useState} from 'react'
+import {type ComponentType, type PropsWithChildren, useState} from 'react'
 import {TableContext} from 'sanity/_singletons'
 
 /**
  * @internal
  */
-export const TableProvider = ({children}: {children: React.ReactNode}): JSX.Element => {
+export const TableProvider: ComponentType<PropsWithChildren> = ({children}) => {
   const [searchTerm, setSearchTerm] = useState<string | null>(null)
   const [sort, setSort] = useState<{column: string; direction: 'asc' | 'desc'} | null>(null)
 
