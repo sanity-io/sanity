@@ -1,10 +1,9 @@
 import {type SanityClient} from '@sanity/client'
-import {isReference, SanityDocument, type Schema, type ValidationMarker} from '@sanity/types'
+import {isReference, type SanityDocument, type Schema, type ValidationMarker} from '@sanity/types'
 import {reduce as reduceJSON} from 'json-reduce'
 import {omit} from 'lodash'
 import {
   asyncScheduler,
-  BehaviorSubject,
   combineLatest,
   concat,
   defer,
@@ -105,8 +104,6 @@ export const validation = memoize(
     let source$
 
     if (doc) {
-      // const documentSubject = new BehaviorSubject(doc)
-      // source$ = documentSubject.asObservable()
       source$ = doc
     } else {
       source$ = editState(ctx, {draftIds, publishedId}, typeName).pipe(
