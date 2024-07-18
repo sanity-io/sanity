@@ -95,6 +95,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const elementRef = useRef<HTMLDivElement | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   const {EditReferenceLink, getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} =
@@ -188,6 +189,12 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   }, [hasRef, isEditing, onPathFocus])
   const [contextMenuButtonElement, setContextMenuButtonElement] =
     useState<HTMLButtonElement | null>(null)
+  const setMenuButtonRef = useCallback((element: HTMLButtonElement | null) => {
+    // Sets the contextMenuButtonElement that useInsertMenuMenuItems needs and has to be a element from useState
+    // while also updating the menuButtonRef that useClickOutsideEvent needs inside ReferenceInput
+    setContextMenuButtonElement(element)
+    menuButtonRef.current = element
+  }, [])
   const {insertBefore, insertAfter} = useInsertMenuMenuItems({
     schemaTypes: insertableTypes,
     insertMenuOptions: parentSchemaType.options?.insertMenu,
@@ -200,7 +207,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       readOnly ? null : (
         <>
           <MenuButton
-            ref={setContextMenuButtonElement}
+            ref={setMenuButtonRef}
             onOpen={() => {
               insertBefore.send({type: 'close'})
               insertAfter.send({type: 'close'})
@@ -258,16 +265,17 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
         </>
       ),
     [
+      OpenLink,
       handleDuplicate,
       handleReplace,
       hasRef,
       inputId,
-      insertBefore,
       insertAfter,
+      insertBefore,
       isEditing,
       onRemove,
-      OpenLink,
       readOnly,
+      setMenuButtonRef,
       t,
     ],
   )
@@ -316,7 +324,11 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   )
 
   const item = (
-    <ReferenceItemRefProvider menuRef={menuRef} containerRef={containerRef}>
+    <ReferenceItemRefProvider
+      menuRef={menuRef}
+      menuButtonRef={menuButtonRef}
+      containerRef={containerRef}
+    >
       <RowLayout
         dragHandle={sortable}
         readOnly={!!readOnly}
