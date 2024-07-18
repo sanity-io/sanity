@@ -147,10 +147,13 @@ describe('BundleDetailsDialog', () => {
       })
       fireEvent.click(screen.getByTestId('submit-release-button'))
 
+      const {hue, icon, slug, _id} = existingBundleValue
       expect(useBundleOperations().updateBundle).toHaveBeenCalledWith({
-        ...existingBundleValue,
+        _id,
+        hue,
+        icon,
         // slug has not been updated
-        slug: existingBundleValue.slug,
+        slug,
         title: 'New title',
         description: 'New description',
       })

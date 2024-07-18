@@ -24,6 +24,8 @@ export function BundleForm(props: {
 }): JSX.Element {
   const {onChange, onError, value} = props
   const {title, description, icon, hue /*, publishAt*/} = value
+  // derive the action from whether the initial value prop has a slug
+  // only editing existing bundles will provide a value.slug
   const {current: action} = useRef(value.slug ? 'edit' : 'create')
   const isEditing = action === 'edit'
 

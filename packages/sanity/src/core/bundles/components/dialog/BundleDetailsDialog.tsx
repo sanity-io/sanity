@@ -45,17 +45,17 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
 
   const bundleOperation = useCallback(
     (formValue: Partial<BundleDocument>) => {
-      if (bundle) {
-        const updatedBundle: BundleDocument = {
-          ...bundle,
+      if (formAction === 'edit' && bundle?._id) {
+        const updatedBundle: Partial<BundleDocument> = {
           ...formValue,
+          _id: bundle._id,
         }
 
         return updateBundle(updatedBundle)
       }
       return createBundle(formValue)
     },
-    [bundle, createBundle, updateBundle],
+    [bundle?._id, createBundle, formAction, updateBundle],
   )
 
   const handleOnSubmit = useCallback(
