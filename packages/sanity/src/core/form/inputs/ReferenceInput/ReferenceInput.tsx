@@ -1,4 +1,4 @@
-import {Stack, Text, useToast} from '@sanity/ui'
+import {Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
@@ -11,7 +11,6 @@ import {Translate, useTranslation} from '../../../i18n'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {Alert} from '../../components/Alert'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {set, setIfMissing, unset} from '../../patch'
 import {AutocompleteContainer} from './AutocompleteContainer'
 import {CreateButton} from './CreateButton'
@@ -124,12 +123,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleClear = useCallback(() => {
     onChange(unset())
   }, [onChange])
-
-  const handleCancelEdit = useCallback(() => {
-    if (!value?._ref) {
-      handleClear()
-    }
-  }, [handleClear, value?._ref])
 
   const handleAutocompleteKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -253,23 +246,37 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const isEditing = focusPath.length === 1 && focusPath[0] === '_ref'
 
   // --- click outside handling
-  const {menuRef, containerRef} = useReferenceItemRef()
+  const {menuRef, menuButtonRef, containerRef} = useReferenceItemRef()
   const clickOutsideBoundaryRef = useRef<HTMLDivElement>(null)
   const autoCompletePortalRef = useRef<HTMLDivElement>(null)
   const createButtonMenuPortalRef = useRef<HTMLDivElement>(null)
-  useOnClickOutside(
-    [
-      containerRef,
-      clickOutsideBoundaryRef,
-      autoCompletePortalRef,
-      createButtonMenuPortalRef,
-      menuRef,
+  useClickOutsideEvent(
+    // We only clear on clicks outside if the ref does not have a value yet
+    !value?._ref &&
+      (() => {
+        // Handle clicks outside while the input is focused
+        if (isEditing) {
+          handleClear()
+        }
+        // And handle ReferenceItem clicks outside after clicking the context menu:
+        // 1. Click "+ Add item".
+        // 2. The empty reference has focus.
+        // 3. Click on the "••• Show more" button.
+        // 4. Focus leaves the empty reference autocomplete and moves to the menu.
+        // 5. Clicking outside of the menu should be handled as if `isEditing` were `true`
+        else if (document.activeElement === menuButtonRef.current) {
+          // If the menu button has focus when this event fires then it means the user clicked outside the menu and we should close
+          handleClear()
+        }
+      }),
+    () => [
+      menuRef.current,
+      menuButtonRef.current,
+      containerRef.current,
+      clickOutsideBoundaryRef.current,
+      autoCompletePortalRef.current,
+      createButtonMenuPortalRef.current,
     ],
-    () => {
-      if (isEditing) {
-        handleCancelEdit()
-      }
-    },
   )
 
   return (

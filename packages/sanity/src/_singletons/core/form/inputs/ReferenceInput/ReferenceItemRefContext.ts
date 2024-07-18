@@ -7,6 +7,7 @@ import {createContext} from 'react'
  */
 export interface ReferenceItemRef {
   menuRef: MutableRefObject<HTMLDivElement | null>
+  menuButtonRef: MutableRefObject<HTMLButtonElement | null>
   containerRef: MutableRefObject<HTMLDivElement | null>
 }
 
