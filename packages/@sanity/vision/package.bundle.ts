@@ -10,9 +10,6 @@ export default defineConfig(() => {
           index: './src/index.ts',
         },
       },
-      rollupOptions: {
-        external: ['sanity'],
-      },
     },
   })
 })
