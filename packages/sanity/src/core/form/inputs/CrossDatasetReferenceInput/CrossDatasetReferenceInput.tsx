@@ -1,7 +1,7 @@
 /* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
 import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Box, Card, Flex, Inline, Menu, Stack, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {
   type FocusEvent,
   type KeyboardEvent,
@@ -24,7 +24,6 @@ import {useFeatureEnabled} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {set, unset} from '../../patch'
 import {type ObjectInputProps} from '../../types'
 import {ReferenceMetadataLoadErrorAlertStrip} from '../ReferenceInput/ReferenceMetadataLoadFailure'
@@ -268,15 +267,10 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   // --- click outside handling
   const clickOutsideBoundaryRef = useRef<HTMLDivElement | null>(null)
   const autocompletePortalRef = useRef<HTMLDivElement | null>(null)
-  const createButtonMenuPortalRef = useRef<HTMLDivElement | null>(null)
-  useOnClickOutside(
-    [clickOutsideBoundaryRef, autocompletePortalRef, createButtonMenuPortalRef],
-    () => {
-      if (hasFocusAtRef) {
-        onPathFocus([])
-      }
-    },
-  )
+  useClickOutsideEvent(hasFocusAtRef && (() => onPathFocus([])), () => [
+    clickOutsideBoundaryRef.current,
+    autocompletePortalRef.current,
+  ])
 
   return (
     <>
