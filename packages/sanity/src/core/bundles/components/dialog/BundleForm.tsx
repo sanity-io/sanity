@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 //import {CalendarIcon} from '@sanity/icons'
 import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   FormFieldHeaderText,
   type FormNodeValidation,
@@ -21,11 +21,11 @@ export function BundleForm(props: {
   onChange: (params: Partial<BundleDocument>) => void
   onError: (errorsExist: boolean) => void
   value: Partial<BundleDocument>
-  action: 'edit' | 'create'
 }): JSX.Element {
-  const {onChange, onError, value, action} = props
-  const isEditing = action === 'edit'
+  const {onChange, onError, value} = props
   const {title, description, icon, hue /*, publishAt*/} = value
+  const {current: action} = useRef(value.slug ? 'edit' : 'create')
+  const isEditing = action === 'edit'
 
   //const dateFormatter = useDateTimeFormat()
 

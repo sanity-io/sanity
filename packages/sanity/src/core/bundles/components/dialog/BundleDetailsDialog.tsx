@@ -101,12 +101,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
     >
       <form onSubmit={handleOnSubmit}>
         <Box padding={6}>
-          <BundleForm
-            onChange={handleOnChange}
-            onError={handleOnError}
-            value={value}
-            action={formAction}
-          />
+          <BundleForm onChange={handleOnChange} onError={handleOnError} value={value} />
         </Box>
         <Flex justify="flex-end" padding={3}>
           <Button

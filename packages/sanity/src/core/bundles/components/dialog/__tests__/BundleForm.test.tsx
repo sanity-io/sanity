@@ -55,17 +55,9 @@ describe('BundleForm', () => {
       mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
       const wrapper = await createWrapper()
-      render(
-        <BundleForm
-          onChange={onChangeMock}
-          value={valueMock}
-          onError={onErrorMock}
-          action="create"
-        />,
-        {
-          wrapper,
-        },
-      )
+      render(<BundleForm onChange={onChangeMock} value={valueMock} onError={onErrorMock} />, {
+        wrapper,
+      })
     })
 
     it('should render the form fields', () => {
@@ -146,6 +138,7 @@ describe('BundleForm', () => {
       description: 'Summer time',
       icon: 'heart-filled',
       hue: 'magenta',
+      slug: 'summer-drop',
     } as BundleDocument
     beforeEach(async () => {
       onChangeMock.mockClear()
@@ -174,12 +167,7 @@ describe('BundleForm', () => {
 
       const wrapper = await createWrapper()
       render(
-        <BundleForm
-          onChange={onChangeMock}
-          value={existingBundleValue}
-          onError={onErrorMock}
-          action="edit"
-        />,
+        <BundleForm onChange={onChangeMock} value={existingBundleValue} onError={onErrorMock} />,
         {
           wrapper,
         },
