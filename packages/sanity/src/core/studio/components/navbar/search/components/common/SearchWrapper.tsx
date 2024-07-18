@@ -44,7 +44,11 @@ export function SearchWrapper({
    * Set shared `onClose` in search context
    */
   useEffect(() => {
-    setOnClose(handleClose)
+    /**
+     * When using useState you have to use the function callback version of setState,
+     *  otherwise it'll call your function and set the state to whatever your function return.
+     */
+    setOnClose(() => handleClose)
   }, [handleClose, setOnClose])
 
   /**
