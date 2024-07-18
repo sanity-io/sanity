@@ -4,7 +4,7 @@ import {useCallback, useState} from 'react'
 
 import {BundleBadge} from '../../../../bundles/components/BundleBadge'
 import {BundleMenu} from '../../../../bundles/components/BundleMenu'
-import {CreateBundleDialog} from '../../../../bundles/components/dialog/CreateBundleDialog'
+import {BundleDetailsDialog} from '../../../../bundles/components/dialog/BundleDetailsDialog'
 import {usePerspective} from '../../../../bundles/hooks/usePerspective'
 import {useBundles} from '../../../../store/bundles'
 
@@ -43,7 +43,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       />
 
       {createBundleDialogOpen && (
-        <CreateBundleDialog onCancel={handleClose} onCreate={handleClose} />
+        <BundleDetailsDialog onCancel={handleClose} onSubmit={handleClose} />
       )}
     </>
   )
