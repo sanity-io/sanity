@@ -11,10 +11,10 @@ import {API_VERSION} from '../../../tasks/constants'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {type ReleasesRouterState} from '../../types/router'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
-import {ReleaseOverview} from './ReleaseOverview'
 import {ReleaseReview} from './ReleaseReview'
+import {ReleaseSummary} from './ReleaseSummary'
 
-const SUPPORTED_SCREENS = ['overview', 'review'] as const
+const SUPPORTED_SCREENS = ['summary', 'review'] as const
 type Screen = (typeof SUPPORTED_SCREENS)[number]
 
 const useFetchBundleDocuments = (bundleSlug: string) => {
@@ -30,7 +30,7 @@ const getActiveScreen = (router: RouterContextValue): Screen => {
     !activeScreen ||
     !SUPPORTED_SCREENS.includes(activeScreen)
   ) {
-    return 'overview'
+    return 'summary'
   }
   return activeScreen
 }
@@ -58,7 +58,7 @@ export const ReleaseDetail = () => {
     })
   }, [router])
 
-  const navigateToOverview = useCallback(() => {
+  const navigateToSummary = useCallback(() => {
     router.navigate({
       ...router.state,
       _searchParams: [],
@@ -67,7 +67,16 @@ export const ReleaseDetail = () => {
 
   const header = useMemo(
     () => (
-      <Card flex="none" padding={3}>
+      <Card
+        flex="none"
+        padding={3}
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+          backgroundColor: 'var(--card-bg-color)',
+        }}
+      >
         <Flex>
           <Flex align="baseline" flex={1} gap={2}>
             <Flex gap={1}>
@@ -88,10 +97,10 @@ export const ReleaseDetail = () => {
 
             <Flex gap={1}>
               <Button
-                key="overview"
+                key="summary"
                 mode="bleed"
-                onClick={navigateToOverview}
-                selected={activeScreen === 'overview'}
+                onClick={navigateToSummary}
+                selected={activeScreen === 'summary'}
                 text="Summary"
               />
               {/* StudioButton supports tooltip when button is disabled */}
@@ -126,8 +135,8 @@ export const ReleaseDetail = () => {
       bundleDocuments.length,
       bundleHasDocuments,
       isPublishButtonDisabled,
-      navigateToOverview,
       navigateToReview,
+      navigateToSummary,
       router,
       showPublishButton,
     ],
@@ -160,8 +169,8 @@ export const ReleaseDetail = () => {
               <LoadingBlock title="Loading documents" />
             ) : (
               <>
-                {activeScreen === 'overview' && (
-                  <ReleaseOverview
+                {activeScreen === 'summary' && (
+                  <ReleaseSummary
                     documents={bundleDocuments}
                     release={bundle}
                     documentsHistory={history.documentsHistory}
