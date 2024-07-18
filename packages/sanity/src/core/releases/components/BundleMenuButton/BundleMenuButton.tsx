@@ -98,6 +98,7 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
           padding={bundleHasDocuments}
           footer={{
             confirmButton: {
+              text: 'Delete',
               tone: 'default',
               onClick: handleOnDeleteBundle,
               loading: discardStatus === 'discarding',
