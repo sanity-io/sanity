@@ -261,7 +261,7 @@
     "@repo/package.config": "workspace:*",
     "@sanity/codegen": "3.51.0",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/pkg-utils": "6.9.3",
+    "@sanity/pkg-utils": "6.10.4",
     "@sanity/tsdoc": "1.0.83",
     "@sanity/ui-workshop": "^1.2.11",
     "@sentry/types": "^8.12.0",
