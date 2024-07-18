@@ -3,16 +3,20 @@ import {Box, Button, type ButtonMode, Card, Container, Flex, Heading, Stack, Tex
 import {isBefore} from 'date-fns'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useState} from 'react'
 
-import {Button as StudioButton} from '../../../ui-components'
-import {CreateBundleDialog} from '../../bundles/components/dialog/CreateBundleDialog'
-import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
-import {type BundleDocument} from '../../store/bundles/types'
-import {useBundles} from '../../store/bundles/useBundles'
-import {ReleasesTable, type TableBundle} from '../components/ReleasesTable/ReleasesTable'
-import {containsBundles} from '../types/bundle'
-import {useBundlesMetadata} from './useBundlesMetadata'
+import {Button as StudioButton} from '../../../../ui-components'
+import {CreateBundleDialog} from '../../../bundles/components/dialog/CreateBundleDialog'
+import {type BundleDocument, useBundles} from '../../../store'
+import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
+import {Table} from '../../components/Table/Table'
+import {containsBundles} from '../../types/bundle'
+import {type BundlesMetadata, useBundlesMetadata} from '../useBundlesMetadata'
+import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 
 type Mode = 'open' | 'archived'
+
+export interface TableBundle extends BundleDocument {
+  documentsMetadata: BundlesMetadata
+}
 
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 
@@ -20,7 +24,6 @@ export function ReleasesOverview() {
   const {data: bundles, loading: loadingBundles} = useBundles()
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState<string>()
   const bundleSlugs = useMemo(() => bundles?.map((bundle) => bundle.slug) || [], [bundles])
   const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
   const loading = loadingBundles || loadingBundlesMetadata
@@ -55,9 +58,6 @@ export function ReleasesOverview() {
       setBundleGroupMode('open')
     }
   }, [bundleGroupMode, groupedBundles.archived.length])
-
-  // clear search when mode changes
-  useEffect(() => setSearchTerm(''), [bundleGroupMode])
 
   const handleBundleGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
@@ -131,54 +131,64 @@ export function ReleasesOverview() {
   }
 
   const applySearchTermToBundles = useCallback(
-    (bundle: BundleDocument) =>
-      !searchTerm || bundle.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()),
-    [searchTerm],
+    (unfilteredData: TableBundle[], tableSearchTerm: string) => {
+      return unfilteredData.filter((bundle) => {
+        return bundle.title.toLocaleLowerCase().includes(tableSearchTerm.toLocaleLowerCase())
+      })
+    },
+    [],
   )
 
-  const filteredBundles = useMemo(
-    () => groupedBundles[bundleGroupMode]?.filter(applySearchTermToBundles) || [],
-    [applySearchTermToBundles, bundleGroupMode, groupedBundles],
-  )
+  const renderRowActions = useCallback(({datum}: {datum: TableBundle | unknown}) => {
+    const bundle = datum as TableBundle
+
+    return (
+      <BundleMenuButton bundle={bundle} documentCount={bundle.documentsMetadata.documentCount} />
+    )
+  }, [])
 
   return (
-    <Card flex={1} overflow="auto">
-      <Container width={3}>
-        <Stack paddingX={4} paddingY={6} space={4}>
-          <Flex align="flex-start" gap={2} paddingBottom={2}>
-            <Flex align="flex-start" flex={1} gap={4}>
-              <Stack paddingY={1} space={4}>
-                <Heading as="h1" size={2} style={{margin: '1px 0'}}>
-                  Releases
-                </Heading>
-                {!loading && !hasBundles && (
-                  <Container style={{margin: 0}} width={0}>
-                    <Stack space={5}>
-                      <Text muted size={2}>
-                        Releases are collections of document versions which can be managed and
-                        published together.
-                      </Text>
-                      <Box>{createReleaseButton}</Box>
-                    </Stack>
-                  </Container>
-                )}
-              </Stack>
-              {loadingOrHasBundles && currentArchivedPicker}
+    <Container width={2}>
+      <Card flex={1} overflow="auto">
+        <Container width={3}>
+          <Stack paddingX={4} paddingY={6} space={4}>
+            <Flex align="flex-start" gap={2} paddingBottom={2}>
+              <Flex align="flex-start" flex={1} gap={4}>
+                <Stack paddingY={1} space={4}>
+                  <Heading as="h1" size={2} style={{margin: '1px 0'}}>
+                    Releases
+                  </Heading>
+                  {!loading && !hasBundles && (
+                    <Container style={{margin: 0}} width={0}>
+                      <Stack space={5}>
+                        <Text muted size={2}>
+                          Releases are collections of document versions which can be managed and
+                          published together.
+                        </Text>
+                        <Box>{createReleaseButton}</Box>
+                      </Stack>
+                    </Container>
+                  )}
+                </Stack>
+                {loadingOrHasBundles && currentArchivedPicker}
+              </Flex>
+              {loadingOrHasBundles && createReleaseButton}
             </Flex>
-            {loadingOrHasBundles && createReleaseButton}
-          </Flex>
-          {loading ? (
-            <LoadingBlock fill data-testid="bundle-table-loader" />
-          ) : (
-            <ReleasesTable
-              bundles={filteredBundles}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
+            <Table<TableBundle>
+              // for resetting filter and sort on table when mode changed
+              key={bundleGroupMode}
+              loading={loading}
+              data={groupedBundles[bundleGroupMode]}
+              columnDefs={releasesOverviewColumnDefs}
+              searchFilter={applySearchTermToBundles}
+              emptyState="No Releases"
+              rowId="_id"
+              rowActions={renderRowActions}
             />
-          )}
-        </Stack>
-      </Container>
-      {renderCreateBundleDialog()}
-    </Card>
+          </Stack>
+        </Container>
+        {renderCreateBundleDialog()}
+      </Card>
+    </Container>
   )
 }
