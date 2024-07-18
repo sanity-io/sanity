@@ -5,8 +5,7 @@ import {type MouseEventHandler, useCallback, useEffect, useMemo, useState} from 
 
 import {Button as StudioButton} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
-import {type BundleDocument} from '../../../store/bundles/types'
-import {useBundles} from '../../../store/bundles/useBundles'
+import {type BundleDocument, useBundles} from '../../../store'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {Table} from '../../components/Table/Table'
 import {containsBundles} from '../../types/bundle'
