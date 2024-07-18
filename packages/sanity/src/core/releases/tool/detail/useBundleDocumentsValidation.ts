@@ -58,13 +58,15 @@ export function useBundleDocumentsValidationOld(bundles: SanityDocument[]) {
 
 export function useBundleDocumentsValidation(bundles: SanityDocument[]) {
   const {getClient, i18n} = useSource()
-  const {unstable_observeDocumentPairAvailability} = useDocumentPreviewStore()
+  const {unstable_observeDocumentPairAvailability, unstable_observeDocuments} =
+    useDocumentPreviewStore()
   const schema = useSchema()
 
   const observable = useMemo(() => {
     return documentsValidation(
       {
         observeDocumentPairAvailability: unstable_observeDocumentPairAvailability,
+        observeDocuments: unstable_observeDocuments,
         schema,
         i18n,
         getClient,

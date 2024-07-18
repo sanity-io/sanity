@@ -45,6 +45,8 @@ export const ReleaseDetail = () => {
   const {data, loading} = useBundles()
   const {documents: bundleDocuments, loading: documentsLoading} =
     useFetchBundleDocuments(parsedSlug)
+
+  console.log(bundleDocuments)
   const history = useReleaseHistory(bundleDocuments)
 
   const bundle = data?.find((storeBundle) => storeBundle.slug === parsedSlug)

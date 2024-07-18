@@ -8,11 +8,9 @@ import {
 import {reduce as reduceJSON} from 'json-reduce'
 import {
   asyncScheduler,
-  BehaviorSubject,
   combineLatest,
   concat,
   defer,
-  from,
   lastValueFrom,
   type Observable,
   of,
@@ -47,14 +45,12 @@ import {validateDocumentObservable} from '../../../validation/validateDocument'
 export interface ValidationStatus {
   isValidating: boolean
   validation: ValidationMarker[]
-  documentId: string
   revision?: string
 }
 
 const INITIAL_VALIDATION_STATUS: ValidationStatus = {
   isValidating: true,
   validation: [],
-  documentId: '',
 }
 
 function findReferenceIds(obj: any): Set<string> {
@@ -99,21 +95,9 @@ export const documentValidation = (
     schema: Schema
     i18n: LocaleSource
   },
-  doc?: SanityDocument,
+  document$: Observable<SanityDocument | null>,
 ) => {
-  const documentSubject = new BehaviorSubject(doc)
-  const document$ = documentSubject.asObservable()
-  function updateDocument(newDocument: SanityDocument) {
-    documentSubject.next(newDocument)
-  }
-  if (!doc) {
-    return {
-      validationStatusObservable: of({validation: [], isValidating: false, documentId: ''}),
-      updateDocument,
-    }
-  }
-
-  const referenceIds$ = from(Array.from(findReferenceIds(document$)))
+  const referenceIds$ = document$.pipe(map((document) => [...findReferenceIds(document)]))
   // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
   // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
   const referenceExistence$ = referenceIds$.pipe(
@@ -171,7 +155,7 @@ export const documentValidation = (
     exhaustMapWithTrailing((document) => {
       return defer(() => {
         if (!document?._type) {
-          return of({validation: EMPTY_VALIDATION, isValidating: false, documentId: doc._id})
+          return of({validation: EMPTY_VALIDATION, isValidating: false, documentId: document?._id})
         }
         return concat(
           of({isValidating: true, revision: document._rev}),
@@ -186,43 +170,53 @@ export const documentValidation = (
             map((validationMarkers) => ({
               validation: validationMarkers,
               isValidating: false,
-              documentId: doc._id,
+              documentId: document?._id,
             })),
           ),
         )
       })
     }),
-    scan((acc, next) => ({...acc, ...next}), {...INITIAL_VALIDATION_STATUS, documentId: doc._id}),
+    scan((acc, next) => ({...acc, ...next}), INITIAL_VALIDATION_STATUS),
     shareLatestWithRefCount(),
   )
 
-  return {
-    validationStatusObservable,
-    updateDocument,
-    documentId: doc._id,
+  return validationStatusObservable
+}
+
+const MEMO = new Map<string, Observable<ValidationStatus>>()
+
+function getDocumentValidation(id: string, producer: () => Observable<ValidationStatus>) {
+  if (!MEMO.has(id)) {
+    MEMO.set(id, producer())
   }
+  return MEMO.get(id)
 }
 
 export const documentsValidation = (
   ctx: {
     observeDocumentPairAvailability: ObserveDocumentPairAvailability
+    observeDocument: (id: string) => Observable<SanityDocument>
     getClient: (options: SourceClientOptions) => SanityClient
     schema: Schema
     i18n: LocaleSource
   },
-  documents: SanityDocument[] = [],
+  documentIds$: Observable<string[]>,
 ) => {
-  const validations = documents.map((doc) => documentValidation(ctx, doc))
-  const combinedObservables = combineLatest(
-    validations.map((v) => v.validationStatusObservable),
-  ).pipe(shareLatestWithRefCount())
-
-  const updateDocument = (doc: SanityDocument) => {
-    validations.find((v) => v.documentId === doc._id)?.updateDocument(doc)
-  }
+  const validations = documentIds$.pipe(
+    mergeMap((ids) => {
+      const validations = ids.map((id) =>
+        getDocumentValidation(id, () =>
+          ctx.observeDocument(id).pipe(mergeMap((doc) => documentValidation(ctx, document$))),
+        ),
+      )
+      return combineLatest(validations)
+    }),
+  )
+  const combinedObservables = combineLatest(validations.map((v) => v)).pipe(
+    shareLatestWithRefCount(),
+  )
 
   return {
     observable: combinedObservables,
-    update: updateDocument,
   }
 }
