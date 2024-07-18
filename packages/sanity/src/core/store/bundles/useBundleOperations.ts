@@ -1,5 +1,6 @@
 import {type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
+import {omit} from 'lodash'
 import {useCallback} from 'react'
 import {getPublishedId, useCurrentUser} from 'sanity'
 
@@ -74,9 +75,11 @@ export function useBundleOperations() {
       if (!client) return null
 
       const transaction = studioClient.transaction()
-      bundleDocuments.forEach(({_version, ...document}) => {
+      bundleDocuments.forEach((document) => {
+        const transactionDocument = omit(document, ['_version']) as SanityDocument
+
         transaction.createOrReplace({
-          ...document,
+          ...transactionDocument,
           _id: getPublishedId(document._id, true),
         })
       })

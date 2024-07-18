@@ -86,6 +86,8 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
             <MenuItem onClick={() => setSelectedAction('edit')} icon={EditIcon} text="Edit" />
             <MenuItem
               onClick={handleOnToggleArchive}
+              // published documents cannot be (un)archived
+              disabled={!!bundle?.publishedAt}
               icon={isBundleArchived ? UnarchiveIcon : ArchiveIcon}
               text={isBundleArchived ? 'Unarchive' : 'Archive'}
             />

@@ -4,7 +4,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {LoadingBlock, useClient} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
-import {Button} from '../../../../ui-components'
+import {Button, Dialog} from '../../../../ui-components'
 import {useListener} from '../../../hooks/useListener'
 import {useBundles} from '../../../store/bundles'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
@@ -47,7 +47,9 @@ export const ReleaseDetail = () => {
   const {publishBundle} = useBundleOperations()
   const {documents: bundleDocuments, loading: documentsLoading} =
     useFetchBundleDocuments(parsedSlug)
-  const [isPublishingBundle, setIsPublishingBundle] = useState(false)
+  const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
+    'idle',
+  )
   const history = useReleaseHistory(bundleDocuments)
   const validation = useBundleDocumentsValidation(bundleDocuments)
 
@@ -57,7 +59,11 @@ export const ReleaseDetail = () => {
   const isValidatingDocuments = Object.values(validation).some(({isValidating}) => isValidating)
   const hasDocumentValidationErrors = Object.values(validation).some(({hasError}) => hasError)
   const isPublishButtonDisabled =
-    loading || !bundle || !bundleHasDocuments || isPublishingBundle || hasDocumentValidationErrors
+    loading ||
+    !bundle ||
+    !bundleHasDocuments ||
+    publishBundleStatus === 'publishing' ||
+    hasDocumentValidationErrors
 
   const toast = useToast()
 
@@ -100,11 +106,11 @@ export const ReleaseDetail = () => {
     )
   }, [hasDocumentValidationErrors, isValidatingDocuments])
 
-  const handlePublishAll = useCallback(async () => {
+  const handleConfirmPublishAll = useCallback(async () => {
     if (!bundle) return
 
     try {
-      setIsPublishingBundle(true)
+      setPublishBundleStatus('publishing')
       await publishBundle(bundle._id, bundleDocuments)
       toast.push({
         closable: true,
@@ -125,9 +131,35 @@ export const ReleaseDetail = () => {
         ),
       })
     } finally {
-      setIsPublishingBundle(false)
+      setPublishBundleStatus('idle')
     }
   }, [bundle, bundleDocuments, publishBundle, toast])
+
+  const confirmPublishDialog = useMemo(() => {
+    if (publishBundleStatus === 'idle') return null
+
+    return (
+      <Dialog
+        id="confirm-publish-dialog"
+        header="Are you sure you want to publish the release and all document versions?"
+        onClose={() => setPublishBundleStatus('idle')}
+        footer={{
+          confirmButton: {
+            label: 'Publish',
+            tone: 'default',
+            onClick: handleConfirmPublishAll,
+            loading: publishBundleStatus === 'publishing',
+            disabled: publishBundleStatus === 'publishing',
+          },
+        }}
+      >
+        <Text muted size={1}>
+          The <strong>{bundle?.title}</strong> release and its {bundleDocuments.length} document
+          version{bundleDocuments.length > 1 ? 's' : ''} will be published.
+        </Text>
+      </Dialog>
+    )
+  }, [bundle?.title, bundleDocuments.length, handleConfirmPublishAll, publishBundleStatus])
 
   const header = useMemo(
     () => (
@@ -196,7 +228,8 @@ export const ReleaseDetail = () => {
                 icon={PublishIcon}
                 disabled={isPublishButtonDisabled}
                 text="Publish all"
-                onClick={handlePublishAll}
+                onClick={() => setPublishBundleStatus('confirm')}
+                loading={publishBundleStatus === 'publishing'}
               />
             )}
             <BundleMenuButton bundle={bundle} documentCount={bundleDocuments.length} />
@@ -209,11 +242,11 @@ export const ReleaseDetail = () => {
       bundle,
       bundleDocuments.length,
       bundleHasDocuments,
-      handlePublishAll,
       isPublishButtonDisabled,
       isValidatingDocuments,
       navigateToReview,
       navigateToSummary,
+      publishBundleStatus,
       publishTooltipContent,
       router,
       showPublishButton,
@@ -269,6 +302,7 @@ export const ReleaseDetail = () => {
           </Box>
         </Container>
       </Card>
+      {confirmPublishDialog}
     </Flex>
   )
 }
