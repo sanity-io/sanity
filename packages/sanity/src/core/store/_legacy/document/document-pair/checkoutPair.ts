@@ -60,13 +60,11 @@ export interface DocumentVersion {
 /**
  * @hidden
  * @beta */
-// TODO: Rename -> `Bundle`
 export interface Pair {
   /** @internal */
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
-  // TODO: Rename -> `public`
   published: DocumentVersion
-  drafts: DocumentVersion[]
+  draft: DocumentVersion
   complete: () => void
 }
 
@@ -116,12 +114,9 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
       }
     }
     if (mutations.patch) {
-      // TODO: Should be dynamic
-      const draftIndex = 0
       return {
         actionType: 'sanity.action.document.edit',
-        draftId: idPair.draftIds[draftIndex],
-        // TODO: Rename -> `publicId`
+        draftId: idPair.draftId,
         publishedId: idPair.publishedId,
         patch: omit(mutations.patch, 'id'),
       }
@@ -183,13 +178,12 @@ function submitCommitRequest(
 }
 
 /** @internal */
-// TODO: Rename -> `checkoutBundle`
 export function checkoutPair(
   client: SanityClient,
   idPair: IdPair,
   serverActionsEnabled: Observable<boolean>,
 ): Pair {
-  const {publishedId, draftIds} = idPair
+  const {publishedId, draftId} = idPair
 
   const listenerEventsConnector = new Subject<ListenerEvent>()
   const listenerEvents$ = getPairListener(client, idPair).pipe(
@@ -200,11 +194,11 @@ export function checkoutPair(
     filter((ev) => ev.type === 'reconnect'),
   ) as Observable<ReconnectEvent>
 
-  const drafts = draftIds.map((draftId) =>
-    createBufferedDocument(draftId, listenerEvents$.pipe(filter(isMutationEventForDocId(draftId)))),
+  const draft = createBufferedDocument(
+    draftId,
+    listenerEvents$.pipe(filter(isMutationEventForDocId(draftId))),
   )
 
-  // TODO: Rename -> `public`
   const published = createBufferedDocument(
     publishedId,
     listenerEvents$.pipe(filter(isMutationEventForDocId(publishedId))),
@@ -215,10 +209,7 @@ export function checkoutPair(
     filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
   )
 
-  const commits$ = merge(
-    ...drafts.map((draft) => draft.commitRequest$),
-    published.commitRequest$,
-  ).pipe(
+  const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
     mergeMap((commitRequest) =>
       serverActionsEnabled.pipe(
         take(1),
@@ -233,13 +224,12 @@ export function checkoutPair(
 
   return {
     transactionsPendingEvents$,
-    drafts: drafts.map<DocumentVersion>((draft) => ({
+    draft: {
       ...draft,
       events: merge(commits$, reconnect$, draft.events).pipe(map(setVersion('draft'))),
       consistency$: draft.consistency$,
       remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft'))),
-    })),
-    // TODO: Rename -> `public`
+    },
     published: {
       ...published,
       events: merge(commits$, reconnect$, published.events).pipe(map(setVersion('published'))),
