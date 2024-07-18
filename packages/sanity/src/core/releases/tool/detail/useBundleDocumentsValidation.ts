@@ -1,33 +1,38 @@
 import {type SanityDocument} from '@sanity/types'
-import {useEffect, useMemo} from 'react'
+import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {useDocumentPreviewStore, useSchema, useSource} from 'sanity'
 
-import {documentValidation} from './validation'
+import {documentsValidation} from './validation'
 
 export function useBundleDocumentsValidation(bundles: SanityDocument[]) {
   const {getClient, i18n} = useSource()
-  const {unstable_observeDocumentPairAvailability} = useDocumentPreviewStore()
+  const {unstable_observeDocumentPairAvailability, unstable_observeDocument} =
+    useDocumentPreviewStore()
   const schema = useSchema()
-  const bundle = bundles[0]
+  // This will be stable across renders, will emit a new one when a bundle is added or removed.
+  const bundlesIds = bundles.map((bundle) => bundle._id).join(',')
 
   const observable = useMemo(() => {
-    const validationStatus = documentValidation(
+    return documentsValidation(
       {
         observeDocumentPairAvailability: unstable_observeDocumentPairAvailability,
+        observeDocument: unstable_observeDocument,
         schema,
         i18n,
         getClient,
       },
-      bundle,
+      bundlesIds.split(','),
     )
-    return validationStatus
-  }, [bundle, getClient, i18n, schema, unstable_observeDocumentPairAvailability])
-  const value = useObservable(observable.validationStatusObservable)
-
-  useEffect(() => {
-    observable.updateDocument(bundle)
-  }, [bundle, observable])
+  }, [
+    bundlesIds,
+    getClient,
+    i18n,
+    schema,
+    unstable_observeDocumentPairAvailability,
+    unstable_observeDocument,
+  ])
+  const value = useObservable(observable, [])
 
   return value
 }
