@@ -27,13 +27,13 @@ export async function getAllVersionsOfDocument(
     return documents.map((doc: SanityDocument) => {
       const sluggedName = getBundleSlug(doc._id)
       const bundle = bundles?.find((b) => b.slug === sluggedName)
-      return {
-        name: speakingurl(sluggedName),
+      const version: Partial<BundleDocument> = {
+        slug: speakingurl(sluggedName),
         title: bundle?.title || sluggedName,
         hue: bundle?.hue || 'gray',
         icon: bundle?.icon || 'cube',
-        //publishAt: bundle?.publishAt,
       }
+      return version
     })
   })
 }
