@@ -78,14 +78,21 @@ export function useBundleOperations() {
       bundleDocuments.forEach((document) => {
         const transactionDocument = omit(document, ['_version']) as SanityDocument
 
+        // update the published document with the bundle version
         transaction.createOrReplace({
           ...transactionDocument,
           _id: getPublishedId(document._id, true),
         })
+        // delete the bundle version document
+        transaction.delete(document._id)
       })
 
-      await transaction.commit()
-      return await client.patch(bundleId).set({publishedAt: new Date().toISOString()}).commit()
+      const {transactionId} = await transaction.commit()
+      const publishedAt = new Date().toISOString()
+      return await client
+        .patch(bundleId)
+        .set({publishedAt, archivedAt: publishedAt, publishedRev: transactionId})
+        .commit()
     },
     [client, studioClient],
   )

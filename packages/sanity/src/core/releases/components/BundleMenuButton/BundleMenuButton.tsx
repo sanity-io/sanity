@@ -5,11 +5,11 @@ import {
   TrashIcon,
   UnarchiveIcon,
 } from '@sanity/icons'
-import {Button, Menu, MenuButton, MenuItem, Spinner, Text, useToast} from '@sanity/ui'
+import {Button, Menu, MenuButton, Spinner, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Dialog} from '../../../../ui-components'
+import {Dialog, MenuItem} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
@@ -86,8 +86,6 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
             <MenuItem onClick={() => setSelectedAction('edit')} icon={EditIcon} text="Edit" />
             <MenuItem
               onClick={handleOnToggleArchive}
-              // published documents cannot be (un)archived
-              disabled={!!bundle?.publishedAt}
               icon={isBundleArchived ? UnarchiveIcon : ArchiveIcon}
               text={isBundleArchived ? 'Unarchive' : 'Archive'}
             />
