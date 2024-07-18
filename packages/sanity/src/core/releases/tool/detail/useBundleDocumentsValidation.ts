@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {useEffect, useMemo} from 'react'
+import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {BehaviorSubject, of} from 'rxjs'
 import {
@@ -13,21 +13,22 @@ import {
 } from 'sanity'
 
 import {validation} from '../../../store/_legacy/document/document-pair/validation'
-import {documentValidation} from './validation'
+import {documentsValidation} from './validation'
 
+/**
+ * This uses the same validation that exists in the document pair store.
+ */
 export function useBundleDocumentsValidationOld(bundles: SanityDocument[]) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {getClient, i18n} = useSource()
   const {unstable_observeDocumentPairAvailability} = useDocumentPreviewStore()
   const schema = useSchema()
   const bundle = bundles[0]
-  console.log('bundle', bundle)
 
   const observable = useMemo(() => {
     if (!bundle) {
       return of({validation: [], isValidating: false})
     }
-    console.log('Observable update', bundle)
     const documentSubject = new BehaviorSubject(bundle)
     const document = documentSubject.asObservable()
 
@@ -52,34 +53,26 @@ export function useBundleDocumentsValidationOld(bundles: SanityDocument[]) {
     return validationStatus
   }, [bundle, client, getClient, i18n, schema, unstable_observeDocumentPairAvailability])
   const value = useObservable(observable, {validation: [], isValidating: false})
-
-  console.log('useBundleDocumentsValidation', value)
-  return null
+  return [value]
 }
 
 export function useBundleDocumentsValidation(bundles: SanityDocument[]) {
   const {getClient, i18n} = useSource()
   const {unstable_observeDocumentPairAvailability} = useDocumentPreviewStore()
   const schema = useSchema()
-  const bundle = bundles[0]
 
   const observable = useMemo(() => {
-    const validationStatus = documentValidation(
+    return documentsValidation(
       {
         observeDocumentPairAvailability: unstable_observeDocumentPairAvailability,
         schema,
         i18n,
         getClient,
       },
-      bundle,
+      bundles,
     )
-    return validationStatus
-  }, [bundle, getClient, i18n, schema, unstable_observeDocumentPairAvailability])
-  const value = useObservable(observable.validationStatusObservable)
-
-  useEffect(() => {
-    observable.updateDocument(bundle)
-  }, [bundle, observable])
+  }, [bundles, getClient, i18n, schema, unstable_observeDocumentPairAvailability])
+  const value = useObservable(observable.observable, [])
 
   return value
 }

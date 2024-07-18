@@ -17,11 +17,12 @@ import {type DocumentHistory} from './documentTable/useReleaseHistory'
 
 export function ReleaseOverview(props: {
   documents: SanityDocument[]
+  validations: any
   documentsHistory: Map<string, DocumentHistory>
   collaborators: string[]
   release: BundleDocument
 }) {
-  const {documents, documentsHistory, release, collaborators} = props
+  const {documents, documentsHistory, release, collaborators, validations} = props
   const {client} = useAddonDataset()
 
   const [iconValue, setIconValue] = useState<BundleIconEditorPickerValue>({
@@ -132,6 +133,7 @@ export function ReleaseOverview(props: {
       {documents.length > 0 && (
         <DocumentTable
           documents={documents}
+          validations={validations}
           release={release}
           documentsHistory={documentsHistory}
         />

@@ -26,8 +26,9 @@ export function DocumentTable(props: {
   documents: SanityDocument[]
   documentsHistory: Map<string, DocumentHistory>
   release: BundleDocument
+  validations: any
 }) {
-  const {documents, release, documentsHistory} = props
+  const {documents, release, documentsHistory, validations} = props
   // Filter will happen at the DocumentRow level because we don't have access here to the preview values.
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [sort, setSort] = useState<DocumentSort>({property: '_updatedAt', order: 'desc'})
@@ -50,7 +51,6 @@ export function DocumentTable(props: {
     })
     return sorted
   }, [documents, sort])
-
   return (
     <Stack space={1}>
       <DocumentHeader
@@ -63,6 +63,7 @@ export function DocumentTable(props: {
       <RowStack>
         {sortedDocuments.map((d) => (
           <DocumentRow
+            validation={validations?.find((v) => v.documentId === d._id)}
             searchTerm={searchTerm}
             document={d}
             key={d._id}

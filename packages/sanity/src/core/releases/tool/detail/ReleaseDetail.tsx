@@ -65,7 +65,7 @@ export const ReleaseDetail = () => {
       _searchParams: [],
     })
   }, [router])
-  useBundleDocumentsValidation(bundleDocuments)
+  const validations = useBundleDocumentsValidation(bundleDocuments)
   const header = useMemo(
     () => (
       <Card flex="none" padding={3}>
@@ -164,6 +164,7 @@ export const ReleaseDetail = () => {
                 {activeScreen === 'overview' && (
                   <ReleaseOverview
                     documents={bundleDocuments}
+                    validations={validations}
                     release={bundle}
                     documentsHistory={history.documentsHistory}
                     collaborators={history.collaborators}
@@ -174,6 +175,7 @@ export const ReleaseDetail = () => {
             {activeScreen === 'review' && (
               <ReleaseReview
                 documents={bundleDocuments}
+                validations={validations}
                 release={bundle}
                 documentsHistory={history.documentsHistory}
               />
