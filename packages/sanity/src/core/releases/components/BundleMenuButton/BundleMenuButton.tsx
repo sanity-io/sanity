@@ -1,9 +1,16 @@
-import {ArchiveIcon, EllipsisHorizontalIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
+import {
+  ArchiveIcon,
+  EditIcon,
+  EllipsisHorizontalIcon,
+  TrashIcon,
+  UnarchiveIcon,
+} from '@sanity/icons'
 import {Button, Menu, MenuButton, MenuItem, Spinner, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Dialog} from '../../../../ui-components'
+import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 
@@ -17,11 +24,13 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
   const router = useRouter()
   const isBundleArchived = !!bundle?.archivedAt
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
-  const [showDiscardDialog, setShowDiscardDialog] = useState(false)
+  const [selectedAction, setSelectedAction] = useState<'edit' | 'delete'>()
   const [discardStatus, setDiscardStatus] = useState<'idle' | 'discarding' | 'error'>('idle')
 
   const bundleMenuDisabled = !bundle
   const toast = useToast()
+
+  const resetSelectedAction = () => setSelectedAction(undefined)
 
   const handleOnDeleteBundle = async () => {
     if (bundleMenuDisabled) return
@@ -42,7 +51,7 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
         description: e.message,
       })
     } finally {
-      setShowDiscardDialog(false)
+      resetSelectedAction()
     }
   }
 
@@ -74,12 +83,13 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
         id="bundle-menu"
         menu={
           <Menu>
+            <MenuItem onClick={() => setSelectedAction('edit')} icon={EditIcon} text="Edit" />
             <MenuItem
               onClick={handleOnToggleArchive}
               icon={isBundleArchived ? UnarchiveIcon : ArchiveIcon}
               text={isBundleArchived ? 'Unarchive' : 'Archive'}
             />
-            <MenuItem onClick={() => setShowDiscardDialog(true)} icon={TrashIcon} text="Delete" />
+            <MenuItem onClick={() => setSelectedAction('delete')} icon={TrashIcon} text="Delete" />
           </Menu>
         }
         popover={{
@@ -89,11 +99,11 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
           portal: true,
         }}
       />
-      {showDiscardDialog && (
+      {selectedAction === 'delete' && (
         <Dialog
           id="discard-version-dialog"
           header={`Are you sure you want to delete the '${bundle?.title}' release?`}
-          onClose={() => setShowDiscardDialog(false)}
+          onClose={resetSelectedAction}
           // remove body padding if no documents in release
           padding={bundleHasDocuments}
           footer={{
@@ -112,6 +122,13 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
             </Text>
           )}
         </Dialog>
+      )}
+      {selectedAction === 'edit' && (
+        <BundleDetailsDialog
+          onCancel={resetSelectedAction}
+          onSubmit={resetSelectedAction}
+          bundle={bundle}
+        />
       )}
     </>
   )
