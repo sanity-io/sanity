@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 //import {CalendarIcon} from '@sanity/icons'
 import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   FormFieldHeaderText,
   type FormNodeValidation,
@@ -24,6 +24,10 @@ export function BundleForm(props: {
 }): JSX.Element {
   const {onChange, onError, value} = props
   const {title, description, icon, hue /*, publishAt*/} = value
+  // derive the action from whether the initial value prop has a slug
+  // only editing existing bundles will provide a value.slug
+  const {current: action} = useRef(value.slug ? 'edit' : 'create')
+  const isEditing = action === 'edit'
 
   //const dateFormatter = useDateTimeFormat()
 
@@ -52,11 +56,24 @@ export function BundleForm(props: {
     [icon, hue],
   )
 
+  const generateSlugFromTitle = useCallback(
+    (pickedTitle: string) => {
+      if (isEditing && value.slug) {
+        const slug = value.slug
+        return {slug, slugExists: false}
+      }
+      const newSlug = speakingurl(pickedTitle)
+      const slugExists = Boolean(data && data.find((bundle) => bundle.slug === newSlug))
+
+      return {slug: newSlug, slugExists}
+    },
+    [isEditing, value, data],
+  )
+
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
-      const newSlug = speakingurl(pickedTitle)
-      const slugExists = data && data.find((bundle) => bundle.slug === newSlug)
+      const {slug: newSlug, slugExists} = generateSlugFromTitle(pickedTitle)
       const isEmptyTitle = pickedTitle.trim() === '' && !isInitialRender
 
       if (isDraftOrPublished(pickedTitle) || slugExists || (isEmptyTitle && !isInitialRender)) {
@@ -88,7 +105,7 @@ export function BundleForm(props: {
       setIsInitialRender(false)
       onChange({...value, title: pickedTitle, slug: newSlug})
     },
-    [data, isInitialRender, onChange, onError, value],
+    [generateSlugFromTitle, isInitialRender, onChange, onError, value],
   )
 
   const handleBundleDescriptionChange = useCallback(

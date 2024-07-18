@@ -27,6 +27,7 @@ export function BundleBadge(
     <Flex
       gap={padding}
       padding={padding}
+      data-testid={`bundle-badge-color-${hue}`}
       style={
         {
           '--card-bg-color': rgba(hues[hue][color._dark ? 700 : 300].hex, 0.2),
@@ -40,7 +41,7 @@ export function BundleBadge(
       {icon && (
         <Box flex="none">
           <Text size={1}>
-            <Icon symbol={icon} />
+            <Icon data-testid={`bundle-badge-icon-${icon.toString()}`} symbol={icon} />
           </Text>
         </Box>
       )}
