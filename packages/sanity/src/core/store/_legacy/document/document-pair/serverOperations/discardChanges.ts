@@ -15,10 +15,10 @@ export const discardChanges: OperationImpl<[], DisabledReason> = {
   },
   execute: ({client, idPair}) => {
     return actionsApiClient(client).observable.action(
-      idPair.draftIds.map((draftId) => ({
+      {
         actionType: 'sanity.action.document.discard',
-        draftId,
-      })),
+        draftId: idPair.draftId,
+      },
       {tag: 'document.discard-changes'},
     )
   },

@@ -17,10 +17,8 @@ export const documentEvents = memoize(
     typeName: string,
     serverActionsEnabled: Observable<boolean>,
   ): Observable<DocumentVersionEvent> => {
-    // TODO: Should be dynamic
-    const draftIndex = 0
     return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
-      switchMap(({drafts, published}) => merge(drafts[draftIndex].events, published.events)),
+      switchMap(({draft, published}) => merge(draft.events, published.events)),
     )
   },
   memoizeKeyGen,

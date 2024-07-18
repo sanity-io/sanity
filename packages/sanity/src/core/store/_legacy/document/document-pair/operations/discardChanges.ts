@@ -13,11 +13,9 @@ export const discardChanges: OperationImpl<[], DisabledReason> = {
     return false
   },
   execute: ({client, idPair}) => {
-    // TODO: Should be dynamic
-    const draftIndex = 0
     return client.observable
       .transaction()
-      .delete(idPair.draftIds[draftIndex])
+      .delete(idPair.draftId)
       .commit({tag: 'document.discard-changes'})
   },
 }
