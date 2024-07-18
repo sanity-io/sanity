@@ -1,14 +1,21 @@
 import {CloseIcon} from '@sanity/icons'
-import {type SanityDocument} from '@sanity/types'
-import {Menu, Text, useToast} from '@sanity/ui'
+import {Card, Menu, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
+import {SanityDefaultPreview} from 'sanity'
 
 import {Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useClient} from '../../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {type BundleDocumentRow} from '../ReleaseSummary'
 
-export function DocumentActions({document}: {document: SanityDocument}) {
+export function DocumentActions({
+  document,
+  bundleTitle,
+}: {
+  document: BundleDocumentRow
+  bundleTitle: string
+}) {
   const [showDiscardDialog, setShowDiscardDialog] = useState(false)
   const [discardStatus, setDiscardStatus] = useState<'idle' | 'discarding' | 'error'>('idle')
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -48,10 +55,11 @@ export function DocumentActions({document}: {document: SanityDocument}) {
       {showDiscardDialog && (
         <Dialog
           id="discard-version-dialog"
-          header="Are you sure you want to delete this version of the document?"
+          header="Are you sure you want to discard the document version?"
           onClose={() => setShowDiscardDialog(false)}
           footer={{
             confirmButton: {
+              text: 'Discard version',
               tone: 'default',
               onClick: handleDiscardVersion,
               loading: discardStatus === 'discarding',
@@ -59,7 +67,12 @@ export function DocumentActions({document}: {document: SanityDocument}) {
             },
           }}
         >
-          <Text>This action can't be undone</Text>
+          <Card marginBottom={4} radius={2} border>
+            <SanityDefaultPreview {...document.previewValues} isPlaceholder={document.isLoading} />
+          </Card>
+          <Text muted size={1}>
+            The <strong>{bundleTitle}</strong> version of this document will be permanently deleted.
+          </Text>
         </Dialog>
       )}
     </>
