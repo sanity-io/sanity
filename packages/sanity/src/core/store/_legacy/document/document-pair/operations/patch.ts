@@ -19,13 +19,11 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
         ...published.patch(patches),
       ])
     } else {
-      // TODO: Should be dynamic
-      const draftIndex = 0
       draft.mutate([
         draft.createIfNotExists({
           ...initialDocument,
           ...snapshots.published,
-          _id: idPair.draftIds[draftIndex],
+          _id: idPair.draftId,
           _type: typeName,
         }),
         ...draft.patch(patches),
