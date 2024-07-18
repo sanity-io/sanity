@@ -2,7 +2,7 @@ import {useRouter} from 'sanity/router'
 
 import {ReleaseDetail} from './detail/ReleaseDetail'
 import {MigrateBundlesSlug} from './Migrate'
-import {ReleasesOverview} from './ReleasesOverview'
+import {ReleasesOverview} from './overview/ReleasesOverview'
 
 export function ReleasesTool() {
   const router = useRouter()
