@@ -116,7 +116,7 @@ describe('BundleMenuButton', () => {
     screen.getByText('This will also delete 2 document versions', {exact: false})
 
     await act(() => {
-      fireEvent.click(screen.getByText('Confirm'))
+      fireEvent.click(screen.getByText('Delete'))
     })
 
     expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(activeBundle)
@@ -149,7 +149,7 @@ describe('BundleMenuButton', () => {
     expect(screen.queryByTestId('confirm-delete-body')).toBeNull()
 
     await act(() => {
-      fireEvent.click(screen.getByText('Confirm'))
+      fireEvent.click(screen.getByText('Delete'))
     })
 
     expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(activeEmptyBundle)
