@@ -23,6 +23,7 @@ type GetAllVersionsOfDocumentType = (
 ) => Promise<Partial<BundleDocument>[]>
 
 jest.mock('sanity', () => ({
+  ...(jest.requireActual('sanity') || {}),
   useClient: jest.fn(),
   usePerspective: jest.fn().mockReturnValue({
     currentGlobalBundle: {},
