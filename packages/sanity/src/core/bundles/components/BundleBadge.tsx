@@ -1,5 +1,5 @@
-import {hues} from '@sanity/color'
-import {ChevronDownIcon, Icon} from '@sanity/icons'
+import {type ColorHueKey, hues} from '@sanity/color'
+import {ChevronDownIcon, Icon, type IconSymbol} from '@sanity/icons'
 // eslint-disable-next-line camelcase
 import {Box, Flex, rgba, Text, useTheme_v2} from '@sanity/ui'
 import {type CSSProperties} from 'react'
@@ -10,7 +10,15 @@ import {type BundleDocument} from '../../store/bundles/types'
  * @internal
  */
 export function BundleBadge(
-  props: Partial<BundleDocument> & {openButton?: boolean; padding?: number; title?: string},
+  props: Partial<
+    BundleDocument & {
+      icon: IconSymbol
+      hue: ColorHueKey
+      openButton: boolean
+      padding: number
+      title: string
+    }
+  >,
 ): JSX.Element {
   const {hue = 'gray', icon, openButton, padding = 3, title} = props
   const {color} = useTheme_v2()
