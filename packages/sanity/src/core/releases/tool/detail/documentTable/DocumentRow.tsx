@@ -56,11 +56,13 @@ export function DocumentRow(props: {
   document: SanityDocument
   release: BundleDocument
   history: DocumentHistory | undefined
+  validation: any
 }) {
   const {
     document,
     release,
     searchTerm,
+    validation,
     history = {
       editors: [],
       createdBy: undefined,
@@ -77,9 +79,10 @@ export function DocumentRow(props: {
     const title = typeof previewValues.title === 'string' ? previewValues.title : fallbackTitle
     if (!title.toLowerCase().includes(searchTerm.toLowerCase())) return null
   }
+  const hasValidationError = validation?.validation.some((v) => v.level === 'error')
 
   return (
-    <Card border radius={3}>
+    <Card border radius={3} tone={hasValidationError ? 'critical' : 'default'}>
       <Flex style={{margin: -1}}>
         <Box flex={1} padding={1}>
           <ReleaseDocumentPreview

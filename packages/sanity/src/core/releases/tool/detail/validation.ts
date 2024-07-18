@@ -47,12 +47,14 @@ import {validateDocumentObservable} from '../../../validation/validateDocument'
 export interface ValidationStatus {
   isValidating: boolean
   validation: ValidationMarker[]
+  documentId: string
   revision?: string
 }
 
 const INITIAL_VALIDATION_STATUS: ValidationStatus = {
   isValidating: true,
   validation: [],
+  documentId: '',
 }
 
 function findReferenceIds(obj: any): Set<string> {
@@ -105,7 +107,10 @@ export const documentValidation = (
     documentSubject.next(newDocument)
   }
   if (!doc) {
-    return {validationStatusObservable: of({validation: [], isValidating: false}), updateDocument}
+    return {
+      validationStatusObservable: of({validation: [], isValidating: false, documentId: ''}),
+      updateDocument,
+    }
   }
 
   const referenceIds$ = from(Array.from(findReferenceIds(document$)))
@@ -160,10 +165,13 @@ export const documentValidation = (
     concat(of(null), referenceDocumentUpdates$),
   ]).pipe(
     map(([document]) => document),
+    distinctUntilChanged((prev, curr) => {
+      return prev?._rev === curr?._rev
+    }),
     exhaustMapWithTrailing((document) => {
       return defer(() => {
         if (!document?._type) {
-          return of({validation: EMPTY_VALIDATION, isValidating: false})
+          return of({validation: EMPTY_VALIDATION, isValidating: false, documentId: doc._id})
         }
         return concat(
           of({isValidating: true, revision: document._rev}),
@@ -175,17 +183,46 @@ export const documentValidation = (
             schema: ctx.schema,
             environment: 'studio',
           }).pipe(
-            map((validationMarkers) => ({validation: validationMarkers, isValidating: false})),
+            map((validationMarkers) => ({
+              validation: validationMarkers,
+              isValidating: false,
+              documentId: doc._id,
+            })),
           ),
         )
       })
     }),
-    scan((acc, next) => ({...acc, ...next}), INITIAL_VALIDATION_STATUS),
+    scan((acc, next) => ({...acc, ...next}), {...INITIAL_VALIDATION_STATUS, documentId: doc._id}),
     shareLatestWithRefCount(),
   )
 
   return {
     validationStatusObservable,
     updateDocument,
+    documentId: doc._id,
+  }
+}
+
+export const documentsValidation = (
+  ctx: {
+    observeDocumentPairAvailability: ObserveDocumentPairAvailability
+    getClient: (options: SourceClientOptions) => SanityClient
+    schema: Schema
+    i18n: LocaleSource
+  },
+  documents: SanityDocument[] = [],
+) => {
+  const validations = documents.map((doc) => documentValidation(ctx, doc))
+  const combinedObservables = combineLatest(
+    validations.map((v) => v.validationStatusObservable),
+  ).pipe(shareLatestWithRefCount())
+
+  const updateDocument = (doc: SanityDocument) => {
+    validations.find((v) => v.documentId === doc._id)?.updateDocument(doc)
+  }
+
+  return {
+    observable: combinedObservables,
+    update: updateDocument,
   }
 }
