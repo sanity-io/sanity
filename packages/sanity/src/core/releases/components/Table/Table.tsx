@@ -31,9 +31,6 @@ export interface TableProps<TableData, AdditionalRowTableData> {
     datum,
   }: {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
-    // datum: TableData extends unknown
-    // RowDatum<TableData, AdditionalRowTableData>
-    // : DefaultTableData
   }) => JSX.Element
 }
 

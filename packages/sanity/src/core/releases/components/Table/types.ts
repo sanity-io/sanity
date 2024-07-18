@@ -4,9 +4,7 @@ export interface InjectedTableProps {
   style: {width?: number}
 }
 
-export type DefaultTableData = unknown
-
-export interface Column<TableData = DefaultTableData> {
+export interface Column<TableData = unknown> {
   header: (props: HeaderProps) => JSX.Element
   cell: (props: {
     datum: TableData
