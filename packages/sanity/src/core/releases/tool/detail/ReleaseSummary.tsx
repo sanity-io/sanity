@@ -1,7 +1,7 @@
 import {DocumentsIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {AvatarStack, Box, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTableContext} from 'sanity/_singletons'
 
 import {
@@ -40,6 +40,11 @@ const getRow =
     return children({...datum, previewValues, isLoading})
   }
 
+const setIconHue = ({hue, icon}: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}) => ({
+  hue: hue ?? 'gray',
+  icon: icon ?? 'documents',
+})
+
 export function ReleaseSummary(props: {
   documents: SanityDocument[]
   documentsHistory: Map<string, DocumentHistory>
@@ -47,12 +52,10 @@ export function ReleaseSummary(props: {
   release: BundleDocument
 }) {
   const {documents, documentsHistory, release, collaborators} = props
+  const {hue, icon} = release
   const {client} = useAddonDataset()
 
-  const [iconValue, setIconValue] = useState<BundleIconEditorPickerValue>({
-    hue: release.hue ?? 'gray',
-    icon: release.icon ?? 'documents',
-  })
+  const [iconValue, setIconValue] = useState<BundleIconEditorPickerValue>(setIconHue({hue, icon}))
   const toast = useToast()
   const handleIconValueChange = useCallback(
     async (value: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}) => {
@@ -105,6 +108,8 @@ export function ReleaseSummary(props: {
     () => getDocumentTableColumnDefs(release.slug),
     [release.slug],
   )
+  // update hue and icon when release changes
+  useEffect(() => setIconValue(setIconHue({hue, icon})), [hue, icon])
 
   return (
     <Stack paddingX={4} space={5}>
