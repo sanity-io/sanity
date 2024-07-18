@@ -56,9 +56,8 @@ export function BundleForm(props: {
 
   const generateSlugFromTitle = useCallback(
     (pickedTitle: string) => {
-      if (isEditing) {
-        // value will have defined slug when editing
-        const slug = value.slug as BundleDocument['slug']
+      if (isEditing && value.slug) {
+        const slug = value.slug
         return {slug, slugExists: false}
       }
       const newSlug = speakingurl(pickedTitle)
