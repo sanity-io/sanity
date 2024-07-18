@@ -48,8 +48,8 @@ export function useBundleOperations() {
   )
 
   const handleUpdateBundle = useCallback(
-    async (bundle: BundleDocument) => {
-      if (!client) return null
+    async (bundle: Partial<BundleDocument>) => {
+      if (!client || !bundle._id) return null
 
       const document = {
         ...bundle,
