@@ -1,15 +1,14 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {render, screen} from '@testing-library/react'
+import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
 
-import {queryByDataUi} from '../../../../../test/setup/customQueries'
-import {createWrapper} from '../../../bundles/util/tests/createWrapper'
-import {useObserveDocument} from '../../../preview/useObserveDocument'
-import {ColorSchemeProvider} from '../../../studio/colorScheme'
-import {UserColorManagerProvider} from '../../../user-color/provider'
-import {releasesUsEnglishLocaleBundle} from '../../i18n'
-import {useDocumentPreviewValues} from '../detail/documentTable/useDocumentPreviewValues'
-import {type DocumentHistory} from '../detail/documentTable/useReleaseHistory'
-import {ReleaseReview} from '../detail/ReleaseReview'
+import {queryByDataUi} from '../../../../../../test/setup/customQueries'
+import {createWrapper} from '../../../../bundles'
+import {useObserveDocument} from '../../../../preview/useObserveDocument'
+import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {useDocumentPreviewValues} from '../documentTable/useDocumentPreviewValues'
+import {type DocumentHistory} from '../documentTable/useReleaseHistory'
+import {ReleaseReview} from '../ReleaseReview'
 
 const baseDocument = {
   name: 'William Faulkner',
@@ -88,13 +87,13 @@ jest.mock('sanity/router', () => ({
   }),
 }))
 
-jest.mock('../../../preview/useObserveDocument', () => {
+jest.mock('../../../../preview/useObserveDocument', () => {
   return {
     useObserveDocument: jest.fn(),
   }
 })
 
-jest.mock('../detail/documentTable/useDocumentPreviewValues', () => {
+jest.mock('../documentTable/useDocumentPreviewValues', () => {
   return {
     useDocumentPreviewValues: jest.fn(),
   }
