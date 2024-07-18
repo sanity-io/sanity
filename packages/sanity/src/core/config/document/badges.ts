@@ -1,5 +1,6 @@
 import {type ComponentType, type ReactNode} from 'react'
 
+import {type HookCollectionActionHook} from '../../components/hookCollection'
 import {type EditStateFor} from '../../store'
 
 /**
@@ -21,6 +22,7 @@ export interface DocumentBadgeProps extends EditStateFor {}
 /**
  * @hidden
  * @beta */
-export interface DocumentBadgeComponent {
+export interface DocumentBadgeComponent
+  extends HookCollectionActionHook<DocumentBadgeProps, DocumentBadgeDescription> {
   (props: DocumentBadgeProps): DocumentBadgeDescription | null
 }

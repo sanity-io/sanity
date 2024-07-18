@@ -1,4 +1,5 @@
 import {Badge, type BadgeTone, Inline} from '@sanity/ui'
+import {memo, useCallback, useDeferredValue} from 'react'
 import {type DocumentBadgeDescription} from 'sanity'
 
 import {Tooltip} from '../../../../ui-components'
@@ -16,7 +17,7 @@ const BADGE_TONES: Record<string, BadgeTone | undefined> = {
   danger: 'critical',
 }
 
-function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
+const DocumentBadgesInner = memo(function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
   if (states.length === 0) {
     return null
   }
@@ -26,7 +27,7 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
         <Tooltip
           content={badge.title}
           disabled={!badge.title}
-          key={String(index)}
+          key={`${badge.label}-${index}`}
           placement="top"
           portal
         >
@@ -45,16 +46,31 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
       ))}
     </Inline>
   )
-}
+})
+
+const DocumentBadgesDeferred = memo(function DocumentBadgesDeferred(
+  props: DocumentBadgesInnerProps,
+) {
+  /**
+   * The purpose of this component is to allow deferring the rendering of document action hook states if the main thread becomes very busy.
+   * The `useDeferredValue` doesn't have an effect unless it's used to delay rendering a component that has `React.memo` to prevent unnecessary re-renders.
+   */
+  const states = useDeferredValue(props.states)
+  return <DocumentBadgesInner states={states} />
+})
 
 export function DocumentBadges() {
   const {badges, editState} = useDocumentPane()
 
+  const renderDocumentBadges = useCallback<
+    (props: {states: DocumentBadgeDescription[]}) => React.ReactNode
+  >(({states}) => <DocumentBadgesDeferred states={states} />, [])
+
   if (!editState || !badges) return null
 
   return (
-    <RenderBadgeCollectionState badges={badges} badgeProps={editState as any}>
-      {({states}) => <DocumentBadgesInner states={states} />}
+    <RenderBadgeCollectionState badges={badges} badgeProps={editState}>
+      {renderDocumentBadges}
     </RenderBadgeCollectionState>
   )
 }
