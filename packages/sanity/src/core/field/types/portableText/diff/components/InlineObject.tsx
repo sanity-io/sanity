@@ -128,8 +128,10 @@ function InlineObjectWithDiff({
     setOpen(false)
   }, [])
 
+  const value = useMemo(() => ({path: myPath}), [myPath])
+
   const popoverContent = (
-    <DiffContext.Provider value={{path: myPath}}>
+    <DiffContext.Provider value={value}>
       <PopoverContent
         diff={diff}
         emptyObject={emptyObject}
