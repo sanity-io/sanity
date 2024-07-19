@@ -34,7 +34,7 @@ export const bundleDocumentsValidation = (
     i18n: LocaleSource
   },
   documentIds: string[] = [],
-): Observable<Map<string, DocumentValidationStatus>> => {
+): Observable<DocumentValidationStatus[]> => {
   return combineLatest(
     documentIds.map((id) => {
       const document$ = ctx.observeDocument(id).pipe(
@@ -60,10 +60,11 @@ export const bundleDocumentsValidation = (
   ).pipe(
     // Transform to a dictionary with the id and value
     scan((acc, next) => {
+      const newMap = new Map(acc) // Create a new Map instance based on the current accumulator
       next.forEach((status) => {
-        acc.set(status.documentId, status)
+        newMap.set(status.documentId, status)
       })
-      return acc
+      return newMap
     }, new Map<string, DocumentValidationStatus>()),
     shareLatestWithRefCount(),
   )
