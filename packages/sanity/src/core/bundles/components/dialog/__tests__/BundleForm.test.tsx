@@ -2,8 +2,8 @@ import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type BundleDocument, useDateTimeFormat} from 'sanity'
 
+import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {useBundles} from '../../../../store/bundles'
-import {createWrapper} from '../../../util/tests/createWrapper'
 import {BundleForm} from '../BundleForm'
 
 jest.mock('../../../../../core/hooks/useDateTimeFormat', () => ({

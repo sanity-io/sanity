@@ -1,16 +1,13 @@
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {type ReactNode} from 'react'
 
-import {
-  createTestProvider,
-  type TestProviderOptions,
-} from '../../../../../test/testUtils/TestProvider'
+import {createTestProvider, type TestProviderOptions} from './TestProvider'
 
 /**
  * @internal
  * @hidden
  */
-export const createWrapper = async (options?: TestProviderOptions) => {
+export async function createWrapper(options?: TestProviderOptions) {
   const TestProvider = await createTestProvider(options)
   return function Wrapper({children}: {children: ReactNode}): JSX.Element {
     return (

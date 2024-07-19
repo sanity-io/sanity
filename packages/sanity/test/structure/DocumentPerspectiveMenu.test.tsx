@@ -3,7 +3,6 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {
   BundleBadge,
   type BundleDocument,
-  createWrapper,
   getAllVersionsOfDocument,
   getBundleSlug,
   type SanityClient,
@@ -13,7 +12,8 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {DocumentPerspectiveMenu} from './DocumentPerspectiveMenu'
+import {DocumentPerspectiveMenu} from '../../src/structure/panes/document/documentPanel/header/perspective/DocumentPerspectiveMenu'
+import {createWrapper} from '../testUtils/createWrapper'
 
 type getBundleSlugType = (documentId: string) => string
 type GetAllVersionsOfDocumentType = (
