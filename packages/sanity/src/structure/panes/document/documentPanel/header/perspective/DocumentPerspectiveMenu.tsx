@@ -26,7 +26,7 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
   const {currentGlobalBundle} = usePerspective()
   const bundles = useMemo(() => data ?? [], [data])
 
-  const existsInBundle = bundles.some((bundle) => bundle.slug === getBundleSlug(documentId))
+  const existsInBundle = getBundleSlug(documentId) === currentGlobalBundle?.slug
   const {title, hue, icon, slug} = currentGlobalBundle
 
   const router = useRouter()

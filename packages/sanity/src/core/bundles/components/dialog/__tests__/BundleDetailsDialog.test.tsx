@@ -2,9 +2,9 @@ import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {type BundleDocument, useBundles} from 'sanity'
 
+import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../../hooks/usePerspective'
-import {createWrapper} from '../../../util/tests/createWrapper'
 import {BundleDetailsDialog} from '../BundleDetailsDialog'
 
 /*jest.mock('../../../../../core/hooks/useDateTimeFormat', () => ({

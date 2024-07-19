@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 
-import {createWrapper} from '../../../util/tests/createWrapper'
+import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from '../BundleIconEditorPicker'
 
 describe('BundleIconEditorPicker', () => {
