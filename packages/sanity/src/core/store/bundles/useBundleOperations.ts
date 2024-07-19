@@ -83,16 +83,12 @@ export function useBundleOperations() {
           ...transactionDocument,
           _id: getPublishedId(document._id, true),
         })
-        // delete the bundle version document
-        transaction.delete(document._id)
       })
 
-      const {transactionId} = await transaction.commit()
+      // returned transactionId is the _rev for the updated documents
+      await transaction.commit()
       const publishedAt = new Date().toISOString()
-      return await client
-        .patch(bundleId)
-        .set({publishedAt, archivedAt: publishedAt, publishedRev: transactionId})
-        .commit()
+      return await client.patch(bundleId).set({publishedAt, archivedAt: publishedAt}).commit()
     },
     [client, studioClient],
   )
