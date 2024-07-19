@@ -5,6 +5,7 @@ import {useState} from 'react'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../../store/bundles/types'
+import {type DocumentValidationStatus} from './bundleDocumentsValidation'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
 import {DocumentDiffContainer} from './review/DocumentDiffContainer'
 
@@ -15,10 +16,12 @@ export function ReleaseReview({
   documents,
   release,
   documentsHistory,
+  validation,
 }: {
   documents: SanityDocument[]
   release: BundleDocument
   documentsHistory: Map<string, DocumentHistory>
+  validation: Map<string, DocumentValidationStatus>
 }) {
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -49,6 +52,7 @@ export function ReleaseReview({
             document={document}
             release={release}
             history={documentsHistory.get(document._id)}
+            validation={validation.get(document._id)}
           />
         ))}
       </Stack>

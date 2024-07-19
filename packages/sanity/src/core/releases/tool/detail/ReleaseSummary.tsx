@@ -14,12 +14,16 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {Chip} from '../../components/Chip'
 import {Table, type TableProps} from '../../components/Table/Table'
+import {type DocumentValidationStatus} from './bundleDocumentsValidation'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {useDocumentPreviewValues} from './documentTable/useDocumentPreviewValues'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
 
-export type DocumentWithHistory = SanityDocument & {history: DocumentHistory | undefined}
+export type DocumentWithHistory = SanityDocument & {
+  history: DocumentHistory | undefined
+  validation: DocumentValidationStatus | undefined
+}
 export type BundleDocumentRow = DocumentWithHistory & ReturnType<typeof useDocumentPreviewValues>
 
 const getRow =
@@ -50,8 +54,9 @@ export function ReleaseSummary(props: {
   documentsHistory: Map<string, DocumentHistory>
   collaborators: string[]
   release: BundleDocument
+  validation: Map<string, DocumentValidationStatus>
 }) {
-  const {documents, documentsHistory, release, collaborators} = props
+  const {documents, documentsHistory, release, collaborators, validation} = props
   const {hue, icon} = release
   const {client} = useAddonDataset()
 
@@ -88,8 +93,9 @@ export function ReleaseSummary(props: {
       documents.map((document) => ({
         ...document,
         history: documentsHistory.get(document._id),
+        validation: validation.get(document._id),
       })),
-    [documents, documentsHistory],
+    [documents, documentsHistory, validation],
   )
 
   const Row = useMemo(() => getRow(release), [release])

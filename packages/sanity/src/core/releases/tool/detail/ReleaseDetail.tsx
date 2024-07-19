@@ -46,6 +46,7 @@ export const ReleaseDetail = () => {
   const {documents: bundleDocuments, loading: documentsLoading} =
     useFetchBundleDocuments(parsedSlug)
   const history = useReleaseHistory(bundleDocuments)
+  const validation = useBundleDocumentsValidation(bundleDocuments)
 
   const bundle = data?.find((storeBundle) => storeBundle.slug === parsedSlug)
   const bundleHasDocuments = !!bundleDocuments.length
@@ -65,7 +66,6 @@ export const ReleaseDetail = () => {
       _searchParams: [],
     })
   }, [router])
-  useBundleDocumentsValidation(bundleDocuments)
   const header = useMemo(
     () => (
       <Card
@@ -176,6 +176,7 @@ export const ReleaseDetail = () => {
                     release={bundle}
                     documentsHistory={history.documentsHistory}
                     collaborators={history.collaborators}
+                    validation={validation}
                   />
                 )}
               </>
@@ -185,6 +186,7 @@ export const ReleaseDetail = () => {
                 documents={bundleDocuments}
                 release={bundle}
                 documentsHistory={history.documentsHistory}
+                validation={validation}
               />
             )}
           </Box>

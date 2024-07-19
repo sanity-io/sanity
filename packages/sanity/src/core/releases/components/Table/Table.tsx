@@ -116,6 +116,9 @@ const TableInner = <TableData, AdditionalRowTableData>({
             radius={3}
             display="flex"
             margin={-1}
+            // @ts-expect-error - Using a custom datum prop, this is not definitive, just a placeholder to show there is an error.
+            // update once designs land
+            tone={datum?.validation?.hasError ? 'critical' : 'default'}
           >
             {amalgamatedColumnDefs.map(({cell: Cell, width, id, sorting = false}) => (
               <Fragment key={String(id)}>
