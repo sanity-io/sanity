@@ -12,6 +12,7 @@ export interface LegacyArrayEditingContextValue {
 }
 
 /**
+ * A hook to check if legacy array editing is enabled
  * @internal
  */
 export function useLegacyArrayEditing(): LegacyArrayEditingContextValue {

@@ -8,6 +8,10 @@ interface LegacyArrayEditingProviderProps {
   enabled?: boolean
 }
 
+/**
+ * A provider that enables legacy array editing for its children.
+ * @internal
+ */
 export function LegacyArrayEditingProvider(props: LegacyArrayEditingProviderProps): JSX.Element {
   const {children, enabled: enabledProp} = props
 
