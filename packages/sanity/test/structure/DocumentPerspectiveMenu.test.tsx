@@ -3,11 +3,10 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {
   BundleBadge,
   type BundleDocument,
-  getAllVersionsOfDocument,
   getBundleSlug,
-  type SanityClient,
   useBundles,
   useClient,
+  useDocumentPerspective,
   usePerspective,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -16,33 +15,24 @@ import {DocumentPerspectiveMenu} from '../../src/structure/panes/document/docume
 import {createWrapper} from '../testUtils/createWrapper'
 
 type getBundleSlugType = (documentId: string) => string
-type GetAllVersionsOfDocumentType = (
-  bundles: BundleDocument[] | null,
-  client: SanityClient,
-  documentId: string,
-) => Promise<Partial<BundleDocument>[]>
 
-jest.mock('sanity', () => ({
-  ...(jest.requireActual('sanity') || {}),
-  useClient: jest.fn(),
-  usePerspective: jest.fn().mockReturnValue({
-    currentGlobalBundle: {},
-    setPerspective: jest.fn(),
-  }),
-  getAllVersionsOfDocument: jest.fn(() =>
-    Promise.resolve([
-      {
-        name: 'spring-drop',
-        title: 'Spring Drop',
-        hue: 'magenta',
-        icon: 'heart-filled',
-      },
-    ]),
-  ),
-  BundleBadge: jest.fn(),
-  useBundles: jest.fn(),
-  getBundleSlug: jest.fn(() => ''),
-}))
+jest.mock('sanity', () => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  const actual = jest.requireActual<typeof import('sanity')>('sanity')
+
+  return {
+    ...actual,
+    useClient: jest.fn(),
+    usePerspective: jest.fn().mockReturnValue({
+      currentGlobalBundle: {},
+      setPerspective: jest.fn(),
+    }),
+    BundleBadge: jest.fn(),
+    useBundles: jest.fn(),
+    getBundleSlug: jest.fn(() => ''),
+    useDocumentPerspective: jest.fn(),
+  }
+})
 
 jest.mock('sanity/router', () => ({
   useRouter: jest.fn().mockReturnValue({
@@ -61,8 +51,10 @@ const navigateIntent = mockUseRouter().navigateIntent as jest.Mock
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 const mockUsePerspective = usePerspective as jest.Mock
 const mockGetBundleSlug = getBundleSlug as jest.MockedFunction<getBundleSlugType>
-const mockGetAllVersionsOfDocument =
-  getAllVersionsOfDocument as jest.MockedFunction<GetAllVersionsOfDocumentType>
+const mockUseDocumentPerspective = useDocumentPerspective as jest.MockedFunction<
+  typeof useDocumentPerspective
+>
+
 const mockBundleBadge = BundleBadge as jest.Mock
 
 describe('DocumentPerspectiveMenu', () => {
@@ -103,23 +95,32 @@ describe('DocumentPerspectiveMenu', () => {
       currentGlobalBundle: mockCurrent,
       setPerspective: jest.fn(),
     })
+
+    mockUseDocumentPerspective.mockImplementationOnce(() => ({
+      data: [],
+    }))
   })
 
   it('should render the bundle badge if the document exists in the global bundle', async () => {
     // Dummy Getters
     mockGetBundleSlug.mockReturnValue('spring-drop')
 
-    mockGetAllVersionsOfDocument.mockImplementationOnce(
-      (): Promise<any> =>
-        Promise.resolve([
-          {
-            name: 'spring-drop',
-            title: 'Spring Drop',
-            hue: 'magenta',
-            icon: 'heart-filled',
-          },
-        ]),
-    )
+    mockUseDocumentPerspective.mockImplementationOnce(() => ({
+      data: [
+        {
+          slug: 'spring-drop',
+          title: 'Spring Drop',
+          hue: 'magenta',
+          icon: 'heart-filled',
+          _type: 'bundle',
+          authorId: '',
+          _id: '',
+          _createdAt: '',
+          _updatedAt: '',
+          _rev: '',
+        },
+      ],
+    }))
 
     const wrapper = await createWrapper()
     render(<DocumentPerspectiveMenu documentId="spring-drop.document-id" />, {wrapper})
@@ -141,17 +142,22 @@ describe('DocumentPerspectiveMenu', () => {
     // Dummy Getters
     mockGetBundleSlug.mockReturnValue('spring-drop')
 
-    mockGetAllVersionsOfDocument.mockImplementationOnce(
-      (): Promise<any> =>
-        Promise.resolve([
-          {
-            name: 'spring-drop',
-            title: 'Spring Drop',
-            hue: 'magenta',
-            icon: 'heart-filled',
-          },
-        ]),
-    )
+    mockUseDocumentPerspective.mockImplementationOnce(() => ({
+      data: [
+        {
+          slug: 'spring-drop',
+          title: 'Spring Drop',
+          hue: 'magenta',
+          icon: 'heart-filled',
+          _type: 'bundle',
+          authorId: '',
+          _id: '',
+          _createdAt: '',
+          _updatedAt: '',
+          _rev: '',
+        },
+      ],
+    }))
 
     const wrapper = await createWrapper()
     render(<DocumentPerspectiveMenu documentId="spring-drop.document-1" />, {wrapper})
