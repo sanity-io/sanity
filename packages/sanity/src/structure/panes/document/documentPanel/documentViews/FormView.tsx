@@ -73,6 +73,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     enabled: isLocked,
     title: t('document-view.form-view.sync-lock-toast.title'),
     description: t('document-view.form-view.sync-lock-toast.description'),
+    closable: true,
   })
 
   useEffect(() => {
