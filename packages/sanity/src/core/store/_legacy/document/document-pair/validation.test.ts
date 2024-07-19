@@ -1,6 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {
+  asyncScheduler,
   concat,
   type ConnectableObservable,
   EMPTY,
@@ -11,7 +12,7 @@ import {
   Subject,
   timer,
 } from 'rxjs'
-import {buffer, publish, takeWhile} from 'rxjs/operators'
+import {buffer, map, publish, takeWhile, throttleTime} from 'rxjs/operators'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {getFallbackLocaleSource} from '../../../../i18n/fallback'
@@ -50,19 +51,27 @@ function createSubscription(
   observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>,
 ) {
   const getClient = () => client
+  const context = {
+    client,
+    getClient,
+    schema,
+    observeDocumentPairAvailability,
+    serverActionsEnabled: of(false),
+    i18n: getFallbackLocaleSource(),
+  }
 
-  const stream = validation(
-    {
-      client,
-      getClient,
-      schema,
-      observeDocumentPairAvailability,
-      i18n: getFallbackLocaleSource(),
-      serverActionsEnabled: false,
-    },
-    {publishedId: 'example-id', draftId: 'drafts.example-id'},
-    'movie',
-  ).pipe(publish())
+  const idPair = {publishedId: 'example-id', draftId: 'drafts.example-id'}
+  const type = 'movie'
+  const source$ = editState(
+    context,
+    {publishedId: 'example-id', draftIds: ['drafts.example-id']},
+    type,
+  ).pipe(
+    map(({draft, published}) => draft || published),
+    throttleTime(200, asyncScheduler, {trailing: true}),
+  )
+
+  const stream = validation(context, source$, idPair.publishedId).pipe(publish())
 
   // Publish and connect this for the tests
   ;(stream as ConnectableObservable<unknown>).connect()

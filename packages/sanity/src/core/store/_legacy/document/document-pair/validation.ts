@@ -26,16 +26,14 @@ import {
   throttleTime,
 } from 'rxjs/operators'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from 'sanity'
 import shallowEquals from 'shallow-equals'
 
 import {type SourceClientOptions} from '../../../../config'
 import {type LocaleSource} from '../../../../i18n'
 import {type DraftsModelDocumentAvailability} from '../../../../preview'
 import {validateDocumentObservable, type ValidationContext} from '../../../../validation'
-import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {editState} from './editState'
-import {memoizeKeyGen} from './memoizeKeyGen'
 
 /**
  * @hidden
@@ -76,9 +74,6 @@ const listenDocumentExists = (
 ): Observable<boolean> =>
   observeDocumentAvailability(id).pipe(map(({published}) => published.available))
 
-// throttle delay for document updates (i.e. time between responding to changes in the current document)
-const DOC_UPDATE_DELAY = 200
-
 // throttle delay for referenced document updates (i.e. time between responding to changes in referenced documents)
 const REF_UPDATE_DELAY = 1000
 
@@ -90,28 +85,14 @@ function shareLatestWithRefCount<T>() {
 export const validation = memoize(
   (
     ctx: {
-      client: SanityClient
       getClient: (options: SourceClientOptions) => SanityClient
       observeDocumentPairAvailability: ObserveDocumentPairAvailability
       schema: Schema
       i18n: LocaleSource
-      serverActionsEnabled: Observable<boolean>
     },
-    {draftIds, publishedId}: IdPair,
-    typeName: string,
-    doc?: Observable<SanityDocument>,
+    source$: Observable<SanityDocument | null | undefined>,
+    _documentId: string,
   ): Observable<ValidationStatus> => {
-    let source$
-
-    if (doc) {
-      source$ = doc
-    } else {
-      source$ = editState(ctx, {draftIds, publishedId}, typeName).pipe(
-        map(({draft, published}) => draft || published),
-        throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
-      )
-    }
-
     const document$ = source$.pipe(
       distinctUntilChanged((prev, next) => {
         if (prev?._rev === next?._rev) {
@@ -200,7 +181,8 @@ export const validation = memoize(
       shareLatestWithRefCount(),
     )
   },
-  (ctx, idPair, typeName) => {
-    return memoizeKeyGen(ctx.client, idPair, typeName)
+  (ctx, source$, documentId) => {
+    const config = ctx.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS).config()
+    return `${config.dataset}-${documentId}`
   },
 )
