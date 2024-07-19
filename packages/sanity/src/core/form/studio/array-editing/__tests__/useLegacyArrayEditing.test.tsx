@@ -58,13 +58,31 @@ describe('useLegacyArrayEditing', () => {
   test('should return legacyEditing: true when enabled is true', () => {
     const {result} = renderHook(() => useLegacyArrayEditing(), {wrapper: legacyEditingWrapper})
 
+    mockedUseInnerHook.mockImplementation(() => {
+      return {
+        beta: {
+          treeArrayEditing: {
+            enabled: false,
+          },
+        },
+      }
+    })
+
     expect(result.current).toEqual({enabled: true})
   })
 
   test('should return legacyEditing: true when parent has enabled set to true', () => {
     const {result} = renderHook(() => useLegacyArrayEditing(), {wrapper: nestedWrapper})
 
-    mockedUseInnerHook.mockImplementation(() => {})
+    mockedUseInnerHook.mockImplementation(() => {
+      return {
+        beta: {
+          treeArrayEditing: {
+            enabled: true,
+          },
+        },
+      }
+    })
 
     expect(result.current).toEqual({enabled: true})
   })
