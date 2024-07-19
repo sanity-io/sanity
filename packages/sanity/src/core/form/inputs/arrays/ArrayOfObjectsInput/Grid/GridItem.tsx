@@ -90,7 +90,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   // The edit portal should open if the item is open and:
   // - tree array editing is disabled
   // - legacy array editing is enabled (e.g. in a Portable Text editor)
-  const openPortal = open && (!legacyArrayEditing.enabled || legacyEditing)
+  const openPortal = open && legacyEditing
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
