@@ -5,10 +5,8 @@ import {
   BundleBadge,
   type BundleDocument,
   BundleMenu,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   getBundleSlug,
   useBundles,
-  useClient,
   useDocumentPerspective,
   usePerspective,
 } from 'sanity'
@@ -21,7 +19,6 @@ const BadgeButton = styled(Button)({
 
 export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Element {
   const {documentId} = props
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {data} = useBundles()
   const {currentGlobalBundle} = usePerspective()
   const bundles = useMemo(() => data ?? [], [data])
@@ -49,6 +46,7 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
           <BundleBadge hue={hue} title={title} icon={icon} padding={2} />
         </BadgeButton>
       )}
+
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
 
       <Box flex="none">

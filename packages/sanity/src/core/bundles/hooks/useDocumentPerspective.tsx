@@ -1,16 +1,21 @@
-import {type ListenOptions, type SanityDocument} from '@sanity/client'
+import {type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {catchError, of} from 'rxjs'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, getBundleSlug, useBundles, useClient} from 'sanity'
+import {
+  type BundleDocument,
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  getBundleSlug,
+  useBundles,
+  useClient,
+} from 'sanity'
 
 export interface DocumentPerspectiveProps {
   documentId: string
 }
 
 export interface DocumentPerspectiveState {
-  data: SanityDocument[] | null
+  data: BundleDocument[] | null
   error?: Error
-  loading: boolean
 }
 
 const LISTEN_OPTIONS: ListenOptions = {
@@ -22,11 +27,10 @@ const LISTEN_OPTIONS: ListenOptions = {
 export function useDocumentPerspective(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
 
-  const [state, setState] = useState<SanityDocument[] | null>(null)
+  const [state, setState] = useState<BundleDocument[] | null>(null)
 
   const [error, setError] = useState<Error | undefined>(undefined)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const [loading, setLoading] = useState<boolean>(client !== null)
   const {data: bundles} = useBundles()
   const pureDocumentId =
     documentId.indexOf('.') > 0
@@ -37,7 +41,6 @@ export function useDocumentPerspective(props: DocumentPerspectiveProps): Documen
 
   const initialFetch = useCallback(async () => {
     if (!client) {
-      setLoading(false)
       return
     }
 
@@ -46,16 +49,14 @@ export function useDocumentPerspective(props: DocumentPerspectiveProps): Documen
 
       // build the document bundles
       const documentBundles = res
-        ?.map((r: SanityDocument) =>
+        ?.map((r: BundleDocument) =>
           bundles?.find((b) => r._version && getBundleSlug(r._id) === b.slug),
         )
-        .filter((b: SanityDocument) => b !== undefined)
+        .filter((b: BundleDocument) => b !== undefined)
 
       setState(documentBundles)
-      setLoading(false)
     } catch (err) {
       setError(err)
-      setLoading(false)
     }
   }, [QUERY, bundles, client])
 
@@ -75,9 +76,7 @@ export function useDocumentPerspective(props: DocumentPerspectiveProps): Documen
   const handleListenerEvent = useCallback(
     async (event) => {
       if (event.type === 'welcome') {
-        setLoading(true)
         await initialFetch()
-        setLoading(false)
       }
 
       if (event.type === 'mutation') {
@@ -85,7 +84,7 @@ export function useDocumentPerspective(props: DocumentPerspectiveProps): Documen
         const exists = state?.find((b) => b.slug === getBundleSlug(prev._id))
 
         if (exists) {
-          const updatedBundles = state?.map((b: SanityDocument) => (exists ? prev : b))
+          const updatedBundles = state?.map((b: BundleDocument) => (exists ? prev : b))
           setState(updatedBundles || [])
         } else {
           setState([...(state || []), prev])
@@ -106,6 +105,5 @@ export function useDocumentPerspective(props: DocumentPerspectiveProps): Documen
   return {
     data: state,
     error,
-    loading,
   }
 }

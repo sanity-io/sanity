@@ -48,7 +48,10 @@ export function getBundleSlug(documentId: string): string {
   return version
 }
 
-export function versionDocumentExists(documentVersions: BundleDocument[], slug: string): boolean {
+export function versionDocumentExists(
+  documentVersions: BundleDocument[] = [],
+  slug: string,
+): boolean {
   return documentVersions.some((version) => version.slug === slug)
 }
 
