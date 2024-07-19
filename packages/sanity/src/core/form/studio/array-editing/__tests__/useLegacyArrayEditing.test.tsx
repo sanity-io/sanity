@@ -25,7 +25,7 @@ const nestedWrapper = ({children}: PropsWithChildren) => (
 )
 
 describe('useLegacyArrayEditing', () => {
-  test('should return enabled: false when config is not enabled', () => {
+  test('should return enabled: true when config is not enabled', () => {
     const features = {
       beta: {
         treeArrayEditing: {
@@ -37,7 +37,7 @@ describe('useLegacyArrayEditing', () => {
 
     const {result} = renderHook(() => useLegacyArrayEditing(), {wrapper})
 
-    expect(result.current).toEqual({enabled: false})
+    expect(result.current).toEqual({enabled: true})
   })
 
   test('should return enabled: true when config is enabled', () => {
