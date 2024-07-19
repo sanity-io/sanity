@@ -243,7 +243,7 @@ importers:
   dev/design-studio:
     dependencies:
       '@sanity/icons':
-        specifier: ^3.3.0
+        specifier: ^3.3.1
         version: 3.3.1(react@18.3.1)
       '@sanity/ui':
         specifier: ^2.8.7
@@ -370,7 +370,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.1(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12)
       '@sanity/icons':
-        specifier: ^3.3.0
+        specifier: ^3.3.1
         version: 3.3.1(react@18.3.1)
       '@sanity/ui':
         specifier: ^2.8.7
@@ -454,7 +454,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.1(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12)
       '@sanity/icons':
-        specifier: ^3.3.0
+        specifier: ^3.3.1
         version: 3.3.1(react@18.3.1)
       '@sanity/image-url':
         specifier: ^1.0.2
