@@ -2,6 +2,8 @@ import {type Context, createContext} from 'react'
 
 import {SANITY_VERSION} from '../core/version'
 
+const MISSING_CONTEXT_HELP_URL = 'https://www.sanity.io/help/missing-context-error'
+
 /**
  * @internal
  * @hidden
@@ -26,11 +28,13 @@ export function createGlobalScopedContext<ContextType, const T extends ContextTy
     globalScope[symbol] = {context: createContext<T>(defaultValue), version: SANITY_VERSION}
   } else if (globalScope[symbol].version !== SANITY_VERSION) {
     throw new TypeError(
-      `Duplicate instances of sanity context with incompatible versions detected: expected ${SANITY_VERSION}, got ${globalScope[symbol].version} on key "${key}"`,
+      `Duplicate instances of context "${key}" with incompatible versions detected: Expected ${SANITY_VERSION} but got ${globalScope[symbol].version}.\n\n` +
+        `For more information, please visit ${MISSING_CONTEXT_HELP_URL}`,
     )
   } else if (!warned.has(SANITY_VERSION)) {
     console.warn(
-      `Duplicate instances of sanity context on key "${key}" detected. This is likely a mistake and could lead to problems.`,
+      `Duplicate instances of context "${key}" detected. This is likely a mistake and may cause unexpected behavior.\n\n` +
+        `For more information, please visit ${MISSING_CONTEXT_HELP_URL}`,
     )
     warned.add(SANITY_VERSION)
   }
