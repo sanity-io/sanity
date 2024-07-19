@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {isReference, type SanityDocument, type Schema, type ValidationMarker} from '@sanity/types'
+import {isReference, type Schema, type ValidationMarker} from '@sanity/types'
 import {reduce as reduceJSON} from 'json-reduce'
 import {omit} from 'lodash'
 import {
@@ -99,20 +99,10 @@ export const validation = memoize(
     },
     {draftIds, publishedId}: IdPair,
     typeName: string,
-    doc?: Observable<SanityDocument>,
   ): Observable<ValidationStatus> => {
-    let source$
-
-    if (doc) {
-      source$ = doc
-    } else {
-      source$ = editState(ctx, {draftIds, publishedId}, typeName).pipe(
-        map(({draft, published}) => draft || published),
-        throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
-      )
-    }
-
-    const document$ = source$.pipe(
+    const document$ = editState(ctx, {draftIds, publishedId}, typeName).pipe(
+      map(({draft, published}) => draft || published),
+      throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
       distinctUntilChanged((prev, next) => {
         if (prev?._rev === next?._rev) {
           return true
