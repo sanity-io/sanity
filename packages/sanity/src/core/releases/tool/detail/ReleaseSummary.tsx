@@ -26,6 +26,14 @@ export type DocumentWithHistory = SanityDocument & {
 }
 export type BundleDocumentRow = DocumentWithHistory & ReturnType<typeof useDocumentPreviewValues>
 
+export interface ReleaseSummaryProps {
+  documents: SanityDocument[]
+  documentsHistory: Map<string, DocumentHistory>
+  collaborators: string[]
+  release: BundleDocument
+  validation: Record<string, DocumentValidationStatus>
+}
+
 const getRow =
   (
     release: BundleDocument,
@@ -49,13 +57,7 @@ const setIconHue = ({hue, icon}: {hue: BundleDocument['hue']; icon: BundleDocume
   icon: icon ?? 'documents',
 })
 
-export function ReleaseSummary(props: {
-  documents: SanityDocument[]
-  documentsHistory: Record<string, DocumentHistory>
-  collaborators: string[]
-  release: BundleDocument
-  validation: Record<string, DocumentValidationStatus>
-}) {
+export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, collaborators, validation} = props
   const {hue, icon} = release
   const {client} = useAddonDataset()
@@ -92,7 +94,7 @@ export function ReleaseSummary(props: {
     () =>
       documents.map((document) => ({
         ...document,
-        history: documentsHistory[document._id],
+        history: documentsHistory.get(document._id),
         validation: validation[document._id],
       })),
     [documents, documentsHistory, validation],
@@ -119,7 +121,7 @@ export function ReleaseSummary(props: {
 
   return (
     <Stack paddingX={4} space={5}>
-      <Stack space={4}>
+      <Stack space={4} data-testid="summary">
         <Flex>
           <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
         </Flex>
@@ -175,7 +177,7 @@ export function ReleaseSummary(props: {
 
             {/* Contributors */}
             <Box padding={1}>
-              {collaborators?.length && (
+              {collaborators?.length > 0 && (
                 <AvatarStack size={0} style={{margin: -1}}>
                   {collaborators?.map((userId) => <UserAvatar key={userId} user={userId} />)}
                 </AvatarStack>
