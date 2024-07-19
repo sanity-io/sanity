@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {useDocumentPreviewStore, useSchema, useSource} from 'sanity'
 
-import {documentsValidation} from './validation'
+import {bundleDocumentsValidation, type DocumentValidationStatus} from './bundleDocumentsValidation'
 
 export function useBundleDocumentsValidation(bundles: SanityDocument[]) {
   const {getClient, i18n} = useSource()
@@ -14,7 +14,7 @@ export function useBundleDocumentsValidation(bundles: SanityDocument[]) {
   const bundlesIds = bundles.map((bundle) => bundle._id).join(',')
 
   const observable = useMemo(() => {
-    return documentsValidation(
+    return bundleDocumentsValidation(
       {
         observeDocumentPairAvailability: unstable_observeDocumentPairAvailability,
         observeDocument: unstable_observeDocument,
@@ -32,7 +32,7 @@ export function useBundleDocumentsValidation(bundles: SanityDocument[]) {
     unstable_observeDocumentPairAvailability,
     unstable_observeDocument,
   ])
-  const value = useObservable(observable, [])
+  const value = useObservable(observable, new Map<string, DocumentValidationStatus>())
 
   return value
 }
