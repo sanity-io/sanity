@@ -15,6 +15,7 @@ export function createGlobalListener(client: SanityClient) {
         events: ['welcome', 'mutation'],
         includeResult: false,
         includePreviousRevision: false,
+        // @ts-expect-error - will be enabled by https://github.com/sanity-io/client/pull/872
         includeMutations: false,
         visibility: 'query',
         effectFormat: 'mendoza',
