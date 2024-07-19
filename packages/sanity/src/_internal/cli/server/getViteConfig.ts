@@ -86,6 +86,14 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
   const defaultFaviconsPath = path.join(path.dirname(sanityPkgPath), 'static', 'favicons')
   const staticPath = `${basePath}static`
 
+  const conditions = [
+    'import',
+    'browser',
+    // the `es2015` condition is primarily rxjs
+    // https://github.com/ReactiveX/rxjs/blob/4a2d0d29a7b17607e74afcb6fb8037fe58ef9021/package.json#L22
+    'es2015',
+  ]
+
   const viteConfig: InlineConfig = {
     // Define a custom cache directory so that sanity's vite cache
     // does not conflict with any potential local vite projects
@@ -113,7 +121,8 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     envPrefix: 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      alias: getAliases({monorepo}),
+      alias: getAliases({monorepo, conditions, sanityPkgPath}),
+      conditions,
     },
     define: {
       // eslint-disable-next-line no-process-env
