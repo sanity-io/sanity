@@ -3,7 +3,7 @@ import {fireEvent, render, screen, waitFor, within} from '@testing-library/react
 import {useRouter} from 'sanity/router'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
-import {createWrapper} from '../../../../bundles/util/tests/createWrapper'
+import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {useBundles} from '../../../../store'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
