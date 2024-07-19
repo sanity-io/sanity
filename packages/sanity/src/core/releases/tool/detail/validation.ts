@@ -14,16 +14,23 @@ export const documentsValidation = (
   ctx: {
     observeDocumentPairAvailability: DocumentPreviewStore['unstable_observeDocumentPairAvailability']
     observeDocument: (id: string) => Observable<SanityDocument | undefined>
+    client: SanityClient
     getClient: (options: SourceClientOptions) => SanityClient
     schema: Schema
     i18n: LocaleSource
+    serverActionsEnabled: Observable<boolean>
   },
   documentIds: string[] = [],
 ) => {
   return combineLatest(
     documentIds.map((id) => {
       const document$ = ctx.observeDocument(id)
-      return validation(ctx, document$, id).pipe(map((res) => ({documentId: id, ...res})))
+      const idPair = {
+        draftIds: [],
+        publishedId: id,
+      }
+      // TODO: Update this function to get the type from the document$ observable
+      return validation(ctx, idPair, '', document$).pipe(map((res) => ({documentId: id, ...res})))
     }),
   ).pipe(shareReplay({bufferSize: 1, refCount: true}))
 }

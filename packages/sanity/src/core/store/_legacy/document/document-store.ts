@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {asyncScheduler, type Observable} from 'rxjs'
-import {filter, map, throttleTime} from 'rxjs/operators'
+import {type Observable} from 'rxjs'
+import {filter, map} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config'
 import {type LocaleSource} from '../../../i18n'
@@ -26,9 +26,6 @@ import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} f
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {type IdPair} from './types'
-
-// throttle delay for document updates (i.e. time between responding to changes in the current document)
-const DOC_UPDATE_DELAY = 200
 
 /**
  * @hidden
@@ -177,12 +174,7 @@ export function createDocumentStore({
         )
       },
       validation(publishedId, type) {
-        const {draftIds} = getIdPairFromPublished(publishedId)
-        const source$ = editState(ctx, {draftIds, publishedId}, type).pipe(
-          map(({draft, published}) => draft || published),
-          throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
-        )
-        return validation(ctx, source$, publishedId)
+        return validation(ctx, getIdPairFromPublished(publishedId), type, null)
       },
     },
   }
