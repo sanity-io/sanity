@@ -2,7 +2,6 @@ export {
   BundleActions,
   BundleBadge,
   BundleMenu,
-  createWrapper,
   getAllVersionsOfDocument,
   getBundleSlug,
   LATEST,
