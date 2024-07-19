@@ -13,6 +13,7 @@ import {type ReleasesRouterState} from '../../types/router'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseReview} from './ReleaseReview'
 import {ReleaseSummary} from './ReleaseSummary'
+import {useBundleDocumentsValidation} from './useBundleDocumentsValidation'
 
 const SUPPORTED_SCREENS = ['summary', 'review'] as const
 type Screen = (typeof SUPPORTED_SCREENS)[number]
@@ -64,7 +65,7 @@ export const ReleaseDetail = () => {
       _searchParams: [],
     })
   }, [router])
-
+  useBundleDocumentsValidation(bundleDocuments)
   const header = useMemo(
     () => (
       <Card
