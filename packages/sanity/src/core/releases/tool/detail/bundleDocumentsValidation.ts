@@ -34,7 +34,7 @@ export const bundleDocumentsValidation = (
     i18n: LocaleSource
   },
   documentIds: string[] = [],
-): Observable<DocumentValidationStatus[]> => {
+): Observable<Map<string, DocumentValidationStatus>> => {
   return combineLatest(
     documentIds.map((id) => {
       const document$ = ctx.observeDocument(id).pipe(
