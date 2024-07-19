@@ -5,9 +5,9 @@ import userEvent from '@testing-library/user-event'
 import {act} from 'react'
 import {type BundleDocument} from 'sanity'
 
+import {createWrapper} from '../../../../../test/testUtils/createWrapper'
 import {usePerspective} from '../../hooks/usePerspective'
 import {LATEST} from '../../util/const'
-import {createWrapper} from '../../util/tests/createWrapper'
 import {BundleMenu} from '../BundleMenu'
 
 jest.mock('../../hooks/usePerspective', () => ({

@@ -3,7 +3,7 @@ import {render, screen} from '@testing-library/react'
 import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
-import {createWrapper} from '../../../../bundles'
+import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {useDocumentPreviewValues} from '../documentTable/useDocumentPreviewValues'
