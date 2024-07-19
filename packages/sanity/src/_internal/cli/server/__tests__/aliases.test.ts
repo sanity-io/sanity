@@ -47,6 +47,15 @@ describe('browserCompatibleSanityPackageSpecifiers', () => {
 })
 
 describe('getAliases', () => {
+  // TODO: this test would be better if it called `vite.build` with fixtures
+  // but vite does not seem to be compatible in our jest environment.
+  // Error from trying to import vite:
+  //
+  // > Invariant violation: "new TextEncoder().encode("") instanceof Uint8Array" is incorrectly false
+  // >
+  // > This indicates that your JavaScript environment is broken. You cannot use
+  // > esbuild in this environment because esbuild relies on this invariant. This
+  // > is not a problem with esbuild. You need to fix your environment instead.
   it('returns the correct aliases for normal builds', () => {
     const aliases = getAliases({
       sanityPkgPath,
