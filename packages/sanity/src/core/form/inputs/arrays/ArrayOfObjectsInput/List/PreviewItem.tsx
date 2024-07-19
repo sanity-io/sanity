@@ -15,7 +15,7 @@ import {FormFieldValidationStatus} from '../../../../components'
 import {EditPortal} from '../../../../components/EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
-import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../../../../studio/array-editing'
+import {LegacyArrayEditingProvider, useLegacyArrayEditing} from '../../../../studio/array-editing'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
@@ -67,14 +67,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   } = props
   const {t} = useTranslation()
 
-  const treeEditing = useTreeEditingEnabled()
+  const legacyArrayEditing = useLegacyArrayEditing()
   const treeEditingDisabledByOption = parentSchemaType?.options?.treeEditing === false
-  const legacyEditing = treeEditingDisabledByOption || treeEditing.legacyEditing
+  const legacyEditing = treeEditingDisabledByOption || legacyArrayEditing.enabled
 
   // The edit portal should open if the item is open and:
   // - tree array editing is disabled
   // - legacy array editing is enabled (e.g. in a Portable Text editor)
-  const openPortal = open && (!treeEditing.enabled || legacyEditing)
+  const openPortal = open && (!legacyArrayEditing.enabled || legacyEditing)
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -219,7 +219,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
 
   return (
-    <TreeEditingEnabledProvider legacyEditing={treeEditingDisabledByOption}>
+    <LegacyArrayEditingProvider enabled={treeEditingDisabledByOption}>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>
       </ChangeIndicator>
@@ -241,6 +241,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           {children}
         </EditPortal>
       )}
-    </TreeEditingEnabledProvider>
+    </LegacyArrayEditingProvider>
   )
 }

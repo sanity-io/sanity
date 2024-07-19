@@ -16,7 +16,7 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {TreeEditingEnabledProvider} from '../../studio/array-editing'
+import {LegacyArrayEditingProvider} from '../../studio/array-editing'
 import {
   type ArrayOfObjectsInputProps,
   type PortableTextInputProps,
@@ -484,7 +484,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <TreeEditingEnabledProvider legacyEditing>
+    <LegacyArrayEditingProvider enabled>
       <PortalProvider __unstable_elements={portalElements} element={portal.element}>
         <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
           <ChangeIndicator
@@ -507,6 +507,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           </ChangeIndicator>
         </ActivateOnFocus>
       </PortalProvider>
-    </TreeEditingEnabledProvider>
+    </LegacyArrayEditingProvider>
   )
 }

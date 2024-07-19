@@ -29,12 +29,7 @@ import {
   type ObjectInputProps,
   type RenderPreviewCallbackProps,
 } from '../types'
-import {
-  ArrayEditingDialog,
-  shouldArrayDialogOpen,
-  TreeEditingEnabledProvider,
-  useTreeEditingEnabled,
-} from './array-editing'
+import {ArrayEditingDialog, shouldArrayDialogOpen} from './array-editing'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
@@ -282,14 +277,12 @@ export function FormBuilder(props: FormBuilderProps) {
       <GetFormValueProvider value={value}>
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
-            <TreeEditingEnabledProvider>
-              <RootInput
-                rootInputProps={rootInputProps}
-                onPathOpen={onPathOpen}
-                openPath={openPath}
-                renderInput={renderInput}
-              />
-            </TreeEditingEnabledProvider>
+            <RootInput
+              rootInputProps={rootInputProps}
+              onPathOpen={onPathOpen}
+              openPath={openPath}
+              renderInput={renderInput}
+            />
           </DocumentFieldActionsProvider>
         </FormValueProvider>
       </GetFormValueProvider>
@@ -306,7 +299,6 @@ interface RootInputProps {
 
 function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
-  const treeEditing = useTreeEditingEnabled()
 
   const open = useMemo(
     () => shouldArrayDialogOpen(rootInputProps.schemaType, openPath),
@@ -315,7 +307,7 @@ function RootInput(props: RootInputProps) {
 
   const isRoot = rootInputProps.id === 'root'
 
-  const arrayEditingModal = treeEditing.enabled && isRoot && open && (
+  const arrayEditingModal = isRoot && open && (
     <ArrayEditingDialog
       // eslint-disable-next-line react/jsx-handler-names
       onPathFocus={rootInputProps.onPathFocus}

@@ -37,7 +37,7 @@ const ITEM: ArrayEditingBreadcrumb = {
   value: {_key: 'first-item', title: `${0}-item`},
 }
 
-export default function TreeEditingBreadcrumbsMenuButtonStory(): JSX.Element {
+export default function ArrayEditingBreadcrumbsMenuButtonStory(): JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>(['first-item'])
 
   return (

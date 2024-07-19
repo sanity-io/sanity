@@ -1,4 +1,4 @@
-export {shouldArrayDialogOpen, useTreeEditingEnabled} from './array-editing'
+export {shouldArrayDialogOpen, useLegacyArrayEditing} from './array-editing'
 export * from './contexts'
 export * from './defaults'
 export * from './FormBuilder'
