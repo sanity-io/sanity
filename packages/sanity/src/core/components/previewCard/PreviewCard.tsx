@@ -1,5 +1,5 @@
 import {Card, type CardProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps, useContext} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps, useContext, useMemo} from 'react'
 import {PreviewCardContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
@@ -41,9 +41,11 @@ export const PreviewCard = forwardRef(function PreviewCard(
 ) {
   const {children, selected, as, ...restProps} = props
 
+  const value = useMemo(() => ({selected}), [selected])
+
   return (
     <StyledCard data-ui="PreviewCard" {...restProps} forwardedAs={as} ref={ref} selected={selected}>
-      <PreviewCardContext.Provider value={{selected}}>{children}</PreviewCardContext.Provider>
+      <PreviewCardContext.Provider value={value}>{children}</PreviewCardContext.Provider>
     </StyledCard>
   )
 })

@@ -118,21 +118,27 @@ function SchedulesProvider({
     [value.schedules, filterByDate],
   )
 
-  return (
-    <SchedulesContext.Provider
-      value={{
-        activeSchedules,
-        schedules: value.schedules || EMPTY_SCHEDULE,
-        schedulesByDate,
-        scheduleState: value.scheduleState,
-        selectedDate: value.selectedDate,
-        setSortBy,
-        sortBy,
-      }}
-    >
-      {children}
-    </SchedulesContext.Provider>
+  const context = useMemo(
+    () => ({
+      activeSchedules,
+      schedules: value.schedules || EMPTY_SCHEDULE,
+      schedulesByDate,
+      scheduleState: value.scheduleState,
+      selectedDate: value.selectedDate,
+      setSortBy,
+      sortBy,
+    }),
+    [
+      activeSchedules,
+      schedulesByDate,
+      sortBy,
+      value.scheduleState,
+      value.schedules,
+      value.selectedDate,
+    ],
   )
+
+  return <SchedulesContext.Provider value={context}>{children}</SchedulesContext.Provider>
 }
 
 function useSchedules() {

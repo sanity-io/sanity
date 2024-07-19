@@ -5,6 +5,7 @@ import {
   type KeyboardEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -185,17 +186,20 @@ export function Calendar(props: CalendarProps) {
     previousEndDate.current = endDate || null
   }, [date, endDate, onSelect])
 
+  const value = useMemo(
+    () => ({
+      date,
+      endDate,
+      focusedDate,
+      selectRange,
+      selectTime,
+      firstWeekDay,
+    }),
+    [date, endDate, firstWeekDay, focusedDate, selectRange, selectTime],
+  )
+
   return (
-    <CalendarContext.Provider
-      value={{
-        date,
-        endDate,
-        focusedDate,
-        selectRange,
-        selectTime,
-        firstWeekDay,
-      }}
-    >
+    <CalendarContext.Provider value={value}>
       <Box data-ui="Calendar" ref={setCalendarElement}>
         {/* Select month and year */}
         <Flex>

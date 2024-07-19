@@ -80,6 +80,8 @@ export function FieldChange(
    */
   const fieldPath = isArray ? change.path.slice(0, -1) : change.path
 
+  const value = useMemo(() => ({path: change.path}), [change.path])
+
   const content = useMemo(
     () =>
       hidden ? null : (
@@ -98,7 +100,7 @@ export function FieldChange(
                 <ValueError error={change.error} />
               ) : (
                 <DiffErrorBoundary t={t}>
-                  <DiffContext.Provider value={{path: change.path}}>
+                  <DiffContext.Provider value={value}>
                     <DiffComponent
                       diff={change.diff}
                       schemaType={change.schemaType as ObjectSchemaType}
@@ -152,23 +154,24 @@ export function FieldChange(
         </Stack>
       ),
     [
-      change,
-      closeRevertChangesConfirmDialog,
-      confirmRevertOpen,
-      DiffComponent,
-      fieldPath,
-      FieldWrapper,
-      handleRevertButtonMouseEnter,
-      handleRevertButtonMouseLeave,
-      handleRevertChanges,
-      handleRevertChangesConfirm,
       hidden,
+      change,
+      FieldWrapper,
+      fieldPath,
+      revertHovered,
+      t,
+      value,
+      DiffComponent,
       isComparingCurrent,
       isPermissionsLoading,
       permissions?.granted,
+      closeRevertChangesConfirmDialog,
+      handleRevertChanges,
+      confirmRevertOpen,
+      handleRevertChangesConfirm,
+      handleRevertButtonMouseEnter,
+      handleRevertButtonMouseLeave,
       readOnly,
-      revertHovered,
-      t,
     ],
   )
 
