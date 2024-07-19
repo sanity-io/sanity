@@ -39,6 +39,12 @@
       "require": "./lib/_singletons.js",
       "default": "./lib/_singletons.js"
     },
+    "./_createContext": {
+      "source": "./src/_exports/_createContext.ts",
+      "import": "./lib/_createContext.mjs",
+      "require": "./lib/_createContext.js",
+      "default": "./lib/_createContext.js"
+    },
     "./cli": {
       "source": "./src/_exports/cli.ts",
       "require": "./lib/cli.js",
@@ -86,6 +92,9 @@
       "_singletons": [
         "./lib/_singletons.d.ts"
       ],
+      "_createContext": [
+        "./lib/_createContext.d.ts"
+      ],
       "cli": [
         "./lib/cli.d.ts"
       ],
@@ -122,13 +131,14 @@
     "presentation.js",
     "router.js",
     "structure.js",
-    "_singletons.js"
+    "_singletons.js",
+    "_createContext.js"
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --config package.bundle.ts",
     "check:types": "tsc --project tsconfig.lib.json",
-    "clean": "rimraf _internal.js _singletons.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
+    "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "jest --coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

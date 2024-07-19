@@ -62,6 +62,9 @@ const config = {
       '@sanity/vision': requireResolve('../../packages/@sanity/vision/src/index.ts'),
       'sanity/_internal': requireResolve('../../packages/sanity/src/_exports/_internal.ts'),
       'sanity/_singletons': requireResolve('../../packages/sanity/src/_exports/_singletons.ts'),
+      'sanity/_createContext': requireResolve(
+        '../../packages/sanity/src/_exports/_createContext.ts',
+      ),
       'sanity/cli': requireResolve('../../packages/sanity/src/_exports/cli.ts'),
       'sanity/desk': requireResolve('../../packages/sanity/src/_exports/desk.ts'),
       'sanity/presentation': requireResolve('../../packages/sanity/src/_exports/presentation.ts'),
@@ -101,6 +104,7 @@ const config = {
         '@sanity/vision': '@sanity/vision/src/index.ts',
         'sanity/_internal': 'sanity/src/_exports/_internal.ts',
         'sanity/_singletons': 'sanity/src/_exports/_singletons.ts',
+        'sanity/_createContext': 'sanity/src/_exports/_createContext.ts',
         'sanity/cli': 'sanity/src/_exports/cli.ts',
         'sanity/desk': 'sanity/src/_exports/desk.ts',
         'sanity/presentation': 'sanity/src/_exports/presentation.ts',
