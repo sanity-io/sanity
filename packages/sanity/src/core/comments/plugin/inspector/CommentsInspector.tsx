@@ -1,4 +1,4 @@
-import {Flex, Layer, useClickOutside, useLayer, useToast} from '@sanity/ui'
+import {Flex, Layer, useClickOutsideEvent, useLayer, useToast} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
@@ -311,21 +311,19 @@ function CommentsInspectorInner(
     }
   }, [isTopLayer, selectedPath, setSelectedPath])
 
-  const handleClickOutside = useCallback(
-    (e: MouseEvent) => {
+  useClickOutsideEvent(
+    (event) => {
       // Clear the selected path when clicking outside the comments inspector.
       // We do this only when the comments inspector is the top layer.
       const isPTETarget =
-        e.target instanceof HTMLElement && e.target?.hasAttribute('data-slate-string')
+        event.target instanceof HTMLElement && event.target?.hasAttribute('data-slate-string')
 
       if (!isPTETarget) {
         handleDeselectPath()
       }
     },
-    [handleDeselectPath],
+    () => [rootRef.current],
   )
-
-  useClickOutside(handleClickOutside, [rootRef.current])
 
   const [loggedTelemetry, setLoggedTelemetry] = useState(false)
   useEffect(() => {

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
 import {Button, type PopoverProps} from '../../../../../../ui-components'
@@ -70,7 +70,11 @@ function Content(props: PopoverEditDialogProps) {
     ),
   )
 
-  useClickOutside(onClose, referenceElement ? [referenceElement] : [], referenceBoundary)
+  useClickOutsideEvent(
+    onClose,
+    () => [referenceElement],
+    () => referenceBoundary,
+  )
 
   // This seems to work with regular refs as well, but it might be safer to use state.
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)

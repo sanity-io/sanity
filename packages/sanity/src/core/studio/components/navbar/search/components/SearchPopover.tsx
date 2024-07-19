@@ -1,6 +1,6 @@
-import {Card, Portal, useClickOutside, useLayer} from '@sanity/ui'
+import {Card, Portal, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
-import {useCallback, useRef, useState} from 'react'
+import {useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
 
@@ -103,13 +103,9 @@ export function SearchPopover({
   /**
    * Check for top-most layer to prevent closing if a portalled element (i.e. menu button) is active
    */
-  const handleClickOutside = useCallback(() => {
-    if (isTopLayer && onSearchClose && open) {
-      onSearchClose()
-    }
-  }, [isTopLayer, onSearchClose, open])
-
-  useClickOutside(handleClickOutside, [popoverElement.current])
+  useClickOutsideEvent(isTopLayer && open && !!onSearchClose && onSearchClose, () => [
+    popoverElement.current,
+  ])
 
   return (
     <SearchWrapper hasValidTerms={hasValidTerms} onClose={onClose} onOpen={onOpen} open={open}>
