@@ -5,6 +5,7 @@ export {
   getAllVersionsOfDocument,
   getBundleSlug,
   LATEST,
+  useDocumentPerspective,
   usePerspective,
 } from './bundles'
 export * from './changeIndicators'

@@ -21,7 +21,7 @@ export async function getAllVersionsOfDocument(
   // remove all versions, get just id (anything anything after first .)
   const id = documentId.replace(/^[^.]*\./, '')
 
-  const query = `*[_id match "*${id}*"]`
+  const query = `*[sanity::versionOf("${id}")]`
 
   return await client.fetch(query, {}, {tag: 'document.list-versions'}).then((documents) => {
     return documents.map((doc: SanityDocument) => {
