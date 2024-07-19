@@ -225,7 +225,11 @@ const config = {
     // Prefer createContext in _singletons
     {
       files: ['packages/sanity/src/**'],
-      excludedFiles: ['**/__workshop__/**', 'packages/sanity/src/_singletons/**'],
+      excludedFiles: [
+        '**/__workshop__/**',
+        'packages/sanity/src/_singletons/**',
+        'packages/sanity/src/_createContext/**',
+      ],
       rules: {
         'no-restricted-imports': [
           'error',

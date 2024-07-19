@@ -1,5 +1,5 @@
 import type {i18n} from 'i18next'
-import {createContext} from 'react'
+import {createContext} from 'sanity/_createContext'
 
 import type {Locale} from '../../../core/i18n/types'
 
@@ -18,4 +18,7 @@ export interface LocaleContextValue {
  * @internal
  * @hidden
  */
-export const LocaleContext = createContext<LocaleContextValue | undefined>(undefined)
+export const LocaleContext = createContext<LocaleContextValue | undefined>(
+  'sanity/_singletons/context/locale',
+  undefined,
+)
