@@ -32,5 +32,14 @@ export function useConditionalToast(params: ToastParams & {id: string; enabled?:
         duration: 0.01,
       })
     }
+    return () => {
+      if (params.enabled) {
+        toast.push({
+          ...params,
+          // Note: @sanity/ui fallbacks to the default duration of 4s in case of falsey values
+          duration: 0.01,
+        })
+      }
+    }
   }, [params, toast, wasEnabled])
 }

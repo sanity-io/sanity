@@ -67,14 +67,19 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   const isLocked = editState?.transactionSyncLock?.enabled
   const {t} = useTranslation(structureLocaleNamespace)
 
-  useConditionalToast({
-    id: `sync-lock-${documentId}`,
-    status: 'warning',
-    enabled: isLocked,
-    title: t('document-view.form-view.sync-lock-toast.title'),
-    description: t('document-view.form-view.sync-lock-toast.description'),
-    closable: true,
-  })
+  const conditionalToastParams = useMemo(
+    () => ({
+      id: `sync-lock-${documentId}`,
+      status: 'warning' as const,
+      enabled: isLocked,
+      title: t('document-view.form-view.sync-lock-toast.title'),
+      description: t('document-view.form-view.sync-lock-toast.description'),
+      closable: true,
+    }),
+    [documentId, isLocked, t],
+  )
+
+  useConditionalToast(conditionalToastParams)
 
   useEffect(() => {
     const sub = documentStore.pair
