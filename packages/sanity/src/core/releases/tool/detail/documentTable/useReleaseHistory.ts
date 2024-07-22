@@ -14,7 +14,7 @@ export type DocumentHistory = {
 
 // TODO: Update this to contemplate the _revision change on any of the internal bundle documents, and fetch only the history of that document if changes.
 export function useReleaseHistory(bundleDocuments: SanityDocument[]): {
-  documentsHistory: Map<string, DocumentHistory>
+  documentsHistory: Record<string, DocumentHistory>
   collaborators: string[]
   loading: boolean
 } {
@@ -56,13 +56,13 @@ export function useReleaseHistory(bundleDocuments: SanityDocument[]): {
 
   return useMemo(() => {
     const collaborators: string[] = []
-    const documentsHistory = new Map<string, DocumentHistory>()
+    const documentsHistory: Record<string, DocumentHistory> = {}
     if (!history.length) {
       return {documentsHistory, collaborators, loading: true}
     }
     history.forEach((item) => {
       const documentId = item.documentIDs[0]
-      let documentHistory = documentsHistory.get(documentId)
+      let documentHistory = documentsHistory[documentId]
       if (!collaborators.includes(item.author)) {
         collaborators.push(item.author)
       }
@@ -74,7 +74,7 @@ export function useReleaseHistory(bundleDocuments: SanityDocument[]): {
           lastEditedBy: item.author,
           editors: [item.author],
         }
-        documentsHistory.set(documentId, documentHistory)
+        documentsHistory[documentId] = documentHistory
       } else {
         // @ts-expect-error TransactionLogEventWithEffects has no property 'mutations' but it's returned from the API
         const isCreate = item.mutations.some((mutation) => 'create' in mutation)
