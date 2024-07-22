@@ -5,6 +5,7 @@ import {
   type BundleDocument,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getBundleSlug,
+  getPublishedId,
   useBundles,
   useClient,
 } from 'sanity'
@@ -39,12 +40,9 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
   const [error, setError] = useState<Error | undefined>(undefined)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {data: bundles} = useBundles()
-  const pureDocumentId =
-    documentId.indexOf('.') > 0
-      ? documentId.slice(documentId.indexOf('.') + 1, documentId.length)
-      : documentId
+  const publishedId = getPublishedId(documentId, documentId.includes('.'))
 
-  const QUERY = `*[sanity::versionOf("${pureDocumentId}")]`
+  const QUERY = `*[sanity::versionOf("${publishedId}")]`
 
   const initialFetch = useCallback(async () => {
     if (!client) {
