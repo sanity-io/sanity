@@ -12,7 +12,6 @@ import {useClient} from '../../../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioClient'
 import {useSource} from '../../../../../../../../source'
-import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {AssetSourceError} from './AssetSourceError'
 import {AssetPreview} from './preview/AssetPreview'
@@ -28,7 +27,7 @@ const ContainerBox = styled(Box)`
   width: min(calc(100vw - 40px), 320px);
 `
 
-export function SearchFilterAssetInput(type?: AssetType) {
+export function renderSearchFilterAssetInput(type?: AssetType) {
   return function FieldInputAssetWithType({
     onChange,
     value,
@@ -37,10 +36,6 @@ export function SearchFilterAssetInput(type?: AssetType) {
     const [selectedAssetFromSource, setSelectedAssetFromSource] = useState<AssetFromSource | null>(
       null,
     )
-
-    const {
-      state: {fullscreen},
-    } = useSearchState()
 
     const {file, image} = useSource().form
     const {t} = useTranslation()
@@ -101,8 +96,6 @@ export function SearchFilterAssetInput(type?: AssetType) {
     }, [client, onChange, selectedAssetFromSource])
 
     const AssetSourceComponent = selectedAssetSource?.component
-
-    const fontSize = fullscreen ? 2 : 1
 
     const buttonText = t(value ? 'search.filter-asset-change' : 'search.filter-asset-select', {
       context: type,

@@ -1,7 +1,7 @@
 import {type ReferenceValue} from '@sanity/types'
 
 import {SearchButtonValueReference} from '../../components/filters/common/ButtonValue'
-import {SearchFilterAssetInput} from '../../components/filters/filter/inputs/asset/Asset'
+import {renderSearchFilterAssetInput} from '../../components/filters/filter/inputs/asset/Asset'
 import {SearchFilterReferenceInput} from '../../components/filters/filter/inputs/reference/Reference'
 import {
   defineSearchOperator,
@@ -39,7 +39,7 @@ export const referenceOperators = {
     buttonValueComponent: SearchButtonValueReference as SearchOperatorButtonValue<ReferenceValue>,
     groqFilter: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
-    inputComponent: SearchFilterAssetInput('file'),
+    inputComponent: renderSearchFilterAssetInput('file'),
     type: 'referencesAssetFile',
   }),
   referencesAssetImage: defineSearchOperator({
@@ -48,7 +48,7 @@ export const referenceOperators = {
     buttonValueComponent: SearchButtonValueReference as SearchOperatorButtonValue<ReferenceValue>,
     groqFilter: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
-    inputComponent: SearchFilterAssetInput('image'),
+    inputComponent: renderSearchFilterAssetInput('image'),
     type: 'referencesAssetImage',
   }),
   referencesDocument: defineSearchOperator({
