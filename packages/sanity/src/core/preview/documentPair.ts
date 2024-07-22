@@ -14,6 +14,7 @@ export function create_preview_documentPair(
   observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
     id: string,
     paths: PreviewPath[],
+    options?: {version?: string},
   ) => Observable<DraftsModelDocument<T>>
 } {
   const {observeDocumentPairAvailability} = createPreviewAvailabilityObserver(
@@ -21,17 +22,23 @@ export function create_preview_documentPair(
     observePaths,
   )
 
-  const ALWAYS_INCLUDED_SNAPSHOT_PATHS: PreviewPath[] = [['_updatedAt'], ['_createdAt'], ['_type']]
+  const ALWAYS_INCLUDED_SNAPSHOT_PATHS: PreviewPath[] = [
+    ['_updatedAt'],
+    ['_createdAt'],
+    ['_type'],
+    ['_version'],
+  ]
 
   return {observePathsDocumentPair}
 
   function observePathsDocumentPair<T extends SanityDocument = SanityDocument>(
     id: string,
     paths: PreviewPath[],
+    {version}: {version?: string} = {},
   ): Observable<DraftsModelDocument<T>> {
-    const {draftId, publishedId} = getIdPair(id)
+    const {draftId, publishedId, versionId} = getIdPair(id, {version})
 
-    return observeDocumentPairAvailability(draftId).pipe(
+    return observeDocumentPairAvailability(draftId, {version}).pipe(
       switchMap((availability) => {
         if (!availability.draft.available && !availability.published.available) {
           // short circuit, neither draft nor published is available so no point in trying to get a snapshot
@@ -46,6 +53,14 @@ export function create_preview_documentPair(
               availability: availability.published,
               snapshot: undefined,
             },
+            ...(availability.version
+              ? {
+                  version: {
+                    availability: availability.version,
+                    snapshot: undefined,
+                  },
+                }
+              : {}),
           })
         }
 
@@ -54,10 +69,12 @@ export function create_preview_documentPair(
         return combineLatest([
           observePaths({_type: 'reference', _ref: draftId}, snapshotPaths),
           observePaths({_type: 'reference', _ref: publishedId}, snapshotPaths),
+          ...(version ? [observePaths({_type: 'reference', _ref: versionId}, snapshotPaths)] : []),
         ]).pipe(
-          map(([draftSnapshot, publishedSnapshot]) => {
+          map(([draftSnapshot, publishedSnapshot, versionSnapshot]) => {
             // note: assume type is always the same
             const type =
+              (isRecord(versionSnapshot) && '_type' in versionSnapshot && versionSnapshot._type) ||
               (isRecord(draftSnapshot) && '_type' in draftSnapshot && draftSnapshot._type) ||
               (isRecord(publishedSnapshot) &&
                 '_type' in publishedSnapshot &&
@@ -75,6 +92,14 @@ export function create_preview_documentPair(
                 availability: availability.published,
                 snapshot: publishedSnapshot as T,
               },
+              ...(availability.version
+                ? {
+                    version: {
+                      availability: availability.version,
+                      snapshot: versionSnapshot as T,
+                    },
+                  }
+                : {}),
             }
           }),
         )

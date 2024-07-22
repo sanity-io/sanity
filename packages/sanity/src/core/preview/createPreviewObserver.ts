@@ -34,7 +34,6 @@ export function createPreviewObserver(context: {
   value: Previewable,
   type: PreviewableType,
   options?: {
-    perspective?: string
     viewOptions?: PrepareViewOptions
     apiConfig?: ApiConfig
   },
@@ -45,7 +44,6 @@ export function createPreviewObserver(context: {
     value: Previewable,
     type: PreviewableType,
     options?: {
-      perspective?: string
       viewOptions?: PrepareViewOptions
       apiConfig?: ApiConfig
     },

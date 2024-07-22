@@ -31,22 +31,30 @@ export function getReferenceInfo(
   documentPreviewStore: DocumentPreviewStore,
   id: string,
   referenceType: ReferenceSchemaType,
+  {version}: {version?: string} = {},
 ): Observable<ReferenceInfo> {
-  const {publishedId, draftId} = getIdPair(id)
+  const {publishedId, draftId, versionId} = getIdPair(id, {version})
 
-  const pairAvailability$ = documentPreviewStore.unstable_observeDocumentPairAvailability(id)
+  const pairAvailability$ = documentPreviewStore.unstable_observeDocumentPairAvailability(id, {
+    version,
+  })
 
   return pairAvailability$.pipe(
     switchMap((pairAvailability) => {
-      if (!pairAvailability.draft.available && !pairAvailability.published.available) {
-        // combine availability of draft + published
+      if (
+        !pairAvailability.version?.available &&
+        !pairAvailability.draft.available &&
+        !pairAvailability.published.available
+      ) {
+        // combine availability of draft + published + version
         const availability =
+          pairAvailability.version?.reason === 'PERMISSION_DENIED' ||
           pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
           pairAvailability.published.reason === 'PERMISSION_DENIED'
             ? PERMISSION_DENIED
             : NOT_FOUND
 
-        // short circuit, neither draft nor published is available so no point in trying to get preview
+        // short circuit, neither draft nor published nor version is available so no point in trying to get preview
         return of({
           id,
           type: undefined,
@@ -54,19 +62,25 @@ export function getReferenceInfo(
           preview: {
             draft: undefined,
             published: undefined,
+            version: undefined,
           },
         } as const)
       }
 
       const draftRef = {_type: 'reference', _ref: draftId}
       const publishedRef = {_type: 'reference', _ref: publishedId}
+      const versionRef = versionId ? {_type: 'reference', _ref: versionId} : undefined
 
       const typeName$ = combineLatest([
         documentPreviewStore.observeDocumentTypeFromId(draftId),
         documentPreviewStore.observeDocumentTypeFromId(publishedId),
+        ...(versionId ? [documentPreviewStore.observeDocumentTypeFromId(versionId)] : []),
       ]).pipe(
-        // assume draft + published are always same type
-        map(([draftTypeName, publishedTypeName]) => draftTypeName || publishedTypeName),
+        // assume draft + published + version are always same type
+        map(
+          ([draftTypeName, publishedTypeName, versionTypeName]) =>
+            versionTypeName || draftTypeName || publishedTypeName,
+        ),
       )
 
       return typeName$.pipe(
@@ -83,6 +97,7 @@ export function getReferenceInfo(
               preview: {
                 draft: undefined,
                 published: undefined,
+                version: undefined,
               },
             } as const)
           }
@@ -98,6 +113,7 @@ export function getReferenceInfo(
               preview: {
                 draft: undefined,
                 published: undefined,
+                version: undefined,
               },
             } as const)
           }
@@ -130,21 +146,46 @@ export function getReferenceInfo(
               startWith(undefined),
             )
 
-          const value$ = combineLatest([draftPreview$, publishedPreview$]).pipe(
-            map(([draft, published]) => ({draft, published})),
+          const versionPreview$ =
+            versionId && versionRef
+              ? documentPreviewStore.observePaths(versionRef, previewPaths).pipe(
+                  map((result) =>
+                    result
+                      ? {
+                          _id: versionId,
+                          ...prepareForPreview(result, refSchemaType),
+                        }
+                      : undefined,
+                  ),
+                  startWith(undefined),
+                )
+              : undefined
+
+          const value$ = combineLatest([
+            draftPreview$,
+            publishedPreview$,
+            ...(versionPreview$ ? [versionPreview$] : []),
+          ]).pipe(
+            map(([draft, published, versionValue]) => ({
+              draft,
+              published,
+              ...(versionValue ? {version: versionValue} : {}),
+            })),
           )
 
           return value$.pipe(
             map((value): ReferenceInfo => {
               const availability =
                 // eslint-disable-next-line no-nested-ternary
-                pairAvailability.draft.available || pairAvailability.published.available
+                pairAvailability.version?.available ||
+                pairAvailability.draft.available ||
+                pairAvailability.published.available
                   ? READABLE
-                  : pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
+                  : pairAvailability.version?.reason === 'PERMISSION_DENIED' ||
+                      pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
                       pairAvailability.published.reason === 'PERMISSION_DENIED'
                     ? PERMISSION_DENIED
                     : NOT_FOUND
-
               return {
                 type: typeName,
                 id: publishedId,
@@ -152,6 +193,7 @@ export function getReferenceInfo(
                 preview: {
                   draft: isRecord(value.draft) ? value.draft : undefined,
                   published: isRecord(value.published) ? value.published : undefined,
+                  version: isRecord(value.version) ? value.version : undefined,
                 },
               }
             }),

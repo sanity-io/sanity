@@ -24,6 +24,7 @@ export function PaneRouterProvider(props: {
   params: Record<string, string | undefined>
   payload: unknown
   siblingIndex: number
+  perspective?: string
 }) {
   const {children, flatIndex, index, params, payload, siblingIndex} = props
   const {navigate, navigateIntent, resolvePathFromState} = useRouter()
@@ -219,6 +220,9 @@ export function PaneRouterProvider(props: {
 
       // Proxied navigation to a given intent. Consider just exposing `router` instead?
       navigateIntent,
+
+      // Perspective of the current pane
+      perspective: props.perspective,
     }),
     [
       flatIndex,
@@ -232,6 +236,7 @@ export function PaneRouterProvider(props: {
       setPayload,
       createPathWithParams,
       navigateIntent,
+      props.perspective,
       modifyCurrentGroup,
       lastPane,
       navigate,

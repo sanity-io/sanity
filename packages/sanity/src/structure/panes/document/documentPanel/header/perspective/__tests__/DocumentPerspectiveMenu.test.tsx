@@ -24,6 +24,7 @@ jest.mock('sanity', () => {
 jest.mock('sanity/router', () => ({
   useRouter: jest.fn().mockReturnValue({
     navigateIntent: jest.fn(),
+    stickyParams: {},
   }),
   route: {
     create: jest.fn(),
@@ -63,13 +64,13 @@ describe('DocumentPerspectiveMenu', () => {
       setPerspective: jest.fn(),
     })
 
-    mockUseDocumentPane.mockImplementationOnce(() => ({
+    mockUseDocumentPane.mockReturnValue({
       documentVersions: [],
-    }))
+    })
   })
 
   it('should render the bundle badge if the document exists in the global bundle', async () => {
-    mockUseDocumentPane.mockImplementationOnce(() => ({
+    mockUseDocumentPane.mockReturnValue({
       documentVersions: [
         {
           slug: 'spring-drop',
@@ -84,23 +85,28 @@ describe('DocumentPerspectiveMenu', () => {
           _rev: '',
         },
       ],
-    }))
+      existsInBundle: true,
+    })
 
     const wrapper = await createTestProvider()
-    render(<DocumentPerspectiveMenu documentId="spring-drop.document-id" />, {wrapper})
+    render(<DocumentPerspectiveMenu />, {wrapper})
 
     expect(screen.getByTestId('button-document-release')).toBeInTheDocument()
   })
 
   it('should not render the bundle badge if the document does not exist in the bundle', async () => {
+    mockUseDocumentPane.mockReturnValue({
+      existsInBundle: false,
+    })
+
     const wrapper = await createTestProvider()
-    render(<DocumentPerspectiveMenu documentId="document-id" />, {wrapper})
+    render(<DocumentPerspectiveMenu />, {wrapper})
 
     expect(screen.queryByTestId('button-document-release')).toBeNull()
   })
 
   it('should navigate to the release intent when the bundle badge is clicked', async () => {
-    mockUseDocumentPane.mockImplementationOnce(() => ({
+    mockUseDocumentPane.mockReturnValue({
       documentVersions: [
         {
           slug: 'spring-drop',
@@ -115,10 +121,11 @@ describe('DocumentPerspectiveMenu', () => {
           _rev: '',
         },
       ],
-    }))
+      existsInBundle: true,
+    })
 
     const wrapper = await createTestProvider()
-    render(<DocumentPerspectiveMenu documentId="spring-drop.document-1" />, {wrapper})
+    render(<DocumentPerspectiveMenu />, {wrapper})
 
     expect(screen.queryByTestId('button-document-release')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('button-document-release'))
