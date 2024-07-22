@@ -4,15 +4,13 @@ import {
   BundleBadge,
   type BundleDocument,
   getBundleSlug,
-  useBundles,
-  useClient,
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {DocumentPerspectiveMenu} from '../../src/structure/panes/document/documentPanel/header/perspective/DocumentPerspectiveMenu'
-import {createWrapper} from '../testUtils/createWrapper'
+import {createWrapper} from '../../../../../../../../test/testUtils/createWrapper'
+import {DocumentPerspectiveMenu} from '../DocumentPerspectiveMenu'
 
 type getBundleSlugType = (documentId: string) => string
 
@@ -22,13 +20,11 @@ jest.mock('sanity', () => {
 
   return {
     ...actual,
-    useClient: jest.fn(),
     usePerspective: jest.fn().mockReturnValue({
       currentGlobalBundle: {},
       setPerspective: jest.fn(),
     }),
     BundleBadge: jest.fn(),
-    useBundles: jest.fn(),
     getBundleSlug: jest.fn(() => ''),
     useDocumentVersions: jest.fn(),
   }
@@ -44,11 +40,9 @@ jest.mock('sanity/router', () => ({
   IntentLink: jest.fn(),
 }))
 
-const mockUseClient = useClient as jest.Mock
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const navigateIntent = mockUseRouter().navigateIntent as jest.Mock
 
-const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 const mockUsePerspective = usePerspective as jest.Mock
 const mockGetBundleSlug = getBundleSlug as jest.MockedFunction<getBundleSlugType>
 const mockUseDocumentVersions = useDocumentVersions as jest.MockedFunction<
@@ -75,21 +69,10 @@ describe('DocumentPerspectiveMenu', () => {
   beforeEach(() => {
     jest.clearAllMocks()
 
-    mockUseClient.mockReturnValue({})
-
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
 
     mockBundleBadge.mockImplementation(() => <div>"test"</div>)
-
-    // Mock the data returned by useBundles hook
-    const mockData: BundleDocument[] = [mockCurrent]
-
-    mockUseBundles.mockReturnValue({
-      data: mockData,
-      loading: false,
-      dispatch: jest.fn(),
-    })
 
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: mockCurrent,
