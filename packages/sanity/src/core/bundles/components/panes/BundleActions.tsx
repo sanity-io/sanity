@@ -6,7 +6,7 @@ import {useDocumentOperation, useDocumentStore, useDocumentVersions} from 'sanit
 
 import {Button} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {versionDocumentExists} from '../../util/dummyGetters'
+import {versionDocumentExists} from '../../util/util'
 
 interface BundleActionsProps {
   currentGlobalBundle: BundleDocument
