@@ -20,7 +20,7 @@ export function ReleaseReview({
 }: {
   documents: SanityDocument[]
   release: BundleDocument
-  documentsHistory: Map<string, DocumentHistory>
+  documentsHistory: Record<string, DocumentHistory>
   validation: Record<string, DocumentValidationStatus>
 }) {
   const [searchTerm, setSearchTerm] = useState('')
@@ -51,7 +51,7 @@ export function ReleaseReview({
             searchTerm={searchTerm}
             document={document}
             release={release}
-            history={documentsHistory.get(document._id)}
+            history={documentsHistory[document._id]}
             validation={validation[document._id]}
           />
         ))}

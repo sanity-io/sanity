@@ -51,7 +51,7 @@ const setIconHue = ({hue, icon}: {hue: BundleDocument['hue']; icon: BundleDocume
 
 export function ReleaseSummary(props: {
   documents: SanityDocument[]
-  documentsHistory: Map<string, DocumentHistory>
+  documentsHistory: Record<string, DocumentHistory>
   collaborators: string[]
   release: BundleDocument
   validation: Record<string, DocumentValidationStatus>
@@ -92,7 +92,7 @@ export function ReleaseSummary(props: {
     () =>
       documents.map((document) => ({
         ...document,
-        history: documentsHistory.get(document._id),
+        history: documentsHistory[document._id],
         validation: validation[document._id],
       })),
     [documents, documentsHistory, validation],
