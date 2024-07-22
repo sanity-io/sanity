@@ -12,6 +12,7 @@ jest.mock('sanity', () => {
   return Object.assign({}, actual, {
     useClient: jest.fn(),
     useBundles: jest.fn(() => ({data: {}})),
+    getPublishedId: jest.fn(),
   })
 })
 
