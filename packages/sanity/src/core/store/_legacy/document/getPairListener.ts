@@ -16,6 +16,7 @@ import {
 interface Snapshots {
   draft: SanityDocument | null
   published: SanityDocument | null
+  version: SanityDocument | null
 }
 
 /** @internal */
@@ -64,14 +65,14 @@ export function getPairListener(
   idPair: IdPair,
   options: PairListenerOptions = {},
 ): Observable<ListenerEvent> {
-  const {publishedId, draftId} = idPair
+  const {publishedId, draftId, versionId} = idPair
+
   return defer(
     () =>
       client.observable.listen(
-        `*[_id == $publishedId || _id == $draftId]`,
+        `*[_id in $ids]`,
         {
-          publishedId,
-          draftId,
+          ids: [publishedId, draftId, versionId].filter((id) => typeof id !== 'undefined'),
         },
         {
           includeResult: false,
@@ -87,6 +88,7 @@ export function getPairListener(
             concatMap((snapshots) => [
               createSnapshotEvent(draftId, snapshots.draft),
               createSnapshotEvent(publishedId, snapshots.published),
+              ...(versionId ? [createSnapshotEvent(versionId, snapshots.version)] : []),
             ]),
           )
         : observableOf(event),
@@ -131,11 +133,15 @@ export function getPairListener(
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
     return client.observable
-      .getDocuments<SanityDocument>([draftId, publishedId], {tag: 'document.snapshots'})
+      .getDocuments<SanityDocument>(
+        [publishedId, draftId, versionId].filter((id): id is string => typeof id === 'string'),
+        {tag: 'document.snapshots'},
+      )
       .pipe(
-        map(([draft, published]) => ({
+        map(([published, draft, version]) => ({
           draft,
           published,
+          version,
         })),
       )
   }
