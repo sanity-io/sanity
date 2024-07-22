@@ -24,6 +24,13 @@ const LISTEN_OPTIONS: ListenOptions = {
   visibility: 'query',
 }
 
+/**
+ * Fetches the document versions for a given document
+ * @param props - document Id of the document (might include bundle slug)
+ * @returns - data: document versions, loading, errors
+ * @hidden
+ * @beta
+ */
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
 
