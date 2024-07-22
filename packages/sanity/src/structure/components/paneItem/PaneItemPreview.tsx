@@ -77,12 +77,12 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     <TooltipDelayGroupProvider>
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatusIndicator draft={draft} published={published} />
+        <DocumentStatusIndicator draft={draft} published={published} version={version} />
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = <DocumentStatus draft={draft} published={published} />
+  const tooltip = <DocumentStatus draft={draft} published={published} version={version} />
 
   return (
     <Root $isInPerspective={isInPerspective}>

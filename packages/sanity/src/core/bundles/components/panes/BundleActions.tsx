@@ -13,21 +13,21 @@ interface BundleActionsProps {
   documentId: string
   documentType: string
   documentVersions: BundleDocument[] | null
+  bundleSlug?: string
 }
 
 /**
  * @internal
  */
 export function BundleActions(props: BundleActionsProps): ReactNode {
-  const {currentGlobalBundle, documentId, documentType, documentVersions} = props
+  const {currentGlobalBundle, documentId, documentType, documentVersions, bundleSlug} = props
   const {slug, title, archivedAt} = currentGlobalBundle
   const documentStore = useDocumentStore()
-
   const [creatingVersion, setCreatingVersion] = useState<boolean>(false)
   const [isInVersion, setIsInVersion] = useState<boolean>(false)
 
   const toast = useToast()
-  const {newVersion} = useDocumentOperation(documentId, documentType)
+  const {newVersion} = useDocumentOperation(documentId, documentType, bundleSlug)
   const {t} = useTranslation()
 
   useEffect(() => {

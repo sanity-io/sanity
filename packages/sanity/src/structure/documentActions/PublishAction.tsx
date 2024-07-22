@@ -44,16 +44,21 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
 }
 
-/** @internal */
+/**
+ * TODO: Verify how this should work with versions, if it's needed at all.
+ *
+ *@internal
+ */
 // eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
-  const {id, type, liveEdit, draft, published} = props
+  const {id, type, liveEdit, draft, published, bundleSlug} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
-  const {publish} = useDocumentOperation(id, type)
-  const validationStatus = useValidationStatus(id, type)
-  const syncState = useSyncState(id, type)
+  const {publish} = useDocumentOperation(id, type, bundleSlug)
+  const validationStatus = useValidationStatus(id, type, bundleSlug)
+  const syncState = useSyncState(id, type, {version: bundleSlug})
   const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
-  const editState = useEditState(documentId, documentType)
+
+  const editState = useEditState(documentId, documentType, 'default', bundleSlug)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const revision = (editState?.draft || editState?.published || {})._rev
@@ -66,6 +71,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
+    version: bundleSlug,
     permission: 'publish',
   })
 
@@ -153,6 +159,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   ])
 
   return useMemo(() => {
+    // TODO: Check whether live edit is enabled because we're editing a version.
     if (liveEdit) {
       return {
         tone: 'default',

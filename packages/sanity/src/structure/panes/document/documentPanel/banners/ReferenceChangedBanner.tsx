@@ -21,14 +21,19 @@ import {Banner} from './Banner'
 interface ParentReferenceInfo {
   loading: boolean
   result?: {
-    availability: {draft: DocumentAvailability; published: DocumentAvailability}
+    availability: {
+      draft: DocumentAvailability
+      published: DocumentAvailability
+      version?: DocumentAvailability
+    }
     refValue: string | undefined
   }
 }
 
 export const ReferenceChangedBanner = memo(() => {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
+  const {params, groupIndex, routerPanesState, replaceCurrent, BackLink, perspective} =
+    usePaneRouter()
   const routerReferenceId = routerPanesState[groupIndex]?.[0].id
   const parentGroup = routerPanesState[groupIndex - 1] as RouterPaneGroup | undefined
   const parentSibling = parentGroup?.[0]
@@ -38,6 +43,10 @@ export const ReferenceChangedBanner = memo(() => {
     return (params?.parentRefPath && pathFromString(params.parentRefPath)) || null
   }, [params?.parentRefPath])
   const {t} = useTranslation(structureLocaleNamespace)
+
+  const bundlePerspective = perspective?.startsWith('bundle.')
+    ? perspective.split('bundle.').at(1)
+    : undefined
 
   /**
    * Loads information regarding the reference field of the parent pane. This
@@ -74,6 +83,9 @@ export const ReferenceChangedBanner = memo(() => {
         .unstable_observePathsDocumentPair(
           publishedId,
           (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][],
+          {
+            version: bundlePerspective,
+          },
         )
         .pipe(
           // this debounce time is needed to prevent flashing banners due to
@@ -82,21 +94,28 @@ export const ReferenceChangedBanner = memo(() => {
           // initially could be stale.
           debounceTime(750),
           map(
-            ({draft, published}): ParentReferenceInfo => ({
+            ({draft, published, version}): ParentReferenceInfo => ({
               loading: false,
               result: {
                 availability: {
                   draft: draft.availability,
                   published: published.availability,
+                  ...(version?.availability
+                    ? {
+                        version: version.availability,
+                      }
+                    : {}),
                 },
-                refValue: pathGet<Reference>(draft.snapshot || published.snapshot, parentRefPath)
-                  ?._ref,
+                refValue: pathGet<Reference>(
+                  version?.snapshot || draft.snapshot || published.snapshot,
+                  parentRefPath,
+                )?._ref,
               },
             }),
           ),
         ),
     )
-  }, [documentPreviewStore, parentId, parentRefPath])
+  }, [bundlePerspective, documentPreviewStore, parentId, parentRefPath])
   const referenceInfo = useObservable(referenceInfoObservable, {loading: true})
 
   const handleReloadReference = useCallback(() => {

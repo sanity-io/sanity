@@ -14,15 +14,19 @@ const SYNCING = {isSyncing: true}
 const NOT_SYNCING = {isSyncing: false}
 
 /** @internal */
-export function useSyncState(publishedDocId: string, documentType: string): SyncState {
+export function useSyncState(
+  publishedDocId: string,
+  documentType: string,
+  {version}: {version?: string} = {},
+): SyncState {
   const documentStore = useDocumentStore()
 
   const observable = useMemo(
     () =>
       documentStore.pair
-        .consistencyStatus(publishedDocId, documentType)
+        .consistencyStatus(publishedDocId, documentType, version)
         .pipe(map((isConsistent) => (isConsistent ? NOT_SYNCING : SYNCING))),
-    [documentStore.pair, documentType, publishedDocId],
+    [documentStore.pair, documentType, publishedDocId, version],
   )
   return useObservable<Observable<SyncState>>(observable, NOT_SYNCING)
 }

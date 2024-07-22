@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {merge, type Observable} from 'rxjs'
+import {EMPTY, merge, type Observable} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 
 import {type IdPair} from '../types'
@@ -17,7 +17,9 @@ export const remoteSnapshots = memoize(
     serverActionsEnabled: Observable<boolean>,
   ): Observable<RemoteSnapshotVersionEvent> => {
     return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
-      switchMap(({published, draft}) => merge(published.remoteSnapshot$, draft.remoteSnapshot$)),
+      switchMap(({published, draft, version}) =>
+        merge(published.remoteSnapshot$, draft.remoteSnapshot$, version?.remoteSnapshot$ ?? EMPTY),
+      ),
     )
   },
   memoizeKeyGen,

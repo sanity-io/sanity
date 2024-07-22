@@ -27,7 +27,7 @@ const isMutationEventForDocId =
 /**
  * @hidden
  * @beta */
-export type WithVersion<T> = T & {version: 'published' | 'draft'}
+export type WithVersion<T> = T & {version: 'published' | 'draft' | 'version'}
 
 /**
  * @hidden
@@ -60,16 +60,17 @@ export interface DocumentVersion {
 /**
  * @hidden
  * @beta */
-export interface Pair {
+export type Pair = {
   /** @internal */
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
   published: DocumentVersion
   draft: DocumentVersion
+  version?: DocumentVersion
   complete: () => void
 }
 
-function setVersion<T>(version: 'draft' | 'published') {
-  return (ev: T): T & {version: 'draft' | 'published'} => ({...ev, version})
+function setVersion<T>(version: 'draft' | 'published' | 'version') {
+  return (ev: T): T & {version: 'draft' | 'published' | 'version'} => ({...ev, version})
 }
 
 function requireId<T extends {_id?: string; _type: string}>(
@@ -183,7 +184,7 @@ export function checkoutPair(
   idPair: IdPair,
   serverActionsEnabled: Observable<boolean>,
 ): Pair {
-  const {publishedId, draftId} = idPair
+  const {publishedId, draftId, versionId} = idPair
 
   const listenerEventsConnector = new Subject<ListenerEvent>()
   const listenerEvents$ = getPairListener(client, idPair).pipe(
@@ -199,6 +200,14 @@ export function checkoutPair(
     listenerEvents$.pipe(filter(isMutationEventForDocId(draftId))),
   )
 
+  const version =
+    typeof versionId === 'undefined'
+      ? undefined
+      : createBufferedDocument(
+          versionId,
+          listenerEvents$.pipe(filter(isMutationEventForDocId(versionId))),
+        )
+
   const published = createBufferedDocument(
     publishedId,
     listenerEvents$.pipe(filter(isMutationEventForDocId(publishedId))),
@@ -209,7 +218,11 @@ export function checkoutPair(
     filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
   )
 
-  const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
+  const commits$ = merge(
+    draft.commitRequest$,
+    published.commitRequest$,
+    version ? version.commitRequest$ : EMPTY,
+  ).pipe(
     mergeMap((commitRequest) =>
       serverActionsEnabled.pipe(
         take(1),
@@ -227,13 +240,20 @@ export function checkoutPair(
     draft: {
       ...draft,
       events: merge(commits$, reconnect$, draft.events).pipe(map(setVersion('draft'))),
-      consistency$: draft.consistency$,
       remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft'))),
     },
+    ...(typeof version === 'undefined'
+      ? {}
+      : {
+          version: {
+            ...version,
+            events: merge(commits$, reconnect$, version.events).pipe(map(setVersion('version'))),
+            remoteSnapshot$: version.remoteSnapshot$.pipe(map(setVersion('version'))),
+          },
+        }),
     published: {
       ...published,
       events: merge(commits$, reconnect$, published.events).pipe(map(setVersion('published'))),
-      consistency$: published.consistency$,
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
     },
     complete: () => listenerEventsConnector.complete(),
