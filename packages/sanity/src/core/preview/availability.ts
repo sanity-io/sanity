@@ -67,7 +67,7 @@ function mutConcat<T>(array: T[], chunks: T[]) {
   return array
 }
 
-export function create_preview_availability(
+export function createPreviewAvailabilityObserver(
   versionedClient: SanityClient,
   observePaths: ObservePathsFn,
 ): {
