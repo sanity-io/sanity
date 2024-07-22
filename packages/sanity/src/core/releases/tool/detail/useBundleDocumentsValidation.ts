@@ -5,13 +5,15 @@ import {useDocumentPreviewStore, useSchema, useSource} from 'sanity'
 
 import {bundleDocumentsValidation, type DocumentValidationStatus} from './bundleDocumentsValidation'
 
-export function useBundleDocumentsValidation(bundles: SanityDocument[]) {
+export function useBundleDocumentsValidation(
+  documents: SanityDocument[],
+): Record<string, DocumentValidationStatus> {
   const {getClient, i18n} = useSource()
   const {unstable_observeDocumentPairAvailability, unstable_observeDocument} =
     useDocumentPreviewStore()
   const schema = useSchema()
   // This will be stable across renders, will emit a new one when a bundle is added or removed.
-  const bundlesIds = bundles.map((bundle) => bundle._id).join(',')
+  const bundleDocumentsIds = documents.map((bundle) => bundle._id).join(',')
 
   const observable = useMemo(() => {
     return bundleDocumentsValidation(
@@ -22,17 +24,23 @@ export function useBundleDocumentsValidation(bundles: SanityDocument[]) {
         i18n,
         getClient,
       },
-      bundlesIds.split(','),
+      /**
+       * TODO: This is a hack to make sure the observable is stable and avoid recalculating all the validation values
+       * when anything in any of the bundle changes, internally, the observable will recalculate only the value for the change bundle document.
+       *
+       * It will create a new observable when the ids change, and recalculate everything, which is not ideal, we will need to find a better way to handle this.
+       * */
+      bundleDocumentsIds.split(','),
     )
   }, [
-    bundlesIds,
+    bundleDocumentsIds,
     getClient,
     i18n,
     schema,
     unstable_observeDocumentPairAvailability,
     unstable_observeDocument,
   ])
-  const value = useObservable(observable, new Map<string, DocumentValidationStatus>())
+  const value = useObservable(observable, {})
 
   return value
 }

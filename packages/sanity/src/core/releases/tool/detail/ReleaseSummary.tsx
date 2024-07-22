@@ -54,7 +54,7 @@ export function ReleaseSummary(props: {
   documentsHistory: Map<string, DocumentHistory>
   collaborators: string[]
   release: BundleDocument
-  validation: Map<string, DocumentValidationStatus>
+  validation: Record<string, DocumentValidationStatus>
 }) {
   const {documents, documentsHistory, release, collaborators, validation} = props
   const {hue, icon} = release
@@ -93,7 +93,7 @@ export function ReleaseSummary(props: {
       documents.map((document) => ({
         ...document,
         history: documentsHistory.get(document._id),
-        validation: validation.get(document._id),
+        validation: validation[document._id],
       })),
     [documents, documentsHistory, validation],
   )
