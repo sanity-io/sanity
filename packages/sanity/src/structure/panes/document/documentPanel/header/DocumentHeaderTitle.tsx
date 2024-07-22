@@ -59,7 +59,7 @@ export function DocumentHeaderTitle(): ReactElement {
       </Flex>
 
       <Flex flex="none" gap={1}>
-        <DocumentPerspectiveMenu documentId={documentId} />
+        <DocumentPerspectiveMenu />
       </Flex>
     </Flex>
   )
