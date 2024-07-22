@@ -1,4 +1,5 @@
-import {useEffect, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 
 import {usePresenceStore} from '../datastores'
 import {type DocumentPresence} from './types'
@@ -6,14 +7,9 @@ import {type DocumentPresence} from './types'
 /** @internal */
 export function useDocumentPresence(documentId: string): DocumentPresence[] {
   const presenceStore = usePresenceStore()
-  const [presence, setPresence] = useState<DocumentPresence[]>([])
-
-  useEffect(() => {
-    const subscription = presenceStore.documentPresence(documentId).subscribe(setPresence)
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [documentId, presenceStore])
-
-  return presence
+  const observable = useMemo(
+    () => presenceStore.documentPresence(documentId),
+    [documentId, presenceStore],
+  )
+  return useObservable(observable, [])
 }
