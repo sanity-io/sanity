@@ -76,7 +76,9 @@ export function useDocumentPerspective(props: DocumentPerspectiveProps): Documen
   const handleListenerEvent = useCallback(
     async (event) => {
       if (event.type === 'welcome') {
-        await initialFetch()
+        if (!state) {
+          await initialFetch()
+        }
       }
 
       if (event.type === 'mutation') {
