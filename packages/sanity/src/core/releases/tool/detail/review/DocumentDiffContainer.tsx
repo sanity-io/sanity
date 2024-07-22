@@ -15,10 +15,12 @@ export function DocumentDiffContainer({
   document,
   release,
   history,
+  searchTerm,
 }: {
   document: SanityDocument
   release: BundleDocument
   history?: DocumentHistory
+  searchTerm: string
 }) {
   const publishedId = getPublishedId(document._id, true)
   const schema = useSchema()
@@ -31,6 +33,13 @@ export function DocumentDiffContainer({
     schemaType,
   )
   const {previewValues, isLoading} = useDocumentPreviewValues({document, release})
+
+  if (searchTerm) {
+    // Early return to filter out documents that don't match the search term
+    const fallbackTitle = typeof document.title === 'string' ? document.title : 'Untitled'
+    const title = typeof previewValues.title === 'string' ? previewValues.title : fallbackTitle
+    if (!title.toLowerCase().includes(searchTerm.toLowerCase())) return null
+  }
 
   return (
     <Card border radius={3}>
