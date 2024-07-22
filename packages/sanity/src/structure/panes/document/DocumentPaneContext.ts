@@ -41,6 +41,10 @@ export interface DocumentPaneContextValue {
   documentType: string
   documentVersions: BundleDocument[] | null
   editState: EditStateFor | null
+  /**
+   * Whether the document being edited exists in the checked-out bundle.
+   */
+  existsInBundle: boolean
   fieldActions: DocumentFieldAction[]
   focusPath: Path
   index: number
@@ -76,6 +80,7 @@ export interface DocumentPaneContextValue {
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike
+  version?: string
   views: View[]
   formState: DocumentFormNode | null
   permissions?: PermissionCheckResult | null

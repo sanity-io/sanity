@@ -15,12 +15,16 @@ export interface PerspectiveValue {
 }
 
 /**
+ * TODO: Improve distinction between global and pane perspectives.
+ *
  * @internal
  */
-export function usePerspective(): PerspectiveValue {
+export function usePerspective(selectedPerspective?: string): PerspectiveValue {
   const router = useRouter()
   const {data: bundles} = useBundles()
+  const perspective = selectedPerspective ?? router.stickyParams.perspective
 
+  // TODO: Should it be possible to set the perspective within a pane, rather than globally?
   const setPerspective = (slug: string | undefined) => {
     if (slug === 'drafts') {
       router.navigateStickyParam('perspective', '')
@@ -28,16 +32,15 @@ export function usePerspective(): PerspectiveValue {
       router.navigateStickyParam('perspective', `bundle.${slug}`)
     }
   }
+
   const selectedBundle =
-    router.stickyParams?.perspective && bundles
+    perspective && bundles
       ? bundles.find((bundle: Partial<BundleDocument>) => {
-          return (
-            `bundle.${bundle.slug}`.toLocaleLowerCase() ===
-            router.stickyParams.perspective?.toLocaleLowerCase()
-          )
+          return `bundle.${bundle.slug}`.toLocaleLowerCase() === perspective?.toLocaleLowerCase()
         })
       : LATEST
 
+  // TODO: Improve naming; this may not be global.
   const currentGlobalBundle = selectedBundle || LATEST
 
   return {

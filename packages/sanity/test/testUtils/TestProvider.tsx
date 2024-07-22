@@ -5,8 +5,8 @@ import {type ReactNode} from 'react'
 import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {
-  CopyPasteProvider,
   AddonDatasetProvider,
+  CopyPasteProvider,
   LocaleProviderBase,
   type LocaleResourceBundle,
   ResourceCacheProvider,
