@@ -34,7 +34,8 @@ export interface PendingMutationsEvent {
 }
 
 /** @internal */
-export interface IdPair {
+export type IdPair = {
   draftId: string
   publishedId: string
+  versionId?: string
 }

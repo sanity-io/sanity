@@ -15,7 +15,6 @@ import {createObserveDocument} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
-import {create_preview_documentPair} from './documentPair'
 import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './liveDocumentIdSet'
 import {createObserveFields} from './observeFields'
 import {
@@ -35,7 +34,7 @@ import {
 export type ObserveForPreviewFn = (
   value: Previewable,
   type: PreviewableType,
-  options?: {viewOptions?: PrepareViewOptions; apiConfig?: ApiConfig; perspective?: string},
+  options?: {viewOptions?: PrepareViewOptions; apiConfig?: ApiConfig},
 ) => Observable<PreparedSnapshot>
 
 /**
@@ -58,11 +57,13 @@ export interface DocumentPreviewStore {
    */
   unstable_observeDocumentPairAvailability: (
     id: string,
+    options?: {version?: string},
   ) => Observable<DraftsModelDocumentAvailability>
 
   unstable_observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
     id: string,
     paths: PreviewPath[],
+    options?: {version?: string},
   ) => Observable<DraftsModelDocument<T>>
 
   /**

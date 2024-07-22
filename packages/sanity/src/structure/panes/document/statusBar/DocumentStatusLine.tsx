@@ -18,7 +18,7 @@ export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
 
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
 
-  const syncState = useSyncState(documentId, documentType)
+  const syncState = useSyncState(documentId, documentType, {version: editState?.bundleSlug})
 
   const lastUpdated = value?._updatedAt
 

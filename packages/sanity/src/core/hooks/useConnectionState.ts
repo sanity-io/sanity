@@ -11,12 +11,16 @@ export type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
 const INITIAL: ConnectionState = 'connecting'
 
 /** @internal */
-export function useConnectionState(publishedDocId: string, docTypeName: string): ConnectionState {
+export function useConnectionState(
+  publishedDocId: string,
+  docTypeName: string,
+  {version}: {version?: string} = {},
+): ConnectionState {
   const documentStore = useDocumentStore()
 
   const observable = useMemo(
     () =>
-      documentStore.pair.documentEvents(publishedDocId, docTypeName).pipe(
+      documentStore.pair.documentEvents(publishedDocId, docTypeName, version).pipe(
         map((ev: {type: string}) => ev.type),
         map((eventType) => eventType !== 'reconnect'),
         switchMap((isConnected) =>
@@ -25,7 +29,7 @@ export function useConnectionState(publishedDocId: string, docTypeName: string):
         startWith(INITIAL as any),
         distinctUntilChanged(),
       ),
-    [docTypeName, documentStore.pair, publishedDocId],
+    [docTypeName, documentStore.pair, publishedDocId, version],
   )
   return useObservable(observable, INITIAL)
 }
