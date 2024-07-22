@@ -91,6 +91,11 @@ export interface DraftsModelDocumentAvailability {
    * document readability for the draft document
    */
   draft: DocumentAvailability
+
+  /**
+   * document readability for the version document
+   */
+  version?: DocumentAvailability
 }
 
 /**
@@ -104,6 +109,10 @@ export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocume
     snapshot: T | undefined
   }
   published: {
+    availability: DocumentAvailability
+    snapshot: T | undefined
+  }
+  version?: {
     availability: DocumentAvailability
     snapshot: T | undefined
   }
@@ -149,5 +158,12 @@ export interface ObservePathsFn {
  * @hidden
  * @beta */
 export interface ObserveDocumentAvailabilityFn {
-  (id: string): Observable<{draft: DocumentAvailability; published: DocumentAvailability}>
+  (
+    id: string,
+    options?: {version?: string},
+  ): Observable<{
+    draft: DocumentAvailability
+    published: DocumentAvailability
+    version?: DocumentAvailability
+  }>
 }

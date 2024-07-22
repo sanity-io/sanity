@@ -25,6 +25,7 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {set, unset} from '../../patch'
 import {type ObjectFieldProps, type RenderPreviewCallback} from '../../types'
+import {useFormBuilder} from '../../useFormBuilder'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
 import {ReferenceLinkCard} from './ReferenceLinkCard'
@@ -61,6 +62,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const elementRef = useRef<HTMLDivElement | null>(null)
   const {schemaType, path, open, inputId, children, inputProps} = props
   const {readOnly, focused, renderPreview, onChange} = props.inputProps
+  const {version} = useFormBuilder()
 
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
   const documentId = usePublishedId()
@@ -73,6 +75,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       path,
       schemaType,
       value,
+      version,
     })
 
   // this is here to make sure the item is visible if it's being edited behind a modal

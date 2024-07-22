@@ -43,6 +43,7 @@ export interface CommentsProviderProps {
   children: ReactNode
   documentId: string
   documentType: string
+  perspective?: string
   type: CommentsType
   sortOrder: 'asc' | 'desc'
 
@@ -78,20 +79,27 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     selectedCommentId,
     isConnecting,
     onPathOpen,
+    perspective,
   } = props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
   const publishedId = getPublishedId(documentId)
-  const editState = useEditState(publishedId, documentType, 'low')
+
+  const bundlePerspective = perspective?.startsWith('bundle.')
+    ? perspective.split('bundle.').at(1)
+    : undefined
+
+  // TODO: Allow versions to have separate comments.
+  const editState = useEditState(publishedId, documentType, 'default', bundlePerspective)
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
 
   const {name: workspaceName, dataset, projectId} = useWorkspace()
 
   const documentValue = useMemo(() => {
-    return editState.draft || editState.published
-  }, [editState.draft, editState.published])
+    return editState.version || editState.draft || editState.published
+  }, [editState.version, editState.draft, editState.published])
 
   const documentRevisionId = useMemo(() => documentValue?._rev, [documentValue])
 
