@@ -6,6 +6,7 @@ import {useSchema} from '../../../../hooks/useSchema'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {getPublishedId} from '../../../../util/draftUtils'
+import {type DocumentValidationStatus} from '../bundleDocumentsValidation'
 import {useDocumentPreviewValues} from '../documentTable/useDocumentPreviewValues'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {DocumentReviewHeader} from '../review/DocumentReviewHeader'
@@ -16,11 +17,13 @@ export function DocumentDiffContainer({
   release,
   history,
   searchTerm,
+  validation,
 }: {
   document: SanityDocument
   release: BundleDocument
   history?: DocumentHistory
   searchTerm: string
+  validation?: DocumentValidationStatus
 }) {
   const publishedId = getPublishedId(document._id, true)
   const schema = useSchema()
@@ -49,6 +52,7 @@ export function DocumentDiffContainer({
         isLoading={!!isLoading}
         history={history}
         release={release}
+        validation={validation}
       />
       <Flex justify="center" padding={4}>
         {baseDocumentLoading ? (

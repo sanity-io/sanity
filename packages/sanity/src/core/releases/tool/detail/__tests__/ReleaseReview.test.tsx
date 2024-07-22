@@ -8,7 +8,6 @@ import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {useDocumentPreviewValues} from '../documentTable/useDocumentPreviewValues'
-import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {ReleaseReview} from '../ReleaseReview'
 
 const DOCUMENTS_MOCKS = {
@@ -88,26 +87,37 @@ const MOCKED_PROPS = {
     _id: 'd3137faf-ece6-44b5-a2b1-1090967f868e',
     _rev: 'j9BPWHem9m3oUugvhMXEGV',
   } as const,
-  documentsHistory: new Map<string, DocumentHistory>([
-    [
-      'differences.doc1',
-      {
-        history: [],
-        createdBy: 'p8xDvUMxC',
-        lastEditedBy: 'p8xDvUMxC',
-        editors: ['p8xDvUMxC'],
-      },
-    ],
-    [
-      'differences.doc2',
-      {
-        history: [],
-        createdBy: 'p8xDvUMxC',
-        lastEditedBy: 'p8xDvUMxC',
-        editors: ['p8xDvUMxC'],
-      },
-    ],
-  ]),
+  documentsHistory: {
+    'differences.doc1': {
+      history: [],
+      createdBy: 'p8xDvUMxC',
+      lastEditedBy: 'p8xDvUMxC',
+      editors: ['p8xDvUMxC'],
+    },
+
+    'differences.doc2': {
+      history: [],
+      createdBy: 'p8xDvUMxC',
+      lastEditedBy: 'p8xDvUMxC',
+      editors: ['p8xDvUMxC'],
+    },
+  },
+  validation: {
+    'differences.doc1': {
+      isValidating: false,
+      validation: [],
+      revision: 'FvEfB9CaLlljeKWNk8Mh0N',
+      documentId: 'differences.doc1',
+      hasError: false,
+    },
+    'differences.doc2': {
+      isValidating: false,
+      validation: [],
+      revision: 'FvEfB9CaLlljeKWNk8Mh0N',
+      documentId: 'differences.doc1',
+      hasError: false,
+    },
+  },
 }
 
 jest.mock('sanity/router', () => ({
