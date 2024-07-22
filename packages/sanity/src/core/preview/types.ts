@@ -113,6 +113,17 @@ export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocume
 }
 
 /**
+ * Event emitted to notify preview subscribers when they need to refetch a document being previewed
+ * - 'connected' will happen when the store is connected to the invalidation channel, both initially and after a reconnect after a connection loss
+ * - 'mutation' will happen when a document has been mutated and the store needs to refetch a document
+ * @hidden
+ * @beta
+ */
+export type InvalidationChannelEvent =
+  | {type: 'connected'}
+  | {type: 'mutation'; documentId: string; visibility: string}
+
+/**
  * @hidden
  * @beta */
 export interface PreparedSnapshot {
