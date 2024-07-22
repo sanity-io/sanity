@@ -14,6 +14,7 @@ import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
+import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
 
 import {imageAssetSource} from './assetSources'
@@ -142,6 +143,7 @@ const sharedSettings = definePlugin({
     routerDebugTool(),
     errorReportingTestPlugin(),
     tsdoc(),
+    media(),
   ],
 })
 
