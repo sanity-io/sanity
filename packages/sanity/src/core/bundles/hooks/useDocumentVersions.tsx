@@ -83,7 +83,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
 
       if (event.type === 'mutation') {
         const prev = event.result
-        const exists = state?.find((b) => b.slug === getBundleSlug(prev._id))
+        const exists = state?.find((b) => b.slug === getBundleSlug(prev?._id || ''))
 
         if (exists) {
           const updatedBundles = state?.map((b: BundleDocument) =>
