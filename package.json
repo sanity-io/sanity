@@ -38,6 +38,7 @@
     "dev:starter-studio": "pnpm --filter sanity-starter-studio dev",
     "dev:strict-studio": "pnpm --filter sanity-strict-studio dev",
     "dev:test-studio": "pnpm --filter sanity-test-studio dev",
+    "dev:test-studio-production-profiling": "REACT_PRODUCTION_PROFILING=true turbo run start --filter=sanity-test-studio",
     "dev:next-studio": "pnpm --filter sanity-test-next-studio dev",
     "dev:compiled-studio": "REACT_COMPILER=true pnpm dev:next-studio",
     "dev:turbo-studio": "pnpm dev:next-studio --turbo",
