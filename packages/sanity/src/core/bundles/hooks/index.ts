@@ -1,2 +1,2 @@
-export * from './useDocumentPerspective'
+export * from './useDocumentVersions'
 export * from './usePerspective'

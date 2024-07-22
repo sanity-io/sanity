@@ -2,7 +2,7 @@ import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
-import {useDocumentOperation, useDocumentPerspective, useDocumentStore} from 'sanity'
+import {useDocumentOperation, useDocumentStore, useDocumentVersions} from 'sanity'
 
 import {Button} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -20,7 +20,7 @@ interface BundleActionsProps {
 export function BundleActions(props: BundleActionsProps): JSX.Element {
   const {currentGlobalBundle, documentId, documentType} = props
   const {slug, title} = currentGlobalBundle
-  const {data: documentVersions} = useDocumentPerspective({documentId})
+  const {data: documentVersions} = useDocumentVersions({documentId})
   const documentStore = useDocumentStore()
 
   const [creatingVersion, setCreatingVersion] = useState<boolean>(false)

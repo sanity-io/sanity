@@ -5,7 +5,7 @@ import {
   type SanityClient,
   unstable_useValuePreview as useValuePreview,
   useBundles,
-  useDocumentPerspective,
+  useDocumentVersions,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
@@ -39,15 +39,15 @@ jest.mock('sanity', () => {
     unstable_useValuePreview: jest.fn(),
     useBundles: jest.fn(),
     getBundleSlug: jest.fn(() => ''),
-    useDocumentPerspective: jest.fn(),
+    useDocumentVersions: jest.fn(),
   }
 })
 
 jest.mock('sanity/router')
 
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
-const mockUseDocumentPerspective = useDocumentPerspective as jest.MockedFunction<
-  typeof useDocumentPerspective
+const mockUseDocumentVersions = useDocumentVersions as jest.MockedFunction<
+  typeof useDocumentVersions
 >
 
 describe('DocumentHeaderTitle', () => {
@@ -70,7 +70,7 @@ describe('DocumentHeaderTitle', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: jest.fn()})
-    mockUseDocumentPerspective.mockReturnValue({data: []})
+    mockUseDocumentVersions.mockReturnValue({data: []})
     mockUseBundles.mockReturnValue({
       data: [],
       loading: false,

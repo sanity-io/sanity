@@ -7,7 +7,7 @@ import {
   BundleMenu,
   getBundleSlug,
   useBundles,
-  useDocumentPerspective,
+  useDocumentVersions,
   usePerspective,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -25,7 +25,7 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
 
   const existsInBundle = getBundleSlug(documentId) === currentGlobalBundle?.slug
   const {title, hue, icon, slug} = currentGlobalBundle
-  const {data: documentVersions} = useDocumentPerspective({documentId})
+  const {data: documentVersions} = useDocumentVersions({documentId})
 
   const router = useRouter()
 

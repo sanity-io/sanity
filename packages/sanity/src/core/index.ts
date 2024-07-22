@@ -4,7 +4,7 @@ export {
   BundleMenu,
   getBundleSlug,
   LATEST,
-  useDocumentPerspective,
+  useDocumentVersions,
   usePerspective,
 } from './bundles'
 export * from './changeIndicators'

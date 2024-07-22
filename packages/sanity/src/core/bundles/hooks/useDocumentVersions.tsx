@@ -24,7 +24,7 @@ const LISTEN_OPTIONS: ListenOptions = {
   visibility: 'query',
 }
 
-export function useDocumentPerspective(props: DocumentPerspectiveProps): DocumentPerspectiveState {
+export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
 
   const [state, setState] = useState<BundleDocument[] | undefined>(undefined)

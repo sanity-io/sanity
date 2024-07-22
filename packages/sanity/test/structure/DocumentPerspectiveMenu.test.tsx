@@ -6,7 +6,7 @@ import {
   getBundleSlug,
   useBundles,
   useClient,
-  useDocumentPerspective,
+  useDocumentVersions,
   usePerspective,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -30,7 +30,7 @@ jest.mock('sanity', () => {
     BundleBadge: jest.fn(),
     useBundles: jest.fn(),
     getBundleSlug: jest.fn(() => ''),
-    useDocumentPerspective: jest.fn(),
+    useDocumentVersions: jest.fn(),
   }
 })
 
@@ -51,8 +51,8 @@ const navigateIntent = mockUseRouter().navigateIntent as jest.Mock
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 const mockUsePerspective = usePerspective as jest.Mock
 const mockGetBundleSlug = getBundleSlug as jest.MockedFunction<getBundleSlugType>
-const mockUseDocumentPerspective = useDocumentPerspective as jest.MockedFunction<
-  typeof useDocumentPerspective
+const mockUseDocumentVersions = useDocumentVersions as jest.MockedFunction<
+  typeof useDocumentVersions
 >
 
 const mockBundleBadge = BundleBadge as jest.Mock
@@ -96,7 +96,7 @@ describe('DocumentPerspectiveMenu', () => {
       setPerspective: jest.fn(),
     })
 
-    mockUseDocumentPerspective.mockImplementationOnce(() => ({
+    mockUseDocumentVersions.mockImplementationOnce(() => ({
       data: [],
     }))
   })
@@ -105,7 +105,7 @@ describe('DocumentPerspectiveMenu', () => {
     // Dummy Getters
     mockGetBundleSlug.mockReturnValue('spring-drop')
 
-    mockUseDocumentPerspective.mockImplementationOnce(() => ({
+    mockUseDocumentVersions.mockImplementationOnce(() => ({
       data: [
         {
           slug: 'spring-drop',
@@ -142,7 +142,7 @@ describe('DocumentPerspectiveMenu', () => {
     // Dummy Getters
     mockGetBundleSlug.mockReturnValue('spring-drop')
 
-    mockUseDocumentPerspective.mockImplementationOnce(() => ({
+    mockUseDocumentVersions.mockImplementationOnce(() => ({
       data: [
         {
           slug: 'spring-drop',
