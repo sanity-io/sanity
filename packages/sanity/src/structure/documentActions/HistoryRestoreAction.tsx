@@ -12,8 +12,14 @@ import {useRouter} from 'sanity/router'
 import {structureLocaleNamespace} from '../i18n'
 
 /** @internal */
-export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revision, onComplete}) => {
-  const {restore} = useDocumentOperation(id, type)
+export const HistoryRestoreAction: DocumentActionComponent = ({
+  id,
+  type,
+  revision,
+  onComplete,
+  bundleSlug,
+}) => {
+  const {restore} = useDocumentOperation(id, type, bundleSlug)
   const event = useDocumentOperationEvent(id, type)
   const {navigateIntent} = useRouter()
   const prevEvent = useRef(event)
