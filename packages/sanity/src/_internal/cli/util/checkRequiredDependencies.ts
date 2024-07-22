@@ -8,6 +8,7 @@ import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 
 import {peerDependencies} from '../../../../package.json'
+import {findClosestPackageJson} from './findClosestPackageJson'
 
 const defaultStudioManifestProps: PartialPackageManifest = {
   name: 'studio',
@@ -32,9 +33,15 @@ interface CheckResult {
  */
 export async function checkRequiredDependencies(context: CliCommandContext): Promise<CheckResult> {
   const {workDir: studioPath, output} = context
+  const closestPackageJson = findClosestPackageJson(studioPath)
+  if (!closestPackageJson) {
+    throw new Error('Failed to find a package.json file in the studio directory or any parent')
+  }
+
+  const dependencyRootPath = path.dirname(closestPackageJson)
   const [studioPackageManifest, installedStyledComponentsVersion, installedSanityVersion] =
     await Promise.all([
-      await readPackageManifest(path.join(studioPath, 'package.json'), defaultStudioManifestProps),
+      await readPackageManifest(closestPackageJson, defaultStudioManifestProps),
       await readModuleVersion(studioPath, 'styled-components'),
       await readModuleVersion(studioPath, 'sanity'),
     ])
@@ -56,7 +63,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   if (!declaredStyledComponentsVersion) {
     const [file, ...args] = process.argv
     const deps = {'styled-components': wantedStyledComponentsVersionRange}
-    await installDependencies(deps, context)
+    await installDependencies(deps, context, dependencyRootPath)
 
     // Re-run the same command (sanity dev/sanity build etc) after installation,
     // as it can have shifted the entire `node_modules` folder around, result in
@@ -164,12 +171,14 @@ async function readPackageManifest(
  *
  * @param dependencies - Object of dependencies `({[package name]: version})`
  * @param context - CLI context
+ * @param dependencyRootPath - Path to the "root", eg parent of `node_modules`
  */
 async function installDependencies(
   dependencies: Record<string, string>,
   context: CliCommandContext,
+  dependencyRootPath: string,
 ): Promise<void> {
-  const {output, prompt, workDir, cliPackageManager} = context
+  const {output, prompt, cliPackageManager} = context
   const packages: string[] = []
 
   output.print('The Sanity studio needs to install missing dependencies:')
@@ -187,14 +196,21 @@ async function installDependencies(
   }
 
   const {getPackageManagerChoice, installNewPackages} = cliPackageManager
-  const {mostOptimal, chosen: pkgManager} = await getPackageManagerChoice(workDir, {prompt})
+  const {mostOptimal, chosen: pkgManager} = await getPackageManagerChoice(dependencyRootPath, {
+    prompt,
+  })
   if (mostOptimal && pkgManager !== mostOptimal) {
     output.warn(
       `WARN: This project appears to be installed with or using ${mostOptimal} - using a different package manager _may_ result in errors.`,
     )
   }
 
-  await installNewPackages({packages, packageManager: pkgManager}, context)
+  await installNewPackages(
+    {packages, packageManager: pkgManager},
+    // We want to install dependencies where the closest `package.json` is,
+    // not necessarily where the studio config resides
+    {...context, workDir: dependencyRootPath},
+  )
 }
 
 function isPackageManifest(item: unknown): item is PartialPackageManifest {
