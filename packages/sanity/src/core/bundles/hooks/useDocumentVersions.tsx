@@ -27,7 +27,7 @@ const LISTEN_OPTIONS: ListenOptions = {
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
 
-  const [state, setState] = useState<BundleDocument[] | undefined>(undefined)
+  const [state, setState] = useState<BundleDocument[] | null>(null)
 
   const [error, setError] = useState<Error | undefined>(undefined)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
