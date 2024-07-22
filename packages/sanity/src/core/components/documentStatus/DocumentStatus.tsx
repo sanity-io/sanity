@@ -9,6 +9,7 @@ interface DocumentStatusProps {
   absoluteDate?: boolean
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
+  version?: PreviewValue | Partial<SanityDocument> | null
   singleLine?: boolean
 }
 
@@ -26,9 +27,16 @@ const StyledText = styled(Text)`
  *
  * @internal
  */
-export function DocumentStatus({absoluteDate, draft, published, singleLine}: DocumentStatusProps) {
+export function DocumentStatus({
+  absoluteDate,
+  draft,
+  published,
+  version,
+  singleLine,
+}: DocumentStatusProps) {
   const {t} = useTranslation()
   const draftUpdatedAt = draft && '_updatedAt' in draft ? draft._updatedAt : ''
+  const versionUpdatedAt = version && '_updatedAt' in version ? version._updatedAt : ''
   const publishedUpdatedAt = published && '_updatedAt' in published ? published._updatedAt : ''
 
   const intlDateFormat = useDateTimeFormat({
@@ -39,6 +47,7 @@ export function DocumentStatus({absoluteDate, draft, published, singleLine}: Doc
   const draftDateAbsolute = draftUpdatedAt && intlDateFormat.format(new Date(draftUpdatedAt))
   const publishedDateAbsolute =
     publishedUpdatedAt && intlDateFormat.format(new Date(publishedUpdatedAt))
+  const versionDateAbsolute = versionUpdatedAt && intlDateFormat.format(new Date(versionUpdatedAt))
 
   const draftUpdatedTimeAgo = useRelativeTime(draftUpdatedAt || '', {
     minimal: true,
@@ -48,9 +57,15 @@ export function DocumentStatus({absoluteDate, draft, published, singleLine}: Doc
     minimal: true,
     useTemporalPhrase: true,
   })
+  const versionUpdatedTimeAgo = useRelativeTime(versionUpdatedAt || '', {
+    minimal: true,
+    useTemporalPhrase: true,
+  })
 
   const publishedDate = absoluteDate ? publishedDateAbsolute : publishedUpdatedTimeAgo
-  const updatedDate = absoluteDate ? draftDateAbsolute : draftUpdatedTimeAgo
+  const updatedDate = absoluteDate
+    ? versionDateAbsolute || draftDateAbsolute
+    : versionUpdatedTimeAgo || draftUpdatedTimeAgo
 
   return (
     <Flex
@@ -60,12 +75,12 @@ export function DocumentStatus({absoluteDate, draft, published, singleLine}: Doc
       gap={2}
       wrap="nowrap"
     >
-      {!publishedDate && (
+      {!version && !publishedDate && (
         <StyledText size={1} weight="medium">
           {t('document-status.not-published')}
         </StyledText>
       )}
-      {publishedDate && (
+      {!version && publishedDate && (
         <StyledText size={1} weight="medium">
           {t('document-status.published', {date: publishedDate})}
         </StyledText>

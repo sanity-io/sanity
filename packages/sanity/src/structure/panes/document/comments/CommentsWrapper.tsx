@@ -5,6 +5,7 @@ import {
   CommentsProvider,
   useCommentsEnabled,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
@@ -37,7 +38,9 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
 
   const {enabled} = useCommentsEnabled()
   const {connectionState, onPathOpen, inspector, openInspector} = useDocumentPane()
-  const {params, setParams, createPathWithParams} = usePaneRouter()
+  const router = useRouter()
+  const {params, setParams, createPathWithParams, ...paneRouter} = usePaneRouter()
+  const perspective = paneRouter.perspective ?? router.stickyParams.perspective
 
   const selectedCommentId = params?.comment
   const paramsRef = useRef(params)
@@ -90,6 +93,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
       selectedCommentId={selectedCommentId}
       sortOrder="desc"
       type="field"
+      perspective={perspective}
     >
       {children}
     </CommentsProvider>

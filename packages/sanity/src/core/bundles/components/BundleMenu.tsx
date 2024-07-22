@@ -4,7 +4,7 @@ import {type ReactElement, useCallback} from 'react'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../store/bundles/types'
-import {usePerspective} from '../hooks/usePerspective'
+import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/util'
 import {BundleBadge} from './BundleBadge'
@@ -23,14 +23,15 @@ interface BundleListProps {
   bundles: BundleDocument[] | null
   loading: boolean
   actions?: ReactElement
+  perspective?: string
 }
 
 /**
  * @internal
  */
 export function BundleMenu(props: BundleListProps): JSX.Element {
-  const {bundles, loading, actions, button} = props
-  const {currentGlobalBundle, setPerspective} = usePerspective()
+  const {bundles, loading, actions, button, perspective} = props
+  const {currentGlobalBundle, setPerspective} = usePerspective(perspective)
 
   const bundlesToDisplay =
     bundles?.filter((bundle) => !isDraftOrPublished(bundle.slug) && !bundle.archivedAt) || []
