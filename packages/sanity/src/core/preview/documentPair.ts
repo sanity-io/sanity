@@ -4,7 +4,7 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
 import {getIdPair, isRecord} from '../util'
-import {create_preview_availability} from './availability'
+import {createPreviewAvailabilityObserver} from './availability'
 import {type DraftsModelDocument, type ObservePathsFn, type PreviewPath} from './types'
 
 export function create_preview_documentPair(
@@ -16,7 +16,7 @@ export function create_preview_documentPair(
     paths: PreviewPath[],
   ) => Observable<DraftsModelDocument<T>>
 } {
-  const {observeDocumentPairAvailability} = create_preview_availability(
+  const {observeDocumentPairAvailability} = createPreviewAvailabilityObserver(
     versionedClient,
     observePaths,
   )

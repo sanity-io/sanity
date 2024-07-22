@@ -119,8 +119,13 @@ function normalizePaths(path: (FieldName | PreviewPath)[]): PreviewPath[] {
   )
 }
 
-export function createPathObserver(context: {observeFields: ObserveFieldsFn}) {
-  const {observeFields} = context
+/**
+ * Creates a function that allows observing nested paths on a document.
+ * If the path includes a reference, the reference will be "followed", allowing for selecting paths within the referenced document.
+ * @param options - Options - Requires a function that can observe fields on a document
+ * */
+export function createPathObserver(options: {observeFields: ObserveFieldsFn}) {
+  const {observeFields} = options
 
   return {
     observePaths(
