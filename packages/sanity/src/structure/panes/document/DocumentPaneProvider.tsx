@@ -43,7 +43,6 @@ import {
   useValidationStatus,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
-import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
@@ -79,7 +78,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       inspectors: inspectorsResolver,
     },
   } = useSource()
-  const {stickyParams} = useRouter()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
@@ -115,20 +113,37 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     templateParams,
   })
 
+  const {perspective} = paneRouter
+
+  const bundlePerspective = perspective?.startsWith('bundle.')
+    ? perspective.split('bundle.').at(1)
+    : undefined
+
   const initialValue = useUnique(initialValueRaw)
-  const {patch} = useDocumentOperation(documentId, documentType)
+  const {patch} = useDocumentOperation(documentId, documentType, bundlePerspective)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
-  const editState = useEditState(documentId, documentType)
-  const {validation: validationRaw} = useValidationStatus(documentId, documentType)
-  const connectionState = useConnectionState(documentId, documentType)
+  const editState = useEditState(documentId, documentType, 'default', bundlePerspective)
+  const {validation: validationRaw} = useValidationStatus(
+    documentId,
+    documentType,
+    bundlePerspective,
+  )
+  const connectionState = useConnectionState(documentId, documentType, {version: bundlePerspective})
   const {data: documentVersions} = useDocumentVersions({documentId})
 
-  const perspective = stickyParams.perspective
+  let value: SanityDocumentLike = initialValue.value
 
-  const value: SanityDocumentLike =
-    (perspective === 'published'
-      ? editState.published || editState.draft
-      : editState?.draft || editState?.published) || initialValue.value
+  switch (true) {
+    case typeof bundlePerspective !== 'undefined':
+      value = editState.version || editState.draft || editState.published || value
+      break
+    case perspective === 'published':
+      value = editState.published || editState.draft || value
+      break
+    default:
+      value = editState?.draft || editState?.published || value
+  }
+
   const [isDeleting, setIsDeleting] = useState(false)
 
   // Resolve document actions
@@ -172,6 +187,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onError: setTimelineError,
     rev: params.rev,
     since: params.since,
+    version: bundlePerspective,
   })
 
   // Subscribe to external timeline state changes
@@ -207,13 +223,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const [presence, setPresence] = useState<DocumentPresence[]>([])
   useEffect(() => {
-    const subscription = presenceStore.documentPresence(documentId).subscribe((nextPresence) => {
+    const subscription = presenceStore.documentPresence(value._id).subscribe((nextPresence) => {
       setPresence(nextPresence)
     })
     return () => {
       subscription.unsubscribe()
     }
-  }, [documentId, presenceStore])
+  }, [presenceStore, value._id])
 
   const inspectors: DocumentInspector[] = useMemo(
     () => inspectorsResolver({documentId, documentType}),
@@ -495,6 +511,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
 
   const isNonExistent = !value?._id
+  const isNonExistentInBundle =
+    typeof bundlePerspective !== 'undefined' && !value._id.startsWith(`${bundlePerspective}.`)
+  const existsInBundle =
+    typeof bundlePerspective !== 'undefined' && value._id.startsWith(`${bundlePerspective}.`)
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
@@ -502,9 +522,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
+    const isSystemPerspectiveApplied = perspective && typeof bundlePerspective === 'undefined'
 
     return (
-      !!perspective ||
+      isNonExistentInBundle ||
+      isSystemPerspectiveApplied ||
       !ready ||
       revTime !== null ||
       hasNoPermission ||
@@ -520,9 +542,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permissions?.granted,
     schemaType,
     isNonExistent,
+    isNonExistentInBundle,
     connectionState,
     editState.transactionSyncLock?.enabled,
     perspective,
+    bundlePerspective,
     ready,
     revTime,
     isDeleting,
@@ -579,14 +603,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       presenceStore.setLocation([
         {
           type: 'document',
-          documentId,
+          documentId: value._id,
           path: nextFocusPath,
           lastActiveAt: new Date().toISOString(),
           selection: payload?.selection,
         },
       ])
     },
-    [documentId, presenceStore],
+    [presenceStore, value._id],
   )
 
   const updatePresenceThrottled = useMemo(
@@ -624,6 +648,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentType,
       documentVersions,
       editState,
+      existsInBundle,
       fieldActions,
       focusPath,
       inspector: currentInspector || null,
@@ -664,6 +689,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       timelineStore,
       title,
       value,
+      version: bundlePerspective,
       views,
       formState,
       unstable_languageFilter: languageFilter,
@@ -673,6 +699,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       actions,
       activeViewId,
       badges,
+      bundlePerspective,
       changesOpen,
       closeInspector,
       collapsedFieldSets,
@@ -686,6 +713,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentType,
       documentVersions,
       editState,
+      existsInBundle,
       fieldActions,
       focusPath,
       formState,
