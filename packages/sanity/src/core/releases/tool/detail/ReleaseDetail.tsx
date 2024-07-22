@@ -13,6 +13,7 @@ import {type ReleasesRouterState} from '../../types/router'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseReview} from './ReleaseReview'
 import {ReleaseSummary} from './ReleaseSummary'
+import {useBundleDocumentsValidation} from './useBundleDocumentsValidation'
 
 const SUPPORTED_SCREENS = ['summary', 'review'] as const
 type Screen = (typeof SUPPORTED_SCREENS)[number]
@@ -45,6 +46,7 @@ export const ReleaseDetail = () => {
   const {documents: bundleDocuments, loading: documentsLoading} =
     useFetchBundleDocuments(parsedSlug)
   const history = useReleaseHistory(bundleDocuments)
+  const validation = useBundleDocumentsValidation(bundleDocuments)
 
   const bundle = data?.find((storeBundle) => storeBundle.slug === parsedSlug)
   const bundleHasDocuments = !!bundleDocuments.length
@@ -64,7 +66,6 @@ export const ReleaseDetail = () => {
       _searchParams: [],
     })
   }, [router])
-
   const header = useMemo(
     () => (
       <Card
@@ -175,6 +176,7 @@ export const ReleaseDetail = () => {
                     release={bundle}
                     documentsHistory={history.documentsHistory}
                     collaborators={history.collaborators}
+                    validation={validation}
                   />
                 )}
               </>
@@ -184,6 +186,7 @@ export const ReleaseDetail = () => {
                 documents={bundleDocuments}
                 release={bundle}
                 documentsHistory={history.documentsHistory}
+                validation={validation}
               />
             )}
           </Box>
