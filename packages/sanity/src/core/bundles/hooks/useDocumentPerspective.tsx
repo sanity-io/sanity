@@ -1,4 +1,4 @@
-import {type ListenOptions} from '@sanity/client'
+import {type ListenEvent, type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {catchError, of} from 'rxjs'
 import {
@@ -27,7 +27,7 @@ const LISTEN_OPTIONS: ListenOptions = {
 export function useDocumentPerspective(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
 
-  const [state, setState] = useState<BundleDocument[] | null>(null)
+  const [state, setState] = useState<BundleDocument[] | undefined>(undefined)
 
   const [error, setError] = useState<Error | undefined>(undefined)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -74,7 +74,7 @@ export function useDocumentPerspective(props: DocumentPerspectiveProps): Documen
   }, [QUERY, client])
 
   const handleListenerEvent = useCallback(
-    async (event) => {
+    async (event: ListenEvent<Record<string, BundleDocument[]>>) => {
       if (event.type === 'welcome') {
         if (!state) {
           await initialFetch()
@@ -86,10 +86,13 @@ export function useDocumentPerspective(props: DocumentPerspectiveProps): Documen
         const exists = state?.find((b) => b.slug === getBundleSlug(prev._id))
 
         if (exists) {
-          const updatedBundles = state?.map((b: BundleDocument) => (exists ? prev : b))
+          const updatedBundles = state?.map((b: BundleDocument) =>
+            exists ? prev : b,
+          ) as BundleDocument[]
           setState(updatedBundles || [])
         } else {
-          setState([...(state || []), prev])
+          const newBundles = [...(state || []), prev] as BundleDocument[]
+          setState(newBundles)
         }
       }
     },
