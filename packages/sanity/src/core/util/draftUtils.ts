@@ -63,11 +63,27 @@ export function isVersionId(id: string): boolean {
   return id.startsWith(VERSION_PREFIX)
 }
 
-/** @internal */
-export function getIdPair(id: string): {draftId: DraftId; publishedId: PublishedId} {
+/**
+ * TODO: Improve return type based on presence of `version` option.
+ *
+ * @internal
+ */
+export function getIdPair(
+  id: string,
+  {version}: {version?: string} = {},
+): {
+  draftId: DraftId
+  publishedId: PublishedId
+  versionId?: string
+} {
   return {
-    draftId: getDraftId(id),
     publishedId: getPublishedId(id),
+    draftId: getDraftId(id),
+    ...(version
+      ? {
+          versionId: id.startsWith(`${version}.`) ? id : [version, getPublishedId(id)].join('.'),
+        }
+      : {}),
   }
 }
 

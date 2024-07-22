@@ -6,24 +6,35 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 
 import {LOADING_PANE} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
 import {type Panes} from '../../structureResolvers'
 import {type DocumentPaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {usePaneRouter} from '../paneRouter'
 
 interface StructureTitleProps {
   resolvedPanes: Panes['resolvedPanes']
 }
 
+// TODO: Fix state jank when editing different versions inside panes.
 const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const {documentId, documentType} = props
-  const editState = useEditState(documentId, documentType)
+  const router = useRouter()
+  const paneRouter = usePaneRouter()
+  const perspective = paneRouter.perspective ?? router.stickyParams.perspective
+
+  const bundlePerspective = perspective?.startsWith('bundle.')
+    ? perspective.split('bundle.').at(1)
+    : undefined
+
+  const editState = useEditState(documentId, documentType, 'default', bundlePerspective)
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)
   const isNewDocument = !editState?.published && !editState?.draft
-  const documentValue = editState?.draft || editState?.published
+  const documentValue = editState?.version || editState?.draft || editState?.published
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
   const {value, isLoading: previewValueIsLoading} = useValuePreview({

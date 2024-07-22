@@ -168,4 +168,9 @@ export interface PaneRouterContextValue {
     params: Record<string, string>,
     options?: {replace?: boolean},
   ) => void
+
+  /**
+   * Perspective of the current pane
+   */
+  perspective?: string
 }
