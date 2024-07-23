@@ -85,6 +85,7 @@ export const ReleaseDetail = () => {
                 as="a"
                 // navigate back to bundles overview
                 onClick={() => router.navigate({})}
+                data-testid="back-to-releases-button"
                 icon={ArrowLeftIcon}
                 mode="bleed"
                 tooltipProps={{content: 'Back to releases'}}
