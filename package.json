@@ -186,6 +186,9 @@
       "@sanity/ui@2": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
+    },
+    "patchedDependencies": {
+      "redux-observable@2.0.0": "patches/redux-observable@2.0.0.patch"
     }
   },
   "isSanityMonorepo": true

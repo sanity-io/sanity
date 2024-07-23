@@ -1,0 +1,72 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+deleted file mode 100644
+index 11a680d568288e0b4f340334d541eb5498479bf6..0000000000000000000000000000000000000000
+diff --git a/dist/esm/StateObservable.js b/dist/esm/StateObservable.js
+index 9abd2760238971a18cb006c48dbd91fad6aa1790..4b283193db918caf7091180db3a17f26af34b254 100644
+--- a/dist/esm/StateObservable.js
++++ b/dist/esm/StateObservable.js
+@@ -1,29 +1,38 @@
+ import { __extends } from "tslib";
+-import { Observable, Subject } from 'rxjs';
++import { Observable, Subject } from "rxjs";
+ var StateObservable = /** @class */ (function (_super) {
+-    __extends(StateObservable, _super);
+-    function StateObservable(input$, initialState) {
+-        var _this = _super.call(this, function (subscriber) {
+-            var subscription = _this.__notifier.subscribe(subscriber);
+-            if (subscription && !subscription.closed) {
+-                subscriber.next(_this.value);
+-            }
+-            return subscription;
+-        }) || this;
+-        _this.__notifier = new Subject();
+-        _this.value = initialState;
+-        input$.subscribe(function (value) {
+-            // We only want to update state$ if it has actually changed since
+-            // redux requires reducers use immutability patterns.
+-            // This is basically what distinctUntilChanged() does but it's so simple
+-            // we don't need to pull that code in
+-            if (value !== _this.value) {
+-                _this.value = value;
+-                _this.__notifier.next(value);
+-            }
+-        });
+-        return _this;
+-    }
+-    return StateObservable;
+-}(Observable));
++  __extends(StateObservable, _super);
++  function StateObservable(input$, initialState) {
++    // var _this = _super.call(this, function (subscriber) {
++    //     var subscription = _this.__notifier.subscribe(subscriber);
++    //     if (subscription && !subscription.closed) {
++    //         subscriber.next(_this.value);
++    //     }
++    //     return subscription;
++    // }) || this;
++
++    var _this =
++      new _super(function (subscriber) {
++        var subscription = _this.__notifier.subscribe(subscriber);
++        if (subscription && !subscription.closed) {
++          subscriber.next(_this.value);
++        }
++        return subscription;
++      }) || this;
++    _this.__notifier = new Subject();
++    _this.value = initialState;
++    input$.subscribe(function (value) {
++      // We only want to update state$ if it has actually changed since
++      // redux requires reducers use immutability patterns.
++      // This is basically what distinctUntilChanged() does but it's so simple
++      // we don't need to pull that code in
++      if (value !== _this.value) {
++        _this.value = value;
++        _this.__notifier.next(value);
++      }
++    });
++    return _this;
++  }
++  return StateObservable;
++})(Observable);
+ export { StateObservable };
