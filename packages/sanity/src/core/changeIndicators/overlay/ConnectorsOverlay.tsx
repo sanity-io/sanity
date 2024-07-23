@@ -4,13 +4,12 @@ import {useCallback, useMemo, useState} from 'react'
 
 import {type Reported} from '../../components/react-track-elements'
 import {ScrollMonitor} from '../../components/scroll'
-import {isNonNullable} from '../../util'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
 import {getOffsetsTo} from '../helpers/getOffsetsTo'
 import {isChangeBar} from '../helpers/isChangeBar'
 import {scrollIntoView} from '../helpers/scrollIntoView'
-import {type TrackedArea, type TrackedChange, useReportedValues} from '../tracker'
+import {type TrackedArea, type TrackedChange, useChangeIndicatorsReportedValues} from '../tracker'
 import {Connector} from './Connector'
 import {SvgWrapper} from './ConnectorsOverlay.styled'
 import {DebugLayers} from './DebugLayers'
@@ -84,14 +83,16 @@ function getState(
 
       return {field: {id, ...field}, change: {id, ...change}}
     })
-    .filter(isNonNullable)
-    // .filter(({field, change}) => field && change && field.element && change.element)
+    .filter(
+      (value): value is NonNullable<typeof value> =>
+        Boolean(value?.field.element) && Boolean(value?.change.element),
+    )
     .map(({field, change}) => ({
       hasHover: field.hasHover || change.hasHover,
       hasFocus: field.hasFocus,
       hasRevertHover: change.hasRevertHover,
-      field: {...field, ...getOffsetsTo(field.element, rootElement)},
-      change: {...change, ...getOffsetsTo(change.element, rootElement)},
+      field: {...field, ...getOffsetsTo(field.element!, rootElement)},
+      change: {...change, ...getOffsetsTo(change.element!, rootElement)},
     }))
 
   return {connectors, isHoverConnector}
@@ -100,7 +101,7 @@ function getState(
 export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   const {rootElement, onSetFocus} = props
   const [hovered, setHovered] = useState<string | null>(null)
-  const allReportedValues = useReportedValues()
+  const allReportedValues = useChangeIndicatorsReportedValues()
   const byId: Map<string, TrackedChange | TrackedArea> = useMemo(
     () => new Map(allReportedValues),
     [allReportedValues],
