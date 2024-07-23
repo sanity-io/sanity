@@ -44,6 +44,10 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
    * ```
    */
   action?: 'delete' | 'discardChanges' | 'duplicate' | 'restore' | 'publish' | 'unpublish'
+  /**
+   * For debugging purposes
+   */
+  displayName?: string
 }
 
 /**

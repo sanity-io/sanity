@@ -1,5 +1,5 @@
 import {TaskIcon} from '@sanity/icons'
-import {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {type DocumentActionDescription} from '../../config'
 import {useTranslation} from '../../i18n'
@@ -22,13 +22,16 @@ export function TaskCreateAction(): DocumentActionDescription | null {
 
   const {t} = useTranslation(tasksLocaleNamespace)
 
-  if (!enabled) return null
+  return useMemo(() => {
+    if (!enabled) return null
 
-  return {
-    icon: TaskIcon,
-    label: t('actions.create.text'),
-    title: t('actions.create.text'),
-    group: ['paneActions'],
-    onHandle: handleCreateTaskFromDocument,
-  }
+    return {
+      icon: TaskIcon,
+      label: t('actions.create.text'),
+      title: t('actions.create.text'),
+      group: ['paneActions'],
+      onHandle: handleCreateTaskFromDocument,
+    }
+  }, [enabled, handleCreateTaskFromDocument, t])
 }
+TaskCreateAction.displayName = 'TaskCreateAction'

@@ -1,11 +1,11 @@
 import {type Path} from '@sanity/types'
-import {type PropsWithChildren, useCallback, useMemo, useState} from 'react'
+import {memo, type PropsWithChildren, useCallback, useMemo, useState} from 'react'
 import {HoveredFieldContext, type HoveredFieldContextValue} from 'sanity/_singletons'
 
 import {pathToString} from '../../field'
 
 /** @internal */
-export function HoveredFieldProvider(props: PropsWithChildren) {
+export const HoveredFieldProvider = memo(function HoveredFieldProvider(props: PropsWithChildren) {
   const {children} = props
   const [hoveredStack, setHoveredStack] = useState<string[]>([])
 
@@ -26,6 +26,7 @@ export function HoveredFieldProvider(props: PropsWithChildren) {
 
     setHoveredStack((prev) => {
       if (prev.includes(pathString)) {
+        // eslint-disable-next-line max-nested-callbacks
         return prev.filter((item) => item !== pathString)
       }
 
@@ -43,4 +44,4 @@ export function HoveredFieldProvider(props: PropsWithChildren) {
   )
 
   return <HoveredFieldContext.Provider value={context}>{children}</HoveredFieldContext.Provider>
-}
+})
