@@ -12,19 +12,21 @@ export function useTasksUpsell(): TasksUpsellContextValue {
 
   if (!value) {
     // Instead of throwing, we return a dummy value to avoid breaking the tasks create action implementation, given the context is optional.
-    return {
-      upsellData: null,
-      handleOpenDialog: () => null,
-      upsellDialogOpen: false,
-      telemetryLogs: {
-        dialogSecondaryClicked: () => null,
-        dialogPrimaryClicked: () => null,
-        panelViewed: () => null,
-        panelDismissed: () => null,
-        panelPrimaryClicked: () => null,
-        panelSecondaryClicked: () => null,
-      },
-    }
+    return FALLBACK_CONTEXT_VALUE
   }
   return value
 }
+
+const FALLBACK_CONTEXT_VALUE = {
+  upsellData: null,
+  handleOpenDialog: () => null,
+  upsellDialogOpen: false,
+  telemetryLogs: {
+    dialogSecondaryClicked: () => null,
+    dialogPrimaryClicked: () => null,
+    panelViewed: () => null,
+    panelDismissed: () => null,
+    panelPrimaryClicked: () => null,
+    panelSecondaryClicked: () => null,
+  },
+} satisfies TasksUpsellContextValue

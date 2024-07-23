@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react'
+import {memo, type ReactNode} from 'react'
 import {
   type DocumentActionDescription,
   type DocumentActionGroup,
@@ -21,11 +21,11 @@ export interface RenderActionCollectionProps {
 }
 
 /** @internal */
-export const RenderActionCollectionState = (props: RenderActionCollectionProps) => {
+export const RenderActionCollectionState = memo((props: RenderActionCollectionProps) => {
   const {actions, children, actionProps, onActionComplete, group} = props
 
   return (
-    <GetHookCollectionState
+    <GetHookCollectionState<Omit<DocumentActionProps, 'onComplete'>, DocumentActionDescription>
       onReset={onActionComplete}
       hooks={actions}
       args={actionProps}
@@ -34,4 +34,5 @@ export const RenderActionCollectionState = (props: RenderActionCollectionProps) 
       {children}
     </GetHookCollectionState>
   )
-}
+})
+RenderActionCollectionState.displayName = 'Memo(RenderActionCollectionState)'

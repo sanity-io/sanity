@@ -1,5 +1,5 @@
 import {Menu} from '@sanity/ui'
-import {type ReactNode, useCallback, useId, useMemo, useState} from 'react'
+import {memo, type ReactNode, useCallback, useId, useMemo, useState} from 'react'
 import {
   ContextMenuButton,
   type DocumentActionDescription,
@@ -19,7 +19,7 @@ export interface ActionMenuButtonProps {
 /**
  * @internal
  */
-export function ActionDialogWrapper({
+export const ActionDialogWrapper = memo(function ActionDialogWrapper({
   actionStates,
   children,
   referenceElement,
@@ -29,11 +29,13 @@ export function ActionDialogWrapper({
   referenceElement?: HTMLElement | null
 }) {
   const [actionIndex, setActionIndex] = useState(-1)
-  const currentAction = actionStates[actionIndex]
+  const currentAction = useMemo(() => actionStates[actionIndex], [actionIndex, actionStates])
 
   const handleAction = useCallback((idx: number) => {
     setActionIndex(idx)
   }, [])
+
+  const result = useMemo(() => children({handleAction}), [children, handleAction])
 
   return (
     <>
@@ -42,10 +44,10 @@ export function ActionDialogWrapper({
           <ActionStateDialog dialog={currentAction.dialog} referenceElement={referenceElement} />
         </LegacyLayerProvider>
       )}
-      {children({handleAction})}
+      {result}
     </>
   )
-}
+})
 
 /**
  * @internal
@@ -66,39 +68,45 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
   )
 
   const {t} = useTranslation(structureLocaleNamespace)
+  const renderActionDialog = useCallback<
+    ({handleAction}: {handleAction: (idx: number) => void}) => ReactNode
+  >(
+    ({handleAction}) => (
+      <MenuButton
+        id={`${idPrefix}-action-menu`}
+        button={
+          <ContextMenuButton
+            aria-label={t('buttons.action-menu-button.aria-label')}
+            disabled={disabled}
+            data-testid="action-menu-button"
+            size="large"
+            tooltipProps={{content: t('buttons.action-menu-button.tooltip')}}
+          />
+        }
+        menu={
+          <Menu padding={1}>
+            {actionStates.map((actionState, idx) => (
+              <ActionMenuListItem
+                actionState={actionState}
+                disabled={disabled}
+                index={idx}
+                // eslint-disable-next-line react/no-array-index-key
+                key={idx}
+                onAction={handleAction}
+              />
+            ))}
+          </Menu>
+        }
+        popover={popoverProps}
+        ref={setReferenceElement}
+      />
+    ),
+    [actionStates, disabled, idPrefix, popoverProps, t],
+  )
 
   return (
     <ActionDialogWrapper actionStates={actionStates} referenceElement={referenceElement}>
-      {({handleAction}) => (
-        <MenuButton
-          id={`${idPrefix}-action-menu`}
-          button={
-            <ContextMenuButton
-              aria-label={t('buttons.action-menu-button.aria-label')}
-              disabled={disabled}
-              data-testid="action-menu-button"
-              size="large"
-              tooltipProps={{content: t('buttons.action-menu-button.tooltip')}}
-            />
-          }
-          menu={
-            <Menu padding={1}>
-              {actionStates.map((actionState, idx) => (
-                <ActionMenuListItem
-                  actionState={actionState}
-                  disabled={disabled}
-                  index={idx}
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={idx}
-                  onAction={handleAction}
-                />
-              ))}
-            </Menu>
-          }
-          popover={popoverProps}
-          ref={setReferenceElement}
-        />
-      )}
+      {renderActionDialog}
     </ActionDialogWrapper>
   )
 }

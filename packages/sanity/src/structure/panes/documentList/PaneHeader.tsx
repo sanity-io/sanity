@@ -87,4 +87,4 @@ export const PaneHeader = memo(
   },
 )
 
-PaneHeader.displayName = 'PaneHeader'
+PaneHeader.displayName = 'Memo(PaneHeader)'

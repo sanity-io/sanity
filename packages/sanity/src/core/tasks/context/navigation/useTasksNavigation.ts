@@ -9,21 +9,23 @@ export function useTasksNavigation(): TasksNavigationContextValue {
   if (!context) {
     // Providers are not mounted when tasks enabled is disabled, but we still need to provide a
     // default value for the context to avoid runtime errors in `TasksFooterAction` and `TaskCreateAction`
-    return {
-      state: {
-        activeTabId: 'assigned',
-        viewMode: 'list',
-        selectedTask: null,
-        isOpen: false,
-        duplicateTaskValues: null,
-      },
-      setActiveTab: () => null,
-      setViewMode: () => null,
-      handleCloseTasks: () => null,
-      handleCopyLinkToTask: () => null,
-      handleOpenTasks: () => null,
-    }
+    return FALLBACK_CONTEXT_VALUE
   }
 
   return context
 }
+
+const FALLBACK_CONTEXT_VALUE = {
+  state: {
+    activeTabId: 'assigned',
+    viewMode: 'list',
+    selectedTask: null,
+    isOpen: false,
+    duplicateTaskValues: null,
+  },
+  setActiveTab: () => null,
+  setViewMode: () => null,
+  handleCloseTasks: () => null,
+  handleCopyLinkToTask: () => null,
+  handleOpenTasks: () => null,
+} satisfies TasksNavigationContextValue
