@@ -15,6 +15,10 @@ jest.mock('../../../../hooks/useListener', () => ({
   useListener: jest.fn().mockReturnValue({documents: [], loading: false}),
 }))
 
+jest.mock('../useBundleDocumentsValidation', () => ({
+  useBundleDocumentsValidation: jest.fn().mockReturnValue({}),
+}))
+
 jest.mock('sanity', () => ({
   LoadingBlock: () => <div data-testid="mocked-loading-block" />,
   useClient: jest.fn().mockReturnValue({getUrl: jest.fn(), config: jest.fn().mockReturnValue({})}),

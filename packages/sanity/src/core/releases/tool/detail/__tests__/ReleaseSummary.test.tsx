@@ -6,6 +6,7 @@ import {route, RouterProvider} from 'sanity/router'
 
 import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
 import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
+import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
 
 jest.mock('../../../../studio/addonDataset/useAddonDataset', () => ({
@@ -87,12 +88,16 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
     >
       <ReleaseSummary
         documents={releaseDocuments}
-        documentsHistory={new Map()
-          .set('123', {createdBy: 'created-author-id-1', lastEditedBy: 'edited-author-id-1'})
-          .set('456', {
+        documentsHistory={{
+          '123': {
+            createdBy: 'created-author-id-1',
+            lastEditedBy: 'edited-author-id-1',
+          } as DocumentHistory,
+          '456': {
             createdBy: 'created-author-id-2',
             editors: ['edited-author-id-1', 'edited-author-id-2'],
-          })}
+          } as DocumentHistory,
+        }}
         collaborators={['author-id', 'collaborator-id']}
         release={
           {
@@ -102,6 +107,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
             authorId: 'author-id',
           } as BundleDocument
         }
+        validation={{}}
         {...props}
       />
     </RouterProvider>,
