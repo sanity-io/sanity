@@ -2,9 +2,9 @@ export {
   BundleActions,
   BundleBadge,
   BundleMenu,
-  getAllVersionsOfDocument,
   getBundleSlug,
   LATEST,
+  useDocumentVersions,
   usePerspective,
 } from './bundles'
 export * from './changeIndicators'
