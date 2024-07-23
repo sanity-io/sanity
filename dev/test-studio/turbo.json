@@ -5,6 +5,11 @@
     "build": {
       "env": ["REACT_PRODUCTION_PROFILING"],
       "outputs": [".sanity/**", "dist/**", "workshop/scopes.js"]
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
     }
   }
 }
