@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 import {type BundleDocument} from '../../store/bundles/types'
 import {usePerspective} from '../hooks/usePerspective'
 import {LATEST} from '../util/const'
-import {isDraftOrPublished} from '../util/dummyGetters'
+import {isDraftOrPublished} from '../util/util'
 import {BundleBadge} from './BundleBadge'
 
 const StyledMenu = styled(Menu)`
