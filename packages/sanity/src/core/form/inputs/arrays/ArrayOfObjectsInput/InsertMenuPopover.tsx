@@ -3,8 +3,8 @@ import {
   type InsertMenuProps as SanityInsertMenuProps,
 } from '@sanity/insert-menu'
 import {type SchemaType} from '@sanity/types'
-import {useClickOutside, useGlobalKeyDown} from '@sanity/ui'
-import {useCallback, useMemo, useReducer, useState} from 'react'
+import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {useCallback, useMemo, useReducer, useRef} from 'react'
 import {useTranslation} from 'sanity'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'
@@ -31,14 +31,12 @@ export function useInsertMenuPopover(props: {
   popoverProps: Omit<PopoverProps, 'content' | 'open'>
 }) {
   const [state, send] = useReducer(popoverReducer, {open: false})
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
   const referenceElement = props.popoverProps.referenceElement ?? null
 
-  useClickOutside(
-    useCallback(() => {
-      send({type: 'close'})
-    }, []),
-    [popoverElement, referenceElement],
+  useClickOutsideEvent(
+    () => send({type: 'close'}),
+    () => [popoverRef.current, referenceElement],
   )
 
   useGlobalKeyDown(
@@ -64,7 +62,7 @@ export function useInsertMenuPopover(props: {
   const popover = useMemo(
     () => (
       <Popover
-        ref={setPopoverElement}
+        ref={popoverRef}
         open={state.open}
         constrainSize
         overflow="hidden"
