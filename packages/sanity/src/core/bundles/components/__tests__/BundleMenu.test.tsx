@@ -17,7 +17,7 @@ jest.mock('../../hooks/usePerspective', () => ({
   }),
 }))
 
-jest.mock('../../util/dummyGetters', () => ({
+jest.mock('../../util/util', () => ({
   isDraftOrPublished: jest.fn(),
 }))
 
