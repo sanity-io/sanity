@@ -6,7 +6,7 @@ import {
   Flex,
   Stack,
   Text,
-  useClickOutside,
+  useClickOutsideEvent,
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
@@ -56,7 +56,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     value,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
   const [addCommentButtonElement, setAddCommentButtonElement] = useState<HTMLButtonElement | null>(
     null,
   )
@@ -119,13 +119,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     [startDiscard],
   )
 
-  const handleClickOutside = useCallback(() => {
-    if (!open) return
-
-    startDiscard()
-  }, [open, startDiscard])
-
-  useClickOutside(handleClickOutside, [popoverElement])
+  useClickOutsideEvent(!open && startDiscard, () => [popoverRef.current])
 
   if (!hasComments) {
     const placeholder = (
@@ -164,7 +158,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         open={open}
         placement="right-start"
         portal
-        ref={setPopoverElement}
+        ref={popoverRef}
         onKeyDown={handlePopoverKeyDown}
       >
         <div>

@@ -4,7 +4,7 @@ import {
   // eslint-disable-next-line no-restricted-imports
   Button,
   LayerProvider,
-  useClickOutside,
+  useClickOutsideEvent,
   usePortal,
 } from '@sanity/ui'
 import {
@@ -52,7 +52,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     ...rest
   } = props
 
-  const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const inputRef = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
@@ -66,7 +66,10 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
 
   const portal = usePortal()
 
-  useClickOutside(() => setPickerOpen(false), [popoverRef])
+  useClickOutsideEvent(
+    () => setPickerOpen(false),
+    () => [popoverRef.current],
+  )
 
   const handleDeactivation = useCallback(() => {
     inputRef.current?.focus()
@@ -130,7 +133,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
               placement="bottom-end"
               portal
               radius={2}
-              ref={setPopoverRef}
+              ref={popoverRef}
             >
               {suffix}
             </Popover>

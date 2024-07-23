@@ -1,7 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
-import {Stack, useClickOutside} from '@sanity/ui'
+import {Stack, useClickOutsideEvent} from '@sanity/ui'
 import {motion, type Variants} from 'framer-motion'
-import {useCallback, useRef, useState} from 'react'
+import {useCallback, useRef} from 'react'
 import {styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'
@@ -45,7 +45,7 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
   } = props
 
   const commentInputRef = useRef<CommentInputHandle | null>(null)
-  const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
+  const contentElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleDiscardConfirm = useCallback(() => {
     commentInputRef.current?.discardDialogController.close()
@@ -56,21 +56,22 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
     commentInputRef.current?.discardDialogController.close()
   }, [])
 
-  const handleClickOutside = useCallback(() => {
-    const hasValue = hasCommentMessageValue(value)
+  useClickOutsideEvent(
+    () => {
+      const hasValue = hasCommentMessageValue(value)
 
-    if (hasValue) {
-      commentInputRef.current?.discardDialogController.open()
-      return
-    }
+      if (hasValue) {
+        commentInputRef.current?.discardDialogController.open()
+        return
+      }
 
-    onClickOutside()
-  }, [onClickOutside, value])
-
-  useClickOutside(handleClickOutside, [contentElement])
+      onClickOutside()
+    },
+    () => [contentElementRef.current],
+  )
 
   const content = (
-    <RootStack padding={2} ref={setContentElement}>
+    <RootStack padding={2} ref={contentElementRef}>
       <CommentInput
         currentUser={currentUser}
         focusLock
