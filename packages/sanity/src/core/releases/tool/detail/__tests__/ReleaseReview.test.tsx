@@ -1,54 +1,76 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
-import {render, screen} from '@testing-library/react'
-import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
+import {type SanityDocument} from '@sanity/client'
+import {act, fireEvent, render, screen} from '@testing-library/react'
+import {ColorSchemeProvider, getPublishedId, UserColorManagerProvider} from 'sanity'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {useDocumentPreviewValues} from '../documentTable/useDocumentPreviewValues'
-import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {ReleaseReview} from '../ReleaseReview'
 
-const baseDocument = {
-  name: 'William Faulkner',
-  role: 'developer',
-  awards: ['first award', 'second award'],
-  favoriteBooks: [
-    {
-      _ref: '0b229e82-48e4-4226-a36f-e6b3d874478a',
-      _type: 'reference',
-      _key: '23610d43d8e8',
+const DOCUMENTS_MOCKS = {
+  doc1: {
+    baseDocument: {
+      name: 'William Faulkner',
+      role: 'developer',
+      _id: 'doc1',
+      _rev: 'FvEfB9CaLlljeKWNkRBaf5',
+      _type: 'author',
+      _createdAt: '',
+      _updatedAt: '',
     },
-  ],
-  _id: '1f8caa96-4174-4c91-bb40-cbc96a737fcf',
-  _rev: 'FvEfB9CaLlljeKWNkRBaf5',
-  _type: 'author',
-  _createdAt: '',
-  _updatedAt: '',
-}
+    previewValues: {
+      _id: 'differences.doc1',
+      _type: 'author',
+      _createdAt: '2024-07-10T12:10:38Z',
+      _updatedAt: '2024-07-15T10:46:02Z',
+      _version: {},
+      title: 'William Faulkner added',
+      subtitle: 'Designer',
+    },
+  },
+  doc2: {
+    baseDocument: {
+      name: 'Virginia Woolf',
+      role: 'developer',
+      _id: 'doc2',
+      _rev: 'FvEfB9CaLlljeKWNkRBaf5',
+      _type: 'author',
+      _createdAt: '',
+      _updatedAt: '',
+    },
+    previewValues: {
+      _id: 'differences.doc2',
+      _type: 'author',
+      _createdAt: '2024-07-10T12:10:38Z',
+      _updatedAt: '2024-07-15T10:46:02Z',
+      _version: {},
+      title: 'Virginia Woolf test',
+      subtitle: 'Developer',
+    },
+  },
+} as const
 
 const MOCKED_PROPS = {
   documents: [
     {
-      favoriteBooks: [
-        {
-          _ref: '0daffd51-59c3-4dca-a9ee-1c4db54db87e',
-          _type: 'reference',
-          _key: '0d3f45004da0',
-        },
-      ],
-      _version: {},
-      bestFriend: {
-        _ref: '0c9d9135-0d20-44a1-9ec1-54ea41ce84d1',
-        _type: 'reference',
-      },
       _rev: 'FvEfB9CaLlljeKWNkQgpz9',
       _type: 'author',
       role: 'designer',
       _createdAt: '2024-07-10T12:10:38Z',
       name: 'William Faulkner added',
-      _id: 'differences.1f8caa96-4174-4c91-bb40-cbc96a737fcf',
+      _id: 'differences.doc1',
+      _updatedAt: '2024-07-15T10:46:02Z',
+    },
+    {
+      _rev: 'FvEfB9CaLlljeKWNkQg1232',
+      _type: 'author',
+      role: 'developer',
+      _createdAt: '2024-07-10T12:10:38Z',
+      name: 'Virginia Woolf test',
+      _id: 'differences.doc2',
       _updatedAt: '2024-07-15T10:46:02Z',
     },
   ],
@@ -65,17 +87,37 @@ const MOCKED_PROPS = {
     _id: 'd3137faf-ece6-44b5-a2b1-1090967f868e',
     _rev: 'j9BPWHem9m3oUugvhMXEGV',
   } as const,
-  documentsHistory: new Map<string, DocumentHistory>([
-    [
-      'differences.1f8caa96-4174-4c91-bb40-cbc96a737fcf',
-      {
-        history: [],
-        createdBy: 'p8xDvUMxC',
-        lastEditedBy: 'p8xDvUMxC',
-        editors: ['p8xDvUMxC'],
-      },
-    ],
-  ]),
+  documentsHistory: {
+    'differences.doc1': {
+      history: [],
+      createdBy: 'p8xDvUMxC',
+      lastEditedBy: 'p8xDvUMxC',
+      editors: ['p8xDvUMxC'],
+    },
+
+    'differences.doc2': {
+      history: [],
+      createdBy: 'p8xDvUMxC',
+      lastEditedBy: 'p8xDvUMxC',
+      editors: ['p8xDvUMxC'],
+    },
+  },
+  validation: {
+    'differences.doc1': {
+      isValidating: false,
+      validation: [],
+      revision: 'FvEfB9CaLlljeKWNk8Mh0N',
+      documentId: 'differences.doc1',
+      hasError: false,
+    },
+    'differences.doc2': {
+      isValidating: false,
+      validation: [],
+      revision: 'FvEfB9CaLlljeKWNk8Mh0N',
+      documentId: 'differences.doc1',
+      hasError: false,
+    },
+  },
 }
 
 jest.mock('sanity/router', () => ({
@@ -104,16 +146,6 @@ const mockedUseDocumentPreviewValues = useDocumentPreviewValues as jest.Mock<
   typeof useDocumentPreviewValues
 >
 
-const previewValues = {
-  _id: 'differences.1f8caa96-4174-4c91-bb40-cbc96a737fcf',
-  _type: 'author',
-  _createdAt: '2024-07-10T12:10:38Z',
-  _updatedAt: '2024-07-15T10:46:02Z',
-  _version: {},
-  title: 'William Faulkner differences check 123 asklaks ',
-  subtitle: 'Designer',
-}
-
 describe('ReleaseReview', () => {
   describe('when loading baseDocument', () => {
     beforeEach(async () => {
@@ -121,11 +153,16 @@ describe('ReleaseReview', () => {
         document: null,
         loading: true,
       })
-      mockedUseDocumentPreviewValues.mockReturnValue({previewValues, isLoading: false})
+      mockedUseDocumentPreviewValues.mockReturnValue({
+        previewValues: DOCUMENTS_MOCKS.doc1.previewValues,
+        isLoading: false,
+      })
       const wrapper = await createWrapper({
         resources: [releasesUsEnglishLocaleBundle],
       })
-      render(<ReleaseReview {...MOCKED_PROPS} />, {wrapper})
+      render(<ReleaseReview {...MOCKED_PROPS} documents={MOCKED_PROPS.documents.slice(0, 1)} />, {
+        wrapper,
+      })
     })
     it("should show the loader when the base document hasn't loaded", () => {
       queryByDataUi(document.body, 'Spinner')
@@ -137,11 +174,16 @@ describe('ReleaseReview', () => {
         document: null,
         loading: false,
       })
-      mockedUseDocumentPreviewValues.mockReturnValue({previewValues, isLoading: false})
+      mockedUseDocumentPreviewValues.mockReturnValue({
+        previewValues: DOCUMENTS_MOCKS.doc1.previewValues,
+        isLoading: false,
+      })
       const wrapper = await createWrapper({
         resources: [releasesUsEnglishLocaleBundle],
       })
-      render(<ReleaseReview {...MOCKED_PROPS} />, {wrapper})
+      render(<ReleaseReview {...MOCKED_PROPS} documents={MOCKED_PROPS.documents.slice(0, 1)} />, {
+        wrapper,
+      })
     })
     it('should render the new document ui', async () => {
       expect(screen.getByText('New document')).toBeInTheDocument()
@@ -154,11 +196,16 @@ describe('ReleaseReview', () => {
         document: MOCKED_PROPS.documents[0],
         loading: false,
       })
-      mockedUseDocumentPreviewValues.mockReturnValue({previewValues, isLoading: false})
+      mockedUseDocumentPreviewValues.mockReturnValue({
+        previewValues: DOCUMENTS_MOCKS.doc1.previewValues,
+        isLoading: false,
+      })
       const wrapper = await createWrapper({
         resources: [releasesUsEnglishLocaleBundle],
       })
-      render(<ReleaseReview {...MOCKED_PROPS} />, {wrapper})
+      render(<ReleaseReview {...MOCKED_PROPS} documents={MOCKED_PROPS.documents.slice(0, 1)} />, {
+        wrapper,
+      })
     })
     it('should show that there are no changes', async () => {
       expect(screen.getByText('No changes')).toBeInTheDocument()
@@ -167,11 +214,22 @@ describe('ReleaseReview', () => {
 
   describe('when the base document is loaded and has changes', () => {
     beforeEach(async () => {
-      mockedUseObserveDocument.mockReturnValue({
-        document: baseDocument,
-        loading: false,
+      mockedUseObserveDocument.mockImplementation((docId: string) => {
+        return {
+          // @ts-expect-error - key is valid, ts won't infer it
+          document: DOCUMENTS_MOCKS[docId].baseDocument,
+          loading: false,
+        }
       })
-      mockedUseDocumentPreviewValues.mockReturnValue({previewValues, isLoading: false})
+      mockedUseDocumentPreviewValues.mockImplementation(
+        ({document}: {document: SanityDocument}) => {
+          return {
+            // @ts-expect-error - key is valid, ts won't infer it
+            previewValues: DOCUMENTS_MOCKS[getPublishedId(document._id, true)].previewValues,
+            isLoading: false,
+          }
+        },
+      )
       const wrapper = await createWrapper({
         resources: [releasesUsEnglishLocaleBundle],
       })
@@ -186,11 +244,56 @@ describe('ReleaseReview', () => {
     })
     it('should should show the changes', async () => {
       // Find an ins tag with the text "added"
-      const element = screen.getByText((content, el) => {
+      const firstDocumentChange = screen.getByText((content, el) => {
         return el?.tagName.toLowerCase() === 'ins' && content === 'added'
       })
 
-      expect(element).toBeInTheDocument()
+      expect(firstDocumentChange).toBeInTheDocument()
+
+      const secondDocumentChange = screen.getByText((content, el) => {
+        return el?.tagName.toLowerCase() === 'ins' && content === 'test'
+      })
+
+      expect(secondDocumentChange).toBeInTheDocument()
+    })
+  })
+  describe('filtering documents', () => {
+    beforeEach(async () => {
+      mockedUseObserveDocument.mockReturnValue({document: null, loading: false})
+
+      mockedUseDocumentPreviewValues.mockImplementation(
+        ({document}: {document: SanityDocument}) => {
+          return {
+            // @ts-expect-error - key is valid, ts won't infer it
+            previewValues: DOCUMENTS_MOCKS[getPublishedId(document._id, true)].previewValues,
+            isLoading: false,
+          }
+        },
+      )
+      const wrapper = await createWrapper({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+      render(<ReleaseReview {...MOCKED_PROPS} />, {wrapper})
+    })
+
+    it('should show all the documents when no filter is applied', () => {
+      expect(screen.queryByText(DOCUMENTS_MOCKS.doc1.previewValues.title)).toBeInTheDocument()
+      expect(screen.queryByText(DOCUMENTS_MOCKS.doc2.previewValues.title)).toBeInTheDocument()
+    })
+    it('should show support filtering by title', () => {
+      const searchInput = screen.getByPlaceholderText('Search documents')
+      act(() => {
+        fireEvent.change(searchInput, {target: {value: 'Virginia'}})
+      })
+
+      expect(screen.queryByText(DOCUMENTS_MOCKS.doc1.previewValues.title)).not.toBeInTheDocument()
+      expect(screen.queryByText(DOCUMENTS_MOCKS.doc2.previewValues.title)).toBeInTheDocument()
+
+      act(() => {
+        fireEvent.change(searchInput, {target: {value: ''}})
+      })
+      expect(screen.queryByText(DOCUMENTS_MOCKS.doc1.previewValues.title)).toBeInTheDocument()
+      expect(screen.queryByText(DOCUMENTS_MOCKS.doc2.previewValues.title)).toBeInTheDocument()
     })
   })
 })

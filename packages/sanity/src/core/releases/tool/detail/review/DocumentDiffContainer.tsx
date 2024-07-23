@@ -6,6 +6,7 @@ import {useSchema} from '../../../../hooks/useSchema'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {getPublishedId} from '../../../../util/draftUtils'
+import {type DocumentValidationStatus} from '../bundleDocumentsValidation'
 import {useDocumentPreviewValues} from '../documentTable/useDocumentPreviewValues'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {DocumentReviewHeader} from '../review/DocumentReviewHeader'
@@ -15,10 +16,14 @@ export function DocumentDiffContainer({
   document,
   release,
   history,
+  searchTerm,
+  validation,
 }: {
   document: SanityDocument
   release: BundleDocument
   history?: DocumentHistory
+  searchTerm: string
+  validation?: DocumentValidationStatus
 }) {
   const publishedId = getPublishedId(document._id, true)
   const schema = useSchema()
@@ -32,6 +37,13 @@ export function DocumentDiffContainer({
   )
   const {previewValues, isLoading} = useDocumentPreviewValues({document, release})
 
+  if (searchTerm) {
+    // Early return to filter out documents that don't match the search term
+    const fallbackTitle = typeof document.title === 'string' ? document.title : 'Untitled'
+    const title = typeof previewValues.title === 'string' ? previewValues.title : fallbackTitle
+    if (!title.toLowerCase().includes(searchTerm.toLowerCase())) return null
+  }
+
   return (
     <Card border radius={3}>
       <DocumentReviewHeader
@@ -40,6 +52,7 @@ export function DocumentDiffContainer({
         isLoading={!!isLoading}
         history={history}
         release={release}
+        validation={validation}
       />
       <Flex justify="center" padding={4}>
         {baseDocumentLoading ? (
