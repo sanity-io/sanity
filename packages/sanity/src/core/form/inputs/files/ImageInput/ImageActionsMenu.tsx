@@ -1,5 +1,5 @@
 import {CropIcon} from '@sanity/icons'
-import {Inline, Menu, Skeleton, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {Inline, Menu, Skeleton, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -59,16 +59,13 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
   // Close menu when clicking outside of it
   // Not when clicking on the button
-  useClickOutside(
-    useCallback(
-      (event) => {
-        if (!buttonElement?.contains(event.target as Node)) {
-          onMenuOpen(false)
-        }
-      },
-      [buttonElement, onMenuOpen],
-    ),
-    [menuElement],
+  useClickOutsideEvent(
+    (event) => {
+      if (!buttonElement?.contains(event.target as Node)) {
+        onMenuOpen(false)
+      }
+    },
+    () => [menuElement],
   )
 
   const setOptionsButtonRef = useCallback(

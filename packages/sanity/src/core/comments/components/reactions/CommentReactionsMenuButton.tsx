@@ -1,5 +1,5 @@
-import {Card, useClickOutside} from '@sanity/ui'
-import {cloneElement, useCallback, useMemo, useState} from 'react'
+import {Card, useClickOutsideEvent} from '@sanity/ui'
+import {cloneElement, useCallback, useMemo, useRef, useState} from 'react'
 
 import {Popover, type PopoverProps} from '../../../../ui-components'
 import {type TFunction, useTranslation} from '../../../i18n'
@@ -26,7 +26,7 @@ export interface CommentReactionsMenuButtonProps {
 export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {
   const {onMenuClose, onMenuOpen, onSelect, options, readOnly, renderMenuButton, mode} = props
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const [open, setOpen] = useState<boolean>(false)
   const {t} = useTranslation(commentsLocaleNamespace)
@@ -67,7 +67,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
     [handleCloseAndFocus],
   )
 
-  useClickOutside(handleClose, [popoverElement, buttonElement])
+  useClickOutsideEvent(handleClose, () => [popoverRef.current, buttonElement])
 
   const handleSelect = useCallback(
     (option: CommentReactionOption) => {
@@ -119,7 +119,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
       open={open}
       placement="bottom"
       portal
-      ref={setPopoverElement}
+      ref={popoverRef}
       tone="default"
     >
       {button}

@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {type Placement, useClickOutside} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {type Placement, useClickOutsideEvent} from '@sanity/ui'
+import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {Button, Popover} from '../../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../i18n'
@@ -15,7 +15,7 @@ const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 export function DocumentTypesButton() {
   const [open, setOpen] = useState(false)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
-  const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const {
     state: {
@@ -28,7 +28,7 @@ export function DocumentTypesButton() {
   const handleClose = useCallback(() => setOpen(false), [])
   const handleOpen = useCallback(() => setOpen(true), [])
 
-  useClickOutside(handleClose, [buttonElement, popoverElement])
+  useClickOutsideEvent(handleClose, () => [buttonElement, popoverRef.current])
 
   const title = useMemo(() => documentTypesTruncated({types, t}), [types, t])
 
@@ -45,7 +45,7 @@ export function DocumentTypesButton() {
       fallbackPlacements={FALLBACK_PLACEMENTS}
       portal
       radius={POPOVER_RADIUS}
-      ref={setPopoverElement}
+      ref={popoverRef}
     >
       <Button
         iconRight={ChevronDownIcon}

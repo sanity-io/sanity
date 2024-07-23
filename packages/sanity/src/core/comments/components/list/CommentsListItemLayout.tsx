@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
   TextSkeleton,
-  useClickOutside,
+  useClickOutsideEvent,
 } from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
@@ -200,7 +200,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const [value, setValue] = useState<CommentMessage>(message)
   const [isEditing, setIsEditing] = useState<boolean>(false)
-  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const rootElementRef = useRef<HTMLDivElement | null>(null)
   const startMessage = useRef<CommentMessage>(message)
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
 
@@ -315,12 +315,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const handleCloseMenu = useCallback(() => setMenuOpen(false), [])
 
-  const handleClickOutside = useCallback(() => {
-    if (!hasChanges) {
-      cancelEdit()
-    }
-  }, [cancelEdit, hasChanges])
-
   const handleRootKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (event.key === 'Escape' && !hasChanges) {
@@ -332,7 +326,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   useDidUpdate(isEditing, handleCloseMenu)
 
-  useClickOutside(handleClickOutside, [rootElement])
+  useClickOutsideEvent(!hasChanges && cancelEdit, () => [rootElementRef.current])
 
   const name = user?.displayName ? (
     <Text size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
@@ -347,7 +341,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       data-menu-open={menuOpen ? 'true' : 'false'}
       data-testid="comments-list-item-layout"
       onKeyDown={handleRootKeyDown}
-      ref={setRootElement}
+      ref={rootElementRef}
       space={4}
     >
       <InnerStack space={1} data-muted={displayError}>

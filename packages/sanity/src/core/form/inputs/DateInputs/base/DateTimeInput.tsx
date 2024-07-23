@@ -1,5 +1,5 @@
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Flex, LayerProvider, useClickOutside} from '@sanity/ui'
+import {Box, Flex, LayerProvider, useClickOutsideEvent} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -45,7 +45,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     calendarLabels,
     ...rest
   } = props
-  const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
   const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
 
@@ -56,7 +56,10 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
 
   const [isPickerOpen, setPickerOpen] = useState(false)
 
-  useClickOutside(() => setPickerOpen(false), [popoverRef])
+  useClickOutsideEvent(
+    () => setPickerOpen(false),
+    () => [popoverRef.current],
+  )
 
   const handleDeactivation = useCallback(() => {
     ref.current?.focus()
@@ -117,7 +120,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
               }
               open
               placement="bottom"
-              ref={setPopoverRef}
+              ref={popoverRef}
             >
               {suffix}
             </Popover>

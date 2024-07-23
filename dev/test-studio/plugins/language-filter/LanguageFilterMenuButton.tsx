@@ -1,6 +1,16 @@
 import {TranslateIcon} from '@sanity/icons'
-import {Box, Button, Card, Checkbox, Flex, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
-import {type FormEvent, useCallback, useState} from 'react'
+import {
+  Box,
+  Button,
+  Card,
+  Checkbox,
+  Flex,
+  Popover,
+  Stack,
+  Text,
+  useClickOutsideEvent,
+} from '@sanity/ui'
+import {type FormEvent, useCallback, useRef, useState} from 'react'
 import {type ObjectSchemaType} from 'sanity'
 
 import {type LanguageFilterPluginOptions} from './types'
@@ -24,8 +34,8 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
   const [open, setOpen] = useState(false)
   const {selectableLanguages, selectedLanguages, selectAll, selectNone, toggleLanguage} =
     usePaneLanguages({options})
-  const [button, setButton] = useState<HTMLElement | null>(null)
-  const [popover, setPopover] = useState<HTMLElement | null>(null)
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleAll = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
@@ -42,9 +52,10 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
 
   const handleClick = useCallback(() => setOpen((o) => !o), [])
 
-  const handleClickOutside = useCallback(() => setOpen(false), [])
-
-  useClickOutside(handleClickOutside, [button, popover])
+  useClickOutsideEvent(
+    () => setOpen(false),
+    () => [buttonRef.current, popoverRef.current],
+  )
 
   const allSelected = selectedLanguages.length === selectableLanguages.length
 
@@ -96,12 +107,12 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
   )
 
   return (
-    <Popover constrainSize content={content} open={open} portal ref={setPopover}>
+    <Popover constrainSize content={content} open={open} portal ref={popoverRef}>
       <Button
         icon={TranslateIcon}
         mode="bleed"
         onClick={handleClick}
-        ref={setButton}
+        ref={buttonRef}
         selected={open}
       />
     </Popover>

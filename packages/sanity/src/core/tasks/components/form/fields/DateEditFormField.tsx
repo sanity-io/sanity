@@ -1,6 +1,6 @@
 import {CalendarIcon} from '@sanity/icons'
 import {type Path} from '@sanity/types'
-import {Box, Flex, useClickOutside} from '@sanity/ui'
+import {Box, Flex, useClickOutsideEvent} from '@sanity/ui'
 import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
@@ -27,7 +27,7 @@ export function DateEditFormField(props: {
   const {t} = useTranslation(tasksLocaleNamespace)
 
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dateFormatter = useDateTimeFormat({dateStyle: 'long'})
   const dueByeDisplayValue = useMemo(() => {
@@ -37,7 +37,10 @@ export function DateEditFormField(props: {
     return {short: monthAndDay, full: dueFormated}
   }, [dateFormatter, value])
 
-  useClickOutside(() => setPickerOpen(false), [popoverRef])
+  useClickOutsideEvent(
+    () => setPickerOpen(false),
+    () => [popoverRef.current],
+  )
 
   const handleKeyUp = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape') {
@@ -69,7 +72,7 @@ export function DateEditFormField(props: {
       constrainSize
       data-testid="date-input-dialog"
       portal
-      ref={setPopoverRef}
+      ref={popoverRef}
       content={
         <Box overflow="auto">
           <ReactFocusLock onDeactivation={handleDeactivation}>

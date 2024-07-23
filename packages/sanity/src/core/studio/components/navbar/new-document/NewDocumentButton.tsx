@@ -1,7 +1,15 @@
 import {AddIcon, SearchIcon} from '@sanity/icons'
 import {isDeprecatedSchemaType} from '@sanity/types'
-import {Card, Flex, Stack, Text, TextInput, type TextInputProps, useClickOutside} from '@sanity/ui'
-import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useState} from 'react'
+import {
+  Card,
+  Flex,
+  Stack,
+  Text,
+  TextInput,
+  type TextInputProps,
+  useClickOutsideEvent,
+} from '@sanity/ui'
+import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 
 import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
@@ -40,8 +48,8 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   const [open, setOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
-  const [dialogElement, setDialogElement] = useState<HTMLDivElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
+  const dialogRef = useRef<HTMLDivElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
   const {t} = useTranslation()
@@ -105,11 +113,11 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   )
 
   // Close popover on click outside
-  useClickOutside(() => {
-    if (open) {
-      handleClose()
-    }
-  }, [buttonElement, dialogElement, popoverElement])
+  useClickOutsideEvent(open && handleClose, () => [
+    buttonElement,
+    dialogRef.current,
+    popoverRef.current,
+  ])
 
   const sharedListProps: NewDocumentListProps = useMemo(
     () => ({
@@ -205,7 +213,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
             id="create-new-document-dialog"
             onClickOutside={handleClose}
             onClose={handleClose}
-            ref={setDialogElement}
+            ref={dialogRef}
             scheme={scheme}
             width={1}
           >
@@ -235,7 +243,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       open={open}
       portal
       radius={3}
-      ref={setPopoverElement}
+      ref={popoverRef}
       scheme={scheme}
       content={
         <RootFlex

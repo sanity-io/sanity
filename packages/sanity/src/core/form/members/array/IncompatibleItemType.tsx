@@ -1,7 +1,7 @@
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
-import {Box, Card, Code, Flex, Stack, Text, type Theme, useClickOutside} from '@sanity/ui'
+import {Box, Card, Code, Flex, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
-import {type FocusEvent, useCallback, useState} from 'react'
+import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../ui-components'
@@ -20,11 +20,14 @@ interface Props {
 export function IncompatibleItemType(props: Props) {
   const {value, onFocus, vertical, ...rest} = props
   const [showDetails, setShowDetails] = useState(false)
-  const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const {t} = useTranslation()
 
-  useClickOutside(() => setShowDetails(false), [popoverRef])
+  useClickOutsideEvent(
+    () => setShowDetails(false),
+    () => [popoverRef.current],
+  )
 
   const handleKeyDown = useCallback((e: any) => {
     if (e.key === 'Escape' || e.key === 'Tab') {
@@ -40,7 +43,7 @@ export function IncompatibleItemType(props: Props) {
   return (
     <Popover
       open={showDetails}
-      ref={setPopoverRef}
+      ref={popoverRef}
       onKeyDown={handleKeyDown}
       portal
       constrainSize
