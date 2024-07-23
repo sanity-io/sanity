@@ -28,7 +28,7 @@ export type BundleDocumentRow = DocumentWithHistory & ReturnType<typeof useDocum
 
 export interface ReleaseSummaryProps {
   documents: SanityDocument[]
-  documentsHistory: Map<string, DocumentHistory>
+  documentsHistory: Record<string, DocumentHistory>
   collaborators: string[]
   release: BundleDocument
   validation: Record<string, DocumentValidationStatus>
@@ -94,7 +94,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     () =>
       documents.map((document) => ({
         ...document,
-        history: documentsHistory.get(document._id),
+        history: documentsHistory[document._id],
         validation: validation[document._id],
       })),
     [documents, documentsHistory, validation],
