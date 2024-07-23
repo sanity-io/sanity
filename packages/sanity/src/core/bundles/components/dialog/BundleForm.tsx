@@ -14,7 +14,7 @@ import speakingurl from 'speakingurl'
 //import {type CalendarLabels} from '../../../form/inputs/DateInputs/base/calendar/types'
 //import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {isDraftOrPublished} from '../../util/dummyGetters'
+import {isDraftOrPublished} from '../../util/util'
 import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
 
 export function BundleForm(props: {
