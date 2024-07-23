@@ -1,14 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Button} from '@sanity/ui'
 import {useCallback} from 'react'
-import {
-  BundleBadge,
-  type BundleDocument,
-  BundleMenu,
-  getBundleSlug,
-  useDocumentVersions,
-  usePerspective,
-} from 'sanity'
+import {BundleBadge, BundleMenu, getBundleSlug, useDocumentVersions, usePerspective} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -49,7 +42,7 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
       <Box flex="none">
         <BundleMenu
           button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
-          bundles={documentVersions as BundleDocument[]}
+          bundles={documentVersions}
           loading={!documentVersions}
         />
       </Box>
