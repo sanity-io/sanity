@@ -298,7 +298,7 @@ export const TagInput = forwardRef(
   },
 )
 
-TagInput.displayName = 'TagInput'
+TagInput.displayName = 'ForwardRef(TagInput)'
 
 function Tag(props: {
   enabled: boolean

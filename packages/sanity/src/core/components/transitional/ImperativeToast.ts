@@ -23,4 +23,4 @@ export const ImperativeToast = forwardRef((_, ref) => {
   return null
 })
 
-ImperativeToast.displayName = 'ImperativeToast'
+ImperativeToast.displayName = 'ForwardRef(ImperativeToast)'

@@ -1,6 +1,6 @@
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import {useCallback, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   type DocumentActionComponent,
@@ -56,24 +56,35 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
     onComplete()
   }, [documentStore.pair, duplicate, id, navigateIntent, onComplete, type])
 
-  if (!isPermissionsLoading && !permissions?.granted) {
+  return useMemo(() => {
+    if (!isPermissionsLoading && !permissions?.granted) {
+      return {
+        icon: CopyIcon,
+        disabled: true,
+        label: t('action.duplicate.label'),
+        title: (
+          <InsufficientPermissionsMessage context="duplicate-document" currentUser={currentUser} />
+        ),
+      }
+    }
+
     return {
       icon: CopyIcon,
-      disabled: true,
-      label: t('action.duplicate.label'),
-      title: (
-        <InsufficientPermissionsMessage context="duplicate-document" currentUser={currentUser} />
-      ),
+      disabled: isDuplicating || Boolean(duplicate.disabled) || isPermissionsLoading,
+      label: isDuplicating ? t('action.duplicate.running.label') : t('action.duplicate.label'),
+      title: duplicate.disabled ? t(DISABLED_REASON_KEY[duplicate.disabled]) : '',
+      onHandle: handle,
     }
-  }
-
-  return {
-    icon: CopyIcon,
-    disabled: isDuplicating || Boolean(duplicate.disabled) || isPermissionsLoading,
-    label: isDuplicating ? t('action.duplicate.running.label') : t('action.duplicate.label'),
-    title: duplicate.disabled ? t(DISABLED_REASON_KEY[duplicate.disabled]) : '',
-    onHandle: handle,
-  }
+  }, [
+    currentUser,
+    duplicate.disabled,
+    handle,
+    isDuplicating,
+    isPermissionsLoading,
+    permissions?.granted,
+    t,
+  ])
 }
 
 DuplicateAction.action = 'duplicate'
+DuplicateAction.displayName = 'DuplicateAction'
