@@ -2,12 +2,14 @@ import speakingurl from 'speakingurl'
 
 import {type BundleDocument} from '../../store/bundles/types'
 
+const PUBLISHED_SLUG = 'Published'
+
 /**
  * @internal
  * @hidden
  */
 export function getBundleSlug(documentId: string): string {
-  if (documentId.indexOf('.') === -1) return 'Published'
+  if (documentId.indexOf('.') === -1) return PUBLISHED_SLUG
   const version = documentId.slice(0, documentId.indexOf('.'))
   return version
 }
@@ -31,7 +33,7 @@ export function getDocumentIsInPerspective(
 ): boolean {
   const bundleSlug = getBundleSlug(documentId)
 
-  if (!perspective) return bundleSlug === 'Published' || bundleSlug === 'drafts'
+  if (!perspective) return bundleSlug === PUBLISHED_SLUG || bundleSlug === 'drafts'
 
   if (!perspective.startsWith('bundle.')) return false
   // perspective is `bundle.${bundleSlug}`
