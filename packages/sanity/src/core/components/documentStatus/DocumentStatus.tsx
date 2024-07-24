@@ -9,7 +9,6 @@ interface DocumentStatusProps {
   absoluteDate?: boolean
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
-  version?: PreviewValue | Partial<SanityDocument> | null
   singleLine?: boolean
 }
 
@@ -27,17 +26,9 @@ const StyledText = styled(Text)`
  *
  * @internal
  */
-export function DocumentStatus({
-  absoluteDate,
-  draft,
-  published,
-  version,
-  singleLine,
-}: DocumentStatusProps) {
+export function DocumentStatus({absoluteDate, draft, published, singleLine}: DocumentStatusProps) {
   const {t} = useTranslation()
-  const checkedOutVersion = version ?? draft
-  const draftUpdatedAt =
-    checkedOutVersion && '_updatedAt' in checkedOutVersion ? checkedOutVersion._updatedAt : ''
+  const draftUpdatedAt = draft && '_updatedAt' in draft ? draft._updatedAt : ''
   const publishedUpdatedAt = published && '_updatedAt' in published ? published._updatedAt : ''
 
   const intlDateFormat = useDateTimeFormat({
@@ -69,12 +60,12 @@ export function DocumentStatus({
       gap={2}
       wrap="nowrap"
     >
-      {!version && !publishedDate && (
+      {!publishedDate && (
         <StyledText size={1} weight="medium">
           {t('document-status.not-published')}
         </StyledText>
       )}
-      {!version && publishedDate && (
+      {publishedDate && (
         <StyledText size={1} weight="medium">
           {t('document-status.published', {date: publishedDate})}
         </StyledText>
