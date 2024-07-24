@@ -6,9 +6,13 @@ const globby = require('globby')
 const yaml = require('js-yaml')
 const fs = require('node:fs')
 
-const workspaces = yaml.load(fs.readFileSync('./pnpm-workspace.yaml', 'utf8'))
+const workspacesPath = path.join(__dirname, 'pnpm-workspace.yaml')
+const workspaces = yaml.load(fs.readFileSync(workspacesPath, 'utf8'))
+
 const jestConfigFiles = globby.sync(
-  workspaces.packages.map((workspace) => path.join(__dirname, workspace, '/jest.config.cjs')),
+  workspaces.packages.map((workspace) => {
+    return path.posix.join('.', workspace, 'jest.config.cjs')
+  }),
 )
 
 const IGNORE_PROJECTS = []
