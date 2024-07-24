@@ -11,7 +11,7 @@ import {type BundleDocument} from './types'
 
 // WIP - Raw implementation for initial testing purposes
 export function useBundleOperations() {
-  const {client} = useAddonDataset()
+  const {client: addOnClient} = useAddonDataset()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const currentUser = useCurrentUser()
 
@@ -23,10 +23,10 @@ export function useBundleOperations() {
         authorId: currentUser?.id,
         _id: bundle._id ?? uuid(),
       } as BundleDocument
-      const res = await client?.createIfNotExists(document)
+      const res = await addOnClient?.createIfNotExists(document)
       return res
     },
-    [client, currentUser?.id],
+    [addOnClient, currentUser?.id],
   )
 
   const handleDeleteBundle = useCallback(
@@ -42,15 +42,15 @@ export function useBundleOperations() {
       })
       await transaction.commit()
       // Remove the bundle metadata document from the addon dataset
-      const res = await client?.delete(bundle._id)
+      const res = await addOnClient?.delete(bundle._id)
       return res
     },
-    [client, studioClient],
+    [addOnClient, studioClient],
   )
 
   const handleUpdateBundle = useCallback(
     async (bundle: Partial<BundleDocument>) => {
-      if (!client || !bundle._id) return null
+      if (!addOnClient || !bundle._id) return null
 
       const document = {
         ...bundle,
@@ -60,19 +60,19 @@ export function useBundleOperations() {
         .filter(([_, value]) => value === undefined)
         .map(([key]) => key)
 
-      let clientOperation = client.patch(bundle._id).set(document)
+      let clientOperation = addOnClient.patch(bundle._id).set(document)
       if (unsetKeys.length) {
         clientOperation = clientOperation.unset(unsetKeys)
       }
 
       return clientOperation.commit()
     },
-    [client],
+    [addOnClient],
   )
 
   const handlePublishBundle = useCallback(
     async (bundleId: string, bundleDocuments: SanityDocument[]) => {
-      if (!client) return null
+      if (!addOnClient) return null
 
       const transaction = studioClient.transaction()
       bundleDocuments.forEach((document) => {
@@ -85,12 +85,11 @@ export function useBundleOperations() {
         })
       })
 
-      // returned transactionId is the _rev for the updated documents
       await transaction.commit()
       const publishedAt = new Date().toISOString()
-      return await client.patch(bundleId).set({publishedAt, archivedAt: publishedAt}).commit()
+      return await addOnClient.patch(bundleId).set({publishedAt, archivedAt: publishedAt}).commit()
     },
-    [client, studioClient],
+    [addOnClient, studioClient],
   )
 
   return {

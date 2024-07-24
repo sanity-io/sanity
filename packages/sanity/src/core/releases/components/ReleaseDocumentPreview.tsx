@@ -47,7 +47,7 @@ export function ReleaseDocumentPreview({
     [documentId, documentTypeName, releaseSlug],
   )
 
-  const presencePreview = useMemo(
+  const previewPresence = useMemo(
     () => documentPresence?.length > 0 && <DocumentPreviewPresence presence={documentPresence} />,
     [documentPresence],
   )
@@ -59,14 +59,14 @@ export function ReleaseDocumentPreview({
       radius={2}
       data-as="a"
     >
-      <SanityDefaultPreview {...previewValues} status={presencePreview} isPlaceholder={isLoading}>
+      <SanityDefaultPreview {...previewValues} status={previewPresence} isPlaceholder={isLoading}>
         {hasValidationError && (
           <Tooltip
             portal
             content={
               <Text muted size={1}>
                 {/* TODO: clarify copy */}
-                There are validation issues with this document
+                There are validation errors in this document
               </Text>
             }
           >
