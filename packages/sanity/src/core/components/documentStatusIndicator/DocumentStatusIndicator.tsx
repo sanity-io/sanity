@@ -7,10 +7,8 @@ import {styled} from 'styled-components'
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
-  version?: PreviewValue | Partial<SanityDocument> | null
 }
 
-// TODO: `version` style is only for debugging.
 const Root = styled(Text)`
   &[data-status='edited'] {
     --card-icon-color: var(--card-badge-caution-dot-color);
@@ -18,9 +16,6 @@ const Root = styled(Text)`
   &[data-status='unpublished'] {
     --card-icon-color: var(--card-badge-default-dot-color);
     opacity: 0.5 !important;
-  }
-  &[data-status='version'] {
-    --card-icon-color: lime;
   }
 `
 
@@ -34,29 +29,25 @@ const Root = styled(Text)`
  *
  * @internal
  */
-export function DocumentStatusIndicator({draft, published, version}: DocumentStatusProps) {
-  const $version = Boolean(version)
+export function DocumentStatusIndicator({draft, published}: DocumentStatusProps) {
   const $draft = Boolean(draft)
   const $published = Boolean(published)
 
   const status = useMemo(() => {
-    if ($version) return 'version'
     if ($draft && !$published) return 'unpublished'
     return 'edited'
-  }, [$draft, $published, $version])
+  }, [$draft, $published])
 
   // Return null if the document is:
-  // - Not a version
   // - Published without edits
   // - Neither published or without edits (this shouldn't be possible)
-  if (!$version && ((!$draft && !$published) || (!$draft && $published))) {
+  if ((!$draft && !$published) || (!$draft && $published)) {
     return null
   }
 
   // TODO: Remove debug `status[0]` output.
   return (
     <Root data-status={status} size={1}>
-      <span>{status[0]}</span>
       <DotIcon />
     </Root>
   )
