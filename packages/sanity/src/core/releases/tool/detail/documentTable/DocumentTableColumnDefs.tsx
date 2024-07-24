@@ -1,6 +1,7 @@
 import {AvatarStack, Box, Flex, Text} from '@sanity/ui'
-import {type BundleDocument, RelativeTime, UserAvatar} from 'sanity'
+import {type BundleDocument, UserAvatar} from 'sanity'
 
+import {RelativeTime} from '../../../../components/RelativeTime'
 import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
 import {Headers} from '../../../components/Table/TableHeader'
 import {type Column} from '../../../components/Table/types'
