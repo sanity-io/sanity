@@ -4,6 +4,7 @@ import {ChevronDownIcon, Icon, type IconSymbol} from '@sanity/icons'
 import {Box, Flex, rgba, Text, useTheme_v2} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 
+import {Tooltip} from '../../../ui-components'
 import {type BundleDocument} from '../../store/bundles/types'
 
 /**
@@ -47,7 +48,17 @@ export function BundleBadge(
       )}
       {title && (
         <Box flex="none">
-          <Text size={1}>{title}</Text>
+          <Tooltip delay={1000} content={title} placement="bottom">
+            <Text
+              style={{
+                maxWidth: 100,
+              }}
+              textOverflow="ellipsis"
+              size={1}
+            >
+              {title}
+            </Text>
+          </Tooltip>
         </Box>
       )}
       {openButton && (
