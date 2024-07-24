@@ -1,8 +1,9 @@
+/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
-import {AuthenticateScreen, NotAuthenticatedScreen} from './screens'
+import {AuthenticateScreen, NotAuthenticatedScreen, RequestAccessScreen} from './screens'
 
 interface AuthBoundaryProps {
   children: ReactNode
@@ -23,6 +24,7 @@ export function AuthBoundary({
   const [loggedIn, setLoggedIn] = useState<'logged-in' | 'logged-out' | 'loading' | 'unauthorized'>(
     'loading',
   )
+  const [loginProvider, setLoginProvider] = useState<string | undefined>()
   const {activeWorkspace} = useActiveWorkspace()
 
   useEffect(() => {
@@ -39,6 +41,7 @@ export function AuthBoundary({
         }
 
         setLoggedIn(authenticated ? 'logged-in' : 'logged-out')
+        if (currentUser?.provider) setLoginProvider(currentUser.provider)
       },
       error: handleError,
     })
@@ -50,7 +53,13 @@ export function AuthBoundary({
 
   if (loggedIn === 'loading') return <LoadingComponent />
 
-  if (loggedIn === 'unauthorized') return <NotAuthenticatedComponent />
+  if (loggedIn === 'unauthorized') {
+    // If using unverified `sanity` login provider, send them
+    // to basic NotAuthorized component.
+    if (loginProvider === 'sanity') return <NotAuthenticatedComponent />
+    // Otherwise, send use to RequestAccessDialog
+    return <RequestAccessScreen />
+  }
 
   // NOTE: there is currently a bug where the `AuthenticateComponent` will
   // flash after the first login with cookieless mode. See `createAuthStore`
