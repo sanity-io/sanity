@@ -7,6 +7,7 @@ import {type BundleDocument} from 'sanity'
 import {Button, Dialog} from '../../../../ui-components'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {type useBundleDocumentsValidation} from '../../tool/detail/useBundleDocumentsValidation'
+import {useObserveDocumentRevisions} from './useObserveDocumentRevisions'
 
 interface ReleasePublishAllButtonProps {
   bundle: BundleDocument
@@ -27,6 +28,8 @@ export const ReleasePublishAllButton = ({
     'idle',
   )
 
+  const publishedDocumentsRevisions = useObserveDocumentRevisions(bundleDocuments)
+
   const isValidatingDocuments = Object.values(validation).some(({isValidating}) => isValidating)
   const hasDocumentValidationErrors = Object.values(validation).some(({hasError}) => hasError)
 
@@ -37,7 +40,7 @@ export const ReleasePublishAllButton = ({
 
     try {
       setPublishBundleStatus('publishing')
-      await publishBundle(bundle._id, bundleDocuments)
+      await publishBundle(bundle._id, bundleDocuments, publishedDocumentsRevisions)
       toast.push({
         closable: true,
         status: 'success',
@@ -60,7 +63,7 @@ export const ReleasePublishAllButton = ({
     } finally {
       setPublishBundleStatus('idle')
     }
-  }, [bundle, bundleDocuments, publishBundle, toast])
+  }, [bundle, bundleDocuments, publishBundle, publishedDocumentsRevisions, toast])
 
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null

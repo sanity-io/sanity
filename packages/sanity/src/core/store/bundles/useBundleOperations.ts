@@ -75,18 +75,42 @@ export function useBundleOperations() {
   )
 
   const handlePublishBundle = useCallback(
-    async (bundleId: string, bundleDocuments: SanityDocument[]) => {
+    async (
+      bundleId: string,
+      bundleDocuments: SanityDocument[],
+      publishedDocumentsRevisions: Record<string, string> = {},
+    ) => {
       if (!addOnClient) return null
 
       const transaction = studioClient.transaction()
-      bundleDocuments.forEach((document) => {
-        const transactionDocument = omit(document, ['_version']) as SanityDocument
+      bundleDocuments.forEach((bundleDocument) => {
+        const publishedDocumentId = getPublishedId(bundleDocument._id, true)
+        const versionDocument = omit(bundleDocument, ['_version']) as SanityDocument
+        const publishedDocumentRevisionId = publishedDocumentsRevisions[publishedDocumentId]
 
-        // update the published document with the bundle version
-        transaction.createOrReplace({
-          ...transactionDocument,
-          _id: getPublishedId(document._id, true),
+        const publishedDocument = {
+          ...versionDocument,
+          _id: publishedDocumentId,
+        }
+        // verify that local bundle document matches remote latest revision
+        transaction.patch(bundleDocument._id, {
+          unset: ['_revision_lock_pseudo_field_'],
+          ifRevisionID: bundleDocument._rev,
         })
+
+        if (publishedDocumentRevisionId) {
+          // if published document exists, verify that local document matches remote latest revision
+          transaction.patch(publishedDocumentId, {
+            unset: ['_revision_lock_pseudo_field_'],
+            ifRevisionID: publishedDocumentRevisionId,
+          })
+          // update the published document with the bundle version
+          transaction.createOrReplace(publishedDocument)
+        } else {
+          // if published document doesn't exist, do not override
+          // only create the document and fail is it suddenly exists
+          transaction.create(publishedDocument)
+        }
       })
 
       await transaction.commit()

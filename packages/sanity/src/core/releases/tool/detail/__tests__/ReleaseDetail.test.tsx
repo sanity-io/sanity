@@ -33,6 +33,12 @@ jest.mock('sanity', () => ({
   useCurrentUser: jest.fn().mockReturnValue({id: 'test-user-id'}),
 }))
 
+jest.mock('../../../components/ReleasePublishAllButton/useObserveDocumentRevisions', () => ({
+  useObserveDocumentRevisions: jest.fn().mockReturnValue({
+    '123': 'mock revision id',
+  }),
+}))
+
 jest.mock('../ReleaseSummary', () => ({
   ReleaseSummary: () => <div data-testid="mocked-release-summary" />,
 }))
@@ -256,15 +262,19 @@ describe('after bundles have loaded', () => {
         fireEvent.click(screen.getByText('Publish all'))
         fireEvent.click(screen.getByText('Publish'))
 
-        expect(useBundleOperations().publishBundle).toHaveBeenCalledWith('test-id', [
-          {
-            _createdAt: currentDate,
-            _id: 'test-id',
-            _rev: 'abc',
-            _type: 'document',
-            _updatedAt: currentDate,
-          },
-        ])
+        expect(useBundleOperations().publishBundle).toHaveBeenCalledWith(
+          'test-id',
+          [
+            {
+              _createdAt: currentDate,
+              _id: 'test-id',
+              _rev: 'abc',
+              _type: 'document',
+              _updatedAt: currentDate,
+            },
+          ],
+          {'123': 'mock revision id'},
+        )
       })
     })
 
