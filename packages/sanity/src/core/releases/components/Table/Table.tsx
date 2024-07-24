@@ -1,13 +1,13 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {get} from 'lodash'
-import {Fragment, useMemo} from 'react'
+import {Fragment, useEffect, useMemo} from 'react'
 import {useTableContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {TableHeader} from './TableHeader'
-import {TableProvider} from './TableProvider'
+import {TableProvider, type TableSort} from './TableProvider'
 import {type Column} from './types'
 
 type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extends undefined
@@ -17,6 +17,7 @@ type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extend
 export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
+  defaultSort?: TableSort
   Row?: ({
     datum,
     children,
@@ -50,6 +51,7 @@ const RowStack = styled(Stack)({
 
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
+  defaultSort,
   data,
   emptyState,
   searchFilter,
@@ -58,7 +60,14 @@ const TableInner = <TableData, AdditionalRowTableData>({
   rowActions,
   loading = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
-  const {searchTerm, sort} = useTableContext()
+  const {searchTerm, sort, setDefaultSort} = useTableContext()
+
+  const {column: defaultSortColumn, direction: defaultSortDirection} = defaultSort || {}
+  useEffect(() => {
+    if (defaultSortColumn) {
+      setDefaultSort({column: defaultSortColumn, direction: defaultSortDirection || 'asc'})
+    }
+  }, [defaultSortColumn, defaultSortDirection, setDefaultSort])
 
   const filteredData = useMemo(() => {
     const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data

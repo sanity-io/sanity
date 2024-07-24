@@ -177,6 +177,7 @@ export function ReleasesOverview() {
             <Table<TableBundle>
               // for resetting filter and sort on table when mode changed
               key={bundleGroupMode}
+              defaultSort={{column: '_createdAt', direction: 'desc'}}
               loading={loading}
               data={groupedBundles[bundleGroupMode]}
               columnDefs={releasesOverviewColumnDefs}
