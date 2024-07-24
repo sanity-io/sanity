@@ -15,7 +15,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
     // TODO: Should be dynamic
     const draftIndex = 0
 
-    actionsApiClient(client).observable.action(
+    return actionsApiClient(client).observable.action(
       {
         // This operation is run when "unpublish anyway" is clicked
         actionType: 'sanity.action.document.unpublish',
