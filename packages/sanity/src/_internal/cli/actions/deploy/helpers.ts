@@ -1,9 +1,11 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import {PassThrough} from 'node:stream'
 import {type Gzip} from 'node:zlib'
 
 import {type CliCommandContext, type CliConfig} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
+import FormData from 'form-data'
 import readPkgUp from 'read-pkg-up'
 
 // TODO: replace with `Promise.withResolvers()` once it lands in node
@@ -135,29 +137,34 @@ export async function createDeployment({
   client,
   tarball,
   applicationId,
-  ...options
+  isAutoUpdating,
+  version,
 }: CreateDeploymentOptions): Promise<void> {
   const config = client.config()
 
   const formData = new FormData()
-  for (const [key, value] of Object.entries(options)) {
-    formData.set(key, value.toString())
-  }
-
-  // convert the tarball into a blob and add it to the form data
-  const chunks: Buffer[] = []
-  for await (const chunk of tarball) {
-    chunks.push(chunk)
-  }
-  const blob = new Blob([Buffer.concat(chunks)], {type: 'application/gzip'})
-  formData.set('tarball', blob)
+  formData.append('isAutoUpdating', isAutoUpdating.toString())
+  formData.append('version', version)
+  formData.append('tarball', tarball, {contentType: 'application/gzip'})
 
   const url = new URL(client.getUrl(`/user-applications/${applicationId}/deployments`))
   const headers = new Headers({
     ...(config.token && {Authorization: `Bearer ${config.token}`}),
   })
 
-  await fetch(url, {method: 'POST', headers, body: formData})
+  await fetch(url, {
+    method: 'POST',
+    headers,
+    // NOTE:
+    // - the fetch API in node.js supports streams but it's not in the types
+    // - the PassThrough is required because `form-data` does not fully conform
+    //   to the node.js stream API
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    body: formData.pipe(new PassThrough()) as any,
+    // @ts-expect-error the `duplex` param is required in order to send a stream
+    // https://github.com/nodejs/node/issues/46221#issuecomment-1383246036
+    duplex: 'half',
+  })
 }
 
 export interface DeleteUserApplicationOptions {
