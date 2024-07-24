@@ -65,6 +65,7 @@ test.describe('basic - main document action', () => {
     // For now, only test in Chromium due to flakiness in Firefox and WebKit
     test.skip(browserName !== 'chromium')
 
+    await page.getByTestId('tree-editing-dialog').getByTestId('string-input').fill('Update test')
     await page.getByTestId('tree-editing-done').click()
 
     await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
