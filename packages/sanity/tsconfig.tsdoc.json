@@ -6,7 +6,8 @@
     "./src/**/__mocks__",
     "./src/**/__workshop__",
     "./src/**/*.test.ts",
-    "./src/**/*.test.tsx"
+    "./src/**/*.test.tsx",
+    "**/jest.config.cjs"
   ],
   "compilerOptions": {
     // Needed until `@microsoft/api-extractor`, as used by `@sanity/tsdoc`, supports `module: "Preserve"`
