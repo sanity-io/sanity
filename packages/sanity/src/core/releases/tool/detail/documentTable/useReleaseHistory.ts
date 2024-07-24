@@ -51,7 +51,6 @@ export function useReleaseHistory(bundleDocuments: SanityDocument[]): {
   useEffect(() => {
     fetchAndParseAll()
     // When revision changes, update the history.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchAndParseAll])
 
   return useMemo(() => {
