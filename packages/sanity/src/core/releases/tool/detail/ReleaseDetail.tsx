@@ -1,6 +1,6 @@
 import {ArrowLeftIcon, ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {LoadingBlock, useClient} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
@@ -106,6 +106,14 @@ export const ReleaseDetail = () => {
     )
   }, [hasDocumentValidationErrors, isValidatingDocuments])
 
+  // review screen will not be available once published
+  // so redirect to summary screen
+  useEffect(() => {
+    if (activeScreen === 'review' && bundle?.publishedAt) {
+      navigateToSummary()
+    }
+  }, [activeScreen, bundle?.publishedAt, navigateToSummary])
+
   const handleConfirmPublishAll = useCallback(async () => {
     if (!bundle) return
 
@@ -201,19 +209,21 @@ export const ReleaseDetail = () => {
                 text="Summary"
               />
               {/* StudioButton supports tooltip when button is disabled */}
-              <Button
-                tooltipProps={{
-                  disabled: bundleHasDocuments,
-                  content: 'Add documents to this release to review changes',
-                  placement: 'bottom',
-                }}
-                key="review"
-                disabled={!bundleHasDocuments}
-                mode="bleed"
-                onClick={navigateToReview}
-                selected={activeScreen === 'review'}
-                text="Review changes"
-              />
+              {!bundle?.publishedAt && (
+                <Button
+                  tooltipProps={{
+                    disabled: bundleHasDocuments,
+                    content: 'Add documents to this release to review changes',
+                    placement: 'bottom',
+                  }}
+                  key="review"
+                  disabled={!bundleHasDocuments}
+                  mode="bleed"
+                  onClick={navigateToReview}
+                  selected={activeScreen === 'review'}
+                  text="Review changes"
+                />
+              )}
             </Flex>
           </Flex>
 
