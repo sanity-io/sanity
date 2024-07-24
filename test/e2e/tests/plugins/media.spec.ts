@@ -13,5 +13,5 @@ test('media plugin should open', async ({page, createDraftDocument}) => {
   expect(await page.getByTestId('file-input-multi-button-media')).toBeVisible()
   await page.getByTestId('file-input-browse-button-media').click()
 
-  expect(await page.getByTestId('media-plugin')).toBeVisible()
+  expect(await page.getByTestId('virtuoso-scroller')).toBeVisible()
 })
