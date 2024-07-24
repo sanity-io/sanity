@@ -3,6 +3,7 @@ export {
   BundleBadge,
   BundleMenu,
   getBundleSlug,
+  getDocumentIsInPerspective,
   LATEST,
   useDocumentVersions,
   usePerspective,
