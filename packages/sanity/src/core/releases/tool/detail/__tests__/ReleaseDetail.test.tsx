@@ -5,11 +5,18 @@ import {route, RouterProvider} from 'sanity/router'
 import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {useListener} from '../../../../hooks/useListener'
 import {useBundles} from '../../../../store/bundles'
+import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {ReleaseDetail} from '../ReleaseDetail'
 import {useBundleDocumentsValidation} from '../useBundleDocumentsValidation'
 
 jest.mock('../../../../store/bundles', () => ({
   useBundles: jest.fn().mockReturnValue({data: [], loading: false}),
+}))
+
+jest.mock('../../../../store/bundles/useBundleOperations', () => ({
+  useBundleOperations: jest.fn().mockReturnValue({
+    publishBundle: jest.fn(),
+  }),
 }))
 
 jest.mock('../../../../hooks/useListener', () => ({
@@ -143,6 +150,7 @@ describe('ReleaseDetail', () => {
 
 describe('after bundles have loaded', () => {
   describe('with unpublished release', () => {
+    const currentDate = new Date().toISOString()
     beforeEach(async () => {
       mockUseBundles.mockReturnValue({
         data: [
@@ -151,13 +159,13 @@ describe('after bundles have loaded', () => {
             publishedAt: undefined,
             archivedAt: undefined,
             _id: 'test-id',
-            _createdAt: new Date().toISOString(),
+            _createdAt: currentDate,
             _type: 'bundle',
             slug: 'test-bundle-slug',
             hue: 'blue',
             icon: 'string',
             authorId: 'author-id',
-            _updatedAt: new Date().toISOString(),
+            _updatedAt: currentDate,
             _rev: 'abc',
           },
         ],
@@ -170,8 +178,8 @@ describe('after bundles have loaded', () => {
             _id: 'test-id',
             _type: 'document',
             _rev: 'abc',
-            _createdAt: new Date().toISOString(),
-            _updatedAt: new Date().toISOString(),
+            _createdAt: currentDate,
+            _updatedAt: currentDate,
           },
         ],
         loading: false,
@@ -195,7 +203,7 @@ describe('after bundles have loaded', () => {
       })
     }
 
-    describe('with pending documnt validation', () => {
+    describe('with pending document validation', () => {
       beforeEach(async () => {
         mockUseBundleDocumentsValidation.mockReturnValue({
           'test-bundle-slug': {
@@ -234,6 +242,29 @@ describe('after bundles have loaded', () => {
 
       it('should show publish all button when release not published', () => {
         expect(screen.getByText('Publish all').closest('button')).not.toBeDisabled()
+      })
+
+      it('should require confirmation to publish', () => {
+        fireEvent.click(screen.getByText('Publish all'))
+        screen.getByText('Are you sure you want to publish the release and all document versions?')
+        fireEvent.click(screen.getByText('Cancel'))
+
+        expect(screen.getByText('Publish all').closest('button')).not.toBeDisabled()
+      })
+
+      it('should perform publish', () => {
+        fireEvent.click(screen.getByText('Publish all'))
+        fireEvent.click(screen.getByText('Publish'))
+
+        expect(useBundleOperations().publishBundle).toHaveBeenCalledWith('test-id', [
+          {
+            _createdAt: currentDate,
+            _id: 'test-id',
+            _rev: 'abc',
+            _type: 'document',
+            _updatedAt: currentDate,
+          },
+        ])
       })
     })
 

@@ -139,6 +139,7 @@ export const ReleaseDetail = () => {
           </Text>
         ),
       })
+      console.error(publishingError)
     } finally {
       setPublishBundleStatus('idle')
     }
@@ -154,7 +155,7 @@ export const ReleaseDetail = () => {
         onClose={() => setPublishBundleStatus('idle')}
         footer={{
           confirmButton: {
-            label: 'Publish',
+            text: 'Publish',
             tone: 'default',
             onClick: handleConfirmPublishAll,
             loading: publishBundleStatus === 'publishing',
