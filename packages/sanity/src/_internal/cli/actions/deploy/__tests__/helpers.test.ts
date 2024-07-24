@@ -1,5 +1,6 @@
 import {type Stats} from 'node:fs'
 import fs from 'node:fs/promises'
+import {Readable} from 'node:stream'
 import {type Gzip} from 'node:zlib'
 
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
@@ -43,11 +44,11 @@ global.fetch = mockFetch
 
 // Mock the Gzip stream
 class MockGzip {
-  constructor(private chunks: Buffer[]) {}
+  constructor(private chunks: AsyncIterable<Buffer> | Iterable<Buffer>) {}
   [Symbol.asyncIterator]() {
     const chunks = this.chunks
     return (async function* thing() {
-      for (const chunk of chunks) yield chunk
+      for await (const chunk of chunks) yield chunk
     })()
   }
 }
@@ -148,16 +149,16 @@ describe('createDeployment', () => {
   })
 
   it('sends the correct request to create a deployment and includes authorization header if token is present', async () => {
-    const chunks = [Buffer.from('first chunk'), Buffer.from('second chunk')]
-    const tarball = new MockGzip(chunks) as unknown as Gzip
+    const tarball = Readable.from([Buffer.from('example chunk', 'utf-8')]) as Gzip
     const applicationId = 'test-app-id'
+    const version = '1.0.0'
 
     mockFetch.mockResolvedValueOnce(new Response())
 
     await createDeployment({
       client: mockClient,
       applicationId,
-      version: '1.0.0',
+      version,
       isAutoUpdating: true,
       tarball,
     })
@@ -174,14 +175,89 @@ describe('createDeployment', () => {
 
     // Extract and validate form data
     const mockFetchCalls = mockFetch.mock.calls as Parameters<typeof fetch>[]
-    const formData = mockFetchCalls[0][1]?.body as FormData
-    expect(formData.get('version')).toBe('1.0.0')
-    expect(formData.get('isAutoUpdating')).toBe('true')
-    expect(formData.get('tarball')).toBeInstanceOf(Blob)
+    const formData = mockFetchCalls[0][1]?.body as unknown as Readable
+
+    // dump the raw content of the form data into a string
+    let content = ''
+    for await (const chunk of formData) {
+      content += chunk
+    }
+
+    expect(content).toContain('isAutoUpdating')
+    expect(content).toContain('true')
+    expect(content).toContain('version')
+    expect(content).toContain(version)
+    expect(content).toContain('example chunk')
 
     // Check Authorization header
     const headers = mockFetchCalls[0][1]?.headers as Headers
     expect(headers.get('Authorization')).toBe('Bearer fake-token')
+  })
+
+  it('streams the tarball contents', async () => {
+    const firstEmission = 'first emission\n'
+    const secondEmission = 'second emission\n'
+
+    async function* createMockStream() {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      yield Buffer.from(firstEmission, 'utf-8')
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      yield Buffer.from(secondEmission, 'utf-8')
+    }
+
+    const mockTarball = Readable.from(createMockStream()) as Gzip
+    const applicationId = 'test-app-id'
+
+    mockFetch.mockResolvedValueOnce(new Response())
+
+    const version = '1.0.0'
+
+    await createDeployment({
+      client: mockClient,
+      applicationId,
+      version,
+      isAutoUpdating: true,
+      tarball: mockTarball,
+    })
+
+    // Check URL and method
+    expect(mockClient.getUrl).toHaveBeenCalledWith(
+      `/user-applications/${applicationId}/deployments`,
+    )
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+    const url = mockFetch.mock.calls[0][0] as URL
+    expect(url.toString()).toBe(
+      'http://example.api.sanity.io/user-applications/test-app-id/deployments',
+    )
+
+    // Extract and validate form data
+    const mockFetchCalls = mockFetch.mock.calls as Parameters<typeof fetch>[]
+    const requestInit = mockFetchCalls[0][1] as any
+
+    // this is required to enable streaming with the native fetch API
+    // https://github.com/nodejs/node/issues/46221
+    expect(requestInit.duplex).toBe('half')
+
+    const formData = requestInit.body as Readable
+
+    let emissions = 0
+    let content = ''
+    for await (const chunk of formData) {
+      content += chunk
+      emissions++
+    }
+
+    expect(emissions).toBeGreaterThan(1)
+
+    expect(content).toContain('isAutoUpdating')
+    expect(content).toContain('true')
+
+    expect(content).toContain('version')
+    expect(content).toContain(version)
+
+    expect(content).toContain(firstEmission)
+    expect(content).toContain(secondEmission)
+    expect(content).toContain('application/gzip')
   })
 })
 

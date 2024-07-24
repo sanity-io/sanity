@@ -1524,6 +1524,9 @@ importers:
       exif-component:
         specifier: ^1.0.1
         version: 1.0.1
+      form-data:
+        specifier: ^4.0.0
+        version: 4.0.0
       framer-motion:
         specifier: 11.0.8
         version: 11.0.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
