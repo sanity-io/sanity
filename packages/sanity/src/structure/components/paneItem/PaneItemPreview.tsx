@@ -1,5 +1,5 @@
 import {type SanityDocument, type SchemaType} from '@sanity/types'
-import {Flex, Text} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {isNumber, isString} from 'lodash'
 import {type ComponentType, isValidElement, useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -10,13 +10,19 @@ import {
   DocumentStatus,
   DocumentStatusIndicator,
   type GeneralPreviewLayoutKey,
+  getDocumentIsInPerspective,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   isRecord,
   SanityDefaultPreview,
 } from 'sanity'
+import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components'
+
+const Root = styled.div<{$isInPerspective: boolean}>`
+  opacity: ${(props) => (props.$isInPerspective ? 1 : 0.5)};
+`
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -62,28 +68,24 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     published: null,
   })
 
+  const isInPerspective = useMemo(
+    () => getDocumentIsInPerspective(value._id, perspective),
+    [perspective, value._id],
+  )
+
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatusIndicator draft={draft} published={published} version={version} />
+        <DocumentStatusIndicator draft={draft} published={published} />
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = <DocumentStatus draft={draft} published={published} version={version} />
+  const tooltip = <DocumentStatus draft={draft} published={published} />
 
-  // TODO: Remove debug `_id` output.
   return (
-    <>
-      <Text size={1} muted>
-        {
-          // This is temporary, will be removed.
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-expect-error
-          (version ?? draft ?? published)?._id
-        }
-      </Text>
+    <Root $isInPerspective={isInPerspective}>
       <SanityDefaultPreview
         {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
         isPlaceholder={isLoading}
@@ -92,6 +94,6 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
         status={status}
         tooltip={tooltip}
       />
-    </>
+    </Root>
   )
 }
