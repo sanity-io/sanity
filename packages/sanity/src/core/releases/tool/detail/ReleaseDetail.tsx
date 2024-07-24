@@ -63,7 +63,8 @@ export const ReleaseDetail = () => {
     !bundle ||
     !bundleHasDocuments ||
     publishBundleStatus === 'publishing' ||
-    hasDocumentValidationErrors
+    hasDocumentValidationErrors ||
+    isValidatingDocuments
 
   const toast = useToast()
 
@@ -231,7 +232,7 @@ export const ReleaseDetail = () => {
             {showPublishButton && (
               <Button
                 tooltipProps={{
-                  disabled: !isPublishButtonDisabled && !isValidatingDocuments,
+                  disabled: !isPublishButtonDisabled,
                   content: publishTooltipContent,
                   placement: 'bottom',
                 }}
@@ -253,7 +254,6 @@ export const ReleaseDetail = () => {
       bundleDocuments.length,
       bundleHasDocuments,
       isPublishButtonDisabled,
-      isValidatingDocuments,
       navigateToReview,
       navigateToSummary,
       publishBundleStatus,
@@ -262,6 +262,40 @@ export const ReleaseDetail = () => {
       showPublishButton,
     ],
   )
+
+  const detailContent = useMemo(() => {
+    if (!bundle) return null
+
+    if (activeScreen === 'summary') {
+      return (
+        <ReleaseSummary
+          documents={bundleDocuments}
+          release={bundle}
+          documentsHistory={history.documentsHistory}
+          collaborators={history.collaborators}
+          validation={validation}
+        />
+      )
+    }
+    if (activeScreen === 'review') {
+      return (
+        <ReleaseReview
+          documents={bundleDocuments}
+          release={bundle}
+          documentsHistory={history.documentsHistory}
+          validation={validation}
+        />
+      )
+    }
+    return null
+  }, [
+    activeScreen,
+    bundle,
+    bundleDocuments,
+    history.collaborators,
+    history.documentsHistory,
+    validation,
+  ])
 
   if (loading) {
     return <LoadingBlock title="Loading release" fill data-testid="bundle-documents-table-loader" />
@@ -286,29 +320,7 @@ export const ReleaseDetail = () => {
       <Card flex={1} overflow="auto">
         <Container width={2}>
           <Box paddingX={4} paddingY={6}>
-            {documentsLoading ? (
-              <LoadingBlock title="Loading documents" />
-            ) : (
-              <>
-                {activeScreen === 'summary' && (
-                  <ReleaseSummary
-                    documents={bundleDocuments}
-                    release={bundle}
-                    documentsHistory={history.documentsHistory}
-                    collaborators={history.collaborators}
-                    validation={validation}
-                  />
-                )}
-              </>
-            )}
-            {activeScreen === 'review' && (
-              <ReleaseReview
-                documents={bundleDocuments}
-                release={bundle}
-                documentsHistory={history.documentsHistory}
-                validation={validation}
-              />
-            )}
+            {documentsLoading ? <LoadingBlock title="Loading documents" /> : detailContent}
           </Box>
         </Container>
       </Card>
