@@ -92,11 +92,9 @@ const TableInner = <TableData, AdditionalRowTableData>({
         </Flex>
       ),
       cell: ({datum, cellProps: {id}}) => (
-        // <Card tone="default">
         <Flex as="td" id={id} align="center" flex="none" padding={3}>
           {rowActions?.({datum})}
         </Flex>
-        // </Card>
       ),
     }),
     [rowActions],
