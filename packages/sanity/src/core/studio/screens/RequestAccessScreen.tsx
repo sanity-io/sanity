@@ -25,13 +25,15 @@ interface AccessRequest {
 
 export function RequestAccessScreen() {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
-  const [error, setError] = useState<unknown>(null)
-
+  const [client, setClient] = useState<SanityClient | undefined>()
   const [projectId, setProjectId] = useState<string | undefined>()
+
+  const [error, setError] = useState<unknown>(null)
   const [loading, setLoading] = useState(true)
+
   const [hasPendingRequest, setHasPendingRequest] = useState<boolean | undefined>()
   const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean | undefined>()
-  const [client, setClient] = useState<SanityClient | undefined>()
+
   const [note, setNote] = useState<string>('')
 
   const {activeWorkspace} = useActiveWorkspace()
@@ -40,31 +42,18 @@ export function RequestAccessScreen() {
     activeWorkspace.auth.logout?.()
   }, [activeWorkspace])
 
-  const handleSubmitRequest = useCallback(() => {
-    if (!client || !projectId) return
-    client
-      .request<AccessRequest | null>({
-        url: `/access/project/${projectId}/requests`,
-        method: 'post',
-        body: {note},
-      })
-      .then((request) => {
-        if (request) setHasPendingRequest(true)
-      })
-      .catch((err) => {
-        const statusCode = err && err.response && err.response.statusCode
-        // If we get a 403, that means the user
-        // is over their cross-project request limit
-        if (statusCode === 403) {
-          setHasTooManyRequests(true)
-        } else {
-          setError(true)
-        }
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [note, projectId, client])
+  useEffect(() => {
+    const subscription = activeWorkspace.auth.state.subscribe({
+      next: ({currentUser: user}) => {
+        setCurrentUser(user)
+      },
+      error: setError,
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [activeWorkspace])
 
   // Get the active workspace client
   useEffect(() => {
@@ -112,18 +101,31 @@ export function RequestAccessScreen() {
       })
   }, [client, projectId])
 
-  useEffect(() => {
-    const subscription = activeWorkspace.auth.state.subscribe({
-      next: ({currentUser: user}) => {
-        setCurrentUser(user)
-      },
-      error: setError,
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [activeWorkspace])
+  const handleSubmitRequest = useCallback(() => {
+    if (!client || !projectId) return
+    client
+      .request<AccessRequest | null>({
+        url: `/access/project/${projectId}/requests`,
+        method: 'post',
+        body: {note},
+      })
+      .then((request) => {
+        if (request) setHasPendingRequest(true)
+      })
+      .catch((err) => {
+        const statusCode = err && err.response && err.response.statusCode
+        // If we get a 403, that means the user
+        // is over their cross-project request limit
+        if (statusCode === 403) {
+          setHasTooManyRequests(true)
+        } else {
+          setError(true)
+        }
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [note, projectId, client])
 
   const providerTitle = getProviderTitle(currentUser?.provider)
   const providerHelp = providerTitle ? ` through ${providerTitle}` : ''
