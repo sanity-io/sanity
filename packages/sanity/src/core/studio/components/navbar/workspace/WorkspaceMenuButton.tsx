@@ -7,7 +7,6 @@ import {
   Menu,
   Text,
 } from '@sanity/ui'
-import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
@@ -21,7 +20,6 @@ const StyledMenu = styled(Menu)`
   max-width: 350px;
   min-width: 250px;
 `
-
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
   fallbackPlacements: ['bottom-end', 'bottom'],
@@ -30,9 +28,8 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 
 export function WorkspaceMenuButton() {
   const workspaces = useWorkspaces()
-  const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
+  const {activeWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
-  const {navigateUrl} = useRouter()
   const {t} = useTranslation()
 
   const multipleWorkspaces = workspaces.length > 1
@@ -77,24 +74,18 @@ export function WorkspaceMenuButton() {
                   ? 'logged-out'
                   : 'no-access'
 
-              const handleSelectWorkspace = () => {
-                if (state === 'logged-in' && workspace.name !== activeWorkspace.name) {
-                  setActiveWorkspace(workspace.name)
-                }
-
-                // Navigate to the base path of the workspace to authenticate
-                if (state === 'logged-out') {
-                  navigateUrl({path: workspace.basePath})
-                }
-              }
               const isSelected = workspace.name === activeWorkspace.name
+
+              // we have a temporary need to make a hard direct link to the workspace
+              // because of possibly shared context between workspaces. When this is resolved,
+              // we can remove this and use setActiveWorkspace instead
               return (
                 <MenuItem
+                  as="a"
+                  href={workspace.basePath}
                   badgeText={STATE_TITLES[state]}
                   iconRight={isSelected ? CheckmarkIcon : undefined}
                   key={workspace.name}
-                  // eslint-disable-next-line react/jsx-no-bind
-                  onClick={handleSelectWorkspace}
                   pressed={isSelected}
                   preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                   selected={isSelected}

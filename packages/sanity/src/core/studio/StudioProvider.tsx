@@ -1,5 +1,5 @@
 import {ToastProvider} from '@sanity/ui'
-import {type ReactNode} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import Refractor from 'react-refractor'
 import bash from 'refractor/lang/bash.js'
 import javascript from 'refractor/lang/javascript.js'
@@ -65,17 +65,20 @@ export function StudioProvider({
   // eslint-disable-next-line no-warning-comments
   /* TODO REMOVE VERSION PROVIDER ONCE STORES ARE SET UP */
 
-  const _children = (
-    <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
-      <StudioTelemetryProvider config={config}>
-        <LocaleProvider>
-          <PackageVersionStatusProvider>
-            <MaybeEnableErrorReporting errorReporter={errorReporter} />
-            <ResourceCacheProvider>{children}</ResourceCacheProvider>
-          </PackageVersionStatusProvider>
-        </LocaleProvider>
-      </StudioTelemetryProvider>
-    </WorkspaceLoader>
+  const _children = useMemo(
+    () => (
+      <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
+        <StudioTelemetryProvider config={config}>
+          <LocaleProvider>
+            <PackageVersionStatusProvider>
+              <MaybeEnableErrorReporting errorReporter={errorReporter} />
+              <ResourceCacheProvider>{children}</ResourceCacheProvider>
+            </PackageVersionStatusProvider>
+          </LocaleProvider>
+        </StudioTelemetryProvider>
+      </WorkspaceLoader>
+    ),
+    [children, config],
   )
 
   return (
@@ -83,7 +86,7 @@ export function StudioProvider({
       <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
         <ErrorLogger />
         <StudioErrorBoundary>
-          <WorkspacesProvider config={config} basePath={basePath}>
+          <WorkspacesProvider config={config} basePath={basePath} LoadingComponent={LoadingBlock}>
             <ActiveWorkspaceMatcher
               unstable_history={history}
               NotFoundComponent={NotFoundScreen}

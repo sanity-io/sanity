@@ -1,7 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {type ReactNode, useCallback, useEffect, useReducer} from 'react'
+import {type ReactNode, useCallback, useEffect, useMemo, useReducer} from 'react'
 import {TasksNavigationContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
@@ -161,18 +161,17 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
     }
   }, [searchParamsAsString, telemetry])
 
-  return (
-    <TasksNavigationContext.Provider
-      value={{
-        state,
-        setViewMode,
-        setActiveTab,
-        handleCloseTasks,
-        handleOpenTasks,
-        handleCopyLinkToTask,
-      }}
-    >
-      {children}
-    </TasksNavigationContext.Provider>
+  const value = useMemo(
+    () => ({
+      state,
+      setViewMode,
+      setActiveTab,
+      handleCloseTasks,
+      handleOpenTasks,
+      handleCopyLinkToTask,
+    }),
+    [handleCloseTasks, handleCopyLinkToTask, handleOpenTasks, setActiveTab, setViewMode, state],
   )
+
+  return <TasksNavigationContext.Provider value={value}>{children}</TasksNavigationContext.Provider>
 }

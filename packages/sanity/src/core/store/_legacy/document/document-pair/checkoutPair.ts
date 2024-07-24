@@ -14,6 +14,7 @@ import {
 } from '../buffered-doc'
 import {getPairListener, type ListenerEvent} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
+import {actionsApiClient} from './utils/actionsApiClient'
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -134,7 +135,7 @@ function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mut
     return commitMutations(client, mutationParams)
   }
 
-  return client.observable.action(toActions(idPair, mutationParams), {
+  return actionsApiClient(client).observable.action(toActions(idPair, mutationParams), {
     tag: 'document.commit',
     transactionId: mutationParams.transactionId,
   })

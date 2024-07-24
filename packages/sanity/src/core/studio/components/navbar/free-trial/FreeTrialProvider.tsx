@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {FreeTrialContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
@@ -102,9 +102,10 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
     [client, showOnLoad, data?.showOnLoad?.id],
   )
 
-  return (
-    <FreeTrialContext.Provider value={{data, showDialog, toggleShowContent, showOnLoad}}>
-      {children}
-    </FreeTrialContext.Provider>
+  const value = useMemo(
+    () => ({data, showDialog, toggleShowContent, showOnLoad}),
+    [data, showDialog, showOnLoad, toggleShowContent],
   )
+
+  return <FreeTrialContext.Provider value={value}>{children}</FreeTrialContext.Provider>
 }

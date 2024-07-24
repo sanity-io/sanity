@@ -1,33 +1,77 @@
-import {type Path} from '@sanity/types'
+import {memo, useContext} from 'react'
+import {
+  ChangeIndicatorTrackerContextGetSnapshot,
+  ChangeIndicatorTrackerContextStore,
+} from 'sanity/_singletons'
 
-import {createNoopTrackerScope, createTrackerScope} from '../components/react-track-elements'
-import {ENABLED} from './constants'
+import {
+  type Reported,
+  type ReporterHook,
+  type TrackerContextGetSnapshot,
+  useTrackerStore,
+  useTrackerStoreReporter,
+} from '../components/react-track-elements'
+import {type ChangeIndicatorTrackerContextValue} from './types'
 
-/** @internal */
-export interface TrackedChange {
-  element: HTMLElement
-  path: Path
-  isChanged: boolean
-  hasFocus: boolean
-  hasHover: boolean
-  hasRevertHover: boolean
-  zIndex: number
+export * from './types'
+
+function ChangeIndicatorsTrackerComponent(props: {children: React.ReactNode}) {
+  const {children} = props
+  const {store, snapshot} = useTrackerStore<ChangeIndicatorTrackerContextValue>()
+
+  return (
+    <ChangeIndicatorTrackerContextStore.Provider value={store}>
+      <ChangeIndicatorTrackerContextGetSnapshot.Provider value={snapshot}>
+        {children}
+      </ChangeIndicatorTrackerContextGetSnapshot.Provider>
+    </ChangeIndicatorTrackerContextStore.Provider>
+  )
 }
 
-/** @internal */
-export interface TrackedArea {
-  element: HTMLElement
+/**
+ * @internal
+ */
+export const ChangeIndicatorsTracker = memo(ChangeIndicatorsTrackerComponent)
+
+const EMPTY_ARRAY: Reported<ChangeIndicatorTrackerContextValue>[] = []
+
+/**
+ * @internal
+ */
+export function useChangeIndicatorsReportedValues(): TrackerContextGetSnapshot<ChangeIndicatorTrackerContextValue> {
+  const snapshot = useContext(ChangeIndicatorTrackerContextGetSnapshot)
+
+  if (snapshot === null) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      new Error(
+        'No context provided for reporter. Make sure that the component calling "useChangeIndicatorsReportedValues()", is wrapped inside a <ChangeIndicatorsTracker> element',
+      ),
+    )
+    return EMPTY_ARRAY
+  }
+
+  return snapshot
 }
 
-const trackerScope = ENABLED
-  ? createTrackerScope<TrackedChange | TrackedArea>()
-  : createNoopTrackerScope<TrackedChange | TrackedArea>()
+/**
+ * @internal
+ */
+export const useChangeIndicatorsReporter: ReporterHook<ChangeIndicatorTrackerContextValue> = (
+  id,
+  value,
+  isEqual?,
+) => {
+  const store = useContext(ChangeIndicatorTrackerContextStore)
 
-/** @internal */
-export const Tracker = trackerScope.Tracker
+  if (store === null) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      new Error(
+        'No context provided for reporter. Make sure that the component calling "useChangeIndicatorsReporter()", is wrapped inside a <ChangeIndicatorsTracker> element',
+      ),
+    )
+  }
 
-/** @internal */
-export const useReportedValues = trackerScope.useReportedValues
-
-/** @internal */
-export const useReporter = trackerScope.useReporter
+  useTrackerStoreReporter<ChangeIndicatorTrackerContextValue>(store, id, value, isEqual)
+}

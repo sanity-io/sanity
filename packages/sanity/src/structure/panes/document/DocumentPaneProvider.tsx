@@ -840,4 +840,4 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 })
 
-DocumentPaneProvider.displayName = 'DocumentPaneProvider'
+DocumentPaneProvider.displayName = 'Memo(DocumentPaneProvider)'

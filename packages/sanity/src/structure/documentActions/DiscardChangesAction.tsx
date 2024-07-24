@@ -60,29 +60,44 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     [handleConfirm, isConfirmDialogOpen, onComplete, t],
   )
 
-  if (!published || liveEdit) {
-    return null
-  }
+  return useMemo(() => {
+    if (!published || liveEdit) {
+      return null
+    }
 
-  if (!isPermissionsLoading && !permissions?.granted) {
+    if (!isPermissionsLoading && !permissions?.granted) {
+      return {
+        tone: 'critical',
+        icon: ResetIcon,
+        disabled: true,
+        label: t('action.discard-changes.label'),
+        title: (
+          <InsufficientPermissionsMessage context="discard-changes" currentUser={currentUser} />
+        ),
+      }
+    }
+
     return {
       tone: 'critical',
       icon: ResetIcon,
-      disabled: true,
+      disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
+      title: (discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || '',
       label: t('action.discard-changes.label'),
-      title: <InsufficientPermissionsMessage context="discard-changes" currentUser={currentUser} />,
+      onHandle: handle,
+      dialog,
     }
-  }
-
-  return {
-    tone: 'critical',
-    icon: ResetIcon,
-    disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
-    title: (discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || '',
-    label: t('action.discard-changes.label'),
-    onHandle: handle,
+  }, [
+    currentUser,
     dialog,
-  }
+    discardChanges.disabled,
+    handle,
+    isPermissionsLoading,
+    liveEdit,
+    permissions?.granted,
+    published,
+    t,
+  ])
 }
 
 DiscardChangesAction.action = 'discardChanges'
+DiscardChangesAction.displayName = 'DiscardChangesAction'

@@ -41,7 +41,7 @@ const ToolPreview = (props: Props) => {
         ref={ref}
       />
     ))
-    Component.displayName = 'LinkComponent'
+    Component.displayName = 'ForwardRef(LinkComponent)'
     return Component
   }, [schemaType, visibleDocument])
 

@@ -1,6 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {Box, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
-import {Fragment, type HTMLAttributes, useCallback, useMemo, useState} from 'react'
+import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Fragment, type HTMLAttributes, useCallback, useMemo, useRef, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
 import {Button, Popover} from '../../../../ui-components'
@@ -38,7 +38,7 @@ export function FieldChange(
   const ops = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
-  const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
   const {t} = useTranslation()
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -67,9 +67,10 @@ export function FieldChange(
     setRevertHovered(false)
   }, [])
 
-  const handleClickOutside = useCallback(() => setConfirmRevertOpen(false), [])
-
-  useClickOutside(handleClickOutside, [revertButtonElement])
+  useClickOutsideEvent(
+    () => setConfirmRevertOpen(false),
+    () => [popoverRef.current],
+  )
 
   const isArray = change.parentSchema?.jsonType === 'array'
 
@@ -79,6 +80,8 @@ export function FieldChange(
    * is only related to the item itself, not the array)
    */
   const fieldPath = isArray ? change.path.slice(0, -1) : change.path
+
+  const value = useMemo(() => ({path: change.path}), [change.path])
 
   const content = useMemo(
     () =>
@@ -99,7 +102,7 @@ export function FieldChange(
                 <ValueError error={change.error} />
               ) : (
                 <DiffErrorBoundary t={t}>
-                  <DiffContext.Provider value={{path: change.path}}>
+                  <DiffContext.Provider value={value}>
                     <DiffComponent
                       diff={change.diff}
                       schemaType={change.schemaType as ObjectSchemaType}
@@ -135,7 +138,7 @@ export function FieldChange(
                   padding={3}
                   portal
                   placement="left"
-                  ref={setRevertButtonElement}
+                  ref={popoverRef}
                 >
                   <RevertChangesButton
                     changeCount={1}
@@ -153,23 +156,24 @@ export function FieldChange(
         </Stack>
       ),
     [
-      change,
-      closeRevertChangesConfirmDialog,
-      confirmRevertOpen,
-      DiffComponent,
-      fieldPath,
-      FieldWrapper,
-      handleRevertButtonMouseEnter,
-      handleRevertButtonMouseLeave,
-      handleRevertChanges,
-      handleRevertChangesConfirm,
       hidden,
+      change,
+      FieldWrapper,
+      fieldPath,
+      revertHovered,
+      t,
+      value,
+      DiffComponent,
       isComparingCurrent,
       isPermissionsLoading,
       permissions?.granted,
+      closeRevertChangesConfirmDialog,
+      handleRevertChanges,
+      confirmRevertOpen,
+      handleRevertChangesConfirm,
+      handleRevertButtonMouseEnter,
+      handleRevertButtonMouseLeave,
       readOnly,
-      revertHovered,
-      t,
     ],
   )
 

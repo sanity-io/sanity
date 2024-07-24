@@ -1,17 +1,12 @@
 import {AvatarCounter, type AvatarPosition} from '@sanity/ui'
 import {sortBy, uniqBy} from 'lodash'
-import {memo, useContext, useId, useMemo, useRef} from 'react'
+import {memo, useCallback, useContext, useId, useMemo, useState} from 'react'
 import {FormFieldPresenceContext} from 'sanity/_singletons'
 
 import {UserAvatar} from '../components/userAvatar'
-import {
-  AVATAR_DISTANCE,
-  AVATAR_SIZE,
-  DEFAULT_MAX_AVATARS_FIELDS,
-  DISABLE_OVERLAY,
-} from './constants'
+import {AVATAR_DISTANCE, AVATAR_SIZE, DEFAULT_MAX_AVATARS_FIELDS} from './constants'
 import {FlexWrapper, InnerBox} from './FieldPresence.styled'
-import {useReporter} from './overlay/tracker'
+import {usePresenceReporter} from './overlay/tracker'
 import {PresenceTooltip} from './PresenceTooltip'
 import {type FormNodePresence} from './types'
 import {splitRight} from './utils'
@@ -92,35 +87,23 @@ export interface FieldPresenceProps {
 }
 
 /** @internal */
-export function FieldPresenceWithOverlay(props: FieldPresenceProps) {
+export function FieldPresence(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
-  const ref = useRef(null)
+  const [element, setElement] = useState<HTMLDivElement | null>(null)
 
-  useReporter(useId(), () => ({presence, element: ref.current!, maxAvatars: maxAvatars}))
+  const reporterId = useId()
+  const reporterGetSnapshot = useCallback(
+    () => ({presence, element, maxAvatars}),
+    [element, maxAvatars, presence],
+  )
+  usePresenceReporter(element ? reporterId : null, reporterGetSnapshot)
 
   const uniquePresence = useMemo(() => uniqBy(presence || [], (item) => item.user.id), [presence])
 
   return (
     <PresenceTooltip items={uniquePresence}>
-      <FlexWrapper ref={ref} style={{minHeight: AVATAR_SIZE, minWidth: AVATAR_SIZE}} />
+      <FlexWrapper ref={setElement} style={{minHeight: AVATAR_SIZE, minWidth: AVATAR_SIZE}} />
     </PresenceTooltip>
   )
 }
-
-/** @internal */
-export function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
-  const contextPresence = useContext(FormFieldPresenceContext)
-  const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
-
-  if (!presence.length) {
-    return null
-  }
-
-  return <FieldPresenceInner presence={presence} maxAvatars={maxAvatars} />
-}
-
-/** @internal */
-export const FieldPresence = DISABLE_OVERLAY
-  ? FieldPresenceWithoutOverlay
-  : FieldPresenceWithOverlay

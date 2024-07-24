@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react'
+import {memo, type ReactNode} from 'react'
 import {
   type DocumentBadgeDescription,
   type DocumentBadgeProps,
@@ -16,16 +16,19 @@ export interface RenderBadgeCollectionProps {
   badges: Badge<DocumentBadgeProps, DocumentBadgeDescription>[]
   badgeProps: EditStateFor
   children: (props: {states: DocumentBadgeDescription[]}) => ReactNode
-  onActionComplete?: () => void
 }
 
 /** @internal */
-export const RenderBadgeCollectionState = (props: RenderBadgeCollectionProps) => {
-  const {badges, children, badgeProps, ...rest} = props
+export const RenderBadgeCollectionState = memo((props: RenderBadgeCollectionProps) => {
+  const {badges, children, badgeProps} = props
 
   return (
-    <GetHookCollectionState {...rest} hooks={badges} args={badgeProps}>
+    <GetHookCollectionState<EditStateFor, DocumentBadgeDescription>
+      hooks={badges}
+      args={badgeProps}
+    >
       {children}
     </GetHookCollectionState>
   )
-}
+})
+RenderBadgeCollectionState.displayName = 'Memo(RenderBadgeCollectionState)'

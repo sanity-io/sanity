@@ -1,7 +1,21 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
-import {createElement, type ForwardedRef, forwardRef, memo, useMemo, useState} from 'react'
-import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
+import {
+  createElement,
+  type ForwardedRef,
+  forwardRef,
+  memo,
+  useCallback,
+  useDeferredValue,
+  useMemo,
+  useState,
+} from 'react'
+import {
+  type DocumentActionDescription,
+  useFieldActions,
+  useTimelineSelector,
+  useTranslation,
+} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {
@@ -12,6 +26,7 @@ import {
   usePane,
   usePaneRouter,
 } from '../../../../components'
+import {type _PaneMenuNode} from '../../../../components/pane/types'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {type PaneMenuItem} from '../../../../types'
@@ -103,6 +118,20 @@ export const DocumentPanelHeader = memo(
 
     const {t} = useTranslation(structureLocaleNamespace)
 
+    const renderPaneActions = useCallback<
+      (props: {states: DocumentActionDescription[]}) => React.ReactNode
+    >(
+      ({states}) => (
+        <DocumentPanelHeaderActionDialogDeferred
+          contextMenuNodes={contextMenuNodes}
+          setReferenceElement={setReferenceElement}
+          referenceElement={referenceElement}
+          states={states}
+        />
+      ),
+      [contextMenuNodes, referenceElement],
+    )
+
     return (
       <TooltipDelayGroupProvider>
         <PaneHeader
@@ -147,34 +176,7 @@ export const DocumentPanelHeader = memo(
                     actionProps={editState}
                     group="paneActions"
                   >
-                    {({states}) => (
-                      <ActionDialogWrapper
-                        actionStates={states}
-                        referenceElement={referenceElement}
-                      >
-                        {({handleAction}) => (
-                          <div ref={setReferenceElement}>
-                            <PaneContextMenuButton
-                              nodes={contextMenuNodes}
-                              key="context-menu"
-                              actionsNodes={
-                                states.length > 0
-                                  ? states.map((actionState, actionIndex) => (
-                                      <ActionMenuListItem
-                                        key={actionState.label}
-                                        actionState={actionState}
-                                        disabled={Boolean(actionState.disabled)}
-                                        index={actionIndex}
-                                        onAction={handleAction}
-                                      />
-                                    ))
-                                  : undefined
-                              }
-                            />
-                          </div>
-                        )}
-                      </ActionDialogWrapper>
-                    )}
+                    {renderPaneActions}
                   </RenderActionCollectionState>
                   <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
                 </>
@@ -217,3 +219,70 @@ export const DocumentPanelHeader = memo(
     )
   }),
 )
+
+const DocumentPanelHeaderActionDialogDeferred = memo(
+  function DocumentPanelHeaderActionDialogDeferred(props: {
+    states: DocumentActionDescription[]
+    setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
+    referenceElement: HTMLElement | null
+    contextMenuNodes: _PaneMenuNode[]
+  }) {
+    const {setReferenceElement, referenceElement, contextMenuNodes} = props
+    /**
+     * The purpose of this component is to allow deferring the rendering of document action hook states if the main thread becomes very busy.
+     * The `useDeferredValue` doesn't have an effect unless it's used to delay rendering a component that has `React.memo` to prevent unnecessary re-renders.
+     */
+    const states = useDeferredValue(props.states)
+
+    return (
+      <DocumentPanelHeaderActionDialog
+        setReferenceElement={setReferenceElement}
+        referenceElement={referenceElement}
+        contextMenuNodes={contextMenuNodes}
+        states={states}
+      />
+    )
+  },
+)
+
+const DocumentPanelHeaderActionDialog = memo(function DocumentPanelHeaderActionDialog(props: {
+  states: DocumentActionDescription[]
+  setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
+  referenceElement: HTMLElement | null
+  contextMenuNodes: _PaneMenuNode[]
+}) {
+  const {states, setReferenceElement, contextMenuNodes, referenceElement} = props
+
+  const renderActionDialog = useCallback<
+    ({handleAction}: {handleAction: (idx: number) => void}) => React.ReactNode
+  >(
+    ({handleAction}) => (
+      <div ref={setReferenceElement}>
+        <PaneContextMenuButton
+          nodes={contextMenuNodes}
+          key="context-menu"
+          actionsNodes={
+            states.length > 0
+              ? states.map((actionState, actionIndex) => (
+                  <ActionMenuListItem
+                    key={actionState.label}
+                    actionState={actionState}
+                    disabled={Boolean(actionState.disabled)}
+                    index={actionIndex}
+                    onAction={handleAction}
+                  />
+                ))
+              : undefined
+          }
+        />
+      </div>
+    ),
+    [contextMenuNodes, setReferenceElement, states],
+  )
+
+  return (
+    <ActionDialogWrapper actionStates={states} referenceElement={referenceElement}>
+      {renderActionDialog}
+    </ActionDialogWrapper>
+  )
+})

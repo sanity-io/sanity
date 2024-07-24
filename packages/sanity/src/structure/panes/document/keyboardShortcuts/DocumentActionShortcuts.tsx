@@ -28,7 +28,7 @@ export interface KeyboardShortcutResponderProps {
   states: DocumentActionDescription[]
 }
 
-function KeyboardShortcutResponder(
+const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
   props: KeyboardShortcutResponderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height'>,
 ) {
   const {
@@ -93,7 +93,7 @@ function KeyboardShortcutResponder(
       ),
     ],
   )
-}
+})
 
 export interface DocumentActionShortcutsProps {
   actionsBoxElement: HTMLElement | null
@@ -130,25 +130,32 @@ export const DocumentActionShortcuts = memo(
       [editState],
     )
 
+    const renderDocumentActionShortcuts = useCallback<
+      (props: {states: DocumentActionDescription[]}) => React.ReactNode
+    >(
+      ({states}) => (
+        <KeyboardShortcutResponder
+          {...rest}
+          activeIndex={activeIndex}
+          actionsBoxElement={actionsBoxElement}
+          as={as}
+          onActionStart={onActionStart}
+          states={states}
+        >
+          {children}
+        </KeyboardShortcutResponder>
+      ),
+      [actionsBoxElement, activeIndex, as, children, onActionStart, rest],
+    )
+
     if (!actionProps || !actions) return null
 
     return (
       <RenderActionCollectionState actionProps={actionProps} actions={actions}>
-        {({states}) => (
-          <KeyboardShortcutResponder
-            {...rest}
-            activeIndex={activeIndex}
-            actionsBoxElement={actionsBoxElement}
-            as={as}
-            onActionStart={onActionStart}
-            states={states}
-          >
-            {children}
-          </KeyboardShortcutResponder>
-        )}
+        {renderDocumentActionShortcuts}
       </RenderActionCollectionState>
     )
   },
 )
 
-DocumentActionShortcuts.displayName = 'DocumentActionShortcuts'
+DocumentActionShortcuts.displayName = 'Memo(DocumentActionShortcuts)'

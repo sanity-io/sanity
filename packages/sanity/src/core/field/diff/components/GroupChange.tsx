@@ -1,10 +1,11 @@
-import {Box, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
+import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
 import {
   type HTMLAttributes,
   type ReactElement,
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {DiffContext} from 'sanity/_singletons'
@@ -48,7 +49,7 @@ export function GroupChange(
 
   const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
-  const [revertPopoverElement, setRevertPopoverElement] = useState<HTMLDivElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
@@ -69,7 +70,10 @@ export function GroupChange(
     setConfirmRevertOpen(false)
   }, [])
 
-  useClickOutside(() => setConfirmRevertOpen(false), [revertPopoverElement])
+  useClickOutsideEvent(
+    () => setConfirmRevertOpen(false),
+    () => [popoverRef.current],
+  )
 
   const content = useMemo(
     () =>
@@ -118,7 +122,7 @@ export function GroupChange(
               portal
               placement="left"
               open={confirmRevertOpen}
-              ref={setRevertPopoverElement}
+              ref={popoverRef}
             >
               <Box>
                 <RevertChangesButton

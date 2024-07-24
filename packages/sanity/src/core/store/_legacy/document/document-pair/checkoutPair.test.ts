@@ -19,6 +19,7 @@ const client = {
     action: mockedActionRequest,
   },
   dataRequest: mockedDataRequest,
+  withConfig: jest.fn(() => client),
 }
 
 const idPair = {publishedId: 'publishedId', draftId: 'draftId'}

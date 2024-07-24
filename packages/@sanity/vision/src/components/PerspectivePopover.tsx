@@ -1,6 +1,6 @@
 import {HelpCircleIcon} from '@sanity/icons'
-import {Badge, Button, Card, Inline, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {Badge, Button, Card, Inline, Popover, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {useCallback, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../i18n'
@@ -8,15 +8,17 @@ import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePo
 
 export function PerspectivePopover() {
   const [open, setOpen] = useState(false)
-  const [buttonEl, setButtonEl] = useState<HTMLElement | null>(null)
-  const [popoverEl, setPopoverEl] = useState<HTMLElement | null>(null)
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const handleClick = useCallback(() => setOpen((o) => !o), [])
-  const handleClickOutside = useCallback(() => setOpen(false), [])
 
   const {t} = useTranslation(visionLocaleNamespace)
 
-  useClickOutside(handleClickOutside, [buttonEl, popoverEl])
+  useClickOutsideEvent(
+    () => setOpen(false),
+    () => [buttonRef.current, popoverRef.current],
+  )
 
   return (
     <Popover
@@ -45,7 +47,7 @@ export function PerspectivePopover() {
       placement="bottom-start"
       portal
       padding={3}
-      ref={setPopoverEl}
+      ref={popoverRef}
       open={open}
     >
       <Button
@@ -54,7 +56,7 @@ export function PerspectivePopover() {
         padding={2}
         tone="primary"
         fontSize={1}
-        ref={setButtonEl}
+        ref={buttonRef}
         onClick={handleClick}
         selected={open}
       />

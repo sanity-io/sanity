@@ -10,7 +10,7 @@ export function useReferenceItemRef(): ReferenceItemRef {
     // The input may not always be wrapped in a reference item.
     // For example in the case of a singular reference input.
     // To prevent the function from crashing, default values are returned in such cases.
-    return {menuRef: {current: null}, containerRef: {current: null}}
+    return {menuRef: {current: null}, menuButtonRef: {current: null}, containerRef: {current: null}}
   }
   return ref
 }

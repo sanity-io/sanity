@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import {VirtualizerScrollInstanceContext} from 'sanity/_singletons'
 
 import {type VirtualizerScrollInstance} from './useVirtualizerScrollInstance'
@@ -17,10 +17,13 @@ interface VirtualizerScrollInstanceProviderProps extends VirtualizerScrollInstan
 export function VirtualizerScrollInstanceProvider(props: VirtualizerScrollInstanceProviderProps) {
   const {scrollElement, containerElement} = props
 
+  const value = useMemo(
+    () => ({scrollElement, containerElement: containerElement}),
+    [containerElement, scrollElement],
+  )
+
   return (
-    <VirtualizerScrollInstanceContext.Provider
-      value={{scrollElement, containerElement: containerElement}}
-    >
+    <VirtualizerScrollInstanceContext.Provider value={value}>
       {props.children}
     </VirtualizerScrollInstanceContext.Provider>
   )

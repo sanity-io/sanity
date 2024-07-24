@@ -1,12 +1,11 @@
 /* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
-import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useMemo, useState} from 'react'
+import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {
   BundleActions,
   type DocumentActionComponent,
   type DocumentActionDescription,
-  Hotkeys,
   isBundleDocument,
   LATEST,
   shouldArrayDialogOpen,
@@ -28,7 +27,9 @@ interface DocumentStatusBarActionsInnerProps {
   states: DocumentActionDescription[]
 }
 
-function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps) {
+const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInner(
+  props: DocumentStatusBarActionsInnerProps,
+) {
   const {disabled, showMenu, states} = props
   const {__internal_tasks, schemaType, openPath, documentId, documentType} = useDocumentPane()
 
@@ -124,7 +125,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
       )}
     </Flex>
   )
-}
+})
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
   const {actions: allActions, connectionState, documentId, editState} = useDocumentPane()
@@ -140,6 +141,24 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
     [allActions],
   )
 
+  const renderDocumentStatusBarActions = useCallback<
+    (props: {states: DocumentActionDescription[]}) => React.ReactNode
+  >(
+    ({states}) => (
+      <DocumentStatusBarActionsInner
+        disabled={connectionState !== 'connected'}
+        // isMenuOpen={isMenuOpen}
+        // onMenuOpen={handleMenuOpen}
+        // onMenuClose={handleMenuClose}
+        showMenu={actions.length > 1}
+        states={states}
+        // Use document ID as key to make sure that the actions state is reset when the document changes
+        key={documentId}
+      />
+    ),
+    [actions.length, connectionState, documentId],
+  )
+
   if (actions.length === 0 || !editState) {
     return null
   }
@@ -152,18 +171,7 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
       actionProps={editState}
       group="default"
     >
-      {({states}) => (
-        <DocumentStatusBarActionsInner
-          disabled={connectionState !== 'connected'}
-          // isMenuOpen={isMenuOpen}
-          // onMenuOpen={handleMenuOpen}
-          // onMenuClose={handleMenuClose}
-          showMenu={actions.length > 1}
-          states={states}
-          // Use document ID as key to make sure that the actions state is reset when the document changes
-          key={documentId}
-        />
-      )}
+      {renderDocumentStatusBarActions}
     </RenderActionCollectionState>
   )
 })
@@ -181,19 +189,26 @@ export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
   // If multiple `restore` actions are defined, ensure only the final one is used.
   const historyActions = useMemo(() => (actions ?? []).filter(isRestoreAction).slice(-1), [actions])
 
+  const renderDocumentStatusBarActions = useCallback<
+    (props: {states: DocumentActionDescription[]}) => React.ReactNode
+  >(
+    ({states}) => (
+      <DocumentStatusBarActionsInner
+        disabled={connectionState !== 'connected' || Boolean(disabled)}
+        showMenu={false}
+        states={states}
+      />
+    ),
+    [connectionState, disabled],
+  )
+
   return (
     <RenderActionCollectionState
       actions={historyActions}
       actionProps={actionProps as any}
       group="default"
     >
-      {({states}) => (
-        <DocumentStatusBarActionsInner
-          disabled={connectionState !== 'connected' || Boolean(disabled)}
-          showMenu={false}
-          states={states}
-        />
-      )}
+      {renderDocumentStatusBarActions}
     </RenderActionCollectionState>
   )
 })

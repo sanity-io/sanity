@@ -20,6 +20,7 @@
 /router.js
 /structure.js
 /_singletons.js
+/_createContext.js
 
 # Playwright-ct artifacts
 /playwright-ct/report

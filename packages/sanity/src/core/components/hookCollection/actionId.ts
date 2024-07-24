@@ -1,11 +1,11 @@
-import {type ActionHook} from './types'
+import {type HookCollectionActionHook} from './types'
 
-const actionIds = new WeakMap<ActionHook<any, any>, string>()
+const actionIds = new WeakMap<HookCollectionActionHook<any, any>, string>()
 
 let counter = 0
 
 /** @internal */
-export function getHookId<T, K>(actionHook: ActionHook<T, K>): string {
+export function getHookId<T, K>(actionHook: HookCollectionActionHook<T, K>): string {
   const cachedId = actionIds.get(actionHook)
 
   if (cachedId) return cachedId

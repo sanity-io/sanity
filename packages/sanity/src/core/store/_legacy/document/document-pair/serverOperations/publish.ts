@@ -1,4 +1,5 @@
 import {type OperationImpl} from '../operations/index'
+import {actionsApiClient} from '../utils/actionsApiClient'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 type DisabledReason = 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES'
@@ -22,7 +23,7 @@ export const publish: OperationImpl<[], DisabledReason> = {
     // TODO: Should be dynamic
     const draftIndex = 0
 
-    return client.observable.action(
+    return actionsApiClient(client).observable.action(
       {
         actionType: 'sanity.action.document.publish',
         draftId: idPair.draftIds[draftIndex],

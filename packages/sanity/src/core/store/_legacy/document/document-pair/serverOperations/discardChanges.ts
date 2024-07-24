@@ -1,4 +1,5 @@
 import {type OperationImpl} from '../operations/types'
+import {actionsApiClient} from '../utils/actionsApiClient'
 
 type DisabledReason = 'NO_CHANGES' | 'NOT_PUBLISHED'
 
@@ -13,7 +14,7 @@ export const discardChanges: OperationImpl<[], DisabledReason> = {
     return false
   },
   execute: ({client, idPair}) => {
-    return client.observable.action(
+    return actionsApiClient(client).observable.action(
       idPair.draftIds.map((draftId) => ({
         actionType: 'sanity.action.document.discard',
         draftId,
