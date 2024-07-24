@@ -5,10 +5,18 @@ import {route, RouterProvider} from 'sanity/router'
 import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {useListener} from '../../../../hooks/useListener'
 import {useBundles} from '../../../../store/bundles'
+import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {ReleaseDetail} from '../ReleaseDetail'
+import {useBundleDocumentsValidation} from '../useBundleDocumentsValidation'
 
 jest.mock('../../../../store/bundles', () => ({
   useBundles: jest.fn().mockReturnValue({data: [], loading: false}),
+}))
+
+jest.mock('../../../../store/bundles/useBundleOperations', () => ({
+  useBundleOperations: jest.fn().mockReturnValue({
+    publishBundle: jest.fn(),
+  }),
 }))
 
 jest.mock('../../../../hooks/useListener', () => ({
@@ -35,8 +43,15 @@ jest.mock('../documentTable/useReleaseHistory', () => ({
   }),
 }))
 
+jest.mock('../useBundleDocumentsValidation', () => ({
+  useBundleDocumentsValidation: jest.fn().mockReturnValue({}),
+}))
+
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 const mockUseListener = useListener as jest.Mock<typeof useListener>
+const mockUseBundleDocumentsValidation = useBundleDocumentsValidation as jest.Mock<
+  typeof useBundleDocumentsValidation
+>
 const mockRouterNavigate = jest.fn()
 
 const renderTest = async () => {
@@ -67,14 +82,6 @@ const publishAgnosticTests = () => {
   it('should default to showing summary screen', () => {
     expect(screen.getByText('Summary').closest('button')).toHaveAttribute('data-selected', '')
   })
-
-  it('should navigate to release review changes screen', () => {
-    expect(screen.getByText('Review changes').closest('button')).not.toBeDisabled()
-    fireEvent.click(screen.getByText('Review changes'))
-    expect(mockRouterNavigate).toHaveBeenCalledWith({
-      path: '/test-bundle-slug?screen=review',
-    })
-  })
 }
 
 describe('ReleaseDetail', () => {
@@ -88,127 +95,261 @@ describe('ReleaseDetail', () => {
       screen.getByTestId('mocked-loading-block')
     })
 
-    describe('when loaded bundles but still loading bundle documents', () => {
-      beforeEach(async () => {
-        mockUseBundles.mockReturnValue({data: [], loading: false, dispatch: jest.fn()})
-        mockUseListener.mockReturnValue({
-          documents: [],
-          loading: true,
-          error: null,
-          dispatch: jest.fn(),
-        })
-        await renderTest()
-      })
-
-      it('should show loading spinner', () => {
-        screen.getByTestId('mocked-loading-block')
-      })
+    it('does not show the rest of the screen ui', () => {
+      expect(screen.queryByText('Publish all')).toBeNull()
+      expect(screen.queryByText('Summary')).toBeNull()
+      expect(screen.queryByText('Review changes')).toBeNull()
+      expect(screen.queryByLabelText('Release menu')).toBeNull()
     })
   })
 
-  describe('after bundles have loaded', () => {
-    describe('with unpublished release', () => {
-      beforeEach(async () => {
-        mockUseBundles.mockReturnValue({
-          data: [
-            {
-              title: 'Test bundle',
-              publishedAt: undefined,
-              archivedAt: undefined,
-              _id: 'test-id',
-              _createdAt: new Date().toISOString(),
-              _type: 'bundle',
-              slug: 'test-bundle-slug',
-              hue: 'blue',
-              icon: 'string',
-              authorId: 'author-id',
-              _updatedAt: new Date().toISOString(),
-              _rev: 'abc',
-            },
-          ],
-          loading: false,
-          dispatch: jest.fn(),
-        })
-        mockUseListener.mockReturnValue({
-          documents: [
-            {
-              _id: 'test-id',
-              _type: 'document',
-              _rev: 'abc',
-              _createdAt: new Date().toISOString(),
-              _updatedAt: new Date().toISOString(),
-            },
-          ],
-          loading: false,
-          dispatch: jest.fn(),
-          error: null,
-        })
-
-        await renderTest()
+  describe('when loaded bundles but still loading bundle documents', () => {
+    beforeEach(async () => {
+      mockUseBundles.mockReturnValue({
+        data: [
+          {
+            title: 'Test bundle',
+            publishedAt: undefined,
+            archivedAt: undefined,
+            _id: 'test-id',
+            _createdAt: new Date().toISOString(),
+            _type: 'bundle',
+            slug: 'test-bundle-slug',
+            hue: 'blue',
+            icon: 'string',
+            authorId: 'author-id',
+            _updatedAt: new Date().toISOString(),
+            _rev: 'abc',
+          },
+        ],
+        loading: false,
+        dispatch: jest.fn(),
       })
-
-      publishAgnosticTests()
-
-      it('should show publish button when release not published', () => {
-        expect(screen.getByText('Publish all').closest('button')).not.toBeDisabled()
+      mockUseListener.mockReturnValue({
+        documents: [],
+        loading: true,
+        error: null,
+        dispatch: jest.fn(),
       })
+      await renderTest()
+    })
 
+    it('should show loading spinner', () => {
+      screen.getByTestId('mocked-loading-block')
+    })
+
+    it('should show the header', () => {
+      screen.getByText('Test bundle')
+      screen.getByText('Summary')
+      expect(screen.getByText('Review changes').closest('button')).toBeDisabled()
+      screen.getByLabelText('Release menu')
+      expect(screen.getByText('Publish all').closest('button')).toBeDisabled()
+    })
+  })
+})
+
+describe('after bundles have loaded', () => {
+  describe('with unpublished release', () => {
+    const currentDate = new Date().toISOString()
+    beforeEach(async () => {
+      mockUseBundles.mockReturnValue({
+        data: [
+          {
+            title: 'Test bundle',
+            publishedAt: undefined,
+            archivedAt: undefined,
+            _id: 'test-id',
+            _createdAt: currentDate,
+            _type: 'bundle',
+            slug: 'test-bundle-slug',
+            hue: 'blue',
+            icon: 'string',
+            authorId: 'author-id',
+            _updatedAt: currentDate,
+            _rev: 'abc',
+          },
+        ],
+        loading: false,
+        dispatch: jest.fn(),
+      })
+      mockUseListener.mockReturnValue({
+        documents: [
+          {
+            _id: 'test-id',
+            _type: 'document',
+            _rev: 'abc',
+            _createdAt: currentDate,
+            _updatedAt: currentDate,
+          },
+        ],
+        loading: false,
+        dispatch: jest.fn(),
+        error: null,
+      })
+    })
+
+    const loadedBundleAndDocumentsTests = () => {
       it('should allow for the release to be archived', () => {
         fireEvent.click(screen.getByLabelText('Release menu'))
         screen.getByText('Archive')
       })
-    })
 
-    describe('with published release', () => {
+      it('should navigate to release review changes screen', () => {
+        expect(screen.getByText('Review changes').closest('button')).not.toBeDisabled()
+        fireEvent.click(screen.getByText('Review changes'))
+        expect(mockRouterNavigate).toHaveBeenCalledWith({
+          path: '/test-bundle-slug?screen=review',
+        })
+      })
+    }
+
+    describe('with pending document validation', () => {
       beforeEach(async () => {
-        mockUseBundles.mockReturnValue({
-          data: [
-            {
-              title: 'Test bundle',
-              publishedAt: new Date().toISOString(),
-              archivedAt: new Date().toISOString(),
-              _id: 'test-id',
-              _createdAt: new Date().toISOString(),
-              _type: 'bundle',
-              slug: 'test-bundle-slug',
-              hue: 'blue',
-              icon: 'string',
-              authorId: 'author-id',
-              _updatedAt: new Date().toISOString(),
-              _rev: 'abc',
-            },
-          ],
-          loading: false,
-          dispatch: jest.fn(),
+        mockUseBundleDocumentsValidation.mockReturnValue({
+          'test-bundle-slug': {
+            documentId: '123',
+            hasError: false,
+            isValidating: true,
+            validation: [],
+          },
         })
-        mockUseListener.mockReturnValue({
-          documents: [
-            {
-              _id: 'test-id',
-              _type: 'document',
-              _rev: 'abc',
-              _createdAt: new Date().toISOString(),
-              _updatedAt: new Date().toISOString(),
-            },
-          ],
-          loading: false,
-          dispatch: jest.fn(),
-          error: null,
-        })
-
         await renderTest()
       })
 
       publishAgnosticTests()
+      loadedBundleAndDocumentsTests()
 
-      it('should not show the publish button', () => {
-        expect(screen.queryByText('Publish all')).toBeNull()
+      it('should disable publish all button', () => {
+        expect(screen.getByText('Publish all').closest('button')).toBeDisabled()
+      })
+    })
+
+    describe('with passing document validation', () => {
+      beforeEach(async () => {
+        mockUseBundleDocumentsValidation.mockReturnValue({
+          'test-bundle-slug': {
+            documentId: '123',
+            hasError: false,
+            isValidating: false,
+            validation: [],
+          },
+        })
+        await renderTest()
       })
 
-      it('should allow for the release to be unarchived', () => {
-        fireEvent.click(screen.getByLabelText('Release menu'))
-        screen.getByText('Unarchive')
+      publishAgnosticTests()
+      loadedBundleAndDocumentsTests()
+
+      it('should show publish all button when release not published', () => {
+        expect(screen.getByText('Publish all').closest('button')).not.toBeDisabled()
       })
+
+      it('should require confirmation to publish', () => {
+        fireEvent.click(screen.getByText('Publish all'))
+        screen.getByText('Are you sure you want to publish the release and all document versions?')
+        fireEvent.click(screen.getByText('Cancel'))
+
+        expect(screen.getByText('Publish all').closest('button')).not.toBeDisabled()
+      })
+
+      it('should perform publish', () => {
+        fireEvent.click(screen.getByText('Publish all'))
+        fireEvent.click(screen.getByText('Publish'))
+
+        expect(useBundleOperations().publishBundle).toHaveBeenCalledWith('test-id', [
+          {
+            _createdAt: currentDate,
+            _id: 'test-id',
+            _rev: 'abc',
+            _type: 'document',
+            _updatedAt: currentDate,
+          },
+        ])
+      })
+    })
+
+    describe('with failing document validation', () => {
+      beforeEach(async () => {
+        mockUseBundleDocumentsValidation.mockReturnValue({
+          'test-bundle-slug': {
+            documentId: '123',
+            hasError: true,
+            isValidating: false,
+            validation: [
+              {
+                message: 'title validation message',
+                level: 'error',
+                path: ['title'],
+              },
+            ],
+          },
+        })
+        await renderTest()
+      })
+
+      publishAgnosticTests()
+      loadedBundleAndDocumentsTests()
+
+      it('should disable publish all button', () => {
+        expect(screen.getByText('Publish all').closest('button')).toBeDisabled()
+        fireEvent.mouseOver(screen.getByText('Publish all'))
+      })
+    })
+  })
+
+  describe('with published release', () => {
+    beforeEach(async () => {
+      mockUseBundles.mockReturnValue({
+        data: [
+          {
+            title: 'Test bundle',
+            publishedAt: new Date().toISOString(),
+            archivedAt: new Date().toISOString(),
+            _id: 'test-id',
+            _createdAt: new Date().toISOString(),
+            _type: 'bundle',
+            slug: 'test-bundle-slug',
+            hue: 'blue',
+            icon: 'string',
+            authorId: 'author-id',
+            _updatedAt: new Date().toISOString(),
+            _rev: 'abc',
+          },
+        ],
+        loading: false,
+        dispatch: jest.fn(),
+      })
+      mockUseListener.mockReturnValue({
+        documents: [
+          {
+            _id: 'test-id',
+            _type: 'document',
+            _rev: 'abc',
+            _createdAt: new Date().toISOString(),
+            _updatedAt: new Date().toISOString(),
+          },
+        ],
+        loading: false,
+        dispatch: jest.fn(),
+        error: null,
+      })
+
+      await renderTest()
+    })
+
+    publishAgnosticTests()
+
+    it('should not show the publish button', () => {
+      expect(screen.queryByText('Publish all')).toBeNull()
+    })
+
+    it('should allow for the release to be unarchived', () => {
+      fireEvent.click(screen.getByLabelText('Release menu'))
+      screen.getByText('Unarchive')
+    })
+
+    it('should not show the review changes button', () => {
+      expect(screen.queryByText('Review changes')).toBeNull()
     })
   })
 })

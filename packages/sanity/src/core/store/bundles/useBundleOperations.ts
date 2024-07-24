@@ -1,7 +1,8 @@
 import {type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
+import {omit} from 'lodash'
 import {useCallback} from 'react'
-import {useCurrentUser} from 'sanity'
+import {getPublishedId, useCurrentUser} from 'sanity'
 
 import {useClient} from '../../hooks'
 import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
@@ -69,9 +70,33 @@ export function useBundleOperations() {
     [client],
   )
 
+  const handlePublishBundle = useCallback(
+    async (bundleId: string, bundleDocuments: SanityDocument[]) => {
+      if (!client) return null
+
+      const transaction = studioClient.transaction()
+      bundleDocuments.forEach((document) => {
+        const transactionDocument = omit(document, ['_version']) as SanityDocument
+
+        // update the published document with the bundle version
+        transaction.createOrReplace({
+          ...transactionDocument,
+          _id: getPublishedId(document._id, true),
+        })
+      })
+
+      // returned transactionId is the _rev for the updated documents
+      await transaction.commit()
+      const publishedAt = new Date().toISOString()
+      return await client.patch(bundleId).set({publishedAt, archivedAt: publishedAt}).commit()
+    },
+    [client, studioClient],
+  )
+
   return {
     createBundle: handleCreateBundle,
     deleteBundle: handleDeleteBundle,
     updateBundle: handleUpdateBundle,
+    publishBundle: handlePublishBundle,
   }
 }
