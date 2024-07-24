@@ -87,9 +87,17 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
       }
 
       if (event.type === 'mutation') {
+        if (event.transition === 'disappear') {
+          const removedDocumentId = getPublishedId(event.documentId)
+          const updatedBundles = state?.filter(
+            (b) => b._id !== removedDocumentId,
+          ) as BundleDocument[]
+          setState(updatedBundles)
+        }
         const prev = event.result
         const exists = state?.find((b) => b.slug === getBundleSlug(prev?._id || ''))
 
+        if (!prev) return
         if (exists) {
           const updatedBundles = state?.map((b: BundleDocument) =>
             exists ? prev : b,
@@ -111,7 +119,6 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
       sub?.unsubscribe()
     }
   }, [handleListenerEvent, listener$, initialFetch])
-
   return {
     data: state,
     error,
