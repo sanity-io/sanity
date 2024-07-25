@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock'
