@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Box, Button, Card, Dialog, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {
   type CurrentUser,
@@ -27,9 +27,11 @@ export function RequestAccessScreen() {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
   const [client, setClient] = useState<SanityClient | undefined>()
   const [projectId, setProjectId] = useState<string | undefined>()
+  const toast = useToast()
 
   const [error, setError] = useState<unknown>(null)
   const [loading, setLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [hasPendingRequest, setHasPendingRequest] = useState<boolean | undefined>()
   const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean | undefined>()
@@ -55,7 +57,7 @@ export function RequestAccessScreen() {
     }
   }, [activeWorkspace])
 
-  // Get the active workspace client
+  // Get the active workspace client to use `request` config
   useEffect(() => {
     const subscription = activeWorkspace.auth.state.subscribe({
       next: ({client: sanityClient}) => {
@@ -103,6 +105,7 @@ export function RequestAccessScreen() {
 
   const handleSubmitRequest = useCallback(() => {
     if (!client || !projectId) return
+    setIsSubmitting(true)
     client
       .request<AccessRequest | null>({
         url: `/access/project/${projectId}/requests`,
@@ -110,6 +113,7 @@ export function RequestAccessScreen() {
         body: {note},
       })
       .then((request) => {
+        toast.push({title: 'Access requested', status: 'success'})
         if (request) setHasPendingRequest(true)
       })
       .catch((err) => {
@@ -119,18 +123,22 @@ export function RequestAccessScreen() {
         if (statusCode === 403) {
           setHasTooManyRequests(true)
         } else {
-          setError(true)
+          toast.push({
+            title: 'There was a problem submitting your request. Please try again later.',
+            status: 'error',
+          })
         }
       })
       .finally(() => {
-        setLoading(false)
+        setIsSubmitting(false)
       })
-  }, [note, projectId, client])
+  }, [note, projectId, client, toast])
 
   const providerTitle = getProviderTitle(currentUser?.provider)
   const providerHelp = providerTitle ? ` through ${providerTitle}` : ''
 
   if (loading) return <LoadingBlock />
+  // Fallback to the old not authorized screen if error
   if (error) return <NotAuthenticatedScreen />
   return (
     <Card height="fill">
@@ -167,11 +175,15 @@ export function RequestAccessScreen() {
                   You can request access to collaborate on this project. If you'd like, you can
                   include a note.
                 </Text>
-                <TextInput onChange={(e) => setNote(e.currentTarget.value)} value={note} />
+                <TextInput
+                  disabled={isSubmitting}
+                  onChange={(e) => setNote(e.currentTarget.value)}
+                  value={note}
+                />
               </>
             )}
           </Stack>
-          <Flex align={'center'} justify={'space-between'} padding={3}>
+          <Flex align={'center'} justify={'space-between'} paddingY={3} paddingX={4}>
             <Button
               mode="bleed"
               padding={2}
@@ -182,8 +194,9 @@ export function RequestAccessScreen() {
             <Button
               mode="default"
               padding={3}
-              text={'Request access'}
-              disabled={hasTooManyRequests || hasPendingRequest}
+              text={hasPendingRequest ? 'Request sent' : 'Request access'}
+              disabled={hasTooManyRequests || hasPendingRequest || isSubmitting}
+              loading={isSubmitting}
               tone="default"
               onClick={handleSubmitRequest}
             />
