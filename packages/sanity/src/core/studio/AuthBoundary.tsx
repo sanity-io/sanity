@@ -56,7 +56,7 @@ export function AuthBoundary({
     // If using unverified `sanity` login provider, send them
     // to basic NotAuthorized component.
     if (loginProvider === 'sanity') return <NotAuthenticatedComponent />
-    // Otherwise, send use to RequestAccessDialog
+    // Otherwise, send user to request access screen
     return <RequestAccessScreen />
   }
 
