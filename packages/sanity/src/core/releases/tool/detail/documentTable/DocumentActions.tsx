@@ -39,19 +39,21 @@ export function DocumentActions({
   }
   return (
     <>
-      <MenuButton
-        id="document-actions"
-        button={<ContextMenuButton />}
-        menu={
-          <Menu>
-            <MenuItem
-              text="Discard version"
-              icon={CloseIcon}
-              onClick={() => setShowDiscardDialog(true)}
-            />
-          </Menu>
-        }
-      />
+      <Card tone="default" display="flex">
+        <MenuButton
+          id="document-actions"
+          button={<ContextMenuButton />}
+          menu={
+            <Menu>
+              <MenuItem
+                text="Discard version"
+                icon={CloseIcon}
+                onClick={() => setShowDiscardDialog(true)}
+              />
+            </Menu>
+          }
+        />
+      </Card>
       {showDiscardDialog && (
         <Dialog
           id="discard-version-dialog"

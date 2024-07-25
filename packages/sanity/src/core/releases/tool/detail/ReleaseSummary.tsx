@@ -158,7 +158,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             />
 
             {/* Published */}
-            {!release.archivedAt && (
+            {
               <Chip
                 avatar={
                   release.publishedBy ? <UserAvatar size={0} user={release.publishedBy} /> : null
@@ -173,7 +173,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
                   )
                 }
               />
-            )}
+            }
 
             {/* Contributors */}
             <Box padding={1}>
