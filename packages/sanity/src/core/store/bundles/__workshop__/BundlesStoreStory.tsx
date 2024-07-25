@@ -9,7 +9,7 @@ import {type BundleDocument} from '../types'
 import {useBundleOperations} from '../useBundleOperations'
 import {useBundles} from '../useBundles'
 
-const WithAddonDatasetProvider = <P extends object>(Component: ComponentType<P>): React.FC<P> => {
+const withAddonDatasetProvider = <P extends object>(Component: ComponentType<P>): React.FC<P> => {
   const WrappedComponent: React.FC<P> = (props) => (
     <AddonDatasetProvider>
       <Component {...props} />
@@ -163,4 +163,4 @@ const BundlesStoreStory = () => {
   )
 }
 
-export default WithAddonDatasetProvider(BundlesStoreStory)
+export default withAddonDatasetProvider(BundlesStoreStory)
