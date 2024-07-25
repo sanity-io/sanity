@@ -79,7 +79,7 @@ export function RequestAccessScreen() {
               // Access request is still pending
               request.status === 'pending' &&
               // Access request is less than 2 weeks old
-              new Date(request.createdAt).getTime() < Date.now() - 2 * 1000 * 60 * 60 * 24 * 7,
+              new Date(request.createdAt).getTime() > Date.now() - 2 * 1000 * 60 * 60 * 24 * 7,
           )
           if (pendingRequests.length) setHasPendingRequest(true)
         }
