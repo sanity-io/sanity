@@ -121,7 +121,7 @@ export function prepareConfig(
     const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
       return {
         ...source,
-        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)],
+        plugins: [...getDefaultPlugins(defaultPluginsOptions, plugins), ...(plugins ?? [])],
       }
     })
 

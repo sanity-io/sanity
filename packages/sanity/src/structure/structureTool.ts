@@ -84,9 +84,20 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
     name: 'sanity/structure',
     document: {
       actions: (prevActions) => {
+        const DEFAULT_ACTIONS = ['schedule', 'taskCreate']
+        // Prev actions contain user custom actions and the default plugin actions, we want the default plugins actions to go at the end.
+        const prevActionsWithoutDefault = prevActions.filter((action) =>
+          action.action ? !DEFAULT_ACTIONS.includes(action.action) : true,
+        )
+        const defaultActions = prevActions.filter((action) =>
+          action.action ? DEFAULT_ACTIONS.includes(action.action) : false,
+        )
+
         // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the document actions already exist in the Studio config
-        return Array.from(new Set([...prevActions, ...documentActions]))
+        return Array.from(
+          new Set([...prevActionsWithoutDefault, ...documentActions, ...defaultActions]),
+        )
       },
       badges: (prevBadges) => {
         // NOTE: since it's possible to have several structure tools in one Studio,

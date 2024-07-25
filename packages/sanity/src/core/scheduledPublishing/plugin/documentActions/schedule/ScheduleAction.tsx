@@ -164,3 +164,5 @@ export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescri
     title: tooltip && <Box style={{maxWidth: '315px'}}>{tooltip}</Box>,
   }
 }
+
+ScheduleAction.action = 'schedule'

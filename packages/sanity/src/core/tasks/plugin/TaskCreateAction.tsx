@@ -35,3 +35,4 @@ export function TaskCreateAction(): DocumentActionDescription | null {
   }, [enabled, handleCreateTaskFromDocument, t])
 }
 TaskCreateAction.displayName = 'TaskCreateAction'
+TaskCreateAction.action = 'taskCreate'
