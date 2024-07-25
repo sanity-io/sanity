@@ -1,9 +1,11 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Button} from '@sanity/ui'
 import {useCallback} from 'react'
-import {BundleBadge, BundleMenu, getBundleSlug, useDocumentVersions, usePerspective} from 'sanity'
+import {BundleBadge, BundleMenu, getBundleSlug, usePerspective} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
+
+import {useDocumentPane} from '../../../useDocumentPane'
 
 const BadgeButton = styled(Button)({
   cursor: 'pointer',
@@ -15,7 +17,7 @@ export function DocumentPerspectiveMenu(props: {documentId: string}): JSX.Elemen
 
   const existsInBundle = getBundleSlug(documentId) === currentGlobalBundle?.slug
   const {title, hue, icon, slug} = currentGlobalBundle
-  const {data: documentVersions} = useDocumentVersions({documentId})
+  const {documentVersions} = useDocumentPane()
 
   const router = useRouter()
 
