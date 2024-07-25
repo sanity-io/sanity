@@ -26,7 +26,6 @@ const mockFsPromisesReaddir = mockFsPromises.readdir as unknown as jest.Mock<
 const mockClient = {
   request: jest.fn(),
   config: jest.fn(),
-  getUrl: jest.fn(),
 } as unknown as SanityClient
 const mockClientRequest = mockClient.request as jest.Mock<SanityClient['request']>
 
@@ -67,7 +66,7 @@ describe('getOrCreateUserApplication', () => {
     })
 
     const result = await getOrCreateUserApplication({client: mockClient, context})
-    expect(mockClient.request).toHaveBeenCalledWith({
+    expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications',
       query: {default: 'true'},
     })
@@ -86,7 +85,7 @@ describe('getOrCreateUserApplication', () => {
       context,
     })
 
-    expect(mockClient.request).toHaveBeenCalledWith({
+    expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications',
       query: {appHost: 'example.sanity.studio'},
     })
@@ -104,7 +103,7 @@ describe('getOrCreateUserApplication', () => {
       context,
     })
 
-    expect(mockClient.request).toHaveBeenCalledWith({
+    expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications',
       method: 'POST',
       body: {appHost: 'newhost', isDefault: true},
@@ -142,18 +141,12 @@ describe('getOrCreateUserApplication', () => {
 describe('createDeployment', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(mockClient.config as jest.Mock<any>).mockReturnValue({token: 'fake-token'})
-    ;(mockClient.getUrl as jest.Mock<SanityClient['getUrl']>).mockImplementation(
-      (uri) => `http://example.api.sanity.io${uri}`,
-    )
   })
 
   it('sends the correct request to create a deployment and includes authorization header if token is present', async () => {
     const tarball = Readable.from([Buffer.from('example chunk', 'utf-8')]) as Gzip
     const applicationId = 'test-app-id'
     const version = '1.0.0'
-
-    mockFetch.mockResolvedValueOnce(new Response())
 
     await createDeployment({
       client: mockClient,
@@ -163,23 +156,18 @@ describe('createDeployment', () => {
       tarball,
     })
 
-    // Check URL and method
-    expect(mockClient.getUrl).toHaveBeenCalledWith(
-      `/user-applications/${applicationId}/deployments`,
-    )
-    expect(mockFetch).toHaveBeenCalledTimes(1)
-    const url = mockFetch.mock.calls[0][0] as URL
-    expect(url.toString()).toBe(
-      'http://example.api.sanity.io/user-applications/test-app-id/deployments',
-    )
+    expect(mockClientRequest).toHaveBeenCalledTimes(1)
 
     // Extract and validate form data
-    const mockFetchCalls = mockFetch.mock.calls as Parameters<typeof fetch>[]
-    const formData = mockFetchCalls[0][1]?.body as unknown as Readable
+    const mockRequestCalls = mockClientRequest.mock.calls as Parameters<typeof mockClientRequest>[]
+    const {uri, method, body} = mockRequestCalls[0][0]
+
+    expect(uri).toBe(`/user-applications/${applicationId}/deployments`)
+    expect(method).toBe('POST')
 
     // dump the raw content of the form data into a string
     let content = ''
-    for await (const chunk of formData) {
+    for await (const chunk of body) {
       content += chunk
     }
 
@@ -188,10 +176,6 @@ describe('createDeployment', () => {
     expect(content).toContain('version')
     expect(content).toContain(version)
     expect(content).toContain('example chunk')
-
-    // Check Authorization header
-    const headers = mockFetchCalls[0][1]?.headers as Headers
-    expect(headers.get('Authorization')).toBe('Bearer fake-token')
   })
 
   it('streams the tarball contents', async () => {
@@ -207,9 +191,6 @@ describe('createDeployment', () => {
 
     const mockTarball = Readable.from(createMockStream()) as Gzip
     const applicationId = 'test-app-id'
-
-    mockFetch.mockResolvedValueOnce(new Response())
-
     const version = '1.0.0'
 
     await createDeployment({
@@ -220,29 +201,15 @@ describe('createDeployment', () => {
       tarball: mockTarball,
     })
 
-    // Check URL and method
-    expect(mockClient.getUrl).toHaveBeenCalledWith(
-      `/user-applications/${applicationId}/deployments`,
-    )
-    expect(mockFetch).toHaveBeenCalledTimes(1)
-    const url = mockFetch.mock.calls[0][0] as URL
-    expect(url.toString()).toBe(
-      'http://example.api.sanity.io/user-applications/test-app-id/deployments',
-    )
+    expect(mockClientRequest).toHaveBeenCalledTimes(1)
+
+    const mockRequestCalls = mockClientRequest.mock.calls as Parameters<typeof mockClientRequest>[]
+    const {body} = mockRequestCalls[0][0]
 
     // Extract and validate form data
-    const mockFetchCalls = mockFetch.mock.calls as Parameters<typeof fetch>[]
-    const requestInit = mockFetchCalls[0][1] as any
-
-    // this is required to enable streaming with the native fetch API
-    // https://github.com/nodejs/node/issues/46221
-    expect(requestInit.duplex).toBe('half')
-
-    const formData = requestInit.body as Readable
-
     let emissions = 0
     let content = ''
-    for await (const chunk of formData) {
+    for await (const chunk of body) {
       content += chunk
       emissions++
     }
