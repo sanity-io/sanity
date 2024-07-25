@@ -22,6 +22,7 @@ export const getDocumentTableColumnDefs: (
           releaseSlug={releaseSlug}
           previewValues={document.previewValues}
           isLoading={!!document.isLoading}
+          hasValidationError={document.validation?.hasError}
         />
       </Box>
     ),
