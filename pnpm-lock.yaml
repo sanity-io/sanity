@@ -766,8 +766,8 @@ importers:
         specifier: ^8.6.3
         version: 8.6.3(debug@4.3.5)
       groq-js:
-        specifier: ^1.11.0
-        version: 1.11.0
+        specifier: ^1.11.1
+        version: 1.11.1
       node-machine-id:
         specifier: ^1.1.12
         version: 1.1.12
@@ -986,8 +986,8 @@ importers:
         specifier: workspace:*
         version: link:../../groq
       groq-js:
-        specifier: ^1.11.0
-        version: 1.11.0
+        specifier: ^1.11.1
+        version: 1.11.1
       json5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -1060,8 +1060,8 @@ importers:
         specifier: ^1.3.2
         version: 1.3.2
       groq-js:
-        specifier: ^1.11.0
-        version: 1.11.0
+        specifier: ^1.11.1
+        version: 1.11.1
       p-map:
         specifier: ^7.0.1
         version: 7.0.2
@@ -1128,8 +1128,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       groq-js:
-        specifier: ^1.11.0
-        version: 1.11.0
+        specifier: ^1.11.1
+        version: 1.11.1
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -1531,8 +1531,8 @@ importers:
         specifier: 1.0.2
         version: 1.0.2
       groq-js:
-        specifier: ^1.11.0
-        version: 1.11.0
+        specifier: ^1.11.1
+        version: 1.11.1
       history:
         specifier: ^5.3.0
         version: 5.3.0
@@ -6837,7 +6837,7 @@ packages:
       express: 4.19.2
       globby: 11.1.0
       groq: 3.52.0
-      groq-js: 1.11.0
+      groq-js: 1.11.1
       history: 5.3.0
       jsonc-parser: 3.3.1
       mkdirp: 1.0.4
@@ -6873,8 +6873,8 @@ packages:
       - debug
     dev: false
 
-  /@sanity/types@3.52.0:
-    resolution: {integrity: sha512-Dqjh8vOWEdnKeLr9ss3ETqAlDff6LChNNFXo71q1eOWqUHoKOD3R0o2qUfNfDl1dWC+T5Frp7MwFC5flAj73xA==}
+  /@sanity/types@3.52.2:
+    resolution: {integrity: sha512-4ONLnYCwNvmkC8Z0LmJmPqMSDX+fNW8J+c/Zg1/kOjoa99gQfl9543mY1jG+ei7FROnWfF36+dv2jagSnGYunQ==}
     dependencies:
       '@sanity/client': 6.21.1(debug@4.3.5)
       '@types/react': 18.3.3
@@ -6955,12 +6955,12 @@ packages:
       - debug
     dev: false
 
-  /@sanity/util@3.52.0:
-    resolution: {integrity: sha512-UsoQ7LDG8HiCGwn60/+hfz3D2Wl02wxHZz5IJ9EyADQ4fJAQ6spFEehsOVywtZPzqNTAZkjJ5h3AmJbEuZzF1w==}
+  /@sanity/util@3.52.2:
+    resolution: {integrity: sha512-G432RERxYop1MjqpyreKn3qrQOkAiNSo6Mc+cF9vm036Ts/pAepW/IUCYfAnARZlGezg4TSAqg9l7WnH1s+v+w==}
     engines: {node: '>=18'}
     dependencies:
       '@sanity/client': 6.21.1(debug@4.3.5)
-      '@sanity/types': 3.52.0
+      '@sanity/types': 3.52.2
       get-random-values-esm: 1.0.2
       moment: 2.30.1
       rxjs: 7.8.1
@@ -12475,8 +12475,8 @@ packages:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
     dev: true
 
-  /groq-js@1.11.0:
-    resolution: {integrity: sha512-kXVC3fwGTesf9l9y4cwMxJp+63jlOZsh89n/MOtJTdc6K76qc6Uo9wEHyerR+aZ1UyFRxouSgoRRZZI/nvY/9A==}
+  /groq-js@1.11.1:
+    resolution: {integrity: sha512-xWem3qjbYDB0bMc3W9OZ1WApyksRSvBjNlTjRIrsM8dhBgzELR7WzNwBrb6/jVQaivZwh2YW/wKMDply086lbw==}
     engines: {node: '>= 14'}
     dependencies:
       debug: 4.3.5(supports-color@9.4.0)
@@ -17461,7 +17461,7 @@ packages:
       '@sanity/image-url': 1.0.2
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1)(react@18.3.1)
       '@sanity/ui': 2.8.8(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12)
-      '@sanity/util': 3.52.0
+      '@sanity/util': 3.52.2
       '@types/lodash-es': 4.17.12
       framer-motion: 11.0.8(react-dom@18.3.1)(react@18.3.1)
       lodash-es: 4.17.21
