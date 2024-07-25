@@ -44,9 +44,12 @@ export function RequestAccessScreen() {
     activeWorkspace.auth.logout?.()
   }, [activeWorkspace])
 
+  // Get config info from active workspace
   useEffect(() => {
     const subscription = activeWorkspace.auth.state.subscribe({
-      next: ({currentUser: user}) => {
+      next: ({client: sanityClient, currentUser: user}) => {
+        setProjectId(sanityClient.config().projectId)
+        setClient(sanityClient)
         setCurrentUser(user)
       },
       error: setError,
@@ -57,23 +60,8 @@ export function RequestAccessScreen() {
     }
   }, [activeWorkspace])
 
-  // Get the active workspace client to use `request` config
-  useEffect(() => {
-    const subscription = activeWorkspace.auth.state.subscribe({
-      next: ({client: sanityClient}) => {
-        setProjectId(sanityClient.config().projectId)
-        setClient(sanityClient)
-      },
-      error: setError,
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [activeWorkspace])
-
-  // Check if user currently has a pending access request
-  // for this project
+  // Check if user has a pending
+  // access request for this project
   useEffect(() => {
     if (!client || !projectId) return
     client
@@ -104,8 +92,12 @@ export function RequestAccessScreen() {
   }, [client, projectId])
 
   const handleSubmitRequest = useCallback(() => {
+    // If we haven't loaded the client or projectId from
+    // current worspace, return early
     if (!client || !projectId) return
+
     setIsSubmitting(true)
+
     client
       .request<AccessRequest | null>({
         url: `/access/project/${projectId}/requests`,
@@ -138,7 +130,8 @@ export function RequestAccessScreen() {
   const providerHelp = providerTitle ? ` through ${providerTitle}` : ''
 
   if (loading) return <LoadingBlock />
-  // Fallback to the old not authorized screen if error
+  // Fallback to the old not authorized screen
+  // if error communicating with Access API
   if (error) return <NotAuthenticatedScreen />
   return (
     <Card height="fill">
