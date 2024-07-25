@@ -147,13 +147,26 @@ const sharedSettings = definePlugin({
   ],
 })
 
+// define this a s a plugin
+const actionsPlugin = definePlugin({
+  name: 'myCoolPlugin',
+  document: {
+    actions: (existingActions) => {
+      const actionNames = existingActions.map((a) => a.name).join(', ')
+      // eslint-disable-next-line no-console
+      console.log(`actions in plugin (${existingActions.length}): ${actionNames}`)
+      return existingActions
+    },
+  },
+})
+
 export default defineConfig([
   {
     name: 'default',
     title: 'Test Studio',
     projectId: 'ppsg7ml5',
     dataset: 'test',
-    plugins: [sharedSettings()],
+    plugins: [sharedSettings(), actionsPlugin()],
     basePath: '/test',
     icon: SanityMonogram,
     // eslint-disable-next-line camelcase
