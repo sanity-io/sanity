@@ -1,6 +1,8 @@
+import {ErrorOutlineIcon} from '@sanity/icons'
 import {type PreviewValue} from '@sanity/types'
-import {Card} from '@sanity/ui'
+import {Card, Text, Tooltip} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
+import {DocumentPreviewPresence, useDocumentPresence} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
 import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
@@ -12,6 +14,7 @@ interface ReleaseDocumentPreviewProps {
   releaseSlug: string
   previewValues: PreviewValue
   isLoading: boolean
+  hasValidationError?: boolean
 }
 
 export function ReleaseDocumentPreview({
@@ -20,7 +23,10 @@ export function ReleaseDocumentPreview({
   releaseSlug,
   previewValues,
   isLoading,
+  hasValidationError,
 }: ReleaseDocumentPreviewProps) {
+  const documentPresence = useDocumentPresence(documentId)
+
   const LinkComponent = useMemo(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -41,9 +47,33 @@ export function ReleaseDocumentPreview({
     [documentId, documentTypeName, releaseSlug],
   )
 
+  const previewPresence = useMemo(
+    () => documentPresence?.length > 0 && <DocumentPreviewPresence presence={documentPresence} />,
+    [documentPresence],
+  )
+
   return (
-    <Card as={LinkComponent} radius={2} data-as="a">
-      <SanityDefaultPreview {...previewValues} isPlaceholder={isLoading} />
+    <Card
+      tone={hasValidationError ? 'critical' : 'default'}
+      as={LinkComponent}
+      radius={2}
+      data-as="a"
+    >
+      <SanityDefaultPreview {...previewValues} status={previewPresence} isPlaceholder={isLoading}>
+        {hasValidationError && (
+          <Tooltip
+            portal
+            content={
+              <Text muted size={1}>
+                {/* TODO: clarify copy */}
+                There are validation errors in this document
+              </Text>
+            }
+          >
+            <ErrorOutlineIcon />
+          </Tooltip>
+        )}
+      </SanityDefaultPreview>
     </Card>
   )
 }
