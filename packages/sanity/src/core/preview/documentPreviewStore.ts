@@ -107,7 +107,7 @@ export function createDocumentPreviewStore({
   function getObserveFields() {
     if (PREVIEW_FETCH_FULL_DOCUMENTS) {
       return function observeFields(id: string, fields: string[], apiConfig?: ApiConfig) {
-        return observeDocument(id, apiConfig).pipe(map((doc) => pick(doc, fields)))
+        return observeDocument(id, apiConfig).pipe(map((doc) => (doc ? pick(doc, fields) : null)))
       }
     }
     return createObserveFields({client: versionedClient, invalidationChannel})
