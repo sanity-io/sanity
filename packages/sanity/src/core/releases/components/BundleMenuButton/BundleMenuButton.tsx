@@ -5,11 +5,11 @@ import {
   TrashIcon,
   UnarchiveIcon,
 } from '@sanity/icons'
-import {Button, Menu, MenuButton, MenuItem, Spinner, Text, useToast} from '@sanity/ui'
+import {Button, Menu, MenuButton, Spinner, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Dialog} from '../../../../ui-components'
+import {Dialog, MenuItem} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
