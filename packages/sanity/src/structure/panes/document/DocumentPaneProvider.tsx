@@ -32,6 +32,7 @@ import {
   useDocumentOperation,
   useDocumentStore,
   useDocumentValuePermissions,
+  useDocumentVersions,
   useEditState,
   useFormState,
   useInitialValue,
@@ -151,6 +152,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const editState = useEditState(documentId, documentType, 'default')
   const {validation: validationRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
+  const {data: documentVersions} = useDocumentVersions({documentId})
 
   // When a bundle is checked out and the document being viewed either comes into existence or is
   // removed from the bundle, switch to the version or the default document accordingly.
@@ -697,6 +699,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentId,
       documentIdRaw,
       documentType,
+      documentVersions,
       editState,
       fieldActions,
       focusPath,
@@ -758,6 +761,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentId,
       documentIdRaw,
       documentType,
+      documentVersions,
       editState,
       fieldActions,
       focusPath,
