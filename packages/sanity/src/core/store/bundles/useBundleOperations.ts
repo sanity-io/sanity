@@ -9,15 +9,27 @@ import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {type BundleDocument} from './types'
 
+const useGuardedAddonClient = () => {
+  const {client: addOnClient} = useAddonDataset()
+
+  return function returnAddonClient() {
+    if (!addOnClient) {
+      throw new Error('Addon client is not available')
+    }
+
+    return addOnClient
+  }
+}
+
 // WIP - Raw implementation for initial testing purposes
 export function useBundleOperations() {
-  const {client: addOnClient} = useAddonDataset()
+  const getAddonClient = useGuardedAddonClient()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const currentUser = useCurrentUser()
 
   const handleCreateBundle = useCallback(
     async (bundle: Partial<BundleDocument>) => {
-      if (!addOnClient) return null
+      const addonClient = getAddonClient()
 
       const document = {
         ...bundle,
@@ -25,15 +37,15 @@ export function useBundleOperations() {
         authorId: currentUser?.id,
         _id: bundle._id ?? uuid(),
       } as BundleDocument
-      const res = await addOnClient.createIfNotExists(document)
+      const res = await addonClient.createIfNotExists(document)
       return res
     },
-    [addOnClient, currentUser?.id],
+    [currentUser?.id, getAddonClient],
   )
 
   const handleDeleteBundle = useCallback(
     async (bundle: BundleDocument) => {
-      if (!addOnClient) return null
+      const addonClient = getAddonClient()
 
       // Fetch the related version documents from the main dataset, this documents will be removed
       const versionDocuments = await studioClient.fetch<SanityDocument[]>(
@@ -46,15 +58,16 @@ export function useBundleOperations() {
       })
       await transaction.commit()
       // Remove the bundle metadata document from the addon dataset
-      const res = await addOnClient.delete(bundle._id)
+      const res = await addonClient.delete(bundle._id)
       return res
     },
-    [addOnClient, studioClient],
+    [getAddonClient, studioClient],
   )
 
   const handleUpdateBundle = useCallback(
     async (bundle: Partial<BundleDocument>) => {
-      if (!addOnClient || !bundle._id) return null
+      const addonClient = getAddonClient()
+      if (!bundle._id) return null
 
       const document = {
         ...bundle,
@@ -64,14 +77,14 @@ export function useBundleOperations() {
         .filter(([_, value]) => value === undefined)
         .map(([key]) => key)
 
-      let clientOperation = addOnClient.patch(bundle._id).set(document)
+      let clientOperation = addonClient.patch(bundle._id).set(document)
       if (unsetKeys.length) {
         clientOperation = clientOperation.unset(unsetKeys)
       }
 
       return clientOperation.commit()
     },
-    [addOnClient],
+    [getAddonClient],
   )
 
   const handlePublishBundle = useCallback(
@@ -80,7 +93,7 @@ export function useBundleOperations() {
       bundleDocuments: SanityDocument[],
       publishedDocumentsRevisions: Record<string, string>,
     ) => {
-      if (!addOnClient) return null
+      const addonClient = getAddonClient()
 
       const transaction = studioClient.transaction()
       bundleDocuments.forEach((bundleDocument) => {
@@ -115,27 +128,15 @@ export function useBundleOperations() {
 
       await transaction.commit()
       const publishedAt = new Date().toISOString()
-      return await addOnClient.patch(bundleId).set({publishedAt, archivedAt: publishedAt}).commit()
+      return await addonClient.patch(bundleId).set({publishedAt, archivedAt: publishedAt}).commit()
     },
-    [addOnClient, studioClient],
+    [getAddonClient, studioClient],
   )
 
-  const guardForAddOnClient = <Callback extends (...args: any[]) => any>(
-    callbackOperation: Callback,
-  ) => {
-    return (...args: Parameters<Callback>): ReturnType<Callback> => {
-      if (!addOnClient) {
-        throw new Error('No addon client found. Unable to perform operation.')
-      }
-
-      return callbackOperation(...args)
-    }
-  }
-
   return {
-    createBundle: guardForAddOnClient(handleCreateBundle),
-    deleteBundle: guardForAddOnClient(handleDeleteBundle),
-    updateBundle: guardForAddOnClient(handleUpdateBundle),
-    publishBundle: guardForAddOnClient(handlePublishBundle),
+    createBundle: handleCreateBundle,
+    deleteBundle: handleDeleteBundle,
+    updateBundle: handleUpdateBundle,
+    publishBundle: handlePublishBundle,
   }
 }
