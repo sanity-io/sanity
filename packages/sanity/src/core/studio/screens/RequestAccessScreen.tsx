@@ -148,7 +148,7 @@ export function RequestAccessScreen() {
               {providerHelp}.
             </Text>
             {hasTooManyRequests || hasPendingRequest ? (
-              <Card tone={hasPendingRequest ? 'primary' : 'caution'} padding={3} border>
+              <Card tone={hasPendingRequest ? 'transparent' : 'caution'} padding={3} border>
                 <Text size={1}>
                   {hasTooManyRequests && !hasPendingRequest && (
                     <>
@@ -157,10 +157,7 @@ export function RequestAccessScreen() {
                     </>
                   )}
                   {hasPendingRequest && (
-                    <>
-                      Your request to access this project is pending. We'll send you an email when
-                      your request has been approved.
-                    </>
+                    <>Your request to access this project is pending approval.</>
                   )}
                 </Text>
               </Card>
