@@ -4,6 +4,7 @@ import {Fragment, useMemo} from 'react'
 import {useTableContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
+import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {TableHeader} from './TableHeader'
 import {TableProvider} from './TableProvider'
@@ -193,8 +194,10 @@ export const Table = <TableData, AdditionalRowTableData = undefined>(
   props: TableProps<TableData, AdditionalRowTableData>,
 ) => {
   return (
-    <TableProvider>
-      <TableInner<TableData, AdditionalRowTableData> {...props} />
-    </TableProvider>
+    <TooltipDelayGroupProvider>
+      <TableProvider>
+        <TableInner<TableData, AdditionalRowTableData> {...props} />
+      </TableProvider>
+    </TooltipDelayGroupProvider>
   )
 }
