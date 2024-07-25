@@ -78,7 +78,7 @@ export function useBundleOperations() {
     async (
       bundleId: string,
       bundleDocuments: SanityDocument[],
-      publishedDocumentsRevisions: Record<string, string> = {},
+      publishedDocumentsRevisions: Record<string, string>,
     ) => {
       if (!addOnClient) return null
 

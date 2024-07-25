@@ -33,10 +33,11 @@ export const ReleasePublishAllButton = ({
   const isValidatingDocuments = Object.values(validation).some(({isValidating}) => isValidating)
   const hasDocumentValidationErrors = Object.values(validation).some(({hasError}) => hasError)
 
-  const isPublishButtonDisabled = disabled || isValidatingDocuments || hasDocumentValidationErrors
+  const isPublishButtonDisabled =
+    disabled || isValidatingDocuments || hasDocumentValidationErrors || !publishedDocumentsRevisions
 
   const handleConfirmPublishAll = useCallback(async () => {
-    if (!bundle) return
+    if (!bundle || !publishedDocumentsRevisions) return
 
     try {
       setPublishBundleStatus('publishing')
