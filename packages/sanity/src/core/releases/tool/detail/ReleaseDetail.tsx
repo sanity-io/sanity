@@ -1,6 +1,6 @@
-import {ArrowLeftIcon, PublishIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {useCallback, useEffect, useMemo} from 'react'
 import {LoadingBlock, useClient} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
@@ -9,6 +9,7 @@ import {useListener} from '../../../hooks/useListener'
 import {useBundles} from '../../../store/bundles'
 import {API_VERSION} from '../../../tasks/constants'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
+import {ReleasePublishAllButton} from '../../components/ReleasePublishAllButton/ReleasePublishAllButton'
 import {type ReleasesRouterState} from '../../types/router'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseReview} from './ReleaseReview'
@@ -20,7 +21,7 @@ type Screen = (typeof SUPPORTED_SCREENS)[number]
 
 const useFetchBundleDocuments = (bundleSlug: string) => {
   const client = useClient({apiVersion: API_VERSION})
-  const query = `*[defined(_version) &&  _id in path("${bundleSlug}.*")]`
+  const query = `*[defined(_version) && _id in path("${bundleSlug}.*")]`
   return useListener({query, client})
 }
 
@@ -66,6 +67,15 @@ export const ReleaseDetail = () => {
       _searchParams: [],
     })
   }, [router])
+
+  // review screen will not be available once published
+  // so redirect to summary screen
+  useEffect(() => {
+    if (activeScreen === 'review' && bundle?.publishedAt) {
+      navigateToSummary()
+    }
+  }, [activeScreen, bundle?.publishedAt, navigateToSummary])
+
   const header = useMemo(
     () => (
       <Card
@@ -106,25 +116,32 @@ export const ReleaseDetail = () => {
                 text="Summary"
               />
               {/* StudioButton supports tooltip when button is disabled */}
-              <Button
-                tooltipProps={{
-                  disabled: bundleHasDocuments,
-                  content: 'Add documents to this release to review changes',
-                  placement: 'bottom',
-                }}
-                key="review"
-                disabled={!bundleHasDocuments}
-                mode="bleed"
-                onClick={navigateToReview}
-                selected={activeScreen === 'review'}
-                text="Review changes"
-              />
+              {!bundle?.publishedAt && (
+                <Button
+                  tooltipProps={{
+                    disabled: bundleHasDocuments,
+                    content: 'Add documents to this release to review changes',
+                    placement: 'bottom',
+                  }}
+                  key="review"
+                  disabled={!bundleHasDocuments}
+                  mode="bleed"
+                  onClick={navigateToReview}
+                  selected={activeScreen === 'review'}
+                  text="Review changes"
+                />
+              )}
             </Flex>
           </Flex>
 
           <Flex flex="none" gap={2}>
-            {showPublishButton && (
-              <Button icon={PublishIcon} disabled={isPublishButtonDisabled} text="Publish all" />
+            {showPublishButton && bundle && (
+              <ReleasePublishAllButton
+                bundle={bundle}
+                bundleDocuments={bundleDocuments}
+                disabled={isPublishButtonDisabled}
+                validation={validation}
+              />
             )}
             <BundleMenuButton bundle={bundle} documentCount={bundleDocuments.length} />
           </Flex>
@@ -134,15 +151,50 @@ export const ReleaseDetail = () => {
     [
       activeScreen,
       bundle,
-      bundleDocuments.length,
+      bundleDocuments,
       bundleHasDocuments,
       isPublishButtonDisabled,
       navigateToReview,
       navigateToSummary,
       router,
       showPublishButton,
+      validation,
     ],
   )
+
+  const detailContent = useMemo(() => {
+    if (!bundle) return null
+
+    if (activeScreen === 'summary') {
+      return (
+        <ReleaseSummary
+          documents={bundleDocuments}
+          release={bundle}
+          documentsHistory={history.documentsHistory}
+          collaborators={history.collaborators}
+          validation={validation}
+        />
+      )
+    }
+    if (activeScreen === 'review') {
+      return (
+        <ReleaseReview
+          documents={bundleDocuments}
+          release={bundle}
+          documentsHistory={history.documentsHistory}
+          validation={validation}
+        />
+      )
+    }
+    return null
+  }, [
+    activeScreen,
+    bundle,
+    bundleDocuments,
+    history.collaborators,
+    history.documentsHistory,
+    validation,
+  ])
 
   if (loading) {
     return <LoadingBlock title="Loading release" fill data-testid="bundle-documents-table-loader" />
@@ -167,29 +219,7 @@ export const ReleaseDetail = () => {
       <Card flex={1} overflow="auto">
         <Container width={2}>
           <Box paddingX={4} paddingY={6}>
-            {documentsLoading ? (
-              <LoadingBlock title="Loading documents" />
-            ) : (
-              <>
-                {activeScreen === 'summary' && (
-                  <ReleaseSummary
-                    documents={bundleDocuments}
-                    release={bundle}
-                    documentsHistory={history.documentsHistory}
-                    collaborators={history.collaborators}
-                    validation={validation}
-                  />
-                )}
-              </>
-            )}
-            {activeScreen === 'review' && (
-              <ReleaseReview
-                documents={bundleDocuments}
-                release={bundle}
-                documentsHistory={history.documentsHistory}
-                validation={validation}
-              />
-            )}
+            {documentsLoading ? <LoadingBlock title="Loading documents" /> : detailContent}
           </Box>
         </Container>
       </Card>
