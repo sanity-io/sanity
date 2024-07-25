@@ -30,7 +30,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks, documentId, documentType} = useDocumentPane()
+  const {__internal_tasks, documentId, documentType, documentVersions} = useDocumentPane()
 
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -88,6 +88,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                         currentGlobalBundle={currentGlobalBundle}
                         documentId={documentId}
                         documentType={documentType}
+                        documentVersions={documentVersions}
                       />
                     ) : (
                       <div>
