@@ -48,6 +48,8 @@ export function RequestAccessScreen() {
   useEffect(() => {
     const subscription = activeWorkspace.auth.state.subscribe({
       next: ({client: sanityClient, currentUser: user}) => {
+        // Need to get the client, projectId, and user from workspace
+        // because this screen is outside the SourceContext
         setProjectId(sanityClient.config().projectId)
         setClient(sanityClient)
         setCurrentUser(user)
