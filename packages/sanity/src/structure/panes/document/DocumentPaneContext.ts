@@ -6,6 +6,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {
+  type BundleDocument,
   type DocumentActionComponent,
   type DocumentBadgeComponent,
   type DocumentFieldAction,
@@ -38,6 +39,7 @@ export interface DocumentPaneContextValue {
   documentId: string
   documentIdRaw: string
   documentType: string
+  documentVersions: BundleDocument[] | null
   editState: EditStateFor | null
   fieldActions: DocumentFieldAction[]
   focusPath: Path
