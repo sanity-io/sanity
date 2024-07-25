@@ -1,6 +1,6 @@
 import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {useDocumentOperation, useDocumentStore} from 'sanity'
 
@@ -18,9 +18,9 @@ interface BundleActionsProps {
 /**
  * @internal
  */
-export function BundleActions(props: BundleActionsProps): JSX.Element {
+export function BundleActions(props: BundleActionsProps): ReactNode {
   const {currentGlobalBundle, documentId, documentType, documentVersions} = props
-  const {slug, title} = currentGlobalBundle
+  const {slug, title, archivedAt} = currentGlobalBundle
   const documentStore = useDocumentStore()
 
   const [creatingVersion, setCreatingVersion] = useState<boolean>(false)
@@ -74,6 +74,8 @@ export function BundleActions(props: BundleActionsProps): JSX.Element {
   ])
 
   /** TODO what should happen when you add a version if we don't have the ready button */
+
+  if (archivedAt) return null
 
   return (
     <Button
