@@ -1,5 +1,10 @@
-import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
-import {defer, merge, timer} from 'rxjs'
+import {
+  type MutationEvent,
+  type ReconnectEvent,
+  type SanityClient,
+  type WelcomeEvent,
+} from '@sanity/client'
+import {merge, timer} from 'rxjs'
 import {filter, share, shareReplay} from 'rxjs/operators'
 
 /**
@@ -7,12 +12,12 @@ import {filter, share, shareReplay} from 'rxjs/operators'
  * Creates a listener that will emit 'welcome' for all new subscribers immediately, and thereafter emit at every mutation event
  */
 export function createGlobalListener(client: SanityClient) {
-  const allEvents$ = defer(() =>
-    client.listen(
+  const allEvents$ = client
+    .listen(
       '*[!(_id in path("_.**"))]',
       {},
       {
-        events: ['welcome', 'mutation'],
+        events: ['welcome', 'mutation', 'reconnect'],
         includeResult: false,
         includePreviousRevision: false,
         includeMutations: false,
@@ -20,19 +25,39 @@ export function createGlobalListener(client: SanityClient) {
         effectFormat: 'mendoza',
         tag: 'preview.global',
       },
-    ),
-  ).pipe(
-    filter(
-      (event): event is WelcomeEvent | MutationEvent =>
-        event.type === 'welcome' || event.type === 'mutation',
-    ),
-    share({resetOnRefCountZero: () => timer(2000), resetOnComplete: true}),
+    )
+    .pipe(
+      share({
+        resetOnRefCountZero: () => timer(2000),
+      }),
+    )
+
+  // Reconnect events emitted in case the connection is lost
+  const reconnect = allEvents$.pipe(
+    filter((event): event is ReconnectEvent => event.type === 'reconnect'),
   )
 
-  const welcome$ = allEvents$.pipe(
-    filter((event) => event.type === 'welcome'),
-    shareReplay({refCount: true, bufferSize: 1}),
+  // Welcome events are emitted when the listener is (re)connected
+  const welcome = allEvents$.pipe(
+    filter((event): event is WelcomeEvent => event.type === 'welcome'),
   )
-  const mutations$ = allEvents$.pipe(filter((event) => event.type === 'mutation')).pipe(share())
-  return merge(welcome$, mutations$)
+
+  // Mutation events coming from the listener
+  const mutations = allEvents$.pipe(
+    filter((event): event is MutationEvent => event.type === 'mutation'),
+  )
+
+  // Replay the latest connection event that was emitted either when the connection was disconnected ('reconnect'), established or re-established ('welcome')
+  const connectionEvent = merge(welcome, reconnect).pipe(
+    shareReplay({bufferSize: 1, refCount: true}),
+  )
+
+  // Emit the welcome event if the latest connection event was the 'welcome' event.
+  // Downstream subscribers will typically map the welcome event to an initial fetch
+  const replayWelcome = connectionEvent.pipe(
+    filter((latestConnectionEvent) => latestConnectionEvent.type === 'welcome'),
+  )
+
+  // Combine into a single stream
+  return merge(replayWelcome, mutations, reconnect)
 }

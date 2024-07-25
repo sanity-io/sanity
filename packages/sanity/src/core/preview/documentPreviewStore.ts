@@ -1,8 +1,8 @@
-import {type SanityClient} from '@sanity/client'
+import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
 import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
 import {pick} from 'lodash'
 import {combineLatest, type Observable} from 'rxjs'
-import {distinctUntilChanged, map} from 'rxjs/operators'
+import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
 import {isRecord} from '../util'
 import {createPreviewAvailabilityObserver} from './availability'
@@ -91,7 +91,13 @@ export function createDocumentPreviewStore({
   client,
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
   const versionedClient = client.withConfig({apiVersion: '1'})
-  const globalListener = createGlobalListener(versionedClient)
+  const globalListener = createGlobalListener(versionedClient).pipe(
+    filter(
+      (event): event is MutationEvent | WelcomeEvent =>
+        // ignore reconnect events for now
+        event.type === 'mutation' || event.type === 'welcome',
+    ),
+  )
   const invalidationChannel = globalListener.pipe(
     map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
   )
