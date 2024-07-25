@@ -51,15 +51,17 @@ export function NotAuthenticatedScreen() {
       >
         <Stack space={4}>
           <Text>
-            You are not authorized to access this studio. You are currently signed in as{' '}
-            <strong>
-              {currentUser?.name} ({currentUser?.email})
-            </strong>
-            {providerHelp}.
+            You are not authorized to access this studio. Maybe you could ask someone to invite you
+            to collaborate on this project?
           </Text>
 
           <Text>
             If you think this is an error, verify that you are signed in with the correct account.
+            You are currently signed in as{' '}
+            <strong>
+              {currentUser?.name} ({currentUser?.email})
+            </strong>
+            {providerHelp}.
           </Text>
         </Stack>
       </Dialog>
