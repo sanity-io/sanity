@@ -1,10 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  getPublishedId,
-  type SanityDocument,
-  type TransactionLogEventWithEffects,
-  useClient,
-} from 'sanity'
+import {getPublishedId, type TransactionLogEventWithEffects, useClient} from 'sanity'
 
 import {getJsonStream} from '../../../../store/_legacy/history/history/getJsonStream'
 import {API_VERSION} from '../../../../tasks/constants'
@@ -17,7 +12,7 @@ export type DocumentHistory = {
 }
 
 // TODO: Update this to contemplate the _revision change on any of the internal bundle documents, and fetch only the history of that document if changes.
-export function useReleaseHistory(bundleDocuments: SanityDocument[]): {
+export function useReleaseHistory(bundleDocumentsIds: string[]): {
   documentsHistory: Record<string, DocumentHistory>
   collaborators: string[]
   loading: boolean
@@ -26,7 +21,6 @@ export function useReleaseHistory(bundleDocuments: SanityDocument[]): {
   const {dataset, token} = client.config()
   const [history, setHistory] = useState<TransactionLogEventWithEffects[]>([])
   const queryParams = `tag=sanity.studio.tasks.history&effectFormat=mendoza&excludeContent=true&includeIdentifiedDocumentsOnly=true`
-  const bundleDocumentsIds = useMemo(() => bundleDocuments.map((doc) => doc._id), [bundleDocuments])
 
   const publishedIds = bundleDocumentsIds.map((id) => getPublishedId(id)).join(',')
   const transactionsUrl = client.getUrl(
