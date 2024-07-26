@@ -6,14 +6,14 @@ import {type BundleDocument} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
-import {type useBundleDocumentsValidation} from '../../tool/detail/useBundleDocumentsValidation'
+import {type DocumentValidationStatus} from '../../tool/detail/bundleDocumentsValidation'
 import {useObserveDocumentRevisions} from './useObserveDocumentRevisions'
 
 interface ReleasePublishAllButtonProps {
   bundle: BundleDocument
   bundleDocuments: SanityDocument[]
   disabled?: boolean
-  validation: ReturnType<typeof useBundleDocumentsValidation>
+  validation: Record<string, DocumentValidationStatus>
 }
 
 export const ReleasePublishAllButton = ({
