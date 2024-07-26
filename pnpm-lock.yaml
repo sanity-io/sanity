@@ -1653,6 +1653,9 @@ importers:
       rxjs-exhaustmap-with-trailing:
         specifier: ^2.1.1
         version: 2.1.1(rxjs@7.8.1)
+      rxjs-mergemap-array:
+        specifier: ^0.1.0
+        version: 0.1.0(rxjs@7.8.1)
       sanity-diff-patch:
         specifier: ^3.0.2
         version: 3.0.2
@@ -6873,8 +6876,8 @@ packages:
       - debug
     dev: false
 
-  /@sanity/types@3.52.0:
-    resolution: {integrity: sha512-Dqjh8vOWEdnKeLr9ss3ETqAlDff6LChNNFXo71q1eOWqUHoKOD3R0o2qUfNfDl1dWC+T5Frp7MwFC5flAj73xA==}
+  /@sanity/types@3.52.2:
+    resolution: {integrity: sha512-4ONLnYCwNvmkC8Z0LmJmPqMSDX+fNW8J+c/Zg1/kOjoa99gQfl9543mY1jG+ei7FROnWfF36+dv2jagSnGYunQ==}
     dependencies:
       '@sanity/client': 6.21.1(debug@4.3.5)
       '@types/react': 18.3.3
@@ -6955,12 +6958,12 @@ packages:
       - debug
     dev: false
 
-  /@sanity/util@3.52.0:
-    resolution: {integrity: sha512-UsoQ7LDG8HiCGwn60/+hfz3D2Wl02wxHZz5IJ9EyADQ4fJAQ6spFEehsOVywtZPzqNTAZkjJ5h3AmJbEuZzF1w==}
+  /@sanity/util@3.52.2:
+    resolution: {integrity: sha512-G432RERxYop1MjqpyreKn3qrQOkAiNSo6Mc+cF9vm036Ts/pAepW/IUCYfAnARZlGezg4TSAqg9l7WnH1s+v+w==}
     engines: {node: '>=18'}
     dependencies:
       '@sanity/client': 6.21.1(debug@4.3.5)
-      '@sanity/types': 3.52.0
+      '@sanity/types': 3.52.2
       get-random-values-esm: 1.0.2
       moment: 2.30.1
       rxjs: 7.8.1
@@ -17397,6 +17400,15 @@ packages:
       rxjs: 7.8.1
     dev: false
 
+  /rxjs-mergemap-array@0.1.0(rxjs@7.8.1):
+    resolution: {integrity: sha512-19fXxPXN4X8LPWu7fg/nyX+nr0G97qSNXhEvF32cdgWuoyUVQ4MrFr+UL4HGip6iO5kbZOL4puAjPeQ/D5qSlA==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      rxjs: 7.x
+    dependencies:
+      rxjs: 7.8.1
+    dev: false
+
   /rxjs@6.6.7:
     resolution: {integrity: sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==}
     engines: {npm: '>=2.0.0'}
@@ -17461,7 +17473,7 @@ packages:
       '@sanity/image-url': 1.0.2
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1)(react@18.3.1)
       '@sanity/ui': 2.8.8(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12)
-      '@sanity/util': 3.52.0
+      '@sanity/util': 3.52.2
       '@types/lodash-es': 4.17.12
       framer-motion: 11.0.8(react-dom@18.3.1)(react@18.3.1)
       lodash-es: 4.17.21
