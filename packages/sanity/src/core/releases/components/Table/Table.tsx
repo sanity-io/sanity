@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {TableHeader} from './TableHeader'
-import {TableProvider} from './TableProvider'
+import {TableProvider, type TableSort} from './TableProvider'
 import {type Column} from './types'
 
 type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extends undefined
@@ -190,12 +190,13 @@ const TableInner = <TableData, AdditionalRowTableData>({
   )
 }
 
-export const Table = <TableData, AdditionalRowTableData = undefined>(
-  props: TableProps<TableData, AdditionalRowTableData>,
-) => {
+export const Table = <TableData, AdditionalRowTableData = undefined>({
+  defaultSort,
+  ...props
+}: TableProps<TableData, AdditionalRowTableData> & {defaultSort?: TableSort}) => {
   return (
     <TooltipDelayGroupProvider>
-      <TableProvider>
+      <TableProvider defaultSort={defaultSort}>
         <TableInner<TableData, AdditionalRowTableData> {...props} />
       </TableProvider>
     </TooltipDelayGroupProvider>
