@@ -13,7 +13,6 @@ import {
 import FocusLock from 'react-focus-lock'
 
 import {Button, Popover} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'
@@ -49,7 +48,6 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
-  const {t} = useTranslation()
 
   useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
     forwardedRef,
