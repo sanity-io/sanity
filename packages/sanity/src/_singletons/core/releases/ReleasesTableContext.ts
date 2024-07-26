@@ -1,20 +1,22 @@
 import {createContext, useContext} from 'react'
 
+import type {TableSort} from '../../../core/releases/components/Table/TableProvider'
+
 /**
  * @internal
  */
 export interface TableContextValue {
   searchTerm: string | null
   setSearchTerm: (searchTerm: string) => void
-  sort: {column: string; direction: 'asc' | 'desc'} | null
-  setSearchColumn: (column: string) => void
+  sort: TableSort | null
+  setSortColumn: (column: string) => void
 }
 
 const DEFAULT_TABLE_CONTEXT: TableContextValue = {
   searchTerm: null,
   setSearchTerm: () => null,
   sort: null,
-  setSearchColumn: () => null,
+  setSortColumn: () => null,
 }
 
 /**

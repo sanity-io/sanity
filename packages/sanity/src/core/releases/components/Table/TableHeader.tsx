@@ -5,13 +5,13 @@ import {useTableContext} from 'sanity/_singletons'
 import {type HeaderProps, type TableHeaderProps} from './types'
 
 const SortHeaderButton = ({header, text}: ButtonProps & HeaderProps) => {
-  const {sort, setSearchColumn} = useTableContext()
+  const {sort, setSortColumn} = useTableContext()
   const sortIcon = sort?.direction === 'asc' ? ArrowUpIcon : ArrowDownIcon
 
   return (
     <Button
       iconRight={header.sorting && sort?.column === header.id ? sortIcon : undefined}
-      onClick={() => setSearchColumn(String(header.id))}
+      onClick={() => setSortColumn(String(header.id))}
       mode="bleed"
       padding={2}
       radius={3}
