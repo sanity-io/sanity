@@ -27,6 +27,8 @@ export function ReleasesOverview() {
   const bundleSlugs = useMemo(() => bundles?.map((bundle) => bundle.slug) || [], [bundles])
   const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
   const loading = loadingBundles || loadingBundlesMetadata
+  const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleSlugs.length))
+
   const hasBundles = bundles && containsBundles(bundles)
   const loadingOrHasBundles = loading || hasBundles
 
@@ -174,17 +176,19 @@ export function ReleasesOverview() {
               </Flex>
               {loadingOrHasBundles && createReleaseButton}
             </Flex>
-            <Table<TableBundle>
-              // for resetting filter and sort on table when mode changed
-              key={bundleGroupMode}
-              loading={loading}
-              data={groupedBundles[bundleGroupMode]}
-              columnDefs={releasesOverviewColumnDefs}
-              searchFilter={applySearchTermToBundles}
-              emptyState="No Releases"
-              rowId="_id"
-              rowActions={renderRowActions}
-            />
+            {(hasBundles || loadingTableData) && (
+              <Table<TableBundle>
+                // for resetting filter and sort on table when mode changed
+                key={bundleGroupMode}
+                loading={loadingTableData}
+                data={groupedBundles[bundleGroupMode]}
+                columnDefs={releasesOverviewColumnDefs}
+                searchFilter={applySearchTermToBundles}
+                emptyState="No Releases"
+                rowId="_id"
+                rowActions={renderRowActions}
+              />
+            )}
           </Stack>
         </Container>
         {renderCreateBundleDialog()}

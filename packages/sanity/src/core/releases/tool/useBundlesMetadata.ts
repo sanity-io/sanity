@@ -19,12 +19,12 @@ export const useBundlesMetadata = (bundleSlugs: string[]) => {
   const [responseData, setResponseData] = useState<Record<string, BundlesMetadata> | null>(null)
 
   useEffect(() => {
-    addBundleSlugsToListener([...new Set(bundleSlugs)])
+    if (bundleSlugs.length) addBundleSlugsToListener([...new Set(bundleSlugs)])
 
     return () => removeBundleSlugsFromListener([...new Set(bundleSlugs)])
   }, [addBundleSlugsToListener, bundleSlugs, removeBundleSlugsFromListener])
 
-  const {data} = state
+  const {data, loading} = state
 
   useEffect(() => {
     if (!data) return
@@ -43,10 +43,7 @@ export const useBundlesMetadata = (bundleSlugs: string[]) => {
     error: state.error,
     // loading is only for initial load
     // changing listened to bundle slugs will not cause a re-load
-    loading: !responseData,
-    // fetching is true when performing initial load for a given set of bundle metadata
-    // changing listened to bundle slugs will cause a re-fetch
-    fetching: state.loading,
+    loading,
     data: responseData,
   }
 }

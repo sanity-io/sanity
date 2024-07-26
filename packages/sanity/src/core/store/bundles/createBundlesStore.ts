@@ -59,10 +59,10 @@ const NOOP_BUNDLES_STORE: BundlesStore = {
   state$: EMPTY.pipe(
     startWith({
       bundles: new Map(),
-      state: 'loaded' as const,
+      state: 'loading' as const,
     }),
   ),
-  getMetadataStateForSlugs$: () => of({data: {}, error: null, loading: false}),
+  getMetadataStateForSlugs$: () => of({data: null, error: null, loading: false}),
   dispatch: () => undefined,
 }
 
