@@ -9,9 +9,12 @@ export interface TableSort {
 /**
  * @internal
  */
-export const TableProvider: ComponentType<PropsWithChildren> = ({children}) => {
+export const TableProvider: ComponentType<PropsWithChildren & {defaultSort?: TableSort}> = ({
+  children,
+  defaultSort,
+}) => {
   const [searchTerm, setSearchTerm] = useState<string | null>(null)
-  const [sort, setSort] = useState<TableSort | null>(null)
+  const [sort, setSort] = useState<TableSort | null>(defaultSort || null)
 
   const setSortColumn = useCallback((newColumn: string) => {
     setSort((s) => {
@@ -23,9 +26,7 @@ export const TableProvider: ComponentType<PropsWithChildren> = ({children}) => {
     })
   }, [])
 
-  const setDefaultSort = useCallback((defaultSort: TableSort) => setSort(defaultSort), [])
-
-  const contextValue = {searchTerm, setSearchTerm, sort, setSortColumn, setDefaultSort}
+  const contextValue = {searchTerm, setSearchTerm, sort, setSortColumn}
 
   return <TableContext.Provider value={contextValue}>{children}</TableContext.Provider>
 }

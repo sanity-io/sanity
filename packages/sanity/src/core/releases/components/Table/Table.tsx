@@ -1,6 +1,6 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {get} from 'lodash'
-import {Fragment, useEffect, useMemo} from 'react'
+import {Fragment, useMemo} from 'react'
 import {useTableContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
@@ -17,7 +17,6 @@ type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extend
 export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
-  defaultSort?: TableSort
   Row?: ({
     datum,
     children,
@@ -51,7 +50,6 @@ const RowStack = styled(Stack)({
 
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
-  defaultSort,
   data,
   emptyState,
   searchFilter,
@@ -60,14 +58,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   rowActions,
   loading = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
-  const {searchTerm, sort, setDefaultSort} = useTableContext()
-
-  const {column: defaultSortColumn, direction: defaultSortDirection} = defaultSort || {}
-  useEffect(() => {
-    if (defaultSortColumn) {
-      setDefaultSort({column: defaultSortColumn, direction: defaultSortDirection || 'asc'})
-    }
-  }, [defaultSortColumn, defaultSortDirection, setDefaultSort])
+  const {searchTerm, sort} = useTableContext()
 
   const filteredData = useMemo(() => {
     const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
@@ -199,12 +190,13 @@ const TableInner = <TableData, AdditionalRowTableData>({
   )
 }
 
-export const Table = <TableData, AdditionalRowTableData = undefined>(
-  props: TableProps<TableData, AdditionalRowTableData>,
-) => {
+export const Table = <TableData, AdditionalRowTableData = undefined>({
+  defaultSort,
+  ...props
+}: TableProps<TableData, AdditionalRowTableData> & {defaultSort?: TableSort}) => {
   return (
     <TooltipDelayGroupProvider>
-      <TableProvider>
+      <TableProvider defaultSort={defaultSort}>
         <TableInner<TableData, AdditionalRowTableData> {...props} />
       </TableProvider>
     </TooltipDelayGroupProvider>

@@ -10,7 +10,6 @@ export interface TableContextValue {
   setSearchTerm: (searchTerm: string) => void
   sort: TableSort | null
   setSortColumn: (column: string) => void
-  setDefaultSort: (sort: TableSort) => void
 }
 
 const DEFAULT_TABLE_CONTEXT: TableContextValue = {
@@ -18,7 +17,6 @@ const DEFAULT_TABLE_CONTEXT: TableContextValue = {
   setSearchTerm: () => null,
   sort: null,
   setSortColumn: () => null,
-  setDefaultSort: () => null,
 }
 
 /**
