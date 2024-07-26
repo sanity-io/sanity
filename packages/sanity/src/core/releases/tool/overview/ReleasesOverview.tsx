@@ -8,6 +8,7 @@ import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDeta
 import {type BundleDocument, useBundles} from '../../../store'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {Table} from '../../components/Table/Table'
+import {type TableSort} from '../../components/Table/TableProvider'
 import {containsBundles} from '../../types/bundle'
 import {type BundlesMetadata, useBundlesMetadata} from '../useBundlesMetadata'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
@@ -19,6 +20,7 @@ export interface TableBundle extends BundleDocument {
 }
 
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
+const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: '_createdAt', direction: 'asc'}
 
 export function ReleasesOverview() {
   const {data: bundles, loading: loadingBundles} = useBundles()
@@ -177,6 +179,7 @@ export function ReleasesOverview() {
             <Table<TableBundle>
               // for resetting filter and sort on table when mode changed
               key={bundleGroupMode}
+              defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
               loading={loading}
               data={groupedBundles[bundleGroupMode]}
               columnDefs={releasesOverviewColumnDefs}
