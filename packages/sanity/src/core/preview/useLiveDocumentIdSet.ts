@@ -15,9 +15,11 @@ export type LiveDocumentSetState =
 /**
  * @internal
  * @beta
- *
- * Observes a document by its ID and returns the document and loading state
- * it will listen to the document changes.
+ * Returns document ids that matches the provided GROQ-filter, and loading state
+ * The document ids are returned in ascending order and will update in real-time
+ * Whenever a document appears or disappears from the set, a new array with the updated set of IDs will be returned.
+ * This provides a lightweight way of subscribing to a list of ids for simple cases where you just want the documents ids
+ * that matches a particular filter.
  */
 export function useLiveDocumentIdSet(
   filter: string,

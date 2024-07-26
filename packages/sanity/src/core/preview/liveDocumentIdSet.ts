@@ -23,7 +23,7 @@ export function createDocumentIdSetObserver(client: SanityClient) {
     const query = `*[${queryFilter}]._id`
     function fetchFilter() {
       return client.observable
-        .fetch(`*[${queryFilter}]._id`, params, {
+        .fetch(query, params, {
           tag: 'preview.observe-document-set.fetch',
         })
         .pipe(

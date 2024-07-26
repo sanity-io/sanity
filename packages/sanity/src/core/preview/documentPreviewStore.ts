@@ -77,7 +77,6 @@ export interface DocumentPreviewStore {
    * @param filter - A groq filter to use for the document set
    * @param params - Parameters to use with the groq filter
    * @param options - Options for the observer
-   * @param options - Options for the observer
    */
   unstable_observeDocumentIdSet: (
     filter: string,

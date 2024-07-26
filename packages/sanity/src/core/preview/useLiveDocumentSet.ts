@@ -7,6 +7,8 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useDocumentPreviewStore} from '../store'
 
+const INITIAL_VALUE = {loading: true, documents: []}
+
 /**
  * @internal
  * @beta
@@ -28,5 +30,5 @@ export function useLiveDocumentSet(
       map((docs) => ({loading: false, documents: docs as SanityDocument[]})),
     )
   }, [documentPreviewStore, groqFilter, params])
-  return useObservable(observable, {loading: true, documents: []})
+  return useObservable(observable, INITIAL_VALUE)
 }
