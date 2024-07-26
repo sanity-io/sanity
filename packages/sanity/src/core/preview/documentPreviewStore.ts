@@ -113,8 +113,10 @@ export interface DocumentPreviewStoreOptions {
  * Setting this to true will end up fetching full documents for everything that's currently being previewed in the studio
  * This comes with an extra memory and initial transfer cost, but gives faster updating previews and less likelihood of displaying
  * out-of-date previews as documents will be kept in sync by applying mendoza patches, instead of re-fetching preview queries
+ *
+ * TODO: Set to false before merging to main, see https://github.com/sanity-io/sanity/pull/7257/
  * */
-const PREVIEW_FETCH_FULL_DOCUMENTS = false
+const PREVIEW_FETCH_FULL_DOCUMENTS = true
 
 /** @internal */
 export function createDocumentPreviewStore({
