@@ -174,20 +174,21 @@ describe('ReleasesOverview', () => {
       // 2 open releases
       expect(bundleRows).toHaveLength(2)
 
-      const openBundles = [...bundles].slice(0, 2)
+      // reverse to match default sort order by _createdAt desc
+      const openBundles = [...bundles].slice(0, 2).reverse()
       openBundles.forEach((bundle, index) => {
         // bundle title
         within(bundleRows[index]).getByText(bundle.title)
         // document count
         within(bundleRows[index]).getByText('1')
         if (index === 0) {
-          // updated at & created at
-          expect(within(bundleRows[index]).getAllByText('yesterday')).toHaveLength(2)
-        } else if (index === 1) {
           // updated at
           within(bundleRows[index]).getByText('2 days ago')
           // created at
           within(bundleRows[index]).getByText('just now')
+        } else if (index === 1) {
+          // updated at & created at
+          expect(within(bundleRows[index]).getAllByText('yesterday')).toHaveLength(2)
         }
       })
     })
@@ -227,15 +228,15 @@ describe('ReleasesOverview', () => {
 
     it('sorts the list of releases', () => {
       const [unsortedFirstBundle, unsortedSecondBundle] = screen.getAllByTestId('table-row')
-      within(unsortedFirstBundle).getByText('Bundle 1')
-      within(unsortedSecondBundle).getByText('Bundle 2')
+      within(unsortedFirstBundle).getByText('Bundle 2')
+      within(unsortedSecondBundle).getByText('Bundle 1')
 
       // sort by asc created at
       fireEvent.click(screen.getByText('Created'))
       const [ascCreatedSortedFirstBundle, ascCreatedSortedSecondBundle] =
         screen.getAllByTestId('table-row')
-      within(ascCreatedSortedFirstBundle).getByText('Bundle 2')
-      within(ascCreatedSortedSecondBundle).getByText('Bundle 1')
+      within(ascCreatedSortedFirstBundle).getByText('Bundle 1')
+      within(ascCreatedSortedSecondBundle).getByText('Bundle 2')
 
       // searching retains sort order
       fireEvent.change(screen.getByPlaceholderText('Search releases'), {
@@ -243,15 +244,15 @@ describe('ReleasesOverview', () => {
       })
       const [ascCreatedSortedFirstBundleAfterSearch, ascCreatedSortedSecondBundleAfterSearch] =
         screen.getAllByTestId('table-row')
-      within(ascCreatedSortedFirstBundleAfterSearch).getByText('Bundle 2')
-      within(ascCreatedSortedSecondBundleAfterSearch).getByText('Bundle 1')
+      within(ascCreatedSortedFirstBundleAfterSearch).getByText('Bundle 1')
+      within(ascCreatedSortedSecondBundleAfterSearch).getByText('Bundle 2')
 
       // sort by desc created at
       fireEvent.click(screen.getByText('Created'))
       const [descCreatedSortedFirstBundle, descCreatedSortedSecondBundle] =
         screen.getAllByTestId('table-row')
-      within(descCreatedSortedFirstBundle).getByText('Bundle 1')
-      within(descCreatedSortedSecondBundle).getByText('Bundle 2')
+      within(descCreatedSortedFirstBundle).getByText('Bundle 2')
+      within(descCreatedSortedSecondBundle).getByText('Bundle 1')
 
       // sort by asc updated at
       fireEvent.click(screen.getByText('Edited'))
@@ -262,7 +263,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('should navigate to release when row clicked', async () => {
-      const bundleRow = screen.getAllByTestId('table-row')[0]
+      const bundleRow = screen.getAllByTestId('table-row')[1]
       fireEvent.click(within(bundleRow).getByText('Bundle 1'))
 
       expect(useRouter().navigate).toHaveBeenCalledWith({bundleSlug: 'bundle-1'})

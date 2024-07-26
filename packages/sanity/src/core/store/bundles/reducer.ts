@@ -1,10 +1,5 @@
 import {type BundleDocument} from './types'
 
-interface BundleAddedAction {
-  payload: BundleDocument
-  type: 'BUNDLE_ADDED'
-}
-
 interface BundleDeletedAction {
   id: string
   type: 'BUNDLE_DELETED'
@@ -34,7 +29,6 @@ interface LoadingStateChangedAction {
 }
 
 export type bundlesReducerAction =
-  | BundleAddedAction
   | BundleDeletedAction
   | BundleUpdatedAction
   | BundlesSetAction
@@ -74,17 +68,6 @@ export function bundlesReducer(
       return {
         ...state,
         bundles: bundlesById,
-      }
-    }
-
-    case 'BUNDLE_ADDED': {
-      const addedBundle = action.payload as BundleDocument
-      const currentBundles = new Map(state.bundles)
-      currentBundles.set(addedBundle._id, addedBundle)
-
-      return {
-        ...state,
-        bundles: currentBundles,
       }
     }
 
