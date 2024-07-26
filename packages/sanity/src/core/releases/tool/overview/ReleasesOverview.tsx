@@ -163,7 +163,7 @@ export function ReleasesOverview() {
                   {!loading && !hasBundles && (
                     <Container style={{margin: 0}} width={0}>
                       <Stack space={5}>
-                        <Text muted size={2}>
+                        <Text data-testid="no-bundles-info-text" muted size={2}>
                           Releases are collections of document versions which can be managed and
                           published together.
                         </Text>
