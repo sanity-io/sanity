@@ -116,7 +116,7 @@ export interface DocumentPreviewStoreOptions {
  * This comes with an extra memory and initial transfer cost, but gives faster updating previews and less likelihood of displaying
  * out-of-date previews as documents will be kept in sync by applying mendoza patches, instead of re-fetching preview queries
  * */
-const PREVIEW_FETCH_FULL_DOCUMENTS = false
+const PREVIEW_FETCH_FULL_DOCUMENTS = true
 
 /** @internal */
 export function createDocumentPreviewStore({
