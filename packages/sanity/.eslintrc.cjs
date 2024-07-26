@@ -172,7 +172,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['./src/_singletons/**/*.*'],
+      files: ['./src/_singletons/**/*.*', './src/core/**/!(.*|__test__)/*.*'],
       rules: {
         'no-restricted-imports': [
           'error',
