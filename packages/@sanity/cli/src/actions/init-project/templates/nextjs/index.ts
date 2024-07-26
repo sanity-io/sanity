@@ -12,17 +12,18 @@ import {structureTool} from 'sanity/structure'
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
 import {apiVersion, dataset, projectId} from ${hasSrcFolder ? "'./src/sanity/env'" : "'./sanity/env'"}
-import {schema} from ${hasSrcFolder ? "'./src/sanity/schema'" : "'./sanity/schema'"}
+import {schema} from ${hasSrcFolder ? "'./src/sanity/schemaTypes'" : "'./sanity/schemaTypes'"}
+import {structure} from ${hasSrcFolder ? "'./src/sanity/structure'" : "'./sanity/structure'"}
 
 export default defineConfig({
   basePath: ':basePath:',
   projectId,
   dataset,
-  // Add and edit the content schema in the './sanity/schema' folder
+  // Add and edit the content schema in the './sanity/schemaTypes' folder
   schema,
   plugins: [
-    structureTool(),
-    // Vision is a tool that lets you query your content with GROQ in the studio
+    structureTool({structure}),
+    // Vision is for querying with GROQ from inside the Studio
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({defaultApiVersion: apiVersion}),
   ],
@@ -59,7 +60,8 @@ export { metadata, viewport } from 'next-sanity/studio'
 
 export default function StudioPage() {
   return <NextStudio config={config} />
-}`
+}
+`
 
 // Format today's date like YYYY-MM-DD
 const envTS = `export const apiVersion =
@@ -101,6 +103,38 @@ export const schema: { types: SchemaTypeDefinition[] } = {
 const schemaJS = `export const schema = {
   types: [],
 }
+`
+
+const structureTS = `import type {StructureResolver} from 'sanity/structure'
+
+// https://www.sanity.io/docs/structure-builder-cheat-sheet
+export const structure: StructureResolver = (S) =>
+  S.list()
+    .title('Blog')
+    .items([
+      S.documentTypeListItem('post').title('Posts'),
+      S.documentTypeListItem('category').title('Categories'),
+      S.documentTypeListItem('author').title('Authors'),
+      S.divider(),
+      ...S.documentTypeListItems().filter(
+        (item) => item.getId() && !['post', 'category', 'author'].includes(item.getId()),
+      ),
+    ])
+`
+
+const structureJS = `// https://www.sanity.io/docs/structure-builder-cheat-sheet
+export const structure = (S) =>
+  S.list()
+    .title('Blog')
+    .items([
+      S.documentTypeListItem('post').title('Posts'),
+      S.documentTypeListItem('category').title('Categories'),
+      S.documentTypeListItem('author').title('Authors'),
+      S.divider(),
+      ...S.documentTypeListItems().filter(
+        (item) => item.getId() && !['post', 'category', 'author'].includes(item.getId()),
+      ),
+    ])
 `
 
 const client = `import { createClient } from 'next-sanity'
@@ -149,23 +183,23 @@ export const sanityFolder = (
   const isBlogTemplate = template === 'blog'
 
   const structure: FolderStructure = {
-    // eslint-disable-next-line no-nested-ternary
-    'schema.': useTypeScript
-      ? isBlogTemplate
-        ? blogSchemaTS
-        : schemaTS
-      : isBlogTemplate
-        ? blogSchemaJS
-        : schemaJS,
+    'schemaTypes': {
+      ...(isBlogTemplate ? blogSchemaFolder : {}),
+      // eslint-disable-next-line no-nested-ternary
+      'index.': useTypeScript
+        ? isBlogTemplate
+          ? blogSchemaTS
+          : schemaTS
+        : isBlogTemplate
+          ? blogSchemaJS
+          : schemaJS,
+    },
+    'structure.': useTypeScript ? structureTS : structureJS,
     'env.': useTypeScript ? envTS : envJS,
     'lib': {
       'client.': client,
       'image.': useTypeScript ? imageTS : imageJS,
     },
-  }
-
-  if (isBlogTemplate) {
-    structure.schemaTypes = blogSchemaFolder(useTypeScript)
   }
 
   return structure

@@ -439,10 +439,14 @@ export default async function initSanity(
     }
     const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
+    const packages = ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1', 'styled-components@6']
+    if (templateToUse === 'blog') {
+      packages.push('@sanity/icons')
+    }
     await installNewPackages(
       {
         packageManager: chosen,
-        packages: ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1', 'styled-components@6'],
+        packages,
       },
       {
         output: context.output,
