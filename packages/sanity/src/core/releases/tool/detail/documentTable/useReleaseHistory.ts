@@ -1,6 +1,10 @@
-import {type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {getPublishedId, type TransactionLogEventWithEffects, useClient} from 'sanity'
+import {
+  getPublishedId,
+  type SanityDocument,
+  type TransactionLogEventWithEffects,
+  useClient,
+} from 'sanity'
 
 import {getJsonStream} from '../../../../store/_legacy/history/history/getJsonStream'
 import {API_VERSION} from '../../../../tasks/constants'
