@@ -5,15 +5,15 @@ import {LoadingBlock} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components'
-import {useLiveDocumentSet} from '../../../preview/useLiveDocumentSet'
 import {useBundles} from '../../../store/bundles'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {ReleasePublishAllButton} from '../../components/ReleasePublishAllButton/ReleasePublishAllButton'
 import {type ReleasesRouterState} from '../../types/router'
+import {type DocumentValidationStatus} from './bundleDocumentsValidation'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseReview} from './ReleaseReview'
 import {ReleaseSummary} from './ReleaseSummary'
-import {useBundleDocumentsValidation} from './useBundleDocumentsValidation'
+import {useBundleDocuments} from './useBundleDocuments'
 
 const SUPPORTED_SCREENS = ['summary', 'review'] as const
 type Screen = (typeof SUPPORTED_SCREENS)[number]
@@ -37,15 +37,18 @@ export const ReleaseDetail = () => {
   const {bundleSlug}: ReleasesRouterState = router.state
   const parsedSlug = decodeURIComponent(bundleSlug || '')
   const {data, loading} = useBundles()
-  const {documents: bundleDocuments, loading: documentsLoading} = useLiveDocumentSet(
-    `defined(_version) &&  _id in path("${parsedSlug}.*")`,
+
+  const {loading: documentsLoading, results} = useBundleDocuments(parsedSlug)
+  const bundleDocuments = results.map((result) => result.document)
+  const documentIds = results.map((result) => result.document?._id)
+
+  const history = useReleaseHistory(documentIds)
+
+  const validation: Record<string, DocumentValidationStatus> = Object.fromEntries(
+    results.map((result) => [result.document._id, result.validation]),
   )
-
-  const history = useReleaseHistory(bundleDocuments)
-  const validation = useBundleDocumentsValidation(bundleDocuments)
-
   const bundle = data?.find((storeBundle) => storeBundle.slug === parsedSlug)
-  const bundleHasDocuments = !!bundleDocuments.length
+  const bundleHasDocuments = !!documentIds.length
   const showPublishButton = loading || !bundle?.publishedAt
   const isPublishButtonDisabled = loading || !bundle || !bundleHasDocuments
 
