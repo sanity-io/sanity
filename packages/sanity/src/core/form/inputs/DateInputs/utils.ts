@@ -19,6 +19,7 @@ export function getCalendarLabels(
     setToCurrentTime: t('calendar.action.set-to-current-time'),
     selectHour: t('calendar.action.select-hour'),
     selectMinute: t('calendar.action.select-minute'),
+    tooltipText: t('calendar.button.tooltip-text'),
     monthNames: [
       t('calendar.month-names.january'),
       t('calendar.month-names.february'),

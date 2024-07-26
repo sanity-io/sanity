@@ -143,6 +143,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
   /** Aria label for button to open date picker */
   'calendar.button.aria-label': 'Open calendar',
+  /** Tooltip content for button to open datetime input */
+  'calendar.button.tooltip-text': 'Select date',
   /** Error message displayed in calendar when entered date is not the correct format */
   'calendar.error.must-be-in-format': 'Must be in the format: {{exampleDate}}',
   /** Month name for April */
@@ -528,8 +530,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.boolean.disabled': 'Disabled',
   /** Placeholder value for datetime input */
   'inputs.datetime.placeholder': 'e.g. {{example}}',
-  /** Tooltip content for button to open datetime input */
-  'inputs.datetime.tooltip-content': 'Select date',
   /** Acessibility label for button to open file options menu */
   'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
   /** Browse */

@@ -86,7 +86,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
         onClick={handleClick}
         style={{display: 'block'}}
         data-testid="select-date-button"
-        tooltipProps={{content: t('inputs.datetime.tooltip-content')}}
+        tooltipProps={{content: calendarLabels.tooltipText}}
       />
     </Flex>
   )
