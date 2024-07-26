@@ -56,8 +56,13 @@ const INITIAL_STATE: bundlesReducerState = {
 }
 
 const NOOP_BUNDLES_STORE: BundlesStore = {
-  state$: EMPTY.pipe(startWith(INITIAL_STATE)),
-  getMetadataStateForSlugs$: () => EMPTY,
+  state$: EMPTY.pipe(
+    startWith({
+      bundles: new Map(),
+      state: 'loaded' as const,
+    }),
+  ),
+  getMetadataStateForSlugs$: () => of({data: {}, error: null, loading: false}),
   dispatch: () => undefined,
 }
 
