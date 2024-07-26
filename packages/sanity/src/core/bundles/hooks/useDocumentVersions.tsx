@@ -1,22 +1,29 @@
-import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {type Observable} from 'rxjs'
-import {type BundleDocument} from 'sanity'
-
-import {useClient} from '../../hooks/useClient'
-import {listenQuery} from '../../store/_legacy/document/listenQuery'
-import {useBundles} from '../../store/bundles/useBundles'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {getPublishedId} from '../../util/draftUtils'
-import {getBundleSlug} from '../util/util'
+import {map, of} from 'rxjs'
+import {catchError, scan} from 'rxjs/operators'
+import {
+  type BundleDocument,
+  getBundleSlug,
+  getPublishedId,
+  useBundles,
+  useDocumentPreviewStore,
+} from 'sanity'
 
 export interface DocumentPerspectiveProps {
   documentId: string
 }
 
 export interface DocumentPerspectiveState {
-  data: BundleDocument[] | null
+  data: BundleDocument[]
+  error?: unknown
+  loading: boolean
+}
+
+const INITIAL_STATE: DocumentPerspectiveState = {
+  loading: true,
+  error: null,
+  data: [],
 }
 
 /**
@@ -29,35 +36,31 @@ export interface DocumentPerspectiveState {
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
 
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {data: bundles} = useBundles()
   const publishedId = getPublishedId(documentId, documentId.includes('.'))
 
-  const QUERY = `*[sanity::versionOf("${publishedId}")]{_id, _version}`
+  const documentPreviewStore = useDocumentPreviewStore()
 
-  const observable = useMemo(
-    () => listenQuery(client, QUERY) as Observable<Pick<SanityDocument, '_id' | '_version'>[]>,
-    [QUERY, client],
-  )
+  const observable = useMemo(() => {
+    return documentPreviewStore
+      .unstable_observeDocumentIdSet(`sanity::versionOf("${publishedId}") && defined(_version)`)
+      .pipe(
+        map(({documentIds}) => {
+          return documentIds.flatMap((id) => {
+            // eslint-disable-next-line max-nested-callbacks
+            const matchingBundle = bundles?.find((bundle) => getBundleSlug(id) === bundle.slug)
+            return matchingBundle || []
+          })
+        }),
+        map((data) => ({data})),
+        catchError((error) => {
+          return of({error})
+        }),
+        scan((state, result) => {
+          return {...state, ...result}
+        }, INITIAL_STATE),
+      )
+  }, [bundles, documentPreviewStore, publishedId])
 
-  // This will return the sanity documents that are a version of the published document.
-  const versions = useObservable(observable, null)
-
-  const state = useMemo(() => {
-    if (!versions) return null
-
-    const validBundles = versions
-      .map(({_id, _version}) => {
-        if (!_version) return null
-        const bundleSlug = getBundleSlug(_id)
-        return bundles?.find((bundle) => bundle.slug === bundleSlug) || null
-      })
-      .filter(Boolean) as BundleDocument[]
-
-    return validBundles
-  }, [versions, bundles])
-
-  return {
-    data: state,
-  }
+  return useObservable(observable, INITIAL_STATE)
 }
