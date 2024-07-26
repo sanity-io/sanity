@@ -26,7 +26,7 @@ const getFetchQuery = (bundleSlugs: string[]) => {
     ({subquery: accSubquery, projection: accProjection}, bundleSlug) => {
       const safeSlug = getSafeSlug(bundleSlug)
 
-      const subquery = `${accSubquery}"${safeSlug}": *[_id in path("${bundleSlug}.*")]{_updatedAt } | order(_updatedAt desc),`
+      const subquery = `${accSubquery}"${safeSlug}": *[defined(_version) && _id in path("${bundleSlug}.*")]{_updatedAt } | order(_updatedAt desc),`
 
       // conforms to BundlesMetadata
       const projection = `${accProjection}"${bundleSlug}": {

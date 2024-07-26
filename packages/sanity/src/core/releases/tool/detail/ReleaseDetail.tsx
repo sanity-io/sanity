@@ -1,13 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo} from 'react'
-import {LoadingBlock, useClient} from 'sanity'
+import {LoadingBlock} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components'
-import {useListener} from '../../../hooks/useListener'
+import {useLiveDocumentSet} from '../../../preview/useLiveDocumentSet'
 import {useBundles} from '../../../store/bundles'
-import {API_VERSION} from '../../../tasks/constants'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {ReleasePublishAllButton} from '../../components/ReleasePublishAllButton/ReleasePublishAllButton'
 import {type ReleasesRouterState} from '../../types/router'
@@ -18,12 +17,6 @@ import {useBundleDocumentsValidation} from './useBundleDocumentsValidation'
 
 const SUPPORTED_SCREENS = ['summary', 'review'] as const
 type Screen = (typeof SUPPORTED_SCREENS)[number]
-
-const useFetchBundleDocuments = (bundleSlug: string) => {
-  const client = useClient({apiVersion: API_VERSION})
-  const query = `*[defined(_version) && _id in path("${bundleSlug}.*")]`
-  return useListener({query, client})
-}
 
 const getActiveScreen = (router: RouterContextValue): Screen => {
   const activeScreen = Object.fromEntries(router.state._searchParams || []).screen as Screen
@@ -44,8 +37,9 @@ export const ReleaseDetail = () => {
   const {bundleSlug}: ReleasesRouterState = router.state
   const parsedSlug = decodeURIComponent(bundleSlug || '')
   const {data, loading} = useBundles()
-  const {documents: bundleDocuments, loading: documentsLoading} =
-    useFetchBundleDocuments(parsedSlug)
+  const {documents: bundleDocuments, loading: documentsLoading} = useLiveDocumentSet(
+    `defined(_version) && _id in path("${bundleSlug}.*")`,
+  )
   const history = useReleaseHistory(bundleDocuments)
   const validation = useBundleDocumentsValidation(bundleDocuments)
 
