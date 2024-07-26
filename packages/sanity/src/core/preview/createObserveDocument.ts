@@ -82,5 +82,6 @@ function applyMutationEvent(current: SanityDocument | undefined, event: Mutation
     )
   }
   const next = applyMendozaPatch(current, event.effects.apply)
-  return {...next, _rev: event.resultRev}
+  // next will be undefined in case of deletion
+  return next ? {...next, _rev: event.resultRev} : undefined
 }
