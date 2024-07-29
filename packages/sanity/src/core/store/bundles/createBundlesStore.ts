@@ -55,8 +55,19 @@ const INITIAL_STATE: bundlesReducerState = {
   state: 'initialising',
 }
 
-const NOOP_BUNDLES_STORE: BundlesStore = {
+const NOOP_BUNDLE_STORE: BundlesStore = {
   state$: EMPTY.pipe(startWith(INITIAL_STATE)),
+  getMetadataStateForSlugs$: () => of({data: null, error: null, loading: false}),
+  dispatch: () => undefined,
+}
+
+const LOADED_BUNDLE_STORE: BundlesStore = {
+  state$: EMPTY.pipe(
+    startWith({
+      bundles: new Map(),
+      state: 'loaded' as const,
+    }),
+  ),
   getMetadataStateForSlugs$: () => of({data: null, error: null, loading: false}),
   dispatch: () => undefined,
 }
@@ -70,10 +81,11 @@ const NOOP_BUNDLES_STORE: BundlesStore = {
  * given the latest state upon subscription.
  */
 export function createBundlesStore(context: {
-  addOnClient: SanityClient | null
+  addonClient: SanityClient | null
   studioClient: SanityClient | null
+  addonClientReady: boolean
 }): BundlesStore {
-  const {addOnClient: client, studioClient} = context
+  const {addonClient, studioClient, addonClientReady} = context
 
   // While the comments dataset is initialising, this factory function will be called with an empty
   // `client` value. Return a noop store while the client is unavailable.
@@ -81,8 +93,12 @@ export function createBundlesStore(context: {
   // TODO: While the comments dataset is initialising, it incorrectly emits an empty object for the
   // client instead of `null`, as the types suggest. Once this is fixed, we can remove the object
   // keys length check.
-  if (!client || Object.keys(client).length === 0) {
-    return NOOP_BUNDLES_STORE
+  if (!addonClient || Object.keys(addonClient).length === 0) {
+    if (addonClientReady) {
+      // addon client has been fetched but it doesn't exists, nothing to load.
+      return LOADED_BUNDLE_STORE
+    }
+    return NOOP_BUNDLE_STORE
   }
 
   const dispatch$ = new Subject<bundlesReducerAction>()
@@ -105,7 +121,7 @@ export function createBundlesStore(context: {
     filter(() => !fetchPending$.value),
     tap(() => fetchPending$.next(true)),
     concatWith(
-      client.observable.fetch<BundleDocument[]>(QUERY, {}, {tag: 'bundles.list'}).pipe(
+      addonClient.observable.fetch<BundleDocument[]>(QUERY, {}, {tag: 'bundles.list'}).pipe(
         timeout(10_000), // 10s timeout
         retry({
           count: 2,
@@ -147,7 +163,7 @@ export function createBundlesStore(context: {
     ),
   )
 
-  const listener$ = client.observable.listen<BundleDocument>(QUERY, {}, LISTEN_OPTIONS).pipe(
+  const listener$ = addonClient.observable.listen<BundleDocument>(QUERY, {}, LISTEN_OPTIONS).pipe(
     map((event) => ({event})),
     catchError((error) =>
       of<ActionWrapper>({
