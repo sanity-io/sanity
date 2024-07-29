@@ -1,4 +1,5 @@
 export interface CalendarLabels {
+  ariaLabel: string
   goToTomorrow: string
   goToToday: string
   goToYesterday: string
@@ -9,6 +10,7 @@ export interface CalendarLabels {
   selectHour: string
   selectMinute: string
   setToCurrentTime: string
+  tooltipText: string
   monthNames: MonthNames
   weekDayNamesShort: WeekDayNames
   setToTimePreset: (time: string, date: Date) => string
