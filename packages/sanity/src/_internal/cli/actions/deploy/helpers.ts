@@ -36,9 +36,9 @@ export interface UserApplication {
   title: string | null
   isDefault: boolean | null
   appHost: string
+  urlType: 'internal' | 'external'
   createdAt: string
   updatedAt: string
-  externalAppHost: string | null
   type: 'studio'
   activeDeployment?: ActiveDeployment | null
 }
@@ -65,7 +65,7 @@ export async function getUserApplication({
 
 function createUserApplication(
   client: SanityClient,
-  body: {title?: string; isDefault?: boolean; appHost: string},
+  body: {title?: string; isDefault?: boolean; appHost: string; urlType: 'internal' | 'external'},
 ): Promise<UserApplication> {
   return client.request({uri: '/user-applications', method: 'POST', body})
 }
@@ -90,7 +90,7 @@ export async function getOrCreateUserApplication({
   if (cliConfig?.studioHost) {
     return await createUserApplication(client, {
       appHost: cliConfig.studioHost,
-      isDefault: true,
+      urlType: 'internal',
     })
   }
 
@@ -109,7 +109,11 @@ export async function getOrCreateUserApplication({
     // the user to try again until this function returns true
     validate: async (appHost: string) => {
       try {
-        const response = await createUserApplication(client, {appHost, isDefault: true})
+        const response = await createUserApplication(client, {
+          appHost,
+          isDefault: true,
+          urlType: 'internal',
+        })
         resolve(response)
         return true
       } catch (e) {
