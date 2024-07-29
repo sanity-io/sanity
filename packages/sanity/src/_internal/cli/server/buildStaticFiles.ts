@@ -73,7 +73,7 @@ export async function buildStaticFiles(
       viteConfig,
       extendViteConfig,
     )
-    viteConfig = finalizeViteConfig(viteConfig)
+    viteConfig = await finalizeViteConfig(viteConfig)
   }
 
   // Copy files placed in /static to the built /static
