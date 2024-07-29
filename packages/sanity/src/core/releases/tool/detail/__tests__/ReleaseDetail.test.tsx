@@ -7,7 +7,7 @@ import {useListener} from '../../../../hooks/useListener'
 import {useBundles} from '../../../../store/bundles'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {ReleaseDetail} from '../ReleaseDetail'
-import {useBundleDocumentsValidation} from '../useBundleDocumentsValidation'
+import {useBundleDocuments} from '../useBundleDocuments'
 
 jest.mock('../../../../store/bundles', () => ({
   useBundles: jest.fn().mockReturnValue({data: [], loading: false}),
@@ -23,8 +23,10 @@ jest.mock('../../../../hooks/useListener', () => ({
   useListener: jest.fn().mockReturnValue({documents: [], loading: false}),
 }))
 
-jest.mock('../useBundleDocumentsValidation', () => ({
-  useBundleDocumentsValidation: jest.fn().mockReturnValue({}),
+jest.mock('../useBundleDocuments', () => ({
+  useBundleDocuments: jest
+    .fn<typeof useBundleDocuments>()
+    .mockReturnValue({loading: true, results: []}),
 }))
 
 jest.mock('sanity', () => ({
@@ -49,15 +51,9 @@ jest.mock('../documentTable/useReleaseHistory', () => ({
   }),
 }))
 
-jest.mock('../useBundleDocumentsValidation', () => ({
-  useBundleDocumentsValidation: jest.fn().mockReturnValue({}),
-}))
-
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 const mockUseListener = useListener as jest.Mock<typeof useListener>
-const mockUseBundleDocumentsValidation = useBundleDocumentsValidation as jest.Mock<
-  typeof useBundleDocumentsValidation
->
+const mockUseBundleDocuments = useBundleDocuments as jest.Mock<typeof useBundleDocuments>
 const mockRouterNavigate = jest.fn()
 
 const renderTest = async () => {
@@ -211,13 +207,25 @@ describe('after bundles have loaded', () => {
 
     describe('with pending document validation', () => {
       beforeEach(async () => {
-        mockUseBundleDocumentsValidation.mockReturnValue({
-          'test-bundle-slug': {
-            documentId: '123',
-            hasError: false,
-            isValidating: true,
-            validation: [],
-          },
+        mockUseBundleDocuments.mockReturnValue({
+          loading: false,
+          results: [
+            {
+              document: {
+                _id: 'test-id',
+                _type: 'document',
+                _rev: 'abc',
+                _createdAt: currentDate,
+                _updatedAt: currentDate,
+              },
+              validation: {
+                documentId: '123',
+                hasError: false,
+                isValidating: true,
+                validation: [],
+              },
+            },
+          ],
         })
         await renderTest()
       })
@@ -232,13 +240,25 @@ describe('after bundles have loaded', () => {
 
     describe('with passing document validation', () => {
       beforeEach(async () => {
-        mockUseBundleDocumentsValidation.mockReturnValue({
-          'test-bundle-slug': {
-            documentId: '123',
-            hasError: false,
-            isValidating: false,
-            validation: [],
-          },
+        mockUseBundleDocuments.mockReturnValue({
+          loading: false,
+          results: [
+            {
+              document: {
+                _id: 'test-id',
+                _type: 'document',
+                _rev: 'abc',
+                _createdAt: currentDate,
+                _updatedAt: currentDate,
+              },
+              validation: {
+                documentId: '123',
+                hasError: false,
+                isValidating: false,
+                validation: [],
+              },
+            },
+          ],
         })
         await renderTest()
       })
@@ -280,19 +300,31 @@ describe('after bundles have loaded', () => {
 
     describe('with failing document validation', () => {
       beforeEach(async () => {
-        mockUseBundleDocumentsValidation.mockReturnValue({
-          'test-bundle-slug': {
-            documentId: '123',
-            hasError: true,
-            isValidating: false,
-            validation: [
-              {
-                message: 'title validation message',
-                level: 'error',
-                path: ['title'],
+        mockUseBundleDocuments.mockReturnValue({
+          loading: false,
+          results: [
+            {
+              document: {
+                _id: '123',
+                _type: 'test',
+                _rev: 'abc',
+                _createdAt: currentDate,
+                _updatedAt: currentDate,
               },
-            ],
-          },
+              validation: {
+                documentId: '123',
+                hasError: true,
+                isValidating: false,
+                validation: [
+                  {
+                    message: 'title validation message',
+                    level: 'error',
+                    path: ['title'],
+                  },
+                ],
+              },
+            },
+          ],
         })
         await renderTest()
       })
