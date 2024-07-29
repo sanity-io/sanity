@@ -20,7 +20,7 @@ export interface TableBundle extends BundleDocument {
 }
 
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
-const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: '_createdAt', direction: 'asc'}
+const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: '_createdAt', direction: 'desc'}
 
 export function ReleasesOverview() {
   const {data: bundles, loading: loadingBundles} = useBundles()
