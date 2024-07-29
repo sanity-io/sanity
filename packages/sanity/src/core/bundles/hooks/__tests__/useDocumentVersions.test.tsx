@@ -1,23 +1,23 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {renderHook} from '@testing-library/react'
-import {useBundles, useClient} from 'sanity'
+import {of} from 'rxjs'
 
+import {listenQuery} from '../../../store/_legacy/document/listenQuery'
+import {useBundles} from '../../../store/bundles/useBundles'
 import {useDocumentVersions} from '../useDocumentVersions'
 
 // Mock the entire module
 jest.mock('../../../studio/source')
 
-jest.mock('sanity', () => {
-  const actual = jest.requireActual('sanity')
-  return Object.assign({}, actual, {
-    useClient: jest.fn(),
-    useBundles: jest.fn(() => ({data: {}})),
-    getPublishedId: jest.fn(),
-  })
-})
+jest.mock('../../../hooks/useClient', () => ({
+  useClient: jest.fn(() => ({fetch: jest.fn()})),
+}))
 
-const mockedUseClient = useClient as jest.Mock
+jest.mock('../../../store/bundles/useBundles')
 const mockedUseBundles = useBundles as jest.Mock
+
+jest.mock('../../../store/_legacy/document/listenQuery')
+const mockedListenQuery = listenQuery as jest.Mock
 
 describe('useDocumentVersions', () => {
   const mockBundles = [
@@ -50,12 +50,44 @@ describe('useDocumentVersions', () => {
   ]
 
   beforeEach(() => {
-    mockedUseClient.mockImplementation(() => ({fetch: jest.fn()}))
     mockedUseBundles.mockReturnValue({data: mockBundles, loading: false, dispatch: jest.fn()})
   })
 
   it('should return initial state', () => {
+    mockedListenQuery.mockReturnValue(of(null))
+
     const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
     expect(result.current.data).toBeNull()
+  })
+
+  it('should return an empty array if no versions are found', () => {
+    mockedListenQuery.mockReturnValue(of([]))
+    const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+    expect(result.current.data).toEqual([])
+  })
+
+  it('should return the bundles if versions are found', () => {
+    mockedListenQuery.mockReturnValue(
+      of([
+        {
+          _id: 'spring-drop.document-1',
+          _version: {},
+        },
+      ]),
+    )
+    const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+    expect(result.current.data).toEqual([mockBundles[0]])
+  })
+  it('should not crash if version bundle is not found', () => {
+    mockedListenQuery.mockReturnValue(
+      of([
+        {
+          _id: 'missing-drop.document-1',
+          _version: {},
+        },
+      ]),
+    )
+    const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+    expect(result.current.data).toEqual([])
   })
 })
