@@ -20,6 +20,25 @@ export type FileInfo = {
   type: DataTransferItem['type'] // mime type of file or string
 }
 
+type CamelToKebab<S extends string> = S extends `${infer P1}${infer P2}`
+  ? P2 extends Uncapitalize<P2>
+    ? `${Lowercase<P1>}${CamelToKebab<P2>}`
+    : `${Lowercase<P1>}-${CamelToKebab<Uncapitalize<P2>>}`
+  : S
+
+type DataAttribute<S extends string> = `data-${CamelToKebab<S>}`
+
+const fileTargetAttributeName = 'isFileTarget'
+const fileTargetDataAttribute: Record<DataAttribute<typeof fileTargetAttributeName>, 'true'> = {
+  'data-is-file-target': 'true',
+}
+
+/**
+ * @internal
+ */
+export const isFileTargetElement = (el: HTMLElement): boolean =>
+  el?.dataset?.[fileTargetAttributeName] === 'true'
+
 type Props = {
   // Triggered when the target component receives one or more files, either originating from a drop event or a paste event
   onFiles?: (files: File[]) => void
@@ -189,6 +208,7 @@ export function fileTarget<ComponentProps>(Component: ComponentType<ComponentPro
           onDragLeave={disabled ? undefined : handleDragLeave}
           onDrop={disabled ? undefined : handleDrop}
           data-test-id="file-target"
+          {...fileTargetDataAttribute}
         />
         {!disabled && showPasteInput && (
           <div contentEditable onPaste={handlePaste} ref={pasteInput} style={PASTE_INPUT_STYLE} />
