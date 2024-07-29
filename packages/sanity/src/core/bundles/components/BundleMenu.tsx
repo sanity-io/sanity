@@ -33,7 +33,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
   const {currentGlobalBundle, setPerspective} = usePerspective()
 
   const bundlesToDisplay =
-    bundles?.filter((b) => !isDraftOrPublished(b.slug) && !b.archivedAt) || []
+    bundles?.filter((bundle) => !isDraftOrPublished(bundle.slug) && !bundle.archivedAt) || []
   const hasBundles = bundlesToDisplay.length > 0
 
   const handleBundleChange = useCallback(
@@ -73,27 +73,27 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                   <>
                     <MenuDivider />
                     <StyledBox data-testid="bundles-list">
-                      {bundlesToDisplay.map((b) => (
+                      {bundlesToDisplay.map((bundle) => (
                         <MenuItem
-                          key={b.slug}
-                          onClick={handleBundleChange(b)}
+                          key={bundle.slug}
+                          onClick={handleBundleChange(bundle)}
                           padding={1}
                           pressed={false}
-                          data-testid={`bundle-${b.slug}`}
+                          data-testid={`bundle-${bundle.slug}`}
                         >
                           <Flex>
-                            <BundleBadge hue={b.hue} icon={b.icon} padding={2} />
+                            <BundleBadge hue={bundle.hue} icon={bundle.icon} padding={2} />
 
                             <Box flex={1} padding={2} style={{minWidth: 100}}>
                               <Text size={1} weight="medium">
-                                {b.title}
+                                {bundle.title}
                               </Text>
                             </Box>
 
                             {/*<Box padding={2}>
                                 <Text muted size={1}>
-                                  {b.publishAt ? (
-                                    <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
+                                  {bundle.publishAt ? (
+                                    <RelativeTime time={bundle.publishAt as Date} useTemporalPhrase />
                                   ) : (
                                     'No target date'
                                   )}
@@ -103,8 +103,10 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                             <Box padding={2}>
                               <Text size={1}>
                                 <CheckmarkIcon
-                                  style={{opacity: currentGlobalBundle.slug === b.slug ? 1 : 0}}
-                                  data-testid={`${b.slug}-checkmark-icon`}
+                                  style={{
+                                    opacity: currentGlobalBundle.slug === bundle.slug ? 1 : 0,
+                                  }}
+                                  data-testid={`${bundle.slug}-checkmark-icon`}
                                 />
                               </Text>
                             </Box>
