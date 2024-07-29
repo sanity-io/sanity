@@ -99,6 +99,24 @@ describe('BundleMenu', () => {
     })
   })
 
+  it('should render latest bundle menu item when bundles are archived', async () => {
+    const wrapper = await createWrapper()
+    const archivedBundles = mockBundles.map((bundle) => ({
+      ...bundle,
+      archivedAt: '2024-07-29T01:49:56.066Z',
+    }))
+    render(<BundleMenu button={ButtonTest} bundles={archivedBundles} loading={false} />, {
+      wrapper,
+    })
+
+    fireEvent.click(screen.getByRole('button', {name: 'Button Test'}))
+
+    act(() => {
+      expect(screen.getByTestId('latest-menu-item')).toBeInTheDocument()
+      expect(screen.queryByTestId('bundles-list')).not.toBeInTheDocument()
+    })
+  })
+
   it('should render latest bundle menu item as selected when currentGlobalBundle is LATEST', async () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: LATEST,
