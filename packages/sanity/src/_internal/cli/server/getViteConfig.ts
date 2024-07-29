@@ -1,7 +1,6 @@
 import path from 'node:path'
 
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
-import viteReact from '@vitejs/plugin-react'
 import debug from 'debug'
 import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig} from 'vite'
@@ -88,6 +87,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
   const defaultFaviconsPath = path.join(path.dirname(sanityPkgPath), 'static', 'favicons')
   const staticPath = `${basePath}static`
 
+  const {default: viteReact} = await import('@vitejs/plugin-react')
   const viteConfig: InlineConfig = {
     // Define a custom cache directory so that sanity's vite cache
     // does not conflict with any potential local vite projects
