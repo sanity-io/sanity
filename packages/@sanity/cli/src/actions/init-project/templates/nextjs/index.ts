@@ -105,10 +105,25 @@ const schemaJS = `export const schema = {
 }
 `
 
-const structureTS = `import type {StructureResolver} from 'sanity/structure'
+const blogStructureTS = `import type {StructureResolver} from 'sanity/structure'
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure: StructureResolver = (S) =>
+  S.list()
+    .title('Blog')
+    .items([
+      S.documentTypeListItem('post').title('Posts'),
+      S.documentTypeListItem('category').title('Categories'),
+      S.documentTypeListItem('author').title('Authors'),
+      S.divider(),
+      ...S.documentTypeListItems().filter(
+        (item) => item.getId() && !['post', 'category', 'author'].includes(item.getId()!),
+      ),
+    ])
+`
+
+const blogStructureJS = `// https://www.sanity.io/docs/structure-builder-cheat-sheet
+export const structure = (S) =>
   S.list()
     .title('Blog')
     .items([
@@ -122,19 +137,20 @@ export const structure: StructureResolver = (S) =>
     ])
 `
 
+const structureTS = `import type {StructureResolver} from 'sanity/structure'
+
+// https://www.sanity.io/docs/structure-builder-cheat-sheet
+export const structure: StructureResolver = (S) =>
+  S.list()
+    .title('Content')
+    .items(S.documentTypeListItems())
+`
+
 const structureJS = `// https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure = (S) =>
   S.list()
-    .title('Blog')
-    .items([
-      S.documentTypeListItem('post').title('Posts'),
-      S.documentTypeListItem('category').title('Categories'),
-      S.documentTypeListItem('author').title('Authors'),
-      S.divider(),
-      ...S.documentTypeListItems().filter(
-        (item) => item.getId() && !['post', 'category', 'author'].includes(item.getId()),
-      ),
-    ])
+    .title('Content')
+    .items(S.documentTypeListItems())
 `
 
 const client = `import { createClient } from 'next-sanity'
@@ -180,26 +196,26 @@ export const sanityFolder = (
   useTypeScript: boolean,
   template?: 'clean' | 'blog',
 ): FolderStructure => {
-  const isBlogTemplate = template === 'blog'
-
+  // Files used in both templates
   const structure: FolderStructure = {
-    'schemaTypes': {
-      ...(isBlogTemplate ? blogSchemaFolder : {}),
-      // eslint-disable-next-line no-nested-ternary
-      'index.': useTypeScript
-        ? isBlogTemplate
-          ? blogSchemaTS
-          : schemaTS
-        : isBlogTemplate
-          ? blogSchemaJS
-          : schemaJS,
-    },
-    'structure.': useTypeScript ? structureTS : structureJS,
     'env.': useTypeScript ? envTS : envJS,
     'lib': {
       'client.': client,
       'image.': useTypeScript ? imageTS : imageJS,
     },
+  }
+
+  if (template === 'blog') {
+    structure.schemaTypes = {
+      ...blogSchemaFolder,
+      'index.': useTypeScript ? blogSchemaTS : blogSchemaJS,
+    }
+    structure['structure.'] = useTypeScript ? blogStructureTS : blogStructureJS
+  } else {
+    structure.schemaTypes = {
+      'index.': useTypeScript ? schemaTS : schemaJS,
+    }
+    structure['structure.'] = useTypeScript ? structureTS : structureJS
   }
 
   return structure
