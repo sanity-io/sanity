@@ -43,15 +43,19 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
   // This will return the sanity documents that are a version of the published document.
   const versions = useObservable(observable, null)
 
-  const state = useMemo(
-    () =>
-      versions
-        ? (versions
-            .map((r) => bundles?.find((b) => r._version && getBundleSlug(r._id) === b.slug))
-            .filter(Boolean) as BundleDocument[])
-        : null,
-    [versions, bundles],
-  )
+  const state = useMemo(() => {
+    if (!versions) return null
+
+    const validBundles = versions
+      .map(({_id, _version}) => {
+        if (!_version) return null
+        const bundleSlug = getBundleSlug(_id)
+        return bundles?.find((bundle) => bundle.slug === bundleSlug) || null
+      })
+      .filter(Boolean) as BundleDocument[]
+
+    return validBundles
+  }, [versions, bundles])
 
   return {
     data: state,
