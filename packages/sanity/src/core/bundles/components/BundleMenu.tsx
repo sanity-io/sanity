@@ -30,9 +30,11 @@ interface BundleListProps {
  */
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
-  const hasBundles = bundles && bundles.filter((b) => !isDraftOrPublished(b.slug)).length > 0
-
   const {currentGlobalBundle, setPerspective} = usePerspective()
+
+  const bundlesToDisplay =
+    bundles?.filter((b) => !isDraftOrPublished(b.slug) && !b.archivedAt) || []
+  const hasBundles = bundlesToDisplay.length > 0
 
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
@@ -71,26 +73,24 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                   <>
                     <MenuDivider />
                     <StyledBox data-testid="bundles-list">
-                      {bundles
-                        .filter((b) => !isDraftOrPublished(b.slug) && !b.archivedAt)
-                        .map((b) => (
-                          <MenuItem
-                            key={b.slug}
-                            onClick={handleBundleChange(b)}
-                            padding={1}
-                            pressed={false}
-                            data-testid={`bundle-${b.slug}`}
-                          >
-                            <Flex>
-                              <BundleBadge hue={b.hue} icon={b.icon} padding={2} />
+                      {bundlesToDisplay.map((b) => (
+                        <MenuItem
+                          key={b.slug}
+                          onClick={handleBundleChange(b)}
+                          padding={1}
+                          pressed={false}
+                          data-testid={`bundle-${b.slug}`}
+                        >
+                          <Flex>
+                            <BundleBadge hue={b.hue} icon={b.icon} padding={2} />
 
-                              <Box flex={1} padding={2} style={{minWidth: 100}}>
-                                <Text size={1} weight="medium">
-                                  {b.title}
-                                </Text>
-                              </Box>
+                            <Box flex={1} padding={2} style={{minWidth: 100}}>
+                              <Text size={1} weight="medium">
+                                {b.title}
+                              </Text>
+                            </Box>
 
-                              {/*<Box padding={2}>
+                            {/*<Box padding={2}>
                                 <Text muted size={1}>
                                   {b.publishAt ? (
                                     <RelativeTime time={b.publishAt as Date} useTemporalPhrase />
@@ -100,17 +100,17 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                 </Text>
                               </Box>*/}
 
-                              <Box padding={2}>
-                                <Text size={1}>
-                                  <CheckmarkIcon
-                                    style={{opacity: currentGlobalBundle.slug === b.slug ? 1 : 0}}
-                                    data-testid={`${b.slug}-checkmark-icon`}
-                                  />
-                                </Text>
-                              </Box>
-                            </Flex>
-                          </MenuItem>
-                        ))}
+                            <Box padding={2}>
+                              <Text size={1}>
+                                <CheckmarkIcon
+                                  style={{opacity: currentGlobalBundle.slug === b.slug ? 1 : 0}}
+                                  data-testid={`${b.slug}-checkmark-icon`}
+                                />
+                              </Text>
+                            </Box>
+                          </Flex>
+                        </MenuItem>
+                      ))}
                     </StyledBox>
                   </>
                 )}
