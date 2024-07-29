@@ -14,8 +14,6 @@ export interface GetAliasesOptions {
   monorepo?: SanityMonorepo
   /** The path to the sanity package.json file. */
   sanityPkgPath?: string
-  /** The list of conditions to resolve package exports. */
-  conditions?: string[]
 }
 
 /**
@@ -41,6 +39,14 @@ export const browserCompatibleSanityPackageSpecifiers = [
 ]
 
 /**
+ * These conditions should align with the conditions present in the
+ * `package.json` of the `'sanity'` module. they are given to `resolve.exports`
+ * in order to determine the correct entrypoint for the browser-compatible
+ * package specifiers listed above.
+ */
+const conditions = ['import', 'browser', 'default']
+
+/**
  * Returns an object of aliases for Vite to use.
  *
  * This function is used within our build tooling to prevent multiple context errors
@@ -53,7 +59,7 @@ export const browserCompatibleSanityPackageSpecifiers = [
  *
  * @internal
  */
-export function getAliases({monorepo, sanityPkgPath, conditions}: GetAliasesOptions): AliasOptions {
+export function getAliases({monorepo, sanityPkgPath}: GetAliasesOptions): AliasOptions {
   // If the current Studio is located within the Sanity monorepo
   if (monorepo?.path) {
     // Load monorepo aliases. This ensures that the Vite server uses the source files
@@ -75,9 +81,9 @@ export function getAliases({monorepo, sanityPkgPath, conditions}: GetAliasesOpti
     return monorepoAliases
   }
 
-  // If not in the monorepo, use the `sanityPkgPath` and `conditions`
+  // If not in the monorepo, use the `sanityPkgPath`
   // to locate the entry points for each subpath the Sanity module exports
-  if (sanityPkgPath && conditions) {
+  if (sanityPkgPath) {
     // Load the package.json of the Sanity package
     // eslint-disable-next-line import/no-dynamic-require
     const pkg = require(sanityPkgPath)
