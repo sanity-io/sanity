@@ -36,7 +36,8 @@ export const ReleaseDetail = () => {
 
   const {bundleSlug}: ReleasesRouterState = router.state
   const parsedSlug = decodeURIComponent(bundleSlug || '')
-  const {data, loading} = useBundles()
+  const {data, loading, deletedBundles} = useBundles()
+  const deletedBundle = deletedBundles[parsedSlug]
 
   const {loading: documentsLoading, results} = useBundleDocuments(parsedSlug)
   const bundleDocuments = results.map((result) => result.document)
@@ -74,8 +75,11 @@ export const ReleaseDetail = () => {
     }
   }, [activeScreen, bundle?.publishedAt, navigateToSummary])
 
-  const header = useMemo(
-    () => (
+  const header = useMemo(() => {
+    const headerBundle = bundle || deletedBundle
+    const isBundleDeleted = !!deletedBundle
+
+    return (
       <Card
         flex="none"
         padding={3}
@@ -100,7 +104,7 @@ export const ReleaseDetail = () => {
               />
               <Box paddingX={1} paddingY={2}>
                 <Text as="h1" size={1} weight="semibold">
-                  {bundle?.title}
+                  {headerBundle?.title}
                 </Text>
               </Box>
             </Flex>
@@ -114,15 +118,15 @@ export const ReleaseDetail = () => {
                 text="Summary"
               />
               {/* StudioButton supports tooltip when button is disabled */}
-              {!bundle?.publishedAt && (
+              {!headerBundle?.publishedAt && (
                 <Button
                   tooltipProps={{
-                    disabled: bundleHasDocuments,
+                    disabled: bundleHasDocuments || isBundleDeleted,
                     content: 'Add documents to this release to review changes',
                     placement: 'bottom',
                   }}
                   key="review"
-                  disabled={!bundleHasDocuments}
+                  disabled={!bundleHasDocuments || isBundleDeleted}
                   mode="bleed"
                   onClick={navigateToReview}
                   selected={activeScreen === 'review'}
@@ -133,7 +137,7 @@ export const ReleaseDetail = () => {
           </Flex>
 
           <Flex flex="none" gap={2}>
-            {showPublishButton && bundle && (
+            {!isBundleDeleted && showPublishButton && bundle && (
               <ReleasePublishAllButton
                 bundle={bundle}
                 bundleDocuments={bundleDocuments}
@@ -141,26 +145,43 @@ export const ReleaseDetail = () => {
                 validation={validation}
               />
             )}
-            <BundleMenuButton bundle={bundle} documentCount={bundleDocuments.length} />
+            <BundleMenuButton
+              disabled={isBundleDeleted}
+              bundle={headerBundle}
+              documentCount={bundleDocuments.length}
+            />
           </Flex>
         </Flex>
       </Card>
-    ),
-    [
-      activeScreen,
-      bundle,
-      bundleDocuments,
-      bundleHasDocuments,
-      isPublishButtonDisabled,
-      navigateToReview,
-      navigateToSummary,
-      router,
-      showPublishButton,
-      validation,
-    ],
-  )
+    )
+  }, [
+    activeScreen,
+    bundle,
+    bundleDocuments,
+    bundleHasDocuments,
+    deletedBundle,
+    isPublishButtonDisabled,
+    navigateToReview,
+    navigateToSummary,
+    router,
+    showPublishButton,
+    validation,
+  ])
 
   const detailContent = useMemo(() => {
+    if (deletedBundle) {
+      return (
+        <Card flex={1} tone="critical">
+          <Container width={0}>
+            <Stack paddingY={4} space={1}>
+              <Heading>
+                '<strong>{deletedBundle.title}</strong>' release has been deleted
+              </Heading>
+            </Stack>
+          </Container>
+        </Card>
+      )
+    }
     if (!bundle) return null
 
     if (activeScreen === 'summary') {
@@ -189,6 +210,7 @@ export const ReleaseDetail = () => {
     activeScreen,
     bundle,
     bundleDocuments,
+    deletedBundle,
     history.collaborators,
     history.documentsHistory,
     validation,
@@ -198,7 +220,7 @@ export const ReleaseDetail = () => {
     return <LoadingBlock title="Loading release" fill data-testid="bundle-documents-table-loader" />
   }
 
-  if (!bundle) {
+  if (!bundle && !deletedBundle) {
     return (
       <Card flex={1} tone="critical">
         <Container width={0}>
@@ -217,7 +239,11 @@ export const ReleaseDetail = () => {
       <Card flex={1} overflow="auto">
         <Container width={2}>
           <Box paddingX={4} paddingY={6}>
-            {documentsLoading ? <LoadingBlock title="Loading documents" /> : detailContent}
+            {documentsLoading && !deletedBundle ? (
+              <LoadingBlock title="Loading documents" />
+            ) : (
+              detailContent
+            )}
           </Box>
         </Container>
       </Card>
