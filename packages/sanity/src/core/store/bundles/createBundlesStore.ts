@@ -1,4 +1,5 @@
 import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
+import {type User} from '@sentry/types'
 import {
   BehaviorSubject,
   catchError,
@@ -52,6 +53,7 @@ const LISTEN_OPTIONS: ListenOptions = {
 
 const INITIAL_STATE: bundlesReducerState = {
   bundles: new Map(),
+  deletedBundles: {},
   state: 'initialising',
 }
 
@@ -72,8 +74,9 @@ const NOOP_BUNDLES_STORE: BundlesStore = {
 export function createBundlesStore(context: {
   addOnClient: SanityClient | null
   studioClient: SanityClient | null
+  currentUser: User | null
 }): BundlesStore {
-  const {addOnClient: client, studioClient} = context
+  const {addOnClient: client, studioClient, currentUser} = context
 
   // While the comments dataset is initialising, this factory function will be called with an empty
   // `client` value. Return a noop store while the client is unavailable.
@@ -197,7 +200,12 @@ export function createBundlesStore(context: {
         // and update the bundles store accordingly
         if (event.type === 'mutation') {
           if (event.transition === 'disappear') {
-            return of<bundlesReducerAction>({type: 'BUNDLE_DELETED', id: event.documentId})
+            return of<bundlesReducerAction>({
+              type: 'BUNDLE_DELETED',
+              id: event.documentId,
+              deletedByUserId: event.identity,
+              currentUserId: currentUser?.id?.toString() || '',
+            })
           }
 
           if (event.transition === 'appear') {

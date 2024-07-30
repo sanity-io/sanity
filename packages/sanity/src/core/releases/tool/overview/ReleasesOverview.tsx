@@ -7,7 +7,7 @@ import {Button as StudioButton} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
 import {type BundleDocument, useBundles} from '../../../store'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
-import {Table} from '../../components/Table/Table'
+import {Table, type TableProps} from '../../components/Table/Table'
 import {type TableSort} from '../../components/Table/TableProvider'
 import {containsBundles} from '../../types/bundle'
 import {type BundlesMetadata, useBundlesMetadata} from '../useBundlesMetadata'
@@ -16,14 +16,18 @@ import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 type Mode = 'open' | 'archived'
 
 export interface TableBundle extends BundleDocument {
-  documentsMetadata: BundlesMetadata
+  documentsMetadata?: BundlesMetadata
+  isDeleted?: boolean
 }
 
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: '_createdAt', direction: 'desc'}
 
+const getRowProps: TableProps<TableBundle, undefined>['rowProps'] = (datum) =>
+  datum.isDeleted ? {tone: 'transparent'} : {}
+
 export function ReleasesOverview() {
-  const {data: bundles, loading: loadingBundles} = useBundles()
+  const {data: bundles, loading: loadingBundles, deletedBundles} = useBundles()
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const bundleSlugs = useMemo(() => bundles?.map((bundle) => bundle.slug) || [], [bundles])
@@ -33,13 +37,21 @@ export function ReleasesOverview() {
   const loadingOrHasBundles = loading || hasBundles
 
   const tableBundles = useMemo<TableBundle[]>(() => {
-    if (!bundles || !bundlesMetadata) return []
-
-    return bundles.map((bundle) => ({
-      ...bundle,
-      documentsMetadata: bundlesMetadata[bundle.slug] || {},
+    const deletedTableBundles = Object.values(deletedBundles).map((deletedBundle) => ({
+      ...deletedBundle,
+      isDeleted: true,
     }))
-  }, [bundles, bundlesMetadata])
+
+    if (!bundles || !bundlesMetadata) return deletedTableBundles
+
+    return [
+      ...deletedTableBundles,
+      ...bundles.map((bundle) => ({
+        ...bundle,
+        documentsMetadata: bundlesMetadata[bundle.slug] || {},
+      })),
+    ]
+  }, [bundles, bundlesMetadata, deletedBundles])
 
   const groupedBundles = useMemo(
     () =>
@@ -144,8 +156,10 @@ export function ReleasesOverview() {
   const renderRowActions = useCallback(({datum}: {datum: TableBundle | unknown}) => {
     const bundle = datum as TableBundle
 
+    if (bundle.isDeleted) return null
+
     return (
-      <BundleMenuButton bundle={bundle} documentCount={bundle.documentsMetadata.documentCount} />
+      <BundleMenuButton bundle={bundle} documentCount={bundle.documentsMetadata?.documentCount} />
     )
   }, [])
 
@@ -187,6 +201,7 @@ export function ReleasesOverview() {
               emptyState="No Releases"
               rowId="_id"
               rowActions={renderRowActions}
+              rowProps={getRowProps}
             />
           </Stack>
         </Container>

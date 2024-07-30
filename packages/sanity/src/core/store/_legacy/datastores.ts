@@ -280,6 +280,7 @@ export function useKeyValueStore(): KeyValueStore {
 export function useBundlesStore(): BundlesStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
+  const currentUser = useCurrentUser()
   const {client: addOnClient} = useAddonDataset()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
@@ -288,7 +289,7 @@ export function useBundlesStore(): BundlesStore {
       resourceCache.get<BundlesStore>({
         dependencies: [workspace, addOnClient],
         namespace: 'BundlesStore',
-      }) || createBundlesStore({addOnClient, studioClient})
+      }) || createBundlesStore({addOnClient, studioClient, currentUser})
 
     resourceCache.set({
       dependencies: [workspace, addOnClient],
@@ -297,5 +298,5 @@ export function useBundlesStore(): BundlesStore {
     })
 
     return bundlesStore
-  }, [addOnClient, resourceCache, studioClient, workspace])
+  }, [addOnClient, currentUser, resourceCache, studioClient, workspace])
 }

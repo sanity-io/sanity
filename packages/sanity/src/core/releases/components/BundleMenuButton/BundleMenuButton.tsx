@@ -16,7 +16,7 @@ import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 
 type Props = {
   bundle?: BundleDocument
-  documentCount: number
+  documentCount?: number
 }
 
 export const BundleMenuButton = ({bundle, documentCount}: Props) => {

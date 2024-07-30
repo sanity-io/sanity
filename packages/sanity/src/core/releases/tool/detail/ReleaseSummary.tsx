@@ -34,6 +34,8 @@ export interface ReleaseSummaryProps {
   validation: Record<string, DocumentValidationStatus>
 }
 
+type AdditionalDocumentTableData = ReturnType<typeof useDocumentPreviewValues>
+
 const getRow =
   (
     release: BundleDocument,
@@ -56,6 +58,10 @@ const setIconHue = ({hue, icon}: {hue: BundleDocument['hue']; icon: BundleDocume
   hue: hue ?? 'gray',
   icon: icon ?? 'documents',
 })
+
+const getRowProps: TableProps<DocumentWithHistory, AdditionalDocumentTableData>['rowProps'] = (
+  datum,
+) => (datum?.validation?.hasError ? {tone: 'critical'} : {})
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, collaborators, validation} = props
@@ -187,13 +193,14 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         </Flex>
       </Stack>
 
-      <Table<DocumentWithHistory, ReturnType<typeof useDocumentPreviewValues>>
+      <Table<DocumentWithHistory, AdditionalDocumentTableData>
         data={aggregatedData}
         emptyState="No documents"
         rowId="_id"
         Row={Row}
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}
+        rowProps={getRowProps}
       />
     </Stack>
   )
