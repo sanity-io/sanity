@@ -53,7 +53,7 @@ export const createBundlesMetadataAggregator = (client: SanityClient | null) => 
     bundleSlugs: string[],
     isInitialLoad: boolean = false,
   ): Observable<MetadataWrapper> => {
-    if (!bundleSlugs?.length || !client) return EMPTY
+    if (!bundleSlugs?.length || !client) return of({data: null, error: null, loading: false})
 
     const {subquery: queryAllDocumentsInBundleSlugs, projection: projectionToBundleMetadata} =
       getFetchQuery(bundleSlugs)
