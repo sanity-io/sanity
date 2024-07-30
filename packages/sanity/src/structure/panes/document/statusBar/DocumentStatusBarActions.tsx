@@ -33,8 +33,15 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states, actionProps} = props
-  const {__internal_tasks, schemaType, openPath, documentId, documentType, documentVersions} =
-    useDocumentPane()
+  const {
+    __internal_tasks,
+    schemaType,
+    openPath,
+    documentId,
+    documentType,
+    documentVersions,
+    formState,
+  } = useDocumentPane()
 
   const paneRouter = usePaneRouter()
   const [firstActionState, ...menuActionStates] = states
@@ -98,13 +105,14 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                 <>
                   {
                     /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
-                    isBundleDocument(currentGlobalBundle) ? (
+                    isBundleDocument(currentGlobalBundle) && formState?.value?._id ? (
                       <BundleActions
                         currentGlobalBundle={currentGlobalBundle}
                         documentId={documentId}
+                        formDocumentId={formState.value._id as string}
                         documentType={documentType}
-                        documentVersions={documentVersions}
                         {...actionProps}
+                        key={formState.value._id as string}
                       />
                     ) : (
                       <div>
