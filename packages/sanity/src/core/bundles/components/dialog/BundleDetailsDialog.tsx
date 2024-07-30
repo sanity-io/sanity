@@ -1,5 +1,5 @@
 import {ArrowRightIcon} from '@sanity/icons'
-import {Box, Button, Dialog, Flex} from '@sanity/ui'
+import {Box, Button, Dialog, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
 
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -15,6 +15,7 @@ interface BundleDetailsDialogProps {
 
 export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Element {
   const {onCancel, onSubmit, bundle} = props
+  const toast = useToast()
   const {createBundle, updateBundle} = useBundleOperations()
   const [hasErrors, setHasErrors] = useState(false)
   const formAction = bundle ? 'edit' : 'create'
@@ -66,18 +67,23 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
           setIsSubmitting(true)
           await bundleOperation(value)
           setValue(value)
-        } catch (err) {
-          console.error(err)
-        } finally {
-          setIsSubmitting(false)
           if (formAction === 'create') {
             setPerspective(value.slug)
           }
+        } catch (err) {
+          console.error(err)
+          toast.push({
+            closable: true,
+            status: 'error',
+            title: `Failed to ${formAction} release`,
+          })
+        } finally {
+          setIsSubmitting(false)
           onSubmit()
         }
       }
     },
-    [bundleOperation, formAction, onSubmit, setPerspective, value],
+    [bundleOperation, formAction, onSubmit, setPerspective, value, toast],
   )
 
   const handleOnChange = useCallback((changedValue: Partial<BundleDocument>) => {
