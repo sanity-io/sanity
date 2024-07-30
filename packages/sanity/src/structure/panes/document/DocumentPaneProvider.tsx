@@ -111,13 +111,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     templateName,
     templateParams,
+    version: params.version,
   })
 
   const {perspective} = paneRouter
 
-  const bundlePerspective = perspective?.startsWith('bundle.')
-    ? perspective.split('bundle.').at(1)
-    : undefined
+  const bundlePerspective =
+    params.version ||
+    (perspective?.startsWith('bundle.') ? perspective.split('bundle.').at(1) : undefined)
 
   const initialValue = useUnique(initialValueRaw)
   const {patch} = useDocumentOperation(documentId, documentType, bundlePerspective)
@@ -214,8 +215,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     if (!timelineReady) {
       return false
     }
-    return Boolean(!editState?.draft && !editState?.published) && !isPristine
-  }, [editState?.draft, editState?.published, isPristine, timelineReady])
+    return Boolean(!editState?.draft && !editState?.published && !editState?.version) && !isPristine
+  }, [editState?.draft, editState?.published, editState?.version, isPristine, timelineReady])
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
