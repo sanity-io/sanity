@@ -1,6 +1,7 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useRouter} from 'sanity/router'
 
+import {Tooltip} from '../../../../ui-components'
 import {BundleBadge} from '../../../bundles'
 import {RelativeTime, UserAvatar} from '../../../components'
 import {type TableRowProps} from '../../components/Table/Table'
@@ -21,20 +22,29 @@ const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}
 
   return (
     <Box {...cellProps} flex={1} padding={1}>
-      <Card {...cardProps} padding={2} radius={2}>
-        <Flex align="center" gap={2}>
-          <Box flex="none">
-            <BundleBadge hue={bundle.hue} icon={bundle.icon} />
-          </Box>
-          <Stack flex={1} space={2}>
-            <Flex align="center" gap={2}>
-              <Text size={1} weight="medium">
-                {bundle.title}
-              </Text>
-            </Flex>
-          </Stack>
-        </Flex>
-      </Card>
+      <Tooltip
+        disabled={!bundle.isDeleted}
+        content={
+          <Text size={1}>
+            '<strong>{bundle.title}</strong>' has been deleted
+          </Text>
+        }
+      >
+        <Card {...cardProps} padding={2} radius={2}>
+          <Flex align="center" gap={2}>
+            <Box flex="none">
+              <BundleBadge hue={bundle.hue} icon={bundle.icon} />
+            </Box>
+            <Stack flex={1} space={2}>
+              <Flex align="center" gap={2}>
+                <Text size={1} weight="medium">
+                  {bundle.title}
+                </Text>
+              </Flex>
+            </Stack>
+          </Flex>
+        </Card>
+      </Tooltip>
     </Box>
   )
 }
