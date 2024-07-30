@@ -51,7 +51,7 @@ export function RequestAccessScreen() {
         // Need to get the client, projectId, and user from workspace
         // because this screen is outside the SourceContext
         setProjectId(sanityClient.config().projectId)
-        setClient(sanityClient)
+        setClient(sanityClient.withConfig({apiVersion: '2024-07-01'}))
         setCurrentUser(user)
       },
       error: setError,
@@ -169,6 +169,9 @@ export function RequestAccessScreen() {
                 </Text>
                 <TextInput
                   disabled={isSubmitting}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSubmitRequest()
+                  }}
                   onChange={(e) => setNote(e.currentTarget.value)}
                   value={note}
                 />

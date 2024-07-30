@@ -35,12 +35,11 @@ export function AuthBoundary({
       next: ({authenticated, currentUser}) => {
         if (currentUser?.roles?.length === 0) {
           setLoggedIn('unauthorized')
-
+          if (currentUser?.provider) setLoginProvider(currentUser.provider)
           return
         }
 
         setLoggedIn(authenticated ? 'logged-in' : 'logged-out')
-        if (currentUser?.provider) setLoginProvider(currentUser.provider)
       },
       error: handleError,
     })
@@ -55,7 +54,7 @@ export function AuthBoundary({
   if (loggedIn === 'unauthorized') {
     // If using unverified `sanity` login provider, send them
     // to basic NotAuthorized component.
-    if (loginProvider === 'sanity') return <NotAuthenticatedComponent />
+    if (!loginProvider || loginProvider === 'sanity') return <NotAuthenticatedComponent />
     // Otherwise, send user to request access screen
     return <RequestAccessScreen />
   }
