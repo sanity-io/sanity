@@ -48,7 +48,7 @@ export function GetFormValueProvider(props: {
 export function useGetFormValue() {
   const ctx = useContext(GetFormValueContext)
   if (!ctx) {
-    throw new Error('useFormValue must be used within a FormValueProvider')
+    throw new Error('useGetFormValue must be used within a GetFormValueProvider')
   }
   return ctx
 }

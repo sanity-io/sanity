@@ -113,7 +113,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     envPrefix: 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      alias: getAliases({monorepo}),
+      alias: getAliases({monorepo, sanityPkgPath}),
     },
     define: {
       // eslint-disable-next-line no-process-env

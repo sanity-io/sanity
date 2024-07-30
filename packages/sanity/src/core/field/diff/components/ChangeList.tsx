@@ -1,8 +1,8 @@
 import {type SanityDocument} from '@sanity/client'
 import {RevertIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
-import {type ReactElement, useCallback, useContext, useMemo, useState} from 'react'
+import {Box, Card, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {type ReactElement, useCallback, useContext, useMemo, useRef, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
 import {Button, Popover} from '../../../../ui-components'
@@ -85,13 +85,12 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): ReactEl
     setConfirmRevertAllOpen(false)
   }, [])
 
-  const [revertAllContainerElement, setRevertAllContainerElement] = useState<HTMLDivElement | null>(
-    null,
+  const revertAllContainerElementRef = useRef<HTMLDivElement | null>(null)
+
+  useClickOutsideEvent(
+    () => setConfirmRevertAllOpen(false),
+    () => [revertAllContainerElementRef.current],
   )
-
-  const handleClickOutside = useCallback(() => setConfirmRevertAllOpen(false), [])
-
-  useClickOutside(handleClickOutside, [revertAllContainerElement])
 
   if (changes.length === 0) {
     return isRoot ? <NoChanges /> : null
@@ -145,7 +144,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): ReactEl
             padding={3}
             placement={'left'}
             portal
-            ref={setRevertAllContainerElement}
+            ref={revertAllContainerElementRef}
           >
             <Stack>
               <Button

@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import {type ReferenceItemRef, ReferenceItemRefContext} from 'sanity/_singletons'
 
 /**
@@ -13,10 +13,14 @@ interface ReferenceItemRefProviderProps extends ReferenceItemRef {
  * @internal
  */
 export function ReferenceItemRefProvider(props: ReferenceItemRefProviderProps) {
-  const {menuRef, containerRef} = props
+  const {menuRef, menuButtonRef, containerRef} = props
+  const value = useMemo(
+    () => ({menuRef, menuButtonRef, containerRef}),
+    [containerRef, menuButtonRef, menuRef],
+  )
 
   return (
-    <ReferenceItemRefContext.Provider value={{menuRef, containerRef}}>
+    <ReferenceItemRefContext.Provider value={value}>
       {props.children}
     </ReferenceItemRefContext.Provider>
   )

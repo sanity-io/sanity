@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.51.0",
+  "version": "3.52.2",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -16,14 +16,14 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/editor": "^1.0.8",
+    "@portabletext/editor": "^1.0.9",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.0.2",
-    "@sanity/block-tools": "3.51.0",
-    "@sanity/client": "^6.21.0",
+    "@sanity/block-tools": "3.52.2",
+    "@sanity/client": "^6.21.1",
     "@sanity/color": "^3.0.0",
     "@sanity/google-maps-input": "^4.0.0",
-    "@sanity/icons": "^3.3.0",
+    "@sanity/icons": "^3.3.1",
     "@sanity/image-url": "^1.0.2",
     "@sanity/locale-ko-kr": "^1.0.1",
     "@sanity/locale-nb-no": "^1.0.1",
@@ -36,7 +36,7 @@
     "@sanity/react-loader": "^1.8.3",
     "@sanity/tsdoc": "1.0.83",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.8.2",
+    "@sanity/ui": "^2.8.8",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
@@ -57,6 +57,7 @@
     "rxjs": "^7.8.0",
     "sanity": "workspace:*",
     "sanity-plugin-hotspot-array": "^2.0.0",
+    "sanity-plugin-media": "^2.3.1",
     "sanity-plugin-mux-input": "^2.2.1",
     "styled-components": "^6.1.11"
   },

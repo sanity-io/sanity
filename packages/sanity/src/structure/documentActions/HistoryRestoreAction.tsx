@@ -59,23 +59,26 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
   const isRevisionInitial = revision === '@initial'
   const isRevisionLatest = revision === undefined // undefined means latest revision
 
-  if (isRevisionLatest) {
-    return null
-  }
+  return useMemo(() => {
+    if (isRevisionLatest) {
+      return null
+    }
 
-  return {
-    label: t('action.restore.label'),
-    color: 'primary',
-    onHandle: handle,
-    title: t(
-      isRevisionInitial
-        ? 'action.restore.disabled.cannot-restore-initial'
-        : 'action.restore.tooltip',
-    ),
-    icon: RestoreIcon,
-    dialog,
-    disabled: isRevisionInitial,
-  }
+    return {
+      label: t('action.restore.label'),
+      color: 'primary',
+      onHandle: handle,
+      title: t(
+        isRevisionInitial
+          ? 'action.restore.disabled.cannot-restore-initial'
+          : 'action.restore.tooltip',
+      ),
+      icon: RestoreIcon,
+      dialog,
+      disabled: isRevisionInitial,
+    }
+  }, [dialog, handle, isRevisionInitial, isRevisionLatest, t])
 }
 
 HistoryRestoreAction.action = 'restore'
+HistoryRestoreAction.displayName = 'HistoryRestoreAction'

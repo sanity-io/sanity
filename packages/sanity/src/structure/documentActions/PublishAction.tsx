@@ -1,7 +1,7 @@
 import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -152,59 +152,75 @@ export const PublishAction: DocumentActionComponent = (props) => {
     doPublish,
   ])
 
-  if (liveEdit) {
-    return {
-      tone: 'default',
-      icon: PublishIcon,
-      label: t('action.publish.live-edit.label'),
-      title: t('action.publish.live-edit.tooltip'),
-      disabled: true,
+  return useMemo(() => {
+    if (liveEdit) {
+      return {
+        tone: 'default',
+        icon: PublishIcon,
+        label: t('action.publish.live-edit.label'),
+        title: t('action.publish.live-edit.tooltip'),
+        disabled: true,
+      }
     }
-  }
 
-  if (!isPermissionsLoading && !permissions?.granted) {
-    return {
-      tone: 'default',
-      icon: PublishIcon,
-      label: 'Publish',
-      title: (
-        <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
-      ),
-      disabled: true,
+    if (!isPermissionsLoading && !permissions?.granted) {
+      return {
+        tone: 'default',
+        icon: PublishIcon,
+        label: 'Publish',
+        title: (
+          <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
+        ),
+        disabled: true,
+      }
     }
-  }
 
-  const disabled = Boolean(
-    publishScheduled ||
-      editState?.transactionSyncLock?.enabled ||
-      publishState === 'publishing' ||
-      publishState === 'published' ||
-      hasValidationErrors ||
-      publish.disabled,
-  )
+    const disabled = Boolean(
+      publishScheduled ||
+        editState?.transactionSyncLock?.enabled ||
+        publishState === 'publishing' ||
+        publishState === 'published' ||
+        hasValidationErrors ||
+        publish.disabled,
+    )
 
-  return {
-    disabled: disabled || isPermissionsLoading,
-    tone: 'default',
-    label:
+    return {
+      disabled: disabled || isPermissionsLoading,
+      tone: 'default',
+      label:
+        // eslint-disable-next-line no-nested-ternary
+        publishState === 'published'
+          ? t('action.publish.published.label')
+          : publishScheduled || publishState === 'publishing'
+            ? t('action.publish.running.label')
+            : t('action.publish.draft.label'),
+      // @todo: Implement loading state, to show a `<Button loading />` state
+      // loading: publishScheduled || publishState === 'publishing',
+      icon: PublishIcon,
       // eslint-disable-next-line no-nested-ternary
-      publishState === 'published'
-        ? t('action.publish.published.label')
-        : publishScheduled || publishState === 'publishing'
-          ? t('action.publish.running.label')
-          : t('action.publish.draft.label'),
-    // @todo: Implement loading state, to show a `<Button loading />` state
-    // loading: publishScheduled || publishState === 'publishing',
-    icon: PublishIcon,
-    // eslint-disable-next-line no-nested-ternary
-    title: publishScheduled
-      ? t('action.publish.waiting')
-      : publishState === 'published' || publishState === 'publishing'
-        ? null
-        : title,
-    shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
-    onHandle: handle,
-  }
+      title: publishScheduled
+        ? t('action.publish.waiting')
+        : publishState === 'published' || publishState === 'publishing'
+          ? null
+          : title,
+      shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
+      onHandle: handle,
+    }
+  }, [
+    currentUser,
+    editState?.transactionSyncLock?.enabled,
+    handle,
+    hasValidationErrors,
+    isPermissionsLoading,
+    liveEdit,
+    permissions?.granted,
+    publish.disabled,
+    publishScheduled,
+    publishState,
+    t,
+    title,
+  ])
 }
 
 PublishAction.action = 'publish'
+PublishAction.displayName = 'PublishAction'

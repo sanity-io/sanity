@@ -69,31 +69,42 @@ export const UnpublishAction: DocumentActionComponent = ({
     return null
   }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, onComplete, type])
 
-  if (liveEdit) {
-    return null
-  }
+  return useMemo(() => {
+    if (liveEdit) {
+      return null
+    }
 
-  if (!isPermissionsLoading && !permissions?.granted) {
+    if (!isPermissionsLoading && !permissions?.granted) {
+      return {
+        tone: 'critical',
+        icon: UnpublishIcon,
+        label: 'Unpublish',
+        title: (
+          <InsufficientPermissionsMessage context="unpublish-document" currentUser={currentUser} />
+        ),
+        disabled: true,
+      }
+    }
+
     return {
       tone: 'critical',
       icon: UnpublishIcon,
-      label: 'Unpublish',
-      title: (
-        <InsufficientPermissionsMessage context="unpublish-document" currentUser={currentUser} />
-      ),
-      disabled: true,
+      disabled: Boolean(unpublish.disabled) || isPermissionsLoading,
+      label: t('action.unpublish.label'),
+      title: unpublish.disabled ? t(DISABLED_REASON_KEY[unpublish.disabled]) : '',
+      onHandle: () => setConfirmDialogOpen(true),
+      dialog,
     }
-  }
-
-  return {
-    tone: 'critical',
-    icon: UnpublishIcon,
-    disabled: Boolean(unpublish.disabled) || isPermissionsLoading,
-    label: t('action.unpublish.label'),
-    title: unpublish.disabled ? t(DISABLED_REASON_KEY[unpublish.disabled]) : '',
-    onHandle: () => setConfirmDialogOpen(true),
+  }, [
+    currentUser,
     dialog,
-  }
+    isPermissionsLoading,
+    liveEdit,
+    permissions?.granted,
+    t,
+    unpublish.disabled,
+  ])
 }
 
 UnpublishAction.action = 'unpublish'
+UnpublishAction.displayName = 'UnpublishAction'

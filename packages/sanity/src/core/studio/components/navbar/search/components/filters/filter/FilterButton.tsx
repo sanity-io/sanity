@@ -4,9 +4,9 @@ import {
   Button, // Button with specific styling and children behavior.
   Card,
   rem,
-  useClickOutside,
+  useClickOutsideEvent,
 } from '@sanity/ui'
-import {type KeyboardEvent, useCallback, useState} from 'react'
+import {type KeyboardEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../../../ui-components'
@@ -49,7 +49,7 @@ const LabelButton = styled(Button)`
 export function FilterButton({filter, initialOpen}: FilterButtonProps) {
   const [open, setOpen] = useState(initialOpen)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
-  const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const {
     dispatch,
@@ -77,7 +77,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
     [handleRemove],
   )
 
-  useClickOutside(handleClose, [buttonElement, popoverElement])
+  useClickOutsideEvent(handleClose, () => [buttonElement, popoverRef.current])
 
   const isValid = validateFilter({
     fieldDefinitions: definitions.fields,
@@ -100,7 +100,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
       placement="bottom-start"
       portal
       radius={POPOVER_RADIUS}
-      ref={setPopoverElement}
+      ref={popoverRef}
     >
       <ContainerDiv>
         <Card

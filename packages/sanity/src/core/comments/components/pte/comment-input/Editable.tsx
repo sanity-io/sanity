@@ -5,11 +5,11 @@ import {
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
-import {useClickOutside} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {isEqual} from 'lodash'
-import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'
@@ -84,7 +84,7 @@ export function Editable(props: EditableProps) {
     placeholder = t('compose.create-comment-placeholder'),
     renderBlock,
   } = props
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
   const editableRef = useRef<HTMLDivElement | null>(null)
   const mentionsMenuRef = useRef<MentionsMenuHandle | null>(null)
@@ -112,13 +112,7 @@ export function Editable(props: EditableProps) {
     [placeholder],
   )
 
-  const handleClickOutside = useCallback(() => {
-    if (mentionsMenuOpen) {
-      closeMentions()
-    }
-  }, [closeMentions, mentionsMenuOpen])
-
-  useClickOutside(handleClickOutside, [popoverElement])
+  useClickOutsideEvent(mentionsMenuOpen && closeMentions, () => [popoverRef.current])
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -219,7 +213,7 @@ export function Editable(props: EditableProps) {
         fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
         open={mentionsMenuOpen}
         placement="bottom"
-        ref={setPopoverElement}
+        ref={popoverRef}
         referenceElement={cursorElement}
       />
 

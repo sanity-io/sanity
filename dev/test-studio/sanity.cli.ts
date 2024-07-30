@@ -14,6 +14,8 @@ export default defineCliConfig({
   // B) creating a `.env` file locally that sets the same env variable as above
   reactStrictMode: true,
   vite(viteConfig: UserConfig): UserConfig {
+    const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
+
     return {
       ...viteConfig,
       optimizeDeps: {
@@ -26,8 +28,26 @@ export default defineCliConfig({
           'sanity',
         ],
       },
+      resolve: reactProductionProfiling
+        ? {
+            ...viteConfig.resolve,
+            alias: {
+              ...viteConfig.resolve?.alias,
+              'react-dom/client': require.resolve('react-dom/profiling'),
+            },
+          }
+        : viteConfig.resolve,
+      esbuild: reactProductionProfiling
+        ? {
+            ...viteConfig.esbuild,
+            // Makes it much easier to look through profiling traces
+            minifyIdentifiers: false,
+          }
+        : viteConfig.esbuild,
       build: {
         ...viteConfig.build,
+        // Enable production source maps to easier debug deployed test studios
+        sourcemap: reactProductionProfiling || viteConfig.build?.sourcemap,
         rollupOptions: {
           ...viteConfig.build?.rollupOptions,
           input: {

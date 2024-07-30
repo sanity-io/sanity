@@ -1,5 +1,14 @@
 import {BinaryDocumentIcon} from '@sanity/icons'
-import {Box, Card, Flex, Menu, Stack, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {
+  Box,
+  Card,
+  Flex,
+  Menu,
+  Stack,
+  Text,
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 
 import {Popover} from '../../../../../ui-components'
@@ -50,16 +59,13 @@ export function FileActionsMenu(props: Props) {
 
   // Close menu when clicking outside of it
   // Not when clicking on the button
-  useClickOutside(
-    useCallback(
-      (event) => {
-        if (!buttonElement?.contains(event.target as Node)) {
-          onMenuOpen(false)
-        }
-      },
-      [buttonElement, onMenuOpen],
-    ),
-    [menuElement],
+  useClickOutsideEvent(
+    (event) => {
+      if (!buttonElement?.contains(event.target as Node)) {
+        onMenuOpen(false)
+      }
+    },
+    () => [menuElement],
   )
 
   const setOptionsButtonRef = useCallback(

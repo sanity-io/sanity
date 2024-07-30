@@ -164,7 +164,7 @@ export const InvalidValueInput = forwardRef(
   },
 )
 
-InvalidValueInput.displayName = 'InvalidValueInput'
+InvalidValueInput.displayName = 'ForwardRef(InvalidValueInput)'
 
 function ConvertButton({
   converter,

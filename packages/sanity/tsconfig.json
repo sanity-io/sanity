@@ -20,7 +20,7 @@
     "./node_modules/@sanity/util/src",
     "./node_modules/groq/src"
   ],
-  "exclude": ["./node_modules/@sanity/codegen/src/typescript/__tests__"],
+  "exclude": ["./node_modules/@sanity/codegen/src/typescript/__tests__", "**/jest.config.cjs"],
   "compilerOptions": {
     "paths": {
       "@sanity/block-tools": ["./node_modules/@sanity/block-tools/src/index.ts"],
@@ -37,6 +37,7 @@
       "groq": ["./node_modules/groq/src/groq.ts"],
       "sanity/_internal": ["./src/_exports/_internal.ts"],
       "sanity/_singletons": ["./src/_exports/_singletons.ts"],
+      "sanity/_createContext": ["./src/_exports/_createContext.ts"],
       "sanity/cli": ["./src/_exports/cli.ts"],
       "sanity/desk": ["./src/_exports/desk.ts"],
       "sanity/migrate": ["./src/_exports/migrate.ts"],

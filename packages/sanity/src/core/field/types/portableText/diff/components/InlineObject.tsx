@@ -6,14 +6,14 @@ import {
   type PortableTextChild,
   type PortableTextObject,
 } from '@sanity/types'
-import {Card, Flex, Text, useClickOutside} from '@sanity/ui'
+import {Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
-import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {ConnectorContext, DiffContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
-import {useReportedValues} from '../../../../../changeIndicators'
+import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
 import {useTranslation} from '../../../../../i18n'
 import {Preview} from '../../../../../preview/components/Preview'
 import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
@@ -99,7 +99,7 @@ function InlineObjectWithDiff({
   )
   const myPath = prefix.concat(path)
   const myValue = `field-${toString(myPath)}`
-  const values = useReportedValues()
+  const values = useChangeIndicatorsReportedValues()
   const isEditing = values.filter(([p]) => p.startsWith(myValue)).length > 0
 
   const focusPath = fullPath.slice(0, -1).concat(path).concat([FOCUS_TERMINATOR])
@@ -128,8 +128,10 @@ function InlineObjectWithDiff({
     setOpen(false)
   }, [])
 
+  const value = useMemo(() => ({path: myPath}), [myPath])
+
   const popoverContent = (
-    <DiffContext.Provider value={{path: myPath}}>
+    <DiffContext.Provider value={value}>
       <PopoverContent
         diff={diff}
         emptyObject={emptyObject}
@@ -184,12 +186,12 @@ function PopoverContent({
   schemaType: ObjectSchemaType
 }) {
   const {t} = useTranslation()
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
 
-  useClickOutside(onClose, [popoverElement])
+  useClickOutsideEvent(onClose, () => [popoverRef.current])
 
   return (
-    <PopoverContainer ref={setPopoverElement} padding={3}>
+    <PopoverContainer ref={popoverRef} padding={3}>
       {emptyObject && (
         <Text muted size={1} weight="medium">
           {t('changes.portable-text.empty-inline-object', {

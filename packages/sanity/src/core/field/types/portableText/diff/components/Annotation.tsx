@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
-import {Flex, Text, useClickOutside} from '@sanity/ui'
+import {Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {
   type MouseEvent,
@@ -9,13 +9,14 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {ConnectorContext, DiffContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
-import {useReportedValues} from '../../../../../changeIndicators'
+import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
 import {useTranslation} from '../../../../../i18n'
 import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {type ObjectDiff} from '../../../../types'
@@ -105,7 +106,7 @@ function AnnnotationWithDiff({
 }: AnnnotationWithDiffProps) {
   const {onSetFocus} = useContext(ConnectorContext)
   const {path: fullPath} = useContext(DiffContext)
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
   const {t} = useTranslation()
   const color = useDiffAnnotationColor(diff, [])
   const style = useMemo(
@@ -130,7 +131,7 @@ function AnnnotationWithDiff({
   const annotationPath = useMemo(() => prefix.concat(path), [path, prefix])
   const myPath = useMemo(() => prefix.concat(markDefPath), [markDefPath, prefix])
   const myValue = `field-${toString(myPath)}`
-  const values = useReportedValues()
+  const values = useChangeIndicatorsReportedValues()
   const isEditing = useMemo(
     () => values.filter(([p]) => p.startsWith(myValue)).length > 0,
     [myValue, values],
@@ -156,19 +157,15 @@ function AnnnotationWithDiff({
     [annotationPath, isRemoved, myPath, onSetFocus],
   )
 
-  const handleClickOutside = useCallback(() => {
-    if (!isEditing) {
-      setOpen(false)
-    }
-  }, [isEditing])
-
-  useClickOutside(handleClickOutside, [popoverElement])
+  useClickOutsideEvent(!isEditing && (() => setOpen(false)), () => [popoverRef.current])
 
   const annotation = (diff.action !== 'unchanged' && diff.annotation) || null
   const annotations = useMemo(() => (annotation ? [annotation] : []), [annotation])
 
+  const value = useMemo(() => ({path: myPath}), [myPath])
+
   const popoverContent = (
-    <DiffContext.Provider value={{path: myPath}}>
+    <DiffContext.Provider value={value}>
       <PopoverContainer padding={3}>
         <div>
           {emptyObject && (
@@ -192,7 +189,7 @@ function AnnnotationWithDiff({
       data-changed=""
       data-removed={diff.action === 'removed' ? '' : undefined}
     >
-      <Popover content={popoverContent} open={open} ref={setPopoverElement} portal>
+      <Popover content={popoverContent} open={open} ref={popoverRef} portal>
         <PreviewContainer paddingLeft={1}>
           <DiffTooltip
             annotations={annotations}

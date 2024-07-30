@@ -1,8 +1,6 @@
-'use strict'
-
 /* eslint-disable tsdoc/syntax */
 
-const path = require('path')
+const path = require('node:path')
 const {escapeRegExp, omit} = require('lodash')
 const devAliases = require('../dev/aliases.cjs')
 
@@ -20,12 +18,12 @@ const defaultModuleNameMapper = resolveAliasPaths({
 })
 
 /**
- * @returns {import('@jest/types').Config.InitialOptions}
+ * Creates a Jest configuration object.
+ *
+ * @param {import('jest').Config} config - Initial Jest configuration options.
+ * @returns {import('jest').Config} The resulting Jest configuration options.
  */
-exports.createJestConfig = function createJestConfig(
-  /** @type {import('@jest/types').Config.InitialOptions */
-  config = {},
-) {
+exports.createJestConfig = function createJestConfig(config = {}) {
   const {
     testMatch = [],
     setupFiles = [],
