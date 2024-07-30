@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@types/lodash": "^4.14.149",
+    "@types/lodash": "^4.17.7",
     "@types/node": "^18.15.3",
     "esbuild": "0.21.5",
     "ts-node": "^10.9.2",

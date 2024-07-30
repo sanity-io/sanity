@@ -58,7 +58,7 @@
     "@sanity/schema": "3.52.2",
     "@sanity/types": "3.52.2",
     "@types/jsdom": "^20.0.0",
-    "@types/lodash": "^4.14.149",
+    "@types/lodash": "^4.17.7",
     "@types/react": "^18.3.3",
     "@vercel/stega": "0.1.2",
     "jsdom": "^23.0.1"
