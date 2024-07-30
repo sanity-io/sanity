@@ -109,7 +109,7 @@
     "@sanity/client": "^6.21.1",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
-    "@sanity/pkg-utils": "6.9.3",
+    "@sanity/pkg-utils": "6.10.7",
     "@sanity/prettier-config": "^1.0.2",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.83",
@@ -165,7 +165,7 @@
     "sanity": "workspace:*",
     "semver": "^7.3.5",
     "turbo": "^2.0.7",
-    "typescript": "5.4.5",
+    "typescript": "5.5.4",
     "vite": "^4.5.3",
     "vite-tsconfig-paths": "^4.3.2",
     "yargs": "^17.3.0"

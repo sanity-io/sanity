@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@sanity/client": "^6.21.1",
-    "@types/react": "^18.0.25"
+    "@types/react": "^18.3.3"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
