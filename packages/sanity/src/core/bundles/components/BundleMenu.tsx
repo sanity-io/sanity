@@ -1,8 +1,10 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
-import {type ReactElement, useCallback} from 'react'
+import {type ReactElement, useCallback, useMemo} from 'react'
+import {useBundles} from 'sanity'
 import {styled} from 'styled-components'
 
+import {Tooltip} from '../../../ui-components'
 import {type BundleDocument} from '../../store/bundles/types'
 import {usePerspective} from '../hooks/usePerspective'
 import {LATEST} from '../util/const'
@@ -30,10 +32,25 @@ interface BundleListProps {
  */
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
+  const {deletedBundles} = useBundles()
   const {currentGlobalBundle, setPerspective} = usePerspective()
+  const deletedBundlesArray = Object.values(deletedBundles).map((bundle) => ({
+    ...bundle,
+    isDeleted: true,
+  }))
 
-  const bundlesToDisplay =
-    bundles?.filter((bundle) => !isDraftOrPublished(bundle.slug) && !bundle.archivedAt) || []
+  const bundlesToDisplay = useMemo(
+    () =>
+      (
+        (
+          [...(bundles || []), ...deletedBundlesArray] as (BundleDocument & {isDeleted?: boolean})[]
+        ).filter((bundle) => !isDraftOrPublished(bundle.slug) && !bundle.archivedAt) || []
+      ).sort(
+        ({isDeleted: AIsDeleted = false}, {isDeleted: BIsDeleted = false}) =>
+          Number(AIsDeleted) - Number(BIsDeleted),
+      ),
+    [bundles, deletedBundlesArray],
+  )
   const hasBundles = bundlesToDisplay.length > 0
 
   const handleBundleChange = useCallback(
@@ -43,6 +60,11 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
       }
     },
     [setPerspective],
+  )
+
+  const isBundleDisabled = useCallback(
+    ({slug}: BundleDocument) => Boolean(deletedBundles[slug]),
+    [deletedBundles],
   )
 
   return (
@@ -79,18 +101,29 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                           onClick={handleBundleChange(bundle)}
                           padding={1}
                           pressed={false}
+                          disabled={isBundleDisabled(bundle)}
                           data-testid={`bundle-${bundle.slug}`}
                         >
-                          <Flex>
-                            <BundleBadge hue={bundle.hue} icon={bundle.icon} padding={2} />
+                          <Tooltip
+                            disabled={!isBundleDisabled(bundle)}
+                            content="This release has been deleted"
+                            placement="bottom-start"
+                          >
+                            <Flex>
+                              <BundleBadge
+                                hue={bundle.hue}
+                                icon={bundle.icon}
+                                padding={2}
+                                isDisabled={isBundleDisabled(bundle)}
+                              />
 
-                            <Box flex={1} padding={2} style={{minWidth: 100}}>
-                              <Text size={1} weight="medium">
-                                {bundle.title}
-                              </Text>
-                            </Box>
+                              <Box flex={1} padding={2} style={{minWidth: 100}}>
+                                <Text size={1} weight="medium">
+                                  {bundle.title}
+                                </Text>
+                              </Box>
 
-                            {/*<Box padding={2}>
+                              {/*<Box padding={2}>
                                 <Text muted size={1}>
                                   {bundle.publishAt ? (
                                     <RelativeTime time={bundle.publishAt as Date} useTemporalPhrase />
@@ -100,17 +133,18 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                 </Text>
                               </Box>*/}
 
-                            <Box padding={2}>
-                              <Text size={1}>
-                                <CheckmarkIcon
-                                  style={{
-                                    opacity: currentGlobalBundle.slug === bundle.slug ? 1 : 0,
-                                  }}
-                                  data-testid={`${bundle.slug}-checkmark-icon`}
-                                />
-                              </Text>
-                            </Box>
-                          </Flex>
+                              <Box padding={2}>
+                                <Text size={1}>
+                                  <CheckmarkIcon
+                                    style={{
+                                      opacity: currentGlobalBundle.slug === bundle.slug ? 1 : 0,
+                                    }}
+                                    data-testid={`${bundle.slug}-checkmark-icon`}
+                                  />
+                                </Text>
+                              </Box>
+                            </Flex>
+                          </Tooltip>
                         </MenuItem>
                       ))}
                     </StyledBox>
