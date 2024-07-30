@@ -116,7 +116,7 @@
     "@sanity/ui": "^2.8.8",
     "@sanity/uuid": "^3.0.2",
     "@types/glob": "^7.2.0",
-    "@types/lodash": "^4.14.149",
+    "@types/lodash": "^4.17.7",
     "@types/node": "^18.19.8",
     "@types/react": "^18.3.3",
     "@types/semver": "^7.5.6",
