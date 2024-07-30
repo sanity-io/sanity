@@ -20,6 +20,6 @@
     "sanity": "workspace:*",
     "sanity-test-studio": "workspace:*",
     "styled-components": "^6.1.11",
-    "typescript": "5.5.3"
+    "typescript": "5.5.4"
   }
 }
