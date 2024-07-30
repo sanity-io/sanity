@@ -79,8 +79,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       '@types/lodash':
-        specifier: ^4.14.149
-        version: 4.17.0
+        specifier: ^4.17.7
+        version: 4.17.7
       '@types/node':
         specifier: ^18.19.8
         version: 18.19.31
@@ -718,8 +718,8 @@ importers:
         specifier: ^20.0.0
         version: 20.0.1
       '@types/lodash':
-        specifier: ^4.14.149
-        version: 4.17.0
+        specifier: ^4.17.7
+        version: 4.17.7
       '@types/react':
         specifier: ^18.3.3
         version: 18.3.3
@@ -827,8 +827,8 @@ importers:
         specifier: ^6.0.0
         version: 6.5.0
       '@types/lodash':
-        specifier: ^4.14.149
-        version: 4.17.0
+        specifier: ^4.17.7
+        version: 4.17.7
       '@types/minimist':
         specifier: ^1.2.5
         version: 1.2.5
@@ -1110,8 +1110,8 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/lodash':
-        specifier: ^4.14.149
-        version: 4.17.0
+        specifier: ^4.17.7
+        version: 4.17.7
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -1315,8 +1315,8 @@ importers:
         specifier: workspace:*
         version: link:../util
       '@types/lodash':
-        specifier: ^4.14.149
-        version: 4.17.0
+        specifier: ^4.17.7
+        version: 4.17.7
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1751,8 +1751,8 @@ importers:
         specifier: ^20.0.0
         version: 20.0.1
       '@types/lodash':
-        specifier: ^4.14.149
-        version: 4.17.0
+        specifier: ^4.17.7
+        version: 4.17.7
       '@types/log-symbols':
         specifier: ^2.0.0
         version: 2.0.0
@@ -1890,8 +1890,8 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0
       '@types/lodash':
-        specifier: ^4.14.149
-        version: 4.17.0
+        specifier: ^4.17.7
+        version: 4.17.7
       '@types/node':
         specifier: ^18.15.3
         version: 18.19.31
@@ -7549,17 +7549,17 @@ packages:
   /@types/lodash-es@4.17.12:
     resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
     dependencies:
-      '@types/lodash': 4.17.0
+      '@types/lodash': 4.17.7
     dev: false
 
   /@types/lodash.isequal@4.5.8:
     resolution: {integrity: sha512-uput6pg4E/tj2LGxCZo9+y27JNyB2OZuuI/T5F+ylVDYuqICLG2/ktjxx0v6GvVntAf8TvEzeQLcV0ffRirXuA==}
     dependencies:
-      '@types/lodash': 4.17.0
+      '@types/lodash': 4.17.7
     dev: false
 
-  /@types/lodash@4.17.0:
-    resolution: {integrity: sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==}
+  /@types/lodash@4.17.7:
+    resolution: {integrity: sha512-8wTvZawATi/lsmNu10/j2hk1KEP0IvjubqPE3cu1Xz7xfXXt5oCq3SNUz4fMIP4XGF9Ky+Ue2tBA3hcS7LSBlA==}
 
   /@types/log-symbols@2.0.0:
     resolution: {integrity: sha512-YJhbp0sz3egFFKl3BcCNPQKzuGFOP4PACcsifhK6ROGnJUW9ViYLuLybQ9GQZm7Zejy3tkGuiXYMq3GiyGkU4g==}
@@ -17828,7 +17828,7 @@ packages:
     dependencies:
       '@juggle/resize-observer': 3.4.0
       '@types/is-hotkey': 0.1.10
-      '@types/lodash': 4.17.0
+      '@types/lodash': 4.17.7
       direction: 1.0.4
       is-hotkey: 0.2.0
       is-plain-object: 5.0.0
