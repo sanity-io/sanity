@@ -19,7 +19,7 @@ export function DocumentHeaderTabs() {
           key={view.id}
           label={view.title}
           tabPanelId={tabPanelId}
-          viewId={index === 0 ? null : view.id ?? null}
+          viewId={index === 0 ? null : (view.id ?? null)}
         />
       ))}
     </TabList>

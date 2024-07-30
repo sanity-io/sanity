@@ -49,6 +49,8 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
+    "@sanity/types": "3.52.3",
+    "@types/react": "^18.3.3",
     "get-random-values-esm": "1.0.2",
     "lodash": "^4.17.21"
   },
@@ -56,10 +58,8 @@
     "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
     "@sanity/schema": "3.52.3",
-    "@sanity/types": "3.52.3",
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.17.7",
-    "@types/react": "^18.3.3",
     "@vercel/stega": "0.1.2",
     "jsdom": "^23.0.1"
   },
