@@ -29,6 +29,8 @@ export function ReleasesOverview() {
   const bundleSlugs = useMemo(() => bundles?.map((bundle) => bundle.slug) || [], [bundles])
   const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
   const loading = loadingBundles || loadingBundlesMetadata
+  const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleSlugs.length))
+
   const hasBundles = bundles && containsBundles(bundles)
   const loadingOrHasBundles = loading || hasBundles
 
@@ -163,7 +165,7 @@ export function ReleasesOverview() {
                   {!loading && !hasBundles && (
                     <Container style={{margin: 0}} width={0}>
                       <Stack space={5}>
-                        <Text muted size={2}>
+                        <Text data-testid="no-bundles-info-text" muted size={2}>
                           Releases are collections of document versions which can be managed and
                           published together.
                         </Text>
@@ -176,18 +178,20 @@ export function ReleasesOverview() {
               </Flex>
               {loadingOrHasBundles && createReleaseButton}
             </Flex>
-            <Table<TableBundle>
-              // for resetting filter and sort on table when mode changed
-              key={bundleGroupMode}
-              defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
-              loading={loading}
-              data={groupedBundles[bundleGroupMode]}
-              columnDefs={releasesOverviewColumnDefs}
-              searchFilter={applySearchTermToBundles}
-              emptyState="No Releases"
-              rowId="_id"
-              rowActions={renderRowActions}
-            />
+            {(hasBundles || loadingTableData) && (
+              <Table<TableBundle>
+                // for resetting filter and sort on table when mode changed
+                key={bundleGroupMode}
+                defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
+                loading={loadingTableData}
+                data={groupedBundles[bundleGroupMode]}
+                columnDefs={releasesOverviewColumnDefs}
+                searchFilter={applySearchTermToBundles}
+                emptyState="No Releases"
+                rowId="_id"
+                rowActions={renderRowActions}
+              />
+            )}
           </Stack>
         </Container>
         {renderCreateBundleDialog()}

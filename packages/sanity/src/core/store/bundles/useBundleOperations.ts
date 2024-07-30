@@ -10,26 +10,38 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {type BundleDocument} from './types'
 
 const useGuardedAddonClient = () => {
-  const {client: addOnClient} = useAddonDataset()
+  const {client: addOnClient, createAddonDataset} = useAddonDataset()
 
-  return function returnAddonClient() {
+  function getAddonClient() {
     if (!addOnClient) {
       throw new Error('Addon client is not available')
     }
 
     return addOnClient
   }
+  async function getOrCreateAddonClient() {
+    if (!addOnClient) {
+      const client = await createAddonDataset()
+      if (!client) {
+        throw new Error('There was an error creating the addon client')
+      }
+      return client
+    }
+    return addOnClient
+  }
+
+  return {getAddonClient, getOrCreateAddonClient}
 }
 
 // WIP - Raw implementation for initial testing purposes
 export function useBundleOperations() {
-  const getAddonClient = useGuardedAddonClient()
+  const {getAddonClient, getOrCreateAddonClient} = useGuardedAddonClient()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const currentUser = useCurrentUser()
 
   const handleCreateBundle = useCallback(
     async (bundle: Partial<BundleDocument>) => {
-      const addonClient = getAddonClient()
+      const addonClient = await getOrCreateAddonClient()
 
       const document = {
         ...bundle,
@@ -40,7 +52,7 @@ export function useBundleOperations() {
       const res = await addonClient.createIfNotExists(document)
       return res
     },
-    [currentUser?.id, getAddonClient],
+    [currentUser?.id, getOrCreateAddonClient],
   )
 
   const handleDeleteBundle = useCallback(
