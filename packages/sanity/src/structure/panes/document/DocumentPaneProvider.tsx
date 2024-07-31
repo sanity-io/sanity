@@ -94,6 +94,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
+  const {perspective} = paneRouter
+
+  const bundlePerspective = perspective?.startsWith('bundle.')
+    ? perspective.split('bundle.').at(1)
+    : undefined
+
+  /* Version and the global perspective should match.
+   * If user clicks on add document, and then switches to another version, he should click again on create document.
+   */
+  const newDocumentVersion = params.version === bundlePerspective ? params.version : undefined
+
   const panePayload = useUnique(paneRouter.payload)
   const {templateName, templateParams} = useMemo(
     () =>
@@ -111,14 +122,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     templateName,
     templateParams,
-    version: params.version,
+    version: newDocumentVersion,
   })
-
-  const {perspective} = paneRouter
-
-  const bundlePerspective =
-    params.version ||
-    (perspective?.startsWith('bundle.') ? perspective.split('bundle.').at(1) : undefined)
 
   const initialValue = useUnique(initialValueRaw)
   const {patch} = useDocumentOperation(documentId, documentType, bundlePerspective)

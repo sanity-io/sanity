@@ -55,7 +55,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
       return
     }
 
-    // TODO: Replace for getBundleId function
+    // TODO: Replace for getVersionId function
     const bundleId = `${slug}.${documentId}`
 
     setCreatingVersion(true)
