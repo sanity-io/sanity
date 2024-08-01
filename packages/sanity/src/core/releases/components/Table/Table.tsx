@@ -1,6 +1,7 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {get} from 'lodash'
-import {Fragment, useMemo} from 'react'
+import {Fragment, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
@@ -18,10 +19,18 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
   Row?: ({
     datum,
+    virtualRow,
     children,
   }: {
     datum: TableData
-    children: (rowData: TableData) => JSX.Element
+    virtualRow: VirtualItem
+    index: number
+    children: (
+      rowData: TableData & {
+        virtualRow: VirtualItem
+        index: number
+      },
+    ) => JSX.Element
   }) => JSX.Element | null
   data: TableData[]
   emptyState: (() => JSX.Element) | string
@@ -32,6 +41,7 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   }: {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
   }) => JSX.Element
+  tableHeight: string
 }
 
 const RowStack = styled(Stack)({
@@ -49,6 +59,7 @@ const RowStack = styled(Stack)({
 
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
+  tableHeight,
   data,
   emptyState,
   searchFilter,
@@ -58,6 +69,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   loading = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
+  const parentRef = useRef(null)
 
   const filteredData = useMemo(() => {
     const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
@@ -75,6 +87,13 @@ const TableInner = <TableData, AdditionalRowTableData>({
       return -order
     })
   }, [data, searchFilter, searchTerm, sort])
+
+  const rowVirtualizer = useVirtualizer({
+    count: filteredData.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 57,
+    overscan: 5,
+  })
 
   const rowActionColumnDef: Column = useMemo(
     () => ({
@@ -106,7 +125,12 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const renderRow = useMemo(
     () =>
-      function TableRow(datum: TableData | (TableData & AdditionalRowTableData)) {
+      function TableRow(
+        datum: (TableData | (TableData & AdditionalRowTableData)) & {
+          virtualRow: VirtualItem
+          index: number
+        },
+      ) {
         return (
           <Card
             key={String(datum[rowId])}
@@ -116,6 +140,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
             radius={3}
             display="flex"
             margin={-1}
+            style={{
+              height: `${datum.virtualRow.size}px`,
+              transform: `translateY(${datum.virtualRow.start - datum.index * datum.virtualRow.size}px)`,
+            }}
             // @ts-expect-error - Using a custom datum prop, this is not definitive, just a placeholder to show there is an error.
             // update once designs land
             tone={datum?.validation?.hasError ? 'critical' : 'default'}
@@ -139,38 +167,27 @@ const TableInner = <TableData, AdditionalRowTableData>({
     [amalgamatedColumnDefs, rowId],
   )
 
-  const tableContent = useMemo(() => {
-    if (filteredData.length === 0) {
-      if (typeof emptyState === 'string') {
-        return (
-          <Card
-            as="tr"
-            border
-            radius={3}
-            display="flex"
-            padding={4}
-            style={{
-              justifyContent: 'center',
-            }}
-          >
-            <Text as="td" muted size={1}>
-              {emptyState}
-            </Text>
-          </Card>
-        )
-      }
-      return emptyState()
-    }
-
-    return filteredData.map((datum) => {
-      if (!Row) return renderRow(datum)
+  const emptyContent = useMemo(() => {
+    if (typeof emptyState === 'string') {
       return (
-        <Row key={String(datum[rowId])} datum={datum}>
-          {renderRow}
-        </Row>
+        <Card
+          as="tr"
+          border
+          radius={3}
+          display="flex"
+          padding={4}
+          style={{
+            justifyContent: 'center',
+          }}
+        >
+          <Text as="td" muted size={1}>
+            {emptyState}
+          </Text>
+        </Card>
       )
-    })
-  }, [Row, emptyState, filteredData, renderRow, rowId])
+    }
+    return emptyState()
+  }, [emptyState])
 
   const headers = useMemo(
     () => amalgamatedColumnDefs.map(({cell, ...header}) => ({...header, id: String(header.id)})),
@@ -182,10 +199,39 @@ const TableInner = <TableData, AdditionalRowTableData>({
   }
 
   return (
-    <Stack as="table" space={1}>
-      <TableHeader headers={headers} searchDisabled={!searchTerm && !data.length} />
-      <RowStack as="tbody">{tableContent}</RowStack>
-    </Stack>
+    <div ref={parentRef} id="container" style={{height: tableHeight, overflowY: 'auto'}}>
+      <div
+        style={{
+          height: `${rowVirtualizer.getTotalSize()}px`,
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        <Stack as="table" space={1}>
+          <TableHeader headers={headers} searchDisabled={!searchTerm && !data.length} />
+          <RowStack as="tbody">
+            {filteredData.length === 0
+              ? emptyContent
+              : rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
+                  const datum = filteredData[virtualRow.index]
+                  if (Row) {
+                    return (
+                      <Row
+                        key={String(datum[rowId])}
+                        datum={datum}
+                        virtualRow={virtualRow}
+                        index={index}
+                      >
+                        {renderRow}
+                      </Row>
+                    )
+                  }
+                  return renderRow({...datum, virtualRow, index})
+                })}
+          </RowStack>
+        </Stack>
+      </div>
+    </div>
   )
 }
 

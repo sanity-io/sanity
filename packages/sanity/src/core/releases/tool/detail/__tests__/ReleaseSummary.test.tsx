@@ -147,7 +147,7 @@ describe('ReleaseSummary', () => {
   })
 
   describe('documents table', () => {
-    it.only('shows list of all documents in release', () => {
+    it('shows list of all documents in release', () => {
       const documents = screen.getAllByTestId('table-row')
 
       expect(documents).toHaveLength(2)

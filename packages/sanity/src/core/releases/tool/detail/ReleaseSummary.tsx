@@ -38,7 +38,7 @@ const getRow =
   (
     release: BundleDocument,
   ): TableProps<DocumentWithHistory, ReturnType<typeof useDocumentPreviewValues>>['Row'] =>
-  ({children, datum}) => {
+  ({children, datum, virtualRow, index}) => {
     const {searchTerm} = useTableContext()
     const {previewValues, isLoading} = useDocumentPreviewValues({document: datum, release})
 
@@ -49,7 +49,7 @@ const getRow =
       if (!title.toLowerCase().includes(searchTerm.toLowerCase())) return null
     }
 
-    return children({...datum, previewValues, isLoading})
+    return children({...datum, previewValues, isLoading, virtualRow, index})
   }
 
 const setIconHue = ({hue, icon}: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}) => ({
@@ -189,6 +189,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
       <Table<DocumentWithHistory, ReturnType<typeof useDocumentPreviewValues>>
         data={aggregatedData}
+        tableHeight="800px"
         emptyState="No documents"
         rowId="_id"
         Row={Row}

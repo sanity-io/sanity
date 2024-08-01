@@ -1,7 +1,10 @@
 import {AddIcon} from '@sanity/icons'
-import {Box, Button, type ButtonMode, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Box, Button, type ButtonMode, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {isBefore} from 'date-fns'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useState} from 'react'
+import {css, styled} from 'styled-components'
 
 import {Button as StudioButton} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
@@ -19,6 +22,13 @@ export interface TableBundle extends BundleDocument {
   documentsMetadata: BundlesMetadata
 }
 
+const RootFlex = styled(Flex)((props) => {
+  const theme = getTheme_v2(props.theme)
+  return css`
+    // The height of the padding used, multiplied by 2 to account for both top and bottom padding
+    height: calc(100% - ${theme.space[6] * 2}px);
+  `
+})
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: '_createdAt', direction: 'desc'}
 
@@ -152,50 +162,47 @@ export function ReleasesOverview() {
   }, [])
 
   return (
-    <Container width={2}>
-      <Card flex={1} overflow="auto">
-        <Container width={3}>
-          <Stack paddingX={4} paddingY={6} space={4}>
-            <Flex align="flex-start" gap={2} paddingBottom={2}>
-              <Flex align="flex-start" flex={1} gap={4}>
-                <Stack paddingY={1} space={4}>
-                  <Heading as="h1" size={2} style={{margin: '1px 0'}}>
-                    Releases
-                  </Heading>
-                  {!loading && !hasBundles && (
-                    <Container style={{margin: 0}} width={0}>
-                      <Stack space={5}>
-                        <Text data-testid="no-bundles-info-text" muted size={2}>
-                          Releases are collections of document versions which can be managed and
-                          published together.
-                        </Text>
-                        <Box>{createReleaseButton}</Box>
-                      </Stack>
-                    </Container>
-                  )}
-                </Stack>
-                {loadingOrHasBundles && currentArchivedPicker}
-              </Flex>
-              {loadingOrHasBundles && createReleaseButton}
-            </Flex>
-            {(hasBundles || loadingTableData) && (
-              <Table<TableBundle>
-                // for resetting filter and sort on table when mode changed
-                key={bundleGroupMode}
-                defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
-                loading={loadingTableData}
-                data={groupedBundles[bundleGroupMode]}
-                columnDefs={releasesOverviewColumnDefs}
-                searchFilter={applySearchTermToBundles}
-                emptyState="No Releases"
-                rowId="_id"
-                rowActions={renderRowActions}
-              />
-            )}
-          </Stack>
-        </Container>
-        {renderCreateBundleDialog()}
-      </Card>
+    <Container width={2} height="fill">
+      <RootFlex paddingX={4} paddingY={6} gap={4} direction="column">
+        <Flex align="flex-start" gap={2} paddingBottom={2}>
+          <Flex align="flex-start" flex={1} gap={4}>
+            <Stack paddingY={1} space={4}>
+              <Heading as="h1" size={2} style={{margin: '1px 0'}}>
+                Releases
+              </Heading>
+              {!loading && !hasBundles && (
+                <Container style={{margin: 0}} width={0}>
+                  <Stack space={5}>
+                    <Text data-testid="no-bundles-info-text" muted size={2}>
+                      Releases are collections of document versions which can be managed and
+                      published together.
+                    </Text>
+                    <Box>{createReleaseButton}</Box>
+                  </Stack>
+                </Container>
+              )}
+            </Stack>
+            {loadingOrHasBundles && currentArchivedPicker}
+          </Flex>
+          {loadingOrHasBundles && createReleaseButton}
+        </Flex>
+        {(hasBundles || loadingTableData) && (
+          <Table<TableBundle>
+            // for resetting filter and sort on table when mode changed
+            key={bundleGroupMode}
+            defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
+            loading={loadingTableData}
+            data={groupedBundles[bundleGroupMode]}
+            columnDefs={releasesOverviewColumnDefs}
+            searchFilter={applySearchTermToBundles}
+            emptyState="No Releases"
+            rowId="_id"
+            rowActions={renderRowActions}
+            tableHeight="100%"
+          />
+        )}
+      </RootFlex>
+      {renderCreateBundleDialog()}
     </Container>
   )
 }
