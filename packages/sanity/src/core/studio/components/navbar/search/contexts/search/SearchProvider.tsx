@@ -1,5 +1,5 @@
 import {isEqual} from 'lodash'
-import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
@@ -28,7 +28,7 @@ interface SearchProviderProps {
  * @internal
  */
 export function SearchProvider({children, fullscreen}: SearchProviderProps) {
-  const onCloseRef = useRef<(() => void) | null>(null)
+  const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
 
   const schema = useSchema()
@@ -102,10 +102,6 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
       operatorDefinitions,
     }),
   )
-
-  const handleSetOnClose = useCallback((onClose: () => void) => {
-    onCloseRef.current = onClose
-  }, [])
 
   /**
    * Trigger search when any terms (query or selected types) OR current pageIndex has changed
@@ -184,21 +180,20 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     isMountedRef.current = true
   }, [dispatch, hasValidTerms, result.hits, terms.query, terms.types])
 
-  return (
-    <SearchContext.Provider
-      value={{
-        dispatch,
-        onClose: onCloseRef?.current,
-        searchCommandList,
-        setSearchCommandList,
-        setOnClose: handleSetOnClose,
-        state: {
-          ...state,
-          fullscreen,
-        },
-      }}
-    >
-      {children}
-    </SearchContext.Provider>
+  const value = useMemo(
+    () => ({
+      dispatch,
+      onClose,
+      searchCommandList,
+      setSearchCommandList,
+      setOnClose,
+      state: {
+        ...state,
+        fullscreen,
+      },
+    }),
+    [fullscreen, onClose, searchCommandList, state],
   )
+
+  return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
 }
