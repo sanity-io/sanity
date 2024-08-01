@@ -107,7 +107,6 @@ export function RequestAccessScreen() {
         body: {note},
       })
       .then((request) => {
-        toast.push({title: 'Access requested', status: 'success'})
         if (request) setHasPendingRequest(true)
       })
       .catch((err) => {
