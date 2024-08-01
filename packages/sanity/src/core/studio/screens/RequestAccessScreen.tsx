@@ -153,7 +153,7 @@ export function RequestAccessScreen() {
                 radius={2}
                 shadow={1}
               >
-                <Text size={1} muted>
+                <Text size={1}>
                   {hasTooManyRequests && !hasPendingRequest && (
                     <>
                       You've reached the limit for access requests across all projects. Please wait
