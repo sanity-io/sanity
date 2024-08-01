@@ -10,6 +10,9 @@ import {
   isBlockSchemaType,
   isFileSchemaType,
   isImageSchemaType,
+  isIndexSegment,
+  isIndexTuple,
+  isKeySegment,
   isNumberSchemaType,
   isObjectSchemaType,
   isPortableTextSpan,
@@ -49,6 +52,24 @@ export interface TransferValueError {
     key: string
     args?: Record<string, unknown>
   }
+}
+
+function getObjectTypeFromPath(path: Path): string {
+  if (path.length === 0) {
+    return 'object'
+  }
+
+  const lastPathSegment = path[path.length - 1]
+
+  if (
+    isKeySegment(lastPathSegment) ||
+    isIndexSegment(lastPathSegment) ||
+    isIndexTuple(lastPathSegment)
+  ) {
+    return 'object'
+  }
+
+  return lastPathSegment
 }
 
 function isCompatiblePrimitiveType(value: unknown, targetJsonTypes: string[]): boolean {
@@ -112,6 +133,7 @@ export async function transferValue({
   sourceRootSchemaType,
   sourcePath,
   sourceValue,
+  sourceRootPath = [],
   targetRootSchemaType,
   targetRootValue,
   targetRootPath,
@@ -126,6 +148,7 @@ export async function transferValue({
 }: {
   sourceRootSchemaType: SchemaType
   sourcePath: Path
+  sourceRootPath?: Path
   sourceValue: unknown
   targetRootSchemaType: SchemaType
   targetPath: Path
@@ -214,11 +237,14 @@ export async function transferValue({
   const isSourcePrimitive = ['number', 'string', 'boolean'].includes(sourceJsonType)
   const isPrimitiveSourceAndPrimitiveArrayTarget =
     isSourcePrimitive && isArrayOfPrimitivesSchemaType(targetSchemaTypeAtPath)
+  const isObjectSourceAndArrayOfObjectsTarget =
+    sourceJsonType === 'object' && isArrayOfObjectsSchemaType(targetSchemaTypeAtPath)
   const isCompatibleSchemaTypes =
     sourceJsonType === targetJsonType ||
     isNumberToStringSchemaType(sourceSchemaTypeAtPath, targetSchemaTypeAtPath) ||
     isNumberToArrayOfStrings(sourceSchemaTypeAtPath, targetSchemaTypeAtPath) ||
-    isPrimitiveSourceAndPrimitiveArrayTarget
+    isPrimitiveSourceAndPrimitiveArrayTarget ||
+    isObjectSourceAndArrayOfObjectsTarget
 
   // Test that the target schematypes are compatible
   if (!isCompatibleSchemaTypes) {
@@ -268,10 +294,18 @@ export async function transferValue({
     })
   }
 
-  // If this is a primitive source and primitive array target, we need to wrap the source value in an array
-  if (isPrimitiveSourceAndPrimitiveArrayTarget) {
+  // If this is a primitive source and primitive array target OR an object source and array of objects target, we need to wrap the source value in an array
+  if (isPrimitiveSourceAndPrimitiveArrayTarget || isObjectSourceAndArrayOfObjectsTarget) {
+    const objectType =
+      isObjectSourceAndArrayOfObjectsTarget &&
+      (!isTypedObject(sourceValueAtPath) || sourceValueAtPath._type === 'object')
+        ? getObjectTypeFromPath(sourceRootPath)
+        : 'object'
+    const wrappedSourceValue = isObjectSourceAndArrayOfObjectsTarget
+      ? [{...(sourceValueAtPath as TypedObject), _type: objectType, _key: keyGenerator()}]
+      : ([sourceValueAtPath] as unknown[])
     return collateArrayValue({
-      sourceValue: [sourceValueAtPath] as unknown[],
+      sourceValue: wrappedSourceValue,
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
       targetRootValue,
       targetRootPath,

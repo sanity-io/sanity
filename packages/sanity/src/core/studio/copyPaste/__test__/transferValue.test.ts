@@ -41,7 +41,7 @@ describe('transferValue', () => {
     })
     expect(transferValueResult.errors).not.toEqual([])
     expect(transferValueResult.errors[0].i18n.key).toEqual(
-      'copy-paste.on-paste.validation.schema-type-incompatible.description',
+      'copy-paste.on-paste.validation.array-value-incompatible.description',
     )
   })
 
@@ -417,6 +417,7 @@ describe('transferValue', () => {
       })
       expect(transferValueResult?.targetValue).toEqual([1, 2, 3])
     })
+
     test('can copy array of strings', async () => {
       const sourceValue = {
         _type: 'editor',
@@ -609,6 +610,30 @@ describe('transferValue', () => {
         {_key: expect.any(String), title: 'Blue', name: 'blue', _type: 'color'},
       ])
     })
+
+    test('can copy an supported object into an array of multiple types', async () => {
+      const sourceValue = {
+        title: 'Red',
+        name: 'red',
+      }
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('editor')!, [
+        'colorWithLongTitle',
+      ])
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceRootPath: ['color'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['arrayOfPredefinedOptions'],
+        targetRootValue: {},
+        targetRootPath: [],
+      })
+      expect(transferValueResult?.targetValue).toEqual([
+        {_key: expect.any(String), title: 'Red', name: 'red', _type: 'color'},
+      ])
+    })
+
     test('can not copy array values into another array that does not accept type', async () => {
       const sourceValue = [
         {
@@ -986,24 +1011,6 @@ describe('transferValue', () => {
       // Test that the keys are not the same
       expect(targetValue.bio[0]._key).not.toEqual('someKey')
       expect(targetValue.bio[0].children[0]._key).not.toEqual('someOtherKey')
-    })
-
-    test('can copy array of numbers', async () => {
-      const sourceValue = {
-        _type: 'author',
-        _id: 'xxx',
-        favoriteNumbers: [1, 2, 3, 4, 'foo'],
-      }
-      const transferValueResult = await transferValue({
-        sourceRootSchemaType: schema.get('author')!,
-        sourcePath: ['favoriteNumbers'],
-        sourceValue,
-        targetRootSchemaType: schema.get('editor')!,
-        targetPath: ['favoriteNumbers'],
-        targetRootValue: {},
-        targetRootPath: [],
-      })
-      expect(transferValueResult?.targetValue).toEqual([1, 2, 3, 4])
     })
 
     test('can copy nested objects', async () => {
