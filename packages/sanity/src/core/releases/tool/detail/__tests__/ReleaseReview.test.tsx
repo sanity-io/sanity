@@ -1,16 +1,15 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
-import {type SanityDocument} from '@sanity/client'
 import {act, fireEvent, render, screen} from '@testing-library/react'
-import {ColorSchemeProvider, getPublishedId, UserColorManagerProvider} from 'sanity'
+import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
-import {useDocumentPreviewValues} from '../documentTable/useDocumentPreviewValues'
 import {ReleaseReview} from '../ReleaseReview'
+import {type BundleDocumentResult} from '../useBundleDocuments'
 
-const DOCUMENTS_MOCKS = {
+const BASE_DOCUMENTS_MOCKS = {
   doc1: {
     baseDocument: {
       name: 'William Faulkner',
@@ -20,15 +19,6 @@ const DOCUMENTS_MOCKS = {
       _type: 'author',
       _createdAt: '',
       _updatedAt: '',
-    },
-    previewValues: {
-      _id: 'differences.doc1',
-      _type: 'author',
-      _createdAt: '2024-07-10T12:10:38Z',
-      _updatedAt: '2024-07-15T10:46:02Z',
-      _version: {},
-      title: 'William Faulkner added',
-      subtitle: 'Designer',
     },
   },
   doc2: {
@@ -41,21 +31,13 @@ const DOCUMENTS_MOCKS = {
       _createdAt: '',
       _updatedAt: '',
     },
-    previewValues: {
-      _id: 'differences.doc2',
-      _type: 'author',
-      _createdAt: '2024-07-10T12:10:38Z',
-      _updatedAt: '2024-07-15T10:46:02Z',
-      _version: {},
-      title: 'Virginia Woolf test',
-      subtitle: 'Developer',
-    },
   },
 } as const
 
-const MOCKED_PROPS = {
-  documents: [
-    {
+const MOCKED_DOCUMENTS: BundleDocumentResult[] = [
+  {
+    id: 'differences.doc1',
+    document: {
       _rev: 'FvEfB9CaLlljeKWNkQgpz9',
       _type: 'author',
       role: 'designer',
@@ -64,7 +46,27 @@ const MOCKED_PROPS = {
       _id: 'differences.doc1',
       _updatedAt: '2024-07-15T10:46:02Z',
     },
-    {
+    previewValues: {
+      isLoading: false,
+      values: {
+        _createdAt: '2024-07-10T12:10:38Z',
+        _updatedAt: '2024-07-15T10:46:02Z',
+        _version: {},
+        title: 'William Faulkner added',
+        subtitle: 'Designer',
+      },
+    },
+    validation: {
+      isValidating: false,
+      validation: [],
+      revision: 'FvEfB9CaLlljeKWNk8Mh0N',
+      documentId: 'differences.doc1',
+      hasError: false,
+    },
+  },
+  {
+    id: 'differences.doc2',
+    document: {
       _rev: 'FvEfB9CaLlljeKWNkQg1232',
       _type: 'author',
       role: 'developer',
@@ -73,7 +75,27 @@ const MOCKED_PROPS = {
       _id: 'differences.doc2',
       _updatedAt: '2024-07-15T10:46:02Z',
     },
-  ],
+    previewValues: {
+      isLoading: false,
+      values: {
+        _createdAt: '2024-07-10T12:10:38Z',
+        _updatedAt: '2024-07-15T10:46:02Z',
+        _version: {},
+        title: 'Virginia Woolf test',
+        subtitle: 'Developer',
+      },
+    },
+    validation: {
+      isValidating: false,
+      validation: [],
+      revision: 'FvEfB9CaLlljeKWNk8Mh0N',
+      documentId: 'differences.doc1',
+      hasError: false,
+    },
+  },
+]
+const MOCKED_PROPS = {
+  documents: MOCKED_DOCUMENTS,
   release: {
     _updatedAt: '2024-07-12T10:39:32Z',
     authorId: 'p8xDvUMxC',
@@ -102,22 +124,6 @@ const MOCKED_PROPS = {
       editors: ['p8xDvUMxC'],
     },
   },
-  validation: {
-    'differences.doc1': {
-      isValidating: false,
-      validation: [],
-      revision: 'FvEfB9CaLlljeKWNk8Mh0N',
-      documentId: 'differences.doc1',
-      hasError: false,
-    },
-    'differences.doc2': {
-      isValidating: false,
-      validation: [],
-      revision: 'FvEfB9CaLlljeKWNk8Mh0N',
-      documentId: 'differences.doc1',
-      hasError: false,
-    },
-  },
 }
 
 jest.mock('sanity/router', () => ({
@@ -135,16 +141,7 @@ jest.mock('../../../../preview/useObserveDocument', () => {
   }
 })
 
-jest.mock('../documentTable/useDocumentPreviewValues', () => {
-  return {
-    useDocumentPreviewValues: jest.fn(),
-  }
-})
-
 const mockedUseObserveDocument = useObserveDocument as jest.Mock<typeof useObserveDocument>
-const mockedUseDocumentPreviewValues = useDocumentPreviewValues as jest.Mock<
-  typeof useDocumentPreviewValues
->
 
 describe('ReleaseReview', () => {
   describe('when loading baseDocument', () => {
@@ -152,10 +149,6 @@ describe('ReleaseReview', () => {
       mockedUseObserveDocument.mockReturnValue({
         document: null,
         loading: true,
-      })
-      mockedUseDocumentPreviewValues.mockReturnValue({
-        previewValues: DOCUMENTS_MOCKS.doc1.previewValues,
-        isLoading: false,
       })
       const wrapper = await createWrapper({
         resources: [releasesUsEnglishLocaleBundle],
@@ -174,10 +167,6 @@ describe('ReleaseReview', () => {
         document: null,
         loading: false,
       })
-      mockedUseDocumentPreviewValues.mockReturnValue({
-        previewValues: DOCUMENTS_MOCKS.doc1.previewValues,
-        isLoading: false,
-      })
       const wrapper = await createWrapper({
         resources: [releasesUsEnglishLocaleBundle],
       })
@@ -193,13 +182,10 @@ describe('ReleaseReview', () => {
   describe('when the base document is loaded and there are no changes', () => {
     beforeEach(async () => {
       mockedUseObserveDocument.mockReturnValue({
-        document: MOCKED_PROPS.documents[0],
+        document: MOCKED_DOCUMENTS[0].document,
         loading: false,
       })
-      mockedUseDocumentPreviewValues.mockReturnValue({
-        previewValues: DOCUMENTS_MOCKS.doc1.previewValues,
-        isLoading: false,
-      })
+
       const wrapper = await createWrapper({
         resources: [releasesUsEnglishLocaleBundle],
       })
@@ -217,19 +203,11 @@ describe('ReleaseReview', () => {
       mockedUseObserveDocument.mockImplementation((docId: string) => {
         return {
           // @ts-expect-error - key is valid, ts won't infer it
-          document: DOCUMENTS_MOCKS[docId].baseDocument,
+          document: BASE_DOCUMENTS_MOCKS[docId].baseDocument,
           loading: false,
         }
       })
-      mockedUseDocumentPreviewValues.mockImplementation(
-        ({document}: {document: SanityDocument}) => {
-          return {
-            // @ts-expect-error - key is valid, ts won't infer it
-            previewValues: DOCUMENTS_MOCKS[getPublishedId(document._id, true)].previewValues,
-            isLoading: false,
-          }
-        },
-      )
+
       const wrapper = await createWrapper({
         resources: [releasesUsEnglishLocaleBundle],
       })
@@ -261,15 +239,6 @@ describe('ReleaseReview', () => {
     beforeEach(async () => {
       mockedUseObserveDocument.mockReturnValue({document: null, loading: false})
 
-      mockedUseDocumentPreviewValues.mockImplementation(
-        ({document}: {document: SanityDocument}) => {
-          return {
-            // @ts-expect-error - key is valid, ts won't infer it
-            previewValues: DOCUMENTS_MOCKS[getPublishedId(document._id, true)].previewValues,
-            isLoading: false,
-          }
-        },
-      )
       const wrapper = await createWrapper({
         resources: [releasesUsEnglishLocaleBundle],
       })
@@ -277,8 +246,12 @@ describe('ReleaseReview', () => {
     })
 
     it('should show all the documents when no filter is applied', () => {
-      expect(screen.queryByText(DOCUMENTS_MOCKS.doc1.previewValues.title)).toBeInTheDocument()
-      expect(screen.queryByText(DOCUMENTS_MOCKS.doc2.previewValues.title)).toBeInTheDocument()
+      expect(
+        screen.queryByText(MOCKED_DOCUMENTS[0].previewValues.values.title as string),
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText(MOCKED_DOCUMENTS[1].previewValues.values.title as string),
+      ).toBeInTheDocument()
     })
     it('should show support filtering by title', () => {
       const searchInput = screen.getByPlaceholderText('Search documents')
@@ -286,14 +259,22 @@ describe('ReleaseReview', () => {
         fireEvent.change(searchInput, {target: {value: 'Virginia'}})
       })
 
-      expect(screen.queryByText(DOCUMENTS_MOCKS.doc1.previewValues.title)).not.toBeInTheDocument()
-      expect(screen.queryByText(DOCUMENTS_MOCKS.doc2.previewValues.title)).toBeInTheDocument()
+      expect(
+        screen.queryByText(MOCKED_DOCUMENTS[0].previewValues.values.title as string),
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(MOCKED_DOCUMENTS[1].previewValues.values.title as string),
+      ).toBeInTheDocument()
 
       act(() => {
         fireEvent.change(searchInput, {target: {value: ''}})
       })
-      expect(screen.queryByText(DOCUMENTS_MOCKS.doc1.previewValues.title)).toBeInTheDocument()
-      expect(screen.queryByText(DOCUMENTS_MOCKS.doc2.previewValues.title)).toBeInTheDocument()
+      expect(
+        screen.queryByText(MOCKED_DOCUMENTS[0].previewValues.values.title as string),
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText(MOCKED_DOCUMENTS[1].previewValues.values.title as string),
+      ).toBeInTheDocument()
     })
   })
 })

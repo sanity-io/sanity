@@ -1,26 +1,23 @@
 import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
-import {type SanityDocument} from '@sanity/types'
 import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {type BundleDocument} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
-import {type DocumentValidationStatus} from '../../tool/detail/bundleDocumentsValidation'
+import {type BundleDocumentResult} from '../../tool/detail/useBundleDocuments'
 import {useObserveDocumentRevisions} from './useObserveDocumentRevisions'
 
 interface ReleasePublishAllButtonProps {
   bundle: BundleDocument
-  bundleDocuments: SanityDocument[]
+  bundleDocuments: BundleDocumentResult[]
   disabled?: boolean
-  validation: Record<string, DocumentValidationStatus>
 }
 
 export const ReleasePublishAllButton = ({
   bundle,
   bundleDocuments,
   disabled,
-  validation,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
   const {publishBundle} = useBundleOperations()
@@ -28,20 +25,25 @@ export const ReleasePublishAllButton = ({
     'idle',
   )
 
-  const publishedDocumentsRevisions = useObserveDocumentRevisions(bundleDocuments)
+  const publishedDocumentsRevisions = useObserveDocumentRevisions(
+    bundleDocuments.map(({document}) => document),
+  )
 
-  const isValidatingDocuments = Object.values(validation).some(({isValidating}) => isValidating)
-  const hasDocumentValidationErrors = Object.values(validation).some(({hasError}) => hasError)
+  const isValidatingDocuments = bundleDocuments.some(({validation}) => validation.isValidating)
+  const hasDocumentValidationErrors = bundleDocuments.some(({validation}) => validation.hasError)
 
-  const isPublishButtonDisabled =
-    disabled || isValidatingDocuments || hasDocumentValidationErrors || !publishedDocumentsRevisions
+  const isPublishButtonDisabled = disabled || isValidatingDocuments || hasDocumentValidationErrors
 
   const handleConfirmPublishAll = useCallback(async () => {
     if (!bundle || !publishedDocumentsRevisions) return
 
     try {
       setPublishBundleStatus('publishing')
-      await publishBundle(bundle._id, bundleDocuments, publishedDocumentsRevisions)
+      await publishBundle(
+        bundle._id,
+        bundleDocuments.map(({document}) => document),
+        publishedDocumentsRevisions,
+      )
       toast.push({
         closable: true,
         status: 'success',

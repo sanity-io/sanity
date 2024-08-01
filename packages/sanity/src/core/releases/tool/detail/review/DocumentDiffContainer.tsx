@@ -7,23 +7,23 @@ import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {getPublishedId} from '../../../../util/draftUtils'
 import {type DocumentValidationStatus} from '../bundleDocumentsValidation'
-import {useDocumentPreviewValues} from '../documentTable/useDocumentPreviewValues'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {DocumentReviewHeader} from '../review/DocumentReviewHeader'
+import {type BundleDocumentResult} from '../useBundleDocuments'
 import {DocumentDiff} from './DocumentDiff'
 
 export function DocumentDiffContainer({
   document,
   release,
   history,
-  searchTerm,
+  previewValues,
   validation,
 }: {
   document: SanityDocument
   release: BundleDocument
   history?: DocumentHistory
-  searchTerm: string
   validation?: DocumentValidationStatus
+  previewValues: BundleDocumentResult['previewValues']
 }) {
   const publishedId = getPublishedId(document._id, true)
   const schema = useSchema()
@@ -35,21 +35,13 @@ export function DocumentDiffContainer({
     publishedId,
     schemaType,
   )
-  const {previewValues, isLoading} = useDocumentPreviewValues({document, release})
-
-  if (searchTerm) {
-    // Early return to filter out documents that don't match the search term
-    const fallbackTitle = typeof document.title === 'string' ? document.title : 'Untitled'
-    const title = typeof previewValues.title === 'string' ? previewValues.title : fallbackTitle
-    if (!title.toLowerCase().includes(searchTerm.toLowerCase())) return null
-  }
 
   return (
     <Card border radius={3}>
       <DocumentReviewHeader
         document={document}
-        previewValues={previewValues}
-        isLoading={!!isLoading}
+        isLoading={previewValues.isLoading}
+        previewValues={previewValues.values}
         history={history}
         release={release}
         validation={validation}

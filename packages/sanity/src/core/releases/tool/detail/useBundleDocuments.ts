@@ -1,16 +1,27 @@
-import {isValidationErrorMarker} from '@sanity/types'
+import {isValidationErrorMarker, type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest} from 'rxjs'
-import {filter, map} from 'rxjs/operators'
+import {filter, map, switchAll} from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
+import {getPreviewStateObservable, getPreviewValueWithFallback, prepareForPreview} from 'sanity'
 
 import {useSchema} from '../../../hooks'
 import {useDocumentPreviewStore} from '../../../store'
 import {useSource} from '../../../studio'
 import {validateDocumentWithReferences} from '../../../validation'
+import {type DocumentValidationStatus} from './bundleDocumentsValidation'
 
-export function useBundleDocuments(bundle: string) {
+export interface BundleDocumentResult {
+  document: SanityDocument
+  validation: DocumentValidationStatus
+  previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
+  id: string
+}
+export function useBundleDocuments(bundle: string): {
+  loading: boolean
+  results: BundleDocumentResult[]
+} {
   const groqFilter = `defined(_version) &&  _id in path("${bundle}.*")`
   const documentPreviewStore = useDocumentPreviewStore()
   const {getClient, i18n} = useSource()
@@ -39,13 +50,51 @@ export function useBundleDocuments(bundle: string) {
           })),
         )
 
-        return combineLatest([document$, validation$]).pipe(
-          map(([document, validation]) => ({document, validation})),
+        const previewValues$ = document$.pipe(
+          map((d) => {
+            const schemaType = schema.get(d._type)
+            if (!schemaType) {
+              throw new Error(`Schema type not found for document type ${d._type}`)
+            }
+
+            return getPreviewStateObservable(
+              documentPreviewStore,
+              schemaType,
+              d._id,
+              'Untitled',
+              `bundle.${bundle}`,
+            ).pipe(
+              // eslint-disable-next-line max-nested-callbacks
+              map((state) => {
+                const previewValues = getPreviewValueWithFallback({
+                  value: d,
+                  draft: state.draft,
+                  published: state.published,
+                  version: state.version,
+                  perspective: `bundle.${bundle}`,
+                })
+                return {
+                  isLoading: !!state.isLoading,
+                  values: prepareForPreview(previewValues, schemaType),
+                }
+              }),
+            )
+          }),
+          switchAll(),
+        )
+
+        return combineLatest([document$, validation$, previewValues$]).pipe(
+          map(([document, validation, previewValues]) => ({
+            id: document._id,
+            document,
+            validation,
+            previewValues,
+          })),
         )
       }),
       map((results) => ({loading: false, results})),
     )
-  }, [documentPreviewStore, getClient, groqFilter, i18n, schema])
+  }, [documentPreviewStore, getClient, groqFilter, i18n, schema, bundle])
 
   return useObservable(observable, {loading: true, results: []})
 }

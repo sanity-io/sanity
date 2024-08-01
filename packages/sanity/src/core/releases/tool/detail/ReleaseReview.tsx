@@ -1,13 +1,12 @@
 import {SearchIcon} from '@sanity/icons'
-import {type SanityDocument} from '@sanity/types'
 import {Container, Flex, Stack, Text, TextInput} from '@sanity/ui'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../../store/bundles/types'
-import {type DocumentValidationStatus} from './bundleDocumentsValidation'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
 import {DocumentDiffContainer} from './review/DocumentDiffContainer'
+import {type BundleDocumentResult} from './useBundleDocuments'
 
 const InputContainer = styled(Container)`
   margin: 0;
@@ -16,14 +15,21 @@ export function ReleaseReview({
   documents,
   release,
   documentsHistory,
-  validation,
 }: {
-  documents: SanityDocument[]
+  documents: BundleDocumentResult[]
   release: BundleDocument
   documentsHistory: Record<string, DocumentHistory>
-  validation: Record<string, DocumentValidationStatus>
 }) {
   const [searchTerm, setSearchTerm] = useState('')
+
+  const filteredList = useMemo(() => {
+    return documents.filter(({previewValues, document}) => {
+      const fallbackTitle = typeof document.title === 'string' ? document.title : 'Untitled'
+      const title =
+        typeof previewValues.values.title === 'string' ? previewValues.values.title : fallbackTitle
+      return title.toLowerCase().includes(searchTerm.toLowerCase())
+    })
+  }, [searchTerm, documents])
 
   return (
     <Stack space={5}>
@@ -45,14 +51,14 @@ export function ReleaseReview({
         </InputContainer>
       </Flex>
       <Stack space={[5, 6]}>
-        {documents.map((document) => (
+        {filteredList.map(({document, validation, previewValues}) => (
           <DocumentDiffContainer
             key={document._id}
-            searchTerm={searchTerm}
             document={document}
             release={release}
             history={documentsHistory[document._id]}
-            validation={validation[document._id]}
+            validation={validation}
+            previewValues={previewValues}
           />
         ))}
       </Stack>

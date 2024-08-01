@@ -17,6 +17,9 @@ type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extend
 export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
+  /**
+   * @deprecated This is not necessary anymore - remove in next commit
+   */
   Row?: ({
     datum,
     virtualRow,
