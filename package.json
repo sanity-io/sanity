@@ -100,7 +100,7 @@
     "@babel/preset-env": "^7.24.7",
     "@babel/preset-react": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
-    "@bjoerge/mutiny": "^0.5.3",
+    "@bjoerge/mutiny": "^0.7.0",
     "@google-cloud/storage": "^7.11.0",
     "@jest/globals": "^29.7.0",
     "@playwright/test": "1.44.1",
