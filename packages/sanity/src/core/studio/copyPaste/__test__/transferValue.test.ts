@@ -288,6 +288,80 @@ describe('transferValue', () => {
       expect(transferValueResult?.targetValue).toEqual(undefined)
     })
 
+    test('will not copy reference where referenced document does not exists', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        reference: {_type: 'reference', _ref: 'zzz'},
+      }
+      const targetRootValue = {
+        _type: 'referencesDocument',
+        _id: 'zzz',
+      }
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: ['reference'],
+        sourceValue,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['referenceWithFilter'],
+        targetRootValue,
+        targetRootPath: ['referenceWithFilter'],
+        options: {
+          validateReferences: true,
+          client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([
+        {
+          level: 'error',
+          sourceValue: expect.any(Object),
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+          },
+        },
+      ])
+      expect(transferValueResult?.targetValue).toEqual(undefined)
+    })
+
+    test('will not copy reference as part of document where referenced document does not exists', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        reference: {_type: 'reference', _ref: 'zzz'},
+      }
+      const targetRootValue = {
+        _type: 'referencesDocument',
+        _id: 'zzz',
+      }
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: [],
+        targetRootValue,
+        targetRootPath: [],
+        options: {
+          validateReferences: true,
+          client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([
+        {
+          level: 'error',
+          sourceValue: expect.any(Object),
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+          },
+        },
+      ])
+      expect(transferValueResult?.targetValue).toEqual({_type: 'referencesDocument'})
+    })
+
     test('will not copy reference where reference does not match filter function', async () => {
       const sourceValue = {_type: 'reference', _ref: 'book-2'}
       const targetRootValue = {
@@ -611,14 +685,12 @@ describe('transferValue', () => {
       ])
     })
 
-    test('can copy an supported object into an array of multiple types', async () => {
+    test('can copy an supported inline object into an array of multiple types', async () => {
       const sourceValue = {
         title: 'Red',
         name: 'red',
       }
-      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('editor')!, [
-        'colorWithLongTitle',
-      ])
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('editor')!, ['color'])
       const transferValueResult = await transferValue({
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
@@ -631,6 +703,26 @@ describe('transferValue', () => {
       })
       expect(transferValueResult?.targetValue).toEqual([
         {_key: expect.any(String), title: 'Red', name: 'red', _type: 'color'},
+      ])
+    })
+
+    test('can copy a supported hoisted object into an array of multiple types', async () => {
+      const sourceValue = {
+        myString: 'hello world',
+      }
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('editor')!, ['myStringObject'])
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceRootPath: ['myStringObject'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['arrayOfPredefinedOptions'],
+        targetRootValue: {},
+        targetRootPath: [],
+      })
+      expect(transferValueResult?.targetValue).toEqual([
+        {_key: expect.any(String), myString: 'hello world', _type: 'myStringObject'},
       ])
     })
 

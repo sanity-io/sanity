@@ -290,6 +290,7 @@ export async function transferValue({
       targetRootValue,
       targetRootPath,
       errors,
+      options,
       keyGenerator,
     })
   }
@@ -310,6 +311,7 @@ export async function transferValue({
       targetRootValue,
       targetRootPath,
       errors,
+      options,
       keyGenerator,
     })
   }
@@ -344,7 +346,7 @@ async function collateObjectValue({
   targetPath: Path
   errors: TransferValueError[]
   keyGenerator: () => string
-  options?: TransferValueOptions
+  options: TransferValueOptions
 }) {
   if (isEmptyValue(sourceValue)) {
     return {
@@ -626,6 +628,7 @@ async function collateObjectValue({
         targetRootValue,
         targetRootPath,
         errors,
+        options,
         keyGenerator,
       })
 
@@ -644,6 +647,7 @@ async function collateObjectValue({
         targetRootValue,
         targetRootPath,
         errors,
+        options,
         keyGenerator,
       })
 
@@ -705,6 +709,7 @@ async function collateArrayValue({
   targetRootValue,
   targetRootPath,
   errors,
+  options,
   keyGenerator,
 }: {
   sourceValue: unknown
@@ -712,6 +717,7 @@ async function collateArrayValue({
   targetRootPath: Path
   targetSchemaType: ArraySchemaType
   errors: TransferValueError[]
+  options: TransferValueOptions
   keyGenerator: () => string
 }): Promise<{
   targetValue: unknown
@@ -803,6 +809,7 @@ async function collateArrayValue({
             targetRootValue,
             targetRootPath,
             errors,
+            options,
             keyGenerator,
           }),
         ),

@@ -110,7 +110,7 @@ export const editorDocument = defineType({
     }),
     defineField({
       type: 'object',
-      name: 'colorWithLongTitle',
+      name: 'color',
       title: 'Color with a long title',
       fields: [
         {
@@ -122,6 +122,11 @@ export const editorDocument = defineType({
           type: 'string',
         },
       ],
+    }),
+    defineField({
+      type: 'myStringObject',
+      name: 'myStringObject',
+      title: 'My string object',
     }),
     defineField({
       name: 'arrayOfPredefinedOptions',
@@ -141,6 +146,10 @@ export const editorDocument = defineType({
               type: 'string',
             },
           ],
+        },
+        {
+          type: 'myStringObject',
+          name: 'myStringObject',
         },
       ],
       options: {
