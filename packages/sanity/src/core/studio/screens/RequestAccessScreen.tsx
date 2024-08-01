@@ -147,8 +147,13 @@ export function RequestAccessScreen() {
               {providerHelp}.
             </Text>
             {hasTooManyRequests || hasPendingRequest ? (
-              <Card tone={hasPendingRequest ? 'transparent' : 'caution'} padding={3} border>
-                <Text size={1}>
+              <Card
+                tone={hasPendingRequest ? 'transparent' : 'caution'}
+                padding={3}
+                radius={2}
+                shadow={1}
+              >
+                <Text size={1} muted>
                   {hasTooManyRequests && !hasPendingRequest && (
                     <>
                       You've reached the limit for access requests across all projects. Please wait
@@ -180,20 +185,22 @@ export function RequestAccessScreen() {
           <Flex align={'center'} justify={'space-between'} paddingY={3} paddingX={4}>
             <Button
               mode="bleed"
-              padding={2}
+              padding={3}
               text={'Sign out'}
               tone="default"
               onClick={handleLogout}
             />
-            <Button
-              mode="default"
-              padding={3}
-              text={hasPendingRequest ? 'Request sent' : 'Request access'}
-              disabled={hasTooManyRequests || hasPendingRequest || isSubmitting}
-              loading={isSubmitting}
-              tone="default"
-              onClick={handleSubmitRequest}
-            />
+            {!hasTooManyRequests && (
+              <Button
+                mode="default"
+                padding={3}
+                text={hasPendingRequest ? 'Request sent' : 'Request access'}
+                disabled={hasPendingRequest || isSubmitting}
+                loading={isSubmitting}
+                tone="default"
+                onClick={handleSubmitRequest}
+              />
+            )}
           </Flex>
         </Box>
       </Dialog>
