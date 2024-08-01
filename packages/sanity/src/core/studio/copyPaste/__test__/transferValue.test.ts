@@ -319,6 +319,9 @@ describe('transferValue', () => {
 
           i18n: {
             key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+            args: {
+              ref: expect.any(String),
+            },
           },
         },
       ])
@@ -356,6 +359,9 @@ describe('transferValue', () => {
 
           i18n: {
             key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+            args: {
+              ref: expect.any(String),
+            },
           },
         },
       ])

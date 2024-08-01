@@ -31,6 +31,9 @@ const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
   /** The validation message that is shown when reference is incompatible with filter */
   'copy-paste.on-paste.validation.reference-filter-incompatible.description':
     'Reference is not allowed in reference field according to filter',
+  /** The validation message that is shown when reference does not exist */
+  'copy-paste.on-paste.validation.reference-validation-failed.description':
+    'The referenced document "{{ref}}" does not exist',
   /** The validation message that is shown when image files are incompatible */
   'copy-paste.on-paste.validation.image-file-incompatible.description':
     'A "{{sourceSchemaType}}" is not allowed in a "{{targetSchemaType}}"',
