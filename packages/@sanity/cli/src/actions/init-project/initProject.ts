@@ -1281,8 +1281,7 @@ export default async function initSanity(
       '# Warning: Do not add secrets (API keys and similar) to this file, as it source controlled!',
       '# Use `.env.local` for any secrets, and ensure it is not added to source control',
     ].join('\n')
-    const shouldPrependWarning = !existingEnv.includes(warningComment)
-    // prepend warning comment to the env vars if one does not exist
+    const shouldPrependWarning = filename !== '.env.local' && !existingEnv.includes(warningComment)
     if (shouldPrependWarning) {
       await fs.writeFile(fileOutputPath, `${warningComment}\n\n${updatedEnv}`, {
         encoding: 'utf8',
