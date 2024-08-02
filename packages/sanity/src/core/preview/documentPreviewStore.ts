@@ -5,7 +5,6 @@ import {
   type WelcomeEvent,
 } from '@sanity/client'
 import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
-import {pick} from 'lodash'
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
@@ -108,16 +107,6 @@ export interface DocumentPreviewStoreOptions {
   client: SanityClient
 }
 
-/** @internal
- * Should the preview system fetch partial documents or full documents?
- * Setting this to true will end up fetching full documents for everything that's currently being previewed in the studio
- * This comes with an extra memory and initial transfer cost, but gives faster updating previews and less likelihood of displaying
- * out-of-date previews as documents will be kept in sync by applying mendoza patches, instead of re-fetching preview queries
- *
- * TODO: Set to false before merging to main, see https://github.com/sanity-io/sanity/pull/7257/
- * */
-const PREVIEW_FETCH_FULL_DOCUMENTS = true
-
 /** @internal */
 export function createDocumentPreviewStore({
   client,
@@ -135,17 +124,7 @@ export function createDocumentPreviewStore({
   )
 
   const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
-
-  function getObserveFields() {
-    if (PREVIEW_FETCH_FULL_DOCUMENTS) {
-      return function observeFields(id: string, fields: string[], apiConfig?: ApiConfig) {
-        return observeDocument(id, apiConfig).pipe(map((doc) => (doc ? pick(doc, fields) : null)))
-      }
-    }
-    return createObserveFields({client: versionedClient, invalidationChannel})
-  }
-
-  const observeFields = getObserveFields()
+  const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
 
   const {observePaths} = createPathObserver({observeFields})
 
