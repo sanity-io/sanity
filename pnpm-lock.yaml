@@ -487,8 +487,8 @@ importers:
         specifier: ^1.8.3
         version: 1.10.4(@sanity/client@6.21.1)(react@18.3.1)
       '@sanity/tsdoc':
-        specifier: 1.0.87
-        version: 1.0.87(@types/babel__core@7.20.5)(@types/node@18.19.31)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)
+        specifier: 1.0.88
+        version: 1.0.88(@types/babel__core@7.20.5)(@types/node@18.19.31)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -3972,21 +3972,11 @@ packages:
   '@octokit/types@9.3.2':
     resolution: {integrity: sha512-D4iHGTdAnEEVsB8fl95m1hiz7D5YiRdQ9b/OEb3BYRVwbLsGHcRVPz+u+BgRLNk0Q0/4iZCBqDN96j2XNxfXrA==}
 
-  '@optimize-lodash/rollup-plugin@4.0.4':
-    resolution: {integrity: sha512-zcbnqx7oQWmGA3Xaf6I8m64+Rufebz4fnSuOHf0++aGqHdwbf19t5OdIebn8Deeb1DoyHbaWVezuTZyKw0vBJw==}
-    engines: {node: '>= 12'}
-    peerDependencies:
-      rollup: '>=2.x'
-
   '@optimize-lodash/rollup-plugin@5.0.0':
     resolution: {integrity: sha512-GJgfYatfqHvi3XAytThuFsq4NzcP9Xc934ouZlL/DsWi6CrnQPfb4l0G4SYV/KAkKHlRLmuu/UxGZqXBbCw7OA==}
     engines: {node: '>= 18'}
     peerDependencies:
       rollup: '>= 4.x'
-
-  '@optimize-lodash/transform@3.0.3':
-    resolution: {integrity: sha512-LeH2C2nYPfwKLQ1OX7jrfZOYTyRajOhhgoCdz47+5d2oBP8YKL/NknCAcDt2QkzLDLbtZ5QHhKZN56S2D/I1JA==}
-    engines: {node: '>= 12'}
 
   '@optimize-lodash/transform@3.0.4':
     resolution: {integrity: sha512-pEzPjvEnWHQCTIv8j/6IYdYBJQUL/Z9Vo0SB2yr5GZNgf0OAznapjilOb7JY9dBEgXtbgtTgSpANZAiipsjhhw==}
@@ -4144,15 +4134,6 @@ packages:
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-
-  '@rollup/pluginutils@5.0.5':
-    resolution: {integrity: sha512-6aEYR910NyP73oHiJglti74iRyOwgFU4x3meH/H8OJx6Ry0j6cOVZ5X/wTvub7G7Ao6qaHBEaNsV3GLJkSsF+Q==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
     peerDependenciesMeta:
       rollup:
         optional: true
@@ -4411,13 +4392,6 @@ packages:
   '@sanity/mutator@3.37.2':
     resolution: {integrity: sha512-F0MvseVtgPBaPxNZtSidF6BQeygviYThgmhRbjZ89AhlRhWiLODvLakdogFmwD1NEQ0tpKn+8m0pQIOHgt2C3w==}
 
-  '@sanity/pkg-utils@6.10.7':
-    resolution: {integrity: sha512-ncD6e7z7GA+tkmW4HqYfwzzX8skCSYhBSTIDpSVi5BQj15gflTB+lfjg+0U95PGOXBmoQ16wbpeGNIFzpRCpHA==}
-    engines: {node: '>=18.17.0'}
-    hasBin: true
-    peerDependencies:
-      typescript: 5.4.x || 5.5.x
-
   '@sanity/pkg-utils@6.10.8':
     resolution: {integrity: sha512-RxniwOZ3qvI2LqZCrGMq74XxF3cJRYvv/4pyVAWst990wyOrVKl/co4fjJoviW5UQid9HySZX1OowWbDa/8Ejw==}
     engines: {node: '>=18.17.0'}
@@ -4458,16 +4432,6 @@ packages:
   '@sanity/test@0.0.1-alpha.1':
     resolution: {integrity: sha512-o2X2Veh9YWyVK/Iou/cToSS6ufcTLREoCVMcvBQbSqCFUIGaN1Ko3zxChJMWdf39dyaJ/ixMKtc8pciF/tL6Sw==}
     hasBin: true
-
-  '@sanity/tsdoc@1.0.87':
-    resolution: {integrity: sha512-lQot54j/5Vb3MWfv5x6Rs0OPUzPwFQT2AG6iiLOq6NuZWep1F9r8yoUNe3aZhZoqNStZLwybt5ChwcudCOR3mg==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    peerDependencies:
-      react: ^18
-      react-dom: ^18
-      sanity: ^3
-      styled-components: ^5.2 || ^6
 
   '@sanity/tsdoc@1.0.88':
     resolution: {integrity: sha512-HnZ6ofOvuJ4akidqc6p8p8/HAQ644N/+LSV+oJdqpTaqi7AdL1H3cthlZnGiCiR5ubln2oJhRuIZaiL7dDTpuQ==}
@@ -11425,12 +11389,6 @@ packages:
     peerDependencies:
       zod: ^3.18.0
 
-  zod-validation-error@3.3.0:
-    resolution: {integrity: sha512-Syib9oumw1NTqEv4LT0e6U83Td9aVRk9iTXPUQr1otyV1PuXQKOvOwhMNqZIq5hluzHP2pMgnOmHEo7kPdI2mw==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      zod: ^3.18.0
-
   zod-validation-error@3.3.1:
     resolution: {integrity: sha512-uFzCZz7FQis256dqw4AhPQgD6f3pzNca/Zh62RNELavlumQB3nDIUFbF5JQfFLcMbO1s02Q7Xg/gpcOBlEnYZA==}
     engines: {node: '>=18.0.0'}
@@ -13765,22 +13723,11 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 18.1.1
 
-  '@optimize-lodash/rollup-plugin@4.0.4(rollup@4.19.2)':
-    dependencies:
-      '@optimize-lodash/transform': 3.0.3
-      '@rollup/pluginutils': 5.0.5(rollup@4.19.2)
-      rollup: 4.19.2
-
   '@optimize-lodash/rollup-plugin@5.0.0(rollup@4.19.2)':
     dependencies:
       '@optimize-lodash/transform': 3.0.4
       '@rollup/pluginutils': 5.1.0(rollup@4.19.2)
       rollup: 4.19.2
-
-  '@optimize-lodash/transform@3.0.3':
-    dependencies:
-      estree-walker: 2.0.2
-      magic-string: 0.30.11
 
   '@optimize-lodash/transform@3.0.4':
     dependencies:
@@ -13965,14 +13912,6 @@ snapshots:
       serialize-javascript: 6.0.2
       smob: 1.5.0
       terser: 5.30.3
-    optionalDependencies:
-      rollup: 4.19.2
-
-  '@rollup/pluginutils@5.0.5(rollup@4.19.2)':
-    dependencies:
-      '@types/estree': 1.0.5
-      estree-walker: 2.0.2
-      picomatch: 2.3.1
     optionalDependencies:
       rollup: 4.19.2
 
@@ -14291,57 +14230,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sanity/pkg-utils@6.10.7(@types/babel__core@7.20.5)(@types/node@18.19.31)(typescript@5.5.4)':
-    dependencies:
-      '@babel/core': 7.25.2
-      '@babel/preset-typescript': 7.24.7(@babel/core@7.25.2)
-      '@babel/types': 7.25.2
-      '@microsoft/api-extractor': 7.47.4(@types/node@18.19.31)
-      '@microsoft/tsdoc-config': 0.17.0
-      '@optimize-lodash/rollup-plugin': 4.0.4(rollup@4.19.2)
-      '@rollup/plugin-alias': 5.1.0(rollup@4.19.2)
-      '@rollup/plugin-babel': 6.0.4(@babel/core@7.25.2)(@types/babel__core@7.20.5)(rollup@4.19.2)
-      '@rollup/plugin-commonjs': 26.0.1(rollup@4.19.2)
-      '@rollup/plugin-json': 6.1.0(rollup@4.19.2)
-      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.19.2)
-      '@rollup/plugin-replace': 5.0.7(rollup@4.19.2)
-      '@rollup/plugin-terser': 0.4.4(rollup@4.19.2)
-      '@sanity/browserslist-config': 1.0.3
-      babel-plugin-react-compiler: 0.0.0-experimental-938cd9a-20240601
-      browserslist: 4.23.2
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      esbuild: 0.23.0
-      esbuild-register: 3.6.0(esbuild@0.23.0)
-      find-config: 1.0.0
-      get-latest-version: 5.1.0(debug@4.3.6)
-      git-url-parse: 14.1.0
-      globby: 11.1.0
-      jsonc-parser: 3.3.1
-      mkdirp: 3.0.1
-      outdent: 0.8.0
-      parse-git-config: 3.0.0
-      pkg-up: 3.1.0
-      prettier: 3.3.3
-      pretty-bytes: 5.6.0
-      prompts: 2.4.2
-      recast: 0.23.9
-      rimraf: 4.4.1
-      rollup: 4.19.2
-      rollup-plugin-esbuild: 6.1.1(esbuild@0.23.0)(rollup@4.19.2)
-      rxjs: 7.8.1
-      treeify: 1.1.0
-      typescript: 5.5.4
-      uuid: 10.0.0
-      zod: 3.23.8
-      zod-validation-error: 3.3.0(zod@3.23.8)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - supports-color
-
   '@sanity/pkg-utils@6.10.8(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)':
     dependencies:
       '@babel/core': 7.25.2
@@ -14455,7 +14343,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/tsdoc@1.0.87(@types/babel__core@7.20.5)(@types/node@18.19.31)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)':
+  '@sanity/tsdoc@1.0.88(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)':
     dependencies:
       '@microsoft/api-extractor': 7.47.4(@types/node@18.19.31)
       '@microsoft/api-extractor-model': 7.29.4(@types/node@18.19.31)
@@ -14466,8 +14354,8 @@ snapshots:
       '@sanity/client': 6.21.1(debug@4.3.6)
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.3.1(react@18.3.1)
-      '@sanity/pkg-utils': 6.10.7(@types/babel__core@7.20.5)(@types/node@18.19.31)(typescript@5.5.4)
-      '@sanity/ui': 2.8.8(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/pkg-utils': 6.10.8(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
+      '@sanity/ui': 2.8.8(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.1(vite@5.3.5(@types/node@18.19.31)(terser@5.30.3))
       cac: 6.7.14
@@ -14507,7 +14395,7 @@ snapshots:
       - supports-color
       - terser
 
-  '@sanity/tsdoc@1.0.88(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)':
+  '@sanity/tsdoc@1.0.88(@types/babel__core@7.20.5)(@types/node@18.19.31)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)':
     dependencies:
       '@microsoft/api-extractor': 7.47.4(@types/node@18.19.31)
       '@microsoft/api-extractor-model': 7.29.4(@types/node@18.19.31)
@@ -14519,7 +14407,7 @@ snapshots:
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.3.1(react@18.3.1)
       '@sanity/pkg-utils': 6.10.8(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
-      '@sanity/ui': 2.8.8(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.8.8(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.1(vite@5.3.5(@types/node@18.19.31)(terser@5.30.3))
       cac: 6.7.14
@@ -23027,10 +22915,6 @@ snapshots:
       readable-stream: 4.5.2
 
   zod-validation-error@2.1.0(zod@3.23.8):
-    dependencies:
-      zod: 3.23.8
-
-  zod-validation-error@3.3.0(zod@3.23.8):
     dependencies:
       zod: 3.23.8
 
