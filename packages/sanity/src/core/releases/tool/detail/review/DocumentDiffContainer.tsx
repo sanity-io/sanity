@@ -1,4 +1,4 @@
-import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
+import {type ObjectSchemaType} from '@sanity/types'
 import {Card, Flex} from '@sanity/ui'
 
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -6,7 +6,6 @@ import {useSchema} from '../../../../hooks/useSchema'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {getPublishedId} from '../../../../util/draftUtils'
-import {type DocumentValidationStatus} from '../bundleDocumentsValidation'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {DocumentReviewHeader} from '../review/DocumentReviewHeader'
 import {type BundleDocumentResult} from '../useBundleDocuments'
@@ -19,10 +18,10 @@ export function DocumentDiffContainer({
   previewValues,
   validation,
 }: {
-  document: SanityDocument
   release: BundleDocument
   history?: DocumentHistory
-  validation?: DocumentValidationStatus
+  document: BundleDocumentResult['document']
+  validation?: BundleDocumentResult['validation']
   previewValues: BundleDocumentResult['previewValues']
 }) {
   const publishedId = getPublishedId(document._id, true)

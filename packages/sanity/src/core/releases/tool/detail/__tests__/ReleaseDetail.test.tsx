@@ -211,7 +211,6 @@ describe('after bundles have loaded', () => {
           loading: false,
           results: [
             {
-              id: 'test-id',
               document: {
                 _id: 'test-id',
                 _type: 'document',
@@ -220,7 +219,6 @@ describe('after bundles have loaded', () => {
                 _updatedAt: currentDate,
               },
               validation: {
-                documentId: 'test-id',
                 hasError: false,
                 isValidating: true,
                 validation: [],
@@ -249,7 +247,6 @@ describe('after bundles have loaded', () => {
           loading: false,
           results: [
             {
-              id: 'test-id',
               document: {
                 _id: 'test-id',
                 _type: 'document',
@@ -258,7 +255,6 @@ describe('after bundles have loaded', () => {
                 _updatedAt: currentDate,
               },
               validation: {
-                documentId: 'test-id',
                 hasError: false,
                 isValidating: false,
                 validation: [],
@@ -314,7 +310,6 @@ describe('after bundles have loaded', () => {
           loading: false,
           results: [
             {
-              id: '123',
               document: {
                 _id: '123',
                 _type: 'test',
@@ -323,7 +318,6 @@ describe('after bundles have loaded', () => {
                 _updatedAt: currentDate,
               },
               validation: {
-                documentId: '123',
                 hasError: true,
                 isValidating: false,
                 validation: [

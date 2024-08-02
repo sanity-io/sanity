@@ -36,7 +36,6 @@ const BASE_DOCUMENTS_MOCKS = {
 
 const MOCKED_DOCUMENTS: BundleDocumentResult[] = [
   {
-    id: 'differences.doc1',
     document: {
       _rev: 'FvEfB9CaLlljeKWNkQgpz9',
       _type: 'author',
@@ -60,12 +59,10 @@ const MOCKED_DOCUMENTS: BundleDocumentResult[] = [
       isValidating: false,
       validation: [],
       revision: 'FvEfB9CaLlljeKWNk8Mh0N',
-      documentId: 'differences.doc1',
       hasError: false,
     },
   },
   {
-    id: 'differences.doc2',
     document: {
       _rev: 'FvEfB9CaLlljeKWNkQg1232',
       _type: 'author',
@@ -89,7 +86,6 @@ const MOCKED_DOCUMENTS: BundleDocumentResult[] = [
       isValidating: false,
       validation: [],
       revision: 'FvEfB9CaLlljeKWNk8Mh0N',
-      documentId: 'differences.doc1',
       hasError: false,
     },
   },

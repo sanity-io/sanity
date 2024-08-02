@@ -9,15 +9,18 @@ import {getPreviewStateObservable, getPreviewValueWithFallback, prepareForPrevie
 import {useSchema} from '../../../hooks'
 import {useDocumentPreviewStore} from '../../../store'
 import {useSource} from '../../../studio'
-import {validateDocumentWithReferences} from '../../../validation'
-import {type DocumentValidationStatus} from './bundleDocumentsValidation'
+import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
+
+export interface DocumentValidationStatus extends ValidationStatus {
+  hasError: boolean
+}
 
 export interface BundleDocumentResult {
   document: SanityDocument
   validation: DocumentValidationStatus
   previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
-  id: string
 }
+
 export function useBundleDocuments(bundle: string): {
   loading: boolean
   results: BundleDocumentResult[]
@@ -44,7 +47,6 @@ export function useBundleDocuments(bundle: string): {
         const validation$ = validateDocumentWithReferences(ctx, document$).pipe(
           map((validationStatus) => ({
             ...validationStatus,
-            documentId: id,
             // eslint-disable-next-line max-nested-callbacks
             hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
           })),
@@ -85,7 +87,6 @@ export function useBundleDocuments(bundle: string): {
 
         return combineLatest([document$, validation$, previewValues$]).pipe(
           map(([document, validation, previewValues]) => ({
-            id: document._id,
             document,
             validation,
             previewValues,

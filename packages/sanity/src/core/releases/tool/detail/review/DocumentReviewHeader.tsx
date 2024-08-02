@@ -6,7 +6,7 @@ import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {Chip} from '../../../components/Chip'
 import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
-import {type DocumentValidationStatus} from '../bundleDocumentsValidation'
+import {type DocumentValidationStatus} from '../useBundleDocuments'
 
 export function DocumentReviewHeader({
   previewValues,

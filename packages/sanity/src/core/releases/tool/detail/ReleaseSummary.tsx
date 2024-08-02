@@ -175,7 +175,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         data={aggregatedData}
         tableHeight="800px"
         emptyState="No documents"
-        rowId="id"
+        rowId="document._id"
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}
         searchFilter={filterRows}

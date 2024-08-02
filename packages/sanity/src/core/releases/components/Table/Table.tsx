@@ -38,7 +38,10 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   data: TableData[]
   emptyState: (() => JSX.Element) | string
   loading?: boolean
-  rowId: keyof TableData
+  /**
+   * Should be the dot separated path to the unique identifier of the row. e.g. document._id
+   */
+  rowId: string
   rowActions?: ({
     datum,
   }: {
@@ -136,7 +139,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
       ) {
         return (
           <Card
-            key={String(datum[rowId])}
+            key={String(get(datum, rowId))}
             data-testid="table-row"
             as="tr"
             border
@@ -220,7 +223,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
                   if (Row) {
                     return (
                       <Row
-                        key={String(datum[rowId])}
+                        key={String(get(datum, rowId))}
                         datum={datum}
                         virtualRow={virtualRow}
                         index={index}

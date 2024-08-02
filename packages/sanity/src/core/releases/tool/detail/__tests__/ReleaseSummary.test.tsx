@@ -7,6 +7,7 @@ import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQu
 import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
+import {type BundleDocumentResult} from '../useBundleDocuments'
 
 jest.mock('../../../../studio/addonDataset/useAddonDataset', () => ({
   useAddonDataset: jest.fn().mockReturnValue({client: {}}),
@@ -23,9 +24,8 @@ jest.mock('../../../../user-color', () => ({
 
 const timeNow = new Date()
 
-const releaseDocuments = [
+const releaseDocuments: BundleDocumentResult[] = [
   {
-    id: '123',
     document: {
       _id: '123',
       _type: 'document',
@@ -44,14 +44,12 @@ const releaseDocuments = [
       isLoading: false,
     },
     validation: {
-      documentId: '123',
       hasError: false,
       isValidating: true,
       validation: [],
     },
   },
   {
-    id: '456',
     document: {
       _id: '456',
       _type: 'document',
@@ -70,7 +68,6 @@ const releaseDocuments = [
       isLoading: false,
     },
     validation: {
-      documentId: '456',
       hasError: false,
       isValidating: true,
       validation: [],
