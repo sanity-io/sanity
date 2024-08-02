@@ -40,7 +40,7 @@ export interface AuthConfig {
   /**
    * If true, the "Choose login provider" (eg "Google, "GitHub", "E-mail/password") screen
    * will be skipped if only a single provider is configured in the `providers` array -
-   * instead it will redirect unauthenticated users straight to the authenticatino URL.
+   * instead it will redirect unauthenticated users straight to the authentication URL.
    */
   redirectOnSingle?: boolean
 
