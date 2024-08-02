@@ -18,12 +18,12 @@ export async function* toSanityMutations(
       if (isTransaction(mut)) {
         yield {
           transactionId: mut.id,
-          mutations: SanityEncoder.encode(mut.mutations as any) as SanityMutation[],
+          mutations: SanityEncoder.encodeAll(mut.mutations as any[]) as SanityMutation[],
         }
         continue
       }
 
-      yield SanityEncoder.encode(arrify(mut) as any[]) as SanityMutation[]
+      yield SanityEncoder.encodeAll(arrify(mut) as any[]) as SanityMutation[]
     }
   }
 }
