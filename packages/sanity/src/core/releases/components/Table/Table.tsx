@@ -17,24 +17,6 @@ type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extend
 export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
-  /**
-   * @deprecated This is not necessary anymore - remove in next commit
-   */
-  Row?: ({
-    datum,
-    virtualRow,
-    children,
-  }: {
-    datum: TableData
-    virtualRow: VirtualItem
-    index: number
-    children: (
-      rowData: TableData & {
-        virtualRow: VirtualItem
-        index: number
-      },
-    ) => JSX.Element
-  }) => JSX.Element | null
   data: TableData[]
   emptyState: (() => JSX.Element) | string
   loading?: boolean
@@ -69,7 +51,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
   data,
   emptyState,
   searchFilter,
-  Row,
   rowId,
   rowActions,
   loading = false,
@@ -220,18 +201,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
               ? emptyContent
               : rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
                   const datum = filteredData[virtualRow.index]
-                  if (Row) {
-                    return (
-                      <Row
-                        key={String(get(datum, rowId))}
-                        datum={datum}
-                        virtualRow={virtualRow}
-                        index={index}
-                      >
-                        {renderRow}
-                      </Row>
-                    )
-                  }
                   return renderRow({...datum, virtualRow, index})
                 })}
           </RowStack>
