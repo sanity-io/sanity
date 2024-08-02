@@ -61,7 +61,7 @@ describe('getAliases', () => {
 
     // Prepare expected aliases
     const dirname = path.dirname(sanityPkgPath)
-    const expectedAliases = browserCompatibleSanityPackageSpecifiers.reduce<Alias[]>(
+    const resolvedSanityAliases = browserCompatibleSanityPackageSpecifiers.reduce<Alias[]>(
       (acc, next) => {
         const dest = resolve.exports(pkg, next, {
           browser: true,
@@ -77,7 +77,18 @@ describe('getAliases', () => {
       [],
     )
 
-    expect(aliases).toEqual(expectedAliases)
+    const styledComponentsAliases = [
+      {
+        find: /^styled-components\/package\.json$/,
+        replacement: expect.stringContaining('styled-components/package.json'),
+      },
+      {
+        find: /^styled-components$/,
+        replacement: expect.stringContaining('styled-components.esm.js'),
+      },
+    ]
+
+    expect(aliases).toEqual([...resolvedSanityAliases, ...styledComponentsAliases])
   })
 
   it('returns the correct aliases for the monorepo', () => {
@@ -93,13 +104,17 @@ describe('getAliases', () => {
       monorepo: {path: monorepoPath},
     })
 
-    const expectedAliases = Object.fromEntries(
+    const resolvedDevAliases = Object.fromEntries(
       Object.entries(devAliases).map(([key, modulePath]) => {
         return [key, path.resolve(monorepoPath, modulePath)]
       }),
     )
 
-    expect(aliases).toMatchObject(expectedAliases)
+    expect(aliases).toMatchObject({
+      ...resolvedDevAliases,
+      'styled-components/package.json': expect.stringContaining('styled-components/package.json'),
+      'styled-components': expect.stringContaining('styled-components.esm.js'),
+    })
   })
 
   it('returns an empty object if no conditions are met', () => {

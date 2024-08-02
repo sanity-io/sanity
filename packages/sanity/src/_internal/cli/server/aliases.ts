@@ -2,6 +2,7 @@ import path from 'node:path'
 
 import {escapeRegExp} from 'lodash'
 import resolve from 'resolve.exports'
+import resolveFrom from 'resolve-from'
 import {type Alias, type AliasOptions} from 'vite'
 
 import {type SanityMonorepo} from './sanityMonorepo'
@@ -77,8 +78,22 @@ export function getAliases({monorepo, sanityPkgPath}: GetAliasesOptions): AliasO
       }),
     )
 
+    // first get the path of `style-components`'s package.json
+    const styledComponentsPkgPath = resolveFrom(monorepo.path, 'styled-components/package.json')
+    // then load it
+    // eslint-disable-next-line import/no-dynamic-require
+    const styledComponentsPkg = require(styledComponentsPkgPath)
+    // get the dirname from the package path
+    const styledComponentsRoot = path.dirname(styledComponentsPkgPath)
+    // then augment the package dirname to the `module` entry point.
+    const styledComponentsEntryPoint = path.join(styledComponentsRoot, styledComponentsPkg.module)
+
     // Return the aliases configuration for monorepo
-    return monorepoAliases
+    return {
+      ...monorepoAliases,
+      'styled-components/package.json': styledComponentsPkgPath,
+      'styled-components': styledComponentsEntryPoint,
+    }
   }
 
   // If not in the monorepo, use the `sanityPkgPath`
@@ -90,24 +105,46 @@ export function getAliases({monorepo, sanityPkgPath}: GetAliasesOptions): AliasO
     const dirname = path.dirname(sanityPkgPath)
 
     // Resolve the entry points for each allowed specifier
-    const unifiedSanityAliases = browserCompatibleSanityPackageSpecifiers.reduce<Alias[]>(
-      (acc, next) => {
-        // Resolve the export path for the specifier using resolve.exports
-        const dest = resolve.exports(pkg, next, {browser: true, conditions})?.[0]
-        if (!dest) return acc
+    const aliases: Alias[] = []
 
-        // Map the specifier to its resolved path
-        acc.push({
-          find: new RegExp(`^${escapeRegExp(next)}$`),
-          replacement: path.resolve(dirname, dest),
-        })
-        return acc
-      },
-      [],
+    for (const specifier of browserCompatibleSanityPackageSpecifiers) {
+      // Resolve the export path for the specifier using resolve.exports
+      const dest = resolve.exports(pkg, specifier, {browser: true, conditions})?.[0]
+      if (!dest) continue
+
+      // Map the specifier to its resolved path
+      aliases.push({
+        find: new RegExp(`^${escapeRegExp(specifier)}$`),
+        replacement: path.resolve(dirname, dest),
+      })
+    }
+
+    // resolve styled-components package.json location relative to the sanity
+    // package.json parent folder
+    const styledComponentsPkgPath = resolveFrom(
+      path.dirname(sanityPkgPath),
+      'styled-components/package.json',
     )
+    aliases.push({
+      find: /^styled-components\/package\.json$/,
+      replacement: styledComponentsPkgPath,
+    })
+
+    // then load the styled-components package.json
+    // eslint-disable-next-line import/no-dynamic-require
+    const styledComponentsPkg = require(styledComponentsPkgPath)
+    // get the styled-components package root
+    const styledComponentsRoot = path.dirname(styledComponentsPkgPath)
+
+    // and then alias `styled-components` exactly to the result of the `module`
+    // entry point
+    aliases.push({
+      find: /^styled-components$/,
+      replacement: path.resolve(styledComponentsRoot, styledComponentsPkg.module),
+    })
 
     // Return the aliases configuration for external projects
-    return unifiedSanityAliases
+    return aliases
   }
 
   // Return an empty aliases configuration if no conditions are met
