@@ -2,9 +2,9 @@ import {isValidationErrorMarker, type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest} from 'rxjs'
-import {filter, map, switchAll} from 'rxjs/operators'
+import {filter, map, startWith, switchAll} from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
-import {getPreviewStateObservable, getPreviewValueWithFallback, prepareForPreview} from 'sanity'
+import {getPreviewValueWithFallback, prepareForPreview} from 'sanity'
 
 import {useSchema} from '../../../hooks'
 import {useDocumentPreviewStore} from '../../../store'
@@ -53,33 +53,26 @@ export function useBundleDocuments(bundle: string): {
         )
 
         const previewValues$ = document$.pipe(
-          map((d) => {
-            const schemaType = schema.get(d._type)
+          map((document) => {
+            const schemaType = schema.get(document._type)
             if (!schemaType) {
-              throw new Error(`Schema type not found for document type ${d._type}`)
+              throw new Error(`Schema type not found for document type ${document._type}`)
             }
 
-            return getPreviewStateObservable(
-              documentPreviewStore,
-              schemaType,
-              d._id,
-              'Untitled',
-              `bundle.${bundle}`,
-            ).pipe(
+            return documentPreviewStore.observeForPreview(document, schemaType).pipe(
               // eslint-disable-next-line max-nested-callbacks
-              map((state) => {
-                const previewValues = getPreviewValueWithFallback({
-                  value: d,
-                  draft: state.draft,
-                  published: state.published,
-                  version: state.version,
-                  perspective: `bundle.${bundle}`,
-                })
-                return {
-                  isLoading: !!state.isLoading,
-                  values: prepareForPreview(previewValues, schemaType),
-                }
-              }),
+              map((version) => ({
+                isLoading: false,
+                values: prepareForPreview(
+                  getPreviewValueWithFallback({
+                    value: document,
+                    version: version.snapshot,
+                    perspective: `bundle.${bundle}`,
+                  }),
+                  schemaType,
+                ),
+              })),
+              startWith({isLoading: true, values: {}}),
             )
           }),
           switchAll(),
