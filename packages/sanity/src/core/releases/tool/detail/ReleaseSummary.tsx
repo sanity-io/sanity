@@ -15,15 +15,15 @@ import {Table} from '../../components/Table/Table'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
-import {type BundleDocumentResult} from './useBundleDocuments'
+import {type DocumentInBundleResult} from './useBundleDocuments'
 
-export type DocumentWithHistory = BundleDocumentResult & {
+export type DocumentWithHistory = DocumentInBundleResult & {
   history: DocumentHistory | undefined
 }
 export type BundleDocumentRow = DocumentWithHistory
 
 export interface ReleaseSummaryProps {
-  documents: BundleDocumentResult[]
+  documents: DocumentInBundleResult[]
   documentsHistory: Record<string, DocumentHistory>
   collaborators: string[]
   release: BundleDocument

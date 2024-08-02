@@ -5,12 +5,12 @@ import {type BundleDocument} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
-import {type BundleDocumentResult} from '../../tool/detail/useBundleDocuments'
+import {type DocumentInBundleResult} from '../../tool/detail/useBundleDocuments'
 import {useObserveDocumentRevisions} from './useObserveDocumentRevisions'
 
 interface ReleasePublishAllButtonProps {
   bundle: BundleDocument
-  bundleDocuments: BundleDocumentResult[]
+  bundleDocuments: DocumentInBundleResult[]
   disabled?: boolean
 }
 

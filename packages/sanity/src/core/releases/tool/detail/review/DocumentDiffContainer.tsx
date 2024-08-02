@@ -8,7 +8,7 @@ import {type BundleDocument} from '../../../../store/bundles/types'
 import {getPublishedId} from '../../../../util/draftUtils'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {DocumentReviewHeader} from '../review/DocumentReviewHeader'
-import {type BundleDocumentResult} from '../useBundleDocuments'
+import {type DocumentInBundleResult} from '../useBundleDocuments'
 import {DocumentDiff} from './DocumentDiff'
 
 export function DocumentDiffContainer({
@@ -20,9 +20,9 @@ export function DocumentDiffContainer({
 }: {
   release: BundleDocument
   history?: DocumentHistory
-  document: BundleDocumentResult['document']
-  validation?: BundleDocumentResult['validation']
-  previewValues: BundleDocumentResult['previewValues']
+  document: DocumentInBundleResult['document']
+  validation?: DocumentInBundleResult['validation']
+  previewValues: DocumentInBundleResult['previewValues']
 }) {
   const publishedId = getPublishedId(document._id, true)
   const schema = useSchema()

@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
 import {DocumentDiffContainer} from './review/DocumentDiffContainer'
-import {type BundleDocumentResult} from './useBundleDocuments'
+import {type DocumentInBundleResult} from './useBundleDocuments'
 
 const InputContainer = styled(Container)`
   margin: 0;
@@ -16,7 +16,7 @@ export function ReleaseReview({
   release,
   documentsHistory,
 }: {
-  documents: BundleDocumentResult[]
+  documents: DocumentInBundleResult[]
   release: BundleDocument
   documentsHistory: Record<string, DocumentHistory>
 }) {

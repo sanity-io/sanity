@@ -15,7 +15,7 @@ export interface DocumentValidationStatus extends ValidationStatus {
   hasError: boolean
 }
 
-export interface BundleDocumentResult {
+export interface DocumentInBundleResult {
   document: SanityDocument
   validation: DocumentValidationStatus
   previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
@@ -23,7 +23,7 @@ export interface BundleDocumentResult {
 
 export function useBundleDocuments(bundle: string): {
   loading: boolean
-  results: BundleDocumentResult[]
+  results: DocumentInBundleResult[]
 } {
   const groqFilter = `defined(_version) &&  _id in path("${bundle}.*")`
   const documentPreviewStore = useDocumentPreviewStore()

@@ -7,7 +7,7 @@ import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseReview} from '../ReleaseReview'
-import {type BundleDocumentResult} from '../useBundleDocuments'
+import {type DocumentInBundleResult} from '../useBundleDocuments'
 
 const BASE_DOCUMENTS_MOCKS = {
   doc1: {
@@ -34,7 +34,7 @@ const BASE_DOCUMENTS_MOCKS = {
   },
 } as const
 
-const MOCKED_DOCUMENTS: BundleDocumentResult[] = [
+const MOCKED_DOCUMENTS: DocumentInBundleResult[] = [
   {
     document: {
       _rev: 'FvEfB9CaLlljeKWNkQgpz9',
