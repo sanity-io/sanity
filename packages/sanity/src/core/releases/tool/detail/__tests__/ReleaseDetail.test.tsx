@@ -211,6 +211,7 @@ describe('after bundles have loaded', () => {
           loading: false,
           results: [
             {
+              id: 'test-id',
               document: {
                 _id: 'test-id',
                 _type: 'document',
@@ -219,10 +220,14 @@ describe('after bundles have loaded', () => {
                 _updatedAt: currentDate,
               },
               validation: {
-                documentId: '123',
+                documentId: 'test-id',
                 hasError: false,
                 isValidating: true,
                 validation: [],
+              },
+              previewValues: {
+                values: {title: 'Test document'},
+                isLoading: false,
               },
             },
           ],
@@ -244,6 +249,7 @@ describe('after bundles have loaded', () => {
           loading: false,
           results: [
             {
+              id: 'test-id',
               document: {
                 _id: 'test-id',
                 _type: 'document',
@@ -252,10 +258,14 @@ describe('after bundles have loaded', () => {
                 _updatedAt: currentDate,
               },
               validation: {
-                documentId: '123',
+                documentId: 'test-id',
                 hasError: false,
                 isValidating: false,
                 validation: [],
+              },
+              previewValues: {
+                values: {title: 'Test document'},
+                isLoading: false,
               },
             },
           ],
@@ -304,6 +314,7 @@ describe('after bundles have loaded', () => {
           loading: false,
           results: [
             {
+              id: '123',
               document: {
                 _id: '123',
                 _type: 'test',
@@ -322,6 +333,10 @@ describe('after bundles have loaded', () => {
                     path: ['title'],
                   },
                 ],
+              },
+              previewValues: {
+                values: {title: 'Test document'},
+                isLoading: false,
               },
             },
           ],

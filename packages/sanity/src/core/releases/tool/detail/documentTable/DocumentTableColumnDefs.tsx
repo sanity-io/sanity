@@ -28,7 +28,7 @@ export const getDocumentTableColumnDefs: (
     ),
   },
   {
-    id: '_createdAt',
+    id: 'document._createdAt',
     sorting: true,
     width: 130,
     header: (props) => (
@@ -50,7 +50,7 @@ export const getDocumentTableColumnDefs: (
     ),
   },
   {
-    id: '_updatedAt',
+    id: 'document._updatedAt',
     sorting: true,
     width: 130,
     header: (props) => (
@@ -72,7 +72,7 @@ export const getDocumentTableColumnDefs: (
     ),
   },
   {
-    id: '_publishedAt',
+    id: 'document._publishedAt',
     sorting: true,
     width: 130,
     header: (props) => (
