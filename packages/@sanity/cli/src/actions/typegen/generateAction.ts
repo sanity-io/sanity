@@ -77,6 +77,7 @@ export default async function typegenGenerateAction(
       workDir,
       schemaPath: codegenConfig.schema,
       searchPath: codegenConfig.path,
+      overloadClientMethods: codegenConfig.overloadClientMethods,
       prettierConfig,
     } satisfies TypegenGenerateTypesWorkerData,
     // eslint-disable-next-line no-process-env
@@ -131,25 +132,32 @@ export default async function typegenGenerateAction(
         return
       }
 
-      stats.queryFilesCount++
-      for (const {
-        queryName,
-        query,
-        type,
-        typeNodesGenerated,
-        unknownTypeNodesGenerated,
-        emptyUnionTypeNodesGenerated,
-      } of msg.types) {
-        fileTypeString += `// Variable: ${queryName}\n`
-        fileTypeString += `// Query: ${query.replace(/(\r\n|\n|\r)/gm, '')}\n`
-        fileTypeString += type
-        stats.queriesCount++
-        stats.typeNodesGenerated += typeNodesGenerated
-        stats.unknownTypeNodesGenerated += unknownTypeNodesGenerated
-        stats.emptyUnionTypeNodesGenerated += emptyUnionTypeNodesGenerated
+      if (msg.type === 'types') {
+        stats.queryFilesCount++
+        for (const {
+          queryName,
+          query,
+          type,
+          typeNodesGenerated,
+          unknownTypeNodesGenerated,
+          emptyUnionTypeNodesGenerated,
+        } of msg.types) {
+          fileTypeString += `// Variable: ${queryName}\n`
+          fileTypeString += `// Query: ${query.replace(/(\r\n|\n|\r)/gm, '')}\n`
+          fileTypeString += type
+          stats.queriesCount++
+          stats.typeNodesGenerated += typeNodesGenerated
+          stats.unknownTypeNodesGenerated += unknownTypeNodesGenerated
+          stats.emptyUnionTypeNodesGenerated += emptyUnionTypeNodesGenerated
+        }
+        typeFile.write(fileTypeString)
+        stats.size += Buffer.byteLength(fileTypeString)
       }
-      typeFile.write(fileTypeString)
-      stats.size += Buffer.byteLength(fileTypeString)
+
+      if (msg.type === 'typemap') {
+        typeFile.write(msg.typeMap)
+        stats.size += Buffer.byteLength(msg.typeMap)
+      }
     })
     worker.addListener('error', reject)
   })
