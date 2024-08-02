@@ -31,8 +31,8 @@ importers:
         specifier: ^7.24.7
         version: 7.24.7(@babel/core@7.25.2)
       '@bjoerge/mutiny':
-        specifier: ^0.5.3
-        version: 0.5.3
+        specifier: ^0.7.0
+        version: 0.7.1(debug@4.3.6)
       '@google-cloud/storage':
         specifier: ^7.11.0
         version: 7.11.0(encoding@0.1.13)
@@ -1039,8 +1039,8 @@ importers:
   packages/@sanity/migrate:
     dependencies:
       '@bjoerge/mutiny':
-        specifier: ^0.5.1
-        version: 0.5.3
+        specifier: ^0.7.0
+        version: 0.7.1(debug@4.3.6)
       '@sanity/client':
         specifier: ^6.21.1
         version: 6.21.1(debug@4.3.6)
@@ -2607,8 +2607,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@bjoerge/mutiny@0.5.3':
-    resolution: {integrity: sha512-QBEeUmc5K6kzut0uurwBtJhJW2fc/KEdKhST2/71Ln6V3j4b4qzK1/OeDsUHAt/RM2Dxe5TjWNn82r6WzmrAIQ==}
+  '@bjoerge/mutiny@0.7.1':
+    resolution: {integrity: sha512-j2WzqTM/HoO6kpoFdozNknLAgzEDoaa1TILfKeYKHbr3PQRoZits1ov/+q+M5hZwV2uST+mOEhkAMcyTe+BY3A==}
     engines: {node: '>=18'}
 
   '@codemirror/autocomplete@6.17.0':
@@ -6286,9 +6286,6 @@ packages:
 
   detect-node-es@1.1.0:
     resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
-
-  diff-match-patch@1.0.5:
-    resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
 
   diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
@@ -12381,11 +12378,16 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@bjoerge/mutiny@0.5.3':
+  '@bjoerge/mutiny@0.7.1(debug@4.3.6)':
     dependencies:
-      diff-match-patch: 1.0.5
+      '@sanity/client': 6.21.1(debug@4.3.6)
+      '@sanity/diff-match-patch': 3.1.1
       hotscript: 1.0.13
+      mendoza: 3.0.7
       nanoid: 5.0.7
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - debug
 
   '@codemirror/autocomplete@6.17.0(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.29.1)(@lezer/common@1.2.1)':
     dependencies:
@@ -16844,8 +16846,6 @@ snapshots:
   detect-newline@4.0.1: {}
 
   detect-node-es@1.1.0: {}
-
-  diff-match-patch@1.0.5: {}
 
   diff-sequences@29.6.3: {}
 

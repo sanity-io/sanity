@@ -50,7 +50,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@bjoerge/mutiny": "^0.5.1",
+    "@bjoerge/mutiny": "^0.7.0",
     "@sanity/client": "^6.21.1",
     "@sanity/types": "3.52.4",
     "@sanity/util": "3.52.4",
