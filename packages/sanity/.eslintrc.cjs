@@ -190,6 +190,11 @@ module.exports = {
                 name: 'sanity/router',
                 message: 'Use relative type imports instead',
               },
+              {
+                name: 'react',
+                importNames: ['createContext'],
+                message: "Use `createContext` from 'sanity/_createContext' instead",
+              },
             ],
           },
         ],
