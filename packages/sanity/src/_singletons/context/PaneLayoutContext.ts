@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {PaneLayoutContextValue} from '../../../../structure/components/pane/types'
+import type {PaneLayoutContextValue} from '../../structure/components/pane/types'
 
 /**
  * @internal

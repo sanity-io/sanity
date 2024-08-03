@@ -1,6 +1,6 @@
-import {createContext} from 'react'
+import {createContext} from 'sanity/_createContext'
 
-import type {CommentsEnabledContextValue} from '../../../../core/comments/context/enabled/types'
+import type {CommentsEnabledContextValue} from '../../core/comments/context/enabled/types'
 
 // NOTE: We initialize this context with a default value (`enabled: false`)
 // rather than `null` to handle cases where the comments feature's availability
@@ -11,7 +11,10 @@ import type {CommentsEnabledContextValue} from '../../../../core/comments/contex
 /**
  * @internal
  */
-export const CommentsEnabledContext = createContext<CommentsEnabledContextValue>({
-  enabled: false,
-  mode: null,
-})
+export const CommentsEnabledContext = createContext<CommentsEnabledContextValue>(
+  'sanity/_singletons/context/comments-enabled',
+  {
+    enabled: false,
+    mode: null,
+  },
+)

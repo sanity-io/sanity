@@ -1,6 +1,6 @@
-import {createContext} from 'react'
+import {createContext} from 'sanity/_createContext'
 
-import type {DocumentFieldActionNode} from '../../../../../core/config/document/fieldActions/types'
+import type {DocumentFieldActionNode} from '../../core/config/document/fieldActions/types'
 
 /** @internal */
 export interface FieldActionsContextValue {
@@ -12,10 +12,13 @@ export interface FieldActionsContextValue {
 }
 
 /** @internal */
-export const FieldActionsContext = createContext<FieldActionsContextValue>({
-  actions: [],
-  focused: false,
-  hovered: false,
-  onMouseEnter: () => undefined,
-  onMouseLeave: () => undefined,
-})
+export const FieldActionsContext = createContext<FieldActionsContextValue>(
+  'sanity/_singletons/context/field-actions',
+  {
+    actions: [],
+    focused: false,
+    hovered: false,
+    onMouseEnter: () => undefined,
+    onMouseLeave: () => undefined,
+  },
+)

@@ -1,6 +1,9 @@
-import {createContext} from 'react'
+import {createContext} from 'sanity/_createContext'
 
-import type {FormNodePresence} from '../../../core/presence/types'
+import type {FormNodePresence} from '../../core/presence/types'
 
 /** @internal */
-export const FormFieldPresenceContext = createContext<FormNodePresence[]>([])
+export const FormFieldPresenceContext = createContext<FormNodePresence[]>(
+  'sanity/_singletons/context/form-field-presence',
+  [],
+)

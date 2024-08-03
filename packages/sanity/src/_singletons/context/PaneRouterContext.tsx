@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {PaneRouterContextValue} from '../../../../structure/components/paneRouter/types'
+import type {PaneRouterContextValue} from '../../structure/components/paneRouter/types'
 
 function missingContext<T = unknown>(): T {
   throw new Error('Pane is missing router context')

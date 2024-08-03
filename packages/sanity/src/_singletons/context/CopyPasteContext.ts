@@ -1,9 +1,12 @@
-import {createContext} from 'react'
+import {createContext} from 'sanity/_createContext'
 
-import type {CopyPasteContextType} from '../../../../core/studio/copyPaste'
+import type {CopyPasteContextType} from '../../core/studio/copyPaste'
 
 /**
  * @beta
  * @hidden
  */
-export const CopyPasteContext = createContext<CopyPasteContextType | null>(null)
+export const CopyPasteContext = createContext<CopyPasteContextType | null>(
+  'sanity/_singletons/context/copy-paste',
+  null,
+)

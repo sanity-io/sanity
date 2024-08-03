@@ -1,8 +1,11 @@
-import {createContext} from 'react'
+import {createContext} from 'sanity/_createContext'
 
-import type {CommentsUpsellContextValue} from '../../../../core/comments/context/upsell/types'
+import type {CommentsUpsellContextValue} from '../../core/comments/context/upsell/types'
 
 /**
  * @internal
  */
-export const CommentsUpsellContext = createContext<CommentsUpsellContextValue | null>(null)
+export const CommentsUpsellContext = createContext<CommentsUpsellContextValue | null>(
+  'sanity/_singletons/context/comments-upsell',
+  null,
+)

@@ -1,8 +1,11 @@
-import {createContext} from 'react'
+import {createContext} from 'sanity/_createContext'
 
-import type {TasksContextValue} from '../../../../core/tasks/context/tasks/types'
+import type {TasksContextValue} from '../../core/tasks/context/tasks/types'
 
 /**
  * @internal
  */
-export const TasksContext = createContext<TasksContextValue | null>(null)
+export const TasksContext = createContext<TasksContextValue | null>(
+  'sanity/_singletons/context/tasks',
+  null,
+)

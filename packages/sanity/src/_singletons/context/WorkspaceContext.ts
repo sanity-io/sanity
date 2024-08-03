@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {Workspace} from '../../../core/config/types'
+import type {Workspace} from '../../core/config/types'
 
 /**
  * @internal
