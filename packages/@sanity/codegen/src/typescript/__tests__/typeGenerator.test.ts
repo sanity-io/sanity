@@ -455,3 +455,97 @@ export type AllSanitySchemaTypes = OptionalData;"
     expect(objectNodeOut).toMatchSnapshot()
   })
 })
+
+describe('generateQueryMap', () => {
+  test('should generate a map of query results', () => {
+    const schema: SchemaType = []
+
+    const queries = [
+      {
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "author"]',
+      },
+      {
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "author"][0]',
+      },
+    ]
+
+    const typeGenerator = new TypeGenerator(schema)
+    typeGenerator.generateTypeNodeTypes('AuthorsResult', queries[0].typeNode)
+    typeGenerator.generateTypeNodeTypes('FirstAuthorResult', queries[1].typeNode)
+
+    const actualOutput = typeGenerator.generateQueryMap(queries)
+
+    expect(actualOutput).toMatchInlineSnapshot(`
+"import \\"@sanity/client\\";
+declare module \\"@sanity/client\\" {
+  interface SanityQueries {
+    \\"*[_type == \\\\\\"author\\\\\\"]\\": AuthorsResult;
+    \\"*[_type == \\\\\\"author\\\\\\"][0]\\": FirstAuthorResult;
+  }
+}"
+`)
+  })
+
+  test('should generate a map of query results with duplicate type names', () => {
+    const schema: SchemaType = []
+
+    const queries = [
+      {
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "foo"]',
+      },
+      {
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "bar"]',
+      },
+    ]
+
+    const typeGenerator = new TypeGenerator(schema)
+    typeGenerator.generateTypeNodeTypes('Foo', queries[0].typeNode)
+    typeGenerator.generateTypeNodeTypes('Foo', queries[1].typeNode)
+
+    const actualOutput = typeGenerator.generateQueryMap(queries)
+
+    expect(actualOutput).toMatchInlineSnapshot(`
+"import \\"@sanity/client\\";
+declare module \\"@sanity/client\\" {
+  interface SanityQueries {
+    \\"*[_type == \\\\\\"foo\\\\\\"]\\": Foo;
+    \\"*[_type == \\\\\\"bar\\\\\\"]\\": Foo_2;
+  }
+}"
+`)
+  })
+
+  test('should generate a map of query results with duplicate query strings', () => {
+    const schema: SchemaType = []
+
+    const queries = [
+      {
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "foo"]',
+      },
+      {
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "foo"]',
+      },
+    ]
+
+    const typeGenerator = new TypeGenerator(schema)
+    typeGenerator.generateTypeNodeTypes('Foo', queries[0].typeNode)
+    typeGenerator.generateTypeNodeTypes('Bar', queries[1].typeNode)
+
+    const actualOutput = typeGenerator.generateQueryMap(queries)
+
+    expect(actualOutput).toMatchInlineSnapshot(`
+"import \\"@sanity/client\\";
+declare module \\"@sanity/client\\" {
+  interface SanityQueries {
+    \\"*[_type == \\\\\\"foo\\\\\\"]\\": Foo | Bar;
+  }
+}"
+`)
+  })
+})
