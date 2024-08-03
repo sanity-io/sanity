@@ -15,6 +15,7 @@ export const configDefintion = z.object({
   schema: z.string().default('./schema.json'),
   generates: z.string().default('./sanity.types.ts'),
   formatGeneratedCode: z.boolean().default(true),
+  overloadClientMethods: z.boolean().default(false),
 })
 
 export type CodegenConfig = z.infer<typeof configDefintion>
