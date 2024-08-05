@@ -67,8 +67,8 @@ importers:
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
-        specifier: 1.0.88
-        version: 1.0.88(@types/babel__core@7.20.5)(@types/node@18.19.31)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))(terser@5.30.3)
+        specifier: 1.0.90
+        version: 1.0.90(@types/babel__core@7.20.5)(@types/node@18.19.31)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))(terser@5.30.3)
       '@sanity/ui':
         specifier: ^2.8.8
         version: 2.8.8(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
@@ -1715,8 +1715,8 @@ importers:
         specifier: 6.10.9
         version: 6.10.9(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
       '@sanity/tsdoc':
-        specifier: 1.0.88
-        version: 1.0.88(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)
+        specifier: 1.0.90
+        version: 1.0.90(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
         version: 1.2.11(@sanity/icons@3.3.1(react@18.3.1))(@sanity/ui@2.8.8(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@18.19.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)
@@ -3618,10 +3618,6 @@ packages:
   '@microsoft/api-extractor-model@7.29.4':
     resolution: {integrity: sha512-LHOMxmT8/tU1IiiiHOdHFF83Qsi+V8d0kLfscG4EvQE9cafiR8blOYr8SfkQKWB1wgEilQgXJX3MIA4vetDLZw==}
 
-  '@microsoft/api-extractor@7.47.4':
-    resolution: {integrity: sha512-HKm+P4VNzWwvq1Ey+Jfhhj/3MjsD+ka2hbt8L5AcRM95lu1MFOYnz3XlU7Gr79Q/ZhOb7W/imAKeYrOI0bFydg==}
-    hasBin: true
-
   '@microsoft/api-extractor@7.47.5':
     resolution: {integrity: sha512-edKt4dFO2t25xmI2FX2rsP5liIgwKW1yuQImA0JM+5YGHCoo51GEQ7j+On17SvVpRJnuqLE/QVgtjIQ1Hpg98w==}
     hasBin: true
@@ -4253,9 +4249,6 @@ packages:
       '@types/node':
         optional: true
 
-  '@rushstack/ts-command-line@4.22.3':
-    resolution: {integrity: sha512-edMpWB3QhFFZ4KtSzS8WNjBgR4PXPPOVrOHMbb7kNpmQ1UFS9HdVtjCXg1H5fG+xYAbeE+TMPcVPUyX2p84STA==}
-
   '@rushstack/ts-command-line@4.22.4':
     resolution: {integrity: sha512-QoyhbWfyF9Ixg5DWdPzxO3h2RmJ7i5WH9b7qLzD5h5WFya/ZqicjdPrVwQiGtrFvAbBj8jhcC9DhbzU9xAk78g==}
 
@@ -4399,13 +4392,6 @@ packages:
   '@sanity/mutator@3.37.2':
     resolution: {integrity: sha512-F0MvseVtgPBaPxNZtSidF6BQeygviYThgmhRbjZ89AhlRhWiLODvLakdogFmwD1NEQ0tpKn+8m0pQIOHgt2C3w==}
 
-  '@sanity/pkg-utils@6.10.8':
-    resolution: {integrity: sha512-RxniwOZ3qvI2LqZCrGMq74XxF3cJRYvv/4pyVAWst990wyOrVKl/co4fjJoviW5UQid9HySZX1OowWbDa/8Ejw==}
-    engines: {node: '>=18.17.0'}
-    hasBin: true
-    peerDependencies:
-      typescript: 5.4.x || 5.5.x
-
   '@sanity/pkg-utils@6.10.9':
     resolution: {integrity: sha512-6kSRmDM6bkGMkaGV8EB18mAdaItx0mn++bzPK9ztQQ3VTW3k1MlKiYgalqjT1E/jUGylb5cv+fWaGAxxQ8lQfQ==}
     engines: {node: '>=18.17.0'}
@@ -4446,16 +4432,6 @@ packages:
   '@sanity/test@0.0.1-alpha.1':
     resolution: {integrity: sha512-o2X2Veh9YWyVK/Iou/cToSS6ufcTLREoCVMcvBQbSqCFUIGaN1Ko3zxChJMWdf39dyaJ/ixMKtc8pciF/tL6Sw==}
     hasBin: true
-
-  '@sanity/tsdoc@1.0.88':
-    resolution: {integrity: sha512-HnZ6ofOvuJ4akidqc6p8p8/HAQ644N/+LSV+oJdqpTaqi7AdL1H3cthlZnGiCiR5ubln2oJhRuIZaiL7dDTpuQ==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    peerDependencies:
-      react: ^18
-      react-dom: ^18
-      sanity: ^3
-      styled-components: ^5.2 || ^6
 
   '@sanity/tsdoc@1.0.90':
     resolution: {integrity: sha512-EokNG/lVKO1N4Ho2/ke7xYXl3hB0vJCpLNjqn3kNFkfjjdpH7j2ocPyTuLKm234xS5ezAn6XixcRfU7JHgcvNQ==}
@@ -13344,24 +13320,6 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@microsoft/api-extractor@7.47.4(@types/node@18.19.31)':
-    dependencies:
-      '@microsoft/api-extractor-model': 7.29.4(@types/node@18.19.31)
-      '@microsoft/tsdoc': 0.15.0
-      '@microsoft/tsdoc-config': 0.17.0
-      '@rushstack/node-core-library': 5.5.1(@types/node@18.19.31)
-      '@rushstack/rig-package': 0.5.3
-      '@rushstack/terminal': 0.13.3(@types/node@18.19.31)
-      '@rushstack/ts-command-line': 4.22.3(@types/node@18.19.31)
-      lodash: 4.17.21
-      minimatch: 3.0.8
-      resolve: 1.22.8
-      semver: 7.5.4
-      source-map: 0.6.1
-      typescript: 5.4.2
-    transitivePeerDependencies:
-      - '@types/node'
-
   '@microsoft/api-extractor@7.47.5(@types/node@18.19.31)':
     dependencies:
       '@microsoft/api-extractor-model': 7.29.4(@types/node@18.19.31)
@@ -14040,15 +13998,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 18.19.31
 
-  '@rushstack/ts-command-line@4.22.3(@types/node@18.19.31)':
-    dependencies:
-      '@rushstack/terminal': 0.13.3(@types/node@18.19.31)
-      '@types/argparse': 1.0.38
-      argparse: 1.0.10
-      string-argv: 0.3.2
-    transitivePeerDependencies:
-      - '@types/node'
-
   '@rushstack/ts-command-line@4.22.4(@types/node@18.19.31)':
     dependencies:
       '@rushstack/terminal': 0.13.3(@types/node@18.19.31)
@@ -14281,57 +14230,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sanity/pkg-utils@6.10.8(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)':
-    dependencies:
-      '@babel/core': 7.25.2
-      '@babel/preset-typescript': 7.24.7(@babel/core@7.25.2)
-      '@babel/types': 7.25.2
-      '@microsoft/api-extractor': 7.47.4(@types/node@18.19.31)
-      '@microsoft/tsdoc-config': 0.17.0
-      '@optimize-lodash/rollup-plugin': 5.0.0(rollup@4.20.0)
-      '@rollup/plugin-alias': 5.1.0(rollup@4.20.0)
-      '@rollup/plugin-babel': 6.0.4(@babel/core@7.25.2)(@types/babel__core@7.20.5)(rollup@4.20.0)
-      '@rollup/plugin-commonjs': 26.0.1(rollup@4.20.0)
-      '@rollup/plugin-json': 6.1.0(rollup@4.20.0)
-      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.20.0)
-      '@rollup/plugin-replace': 5.0.7(rollup@4.20.0)
-      '@rollup/plugin-terser': 0.4.4(rollup@4.20.0)
-      '@sanity/browserslist-config': 1.0.3
-      babel-plugin-react-compiler: 0.0.0-experimental-938cd9a-20240601
-      browserslist: 4.23.3
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      esbuild: 0.23.0
-      esbuild-register: 3.6.0(esbuild@0.23.0)
-      find-config: 1.0.0
-      get-latest-version: 5.1.0(debug@4.3.6)
-      git-url-parse: 14.1.0
-      globby: 11.1.0
-      jsonc-parser: 3.3.1
-      mkdirp: 3.0.1
-      outdent: 0.8.0
-      parse-git-config: 3.0.0
-      pkg-up: 3.1.0
-      prettier: 3.3.3
-      pretty-bytes: 5.6.0
-      prompts: 2.4.2
-      recast: 0.23.9
-      rimraf: 4.4.1
-      rollup: 4.20.0
-      rollup-plugin-esbuild: 6.1.1(esbuild@0.23.0)(rollup@4.20.0)
-      rxjs: 7.8.1
-      treeify: 1.1.0
-      typescript: 5.5.4
-      uuid: 10.0.0
-      zod: 3.23.8
-      zod-validation-error: 3.3.1(zod@3.23.8)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - supports-color
-
   '@sanity/pkg-utils@6.10.9(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)':
     dependencies:
       '@babel/core': 7.25.2
@@ -14445,9 +14343,9 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/tsdoc@1.0.88(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)':
+  '@sanity/tsdoc@1.0.90(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.30.3)':
     dependencies:
-      '@microsoft/api-extractor': 7.47.4(@types/node@18.19.31)
+      '@microsoft/api-extractor': 7.47.5(@types/node@18.19.31)
       '@microsoft/api-extractor-model': 7.29.4(@types/node@18.19.31)
       '@microsoft/tsdoc': 0.15.0
       '@microsoft/tsdoc-config': 0.17.0
@@ -14456,7 +14354,7 @@ snapshots:
       '@sanity/client': 6.21.1(debug@4.3.6)
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.3.1(react@18.3.1)
-      '@sanity/pkg-utils': 6.10.8(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
+      '@sanity/pkg-utils': 6.10.9(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
       '@sanity/ui': 2.8.8(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.1(vite@5.3.5(@types/node@18.19.31)(terser@5.30.3))
@@ -14481,58 +14379,6 @@ snapshots:
       sanity: link:packages/sanity
       slugify: 1.6.6
       styled-components: 6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      tmp: 0.2.3
-      typescript: 5.5.4
-      vite: 5.3.5(@types/node@18.19.31)(terser@5.30.3)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - less
-      - lightningcss
-      - react-is
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
-  '@sanity/tsdoc@1.0.88(@types/babel__core@7.20.5)(@types/node@18.19.31)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))(terser@5.30.3)':
-    dependencies:
-      '@microsoft/api-extractor': 7.47.4(@types/node@18.19.31)
-      '@microsoft/api-extractor-model': 7.29.4(@types/node@18.19.31)
-      '@microsoft/tsdoc': 0.15.0
-      '@microsoft/tsdoc-config': 0.17.0
-      '@portabletext/react': 3.1.0(react@19.0.0-rc-f994737d14-20240522)
-      '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.21.1(debug@4.3.6)
-      '@sanity/color': 3.0.6
-      '@sanity/icons': 3.3.1(react@19.0.0-rc-f994737d14-20240522)
-      '@sanity/pkg-utils': 6.10.8(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
-      '@sanity/ui': 2.8.8(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
-      '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.1(vite@5.3.5(@types/node@18.19.31)(terser@5.30.3))
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      cors: 2.8.5
-      dotenv-flow: 3.3.0
-      esbuild: 0.23.0
-      esbuild-register: 3.6.0(esbuild@0.23.0)
-      express: 4.19.2
-      globby: 11.1.0
-      groq: link:packages/groq
-      groq-js: 1.12.0
-      history: 5.3.0
-      jsonc-parser: 3.3.1
-      mkdirp: 1.0.4
-      pkg-up: 3.1.0
-      react: 19.0.0-rc-f994737d14-20240522
-      react-dom: 19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522)
-      react-refractor: 2.2.0(react@19.0.0-rc-f994737d14-20240522)
-      sanity: link:packages/sanity
-      slugify: 1.6.6
-      styled-components: 6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
       tmp: 0.2.3
       typescript: 5.5.4
       vite: 5.3.5(@types/node@18.19.31)(terser@5.30.3)
@@ -14585,6 +14431,58 @@ snapshots:
       sanity: link:packages/sanity
       slugify: 1.6.6
       styled-components: 6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tmp: 0.2.3
+      typescript: 5.5.4
+      vite: 5.3.5(@types/node@18.19.31)(terser@5.30.3)
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - less
+      - lightningcss
+      - react-is
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
+  '@sanity/tsdoc@1.0.90(@types/babel__core@7.20.5)(@types/node@18.19.31)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))(terser@5.30.3)':
+    dependencies:
+      '@microsoft/api-extractor': 7.47.5(@types/node@18.19.31)
+      '@microsoft/api-extractor-model': 7.29.4(@types/node@18.19.31)
+      '@microsoft/tsdoc': 0.15.0
+      '@microsoft/tsdoc-config': 0.17.0
+      '@portabletext/react': 3.1.0(react@19.0.0-rc-f994737d14-20240522)
+      '@portabletext/toolkit': 2.0.15
+      '@sanity/client': 6.21.1(debug@4.3.6)
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 3.3.1(react@19.0.0-rc-f994737d14-20240522)
+      '@sanity/pkg-utils': 6.10.9(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
+      '@sanity/ui': 2.8.8(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
+      '@types/cpx': 1.5.5
+      '@vitejs/plugin-react': 4.3.1(vite@5.3.5(@types/node@18.19.31)(terser@5.30.3))
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      cors: 2.8.5
+      dotenv-flow: 3.3.0
+      esbuild: 0.23.0
+      esbuild-register: 3.6.0(esbuild@0.23.0)
+      express: 4.19.2
+      globby: 11.1.0
+      groq: link:packages/groq
+      groq-js: 1.12.0
+      history: 5.3.0
+      jsonc-parser: 3.3.1
+      mkdirp: 1.0.4
+      pkg-up: 3.1.0
+      react: 19.0.0-rc-f994737d14-20240522
+      react-dom: 19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522)
+      react-refractor: 2.2.0(react@19.0.0-rc-f994737d14-20240522)
+      sanity: link:packages/sanity
+      slugify: 1.6.6
+      styled-components: 6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
       tmp: 0.2.3
       typescript: 5.5.4
       vite: 5.3.5(@types/node@18.19.31)(terser@5.30.3)
