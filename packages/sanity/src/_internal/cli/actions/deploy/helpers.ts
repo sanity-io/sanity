@@ -3,10 +3,9 @@ import path from 'node:path'
 import {PassThrough} from 'node:stream'
 import {type Gzip} from 'node:zlib'
 
-import {type CliCommandContext, type CliConfig} from '@sanity/cli'
+import {type CliCommandContext, type CliConfig, type CliOutputter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
 import FormData from 'form-data'
-import {type Ora} from 'ora'
 import readPkgUp from 'read-pkg-up'
 
 // TODO: replace with `Promise.withResolvers()` once it lands in node
@@ -76,7 +75,7 @@ function createUserApplication(
 export interface GetOrCreateUserApplicationOptions {
   client: SanityClient
   context: Pick<CliCommandContext, 'output' | 'prompt'>
-  spinner: Ora
+  spinner: ReturnType<CliOutputter['spinner']>
   cliConfig?: Pick<CliConfig, 'studioHost'>
 }
 
