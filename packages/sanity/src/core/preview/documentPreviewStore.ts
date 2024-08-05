@@ -115,7 +115,7 @@ export function createDocumentPreviewStore({
   const globalListener = createGlobalListener(versionedClient).pipe(
     filter(
       (event): event is MutationEvent | WelcomeEvent =>
-        // ignore reconnect events for now
+        // ignore reconnect events for now until we know that downstream consumers can handle them
         event.type === 'mutation' || event.type === 'welcome',
     ),
   )
