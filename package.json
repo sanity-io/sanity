@@ -109,7 +109,7 @@
     "@sanity/client": "^6.21.1",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
-    "@sanity/pkg-utils": "6.10.8",
+    "@sanity/pkg-utils": "6.10.9",
     "@sanity/prettier-config": "^1.0.2",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.88",
