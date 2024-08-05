@@ -6,6 +6,7 @@ import {type Gzip} from 'node:zlib'
 import {type CliCommandContext, type CliConfig} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
 import FormData from 'form-data'
+import {type Ora} from 'ora'
 import readPkgUp from 'read-pkg-up'
 
 // TODO: replace with `Promise.withResolvers()` once it lands in node
@@ -34,7 +35,6 @@ export interface UserApplication {
   id: string
   projectId: string
   title: string | null
-  isDefault: boolean | null
   appHost: string
   urlType: 'internal' | 'external'
   createdAt: string
@@ -65,7 +65,10 @@ export async function getUserApplication({
 
 function createUserApplication(
   client: SanityClient,
-  body: {title?: string; isDefault?: boolean; appHost: string; urlType: 'internal' | 'external'},
+  body: Pick<UserApplication, 'appHost' | 'urlType'> & {
+    title?: string
+    isDefaultForDeployment?: boolean
+  },
 ): Promise<UserApplication> {
   return client.request({uri: '/user-applications', method: 'POST', body})
 }
@@ -73,22 +76,30 @@ function createUserApplication(
 export interface GetOrCreateUserApplicationOptions {
   client: SanityClient
   context: Pick<CliCommandContext, 'output' | 'prompt'>
+  spinner: Ora
   cliConfig?: Pick<CliConfig, 'studioHost'>
 }
 
 export async function getOrCreateUserApplication({
   client,
   cliConfig,
+  spinner,
   context: {output, prompt},
 }: GetOrCreateUserApplicationOptions): Promise<UserApplication> {
   // if there is already an existing user-app, then just return it
   const existingUserApplication = await getUserApplication({client, appHost: cliConfig?.studioHost})
-  if (existingUserApplication) return existingUserApplication
+
+  // Complete the spinner so prompt can properly work
+  spinner.succeed()
+
+  if (existingUserApplication) {
+    return existingUserApplication
+  }
 
   // otherwise, we need to create one.
   // if a `studioHost` was provided in the CLI config, then use that
   if (cliConfig?.studioHost) {
-    return await createUserApplication(client, {
+    return createUserApplication(client, {
       appHost: cliConfig.studioHost,
       urlType: 'internal',
     })
@@ -111,14 +122,16 @@ export async function getOrCreateUserApplication({
       try {
         const response = await createUserApplication(client, {
           appHost,
-          isDefault: true,
+          isDefaultForDeployment: true,
           urlType: 'internal',
         })
         resolve(response)
         return true
       } catch (e) {
         // if the name is taken, it should return a 409 so we relay to the user
-        if (e?.statusCode === 409) return e?.message || 'Conflict' // just in case
+        if (e?.statusCode === 409) {
+          return e?.message || 'Conflict' // just in case
+        }
 
         // otherwise, it's a fatal error
         throw e
@@ -143,16 +156,17 @@ export async function createDeployment({
   applicationId,
   isAutoUpdating,
   version,
-}: CreateDeploymentOptions): Promise<void> {
+}: CreateDeploymentOptions): Promise<{location: string}> {
   const formData = new FormData()
   formData.append('isAutoUpdating', isAutoUpdating.toString())
   formData.append('version', version)
   formData.append('tarball', tarball, {contentType: 'application/gzip', filename: 'app.tar.gz'})
 
-  await client.request({
+  return client.request({
     uri: `/user-applications/${applicationId}/deployments`,
     method: 'POST',
-    body: formData.pipe(new PassThrough()) as any,
+    headers: formData.getHeaders(),
+    body: formData.pipe(new PassThrough()),
   })
 }
 

@@ -1,9 +1,11 @@
+/* eslint-disable max-statements */
 import path from 'node:path'
 import zlib from 'node:zlib'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 
+import {debug as debugIt} from '../../debug'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
 import {
   checkDir,
@@ -12,6 +14,8 @@ import {
   getInstalledSanityVersion,
   getOrCreateUserApplication,
 } from './helpers'
+
+const debug = debugIt.extend('deploy')
 
 export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
   build?: boolean
@@ -34,7 +38,7 @@ export default async function deployStudioAction(
   const client = apiClient({
     requireUser: true,
     requireProject: true,
-  }).withConfig({apiVersion: 'vX'})
+  }).withConfig({apiVersion: 'v2024-08-01'})
 
   if (customSourceDir === 'graphql') {
     throw new Error('Did you mean `sanity graphql deploy`?')
@@ -66,12 +70,25 @@ export default async function deployStudioAction(
   // Check that the project has a studio hostname
   let spinner = output.spinner('Checking project info').start()
 
-  const userApplication = await getOrCreateUserApplication({
-    client,
-    context,
-    // ensures only v3 configs with `studioHost` are sent
-    ...(cliConfig && 'studioHost' in cliConfig && {cliConfig}),
-  })
+  let userApplication
+
+  try {
+    userApplication = await getOrCreateUserApplication({
+      client,
+      context,
+      spinner,
+      // ensures only v3 configs with `studioHost` are sent
+      ...(cliConfig && 'studioHost' in cliConfig && {cliConfig}),
+    })
+  } catch (err) {
+    if (err.message) {
+      output.error(chalk.red(err.message))
+      return
+    }
+
+    debug('Error creating user application', err)
+    throw err
+  }
 
   // Always build the project, unless --no-build is passed
   const shouldBuild = flags.build
@@ -95,6 +112,7 @@ export default async function deployStudioAction(
     spinner.succeed()
   } catch (err) {
     spinner.fail()
+    debug('Error checking directory', err)
     throw err
   }
 
@@ -105,7 +123,7 @@ export default async function deployStudioAction(
 
   spinner = output.spinner('Deploying to Sanity.Studio').start()
   try {
-    await createDeployment({
+    const {location} = await createDeployment({
       client,
       applicationId: userApplication.id,
       version: installedSanityVersion,
@@ -116,11 +134,10 @@ export default async function deployStudioAction(
     spinner.succeed()
 
     // And let the user know we're done
-    output.print(
-      `\nSuccess! Studio deployed to ${chalk.cyan(`https://${userApplication.appHost}.sanity.studio`)}`,
-    )
+    output.print(`\nSuccess! Studio deployed to ${chalk.cyan(location)}`)
   } catch (err) {
     spinner.fail()
+    debug('Error deploying studio', err)
     throw err
   }
 }
