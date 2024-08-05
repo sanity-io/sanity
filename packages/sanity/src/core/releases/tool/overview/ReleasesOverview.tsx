@@ -1,10 +1,7 @@
 import {AddIcon} from '@sanity/icons'
 import {Box, Button, type ButtonMode, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
 import {isBefore} from 'date-fns'
-import {type MouseEventHandler, useCallback, useEffect, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button as StudioButton} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
@@ -22,13 +19,6 @@ export interface TableBundle extends BundleDocument {
   documentsMetadata: BundlesMetadata
 }
 
-const RootFlex = styled(Flex)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    // The height of the padding used, multiplied by 2 to account for both top and bottom padding
-    height: calc(100% - ${theme.space[6] * 2}px);
-  `
-})
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: '_createdAt', direction: 'desc'}
 
@@ -40,6 +30,8 @@ export function ReleasesOverview() {
   const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
   const loading = loadingBundles || loadingBundlesMetadata
   const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleSlugs.length))
+
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
   const hasBundles = bundles && containsBundles(bundles)
   const loadingOrHasBundles = loading || hasBundles
@@ -162,8 +154,8 @@ export function ReleasesOverview() {
   }, [])
 
   return (
-    <Container width={2} height="fill">
-      <RootFlex paddingX={4} paddingY={6} gap={4} direction="column">
+    <Flex paddingX={4} height="fill" direction="column" ref={scrollContainerRef} overflow={'auto'}>
+      <Container width={2} paddingY={6}>
         <Flex align="flex-start" gap={2} paddingBottom={2}>
           <Flex align="flex-start" flex={1} gap={4}>
             <Stack paddingY={1} space={4}>
@@ -198,11 +190,11 @@ export function ReleasesOverview() {
             emptyState="No Releases"
             rowId="_id"
             rowActions={renderRowActions}
-            tableHeight="100%"
+            scrollContainerRef={scrollContainerRef}
           />
         )}
-      </RootFlex>
+      </Container>
       {renderCreateBundleDialog()}
-    </Container>
+    </Flex>
   )
 }

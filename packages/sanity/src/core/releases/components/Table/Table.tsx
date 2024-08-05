@@ -1,7 +1,12 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
+import {
+  defaultRangeExtractor,
+  type Range,
+  useVirtualizer,
+  type VirtualItem,
+} from '@tanstack/react-virtual'
 import {get} from 'lodash'
-import {Fragment, useMemo, useRef} from 'react'
+import {Fragment, type MutableRefObject, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
@@ -29,35 +34,63 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   }: {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
   }) => JSX.Element
-  tableHeight: string
+  scrollContainerRef: MutableRefObject<HTMLDivElement | null>
 }
 
 const RowStack = styled(Stack)({
-  '& > *:not(:first-child)': {
+  '& > *:not([first-child])': {
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
     marginTop: -1,
   },
 
-  '& > *:not(:last-child)': {
+  '& > *:not([last-child])': {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },
 })
 
+const ITEM_HEIGHT = 59
+
+/**
+ * This function modifies the rangeExtractor to account for the offset of the virtualizer
+ * in this case, the parent with overflow (the element over which the scroll happens) and the start of the virtualizer
+ * don't match, because there are some elements rendered on top of the virtualizer.
+ * This, will take care of adding more elements to the start of the virtualizer to account for the offset.
+ */
+const withVirtualizerOffset = ({
+  scrollContainerRef,
+  virtualizerContainerRef,
+  range,
+}: {
+  scrollContainerRef: MutableRefObject<HTMLDivElement | null>
+  virtualizerContainerRef: MutableRefObject<HTMLDivElement | null>
+  range: Range
+}) => {
+  const parentOffset = scrollContainerRef.current?.offsetTop ?? 0
+  const virtualizerOffset = virtualizerContainerRef.current?.offsetTop ?? 0
+  const virtualizerScrollMargin = virtualizerOffset - parentOffset
+  const topItemsOffset = Math.ceil(virtualizerScrollMargin / ITEM_HEIGHT)
+  const startIndexWithOffset = range.startIndex - topItemsOffset
+  const result = defaultRangeExtractor({
+    ...range,
+    // By modifying the startIndex, we are adding more elements to the start of the virtualizer
+    startIndex: startIndexWithOffset > 0 ? startIndexWithOffset : 0,
+  })
+  return result
+}
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
-  tableHeight,
   data,
   emptyState,
   searchFilter,
   rowId,
   rowActions,
   loading = false,
+  scrollContainerRef,
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
-  const parentRef = useRef(null)
-
+  const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
   const filteredData = useMemo(() => {
     const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
     if (!sort) return filteredResult
@@ -77,9 +110,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 57,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => ITEM_HEIGHT,
     overscan: 5,
+    rangeExtractor: (range) =>
+      withVirtualizerOffset({scrollContainerRef, virtualizerContainerRef, range}),
   })
 
   const rowActionColumnDef: Column = useMemo(
@@ -116,6 +151,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
         datum: (TableData | (TableData & AdditionalRowTableData)) & {
           virtualRow: VirtualItem
           index: number
+          isFirst: boolean
+          isLast: boolean
         },
       ) {
         return (
@@ -126,6 +163,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
             border
             radius={3}
             display="flex"
+            first-child={datum.isFirst ? '' : undefined}
+            last-child={datum.isLast ? '' : undefined}
             margin={-1}
             style={{
               height: `${datum.virtualRow.size}px`,
@@ -186,10 +225,12 @@ const TableInner = <TableData, AdditionalRowTableData>({
   }
 
   return (
-    <div ref={parentRef} id="container" style={{height: tableHeight, overflowY: 'auto'}}>
+    <div ref={virtualizerContainerRef}>
       <div
         style={{
           height: `${rowVirtualizer.getTotalSize()}px`,
+          // The padding accounts for the height of the <TableHeader> and extra space for padding at the bottom
+          paddingBottom: '110px',
           width: '100%',
           position: 'relative',
         }}
@@ -201,7 +242,13 @@ const TableInner = <TableData, AdditionalRowTableData>({
               ? emptyContent
               : rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
                   const datum = filteredData[virtualRow.index]
-                  return renderRow({...datum, virtualRow, index})
+                  return renderRow({
+                    ...datum,
+                    virtualRow,
+                    index,
+                    isFirst: virtualRow.index === 0,
+                    isLast: virtualRow.index === filteredData.length - 1,
+                  })
                 })}
           </RowStack>
         </Stack>

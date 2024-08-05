@@ -32,7 +32,7 @@ export function ReleaseReview({
   }, [searchTerm, documents])
 
   return (
-    <Stack space={5}>
+    <Stack space={5} paddingTop={6}>
       <Flex justify="space-between" align="center">
         <Text size={1} weight="semibold">
           Changes to published documents

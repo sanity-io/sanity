@@ -1,6 +1,7 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useMemo} from 'react'
+// eslint-disable-next-line camelcase
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {LoadingBlock} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
@@ -28,6 +29,7 @@ const getActiveScreen = (router: RouterContextValue): Screen => {
   }
   return activeScreen
 }
+
 export const ReleaseDetail = () => {
   const router = useRouter()
 
@@ -71,16 +73,7 @@ export const ReleaseDetail = () => {
 
   const header = useMemo(
     () => (
-      <Card
-        flex="none"
-        padding={3}
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          backgroundColor: 'var(--card-bg-color)',
-        }}
-      >
+      <Card flex="none" padding={3}>
         <Flex>
           <Flex align="baseline" flex={1} gap={2}>
             <Flex gap={1}>
@@ -143,15 +136,16 @@ export const ReleaseDetail = () => {
     [
       activeScreen,
       bundle,
-      results,
       bundleHasDocuments,
       isPublishButtonDisabled,
       navigateToReview,
       navigateToSummary,
+      results,
       router,
       showPublishButton,
     ],
   )
+  const scrollContainerRef = useRef(null)
 
   const detailContent = useMemo(() => {
     if (!bundle) return null
@@ -163,6 +157,7 @@ export const ReleaseDetail = () => {
           release={bundle}
           documentsHistory={history.documentsHistory}
           collaborators={history.collaborators}
+          scrollContainerRef={scrollContainerRef}
         />
       )
     }
@@ -195,16 +190,13 @@ export const ReleaseDetail = () => {
   }
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" height="fill">
       {header}
-
-      <Card flex={1} overflow="auto">
-        <Container width={2}>
-          <Box paddingX={4} paddingY={6}>
-            {documentsLoading ? <LoadingBlock title="Loading documents" /> : detailContent}
-          </Box>
+      <Flex paddingX={4} ref={scrollContainerRef} overflow="auto">
+        <Container width={2} paddingX={2}>
+          {documentsLoading ? <LoadingBlock title="Loading documents" /> : detailContent}
         </Container>
-      </Card>
+      </Flex>
     </Flex>
   )
 }

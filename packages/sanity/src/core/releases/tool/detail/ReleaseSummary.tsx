@@ -26,6 +26,7 @@ export interface ReleaseSummaryProps {
   documents: DocumentInBundleResult[]
   documentsHistory: Record<string, DocumentHistory>
   collaborators: string[]
+  scrollContainerRef: React.RefObject<HTMLDivElement>
   release: BundleDocument
 }
 
@@ -35,7 +36,7 @@ const setIconHue = ({hue, icon}: {hue: BundleDocument['hue']; icon: BundleDocume
 })
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, documentsHistory, release, collaborators} = props
+  const {documents, documentsHistory, release, collaborators, scrollContainerRef} = props
   const {hue, icon} = release
   const {client} = useAddonDataset()
 
@@ -104,8 +105,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   return (
-    <Stack paddingX={4} space={5}>
-      <Stack space={4} data-testid="summary">
+    <>
+      <Stack space={4} data-testid="summary" paddingTop={6} paddingBottom={5}>
         <Flex>
           <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
         </Flex>
@@ -173,13 +174,13 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
       <Table<DocumentWithHistory>
         data={aggregatedData}
-        tableHeight="800px"
         emptyState="No documents"
         rowId="document._id"
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}
         searchFilter={filterRows}
+        scrollContainerRef={scrollContainerRef}
       />
-    </Stack>
+    </>
   )
 }
