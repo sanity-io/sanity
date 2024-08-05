@@ -6,7 +6,6 @@ import {type Gzip} from 'node:zlib'
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {type CliCommandContext} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
-import {type Ora} from 'ora'
 
 import {
   checkDir,
@@ -39,8 +38,8 @@ const mockOutput = {
 } as CliCommandContext['output']
 const mockPrompt = {single: jest.fn()} as unknown as CliCommandContext['prompt']
 const mockSpinner = {
-  succeed: jest.fn() as jest.Mock<Ora['succeed']>,
-} as unknown as Ora
+  succeed: jest.fn(),
+} as unknown as ReturnType<CliCommandContext['output']['spinner']>
 
 const mockFetch = jest.fn<typeof fetch>()
 global.fetch = mockFetch
