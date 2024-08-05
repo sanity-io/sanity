@@ -114,6 +114,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
       alias: getAliases({monorepo, sanityPkgPath}),
+      dedupe: ['styled-components'],
     },
     define: {
       // eslint-disable-next-line no-process-env
