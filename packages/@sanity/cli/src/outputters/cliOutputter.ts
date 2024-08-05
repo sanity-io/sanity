@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import chalk from 'chalk'
-import ora, {type Ora} from 'ora'
+import ora, {type Options, type Ora} from 'ora'
 
 let isFirstClear = true
 
@@ -28,7 +28,7 @@ export default {
     isFirstClear = false
   },
 
-  spinner(options: ora.Options | string): Ora {
+  spinner(options: Options | string): Ora {
     return ora(options)
   },
 }
