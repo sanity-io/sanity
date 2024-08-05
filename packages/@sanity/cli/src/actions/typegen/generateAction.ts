@@ -175,6 +175,7 @@ export default async function typegenGenerateAction(
     unknownTypeNodesRatio:
       stats.typeNodesGenerated > 0 ? stats.unknownTypeNodesGenerated / stats.typeNodesGenerated : 0,
     emptyUnionTypeNodesGenerated: stats.emptyUnionTypeNodesGenerated,
+    configOverloadClientMethods: codegenConfig.overloadClientMethods,
   })
 
   trace.complete()
