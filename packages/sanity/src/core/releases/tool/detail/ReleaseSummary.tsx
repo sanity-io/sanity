@@ -1,6 +1,6 @@
 import {DocumentsIcon} from '@sanity/icons'
 import {AvatarStack, Box, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {
   BundleIconEditorPicker,
@@ -26,7 +26,7 @@ export interface ReleaseSummaryProps {
   documents: DocumentInBundleResult[]
   documentsHistory: Record<string, DocumentHistory>
   collaborators: string[]
-  scrollContainerRef: React.RefObject<HTMLDivElement>
+  scrollContainerRef: RefObject<HTMLDivElement>
   release: BundleDocument
 }
 
