@@ -20,7 +20,7 @@ async function* chunk(array: Uint8Array, chunkSize: number) {
   }
 }
 
-test('decodeText() works with chunks of unicode strings', async () => {
+test('decodeText() works with chunks of multibyte unicode strings', async () => {
   const decoded = await toArray(decodeText(chunk(bytes, 10)))
   expect(decoded.join('')).toEqual(str)
 })
