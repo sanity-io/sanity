@@ -1,9 +1,12 @@
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 
+import {debug as debugIt} from '../../debug'
 import {deleteUserApplication, getUserApplication} from './helpers'
 
+const debug = debugIt.extend('undeploy')
+
 export default async function undeployStudioAction(
-  args: CliCommandArguments<Record<string, unknown>>,
+  _: CliCommandArguments<Record<string, unknown>>,
   context: CliCommandContext,
 ): Promise<void> {
   const {apiClient, chalk, output, prompt, cliConfig} = context
@@ -11,7 +14,7 @@ export default async function undeployStudioAction(
   const client = apiClient({
     requireUser: true,
     requireProject: true,
-  }).withConfig({apiVersion: 'vX'})
+  }).withConfig({apiVersion: 'v2024-08-01'})
 
   // Check that the project has a studio hostname
   let spinner = output.spinner('Checking project info').start()
@@ -51,6 +54,7 @@ export default async function undeployStudioAction(
     spinner.succeed()
   } catch (err) {
     spinner.fail()
+    debug('Error undeploying studio', err)
     throw err
   }
 

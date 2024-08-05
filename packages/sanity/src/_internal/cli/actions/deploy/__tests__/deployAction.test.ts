@@ -35,8 +35,7 @@ describe('deployStudioAction', () => {
     appHost: 'app-host',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    externalAppHost: null,
-    isDefault: false,
+    urlType: 'internal',
     projectId: 'example',
     title: null,
     type: 'studio',
@@ -73,6 +72,7 @@ describe('deployStudioAction', () => {
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
     helpers.getOrCreateUserApplication.mockResolvedValueOnce(mockApplication)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValueOnce({pipe: jest.fn().mockReturnValue('tarball')})
     zlibCreateGzipMock.mockReturnValue('gzipped')
@@ -126,6 +126,7 @@ describe('deployStudioAction', () => {
     ).mockResolvedValueOnce(true) // User confirms to proceed
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
     helpers.getOrCreateUserApplication.mockResolvedValueOnce(mockApplication)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValueOnce({pipe: jest.fn().mockReturnValue('tarball')})
     zlibCreateGzipMock.mockReturnValue('gzipped')

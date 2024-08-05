@@ -6,6 +6,7 @@ import {type Gzip} from 'node:zlib'
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {type CliCommandContext} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
+import {type Ora} from 'ora'
 
 import {
   checkDir,
@@ -37,20 +38,12 @@ const mockOutput = {
   spinner: jest.fn(),
 } as CliCommandContext['output']
 const mockPrompt = {single: jest.fn()} as unknown as CliCommandContext['prompt']
+const mockSpinner = {
+  succeed: jest.fn() as jest.Mock<Ora['succeed']>,
+} as unknown as Ora
 
 const mockFetch = jest.fn<typeof fetch>()
 global.fetch = mockFetch
-
-// Mock the Gzip stream
-class MockGzip {
-  constructor(private chunks: AsyncIterable<Buffer> | Iterable<Buffer>) {}
-  [Symbol.asyncIterator]() {
-    const chunks = this.chunks
-    return (async function* thing() {
-      for await (const chunk of chunks) yield chunk
-    })()
-  }
-}
 
 const context = {output: mockOutput, prompt: mockPrompt}
 
@@ -62,25 +55,30 @@ describe('getOrCreateUserApplication', () => {
   it('gets the default user application if no `studioHost` is provided', async () => {
     mockClientRequest.mockResolvedValueOnce({
       id: 'default-app',
-      isDefault: true,
     })
 
-    const result = await getOrCreateUserApplication({client: mockClient, context})
+    const result = await getOrCreateUserApplication({
+      client: mockClient,
+      spinner: mockSpinner,
+      context,
+    })
     expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications',
       query: {default: 'true'},
     })
-    expect(result).toEqual({id: 'default-app', isDefault: true})
+    expect(result).toEqual({id: 'default-app'})
   })
 
   it('gets an existing user application if a `studioHost` is provided in the config', async () => {
     mockClientRequest.mockResolvedValueOnce({
       id: 'existing-app',
       appHost: 'example.sanity.studio',
+      urlType: 'internal',
     })
 
     const result = await getOrCreateUserApplication({
       client: mockClient,
+      spinner: mockSpinner,
       cliConfig: {studioHost: 'example.sanity.studio'},
       context,
     })
@@ -89,30 +87,49 @@ describe('getOrCreateUserApplication', () => {
       uri: '/user-applications',
       query: {appHost: 'example.sanity.studio'},
     })
-    expect(result).toEqual({id: 'existing-app', appHost: 'example.sanity.studio'})
+    expect(result).toEqual({
+      id: 'existing-app',
+      urlType: 'internal',
+      appHost: 'example.sanity.studio',
+    })
   })
 
   it('creates a user application using `studioHost` if provided in the config', async () => {
-    const newApp = {id: 'new-app', appHost: 'newhost.sanity.studio', isDefault: true}
+    const newApp = {
+      id: 'new-app',
+      appHost: 'newhost.sanity.studio',
+      urlType: 'internal',
+    }
     mockClientRequest.mockResolvedValueOnce(null) // Simulate no existing app
     mockClientRequest.mockResolvedValueOnce(newApp)
 
     const result = await getOrCreateUserApplication({
       client: mockClient,
+      spinner: mockSpinner,
       cliConfig: {studioHost: 'newhost'},
       context,
     })
 
-    expect(mockClientRequest).toHaveBeenCalledWith({
+    expect(mockClientRequest).toHaveBeenCalledTimes(2)
+    expect(mockClientRequest).toHaveBeenNthCalledWith(1, {
+      uri: '/user-applications',
+      query: {appHost: 'newhost'},
+    })
+    expect(mockClientRequest).toHaveBeenNthCalledWith(2, {
       uri: '/user-applications',
       method: 'POST',
-      body: {appHost: 'newhost', isDefault: true},
+      body: {appHost: 'newhost', urlType: 'internal'},
     })
     expect(result).toEqual(newApp)
   })
 
   it('creates a default user application by prompting the user for a name', async () => {
-    const newApp = {id: 'default-app', appHost: 'default.sanity.studio', isDefault: true}
+    const newApp = {
+      id: 'default-app',
+      appHost: 'default.sanity.studio',
+      urlType: 'internal',
+      isDefaultForDeployment: true,
+    }
     mockClientRequest.mockResolvedValueOnce(null) // Simulate no existing app
     ;(mockPrompt.single as jest.Mock<any>).mockImplementationOnce(
       async ({validate}: Parameters<CliCommandContext['prompt']['single']>[0]) => {
@@ -127,6 +144,7 @@ describe('getOrCreateUserApplication', () => {
     const result = await getOrCreateUserApplication({
       client: mockClient,
       context,
+      spinner: mockSpinner,
     })
 
     expect(mockPrompt.single).toHaveBeenCalledWith(
