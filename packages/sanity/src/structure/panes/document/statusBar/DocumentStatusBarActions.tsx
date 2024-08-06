@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
@@ -31,18 +31,13 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const isTreeArrayEditingEnabled = useSource().beta?.treeArrayEditing?.enabled
-  const [isTreeArrayEditingEnabledOpen, setIsTreeArrayEditingEnabledOpen] = useState(false)
 
-  useEffect(() => {
-    // Disable the main document action if the array dialog is open
-    const isTreeEnabled = () => {
-      if (!isTreeArrayEditingEnabled) return false
+  // Disable the main document action if the array dialog is open
+  const isTreeArrayEditingEnabledOpen = useMemo(() => {
+    if (!isTreeArrayEditingEnabled) return false
 
-      return shouldArrayDialogOpen(schemaType, openPath)
-    }
-
-    setIsTreeArrayEditingEnabledOpen(isTreeEnabled)
-  }, [isTreeArrayEditingEnabled, schemaType, openPath, other])
+    return shouldArrayDialogOpen(schemaType, openPath)
+  }, [isTreeArrayEditingEnabled, openPath, schemaType])
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
