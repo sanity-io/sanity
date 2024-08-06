@@ -122,12 +122,11 @@ describe('getOrCreateUserApplication', () => {
     expect(result).toEqual(newApp)
   })
 
-  it('creates a default user application by prompting the user for a name', async () => {
+  it('creates a user application by prompting the user for a name', async () => {
     const newApp = {
       id: 'default-app',
       appHost: 'default.sanity.studio',
       urlType: 'internal',
-      isDefaultForDeployment: true,
     }
     mockClientRequest.mockResolvedValueOnce(null) // Simulate no existing app
     ;(mockPrompt.single as jest.Mock<any>).mockImplementationOnce(
