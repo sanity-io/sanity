@@ -71,7 +71,18 @@ export function findQueriesInSource(
           resolver,
         })
 
-        queries.push({name: queryName, result: queryResult})
+        const location = node.loc
+          ? {
+              start: {
+                ...node.loc?.start,
+              },
+              end: {
+                ...node.loc?.end,
+              },
+            }
+          : {}
+
+        queries.push({name: queryName, result: queryResult, location})
       }
     },
   })
