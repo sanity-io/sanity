@@ -12,7 +12,6 @@ import {
   type ObjectInputProps,
   type ObjectSchemaType,
   type Path,
-  type PathSegment,
   useTranslation,
 } from 'sanity'
 import {css, styled} from 'styled-components'
@@ -130,9 +129,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     openPathRef.current = undefined
 
     // Focus the root array item when closing the dialog.
-    const firstKeySegmentIndex = isKeySegment(openPath as PathSegment)
-      ? openPath.findIndex(isKeySegment)
-      : openPath.findIndex(isKeySegment) - 1
+    // test
+    const firstKeySegmentIndex = openPath.findIndex(isKeySegment)
     const rootFocusPath = openPath.slice(0, firstKeySegmentIndex + 1)
     onPathFocus(rootFocusPath)
   }, [debouncedBuildTreeEditingState, onPathFocus, onPathOpen, openPath])
