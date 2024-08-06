@@ -167,6 +167,7 @@ export const ReleaseDetail = () => {
           documents={results}
           release={bundle}
           documentsHistory={history.documentsHistory}
+          scrollContainerRef={scrollContainerRef}
         />
       )
     }

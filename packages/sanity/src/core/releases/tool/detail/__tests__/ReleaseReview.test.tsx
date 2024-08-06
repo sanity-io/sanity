@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
-import {act, fireEvent, render, screen} from '@testing-library/react'
+import {act, fireEvent, render, screen, within} from '@testing-library/react'
 import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
@@ -11,26 +11,22 @@ import {type DocumentInBundleResult} from '../useBundleDocuments'
 
 const BASE_DOCUMENTS_MOCKS = {
   doc1: {
-    baseDocument: {
-      name: 'William Faulkner',
-      role: 'developer',
-      _id: 'doc1',
-      _rev: 'FvEfB9CaLlljeKWNkRBaf5',
-      _type: 'author',
-      _createdAt: '',
-      _updatedAt: '',
-    },
+    name: 'William Faulkner',
+    role: 'developer',
+    _id: 'doc1',
+    _rev: 'FvEfB9CaLlljeKWNkRBaf5',
+    _type: 'author',
+    _createdAt: '',
+    _updatedAt: '',
   },
   doc2: {
-    baseDocument: {
-      name: 'Virginia Woolf',
-      role: 'developer',
-      _id: 'doc2',
-      _rev: 'FvEfB9CaLlljeKWNkRBaf5',
-      _type: 'author',
-      _createdAt: '',
-      _updatedAt: '',
-    },
+    name: 'Virginia Woolf',
+    role: 'developer',
+    _id: 'doc2',
+    _rev: 'FvEfB9CaLlljeKWNkRBaf5',
+    _type: 'author',
+    _createdAt: '',
+    _updatedAt: '',
   },
 } as const
 
@@ -91,6 +87,7 @@ const MOCKED_DOCUMENTS: DocumentInBundleResult[] = [
   },
 ]
 const MOCKED_PROPS = {
+  scrollContainerRef: {current: null},
   documents: MOCKED_DOCUMENTS,
   release: {
     _updatedAt: '2024-07-12T10:39:32Z',
@@ -199,7 +196,7 @@ describe('ReleaseReview', () => {
       mockedUseObserveDocument.mockImplementation((docId: string) => {
         return {
           // @ts-expect-error - key is valid, ts won't infer it
-          document: BASE_DOCUMENTS_MOCKS[docId].baseDocument,
+          document: BASE_DOCUMENTS_MOCKS[docId],
           loading: false,
         }
       })
@@ -229,6 +226,37 @@ describe('ReleaseReview', () => {
       })
 
       expect(secondDocumentChange).toBeInTheDocument()
+    })
+    it('should collapse documents', () => {
+      const firstDocumentDiff = screen.getByTestId(
+        `doc-differences-${MOCKED_DOCUMENTS[0].document._id}`,
+      )
+      const secondDocumentDiff = screen.getByTestId(
+        `doc-differences-${MOCKED_DOCUMENTS[1].document._id}`,
+      )
+      expect(within(firstDocumentDiff).getByText('added')).toBeInTheDocument()
+      expect(within(secondDocumentDiff).getByText('test')).toBeInTheDocument()
+      // get the toggle button with id 'document-review-header-toggle' inside the first document diff
+      const firstDocToggle = within(firstDocumentDiff).getByTestId('document-review-header-toggle')
+      act(() => {
+        fireEvent.click(firstDocToggle)
+      })
+      expect(within(firstDocumentDiff).queryByText('added')).not.toBeInTheDocument()
+      expect(within(secondDocumentDiff).getByText('test')).toBeInTheDocument()
+      act(() => {
+        fireEvent.click(firstDocToggle)
+      })
+      expect(within(firstDocumentDiff).getByText('added')).toBeInTheDocument()
+      expect(within(secondDocumentDiff).getByText('test')).toBeInTheDocument()
+
+      const secondDocToggle = within(secondDocumentDiff).getByTestId(
+        'document-review-header-toggle',
+      )
+      act(() => {
+        fireEvent.click(secondDocToggle)
+      })
+      expect(within(firstDocumentDiff).getByText('added')).toBeInTheDocument()
+      expect(within(secondDocumentDiff).queryByText('test')).not.toBeInTheDocument()
     })
   })
   describe('filtering documents', () => {

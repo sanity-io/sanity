@@ -11,32 +11,41 @@ import {DocumentReviewHeader} from '../review/DocumentReviewHeader'
 import {type DocumentInBundleResult} from '../useBundleDocuments'
 import {DocumentDiff} from './DocumentDiff'
 
-export function DocumentDiffContainer({
-  document,
-  release,
-  history,
-  previewValues,
-  validation,
-}: {
-  release: BundleDocument
-  history?: DocumentHistory
-  document: DocumentInBundleResult['document']
-  validation?: DocumentInBundleResult['validation']
-  previewValues: DocumentInBundleResult['previewValues']
-}) {
+function DocumentDiffExpanded({document}: {document: DocumentInBundleResult['document']}) {
   const publishedId = getPublishedId(document._id, true)
+
   const schema = useSchema()
   const schemaType = schema.get(document._type) as ObjectSchemaType
   if (!schemaType) {
     throw new Error(`Schema type "${document._type}" not found`)
   }
-  const {document: baseDocument, loading: baseDocumentLoading} = useObserveDocument(
-    publishedId,
-    schemaType,
-  )
 
+  const {document: baseDocument, loading: baseDocumentLoading} = useObserveDocument(publishedId)
+
+  if (baseDocumentLoading) return <LoadingBlock />
+
+  return <DocumentDiff baseDocument={baseDocument} document={document} schemaType={schemaType} />
+}
+
+export function DocumentDiffContainer({
+  document,
+  history,
+  release,
+  previewValues,
+  validation,
+  isExpanded,
+  toggleIsExpanded,
+}: {
+  document: DocumentInBundleResult['document']
+  history?: DocumentHistory
+  release: BundleDocument
+  previewValues: DocumentInBundleResult['previewValues']
+  validation?: DocumentInBundleResult['validation']
+  isExpanded: boolean
+  toggleIsExpanded: () => void
+}) {
   return (
-    <Card border radius={3}>
+    <Card border radius={3} data-testid={`doc-differences-${document._id}`}>
       <DocumentReviewHeader
         document={document}
         isLoading={previewValues.isLoading}
@@ -44,14 +53,14 @@ export function DocumentDiffContainer({
         history={history}
         release={release}
         validation={validation}
+        isExpanded={isExpanded}
+        toggleIsExpanded={toggleIsExpanded}
       />
-      <Flex justify="center" padding={4}>
-        {baseDocumentLoading ? (
-          <LoadingBlock />
-        ) : (
-          <DocumentDiff baseDocument={baseDocument} document={document} schemaType={schemaType} />
-        )}
-      </Flex>
+      {isExpanded && (
+        <Flex justify="center" padding={4}>
+          <DocumentDiffExpanded document={document} />
+        </Flex>
+      )}
     </Card>
   )
 }
