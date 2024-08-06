@@ -20,6 +20,20 @@ export interface NamedQueryResult {
   name: string
   /** result is a groq query */
   result: resolveExpressionReturnType
+
+  /** location is the location of the query in the source */
+  location: {
+    start?: {
+      line: number
+      column: number
+      index: number
+    }
+    end?: {
+      line: number
+      column: number
+      index: number
+    }
+  }
 }
 
 const TAGGED_TEMPLATE_ALLOW_LIST = ['groq']

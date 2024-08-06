@@ -14,7 +14,12 @@ describe('findQueries with the groq template', () => {
       const queries = findQueriesInSource(source, 'test.ts')
       const queryResult = queries[0]
 
+      expect(queryResult?.name).toEqual('postQuery')
       expect(queryResult?.result).toEqual('*[_type == "author"]')
+      expect(queryResult?.location).toStrictEqual({
+        end: {line: 3, column: 50, index: 86},
+        start: {line: 3, column: 12, index: 48},
+      })
     })
 
     test('with variables', () => {
@@ -29,6 +34,10 @@ describe('findQueries with the groq template', () => {
       const queryResult = queries[0]
 
       expect(queryResult?.result).toEqual('*[_type == "author"]')
+      expect(queryResult?.location).toStrictEqual({
+        end: {line: 4, column: 53, index: 118},
+        start: {line: 4, column: 12, index: 77},
+      })
     })
 
     test('with function', () => {
