@@ -27,7 +27,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks, schemaType, openPath, ...other} = useDocumentPane()
+  const {__internal_tasks, schemaType, openPath} = useDocumentPane()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const isTreeArrayEditingEnabled = useSource().beta?.treeArrayEditing?.enabled
