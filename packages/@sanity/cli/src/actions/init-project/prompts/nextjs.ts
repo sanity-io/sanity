@@ -38,15 +38,15 @@ export function promptForNextTemplate(prompt: CliPrompter): Promise<'clean' | 'b
     type: 'list',
     choices: [
       {
-        value: 'clean',
-        name: 'Clean project with no predefined schema types',
-      },
-      {
         value: 'blog',
         name: 'Blog (schema)',
       },
+      {
+        value: 'clean',
+        name: 'Clean project with no predefined schema types',
+      },
     ],
-    default: 'clean',
+    default: 'blog',
   })
 }
 

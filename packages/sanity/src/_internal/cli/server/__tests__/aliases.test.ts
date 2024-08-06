@@ -57,10 +57,7 @@ describe('getAliases', () => {
   // > esbuild in this environment because esbuild relies on this invariant. This
   // > is not a problem with esbuild. You need to fix your environment instead.
   it('returns the correct aliases for normal builds', () => {
-    const aliases = getAliases({
-      sanityPkgPath,
-      conditions: ['import', 'browser'],
-    })
+    const aliases = getAliases({sanityPkgPath})
 
     // Prepare expected aliases
     const dirname = path.dirname(sanityPkgPath)
@@ -68,7 +65,6 @@ describe('getAliases', () => {
       (acc, next) => {
         const dest = resolve.exports(pkg, next, {
           browser: true,
-          conditions: ['import', 'browser'],
         })?.[0]
         if (dest) {
           acc.push({

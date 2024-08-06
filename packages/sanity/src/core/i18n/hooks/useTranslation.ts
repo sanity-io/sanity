@@ -52,7 +52,6 @@ export function useTranslation<
   options?: UseTranslationOptions<KPrefix>,
 ): UseTranslationResponse<FallbackNs<Ns>, KPrefix> {
   const {t} = useOriginalTranslation(
-    // @ts-expect-error type check is failing after using `module: preserve` in tsconfig, which uses `moduleResolution: bundler` internally
     ns,
     options
       ? {keyPrefix: options.keyPrefix, lng: options.lng, ...translationOptionOverrides}

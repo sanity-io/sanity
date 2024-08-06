@@ -107,3 +107,10 @@ export function FieldPresence(props: FieldPresenceProps) {
     </PresenceTooltip>
   )
 }
+
+/**
+ * @internal
+ * @hidden
+ * @deprecated Use `FieldPresence` instead
+ */
+export const FieldPresenceWithOverlay = FieldPresence

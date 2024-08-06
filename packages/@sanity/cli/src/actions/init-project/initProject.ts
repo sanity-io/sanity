@@ -439,10 +439,14 @@ export default async function initSanity(
     }
     const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
+    const packages = ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1', 'styled-components@6']
+    if (templateToUse === 'blog') {
+      packages.push('@sanity/icons')
+    }
     await installNewPackages(
       {
         packageManager: chosen,
-        packages: ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1', 'styled-components@6'],
+        packages,
       },
       {
         output: context.output,
@@ -1277,8 +1281,7 @@ export default async function initSanity(
       '# Warning: Do not add secrets (API keys and similar) to this file, as it source controlled!',
       '# Use `.env.local` for any secrets, and ensure it is not added to source control',
     ].join('\n')
-    const shouldPrependWarning = !existingEnv.includes(warningComment)
-    // prepend warning comment to the env vars if one does not exist
+    const shouldPrependWarning = filename !== '.env.local' && !existingEnv.includes(warningComment)
     if (shouldPrependWarning) {
       await fs.writeFile(fileOutputPath, `${warningComment}\n\n${updatedEnv}`, {
         encoding: 'utf8',

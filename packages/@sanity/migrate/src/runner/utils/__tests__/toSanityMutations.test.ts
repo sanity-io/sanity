@@ -14,10 +14,10 @@ jest.mock('@bjoerge/mutiny', () => {
   return {
     ...actual,
     SanityEncoder: {
-      ...actual.SanityEncoder.encode,
-      encode: jest
-        .fn<typeof actual.SanityEncoder.encode>()
-        .mockImplementation(actual.SanityEncoder.encode),
+      ...actual.SanityEncoder,
+      encodeAll: jest
+        .fn<typeof actual.SanityEncoder.encodeAll>()
+        .mockImplementation(actual.SanityEncoder.encodeAll),
     },
   }
 })
@@ -45,8 +45,8 @@ describe('#toSanityMutations', () => {
       result.push(mutation)
     }
 
-    expect(result.flat()).toEqual(SanityEncoder.encode([mockMutation] as any))
-    expect(SanityEncoder.encode).toHaveBeenCalledWith([mockMutation])
+    expect(result.flat()).toEqual(SanityEncoder.encodeAll([mockMutation] as any[]))
+    expect(SanityEncoder.encodeAll).toHaveBeenCalledWith([mockMutation])
   })
 
   it('should handle multiple mutations', async () => {
@@ -84,8 +84,8 @@ describe('#toSanityMutations', () => {
       result.push(mutation)
     }
 
-    expect(result.flat()).toEqual(SanityEncoder.encode(mockMutations as any))
-    expect(SanityEncoder.encode).toHaveBeenCalledWith(mockMutations)
+    expect(result.flat()).toEqual(SanityEncoder.encodeAll(mockMutations as any[]))
+    expect(SanityEncoder.encodeAll).toHaveBeenCalledWith(mockMutations)
   })
 
   it('should handle transaction', async () => {
@@ -114,10 +114,10 @@ describe('#toSanityMutations', () => {
 
     const expected: TransactionPayload = {
       transactionId: mockTransaction.id,
-      mutations: SanityEncoder.encode(mockTransaction.mutations as any),
+      mutations: SanityEncoder.encodeAll(mockTransaction.mutations as any[]),
     }
 
     expect(result).toEqual([expected])
-    expect(SanityEncoder.encode).toHaveBeenCalledWith(mockTransaction.mutations)
+    expect(SanityEncoder.encodeAll).toHaveBeenCalledWith(mockTransaction.mutations)
   })
 })

@@ -8,6 +8,7 @@ export function getCalendarLabels(
   t: (key: string, values?: Record<string, unknown>) => string,
 ): CalendarLabels {
   return {
+    ariaLabel: t('calendar.button.aria-label'),
     goToTomorrow: t('calendar.action.go-to-tomorrow'),
     goToToday: t('calendar.action.go-to-today'),
     goToYesterday: t('calendar.action.go-to-yesterday'),
@@ -18,6 +19,7 @@ export function getCalendarLabels(
     setToCurrentTime: t('calendar.action.set-to-current-time'),
     selectHour: t('calendar.action.select-hour'),
     selectMinute: t('calendar.action.select-minute'),
+    tooltipText: t('calendar.button.tooltip-text'),
     monthNames: [
       t('calendar.month-names.january'),
       t('calendar.month-names.february'),

@@ -8,7 +8,7 @@
  * @returns The same string as the input
  * @public
  */
-export default function groq(strings: TemplateStringsArray, ...keys: any[]): string {
+export function groq(strings: TemplateStringsArray, ...keys: any[]): string {
   const lastIndex = strings.length - 1
   return (
     strings.slice(0, lastIndex).reduce((acc, str, i) => {

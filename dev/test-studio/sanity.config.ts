@@ -147,26 +147,35 @@ const sharedSettings = definePlugin({
   ],
 })
 
+const defaultWorkspace = {
+  name: 'default',
+  title: 'Test Studio',
+  projectId: 'ppsg7ml5',
+  dataset: 'test',
+  plugins: [sharedSettings()],
+  basePath: '/test',
+  icon: SanityMonogram,
+  // eslint-disable-next-line camelcase
+  __internal_serverDocumentActions: {
+    enabled: true,
+  },
+  scheduledPublishing: {
+    enabled: true,
+    inputDateTimeFormat: 'MM/dd/yy h:mm a',
+  },
+  tasks: {
+    enabled: true,
+  },
+}
+
 export default defineConfig([
+  defaultWorkspace,
   {
-    name: 'default',
-    title: 'Test Studio',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    plugins: [sharedSettings()],
-    basePath: '/test',
-    icon: SanityMonogram,
-    // eslint-disable-next-line camelcase
-    __internal_serverDocumentActions: {
-      enabled: true,
-    },
-    scheduledPublishing: {
-      enabled: true,
-      inputDateTimeFormat: 'MM/dd/yy h:mm a',
-    },
-    tasks: {
-      enabled: true,
-    },
+    ...defaultWorkspace,
+    name: 'us',
+    title: 'Test Studio (US)',
+    dataset: 'test-us',
+    basePath: '/us',
   },
   {
     name: 'partialIndexing',

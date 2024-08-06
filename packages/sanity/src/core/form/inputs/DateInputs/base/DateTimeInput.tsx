@@ -77,13 +77,14 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const suffix = (
     <Flex style={{padding: '5px'}}>
       <Button
+        aria-label={calendarLabels.ariaLabel}
         ref={buttonRef}
         icon={CalendarIcon}
         mode="bleed"
         onClick={handleClick}
         style={{display: 'block'}}
         data-testid="select-date-button"
-        tooltipProps={{content: 'Select date'}}
+        tooltipProps={{content: calendarLabels.tooltipText}}
       />
     </Flex>
   )

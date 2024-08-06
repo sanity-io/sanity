@@ -104,7 +104,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
 
     /* Reset the list count if the element is not a numbered list item */
     & > :not(.pt-list-item-number) {
-      counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
+      counter-set: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
     }
 
     ${TEXT_LEVELS.slice(1).map((l) => {

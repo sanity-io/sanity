@@ -30,7 +30,7 @@ export const TasksActivityCreatedAt = memo(
         <Flex align="center" paddingTop={1}>
           <Text size={1} muted>
             <strong style={{fontWeight: 600}}>
-              {loading ? <UserSkeleton /> : user?.displayName ?? t('panel.activity.unknown-user')}{' '}
+              {loading ? <UserSkeleton /> : (user?.displayName ?? t('panel.activity.unknown-user'))}{' '}
             </strong>
             {t('panel.activity.created-fragment')} •{' '}
             <Tooltip content={formattedDate} placement="top-end">
