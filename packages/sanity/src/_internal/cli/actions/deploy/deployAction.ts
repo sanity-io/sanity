@@ -5,17 +5,17 @@ import zlib from 'node:zlib'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 
-import {debug as debugIt} from '../../debug'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
 import {
   checkDir,
   createDeployment,
+  debug,
   dirIsEmptyOrNonExistent,
   getInstalledSanityVersion,
   getOrCreateUserApplication,
+  getOrCreateUserApplicationFromConfig,
+  type UserApplication,
 } from './helpers'
-
-const debug = debugIt.extend('deploy')
 
 export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
   build?: boolean
@@ -70,16 +70,24 @@ export default async function deployStudioAction(
   // Check that the project has a studio hostname
   let spinner = output.spinner('Checking project info').start()
 
-  let userApplication
+  let userApplication: UserApplication
 
   try {
-    userApplication = await getOrCreateUserApplication({
-      client,
-      context,
-      spinner,
-      // ensures only v3 configs with `studioHost` are sent
-      ...(cliConfig && 'studioHost' in cliConfig && {cliConfig}),
-    })
+    // If the user has provided a studioHost in the config, use that
+    if (cliConfig && 'studioHost' in cliConfig && cliConfig.studioHost) {
+      userApplication = await getOrCreateUserApplicationFromConfig({
+        client,
+        context,
+        spinner,
+        appHost: cliConfig.studioHost,
+      })
+    } else {
+      userApplication = await getOrCreateUserApplication({
+        client,
+        context,
+        spinner,
+      })
+    }
   } catch (err) {
     if (err.message) {
       output.error(chalk.red(err.message))
