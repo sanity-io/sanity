@@ -128,8 +128,8 @@ export async function getOrCreateUserApplication({
         return true
       } catch (e) {
         // if the name is taken, it should return a 409 so we relay to the user
-        if (e?.statusCode === 409) {
-          return e?.message || 'Conflict' // just in case
+        if ([402, 409].includes(e?.statusCode)) {
+          return e?.message || 'Bad request' // just in case
         }
 
         // otherwise, it's a fatal error

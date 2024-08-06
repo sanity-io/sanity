@@ -55,8 +55,9 @@ describe('deployStudioAction', () => {
         withConfig: jest.fn().mockReturnThis(),
       }),
       workDir: '/fake/work/dir',
-      chalk: {cyan: jest.fn((str) => str)},
+      chalk: {cyan: jest.fn((str) => str), red: jest.fn((str) => str)},
       output: {
+        error: jest.fn((str) => str),
         print: jest.fn(),
         spinner: jest.fn().mockReturnValue(spinnerInstance),
       },
@@ -201,5 +202,42 @@ describe('deployStudioAction', () => {
         mockContext,
       ),
     ).rejects.toThrow('Did you mean `sanity graphql deploy`?')
+  })
+
+  it('returns an error if API responds with 402', async () => {
+    const mockSpinner = mockContext.output.spinner('')
+
+    // Mock utility functions
+    helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
+    helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+    helpers.getOrCreateUserApplication.mockRejectedValueOnce({
+      statusCode: 402,
+      message: 'Application limit reached',
+      error: 'Payment Required',
+    })
+    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
+    tarPackMock.mockReturnValueOnce({pipe: jest.fn().mockReturnValue('tarball')})
+    zlibCreateGzipMock.mockReturnValue('gzipped')
+
+    await deployStudioAction(
+      {
+        argsWithoutOptions: ['customSourceDir'],
+        extOptions: {},
+      } as CliCommandArguments<DeployStudioActionFlags>,
+      mockContext,
+    )
+
+    expect(helpers.dirIsEmptyOrNonExistent).toHaveBeenCalledWith(
+      expect.stringContaining('customSourceDir'),
+    )
+    expect(helpers.getOrCreateUserApplication).toHaveBeenCalledWith(
+      expect.objectContaining({
+        client: expect.anything(),
+        context: expect.anything(),
+        spinner: expect.anything(),
+      }),
+    )
+
+    expect(mockContext.output.error).toHaveBeenCalledWith('Application limit reached')
   })
 })
