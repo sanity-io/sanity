@@ -66,7 +66,6 @@ function createUserApplication(
   client: SanityClient,
   body: Pick<UserApplication, 'appHost' | 'urlType'> & {
     title?: string
-    isDefaultForDeployment?: boolean
   },
 ): Promise<UserApplication> {
   return client.request({uri: '/user-applications', method: 'POST', body})
@@ -121,7 +120,6 @@ export async function getOrCreateUserApplication({
       try {
         const response = await createUserApplication(client, {
           appHost,
-          isDefaultForDeployment: true,
           urlType: 'internal',
         })
         resolve(response)
