@@ -3,10 +3,14 @@ import path from 'node:path'
 import {PassThrough} from 'node:stream'
 import {type Gzip} from 'node:zlib'
 
-import {type CliCommandContext, type CliConfig, type CliOutputter} from '@sanity/cli'
+import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
 import FormData from 'form-data'
 import readPkgUp from 'read-pkg-up'
+
+import {debug as debugIt} from '../../debug'
+
+export const debug = debugIt.extend('deploy')
 
 // TODO: replace with `Promise.withResolvers()` once it lands in node
 function promiseWithResolvers<T>() {
@@ -42,8 +46,11 @@ export interface UserApplication {
   activeDeployment?: ActiveDeployment | null
 }
 
-export interface GetUserApplicationOptions {
+export interface GetUserApplicationsOptions {
   client: SanityClient
+}
+
+export interface GetUserApplicationOptions extends GetUserApplicationsOptions {
   appHost?: string
 }
 
@@ -57,7 +64,28 @@ export async function getUserApplication({
       query: appHost ? {appHost} : {default: 'true'},
     })
   } catch (e) {
-    if (e?.statusCode === 404) return null
+    if (e?.statusCode === 404) {
+      return null
+    }
+
+    debug('Error getting user application', e)
+    throw e
+  }
+}
+
+export async function getUserApplications({
+  client,
+}: GetUserApplicationsOptions): Promise<UserApplication[] | null> {
+  try {
+    return await client.request({
+      uri: '/user-applications',
+    })
+  } catch (e) {
+    if (e?.statusCode === 404) {
+      return null
+    }
+
+    debug('Error getting user application', e)
     throw e
   }
 }
@@ -75,17 +103,46 @@ export interface GetOrCreateUserApplicationOptions {
   client: SanityClient
   context: Pick<CliCommandContext, 'output' | 'prompt'>
   spinner: ReturnType<CliOutputter['spinner']>
-  cliConfig?: Pick<CliConfig, 'studioHost'>
 }
 
+/**
+ * This function handles the logic for managing user applications when
+ * studioHost is not provided in the CLI config.
+ *
+ * @internal
+ *
+ *    +-------------------------------+
+ *    |   Fetch Existing user-app?   |
+ *    +---------+--------------------+
+ *              |
+ *        +-----+-----+
+ *        |           |
+ *        v           v
+ *   +---------+  +-------------------------+
+ *   | Return  |  | Fetch all user apps     |
+ *   | user-app|  +-------------------------+
+ *   +---------+            |
+ *                          v
+ *           +---------------------------+
+ *           |  User apps found?         |
+ *           +-----------+---------------+
+ *                       |
+ *                +------v------+
+ *                |             |
+ *                v             v
+ *   +--------------------+  +------------------------+
+ *   | Show list and      |  | Prompt for hostname    |
+ *   | prompt selection   |  | and create new app     |
+ *   +--------------------+  +------------------------+
+ */
 export async function getOrCreateUserApplication({
   client,
-  cliConfig,
   spinner,
-  context: {output, prompt},
+  context,
 }: GetOrCreateUserApplicationOptions): Promise<UserApplication> {
+  const {output, prompt} = context
   // if there is already an existing user-app, then just return it
-  const existingUserApplication = await getUserApplication({client, appHost: cliConfig?.studioHost})
+  const existingUserApplication = await getUserApplication({client})
 
   // Complete the spinner so prompt can properly work
   spinner.succeed()
@@ -94,13 +151,28 @@ export async function getOrCreateUserApplication({
     return existingUserApplication
   }
 
-  // otherwise, we need to create one.
-  // if a `studioHost` was provided in the CLI config, then use that
-  if (cliConfig?.studioHost) {
-    return createUserApplication(client, {
-      appHost: cliConfig.studioHost,
-      urlType: 'internal',
+  const userApplications = await getUserApplications({client})
+
+  if (userApplications?.length) {
+    const choices = userApplications.map((app) => ({
+      value: app.appHost,
+      name: app.appHost,
+    }))
+
+    const selected = await prompt.single({
+      message: 'Select existing studio hostname',
+      type: 'list',
+      choices: [
+        {value: 'new', name: 'Create new studio hostname'},
+        new prompt.Separator(),
+        ...choices,
+      ],
     })
+
+    // if the user selected an existing app, return it
+    if (selected !== 'new') {
+      return userApplications.find((app) => app.appHost === selected)!
+    }
   }
 
   // otherwise, prompt the user for a hostname
@@ -127,9 +199,10 @@ export async function getOrCreateUserApplication({
       } catch (e) {
         // if the name is taken, it should return a 409 so we relay to the user
         if ([402, 409].includes(e?.statusCode)) {
-          return e?.message || 'Bad request' // just in case
+          return e?.response?.body?.message || 'Bad request' // just in case
         }
 
+        debug('Error creating user application', e)
         // otherwise, it's a fatal error
         throw e
       }
@@ -137,6 +210,57 @@ export async function getOrCreateUserApplication({
   })
 
   return await promise
+}
+
+/**
+ * This function handles the logic for managing user applications when
+ * studioHost is provided in the CLI config.
+ *
+ * @internal
+ */
+export async function getOrCreateUserApplicationFromConfig({
+  client,
+  context,
+  spinner,
+  appHost,
+}: GetOrCreateUserApplicationOptions & {
+  appHost: string
+}): Promise<UserApplication> {
+  const {output} = context
+  // if there is already an existing user-app, then just return it
+  const existingUserApplication = await getUserApplication({client, appHost})
+
+  // Complete the spinner so prompt can properly work
+  spinner.succeed()
+
+  if (existingUserApplication) {
+    return existingUserApplication
+  }
+
+  output.print('Your project has not been assigned a studio hostname.')
+  output.print(`Creating https://${appHost}.sanity.studio`)
+  output.print('')
+  spinner.start('Creating studio hostname')
+
+  try {
+    const response = await createUserApplication(client, {
+      appHost,
+      urlType: 'internal',
+    })
+    spinner.succeed()
+
+    return response
+  } catch (e) {
+    spinner.fail()
+    // if the name is taken, it should return a 409 so we relay to the user
+    if ([402, 409].includes(e?.statusCode)) {
+      throw new Error(e?.response?.body?.message) || 'Bad request' // just in case
+    }
+
+    debug('Error creating user application from config', e)
+    // otherwise, it's a fatal error
+    throw e
+  }
 }
 
 export interface CreateDeploymentOptions {
