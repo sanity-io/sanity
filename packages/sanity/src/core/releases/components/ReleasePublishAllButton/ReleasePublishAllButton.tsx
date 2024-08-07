@@ -2,10 +2,11 @@ import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {type BundleDocument} from 'sanity'
+import {type BundleDocument, Translate, useTranslation} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
+import {releasesLocaleNamespace} from '../../i18n'
 import {type DocumentValidationStatus} from '../../tool/detail/bundleDocumentsValidation'
 import {useObserveDocumentRevisions} from './useObserveDocumentRevisions'
 
@@ -24,6 +25,7 @@ export const ReleasePublishAllButton = ({
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
   const {publishBundle} = useBundleOperations()
+  const {t} = useTranslation(releasesLocaleNamespace)
   const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
     'idle',
   )
@@ -47,7 +49,7 @@ export const ReleasePublishAllButton = ({
         status: 'success',
         title: (
           <Text muted size={1}>
-            The <strong>{bundle.title}</strong> release was published
+            <Translate t={t} i18nKey="release.toast.published" values={{title: bundle.title}} />
           </Text>
         ),
       })
@@ -56,7 +58,7 @@ export const ReleasePublishAllButton = ({
         status: 'error',
         title: (
           <Text muted size={1}>
-            Failed to publish the <strong>{bundle.title}</strong> release
+            <Translate t={t} i18nKey="release.toast.error" values={{title: bundle.title}} />
           </Text>
         ),
       })
@@ -64,7 +66,7 @@ export const ReleasePublishAllButton = ({
     } finally {
       setPublishBundleStatus('idle')
     }
-  }, [bundle, bundleDocuments, publishBundle, publishedDocumentsRevisions, toast])
+  }, [bundle, bundleDocuments, publishBundle, publishedDocumentsRevisions, t, toast])
 
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null
@@ -72,11 +74,11 @@ export const ReleasePublishAllButton = ({
     return (
       <Dialog
         id="confirm-publish-dialog"
-        header="Are you sure you want to publish the release and all document versions?"
+        header={t('release.publish-dialog.confirm-publish.title')}
         onClose={() => setPublishBundleStatus('idle')}
         footer={{
           confirmButton: {
-            text: 'Publish',
+            text: t('release.action.publish'),
             tone: 'default',
             onClick: handleConfirmPublishAll,
             loading: publishBundleStatus === 'publishing',
@@ -85,23 +87,32 @@ export const ReleasePublishAllButton = ({
         }}
       >
         <Text muted size={1}>
-          The <strong>{bundle?.title}</strong> release and its {bundleDocuments.length} document
-          version{bundleDocuments.length > 1 ? 's' : ''} will be published.
+          {
+            <Translate
+              t={t}
+              i18nKey="release.publish-dialog.confirm-publish-description"
+              values={{
+                title: bundle.title,
+                bundleDocumentsLength: bundleDocuments.length,
+                count: bundleDocuments.length,
+              }}
+            />
+          }
         </Text>
       </Dialog>
     )
-  }, [bundle?.title, bundleDocuments.length, handleConfirmPublishAll, publishBundleStatus])
+  }, [bundle.title, bundleDocuments.length, handleConfirmPublishAll, publishBundleStatus, t])
 
   const publishTooltipContent = useMemo(() => {
     if (!hasDocumentValidationErrors && !isValidatingDocuments) return null
 
     const tooltipText = () => {
       if (isValidatingDocuments) {
-        return 'Validating documents...'
+        return t('release.publish-dialog.validation.loading')
       }
 
       if (hasDocumentValidationErrors) {
-        return 'Some documents have validation errors'
+        return t('release.publish-dialog.validation.error')
       }
 
       return null
@@ -115,7 +126,7 @@ export const ReleasePublishAllButton = ({
         </Text>
       </Flex>
     )
-  }, [hasDocumentValidationErrors, isValidatingDocuments])
+  }, [hasDocumentValidationErrors, isValidatingDocuments, t])
 
   return (
     <>
@@ -127,7 +138,7 @@ export const ReleasePublishAllButton = ({
         }}
         icon={PublishIcon}
         disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
-        text="Publish all"
+        text={t('release.action.publish-all')}
         onClick={() => setPublishBundleStatus('confirm')}
         loading={publishBundleStatus === 'publishing'}
       />
