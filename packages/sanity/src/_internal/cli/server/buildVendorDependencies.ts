@@ -97,7 +97,7 @@ const VENDOR_IMPORTS: VendorImports = {
   },
   'styled-components': {
     '^6.1.0': {
-      '.': './dist/styled-components.esm.js',
+      '.': './dist/styled-components.browser.esm.js',
       './package.json': './package.json',
     },
   },
@@ -113,6 +113,7 @@ interface VendorBuildOptions {
  * Builds the ESM browser compatible versions of the vendor packages
  * specified in VENDOR_IMPORTS. Returns the `imports` object of an import map.
  */
+// eslint-disable-next-line max-statements
 export async function buildVendorDependencies({
   cwd,
   outputDir,
@@ -125,6 +126,51 @@ export async function buildVendorDependencies({
 
   // Iterate over each package and its version ranges in VENDOR_IMPORTS
   for (const [packageName, ranges] of Object.entries(VENDOR_IMPORTS)) {
+    // TODO: remove this special case once our temp fork is gone
+    // this is a temporary code path to try to point to our fork of
+    // styled-components we include as a dependency for now
+    if (packageName === 'styled-components') {
+      try {
+        // first resolve the sanity root
+        const sanityRoot = path.dirname(resolveFrom(cwd, 'sanity/package.json'))
+        // then use that to resolve `@sanity/styled-components`
+        // note that we do this in order to find the version we install by
+        // including `@sanity/styled-components` as a dependency to the studio
+        const sanityStyledComponents = path.dirname(
+          resolveFrom(sanityRoot, '@sanity/styled-components/package.json'),
+        )
+
+        // set the entry points and corresponding import map
+        entry['styled-components/index'] = path.posix.join(
+          sanityStyledComponents,
+          './dist/styled-components.browser.esm.js',
+        )
+        entry['styled-components/package.json'] = path.posix.join(
+          sanityStyledComponents,
+          './package.json',
+        )
+        imports['styled-components'] = path.posix.join(
+          '/',
+          basePath,
+          VENDOR_DIR,
+          'styled-components',
+          'index.mjs',
+        )
+        imports['styled-components/package.json'] = path.posix.join(
+          '/',
+          basePath,
+          VENDOR_DIR,
+          'styled-components',
+          'package.json.mjs',
+        )
+
+        // if we get here then, no need to go through the normal flow
+        continue
+      } catch {
+        // if resolving the fork fails, then have it follow the normal resolution
+      }
+    }
+
     const packageJsonPath = resolveFrom.silent(cwd, path.join(packageName, 'package.json'))
     if (!packageJsonPath) {
       throw new Error(

@@ -40,16 +40,16 @@ describe('buildVendorDependencies', () => {
     {basePath: '/some-path', expectedPath: '/some-path/'},
   ])('basePath: $basePath', ({basePath, expectedPath}) => {
     it('should throw if there is no matching entry in VENDOR_IMPORTS', () => {
-      const cwd = path.join(examplesRoot, 'prj-with-styled-components-5')
+      const cwd = path.join(examplesRoot, 'prj-with-react-17')
 
       return expect(buildVendorDependencies({cwd, basePath: basePath, outputDir})).rejects.toThrow(
-        "Package 'styled-components' requires at least 6.1.0.",
+        "Package 'react' requires at least 18.0.0.",
       )
     })
 
     it('should return the expected entry points for react 18', async () => {
       const cwd = path.join(examplesRoot, 'prj-with-react-18')
-      const imports = await buildVendorDependencies({cwd, basePath: basePath, outputDir})
+      const imports = await buildVendorDependencies({cwd, basePath, outputDir})
 
       expect(imports).toEqual({
         'react': `${expectedPath}vendor/react-index-12345.mjs`,
