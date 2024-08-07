@@ -2,7 +2,6 @@ import {DocumentsIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {AvatarStack, Box, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useTableContext} from 'sanity/_singletons'
 
 import {
   BundleIconEditorPicker,
@@ -14,6 +13,7 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {Chip} from '../../components/Chip'
 import {Table, type TableProps} from '../../components/Table/Table'
+import {useTableContext} from '../../components/Table/TableProvider'
 import {type DocumentValidationStatus} from './bundleDocumentsValidation'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
