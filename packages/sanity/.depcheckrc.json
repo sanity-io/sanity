@@ -2,6 +2,7 @@
   "ignores": [
     "@repo/tsconfig",
     "@sanity/pkg-utils",
+    "@sanity/styled-components",
     "globby",
     "sanity",
     "@sanity/codegen",
