@@ -16,7 +16,7 @@ jest.mock('../helpers')
 jest.mock('../../build/buildAction')
 
 type Helpers = typeof _helpers
-const helpers = _helpers as {[K in keyof Helpers]: jest.Mock<Helpers[K]>}
+const helpers = _helpers as unknown as {[K in keyof Helpers]: jest.Mock<Helpers[K]>}
 const buildSanityStudioMock = buildSanityStudio as jest.Mock<typeof buildSanityStudio>
 const tarPackMock = tar.pack as jest.Mock
 const zlibCreateGzipMock = zlib.createGzip as jest.Mock
@@ -102,6 +102,60 @@ describe('deployStudioAction', () => {
       expect.objectContaining({
         client: expect.anything(),
         context: expect.anything(),
+      }),
+    )
+    expect(helpers.createDeployment).toHaveBeenCalledWith({
+      client: expect.anything(),
+      applicationId: 'app-id',
+      version: 'vX',
+      isAutoUpdating: false,
+      tarball: 'tarball',
+    })
+
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      '\nSuccess! Studio deployed to https://app-host.sanity.studio',
+    )
+    expect(mockSpinner.succeed).toHaveBeenCalled()
+  })
+
+  it('builds and deploys the studio if the directory is empty and hostname in config', async () => {
+    const mockSpinner = mockContext.output.spinner('')
+    mockContext.cliConfig = {studioHost: 'app-host'}
+
+    // Mock utility functions
+    helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
+    helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+    helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockApplication)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
+    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
+    tarPackMock.mockReturnValueOnce({pipe: jest.fn().mockReturnValue('tarball')})
+    zlibCreateGzipMock.mockReturnValue('gzipped')
+
+    await deployStudioAction(
+      {
+        argsWithoutOptions: ['customSourceDir'],
+        extOptions: {},
+      } as CliCommandArguments<DeployStudioActionFlags>,
+      mockContext,
+    )
+
+    // Check that buildSanityStudio was called
+    expect(buildSanityStudioMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        extOptions: {build: true},
+        argsWithoutOptions: ['customSourceDir'],
+      }),
+      mockContext,
+      {basePath: '/'},
+    )
+    expect(helpers.dirIsEmptyOrNonExistent).toHaveBeenCalledWith(
+      expect.stringContaining('customSourceDir'),
+    )
+    expect(helpers.getOrCreateUserApplicationFromConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        client: expect.anything(),
+        context: expect.anything(),
+        appHost: 'app-host',
       }),
     )
     expect(helpers.createDeployment).toHaveBeenCalledWith({
@@ -205,8 +259,6 @@ describe('deployStudioAction', () => {
   })
 
   it('returns an error if API responds with 402', async () => {
-    const mockSpinner = mockContext.output.spinner('')
-
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')

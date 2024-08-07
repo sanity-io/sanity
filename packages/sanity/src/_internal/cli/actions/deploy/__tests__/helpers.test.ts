@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {type Stats} from 'node:fs'
 import fs from 'node:fs/promises'
 import {Readable} from 'node:stream'
@@ -13,6 +14,7 @@ import {
   deleteUserApplication,
   dirIsEmptyOrNonExistent,
   getOrCreateUserApplication,
+  getOrCreateUserApplicationFromConfig,
 } from '../helpers'
 
 jest.mock('node:fs/promises')
@@ -36,8 +38,12 @@ const mockOutput = {
   warn: jest.fn(),
   spinner: jest.fn(),
 } as CliCommandContext['output']
-const mockPrompt = {single: jest.fn()} as unknown as CliCommandContext['prompt']
+const mockPrompt = {
+  single: jest.fn(),
+  Separator: jest.fn(),
+} as unknown as CliCommandContext['prompt']
 const mockSpinner = {
+  start: jest.fn(),
   succeed: jest.fn(),
 } as unknown as ReturnType<CliCommandContext['output']['spinner']>
 
@@ -68,60 +74,6 @@ describe('getOrCreateUserApplication', () => {
     expect(result).toEqual({id: 'default-app'})
   })
 
-  it('gets an existing user application if a `studioHost` is provided in the config', async () => {
-    mockClientRequest.mockResolvedValueOnce({
-      id: 'existing-app',
-      appHost: 'example.sanity.studio',
-      urlType: 'internal',
-    })
-
-    const result = await getOrCreateUserApplication({
-      client: mockClient,
-      spinner: mockSpinner,
-      cliConfig: {studioHost: 'example.sanity.studio'},
-      context,
-    })
-
-    expect(mockClientRequest).toHaveBeenCalledWith({
-      uri: '/user-applications',
-      query: {appHost: 'example.sanity.studio'},
-    })
-    expect(result).toEqual({
-      id: 'existing-app',
-      urlType: 'internal',
-      appHost: 'example.sanity.studio',
-    })
-  })
-
-  it('creates a user application using `studioHost` if provided in the config', async () => {
-    const newApp = {
-      id: 'new-app',
-      appHost: 'newhost.sanity.studio',
-      urlType: 'internal',
-    }
-    mockClientRequest.mockResolvedValueOnce(null) // Simulate no existing app
-    mockClientRequest.mockResolvedValueOnce(newApp)
-
-    const result = await getOrCreateUserApplication({
-      client: mockClient,
-      spinner: mockSpinner,
-      cliConfig: {studioHost: 'newhost'},
-      context,
-    })
-
-    expect(mockClientRequest).toHaveBeenCalledTimes(2)
-    expect(mockClientRequest).toHaveBeenNthCalledWith(1, {
-      uri: '/user-applications',
-      query: {appHost: 'newhost'},
-    })
-    expect(mockClientRequest).toHaveBeenNthCalledWith(2, {
-      uri: '/user-applications',
-      method: 'POST',
-      body: {appHost: 'newhost', urlType: 'internal'},
-    })
-    expect(result).toEqual(newApp)
-  })
-
   it('creates a user application by prompting the user for a name', async () => {
     const newApp = {
       id: 'default-app',
@@ -129,6 +81,7 @@ describe('getOrCreateUserApplication', () => {
       urlType: 'internal',
     }
     mockClientRequest.mockResolvedValueOnce(null) // Simulate no existing app
+    mockClientRequest.mockResolvedValueOnce([]) // Simulate no list of deployments
     ;(mockPrompt.single as jest.Mock<any>).mockImplementationOnce(
       async ({validate}: Parameters<CliCommandContext['prompt']['single']>[0]) => {
         // Simulate user input and validation
@@ -150,6 +103,93 @@ describe('getOrCreateUserApplication', () => {
         message: 'Studio hostname (<value>.sanity.studio):',
       }),
     )
+    expect(result).toEqual(newApp)
+  })
+
+  it('allows user to select a user application from a list', async () => {
+    const existingApp = {
+      id: 'default-app',
+      appHost: 'default.sanity.studio',
+      urlType: 'internal',
+    }
+    mockClientRequest.mockResolvedValueOnce(null) // Simulate no existing app
+    mockClientRequest.mockResolvedValueOnce([existingApp]) // Simulate no list of deployments
+    ;(mockPrompt.single as jest.Mock<any>).mockImplementationOnce(async ({choices}: any) => {
+      // Simulate user input
+      return Promise.resolve(choices[2].value)
+    })
+
+    const result = await getOrCreateUserApplication({
+      client: mockClient,
+      context,
+      spinner: mockSpinner,
+    })
+
+    expect(mockPrompt.single).toHaveBeenCalledWith(
+      expect.objectContaining({
+        choices: expect.arrayContaining([expect.objectContaining({name: 'default.sanity.studio'})]),
+      }),
+    )
+    expect(result).toEqual(existingApp)
+  })
+})
+
+describe('getOrCreateUserApplicationFromConfig', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('gets an existing user application if a `studioHost` is provided in the config', async () => {
+    mockClientRequest.mockResolvedValueOnce({
+      id: 'existing-app',
+      appHost: 'example.sanity.studio',
+      urlType: 'internal',
+    })
+
+    const result = await getOrCreateUserApplicationFromConfig({
+      client: mockClient,
+      spinner: mockSpinner,
+      context,
+      appHost: 'example',
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledWith({
+      uri: '/user-applications',
+      query: {appHost: 'example'},
+    })
+    expect(result).toEqual({
+      id: 'existing-app',
+      urlType: 'internal',
+      appHost: 'example.sanity.studio',
+    })
+  })
+
+  it('creates a user application using `studioHost` if provided in the config', async () => {
+    const newApp = {
+      id: 'new-app',
+      appHost: 'newhost.sanity.studio',
+      urlType: 'internal',
+    }
+    mockClientRequest.mockResolvedValueOnce(null) // Simulate no existing app
+    mockClientRequest.mockResolvedValueOnce(newApp)
+
+    const result = await getOrCreateUserApplicationFromConfig({
+      client: mockClient,
+      spinner: mockSpinner,
+      context,
+      appHost: 'newhost',
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledTimes(2)
+    expect(mockClientRequest).toHaveBeenNthCalledWith(1, {
+      uri: '/user-applications',
+      query: {appHost: 'newhost'},
+    })
+    expect(mockClientRequest).toHaveBeenNthCalledWith(2, {
+      uri: '/user-applications',
+      method: 'POST',
+      body: {appHost: 'newhost', urlType: 'internal'},
+    })
     expect(result).toEqual(newApp)
   })
 })
