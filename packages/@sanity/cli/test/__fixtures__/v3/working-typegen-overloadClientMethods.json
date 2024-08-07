@@ -1,0 +1,5 @@
+{
+  "schema": "./working-schema.json",
+  "generates": "./out/types.ts",
+  "overloadClientMethods": true
+}

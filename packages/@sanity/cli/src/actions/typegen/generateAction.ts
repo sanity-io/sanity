@@ -3,7 +3,7 @@ import {dirname, join} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {readConfig} from '@sanity/codegen'
-import prettier from 'prettier'
+import {format as prettierFormat, resolveConfig as resolvePrettierConfig} from 'prettier'
 
 import {type CliCommandArguments, type CliCommandContext} from '../../types'
 import {getCliWorkerPath} from '../../util/cliWorker'
@@ -61,13 +61,6 @@ export default async function typegenGenerateAction(
   const outputPath = join(process.cwd(), codegenConfig.generates)
   const outputDir = dirname(outputPath)
   await mkdir(outputDir, {recursive: true})
-
-  const prettierConfig = codegenConfig.formatGeneratedCode
-    ? await prettier.resolveConfig(outputPath).catch((err) => {
-        output.warn(`Failed to load prettier config: ${err.message}`)
-        return null
-      })
-    : null
   const workerPath = await getCliWorkerPath('typegenGenerate')
 
   const spinner = output.spinner({}).start('Generating types')
@@ -78,7 +71,6 @@ export default async function typegenGenerateAction(
       schemaPath: codegenConfig.schema,
       searchPath: codegenConfig.path,
       overloadClientMethods: codegenConfig.overloadClientMethods,
-      prettierConfig,
     } satisfies TypegenGenerateTypesWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,
@@ -123,6 +115,14 @@ export default async function typegenGenerateAction(
         return
       }
 
+      if (msg.type === 'typemap') {
+        let typeMapStr = `// Query TypeMap\n`
+        typeMapStr += msg.typeMap
+        typeFile.write(typeMapStr)
+        stats.size += Buffer.byteLength(typeMapStr)
+        return
+      }
+
       let fileTypeString = `// Source: ${msg.filename}\n`
 
       if (msg.type === 'schema') {
@@ -143,26 +143,47 @@ export default async function typegenGenerateAction(
           emptyUnionTypeNodesGenerated,
         } of msg.types) {
           fileTypeString += `// Variable: ${queryName}\n`
-          fileTypeString += `// Query: ${query.replace(/(\r\n|\n|\r)/gm, '')}\n`
+          fileTypeString += `// Query: ${query.replace(/(\r\n|\n|\r)/gm, '').trim()}\n`
           fileTypeString += type
           stats.queriesCount++
           stats.typeNodesGenerated += typeNodesGenerated
           stats.unknownTypeNodesGenerated += unknownTypeNodesGenerated
           stats.emptyUnionTypeNodesGenerated += emptyUnionTypeNodesGenerated
         }
-        typeFile.write(fileTypeString)
+        typeFile.write(`${fileTypeString}\n`)
         stats.size += Buffer.byteLength(fileTypeString)
-      }
-
-      if (msg.type === 'typemap') {
-        typeFile.write(msg.typeMap)
-        stats.size += Buffer.byteLength(msg.typeMap)
       }
     })
     worker.addListener('error', reject)
   })
 
-  typeFile.close()
+  await typeFile.close()
+
+  const prettierConfig = codegenConfig.formatGeneratedCode
+    ? await resolvePrettierConfig(outputPath).catch((err) => {
+        output.warn(`Failed to load prettier config: ${err.message}`)
+        return null
+      })
+    : null
+
+  if (prettierConfig) {
+    const formatFile = await open(outputPath, constants.O_RDWR)
+    try {
+      const code = await formatFile.readFile()
+      const formattedCode = await prettierFormat(code.toString(), {
+        ...prettierConfig,
+        parser: 'typescript' as const,
+      })
+      await formatFile.truncate()
+      await formatFile.write(formattedCode, 0)
+
+      spinner.info('Formatted generated types with Prettier')
+    } catch (err) {
+      output.warn(`Failed to format generated types with Prettier: ${err.message}`)
+    } finally {
+      await formatFile.close()
+    }
+  }
 
   trace.log({
     outputSize: stats.size,
