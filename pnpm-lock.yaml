@@ -1426,8 +1426,8 @@ importers:
         specifier: 3.53.0
         version: link:../@sanity/schema
       '@sanity/styled-components':
-        specifier: ^6.1.12
-        version: 6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^6.1.13
+        version: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sanity/telemetry':
         specifier: ^0.7.7
         version: 0.7.9(react@18.3.1)
@@ -4425,8 +4425,8 @@ packages:
       '@sanity/client': ^6.21.1
       react: ^18.3 || >=19.0.0-rc
 
-  '@sanity/styled-components@6.1.12':
-    resolution: {integrity: sha512-zSFZMSXo8BispElGJaf1w4DiOCpjuocXKTWrpwHpgp3IS3l3Ndxr9Fjkd4aRkaHDC8L2b3d1sYYZyRUnSq+biw==}
+  '@sanity/styled-components@6.1.13':
+    resolution: {integrity: sha512-48AAgyu3UgogIMKulu4Entt9/6cA/6nCyxARQ1bBhuDKLyIS2XWCHAbesDKHb4mWzD36x6BBUdGsCyhc82j+Ow==}
     engines: {node: '>= 16'}
     peerDependencies:
       react: '>= 16.8.0'
@@ -14321,7 +14321,7 @@ snapshots:
       '@sanity/core-loader': 1.6.21(@sanity/client@6.21.1)
       react: 18.3.1
 
-  '@sanity/styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@sanity/styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@emotion/is-prop-valid': 1.2.2
       '@emotion/unitless': 0.8.1
