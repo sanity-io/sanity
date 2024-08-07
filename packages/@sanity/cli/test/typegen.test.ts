@@ -69,4 +69,24 @@ describeCliTest('CLI: `sanity typegen`', () => {
     expect(types.toString()).toContain(`'person'`)
     expect(types.toString()).toMatchSnapshot()
   })
+
+  test('sanity typegen generate: with overloadClientMethods', async () => {
+    // Write a prettier config to the output folder, with single quotes. The defeault is double quotes.
+    await writeFile(`${studiosPath}/v3/out/.prettierrc`, '{\n  "singleQuote": true\n}\n')
+    const result = await runSanityCmdCommand('v3', [
+      'typegen',
+      'generate',
+      '--config-path',
+      'working-typegen-overloadClientMethods.json',
+    ])
+
+    expect(result.code).toBe(0)
+    expect(result.stderr).toContain(
+      'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
+    )
+
+    const types = await readFile(`${studiosPath}/v3/out/types.ts`)
+    expect(types.toString()).toContain(`'person'`)
+    expect(types.toString()).toMatchSnapshot()
+  })
 })
