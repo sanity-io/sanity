@@ -6,6 +6,15 @@ import {BundlesMetadataContext} from 'sanity/_singletons'
 import {type MetadataWrapper} from '../../store/bundles/createBundlesMetadataAggregator'
 import {type BundlesMetadata} from '../tool/useBundlesMetadata'
 
+/**
+ * @internal
+ */
+export interface BundlesMetadataContextValue {
+  state: MetadataWrapper
+  addBundleSlugsToListener: (slugs: string[]) => void
+  removeBundleSlugsFromListener: (slugs: string[]) => void
+}
+
 const DEFAULT_METADATA_STATE: MetadataWrapper = {
   data: null,
   error: null,
@@ -91,7 +100,7 @@ export const BundlesMetadataProvider = ({children}: {children: React.ReactNode})
   return <BundlesMetadataProviderInner>{children}</BundlesMetadataProviderInner>
 }
 
-export const useBundlesMetadataProvider = () => {
+export const useBundlesMetadataProvider = (): BundlesMetadataContextValue => {
   const contextValue = useContext(BundlesMetadataContext)
 
   return (
