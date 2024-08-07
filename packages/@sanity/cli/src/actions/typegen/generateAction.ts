@@ -115,6 +115,14 @@ export default async function typegenGenerateAction(
         return
       }
 
+      if (msg.type === 'typemap') {
+        let typeMapStr = `// Query TypeMap\n`
+        typeMapStr += msg.typeMap
+        typeFile.write(typeMapStr)
+        stats.size += Buffer.byteLength(typeMapStr)
+        return
+      }
+
       let fileTypeString = `// Source: ${msg.filename}\n`
 
       if (msg.type === 'schema') {
@@ -171,7 +179,7 @@ export default async function typegenGenerateAction(
 
       spinner.info('Formatted generated types with Prettier')
     } catch (err) {
-      output.warn(`Failed to format generated types with Prettier: ${err?.message}`)
+      output.warn(`Failed to format generated types with Prettier: ${err.message}`)
     } finally {
       await formatFile.close()
     }

@@ -50,7 +50,6 @@ export type TypegenGenerateTypesWorkerMessage =
     }
   | {
       type: 'typemap'
-      filename: string
       typeMap: string
     }
   | {
@@ -76,7 +75,7 @@ async function main() {
 
   parentPort?.postMessage({
     type: 'schema',
-    schema: schemaTypes,
+    schema: `${schemaTypes.trim()}\n`,
     filename: 'schema.json',
     length: schema.length,
   } satisfies TypegenGenerateTypesWorkerMessage)
@@ -85,6 +84,8 @@ async function main() {
     path: opts.searchPath,
     resolver,
   })
+
+  const allQueries = []
 
   for await (const result of queries) {
     if (result.type === 'error') {
@@ -149,14 +150,17 @@ async function main() {
       } satisfies TypegenGenerateTypesWorkerMessage)
     }
 
-    if (fileQueryTypes.length > 0 && opts.overloadClientMethods) {
-      const typeMap = typeGenerator.generateQueryMap(fileQueryTypes)
-      parentPort?.postMessage({
-        type: 'typemap',
-        filename: result.filename,
-        typeMap,
-      } satisfies TypegenGenerateTypesWorkerMessage)
+    if (fileQueryTypes.length > 0) {
+      allQueries.push(...fileQueryTypes)
     }
+  }
+
+  if (opts.overloadClientMethods && allQueries.length > 0) {
+    const typeMap = `${typeGenerator.generateQueryMap(allQueries).trim()}\n`
+    parentPort?.postMessage({
+      type: 'typemap',
+      typeMap,
+    } satisfies TypegenGenerateTypesWorkerMessage)
   }
 
   parentPort?.postMessage({
