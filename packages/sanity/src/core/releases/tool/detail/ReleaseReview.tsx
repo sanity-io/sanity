@@ -2,9 +2,11 @@ import {SearchIcon} from '@sanity/icons'
 import {Box, Container, Flex, Text, TextInput} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import {type RefObject, useCallback, useMemo, useState} from 'react'
+import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../../store/bundles/types'
+import {releasesLocaleNamespace} from '../../i18n'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
 import {DocumentDiffContainer} from './review/DocumentDiffContainer'
 import {type DocumentInBundleResult} from './useBundleDocuments'
@@ -66,18 +68,19 @@ export function ReleaseReview({
     overscan: 4,
   })
   const items = virtualizer.getVirtualItems()
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   return (
     <Flex direction="column" gap={5} paddingY={6}>
       <Flex justify="space-between" align="center">
         <Text size={1} weight="semibold">
-          Changes to published documents
+          {t('release.changes-published-docs.title')}
         </Text>
         <InputContainer width={0}>
           <TextInput
             fontSize={1}
             icon={SearchIcon}
-            placeholder="Search documents"
+            placeholder={t('release.search-documents-placeholder')}
             radius={3}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.currentTarget.value)}
