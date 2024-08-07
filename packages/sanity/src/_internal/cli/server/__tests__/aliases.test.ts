@@ -77,6 +77,13 @@ describe('getAliases', () => {
       [],
     )
 
+    expectedAliases.push({
+      find: 'styled-components',
+      replacement: expect.stringContaining(
+        'node_modules/@sanity/styled-components',
+      ) as unknown as string,
+    })
+
     expect(aliases).toEqual(expectedAliases)
   })
 

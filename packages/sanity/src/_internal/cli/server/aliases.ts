@@ -2,6 +2,7 @@ import path from 'node:path'
 
 import {escapeRegExp} from 'lodash'
 import resolve from 'resolve.exports'
+import resolveFrom from 'resolve-from'
 import {type Alias, type AliasOptions} from 'vite'
 
 import {type SanityMonorepo} from './sanityMonorepo'
@@ -89,6 +90,16 @@ export function getAliases({monorepo, sanityPkgPath}: GetAliasesOptions): AliasO
     const pkg = require(sanityPkgPath)
     const dirname = path.dirname(sanityPkgPath)
 
+    // try to resolve our patched styled-components fork
+    let patchStyledComponents
+    try {
+      patchStyledComponents = path.dirname(
+        resolveFrom(dirname, '@sanity/styled-components/package.json'),
+      )
+    } catch {
+      // intentionally do nothing if it isn't resolved
+    }
+
     // Resolve the entry points for each allowed specifier
     const unifiedSanityAliases = browserCompatibleSanityPackageSpecifiers.reduce<Alias[]>(
       (acc, next) => {
@@ -105,6 +116,13 @@ export function getAliases({monorepo, sanityPkgPath}: GetAliasesOptions): AliasO
       },
       [],
     )
+
+    if (patchStyledComponents) {
+      unifiedSanityAliases.push({
+        find: 'styled-components',
+        replacement: patchStyledComponents,
+      })
+    }
 
     // Return the aliases configuration for external projects
     return unifiedSanityAliases
