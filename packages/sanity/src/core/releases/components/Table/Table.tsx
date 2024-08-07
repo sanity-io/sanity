@@ -1,13 +1,12 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {get} from 'lodash'
 import {Fragment, useMemo} from 'react'
-import {useTableContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {TableHeader} from './TableHeader'
-import {TableProvider, type TableSort} from './TableProvider'
+import {TableProvider, type TableSort, useTableContext} from './TableProvider'
 import {type Column} from './types'
 
 type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extends undefined
