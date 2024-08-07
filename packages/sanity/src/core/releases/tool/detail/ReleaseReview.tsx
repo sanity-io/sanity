@@ -24,6 +24,9 @@ const VirtualizerTrack = styled.div`
   width: 100%;
 `
 
+// Estimation of a document with 1 change
+const REVIEW_ITEM_ESTIMATED_HEIGHT = 140
+
 export function ReleaseReview({
   documents,
   release,
@@ -59,8 +62,7 @@ export function ReleaseReview({
   const virtualizer = useVirtualizer({
     count: filteredList.length,
     getScrollElement: () => scrollContainerRef.current,
-    // Estimation of a document with 1 change
-    estimateSize: () => 140,
+    estimateSize: () => REVIEW_ITEM_ESTIMATED_HEIGHT,
     overscan: 4,
   })
   const items = virtualizer.getVirtualItems()
