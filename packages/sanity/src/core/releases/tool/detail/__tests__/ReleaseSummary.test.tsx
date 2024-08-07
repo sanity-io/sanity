@@ -107,6 +107,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
       router={route.create('/test', [route.intents('/intent')])}
     >
       <ReleaseSummary
+        scrollContainerRef={{current: null}}
         documents={releaseDocuments}
         documentsHistory={{
           '123': {
