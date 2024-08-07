@@ -12,6 +12,7 @@ import {
   useClickOutside,
 } from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -46,6 +47,8 @@ export function BundleIconEditorPicker(props: {
 
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLDivElement | null>(null)
+
+  const {t} = useTranslation()
 
   const handleClickOutside = useCallback(() => {
     setOpen(false)
@@ -92,7 +95,7 @@ export function BundleIconEditorPicker(props: {
                 icon={SearchIcon}
                 onChange={handleIconSearchQueryChange}
                 padding={2}
-                placeholder="Search icons"
+                placeholder={t('bundle.form.search-icon')}
                 space={2}
                 value={iconSearchQuery}
               />
