@@ -10,6 +10,8 @@ import {
 } from '../schemaDefinition'
 import {type BaseSchemaDefinition, type SearchConfiguration, type TitledListValue} from './common'
 
+export type {InsertMenuOptions}
+
 /** @public */
 export interface ArrayOptions<V = unknown> extends SearchConfiguration {
   list?: TitledListValue<V>[] | V[]

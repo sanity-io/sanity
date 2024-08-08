@@ -145,6 +145,7 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
     ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
     const textSearchParams: TextSearchParams = {
+      perspective: searchOptions.perspective,
       query: {
         string: getQueryString(searchTerms.query, searchOptions),
       },
@@ -156,7 +157,9 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       },
       types: getDocumentTypeConfiguration(searchOptions, searchTerms),
       ...(searchOptions.sort ? {order: getOrder(searchOptions.sort)} : {}),
-      includeAttributes: ['_id', '_type'],
+      // Note: Text Search API does not currently expose fields containing an empty object, so
+      // we're not yet able to retrieve `_version` here.
+      includeAttributes: ['_id', '_type', '_version'],
       fromCursor: searchOptions.cursor,
       limit: searchOptions.limit ?? DEFAULT_LIMIT,
     }

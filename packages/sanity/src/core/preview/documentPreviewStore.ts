@@ -1,14 +1,22 @@
-import {type SanityClient} from '@sanity/client'
+import {
+  type MutationEvent,
+  type QueryParams,
+  type SanityClient,
+  type WelcomeEvent,
+} from '@sanity/client'
 import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
-import {type Observable} from 'rxjs'
-import {distinctUntilChanged, map} from 'rxjs/operators'
+import {combineLatest, type Observable} from 'rxjs'
+import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
 import {isRecord} from '../util'
-import {create_preview_availability} from './availability'
+import {createPreviewAvailabilityObserver} from './availability'
+import {createGlobalListener} from './createGlobalListener'
+import {createObserveDocument} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {create_preview_documentPair} from './documentPair'
-import {create_preview_observeFields} from './observeFields'
+import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './liveDocumentIdSet'
+import {createObserveFields} from './observeFields'
 import {
   type ApiConfig,
   type DraftsModelDocument,
@@ -26,11 +34,15 @@ import {
 export type ObserveForPreviewFn = (
   value: Previewable,
   type: PreviewableType,
-  viewOptions?: PrepareViewOptions,
-  apiConfig?: ApiConfig,
+  options?: {viewOptions?: PrepareViewOptions; apiConfig?: ApiConfig; perspective?: string},
 ) => Observable<PreparedSnapshot>
 
 /**
+ * The document preview store supports subscribing to content for previewing purposes.
+ * Documents observed by this store will be kept in sync and receive real-time updates from all collaborators,
+ * but has no support for optimistic updates, so any local edits will require a server round-trip before becoming visible,
+ * which means this store is less suitable for real-time editing scenarios.
+ *
  * @hidden
  * @beta */
 export interface DocumentPreviewStore {
@@ -51,6 +63,43 @@ export interface DocumentPreviewStore {
     id: string,
     paths: PreviewPath[],
   ) => Observable<DraftsModelDocument<T>>
+
+  /**
+   * Observes a set of document IDs that matches the given groq-filter. The document ids are returned in ascending order and will update in real-time
+   * Whenever a document appears or disappears from the set, a new array with the updated set of IDs will be pushed to subscribers.
+   * The query is performed once, initially, and thereafter the set of ids are patched based on the `appear` and `disappear`
+   * transitions on the received listener events.
+   * This provides a lightweight way of subscribing to a list of ids for simple cases where you just want to subscribe to a set of documents ids
+   * that matches a particular filter.
+   * @hidden
+   * @beta
+   * @param filter - A groq filter to use for the document set
+   * @param params - Parameters to use with the groq filter
+   * @param options - Options for the observer
+   */
+  unstable_observeDocumentIdSet: (
+    filter: string,
+    params?: QueryParams,
+    options?: {
+      /**
+       * Where to insert new items into the set. Defaults to 'sorted' which is based on the lexicographic order of the id
+       */
+      insert?: 'sorted' | 'prepend' | 'append'
+    },
+  ) => Observable<DocumentIdSetObserverState>
+
+  /**
+   * Observe a complete document with the given ID
+   * @hidden
+   * @beta
+   */
+  unstable_observeDocument: (id: string) => Observable<SanityDocument | undefined>
+  /**
+   * Observe a list of complete documents with the given IDs
+   * @hidden
+   * @beta
+   */
+  unstable_observeDocuments: (ids: string[]) => Observable<(SanityDocument | undefined)[]>
 }
 
 /** @internal */
@@ -63,18 +112,19 @@ export function createDocumentPreviewStore({
   client,
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
   const versionedClient = client.withConfig({apiVersion: '1'})
+  const globalListener = createGlobalListener(versionedClient).pipe(
+    filter(
+      (event): event is MutationEvent | WelcomeEvent =>
+        // ignore reconnect events for now until we know that downstream consumers can handle them
+        event.type === 'mutation' || event.type === 'welcome',
+    ),
+  )
+  const invalidationChannel = globalListener.pipe(
+    map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
+  )
 
-  // NOTE: this is workaroudn for circumventing a circular dependency between `observePaths` and
-  // `observeFields`.
-  // eslint-disable-next-line camelcase
-  const __proxy_observePaths: ObservePathsFn = (value, paths, apiConfig) => {
-    return observePaths(value, paths, apiConfig)
-  }
-
-  const {observeFields} = create_preview_observeFields({
-    observePaths: __proxy_observePaths,
-    versionedClient,
-  })
+  const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
+  const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
 
   const {observePaths} = createPathObserver({observeFields})
 
@@ -82,27 +132,34 @@ export function createDocumentPreviewStore({
     id: string,
     apiConfig?: ApiConfig,
   ): Observable<string | undefined> {
-    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig).pipe(
+    return observePaths({_type: 'reference', _ref: id}, ['_type', '_version'], apiConfig).pipe(
       map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
       distinctUntilChanged(),
     )
   }
 
-  // const {createPreviewObserver} = create_preview_createPreviewObserver(observeDocumentTypeFromId)
+  const observeDocumentIdSet = createDocumentIdSetObserver(
+    versionedClient.withConfig({apiVersion: '2024-07-22'}),
+  )
+
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
-  const {observeDocumentPairAvailability} = create_preview_availability(
+  const {observeDocumentPairAvailability} = createPreviewAvailabilityObserver(
     versionedClient,
     observePaths,
   )
   const {observePathsDocumentPair} = create_preview_documentPair(versionedClient, observePaths)
 
   // @todo: explain why the API is like this now, and that it should not be like this in the future!
+
   return {
     observePaths,
     observeForPreview,
     observeDocumentTypeFromId,
 
-    // eslint-disable-next-line camelcase
+    unstable_observeDocumentIdSet: observeDocumentIdSet,
+    unstable_observeDocument: observeDocument,
+    unstable_observeDocuments: (ids: string[]) =>
+      combineLatest(ids.map((id) => observeDocument(id))),
     unstable_observeDocumentPairAvailability: observeDocumentPairAvailability,
     unstable_observePathsDocumentPair: observePathsDocumentPair,
   }

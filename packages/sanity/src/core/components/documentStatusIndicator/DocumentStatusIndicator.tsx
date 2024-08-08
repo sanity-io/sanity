@@ -30,8 +30,8 @@ const Root = styled(Text)`
  * @internal
  */
 export function DocumentStatusIndicator({draft, published}: DocumentStatusProps) {
-  const $draft = !!draft
-  const $published = !!published
+  const $draft = Boolean(draft)
+  const $published = Boolean(published)
 
   const status = useMemo(() => {
     if ($draft && !$published) return 'unpublished'
@@ -45,6 +45,7 @@ export function DocumentStatusIndicator({draft, published}: DocumentStatusProps)
     return null
   }
 
+  // TODO: Remove debug `status[0]` output.
   return (
     <Root data-status={status} size={1}>
       <DotIcon />

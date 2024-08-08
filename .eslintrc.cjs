@@ -162,6 +162,16 @@ const config = {
       },
     },
 
+    // Ignore i18n in releases files. TODO: Remove this before moving releases to GA.
+    {
+      files: ['**/*/core/releases/**/*', '**/*/core/bundles/**/*'],
+      rules: {
+        'i18next/no-literal-string': 'off',
+        '@sanity/i18n/no-attribute-string-literals': 'off',
+        '@sanity/i18n/no-attribute-template-literals': 'off',
+      },
+    },
+
     // Files to disable i18n literals,
     {
       files: ['./**/*/__workshop__/**/*', './dev/**/*', './examples/**/*', '**/*/debug/**/*'],

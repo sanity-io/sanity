@@ -11,6 +11,8 @@ import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths
 import {omit, throttle} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
+import {useObservable} from 'react-rx'
+import {map} from 'rxjs'
 import {
   type DocumentFieldAction,
   type DocumentInspector,
@@ -27,7 +29,9 @@ import {
   useConnectionState,
   useCopyPaste,
   useDocumentOperation,
+  useDocumentStore,
   useDocumentValuePermissions,
+  useDocumentVersions,
   useEditState,
   useFormState,
   useInitialValue,
@@ -42,7 +46,10 @@ import {
   useValidationStatus,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
+import {useRouter} from 'sanity/router'
 
+// eslint-disable-next-line
+import {type DraftsModelDocumentAvailability} from '../../../core/preview'
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
@@ -77,23 +84,47 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       inspectors: inspectorsResolver,
     },
   } = useSource()
+  const {stickyParams} = useRouter()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
   const {features} = useStructureTool()
   const {push: pushToast} = useToast()
+  const documentStore = useDocumentStore()
   const {
     options,
     menuItemGroups = DEFAULT_MENU_ITEM_GROUPS,
     title = null,
     views: viewsProp = [],
   } = pane
+  const perspective = stickyParams.perspective
+  const bundle = perspective?.startsWith('bundle.') ? perspective.split('bundle.').at(1) : undefined
   const paneOptions = useUnique(options)
   const documentIdRaw = paneOptions.id
-  const documentId = getPublishedId(documentIdRaw)
+  const [documentId, setDocumentId] = useState<string>(
+    bundle ? [bundle, getPublishedId(documentIdRaw)].join('.') : getPublishedId(documentIdRaw),
+  )
+
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
   const panePayload = useUnique(paneRouter.payload)
+
+  const versionExists$ = useMemo(
+    () =>
+      documentStore
+        .listenQuery(
+          '*[_id == $versionId][0]._id',
+          {
+            versionId: [bundle, getPublishedId(documentIdRaw)].join('.'),
+          },
+          {},
+        )
+        .pipe(map((id) => id !== null)),
+    [documentStore, documentIdRaw, bundle],
+  )
+
+  const versionExists = useObservable(versionExists$)
+
   const {templateName, templateParams} = useMemo(
     () =>
       getInitialValueTemplateOpts(templates, {
@@ -111,13 +142,45 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     templateName,
     templateParams,
   })
+
+  const [liveEdit, setLiveEdit] = useState<boolean>(false)
   const initialValue = useUnique(initialValueRaw)
   const {patch} = useDocumentOperation(documentId, documentType)
-  const editState = useEditState(documentId, documentType)
+  const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
+  const editState = useEditState(documentId, documentType, 'default')
   const {validation: validationRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
-  const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
-  const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
+  const {data: documentVersions} = useDocumentVersions({documentId})
+
+  // When a bundle is checked out and the document being viewed either comes into existence or is
+  // removed from the bundle, switch to the version or the default document accordingly.
+  useEffect(() => {
+    setDocumentId(
+      bundle && versionExists
+        ? [bundle, getPublishedId(documentIdRaw)].join('.')
+        : getPublishedId(documentIdRaw),
+    )
+  }, [bundle, versionExists, documentIdRaw])
+
+  // When a bundle is checked out and the document being viewed exists in that bundle, enable
+  // live editing.
+  useEffect(() => {
+    const isEnabled = Boolean(schemaType?.liveEdit || versionExists)
+
+    setLiveEdit(isEnabled)
+    ;(globalThis as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED_LIVE_EDIT_OVERRIDE =
+      isEnabled
+
+    return () => {
+      ;(globalThis as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED_LIVE_EDIT_OVERRIDE =
+        undefined
+    }
+  }, [schemaType?.liveEdit, versionExists])
+
+  const value: SanityDocumentLike =
+    (perspective === 'published' && !bundle
+      ? editState.published || editState.draft
+      : editState?.draft || editState?.published) || initialValue.value
   const [isDeleting, setIsDeleting] = useState(false)
 
   // Resolve document actions
@@ -149,21 +212,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
   const [timelineError, setTimelineError] = useState<Error | null>(null)
-
-  /**
-   * The `preferLatestPublished` parameter can be used to "force" viewing the revision
-   * of the last published document. This is not a permanent function, and will likely
-   * be removed when we move to a more robust way of viewing "releases".
-   */
-  useEffect(() => {
-    if (params.prefersLatestPublished && editState.published) {
-      setPaneParams({
-        //ensure we only run on first load
-        ...omit(params, 'prefersLatestPublished'),
-        rev: `${editState.published._updatedAt}/${editState.published._rev}`,
-      })
-    }
-  }, [editState, setPaneParams, params])
 
   /**
    * Create an intermediate store which handles document Timeline + TimelineController
@@ -265,7 +313,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
    * a timeline revision in this instance will display an error localized to the popover itself.
    */
   const ready =
-    connectionState === 'connected' && editState.ready && (timelineReady || !!timelineError)
+    connectionState === 'connected' &&
+    editState.ready &&
+    (timelineReady || !!timelineError) &&
+    typeof versionExists === 'boolean'
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
     () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
@@ -484,7 +535,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const liveEdit = Boolean(schemaType?.liveEdit)
   const docId = value._id ? value._id : 'dummy-id'
   const docPermissionsInput = useMemo(() => {
     return {
@@ -508,6 +558,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const isLocked = editState.transactionSyncLock?.enabled
 
     return (
+      (!!perspective && !bundle) ||
       !ready ||
       revTime !== null ||
       hasNoPermission ||
@@ -519,16 +570,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isDeleted
     )
   }, [
-    connectionState,
-    editState.transactionSyncLock,
-    isNonExistent,
-    isDeleted,
-    isDeleting,
     isPermissionsLoading,
     permissions?.granted,
+    schemaType,
+    isNonExistent,
+    connectionState,
+    editState.transactionSyncLock?.enabled,
+    perspective,
     ready,
     revTime,
-    schemaType,
+    isDeleting,
+    isDeleted,
+    bundle,
   ])
 
   const formState = useFormState(schemaType!, {
@@ -624,6 +677,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentId,
       documentIdRaw,
       documentType,
+      documentVersions,
       editState,
       fieldActions,
       focusPath,
@@ -685,6 +739,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentId,
       documentIdRaw,
       documentType,
+      documentVersions,
       editState,
       fieldActions,
       focusPath,

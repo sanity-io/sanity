@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import {useRouter} from 'sanity/router'
 
 import {type PreviewProps} from '../../components'
 import {type RenderPreviewCallbackProps} from '../../form'
@@ -38,6 +39,7 @@ export function PreviewLoader(
     ...restProps
   } = props
 
+  const perspective = useRouter().stickyParams.perspective
   const {t} = useTranslation()
   const [element, setElement] = useState<HTMLDivElement | null>(null)
 
@@ -51,6 +53,7 @@ export function PreviewLoader(
   const preview = useValuePreview({
     enabled: skipVisibilityCheck || isVisible,
     schemaType,
+    perspective,
     value,
   })
 

@@ -6,7 +6,7 @@ import {type FileOptions, type FileValue} from './file'
 import {type ObjectDefinition} from './object'
 
 /** @public */
-export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'location'
+export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'image' | 'location'
 
 /** @public */
 export interface ImageOptions extends FileOptions {

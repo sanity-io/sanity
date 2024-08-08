@@ -1,6 +1,6 @@
 {
   "name": "embedded-studio",
-  "version": "3.52.2",
+  "version": "3.53.0",
   "private": true,
   "scripts": {
     "build": "tsc && vite build",
@@ -18,7 +18,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
-    "typescript": "5.5.3",
+    "typescript": "5.5.4",
     "vite": "^4.5.3"
   }
 }

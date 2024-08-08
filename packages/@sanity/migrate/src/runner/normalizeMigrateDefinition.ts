@@ -54,7 +54,7 @@ function normalizeMutation(
     return change.flatMap((ch) => normalizeMutation(ch))
   }
   if (isRawMutation(change)) {
-    return SanityEncoder.decode([change] as any) as Mutation[]
+    return SanityEncoder.decodeAll([change] as any) as Mutation[]
   }
   return [change]
 }
@@ -128,7 +128,7 @@ function normalizeDocumentMutation(
     return change.flatMap((ch) => normalizeDocumentMutation(documentId, ch))
   }
   if (isRawMutation(change)) {
-    return SanityEncoder.decode([change] as any)[0] as Mutation
+    return SanityEncoder.decodeAll([change] as any)[0] as Mutation
   }
   if (isTransaction(change)) {
     return change
@@ -149,7 +149,7 @@ function normalizeNodeMutation(
     return change.flatMap((ch) => normalizeNodeMutation(path, ch))
   }
   if (isRawMutation(change)) {
-    return SanityEncoder.decode([change] as any)[0] as Mutation
+    return SanityEncoder.decodeAll([change] as any)[0] as Mutation
   }
 
   if (isNodePatch(change)) {

@@ -20,6 +20,20 @@ import groq from 'groq'
 const query = groq`*[_type == 'products'][0...10]`
 ```
 
+## Automatic type inference
+
+If you are using `@sanity/codegen` you can use `defineQuery` instead of `groq` to
+get type inference out of the box:
+
+```ts
+import {defineQuery} from 'groq'
+
+const query = defineQuery(`*[_type == 'products'][0...10]`)
+```
+
+In the future we might merge `defineQuery` with `groq`, but this is currently [not
+100% supported by TypeScript](https://github.com/microsoft/TypeScript/issues/33304).
+
 ## What is Sanity? What is GROQ?
 
 [Sanity](https://www.sanity.io) is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches.

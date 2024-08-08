@@ -1,3 +1,13 @@
+export {
+  BundleActions,
+  BundleBadge,
+  BundleMenu,
+  getBundleSlug,
+  getDocumentIsInPerspective,
+  LATEST,
+  useDocumentVersions,
+  usePerspective,
+} from './bundles'
 export * from './changeIndicators'
 export {
   CommentInput,

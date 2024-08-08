@@ -3,6 +3,7 @@ import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/
 import {type ReactNode} from 'react'
 
 import {
+  AddonDatasetProvider,
   LocaleProviderBase,
   type LocaleResourceBundle,
   ResourceCacheProvider,
@@ -15,7 +16,7 @@ import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
-interface TestProviderOptions {
+export interface TestProviderOptions {
   config?: SingleWorkspace
   client?: SanityClient
   resources?: LocaleResourceBundle[]
@@ -46,7 +47,9 @@ export async function createTestProvider({
             <LayerProvider>
               <WorkspaceProvider workspace={workspace}>
                 <SourceProvider source={workspace.unstable_sources[0]}>
-                  <ResourceCacheProvider>{children}</ResourceCacheProvider>
+                  <ResourceCacheProvider>
+                    <AddonDatasetProvider>{children}</AddonDatasetProvider>
+                  </ResourceCacheProvider>
                 </SourceProvider>
               </WorkspaceProvider>
             </LayerProvider>

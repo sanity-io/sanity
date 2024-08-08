@@ -22,16 +22,20 @@ export function useFocusBlock(): PortableTextBlock | undefined {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => PortableTextEditor.focusBlock(editor), [editor, selection]) // selection must be an additional dep here
+  return useMemo(
+    () => (selection ? PortableTextEditor.focusBlock(editor) : undefined),
+    [editor, selection],
+  )
 }
 
 export function useFocusChild(): PortableTextChild | undefined {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => PortableTextEditor.focusChild(editor), [editor, selection]) // selection must be an additional dep here
+  return useMemo(
+    () => (selection ? PortableTextEditor.focusChild(editor) : undefined),
+    [editor, selection],
+  )
 }
 
 export function useActionGroups({
@@ -75,29 +79,23 @@ export function useActiveActionKeys({
   const selection = usePortableTextEditorSelection()
 
   return useUnique(
-    useMemo(
-      () => {
-        return actions
-          .filter((a) => {
-            if (a.type === 'annotation') {
-              return PortableTextEditor.isAnnotationActive(editor, a.key)
-            }
+    useMemo(() => {
+      return selection
+        ? actions
+            .filter((a) => {
+              if (a.type === 'annotation') {
+                return PortableTextEditor.isAnnotationActive(editor, a.key)
+              }
 
-            if (a.type === 'listStyle') {
-              return PortableTextEditor.hasListStyle(editor, a.key)
-            }
+              if (a.type === 'listStyle') {
+                return PortableTextEditor.hasListStyle(editor, a.key)
+              }
 
-            return PortableTextEditor.isMarkActive(editor, a.key)
-          })
-          .map((a) => a.key)
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [
-        editor,
-        // This is needed so that active actions update as `selection` changes
-        selection,
-      ],
-    ),
+              return PortableTextEditor.isMarkActive(editor, a.key)
+            })
+            .map((a) => a.key)
+        : []
+    }, [actions, editor, selection]),
   )
 }
 
@@ -109,13 +107,12 @@ export function useActiveStyleKeys({items}: {items: BlockStyleItem[]}): string[]
   return useUnique(
     useMemo(
       () =>
-        items.filter((i) => PortableTextEditor.hasBlockStyle(editor, i.style)).map((i) => i.style),
-      //  eslint-disable-next-line react-hooks/exhaustive-deps
-      [
-        focusBlock,
-        // This is needed so that active styles update as `selection` changes
-        selection,
-      ],
+        focusBlock && selection
+          ? items
+              .filter((i) => PortableTextEditor.hasBlockStyle(editor, i.style))
+              .map((i) => i.style)
+          : [],
+      [editor, focusBlock, items, selection],
     ),
   )
 }

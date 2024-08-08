@@ -25,6 +25,7 @@ const INITIAL_STATE: QueryResult = {
 interface UseDocumentListOpts {
   apiVersion?: string
   filter: string
+  perspective?: string
   params: Record<string, unknown>
   searchQuery: string | null
   sortOrder?: SortOrder
@@ -50,7 +51,7 @@ const INITIAL_QUERY_RESULTS: QueryResult = {
  * @internal
  */
 export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
-  const {filter, params: paramsProp, sortOrder, searchQuery, apiVersion} = opts
+  const {filter, params: paramsProp, sortOrder, searchQuery, perspective, apiVersion} = opts
   const client = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
@@ -66,8 +67,13 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
   // Filter out published documents that have drafts to avoid duplicates in the list.
   const items = useMemo(
-    () => (documents ? removePublishedWithDrafts(documents) : EMPTY_ARRAY),
-    [documents],
+    () =>
+      documents
+        ? removePublishedWithDrafts(documents, {
+            bundlePerspective: (perspective ?? '').split('bundle.').at(1),
+          })
+        : EMPTY_ARRAY,
+    [documents, perspective],
   )
 
   // A state variable to keep track of whether we are currently lazy loading the list.
@@ -156,6 +162,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       limit,
       params: paramsProp,
       schema,
+      perspective,
       searchQuery: searchQuery || '',
       sort,
       staticTypeNames: typeNameFromFilter,
@@ -192,6 +199,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     filter,
     paramsProp,
     schema,
+    perspective,
     searchQuery,
     typeNameFromFilter,
     maxFieldDepth,

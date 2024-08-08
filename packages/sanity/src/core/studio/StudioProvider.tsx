@@ -62,6 +62,9 @@ export function StudioProvider({
   // mounted React component that is shared across embedded and standalone studios.
   errorReporter.initialize()
 
+  // eslint-disable-next-line no-warning-comments
+  /* TODO REMOVE VERSION PROVIDER ONCE STORES ARE SET UP */
+
   const _children = useMemo(
     () => (
       <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>

@@ -14,7 +14,8 @@ export type PublishedId = Opaque<string, 'publishedId'>
 
 /** @internal */
 export const DRAFTS_FOLDER = 'drafts'
-const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
+const PATH_SEPARATOR = '.'
+const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
 
 /**
  *
@@ -74,8 +75,16 @@ export function getDraftId(id: string): DraftId {
 }
 
 /** @internal */
-export function getPublishedId(id: string): PublishedId {
-  return (isDraftId(id) ? id.slice(DRAFTS_PREFIX.length) : id) as PublishedId
+export function getPublishedId(id: string, isVersion?: boolean): PublishedId {
+  if (isVersion) {
+    return id.split(PATH_SEPARATOR).slice(1).join(PATH_SEPARATOR) as PublishedId
+  }
+
+  if (isDraftId(id)) {
+    return id.slice(DRAFTS_PREFIX.length) as PublishedId
+  }
+
+  return id as PublishedId
 }
 
 /** @internal */
@@ -116,23 +125,58 @@ export interface CollatedHit<T extends {_id: string} = {_id: string}> {
   type: string
   draft?: T
   published?: T
+  version?: T
+}
+
+interface CollateOptions {
+  bundlePerspective?: string
 }
 
 /** @internal */
-export function collate<T extends {_id: string; _type: string}>(documents: T[]): CollatedHit<T>[] {
+export function collate<
+  T extends {
+    _id: string
+    _type: string
+    _version?: Record<string, never>
+  },
+>(documents: T[], {bundlePerspective}: CollateOptions = {}): CollatedHit<T>[] {
   const byId = documents.reduce((res, doc) => {
-    const publishedId = getPublishedId(doc._id)
+    const isVersion = Boolean(doc._version)
+    const publishedId = getPublishedId(doc._id, isVersion)
+    const bundle = isVersion ? doc._id.split('.').at(0) : undefined
+
     let entry = res.get(publishedId)
     if (!entry) {
-      entry = {id: publishedId, type: doc._type, published: undefined, draft: undefined}
+      entry = {
+        id: publishedId,
+        type: doc._type,
+        published: undefined,
+        draft: undefined,
+        version: undefined,
+      }
       res.set(publishedId, entry)
     }
 
-    entry[publishedId === doc._id ? 'published' : 'draft'] = doc
+    if (bundlePerspective && bundle === bundlePerspective) {
+      entry.version = doc
+    }
+
+    if (!isVersion) {
+      entry[publishedId === doc._id ? 'published' : 'draft'] = doc
+    }
+
     return res
   }, new Map())
 
-  return Array.from(byId.values())
+  return (
+    Array.from(byId.values())
+      // Remove entries that have no data, because all the following conditions are true:
+      //
+      // 1. They have no published version.
+      // 2. They have no draft version.
+      // 3. They have a version, but not the one that is currently checked out.
+      .filter((entry) => entry.published ?? entry.version ?? entry.draft)
+  )
 }
 
 /** @internal */

@@ -162,6 +162,7 @@ describe('resolveConfig', () => {
       {name: 'sanity/comments'},
       {name: 'sanity/tasks'},
       {name: 'sanity/scheduled-publishing'},
+      {name: 'sanity/releases'},
     ])
   })
 
@@ -188,6 +189,7 @@ describe('resolveConfig', () => {
     expect(workspace.__internal.options.plugins).toMatchObject([
       {name: 'sanity/comments'},
       {name: 'sanity/tasks'},
+      {name: 'sanity/releases'},
     ])
   })
 })

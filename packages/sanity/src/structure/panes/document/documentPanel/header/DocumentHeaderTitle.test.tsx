@@ -1,6 +1,13 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {render, waitFor} from '@testing-library/react'
-import {defineConfig, type SanityClient, unstable_useValuePreview as useValuePreview} from 'sanity'
+import {
+  defineConfig,
+  type SanityClient,
+  unstable_useValuePreview as useValuePreview,
+  useBundles,
+  useDocumentVersions,
+} from 'sanity'
+import {useRouter} from 'sanity/router'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -23,19 +30,30 @@ function createWrapperComponent(client: SanityClient) {
 }
 
 jest.mock('../../useDocumentPane')
+
 jest.mock('sanity', () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = jest.requireActual<typeof import('sanity')>('sanity')
   return {
     ...actual,
     unstable_useValuePreview: jest.fn(),
+    useBundles: jest.fn(),
+    getBundleSlug: jest.fn(() => ''),
+    useDocumentVersions: jest.fn(),
   }
 })
+
+jest.mock('sanity/router')
+
+const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
+const mockUseDocumentVersions = useDocumentVersions as jest.MockedFunction<
+  typeof useDocumentVersions
+>
 
 describe('DocumentHeaderTitle', () => {
   const mockUseDocumentPane = useDocumentPane as jest.MockedFunction<typeof useDocumentPane>
   const mockUseValuePreview = useValuePreview as jest.MockedFunction<typeof useValuePreview>
-
+  const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
   const defaultProps = {
     connectionState: 'connected',
     schemaType: {title: 'Test Schema', name: 'testSchema'},
@@ -49,6 +67,15 @@ describe('DocumentHeaderTitle', () => {
   beforeEach(() => {
     mockUseDocumentPane.mockReturnValue(defaultProps as unknown as DocumentPaneContextValue)
     mockUseValuePreview.mockReturnValue({...defaultValue, error: undefined, value: undefined})
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: jest.fn()})
+    mockUseDocumentVersions.mockReturnValue({data: []})
+    mockUseBundles.mockReturnValue({
+      data: [],
+      loading: false,
+      dispatch: jest.fn(),
+    })
   })
 
   afterEach(() => {

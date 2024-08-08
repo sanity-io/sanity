@@ -1,11 +1,15 @@
+/* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
-import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
+import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
+  BundleActions,
   type DocumentActionComponent,
   type DocumentActionDescription,
-  Hotkeys,
+  isBundleDocument,
+  LATEST,
   shouldArrayDialogOpen,
+  usePerspective,
   useSource,
   useTimelineSelector,
 } from 'sanity'
@@ -27,7 +31,9 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks, schemaType, openPath} = useDocumentPane()
+  const {__internal_tasks, schemaType, openPath, documentId, documentType, documentVersions} =
+    useDocumentPane()
+
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const isTreeArrayEditingEnabled = useSource().beta?.treeArrayEditing?.enabled
@@ -60,6 +66,11 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     )
   }, [firstActionState])
 
+  /* Version / Bundling handling */
+
+  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
+  const {currentGlobalBundle} = usePerspective()
+
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
@@ -67,24 +78,48 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              <Button
-                data-testid={`action-${firstActionState.label}`}
-                disabled={
-                  disabled || Boolean(firstActionState.disabled) || isTreeArrayEditingEnabledOpen
-                }
-                icon={firstActionState.icon}
-                // eslint-disable-next-line react/jsx-handler-names
-                onClick={firstActionState.onHandle}
-                ref={setButtonElement}
-                size="large"
-                text={firstActionState.label}
-                tone={firstActionState.tone || 'primary'}
-              />
+              {currentGlobalBundle.slug === LATEST.slug ? (
+                <Button
+                  data-testid={`action-${firstActionState.label}`}
+                  disabled={
+                    disabled || Boolean(firstActionState.disabled) || isTreeArrayEditingEnabledOpen
+                  }
+                  icon={firstActionState.icon}
+                  // eslint-disable-next-line react/jsx-handler-names
+                  onClick={firstActionState.onHandle}
+                  ref={setButtonElement}
+                  text={firstActionState.label}
+                  tone={firstActionState.tone || 'primary'}
+                />
+              ) : (
+                <>
+                  {
+                    /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
+                    isBundleDocument(currentGlobalBundle) ? (
+                      <BundleActions
+                        currentGlobalBundle={currentGlobalBundle}
+                        documentId={documentId}
+                        documentType={documentType}
+                        documentVersions={documentVersions}
+                      />
+                    ) : (
+                      <div>
+                        {/* eslint-disable-next-line i18next/no-literal-string */}
+                        <Text>Not a bundle</Text>
+                      </div>
+                    )
+                  }
+                </>
+              )}
             </Stack>
           </Tooltip>
         </LayerProvider>
       )}
-      {showMenu && menuActionStates.length > 0 && (
+      {/**
+       * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
+       * SPECIFICALLY FOR ISDRAFT
+       */}
+      {showMenu && menuActionStates.length > 0 && currentGlobalBundle.slug === LATEST.slug && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (

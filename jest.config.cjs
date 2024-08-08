@@ -1,15 +1,11 @@
 /* eslint-disable tsdoc/syntax */
-'use strict'
 
-const path = require('path')
+const path = require('node:path')
 const globby = require('globby')
-const yaml = require('js-yaml')
-const fs = require('node:fs')
 
-const workspaces = yaml.load(fs.readFileSync('./pnpm-workspace.yaml', 'utf8'))
-const jestConfigFiles = globby.sync(
-  workspaces.packages.map((workspace) => path.join(__dirname, workspace, '/jest.config.cjs')),
-)
+const jestConfigFiles = globby.sync('**/*/jest.config.cjs', {
+  ignore: ['**/node_modules'],
+})
 
 const IGNORE_PROJECTS = []
 
