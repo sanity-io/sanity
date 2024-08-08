@@ -1,9 +1,10 @@
 import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {type BundleDocument, Translate, useTranslation} from 'sanity'
+import {type BundleDocument} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
+import {Translate, useTranslation} from '../../../i18n'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type DocumentInBundleResult} from '../../tool/detail/useBundleDocuments'
