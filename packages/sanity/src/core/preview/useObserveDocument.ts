@@ -1,4 +1,4 @@
-import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
+import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
@@ -16,7 +16,6 @@ const INITIAL_STATE = {loading: true, document: null}
  */
 export function useObserveDocument<T extends SanityDocument>(
   documentId: string,
-  schemaType: ObjectSchemaType,
 ): {
   document: T | null
   loading: boolean
@@ -25,12 +24,9 @@ export function useObserveDocument<T extends SanityDocument>(
   const observable = useMemo(
     () =>
       documentPreviewStore
-        .observePaths(
-          {_id: documentId},
-          schemaType.fields.map((field) => [field.name]),
-        )
+        .unstable_observeDocument(documentId)
         .pipe(map((document) => ({loading: false, document: document as T}))),
-    [documentId, documentPreviewStore, schemaType.fields],
+    [documentId, documentPreviewStore],
   )
   return useObservable(observable, INITIAL_STATE)
 }
