@@ -3,6 +3,7 @@ import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/
 import {type ReactNode} from 'react'
 
 import {
+  CopyPasteProvider,
   LocaleProviderBase,
   type LocaleResourceBundle,
   ResourceCacheProvider,
@@ -46,7 +47,9 @@ export async function createTestProvider({
             <LayerProvider>
               <WorkspaceProvider workspace={workspace}>
                 <SourceProvider source={workspace.unstable_sources[0]}>
-                  <ResourceCacheProvider>{children}</ResourceCacheProvider>
+                  <CopyPasteProvider>
+                    <ResourceCacheProvider>{children}</ResourceCacheProvider>
+                  </CopyPasteProvider>
                 </SourceProvider>
               </WorkspaceProvider>
             </LayerProvider>
