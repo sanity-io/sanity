@@ -219,10 +219,13 @@ describe('after bundles have loaded', () => {
                 _updatedAt: currentDate,
               },
               validation: {
-                documentId: '123',
                 hasError: false,
                 isValidating: true,
                 validation: [],
+              },
+              previewValues: {
+                values: {title: 'Test document'},
+                isLoading: false,
               },
             },
           ],
@@ -252,10 +255,13 @@ describe('after bundles have loaded', () => {
                 _updatedAt: currentDate,
               },
               validation: {
-                documentId: '123',
                 hasError: false,
                 isValidating: false,
                 validation: [],
+              },
+              previewValues: {
+                values: {title: 'Test document'},
+                isLoading: false,
               },
             },
           ],
@@ -312,7 +318,6 @@ describe('after bundles have loaded', () => {
                 _updatedAt: currentDate,
               },
               validation: {
-                documentId: '123',
                 hasError: true,
                 isValidating: false,
                 validation: [
@@ -322,6 +327,10 @@ describe('after bundles have loaded', () => {
                     path: ['title'],
                   },
                 ],
+              },
+              previewValues: {
+                values: {title: 'Test document'},
+                isLoading: false,
               },
             },
           ],

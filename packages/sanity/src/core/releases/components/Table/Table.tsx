@@ -1,6 +1,12 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {
+  defaultRangeExtractor,
+  type Range,
+  useVirtualizer,
+  type VirtualItem,
+} from '@tanstack/react-virtual'
 import {get} from 'lodash'
-import {Fragment, useMemo} from 'react'
+import {Fragment, type MutableRefObject, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
@@ -16,49 +22,75 @@ type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extend
 export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
-  Row?: ({
-    datum,
-    children,
-  }: {
-    datum: TableData
-    children: (rowData: TableData) => JSX.Element
-  }) => JSX.Element | null
   data: TableData[]
   emptyState: (() => JSX.Element) | string
   loading?: boolean
-  rowId: keyof TableData
+  /**
+   * Should be the dot separated path to the unique identifier of the row. e.g. document._id
+   */
+  rowId: string
   rowActions?: ({
     datum,
   }: {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
   }) => JSX.Element
+  scrollContainerRef: MutableRefObject<HTMLDivElement | null>
 }
 
 const RowStack = styled(Stack)({
-  '& > *:not(:first-child)': {
+  '& > *:not([first-child])': {
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
     marginTop: -1,
   },
 
-  '& > *:not(:last-child)': {
+  '& > *:not([last-child])': {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },
 })
 
+const ITEM_HEIGHT = 59
+
+/**
+ * This function modifies the rangeExtractor to account for the offset of the virtualizer
+ * in this case, the parent with overflow (the element over which the scroll happens) and the start of the virtualizer
+ * don't match, because there are some elements rendered on top of the virtualizer.
+ * This, will take care of adding more elements to the start of the virtualizer to account for the offset.
+ */
+const withVirtualizerOffset = ({
+  scrollContainerRef,
+  virtualizerContainerRef,
+  range,
+}: {
+  scrollContainerRef: MutableRefObject<HTMLDivElement | null>
+  virtualizerContainerRef: MutableRefObject<HTMLDivElement | null>
+  range: Range
+}) => {
+  const parentOffset = scrollContainerRef.current?.offsetTop ?? 0
+  const virtualizerOffset = virtualizerContainerRef.current?.offsetTop ?? 0
+  const virtualizerScrollMargin = virtualizerOffset - parentOffset
+  const topItemsOffset = Math.ceil(virtualizerScrollMargin / ITEM_HEIGHT)
+  const startIndexWithOffset = range.startIndex - topItemsOffset
+  const result = defaultRangeExtractor({
+    ...range,
+    // By modifying the startIndex, we are adding more elements to the start of the virtualizer
+    startIndex: startIndexWithOffset > 0 ? startIndexWithOffset : 0,
+  })
+  return result
+}
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
   data,
   emptyState,
   searchFilter,
-  Row,
   rowId,
   rowActions,
   loading = false,
+  scrollContainerRef,
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
-
+  const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
   const filteredData = useMemo(() => {
     const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
     if (!sort) return filteredResult
@@ -75,6 +107,15 @@ const TableInner = <TableData, AdditionalRowTableData>({
       return -order
     })
   }, [data, searchFilter, searchTerm, sort])
+
+  const rowVirtualizer = useVirtualizer({
+    count: filteredData.length,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => ITEM_HEIGHT,
+    overscan: 5,
+    rangeExtractor: (range) =>
+      withVirtualizerOffset({scrollContainerRef, virtualizerContainerRef, range}),
+  })
 
   const rowActionColumnDef: Column = useMemo(
     () => ({
@@ -106,16 +147,29 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const renderRow = useMemo(
     () =>
-      function TableRow(datum: TableData | (TableData & AdditionalRowTableData)) {
+      function TableRow(
+        datum: (TableData | (TableData & AdditionalRowTableData)) & {
+          virtualRow: VirtualItem
+          index: number
+          isFirst: boolean
+          isLast: boolean
+        },
+      ) {
         return (
           <Card
-            key={String(datum[rowId])}
+            key={String(get(datum, rowId))}
             data-testid="table-row"
             as="tr"
             border
             radius={3}
             display="flex"
+            first-child={datum.isFirst ? '' : undefined}
+            last-child={datum.isLast ? '' : undefined}
             margin={-1}
+            style={{
+              height: `${datum.virtualRow.size}px`,
+              transform: `translateY(${datum.virtualRow.start - datum.index * datum.virtualRow.size}px)`,
+            }}
             // @ts-expect-error - Using a custom datum prop, this is not definitive, just a placeholder to show there is an error.
             // update once designs land
             tone={datum?.validation?.hasError ? 'critical' : 'default'}
@@ -139,38 +193,27 @@ const TableInner = <TableData, AdditionalRowTableData>({
     [amalgamatedColumnDefs, rowId],
   )
 
-  const tableContent = useMemo(() => {
-    if (filteredData.length === 0) {
-      if (typeof emptyState === 'string') {
-        return (
-          <Card
-            as="tr"
-            border
-            radius={3}
-            display="flex"
-            padding={4}
-            style={{
-              justifyContent: 'center',
-            }}
-          >
-            <Text as="td" muted size={1}>
-              {emptyState}
-            </Text>
-          </Card>
-        )
-      }
-      return emptyState()
-    }
-
-    return filteredData.map((datum) => {
-      if (!Row) return renderRow(datum)
+  const emptyContent = useMemo(() => {
+    if (typeof emptyState === 'string') {
       return (
-        <Row key={String(datum[rowId])} datum={datum}>
-          {renderRow}
-        </Row>
+        <Card
+          as="tr"
+          border
+          radius={3}
+          display="flex"
+          padding={4}
+          style={{
+            justifyContent: 'center',
+          }}
+        >
+          <Text as="td" muted size={1}>
+            {emptyState}
+          </Text>
+        </Card>
       )
-    })
-  }, [Row, emptyState, filteredData, renderRow, rowId])
+    }
+    return emptyState()
+  }, [emptyState])
 
   const headers = useMemo(
     () => amalgamatedColumnDefs.map(({cell, ...header}) => ({...header, id: String(header.id)})),
@@ -182,10 +225,35 @@ const TableInner = <TableData, AdditionalRowTableData>({
   }
 
   return (
-    <Stack as="table" space={1}>
-      <TableHeader headers={headers} searchDisabled={!searchTerm && !data.length} />
-      <RowStack as="tbody">{tableContent}</RowStack>
-    </Stack>
+    <div ref={virtualizerContainerRef}>
+      <div
+        style={{
+          height: `${rowVirtualizer.getTotalSize()}px`,
+          // The padding accounts for the height of the <TableHeader> and extra space for padding at the bottom
+          paddingBottom: '110px',
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        <Stack as="table" space={1}>
+          <TableHeader headers={headers} searchDisabled={!searchTerm && !data.length} />
+          <RowStack as="tbody">
+            {filteredData.length === 0
+              ? emptyContent
+              : rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
+                  const datum = filteredData[virtualRow.index]
+                  return renderRow({
+                    ...datum,
+                    virtualRow,
+                    index,
+                    isFirst: virtualRow.index === 0,
+                    isLast: virtualRow.index === filteredData.length - 1,
+                  })
+                })}
+          </RowStack>
+        </Stack>
+      </div>
+    </div>
   )
 }
 
