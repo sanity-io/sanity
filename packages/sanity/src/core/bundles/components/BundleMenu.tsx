@@ -1,11 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
 import {type ReactElement, useCallback, useMemo} from 'react'
-import {useBundles} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
 import {type BundleDocument} from '../../store/bundles/types'
+import {useBundles} from '../../store/bundles/useBundles'
 import {usePerspective} from '../hooks/usePerspective'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/util'

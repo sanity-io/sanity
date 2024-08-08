@@ -70,11 +70,13 @@ export const releasesOverviewColumnDefs: Column<TableBundle>[] = [
         </Box>
       </Flex>
     ),
-    cell: ({datum: {documentsMetadata}, cellProps}) => (
+    cell: ({datum: {isDeleted, documentsMetadata}, cellProps}) => (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        <Text muted size={1}>
-          {documentsMetadata?.documentCount || 0}
-        </Text>
+        {!isDeleted && (
+          <Text muted size={1}>
+            {documentsMetadata?.documentCount || 0}
+          </Text>
+        )}
       </Flex>
     ),
   },

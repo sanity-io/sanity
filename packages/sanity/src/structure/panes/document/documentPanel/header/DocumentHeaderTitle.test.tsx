@@ -37,13 +37,16 @@ jest.mock('sanity', () => {
   return {
     ...actual,
     unstable_useValuePreview: jest.fn(),
-    useBundles: jest.fn(),
     getBundleSlug: jest.fn(() => ''),
     useDocumentVersions: jest.fn(),
   }
 })
 
 jest.mock('sanity/router')
+
+jest.mock('../../../../../core/store/bundles/useBundles', () => ({
+  useBundles: jest.fn(),
+}))
 
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 const mockUseDocumentVersions = useDocumentVersions as jest.MockedFunction<
@@ -70,11 +73,12 @@ describe('DocumentHeaderTitle', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: jest.fn()})
-    mockUseDocumentVersions.mockReturnValue({data: []})
+    mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: undefined})
     mockUseBundles.mockReturnValue({
       data: [],
       loading: false,
       dispatch: jest.fn(),
+      deletedBundles: {},
     })
   })
 

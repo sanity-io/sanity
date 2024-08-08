@@ -10,7 +10,7 @@ import {ReleaseDetail} from '../ReleaseDetail'
 import {useBundleDocuments} from '../useBundleDocuments'
 
 jest.mock('../../../../store/bundles', () => ({
-  useBundles: jest.fn().mockReturnValue({data: [], loading: false}),
+  useBundles: jest.fn().mockReturnValue({data: [], loading: false, deletedBundles: {}}),
 }))
 
 jest.mock('../../../../store/bundles/useBundleOperations', () => ({
@@ -89,7 +89,12 @@ const publishAgnosticTests = () => {
 describe('ReleaseDetail', () => {
   describe('when loading bundles', () => {
     beforeEach(async () => {
-      mockUseBundles.mockReturnValue({data: [], loading: true, dispatch: jest.fn()})
+      mockUseBundles.mockReturnValue({
+        data: [],
+        loading: true,
+        dispatch: jest.fn(),
+        deletedBundles: {},
+      })
       await renderTest()
     })
 
@@ -126,6 +131,7 @@ describe('ReleaseDetail', () => {
         ],
         loading: false,
         dispatch: jest.fn(),
+        deletedBundles: {},
       })
       mockUseListener.mockReturnValue({
         documents: [],
@@ -173,6 +179,7 @@ describe('after bundles have loaded', () => {
         ],
         loading: false,
         dispatch: jest.fn(),
+        deletedBundles: {},
       })
       mockUseListener.mockReturnValue({
         documents: [
@@ -369,6 +376,7 @@ describe('after bundles have loaded', () => {
         ],
         loading: false,
         dispatch: jest.fn(),
+        deletedBundles: {},
       })
       mockUseListener.mockReturnValue({
         documents: [
@@ -401,6 +409,43 @@ describe('after bundles have loaded', () => {
 
     it('should not show the review changes button', () => {
       expect(screen.queryByText('Review changes')).toBeNull()
+    })
+  })
+
+  describe('with deleted release', () => {
+    beforeEach(async () => {
+      mockUseBundles.mockReturnValue({
+        data: [],
+        loading: false,
+        dispatch: jest.fn(),
+        deletedBundles: {
+          'test-bundle-slug': {
+            title: 'Test bundle',
+            publishedAt: undefined,
+            archivedAt: undefined,
+            _id: 'test-id',
+            _createdAt: new Date().toISOString(),
+            _type: 'bundle',
+            slug: 'test-bundle-slug',
+            hue: 'blue',
+            icon: 'string',
+            authorId: 'author-id',
+            _updatedAt: new Date().toISOString(),
+            _rev: 'abc',
+          },
+        },
+      })
+      await renderTest()
+    })
+
+    publishAgnosticTests()
+
+    it('should not show publish button', () => {
+      expect(screen.queryByText('Publish all')).toBeNull()
+    })
+
+    it('should disable Bundle menu', () => {
+      expect(screen.getByLabelText('Release menu')).toBeDisabled()
     })
   })
 })

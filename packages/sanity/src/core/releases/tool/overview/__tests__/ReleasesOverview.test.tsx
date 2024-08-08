@@ -38,6 +38,7 @@ describe('ReleasesOverview', () => {
         data: null,
         loading: true,
         dispatch: jest.fn(),
+        deletedBundles: {},
       })
       mockUseBundlesMetadata.mockReturnValue({
         loading: true,
@@ -77,6 +78,7 @@ describe('ReleasesOverview', () => {
         data: [],
         loading: false,
         dispatch: jest.fn(),
+        deletedBundles: {},
       })
       mockUseBundlesMetadata.mockReturnValue({
         loading: false,
@@ -147,6 +149,14 @@ describe('ReleasesOverview', () => {
         data: bundles,
         loading: false,
         dispatch: jest.fn(),
+        deletedBundles: {
+          'deleted-bundle-slug': {
+            title: 'Deleted Bundle',
+            _id: 'deleted-bundle-id',
+            slug: 'deleted-bundle-slug',
+            _createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * 5).toISOString(),
+          } as BundleDocument,
+        },
       })
       mockUseBundlesMetadata.mockReturnValue({
         loading: false,
@@ -168,8 +178,8 @@ describe('ReleasesOverview', () => {
 
     it('shows each open bundle', () => {
       const bundleRows = screen.getAllByTestId('table-row')
-      // 2 open releases
-      expect(bundleRows).toHaveLength(2)
+      // 2 open releases & 1 deleted release)
+      expect(bundleRows).toHaveLength(3)
 
       // reverse to match default sort order by _createdAt desc
       const openBundles = [...bundles].slice(0, 2).reverse()
@@ -230,19 +240,27 @@ describe('ReleasesOverview', () => {
 
       // sort by asc created at
       fireEvent.click(screen.getByText('Created'))
-      const [ascCreatedSortedFirstBundle, ascCreatedSortedSecondBundle] =
-        screen.getAllByTestId('table-row')
-      within(ascCreatedSortedFirstBundle).getByText('Bundle 1')
-      within(ascCreatedSortedSecondBundle).getByText('Bundle 2')
+      const [
+        ascCreatedSortedFirstBundle,
+        ascCreatedSortedSecondBundle,
+        ascCreatedSortedThirdBundle,
+      ] = screen.getAllByTestId('table-row')
+      within(ascCreatedSortedFirstBundle).getByText('Deleted Bundle')
+      within(ascCreatedSortedSecondBundle).getByText('Bundle 1')
+      within(ascCreatedSortedThirdBundle).getByText('Bundle 2')
 
       // searching retains sort order
       fireEvent.change(screen.getByPlaceholderText('Search releases'), {
         target: {value: 'Bundle'},
       })
-      const [ascCreatedSortedFirstBundleAfterSearch, ascCreatedSortedSecondBundleAfterSearch] =
-        screen.getAllByTestId('table-row')
-      within(ascCreatedSortedFirstBundleAfterSearch).getByText('Bundle 1')
-      within(ascCreatedSortedSecondBundleAfterSearch).getByText('Bundle 2')
+      const [
+        ascCreatedSortedFirstBundleAfterSearch,
+        ascCreatedSortedSecondBundleAfterSearch,
+        ascCreatedSortedThirdBundleAfterSearch,
+      ] = screen.getAllByTestId('table-row')
+      within(ascCreatedSortedFirstBundleAfterSearch).getByText('Deleted Bundle')
+      within(ascCreatedSortedSecondBundleAfterSearch).getByText('Bundle 1')
+      within(ascCreatedSortedThirdBundleAfterSearch).getByText('Bundle 2')
 
       // sort by desc created at
       fireEvent.click(screen.getByText('Created'))

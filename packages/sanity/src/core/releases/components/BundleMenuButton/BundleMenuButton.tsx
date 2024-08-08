@@ -14,13 +14,13 @@ import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDeta
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 
-type Props = {
+export type BundleMenuButtonProps = {
   disabled?: boolean
   bundle?: BundleDocument
   documentCount?: number
 }
 
-export const BundleMenuButton = ({disabled, bundle, documentCount}: Props) => {
+export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuButtonProps) => {
   const {deleteBundle, updateBundle} = useBundleOperations()
   const router = useRouter()
   const isBundleArchived = !!bundle?.archivedAt
