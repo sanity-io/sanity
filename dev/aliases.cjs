@@ -26,6 +26,7 @@ const devAliases = {
   '@sanity/util': './packages/@sanity/util/src/_exports',
   '@sanity/vision': './packages/@sanity/vision/src',
   'sanity': './packages/sanity/src/_exports',
+  'groq': './packages/groq/src/_exports.mts',
 }
 
 module.exports = devAliases
