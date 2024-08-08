@@ -1,6 +1,7 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useMemo} from 'react'
+// eslint-disable-next-line camelcase
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {LoadingBlock} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
@@ -9,7 +10,6 @@ import {useBundles} from '../../../store/bundles'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {ReleasePublishAllButton} from '../../components/ReleasePublishAllButton/ReleasePublishAllButton'
 import {type ReleasesRouterState} from '../../types/router'
-import {type DocumentValidationStatus} from './bundleDocumentsValidation'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseReview} from './ReleaseReview'
 import {ReleaseSummary} from './ReleaseSummary'
@@ -29,6 +29,7 @@ const getActiveScreen = (router: RouterContextValue): Screen => {
   }
   return activeScreen
 }
+
 export const ReleaseDetail = () => {
   const router = useRouter()
 
@@ -39,16 +40,12 @@ export const ReleaseDetail = () => {
   const {data, loading} = useBundles()
 
   const {loading: documentsLoading, results} = useBundleDocuments(parsedSlug)
-  const bundleDocuments = results.map((result) => result.document)
-  const documentIds = results.map((result) => result.document?._id)
 
+  const documentIds = results.map((result) => result.document?._id)
   const history = useReleaseHistory(documentIds)
 
-  const validation: Record<string, DocumentValidationStatus> = Object.fromEntries(
-    results.map((result) => [result.document._id, result.validation]),
-  )
   const bundle = data?.find((storeBundle) => storeBundle.slug === parsedSlug)
-  const bundleHasDocuments = !!documentIds.length
+  const bundleHasDocuments = !!results.length
   const showPublishButton = loading || !bundle?.publishedAt
   const isPublishButtonDisabled = loading || !bundle || !bundleHasDocuments
 
@@ -76,16 +73,7 @@ export const ReleaseDetail = () => {
 
   const header = useMemo(
     () => (
-      <Card
-        flex="none"
-        padding={3}
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          backgroundColor: 'var(--card-bg-color)',
-        }}
-      >
+      <Card flex="none" padding={3}>
         <Flex>
           <Flex align="baseline" flex={1} gap={2}>
             <Flex gap={1}>
@@ -136,12 +124,11 @@ export const ReleaseDetail = () => {
             {showPublishButton && bundle && (
               <ReleasePublishAllButton
                 bundle={bundle}
-                bundleDocuments={bundleDocuments}
+                bundleDocuments={results}
                 disabled={isPublishButtonDisabled}
-                validation={validation}
               />
             )}
-            <BundleMenuButton bundle={bundle} documentCount={bundleDocuments.length} />
+            <BundleMenuButton bundle={bundle} documentCount={results.length} />
           </Flex>
         </Flex>
       </Card>
@@ -149,16 +136,16 @@ export const ReleaseDetail = () => {
     [
       activeScreen,
       bundle,
-      bundleDocuments,
       bundleHasDocuments,
       isPublishButtonDisabled,
       navigateToReview,
       navigateToSummary,
+      results,
       router,
       showPublishButton,
-      validation,
     ],
   )
+  const scrollContainerRef = useRef(null)
 
   const detailContent = useMemo(() => {
     if (!bundle) return null
@@ -166,33 +153,26 @@ export const ReleaseDetail = () => {
     if (activeScreen === 'summary') {
       return (
         <ReleaseSummary
-          documents={bundleDocuments}
+          documents={results}
           release={bundle}
           documentsHistory={history.documentsHistory}
           collaborators={history.collaborators}
-          validation={validation}
+          scrollContainerRef={scrollContainerRef}
         />
       )
     }
     if (activeScreen === 'review') {
       return (
         <ReleaseReview
-          documents={bundleDocuments}
+          documents={results}
           release={bundle}
           documentsHistory={history.documentsHistory}
-          validation={validation}
+          scrollContainerRef={scrollContainerRef}
         />
       )
     }
     return null
-  }, [
-    activeScreen,
-    bundle,
-    bundleDocuments,
-    history.collaborators,
-    history.documentsHistory,
-    validation,
-  ])
+  }, [activeScreen, bundle, history.collaborators, history.documentsHistory, results])
 
   if (loading) {
     return <LoadingBlock title="Loading release" fill data-testid="bundle-documents-table-loader" />
@@ -211,16 +191,13 @@ export const ReleaseDetail = () => {
   }
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" height="fill">
       {header}
-
-      <Card flex={1} overflow="auto">
-        <Container width={2}>
-          <Box paddingX={4} paddingY={6}>
-            {documentsLoading ? <LoadingBlock title="Loading documents" /> : detailContent}
-          </Box>
+      <Flex paddingX={4} ref={scrollContainerRef} overflow="auto">
+        <Container width={2} paddingX={2}>
+          {documentsLoading ? <LoadingBlock title="Loading documents" /> : detailContent}
         </Container>
-      </Card>
+      </Flex>
     </Flex>
   )
 }

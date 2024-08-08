@@ -1,12 +1,14 @@
+import {ChevronDownIcon, ChevronRightIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {AvatarStack, Box, Card, Flex} from '@sanity/ui'
 
+import {Button} from '../../../../../ui-components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {Chip} from '../../../components/Chip'
 import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
-import {type DocumentValidationStatus} from '../bundleDocumentsValidation'
+import {type DocumentValidationStatus} from '../useBundleDocuments'
 
 export function DocumentReviewHeader({
   previewValues,
@@ -15,12 +17,16 @@ export function DocumentReviewHeader({
   history,
   release,
   validation,
+  isExpanded,
+  toggleIsExpanded,
 }: {
   document: SanityDocument
   previewValues: PreviewValue
   isLoading: boolean
   release: BundleDocument
   validation?: DocumentValidationStatus
+  isExpanded: boolean
+  toggleIsExpanded: () => void
   history?: {
     createdBy: string
     lastEditedBy: string
@@ -28,19 +34,26 @@ export function DocumentReviewHeader({
   }
 }) {
   return (
-    <Card
-      tone={validation?.hasError ? 'critical' : 'default'}
-      radius={3}
-      style={{marginBottom: 20}}
-    >
-      <Flex justify="space-between" align="center">
-        <Box padding={1} style={{flex: '1'}}>
+    <Card tone={validation?.hasError ? 'critical' : 'default'} radius={3}>
+      <Flex justify="space-between" align="center" paddingY={1} paddingX={2}>
+        <Button
+          data-testid="document-review-header-toggle"
+          icon={isExpanded ? ChevronDownIcon : ChevronRightIcon}
+          mode="bleed"
+          onClick={toggleIsExpanded}
+          tooltipProps={{
+            content: isExpanded ? 'Collapse document diff' : 'Expand document diff',
+            placement: 'top',
+          }}
+        />
+        <Box style={{flex: '1'}}>
           <ReleaseDocumentPreview
             documentId={document._id}
             documentTypeName={document._type}
             releaseSlug={release.slug}
             previewValues={previewValues}
             isLoading={isLoading}
+            hasValidationError={validation?.hasError}
           />
         </Box>
         <Flex gap={2} padding={3} style={{flexShrink: 0}}>
