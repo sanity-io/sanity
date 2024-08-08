@@ -189,7 +189,7 @@ export function ReleasesOverview() {
             defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
             loading={loadingTableData}
             data={groupedBundles[bundleGroupMode]}
-            columnDefs={releasesOverviewColumnDefs}
+            columnDefs={releasesOverviewColumnDefs(t)}
             searchFilter={applySearchTermToBundles}
             emptyState={t('no-releases')}
             // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
