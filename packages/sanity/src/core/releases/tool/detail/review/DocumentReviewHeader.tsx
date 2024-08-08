@@ -67,7 +67,7 @@ export function DocumentReviewHeader({
                 <span>
                   <Translate
                     t={t}
-                    i18nKey={'release.created'}
+                    i18nKey={'created'}
                     components={{
                       RelativeTime: () => (
                         <RelativeTime time={document._createdAt} useTemporalPhrase />
@@ -85,7 +85,7 @@ export function DocumentReviewHeader({
                 <span>
                   <Translate
                     t={t}
-                    i18nKey={'release.review.edited'}
+                    i18nKey={'review.edited'}
                     components={{
                       RelativeTime: () => (
                         <RelativeTime time={document._updatedAt} useTemporalPhrase />

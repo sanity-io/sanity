@@ -49,11 +49,11 @@ export function DocumentDiff({
   const isChanged = !!rootDiff?.isChanged
 
   if (!baseDocument) {
-    return <Text>{t('release.diff.new-document')}</Text>
+    return <Text>{t('diff.new-document')}</Text>
   }
 
   if (!isChanged) {
-    return <Text>{t('release.diff.no-changes')}</Text>
+    return <Text>{t('diff.no-changes')}</Text>
   }
 
   return (
@@ -73,7 +73,7 @@ export function DocumentDiff({
         {changesList.length ? (
           changesList.map((change) => <ChangeResolver key={change.key} change={changesList[0]} />)
         ) : (
-          <Text>{t('release.diff.list-empty')}</Text>
+          <Text>{t('diff.list-empty')}</Text>
         )}
       </ChangesWrapper>
     </DocumentChangeContext.Provider>

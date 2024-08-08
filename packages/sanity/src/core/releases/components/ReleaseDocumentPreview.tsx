@@ -67,7 +67,7 @@ export function ReleaseDocumentPreview({
             portal
             content={
               <Text muted size={1}>
-                {t('release.document-validation.error')}
+                {t('document-validation.error')}
               </Text>
             }
           >

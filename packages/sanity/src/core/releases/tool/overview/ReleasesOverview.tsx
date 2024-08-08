@@ -88,7 +88,7 @@ export function ReleasesOverview() {
           {...groupModeButtonBaseProps}
           onClick={handleBundleGroupModeChange}
           selected={bundleGroupMode === 'open'}
-          text={t('release.action.open')}
+          text={t('action.open')}
           value="open"
         />
         {/* StudioButton supports tooltip when button is disabled */}
@@ -97,12 +97,12 @@ export function ReleasesOverview() {
           disabled={groupModeButtonBaseProps.disabled || !groupedBundles.archived.length}
           tooltipProps={{
             disabled: groupedBundles.archived.length !== 0,
-            content: t('release.no-archived-release'),
+            content: t('no-archived-release'),
             placement: 'bottom',
           }}
           onClick={handleBundleGroupModeChange}
           selected={bundleGroupMode === 'archived'}
-          text={t('release.action.archived')}
+          text={t('action.archived')}
           value="archived"
         />
       </Flex>
@@ -192,6 +192,7 @@ export function ReleasesOverview() {
             columnDefs={releasesOverviewColumnDefs}
             searchFilter={applySearchTermToBundles}
             emptyState={t('release.no-releases')}
+            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             rowId="_id"
             rowActions={renderRowActions}
             scrollContainerRef={scrollContainerRef}

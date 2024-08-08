@@ -127,7 +127,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         <Flex>
           <Flex flex={1} gap={2}>
             <Chip
-              text={<>{t('release.summary.document-count', {count: documents.length})}</>}
+              text={<>{t('summary.document-count', {count: documents.length})}</>}
               icon={
                 <Text size={1}>
                   <DocumentsIcon />
@@ -142,7 +142,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
                 <span>
                   <Translate
                     t={t}
-                    i18nKey={'release.summary.created'}
+                    i18nKey="summary.created"
                     components={{
                       RelativeTime: () => (
                         <RelativeTime time={release._createdAt} useTemporalPhrase />
@@ -164,7 +164,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
                     <span>
                       <Translate
                         t={t}
-                        i18nKey={'release.summary.published'}
+                        i18nKey={'summary.published'}
                         components={{
                           RelativeTime: () =>
                             release.publishedAt && (
@@ -174,7 +174,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
                       />
                     </span>
                   ) : (
-                    t('release.summary.not-published')
+                    t('summary.not-published')
                   )
                 }
               />
@@ -194,7 +194,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
       <Table<DocumentWithHistory>
         data={aggregatedData}
-        emptyState={t('release.summary.no-documents')}
+        emptyState={t('summary.no-documents')}
+        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
         rowId="document._id"
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}

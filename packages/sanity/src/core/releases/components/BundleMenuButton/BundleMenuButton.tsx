@@ -80,7 +80,7 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
             icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
             mode="bleed"
             padding={2}
-            aria-label={t('release.menu.label')}
+            aria-label={t('menu.label')}
           />
         }
         id="bundle-menu"
@@ -89,17 +89,17 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
             <MenuItem
               onClick={() => setSelectedAction('edit')}
               icon={EditIcon}
-              text={t('release.action.edit')}
+              text={t('action.edit')}
             />
             <MenuItem
               onClick={handleOnToggleArchive}
               icon={isBundleArchived ? UnarchiveIcon : ArchiveIcon}
-              text={isBundleArchived ? t('release.action.unarchive') : t('release.action.archive')}
+              text={isBundleArchived ? t('action.unarchive') : t('action.archive')}
             />
             <MenuItem
               onClick={() => setSelectedAction('delete')}
               icon={TrashIcon}
-              text={t('release.action.delete')}
+              text={t('action.delete')}
             />
           </Menu>
         }
@@ -129,7 +129,7 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
         >
           {bundleHasDocuments && (
             <Text data-testid="confirm-delete-body" muted size={1}>
-              {t('release.delete.warning', {documentCount, count: documentCount})}
+              {t('delete.warning', {documentCount, count: documentCount})}
             </Text>
           )}
         </Dialog>

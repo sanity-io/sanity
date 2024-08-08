@@ -74,13 +74,13 @@ export function ReleaseReview({
     <Flex direction="column" gap={5} paddingY={6}>
       <Flex justify="space-between" align="center">
         <Text size={1} weight="semibold">
-          {t('release.changes-published-docs.title')}
+          {t('changes-published-docs.title')}
         </Text>
         <InputContainer width={0}>
           <TextInput
             fontSize={1}
             icon={SearchIcon}
-            placeholder={t('release.search-documents-placeholder')}
+            placeholder={t('search-documents-placeholder')}
             radius={3}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.currentTarget.value)}

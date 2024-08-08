@@ -102,14 +102,14 @@ export const ReleaseDetail = () => {
                 mode="bleed"
                 onClick={navigateToSummary}
                 selected={activeScreen === 'summary'}
-                text={t('release.actions.summary')}
+                text={t('actions.summary')}
               />
               {/* StudioButton supports tooltip when button is disabled */}
               {!bundle?.publishedAt && (
                 <Button
                   tooltipProps={{
                     disabled: bundleHasDocuments,
-                    content: t('release.review.description'),
+                    content: t('review.description'),
                     placement: 'bottom',
                   }}
                   key="review"
@@ -117,7 +117,7 @@ export const ReleaseDetail = () => {
                   mode="bleed"
                   onClick={navigateToReview}
                   selected={activeScreen === 'review'}
-                  text={t('release.action.review')}
+                  text={t('action.review')}
                 />
               )}
             </Flex>
@@ -187,7 +187,7 @@ export const ReleaseDetail = () => {
       <Card flex={1} tone="critical">
         <Container width={0}>
           <Stack paddingX={4} paddingY={6} space={1}>
-            <Heading>{t('release.not-found', {bundleSlug})}</Heading>
+            <Heading>{t('not-found', {bundleSlug})}</Heading>
           </Stack>
         </Container>
       </Card>
@@ -199,11 +199,7 @@ export const ReleaseDetail = () => {
       {header}
       <Flex paddingX={4} ref={scrollContainerRef} overflow="auto">
         <Container width={2} paddingX={2}>
-          {documentsLoading ? (
-            <LoadingBlock title={t('release.document-loading')} />
-          ) : (
-            detailContent
-          )}
+          {documentsLoading ? <LoadingBlock title={t('document-loading')} /> : detailContent}
         </Container>
       </Flex>
     </Flex>

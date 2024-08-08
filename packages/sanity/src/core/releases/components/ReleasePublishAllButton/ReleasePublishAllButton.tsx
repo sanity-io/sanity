@@ -51,7 +51,7 @@ export const ReleasePublishAllButton = ({
         status: 'success',
         title: (
           <Text muted size={1}>
-            <Translate t={t} i18nKey="release.toast.published" values={{title: bundle.title}} />
+            <Translate t={t} i18nKey="toast.published" values={{title: bundle.title}} />
           </Text>
         ),
       })
@@ -60,7 +60,7 @@ export const ReleasePublishAllButton = ({
         status: 'error',
         title: (
           <Text muted size={1}>
-            <Translate t={t} i18nKey="release.toast.error" values={{title: bundle.title}} />
+            <Translate t={t} i18nKey="toast.error" values={{title: bundle.title}} />
           </Text>
         ),
       })
@@ -76,11 +76,11 @@ export const ReleasePublishAllButton = ({
     return (
       <Dialog
         id="confirm-publish-dialog"
-        header={t('release.publish-dialog.confirm-publish.title')}
+        header={t('publish-dialog.confirm-publish.title')}
         onClose={() => setPublishBundleStatus('idle')}
         footer={{
           confirmButton: {
-            text: t('release.action.publish'),
+            text: t('action.publish'),
             tone: 'default',
             onClick: handleConfirmPublishAll,
             loading: publishBundleStatus === 'publishing',
@@ -92,7 +92,7 @@ export const ReleasePublishAllButton = ({
           {
             <Translate
               t={t}
-              i18nKey="release.publish-dialog.confirm-publish-description"
+              i18nKey="publish-dialog.confirm-publish-description"
               values={{
                 title: bundle.title,
                 bundleDocumentsLength: bundleDocuments.length,
@@ -110,11 +110,11 @@ export const ReleasePublishAllButton = ({
 
     const tooltipText = () => {
       if (isValidatingDocuments) {
-        return t('release.publish-dialog.validation.loading')
+        return t('publish-dialog.validation.loading')
       }
 
       if (hasDocumentValidationErrors) {
-        return t('release.publish-dialog.validation.error')
+        return t('publish-dialog.validation.error')
       }
 
       return null
@@ -140,7 +140,7 @@ export const ReleasePublishAllButton = ({
         }}
         icon={PublishIcon}
         disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
-        text={t('release.action.publish-all')}
+        text={t('action.publish-all')}
         onClick={() => setPublishBundleStatus('confirm')}
         loading={publishBundleStatus === 'publishing'}
       />

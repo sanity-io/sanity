@@ -15,10 +15,7 @@ export const getDocumentTableColumnDefs: (
     id: 'search',
     width: null,
     header: (props) => (
-      <Headers.TableHeaderSearch
-        {...props}
-        placeholder={t('release.search-documents-placeholder')}
-      />
+      <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
     ),
     cell: ({cellProps, datum: {document, previewValues, validation}}) => (
       <Box {...cellProps} flex={1} padding={1}>
@@ -39,7 +36,7 @@ export const getDocumentTableColumnDefs: (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('release.table-header.created')} {...props} />
+        <Headers.SortHeaderButton text={t('table-header.created')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: {document, history}}) => (
@@ -61,7 +58,7 @@ export const getDocumentTableColumnDefs: (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('release.table-header.edited')} {...props} />
+        <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: {document, history}}) => (
@@ -83,7 +80,7 @@ export const getDocumentTableColumnDefs: (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('release.table-header.published')} {...props} />
+        <Headers.SortHeaderButton text={t('table-header.published')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: {document}}) => (
@@ -114,7 +111,7 @@ export const getDocumentTableColumnDefs: (
       <Flex {...headerProps} paddingY={3} sizing="border">
         <Box padding={2}>
           <Text muted size={1} weight="medium">
-            {t('release.table-header.contributors')}
+            {t('table-header.contributors')}
           </Text>
         </Box>
       </Flex>

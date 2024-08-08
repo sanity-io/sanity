@@ -49,7 +49,7 @@ export const releasesOverviewColumnDefs: (
       header: (props) => (
         <Headers.TableHeaderSearch
           {...props}
-          placeholder={t('release.overview.search-releases-placeholder')}
+          placeholder={t('overview.search-releases-placeholder')}
         />
       ),
       cell: ReleaseNameCell,
@@ -62,7 +62,7 @@ export const releasesOverviewColumnDefs: (
         <Flex {...headerProps} paddingY={3} sizing="border">
           <Box padding={2}>
             <Text muted size={1} weight="medium">
-              {t('release.table-header.documents')}
+              {t('table-header.documents')}
             </Text>
           </Box>
         </Flex>
@@ -81,7 +81,7 @@ export const releasesOverviewColumnDefs: (
       width: 120,
       header: (props) => (
         <Flex {...props.headerProps} paddingY={3} sizing="border">
-          <Headers.SortHeaderButton text={t('release.table-header.created')} {...props} />
+          <Headers.SortHeaderButton text={t('table-header.created')} {...props} />
         </Flex>
       ),
       cell: ({cellProps, datum: bundle}) => (
@@ -99,7 +99,7 @@ export const releasesOverviewColumnDefs: (
       width: 100,
       header: (props) => (
         <Flex {...props.headerProps} paddingY={3} sizing="border">
-          <Headers.SortHeaderButton text={t('release.table-header.edited')} {...props} />
+          <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
         </Flex>
       ),
       cell: ({datum: {documentsMetadata}, cellProps}) => (
@@ -125,7 +125,7 @@ export const releasesOverviewColumnDefs: (
           paddingY={0}
           sizing="border"
         >
-          <Headers.SortHeaderButton text={t('release.table-header.published')} {...props} />
+          <Headers.SortHeaderButton text={t('table-header.published')} {...props} />
         </Flex>
       ),
       cell: ({cellProps, datum: bundle}) => (

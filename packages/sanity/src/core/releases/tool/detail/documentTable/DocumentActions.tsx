@@ -48,7 +48,7 @@ export function DocumentActions({
           menu={
             <Menu>
               <MenuItem
-                text={t('release.action.discard-version')}
+                text={t('action.discard-version')}
                 icon={CloseIcon}
                 onClick={() => setShowDiscardDialog(true)}
               />
@@ -59,11 +59,11 @@ export function DocumentActions({
       {showDiscardDialog && (
         <Dialog
           id="discard-version-dialog"
-          header={t('release.discard-version-dialog.header')}
+          header={t('discard-version-dialog.header')}
           onClose={() => setShowDiscardDialog(false)}
           footer={{
             confirmButton: {
-              text: t('release.discard-version-dialog.title'),
+              text: t('discard-version-dialog.title'),
               tone: 'default',
               onClick: handleDiscardVersion,
               loading: discardStatus === 'discarding',
@@ -80,7 +80,7 @@ export function DocumentActions({
           <Text muted size={1}>
             <Translate
               t={t}
-              i18nKey={'release.discard-version-dialog.description'}
+              i18nKey={'discard-version-dialog.description'}
               values={{title: bundleTitle}}
             />
           </Text>
