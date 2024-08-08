@@ -11,7 +11,7 @@ import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {Chip} from '../../components/Chip'
-import {Table} from '../../components/Table/Table'
+import {Table, type TableProps} from '../../components/Table/Table'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
@@ -34,6 +34,9 @@ const setIconHue = ({hue, icon}: {hue: BundleDocument['hue']; icon: BundleDocume
   hue: hue ?? 'gray',
   icon: icon ?? 'documents',
 })
+
+const getRowProps: TableProps<DocumentWithHistory, undefined>['rowProps'] = (datum) =>
+  datum?.validation?.hasError ? {tone: 'critical'} : {}
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, collaborators, scrollContainerRef} = props
@@ -179,6 +182,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}
         searchFilter={filterRows}
+        rowProps={getRowProps}
         scrollContainerRef={scrollContainerRef}
       />
     </>

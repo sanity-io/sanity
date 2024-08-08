@@ -15,11 +15,12 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 
 type Props = {
+  disabled?: boolean
   bundle?: BundleDocument
-  documentCount: number
+  documentCount?: number
 }
 
-export const BundleMenuButton = ({bundle, documentCount}: Props) => {
+export const BundleMenuButton = ({disabled, bundle, documentCount}: Props) => {
   const {deleteBundle, updateBundle} = useBundleOperations()
   const router = useRouter()
   const isBundleArchived = !!bundle?.archivedAt
@@ -27,7 +28,7 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
   const [selectedAction, setSelectedAction] = useState<'edit' | 'delete'>()
   const [discardStatus, setDiscardStatus] = useState<'idle' | 'discarding' | 'error'>('idle')
 
-  const bundleMenuDisabled = !bundle
+  const bundleMenuDisabled = !bundle || disabled
   const toast = useToast()
 
   const resetSelectedAction = () => setSelectedAction(undefined)

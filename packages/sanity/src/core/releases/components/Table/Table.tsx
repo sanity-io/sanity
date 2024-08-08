@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, Stack, Text} from '@sanity/ui'
 import {
   defaultRangeExtractor,
   type Range,
@@ -6,7 +6,15 @@ import {
   type VirtualItem,
 } from '@tanstack/react-virtual'
 import {get} from 'lodash'
-import {Fragment, type MutableRefObject, useMemo, useRef} from 'react'
+import {
+  Fragment,
+  type HTMLProps,
+  type MutableRefObject,
+  type ReactNode,
+  type RefAttributes,
+  useMemo,
+  useRef,
+} from 'react'
 import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
@@ -18,6 +26,12 @@ import {type Column} from './types'
 type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extends undefined
   ? TableData
   : TableData & AdditionalRowTableData
+
+export type TableRowProps = Omit<
+  CardProps & Omit<HTMLProps<HTMLDivElement>, 'height' | 'as'>,
+  'ref'
+> &
+  RefAttributes<HTMLDivElement>
 
 export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
@@ -33,7 +47,8 @@ export interface TableProps<TableData, AdditionalRowTableData> {
     datum,
   }: {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
-  }) => JSX.Element
+  }) => ReactNode
+  rowProps: (datum: TableData) => Partial<TableRowProps>
   scrollContainerRef: MutableRefObject<HTMLDivElement | null>
 }
 
@@ -87,6 +102,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   rowId,
   rowActions,
   loading = false,
+  rowProps = () => ({}),
   scrollContainerRef,
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
@@ -133,7 +149,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
       ),
       cell: ({datum, cellProps: {id}}) => (
         <Flex as="td" id={id} align="center" flex="none" padding={3}>
-          {rowActions?.({datum})}
+          {rowActions?.({datum}) || <Box style={{width: '25px'}} />}
         </Flex>
       ),
     }),
@@ -155,6 +171,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
           isLast: boolean
         },
       ) {
+        const cardRowProps = rowProps(datum as TableData)
+
         return (
           <Card
             key={String(get(datum, rowId))}
@@ -170,9 +188,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
               height: `${datum.virtualRow.size}px`,
               transform: `translateY(${datum.virtualRow.start - datum.index * datum.virtualRow.size}px)`,
             }}
-            // @ts-expect-error - Using a custom datum prop, this is not definitive, just a placeholder to show there is an error.
-            // update once designs land
-            tone={datum?.validation?.hasError ? 'critical' : 'default'}
+            {...cardRowProps}
           >
             {amalgamatedColumnDefs.map(({cell: Cell, width, id, sorting = false}) => (
               <Fragment key={String(id)}>
@@ -190,7 +206,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
           </Card>
         )
       },
-    [amalgamatedColumnDefs, rowId],
+    [amalgamatedColumnDefs, rowId, rowProps],
   )
 
   const emptyContent = useMemo(() => {

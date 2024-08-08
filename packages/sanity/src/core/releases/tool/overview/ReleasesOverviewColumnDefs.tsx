@@ -1,8 +1,10 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useRouter} from 'sanity/router'
 
+import {Tooltip} from '../../../../ui-components'
 import {BundleBadge} from '../../../bundles'
 import {RelativeTime, UserAvatar} from '../../../components'
+import {type TableRowProps} from '../../components/Table/Table'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column} from '../../components/Table/types'
 import {type TableBundle} from './ReleasesOverview'
@@ -10,29 +12,39 @@ import {type TableBundle} from './ReleasesOverview'
 const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}) => {
   const router = useRouter()
 
+  const cardProps: TableRowProps = bundle.isDeleted
+    ? {tone: 'transparent'}
+    : {
+        as: 'a',
+        // navigate to bundle detail
+        onClick: () => router.navigate({bundleSlug: bundle.slug}),
+      }
+
   return (
     <Box {...cellProps} flex={1} padding={1}>
-      <Card
-        as="a"
-        // navigate to bundle detail
-        // eslint-disable-next-line react/jsx-no-bind
-        onClick={() => router.navigate({bundleSlug: bundle.slug})}
-        padding={2}
-        radius={2}
+      <Tooltip
+        disabled={!bundle.isDeleted}
+        content={
+          <Text size={1}>
+            '<strong>{bundle.title}</strong>' has been deleted
+          </Text>
+        }
       >
-        <Flex align="center" gap={2}>
-          <Box flex="none">
-            <BundleBadge hue={bundle.hue} icon={bundle.icon} />
-          </Box>
-          <Stack flex={1} space={2}>
-            <Flex align="center" gap={2}>
-              <Text size={1} weight="medium">
-                {bundle.title}
-              </Text>
-            </Flex>
-          </Stack>
-        </Flex>
-      </Card>
+        <Card {...cardProps} padding={2} radius={2}>
+          <Flex align="center" gap={2}>
+            <Box flex="none">
+              <BundleBadge hue={bundle.hue} icon={bundle.icon} />
+            </Box>
+            <Stack flex={1} space={2}>
+              <Flex align="center" gap={2}>
+                <Text size={1} weight="medium">
+                  {bundle.title}
+                </Text>
+              </Flex>
+            </Stack>
+          </Flex>
+        </Card>
+      </Tooltip>
     </Box>
   )
 }
@@ -61,7 +73,7 @@ export const releasesOverviewColumnDefs: Column<TableBundle>[] = [
     cell: ({datum: {documentsMetadata}, cellProps}) => (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
         <Text muted size={1}>
-          {documentsMetadata.documentCount}
+          {documentsMetadata?.documentCount || 0}
         </Text>
       </Flex>
     ),
@@ -77,7 +89,7 @@ export const releasesOverviewColumnDefs: Column<TableBundle>[] = [
     ),
     cell: ({cellProps, datum: bundle}) => (
       <Flex {...cellProps} align="center" gap={2} paddingX={2} paddingY={3} sizing="border">
-        {bundle.authorId && <UserAvatar size={0} user={bundle.authorId} />}
+        {!!bundle.authorId && <UserAvatar size={0} user={bundle.authorId} />}
         <Text muted size={1}>
           <RelativeTime time={bundle._createdAt} useTemporalPhrase minimal />
         </Text>
@@ -95,7 +107,7 @@ export const releasesOverviewColumnDefs: Column<TableBundle>[] = [
     ),
     cell: ({datum: {documentsMetadata}, cellProps}) => (
       <Flex {...cellProps} align="center" gap={2} paddingX={2} paddingY={3} sizing="border">
-        {documentsMetadata.updatedAt && (
+        {!!documentsMetadata?.updatedAt && (
           <Text muted size={1}>
             <RelativeTime time={documentsMetadata.updatedAt} useTemporalPhrase minimal />
           </Text>
