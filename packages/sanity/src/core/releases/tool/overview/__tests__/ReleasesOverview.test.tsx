@@ -150,7 +150,6 @@ describe('ReleasesOverview', () => {
       })
       mockUseBundlesMetadata.mockReturnValue({
         loading: false,
-        fetching: false,
         error: null,
         data: Object.fromEntries(
           bundles.map((bundle, index) => [
