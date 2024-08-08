@@ -1,5 +1,5 @@
 import {AvatarStack, Box, Flex, Text} from '@sanity/ui'
-import {type BundleDocument, UserAvatar} from 'sanity'
+import {type BundleDocument, type TFunction, UserAvatar} from 'sanity'
 
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
@@ -9,11 +9,17 @@ import {type BundleDocumentRow} from '../ReleaseSummary'
 
 export const getDocumentTableColumnDefs: (
   releaseSlug: BundleDocument['slug'],
-) => Column<BundleDocumentRow>[] = (releaseSlug) => [
+  t: TFunction<'releases', undefined>,
+) => Column<BundleDocumentRow>[] = (releaseSlug, t) => [
   {
     id: 'search',
     width: null,
-    header: (props) => <Headers.TableHeaderSearch {...props} placeholder="Search documents" />,
+    header: (props) => (
+      <Headers.TableHeaderSearch
+        {...props}
+        placeholder={t('release.search-documents-placeholder')}
+      />
+    ),
     cell: ({cellProps, datum: {document, previewValues, validation}}) => (
       <Box {...cellProps} flex={1} padding={1}>
         <ReleaseDocumentPreview
@@ -33,7 +39,7 @@ export const getDocumentTableColumnDefs: (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text="Created" {...props} />
+        <Headers.SortHeaderButton text={t('release.table-header.created')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: {document, history}}) => (
@@ -55,7 +61,7 @@ export const getDocumentTableColumnDefs: (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text="Edited" {...props} />
+        <Headers.SortHeaderButton text={t('release.table-header.edited')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: {document, history}}) => (
@@ -77,7 +83,7 @@ export const getDocumentTableColumnDefs: (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text="Published" {...props} />
+        <Headers.SortHeaderButton text={t('release.table-header.published')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum: {document}}) => (
@@ -108,7 +114,7 @@ export const getDocumentTableColumnDefs: (
       <Flex {...headerProps} paddingY={3} sizing="border">
         <Box padding={2}>
           <Text muted size={1} weight="medium">
-            Contributors
+            {t('release.table-header.contributors')}
           </Text>
         </Box>
       </Flex>

@@ -1,6 +1,7 @@
 import {DocumentsIcon} from '@sanity/icons'
 import {AvatarStack, Box, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
 import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
+import {Translate, useTranslation} from 'sanity'
 
 import {
   BundleIconEditorPicker,
@@ -12,6 +13,7 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {Chip} from '../../components/Chip'
 import {Table} from '../../components/Table/Table'
+import {releasesLocaleNamespace} from '../../i18n'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
@@ -39,6 +41,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, collaborators, scrollContainerRef} = props
   const {hue, icon} = release
   const {client} = useAddonDataset()
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const [iconValue, setIconValue] = useState<BundleIconEditorPickerValue>(setIconHue({hue, icon}))
   const toast = useToast()
@@ -88,8 +91,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     )
 
   const documentTableColumnDefs = useMemo(
-    () => getDocumentTableColumnDefs(release.slug),
-    [release.slug],
+    () => getDocumentTableColumnDefs(release.slug, t),
+    [release.slug, t],
   )
   // update hue and icon when release changes
   useEffect(() => setIconValue(setIconHue({hue, icon})), [hue, icon])
@@ -124,7 +127,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         <Flex>
           <Flex flex={1} gap={2}>
             <Chip
-              text={<>{documents.length} documents</>}
+              text={<>{t('release.summary.document-count', {count: documents.length})}</>}
               icon={
                 <Text size={1}>
                   <DocumentsIcon />
@@ -137,7 +140,15 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
               avatar={<UserAvatar size={0} user={release.authorId} />}
               text={
                 <span>
-                  Created <RelativeTime time={release._createdAt} useTemporalPhrase />
+                  <Translate
+                    t={t}
+                    i18nKey={'release.summary.created'}
+                    components={{
+                      RelativeTime: () => (
+                        <RelativeTime time={release._createdAt} useTemporalPhrase />
+                      ),
+                    }}
+                  />
                 </span>
               }
             />
@@ -151,10 +162,19 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
                 text={
                   release.publishedAt ? (
                     <span>
-                      Published <RelativeTime time={release.publishedAt} useTemporalPhrase />
+                      <Translate
+                        t={t}
+                        i18nKey={'release.summary.published'}
+                        components={{
+                          RelativeTime: () =>
+                            release.publishedAt && (
+                              <RelativeTime time={release.publishedAt} useTemporalPhrase />
+                            ),
+                        }}
+                      />
                     </span>
                   ) : (
-                    'Not published'
+                    t('release.summary.not-published')
                   )
                 }
               />
@@ -174,7 +194,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
       <Table<DocumentWithHistory>
         data={aggregatedData}
-        emptyState="No documents"
+        emptyState={t('release.summary.no-documents')}
         rowId="document._id"
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}

@@ -2,13 +2,14 @@ import {ArrowLeftIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {useCallback, useEffect, useMemo, useRef} from 'react'
-import {LoadingBlock} from 'sanity'
+import {LoadingBlock, useTranslation} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components'
 import {useBundles} from '../../../store/bundles'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {ReleasePublishAllButton} from '../../components/ReleasePublishAllButton/ReleasePublishAllButton'
+import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleasesRouterState} from '../../types/router'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseReview} from './ReleaseReview'
@@ -48,6 +49,8 @@ export const ReleaseDetail = () => {
   const bundleHasDocuments = !!results.length
   const showPublishButton = loading || !bundle?.publishedAt
   const isPublishButtonDisabled = loading || !bundle || !bundleHasDocuments
+
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const navigateToReview = useCallback(() => {
     router.navigate({
@@ -99,14 +102,14 @@ export const ReleaseDetail = () => {
                 mode="bleed"
                 onClick={navigateToSummary}
                 selected={activeScreen === 'summary'}
-                text="Summary"
+                text={t('release.actions.summary')}
               />
               {/* StudioButton supports tooltip when button is disabled */}
               {!bundle?.publishedAt && (
                 <Button
                   tooltipProps={{
                     disabled: bundleHasDocuments,
-                    content: 'Add documents to this release to review changes',
+                    content: t('release.review.description'),
                     placement: 'bottom',
                   }}
                   key="review"
@@ -114,7 +117,7 @@ export const ReleaseDetail = () => {
                   mode="bleed"
                   onClick={navigateToReview}
                   selected={activeScreen === 'review'}
-                  text="Review changes"
+                  text={t('release.action.review')}
                 />
               )}
             </Flex>
@@ -143,6 +146,7 @@ export const ReleaseDetail = () => {
       results,
       router,
       showPublishButton,
+      t,
     ],
   )
   const scrollContainerRef = useRef(null)
@@ -183,7 +187,7 @@ export const ReleaseDetail = () => {
       <Card flex={1} tone="critical">
         <Container width={0}>
           <Stack paddingX={4} paddingY={6} space={1}>
-            <Heading>Release not found: {bundleSlug}</Heading>
+            <Heading>{t('release.not-found', {bundleSlug})}</Heading>
           </Stack>
         </Container>
       </Card>
@@ -195,7 +199,11 @@ export const ReleaseDetail = () => {
       {header}
       <Flex paddingX={4} ref={scrollContainerRef} overflow="auto">
         <Container width={2} paddingX={2}>
-          {documentsLoading ? <LoadingBlock title="Loading documents" /> : detailContent}
+          {documentsLoading ? (
+            <LoadingBlock title={t('release.document-loading')} />
+          ) : (
+            detailContent
+          )}
         </Container>
       </Flex>
     </Flex>

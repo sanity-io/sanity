@@ -1,6 +1,7 @@
 import {ChevronDownIcon, ChevronRightIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {AvatarStack, Box, Card, Flex} from '@sanity/ui'
+import {Translate, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {RelativeTime} from '../../../../components/RelativeTime'
@@ -8,6 +9,7 @@ import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {Chip} from '../../../components/Chip'
 import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
+import {releasesLocaleNamespace} from '../../../i18n'
 import {type DocumentValidationStatus} from '../useBundleDocuments'
 
 export function DocumentReviewHeader({
@@ -33,6 +35,7 @@ export function DocumentReviewHeader({
     editors: string[]
   }
 }) {
+  const {t} = useTranslation(releasesLocaleNamespace)
   return (
     <Card tone={validation?.hasError ? 'critical' : 'default'} radius={3}>
       <Flex justify="space-between" align="center" paddingY={1} paddingX={2}>
@@ -62,7 +65,15 @@ export function DocumentReviewHeader({
               avatar={<UserAvatar size={0} user={history?.createdBy} />}
               text={
                 <span>
-                  Created <RelativeTime time={document._createdAt} useTemporalPhrase />
+                  <Translate
+                    t={t}
+                    i18nKey={'release.created'}
+                    components={{
+                      RelativeTime: () => (
+                        <RelativeTime time={document._createdAt} useTemporalPhrase />
+                      ),
+                    }}
+                  />
                 </span>
               }
             />
@@ -72,7 +83,15 @@ export function DocumentReviewHeader({
               avatar={<UserAvatar size={0} user={history?.lastEditedBy} />}
               text={
                 <span>
-                  Edited <RelativeTime time={document._updatedAt} useTemporalPhrase />
+                  <Translate
+                    t={t}
+                    i18nKey={'release.review.edited'}
+                    components={{
+                      RelativeTime: () => (
+                        <RelativeTime time={document._updatedAt} useTemporalPhrase />
+                      ),
+                    }}
+                  />
                 </span>
               }
             />

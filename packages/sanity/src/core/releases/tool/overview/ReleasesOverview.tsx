@@ -2,6 +2,7 @@ import {AddIcon} from '@sanity/icons'
 import {Box, Button, type ButtonMode, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {isBefore} from 'date-fns'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useTranslation} from 'sanity'
 
 import {Button as StudioButton} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
@@ -9,6 +10,7 @@ import {type BundleDocument, useBundles} from '../../../store'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {Table} from '../../components/Table/Table'
 import {type TableSort} from '../../components/Table/TableProvider'
+import {releasesLocaleNamespace} from '../../i18n'
 import {containsBundles} from '../../types/bundle'
 import {type BundlesMetadata, useBundlesMetadata} from '../useBundlesMetadata'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
@@ -30,6 +32,8 @@ export function ReleasesOverview() {
   const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
   const loading = loadingBundles || loadingBundlesMetadata
   const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleSlugs.length))
+  const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
@@ -84,7 +88,7 @@ export function ReleasesOverview() {
           {...groupModeButtonBaseProps}
           onClick={handleBundleGroupModeChange}
           selected={bundleGroupMode === 'open'}
-          text="Open"
+          text={t('release.action.open')}
           value="open"
         />
         {/* StudioButton supports tooltip when button is disabled */}
@@ -93,12 +97,12 @@ export function ReleasesOverview() {
           disabled={groupModeButtonBaseProps.disabled || !groupedBundles.archived.length}
           tooltipProps={{
             disabled: groupedBundles.archived.length !== 0,
-            content: 'No archived releases',
+            content: t('release.no-archived-release'),
             placement: 'bottom',
           }}
           onClick={handleBundleGroupModeChange}
           selected={bundleGroupMode === 'archived'}
-          text="Archived"
+          text={t('release.action.archived')}
           value="archived"
         />
       </Flex>
@@ -109,6 +113,7 @@ export function ReleasesOverview() {
     handleBundleGroupModeChange,
     hasBundles,
     loading,
+    t,
   ])
 
   const createReleaseButton = useMemo(
@@ -119,10 +124,10 @@ export function ReleasesOverview() {
         onClick={() => setIsCreateBundleDialogOpen(true)}
         padding={2}
         space={2}
-        text="Create release"
+        text={tCore('bundle.action.create')}
       />
     ),
-    [isCreateBundleDialogOpen],
+    [isCreateBundleDialogOpen, tCore],
   )
 
   const renderCreateBundleDialog = () => {
@@ -160,14 +165,13 @@ export function ReleasesOverview() {
           <Flex align="flex-start" flex={1} gap={4}>
             <Stack paddingY={1} space={4}>
               <Heading as="h1" size={2} style={{margin: '1px 0'}}>
-                Releases
+                {t('release.overview.title')}
               </Heading>
               {!loading && !hasBundles && (
                 <Container style={{margin: 0}} width={0}>
                   <Stack space={5}>
                     <Text data-testid="no-bundles-info-text" muted size={2}>
-                      Releases are collections of document versions which can be managed and
-                      published together.
+                      {t('release.overview.description')}
                     </Text>
                     <Box>{createReleaseButton}</Box>
                   </Stack>
@@ -187,7 +191,7 @@ export function ReleasesOverview() {
             data={groupedBundles[bundleGroupMode]}
             columnDefs={releasesOverviewColumnDefs}
             searchFilter={applySearchTermToBundles}
-            emptyState="No Releases"
+            emptyState={t('release.no-releases')}
             rowId="_id"
             rowActions={renderRowActions}
             scrollContainerRef={scrollContainerRef}
