@@ -36,6 +36,16 @@ export default defineConfig({
     ],
   },
 
+  extract: {
+    ...baseConfig.extract,
+    // By default pkg-utils will add deps in devDependencies that are not in peerDependencies to the list over bundledPackages
+    // but we don't want certain deps like `ora` to be a peer dep, or attempt bundling its typings, so we exclude it here
+    bundledPackages: (prev) => {
+      const denyList = new Set(['ora', '@types/inquirer', 'vite'])
+      return prev.filter((pkg) => !denyList.has(pkg))
+    },
+  },
+
   bundles: [
     {
       source: './src/cli.ts',

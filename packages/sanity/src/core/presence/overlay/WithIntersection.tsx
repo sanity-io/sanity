@@ -21,5 +21,5 @@ export const WithIntersection = (props: WithIntersectionProps & HTMLProps<HTMLDi
       .subscribe()
     return () => subscription.unsubscribe()
   }, [io, id, onIntersection])
-  return <div ref={element} {...rest} />
+  return <div {...rest} ref={element} />
 }

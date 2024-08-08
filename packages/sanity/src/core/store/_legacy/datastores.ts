@@ -281,22 +281,22 @@ export function useBundlesStore(): BundlesStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
   const currentUser = useCurrentUser()
-  const {client: addOnClient} = useAddonDataset()
+  const {client: addonClient, ready} = useAddonDataset()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   return useMemo(() => {
     const bundlesStore =
       resourceCache.get<BundlesStore>({
-        dependencies: [workspace, addOnClient],
+        dependencies: [workspace, addonClient, {addonClientReady: ready}],
         namespace: 'BundlesStore',
-      }) || createBundlesStore({addOnClient, studioClient, currentUser})
+      }) || createBundlesStore({addonClient, studioClient, addonClientReady: ready, currentUser})
 
     resourceCache.set({
-      dependencies: [workspace, addOnClient],
+      dependencies: [workspace, addonClient, {addonClientReady: ready}],
       namespace: 'BundlesStore',
       value: bundlesStore,
     })
 
     return bundlesStore
-  }, [addOnClient, currentUser, resourceCache, studioClient, workspace])
+  }, [addonClient, resourceCache, studioClient, workspace, ready, currentUser])
 }

@@ -292,8 +292,8 @@ export const Rule: RuleClass = class Rule implements IRule {
     a?: string | {name?: string; invert?: boolean},
     b?: {name?: string; invert?: boolean},
   ): Rule {
-    const name = typeof a === 'string' ? a : a?.name ?? b?.name
-    const invert = typeof a === 'string' ? false : a?.invert ?? b?.invert
+    const name = typeof a === 'string' ? a : (a?.name ?? b?.name)
+    const invert = typeof a === 'string' ? false : (a?.invert ?? b?.invert)
 
     const constraint: RuleSpecConstraint<'regex'> = {
       pattern,

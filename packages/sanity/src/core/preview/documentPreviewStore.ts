@@ -5,7 +5,6 @@ import {
   type WelcomeEvent,
 } from '@sanity/client'
 import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
-import {pick} from 'lodash'
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
@@ -126,7 +125,7 @@ export function createDocumentPreviewStore({
   const globalListener = createGlobalListener(versionedClient).pipe(
     filter(
       (event): event is MutationEvent | WelcomeEvent =>
-        // ignore reconnect events for now
+        // ignore reconnect events for now until we know that downstream consumers can handle them
         event.type === 'mutation' || event.type === 'welcome',
     ),
   )
@@ -135,17 +134,7 @@ export function createDocumentPreviewStore({
   )
 
   const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
-
-  function getObserveFields() {
-    if (PREVIEW_FETCH_FULL_DOCUMENTS) {
-      return function observeFields(id: string, fields: string[], apiConfig?: ApiConfig) {
-        return observeDocument(id, apiConfig).pipe(map((doc) => (doc ? pick(doc, fields) : null)))
-      }
-    }
-    return createObserveFields({client: versionedClient, invalidationChannel})
-  }
-
-  const observeFields = getObserveFields()
+  const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
 
   const {observePaths} = createPathObserver({observeFields})
 

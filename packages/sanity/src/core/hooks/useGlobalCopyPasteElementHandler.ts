@@ -3,6 +3,7 @@ import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useEffect, useRef} from 'react'
 import {type FormDocumentValue} from 'sanity'
 
+import {isFileTargetElement} from '../form/inputs/common/fileTarget/fileTarget'
 import {useCopyPaste} from '../studio/copyPaste'
 import {hasSelection, isEmptyFocusPath, isNativeEditableElement} from '../studio/copyPaste/utils'
 
@@ -56,7 +57,8 @@ export function useGlobalCopyPasteElementHandler({
       if (isPasteHotKey(event)) {
         if (
           isNativeEditableElement(targetElement as HTMLElement) ||
-          isEmptyFocusPath(focusPathRef.current)
+          isEmptyFocusPath(focusPathRef.current) ||
+          isFileTargetElement(targetElement as HTMLElement)
         ) {
           return
         }

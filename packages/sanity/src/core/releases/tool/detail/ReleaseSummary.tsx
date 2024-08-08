@@ -1,8 +1,6 @@
 import {DocumentsIcon} from '@sanity/icons'
-import {type SanityDocument} from '@sanity/types'
 import {AvatarStack, Box, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useTableContext} from 'sanity/_singletons'
+import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {
   BundleIconEditorPicker,
@@ -14,57 +12,34 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {Chip} from '../../components/Chip'
 import {Table, type TableProps} from '../../components/Table/Table'
-import {type DocumentValidationStatus} from './bundleDocumentsValidation'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
-import {useDocumentPreviewValues} from './documentTable/useDocumentPreviewValues'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
+import {type DocumentInBundleResult} from './useBundleDocuments'
 
-export type DocumentWithHistory = SanityDocument & {
+export type DocumentWithHistory = DocumentInBundleResult & {
   history: DocumentHistory | undefined
-  validation: DocumentValidationStatus | undefined
 }
-export type BundleDocumentRow = DocumentWithHistory & ReturnType<typeof useDocumentPreviewValues>
+export type BundleDocumentRow = DocumentWithHistory
 
 export interface ReleaseSummaryProps {
-  documents: SanityDocument[]
+  documents: DocumentInBundleResult[]
   documentsHistory: Record<string, DocumentHistory>
   collaborators: string[]
+  scrollContainerRef: RefObject<HTMLDivElement>
   release: BundleDocument
-  validation: Record<string, DocumentValidationStatus>
 }
-
-type AdditionalDocumentTableData = ReturnType<typeof useDocumentPreviewValues>
-
-const getRow =
-  (
-    release: BundleDocument,
-  ): TableProps<DocumentWithHistory, ReturnType<typeof useDocumentPreviewValues>>['Row'] =>
-  ({children, datum}) => {
-    const {searchTerm} = useTableContext()
-    const {previewValues, isLoading} = useDocumentPreviewValues({document: datum, release})
-
-    if (searchTerm) {
-      // Early return to filter out documents that don't match the search term
-      const fallbackTitle = typeof document.title === 'string' ? document.title : 'Untitled'
-      const title = typeof previewValues.title === 'string' ? previewValues.title : fallbackTitle
-      if (!title.toLowerCase().includes(searchTerm.toLowerCase())) return null
-    }
-
-    return children({...datum, previewValues, isLoading})
-  }
 
 const setIconHue = ({hue, icon}: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}) => ({
   hue: hue ?? 'gray',
   icon: icon ?? 'documents',
 })
 
-const getRowProps: TableProps<DocumentWithHistory, AdditionalDocumentTableData>['rowProps'] = (
-  datum,
-) => (datum?.validation?.hasError ? {tone: 'critical'} : {})
+const getRowProps: TableProps<DocumentWithHistory, undefined>['rowProps'] = (datum) =>
+  datum?.validation?.hasError ? {tone: 'critical'} : {}
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, documentsHistory, release, collaborators, validation} = props
+  const {documents, documentsHistory, release, collaborators, scrollContainerRef} = props
   const {hue, icon} = release
   const {client} = useAddonDataset()
 
@@ -100,13 +75,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     () =>
       documents.map((document) => ({
         ...document,
-        history: documentsHistory[document._id],
-        validation: validation[document._id],
+        history: documentsHistory[document.document._id],
       })),
-    [documents, documentsHistory, validation],
+    [documents, documentsHistory],
   )
-
-  const Row = useMemo(() => getRow(release), [release])
 
   const renderRowActions: ({datum}: {datum: BundleDocumentRow | unknown}) => JSX.Element =
     useCallback(
@@ -125,9 +97,19 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   // update hue and icon when release changes
   useEffect(() => setIconValue(setIconHue({hue, icon})), [hue, icon])
 
+  const filterRows = useCallback(
+    (data: DocumentWithHistory[], searchTerm: string) =>
+      data.filter(({previewValues}) => {
+        const title =
+          typeof previewValues.values.title === 'string' ? previewValues.values.title : 'Untitled'
+        return title.toLowerCase().includes(searchTerm.toLowerCase())
+      }),
+    [],
+  )
+
   return (
-    <Stack paddingX={4} space={5}>
-      <Stack space={4} data-testid="summary">
+    <>
+      <Stack space={4} data-testid="summary" paddingTop={6} paddingBottom={5}>
         <Flex>
           <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
         </Flex>
@@ -193,15 +175,16 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         </Flex>
       </Stack>
 
-      <Table<DocumentWithHistory, AdditionalDocumentTableData>
+      <Table<DocumentWithHistory>
         data={aggregatedData}
         emptyState="No documents"
-        rowId="_id"
-        Row={Row}
+        rowId="document._id"
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}
+        searchFilter={filterRows}
         rowProps={getRowProps}
+        scrollContainerRef={scrollContainerRef}
       />
-    </Stack>
+    </>
   )
 }

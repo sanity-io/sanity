@@ -214,21 +214,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const [timelineError, setTimelineError] = useState<Error | null>(null)
 
   /**
-   * The `preferLatestPublished` parameter can be used to "force" viewing the revision
-   * of the last published document. This is not a permanent function, and will likely
-   * be removed when we move to a more robust way of viewing "releases".
-   */
-  useEffect(() => {
-    if (params.prefersLatestPublished && editState.published) {
-      setPaneParams({
-        //ensure we only run on first load
-        ...omit(params, 'prefersLatestPublished'),
-        rev: `${editState.published._updatedAt}/${editState.published._rev}`,
-      })
-    }
-  }, [editState, setPaneParams, params])
-
-  /**
    * Create an intermediate store which handles document Timeline + TimelineController
    * creation, and also fetches pre-requsite document snapshots. Compatible with `useSyncExternalStore`
    * and made available to child components via DocumentPaneContext.

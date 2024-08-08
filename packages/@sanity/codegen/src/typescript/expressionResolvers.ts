@@ -20,9 +20,24 @@ export interface NamedQueryResult {
   name: string
   /** result is a groq query */
   result: resolveExpressionReturnType
+
+  /** location is the location of the query in the source */
+  location: {
+    start?: {
+      line: number
+      column: number
+      index: number
+    }
+    end?: {
+      line: number
+      column: number
+      index: number
+    }
+  }
 }
 
 const TAGGED_TEMPLATE_ALLOW_LIST = ['groq']
+const FUNCTION_WRAPPER_ALLOW_LIST = ['defineQuery']
 
 /**
  * resolveExpression takes a node and returns the resolved value of the expression.
@@ -122,6 +137,22 @@ export function resolveExpression({
       file,
       babelConfig,
       resolver,
+    })
+  }
+
+  if (
+    babelTypes.isCallExpression(node) &&
+    babelTypes.isIdentifier(node.callee) &&
+    FUNCTION_WRAPPER_ALLOW_LIST.includes(node.callee.name)
+  ) {
+    return resolveExpression({
+      node: node.arguments[0],
+      scope,
+      filename,
+      file,
+      resolver,
+      babelConfig,
+      params,
     })
   }
 

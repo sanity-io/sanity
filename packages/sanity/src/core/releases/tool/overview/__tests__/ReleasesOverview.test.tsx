@@ -41,7 +41,6 @@ describe('ReleasesOverview', () => {
       })
       mockUseBundlesMetadata.mockReturnValue({
         loading: true,
-        fetching: true,
         error: null,
         data: null,
       })
@@ -81,7 +80,6 @@ describe('ReleasesOverview', () => {
       })
       mockUseBundlesMetadata.mockReturnValue({
         loading: false,
-        fetching: false,
         error: null,
         data: null,
       })
@@ -90,12 +88,12 @@ describe('ReleasesOverview', () => {
       return render(<ReleasesOverview />, {wrapper})
     })
 
-    it('shows a message that no bundles are available', () => {
-      screen.getByText('No Releases')
+    it('shows a message about bundles', () => {
+      screen.getByTestId('no-bundles-info-text')
     })
 
-    it('does not allow for bundle search', () => {
-      expect(screen.getByPlaceholderText('Search releases')).toBeDisabled()
+    it('does not show the bundles table', () => {
+      expect(screen.queryByRole('table')).toBeNull()
     })
 
     it('does not show bundle history mode switch', () => {
@@ -152,7 +150,6 @@ describe('ReleasesOverview', () => {
       })
       mockUseBundlesMetadata.mockReturnValue({
         loading: false,
-        fetching: false,
         error: null,
         data: Object.fromEntries(
           bundles.map((bundle, index) => [

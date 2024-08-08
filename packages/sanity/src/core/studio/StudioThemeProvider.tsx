@@ -22,7 +22,7 @@ function getThemeValues(theme: StudioTheme): RootTheme {
   return {
     ...defaultTheme,
     v2: theme.v2,
-    fonts: isThemerTheme(theme) ? defaultTheme.fonts : theme.fonts ?? defaultTheme.fonts,
+    fonts: isThemerTheme(theme) ? defaultTheme.fonts : (theme.fonts ?? defaultTheme.fonts),
     color: theme.color ?? defaultTheme.color,
   }
 }
