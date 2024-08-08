@@ -4,6 +4,10 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from '../BundleIconEditorPicker'
 
+jest.mock('sanity', () => ({
+  useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
+}))
+
 describe('BundleIconEditorPicker', () => {
   const onChangeMock = jest.fn()
   const valueMock: BundleIconEditorPickerValue = {
