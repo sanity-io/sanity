@@ -81,6 +81,7 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
             mode="bleed"
             padding={2}
             aria-label={t('menu.label')}
+            data-testid="release-menu-button"
           />
         }
         id="bundle-menu"
@@ -90,16 +91,19 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
               onClick={() => setSelectedAction('edit')}
               icon={EditIcon}
               text={t('action.edit')}
+              data-testid="edit-release"
             />
             <MenuItem
               onClick={handleOnToggleArchive}
               icon={isBundleArchived ? UnarchiveIcon : ArchiveIcon}
               text={isBundleArchived ? t('action.unarchive') : t('action.archive')}
+              data-testid="archive-release"
             />
             <MenuItem
               onClick={() => setSelectedAction('delete')}
               icon={TrashIcon}
               text={t('action.delete')}
+              data-testid="delete-release"
             />
           </Menu>
         }
@@ -113,7 +117,7 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
       {selectedAction === 'delete' && (
         <Dialog
           id="discard-version-dialog"
-          header={`Are you sure you want to delete the '${bundle?.title}' release?`}
+          header={t('delete-dialog.header', {title: bundle?.title})}
           onClose={resetSelectedAction}
           // remove body padding if no documents in release
           padding={bundleHasDocuments}
