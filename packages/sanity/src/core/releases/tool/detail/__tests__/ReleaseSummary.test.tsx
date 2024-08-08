@@ -1,5 +1,4 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
-import {type SanityDocument} from '@sanity/types'
 import {fireEvent, render, screen, within} from '@testing-library/react'
 import {type BundleDocument, defineType} from 'sanity'
 import {route, RouterProvider} from 'sanity/router'
@@ -8,15 +7,10 @@ import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQu
 import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
+import {type DocumentInBundleResult} from '../useBundleDocuments'
 
 jest.mock('../../../../studio/addonDataset/useAddonDataset', () => ({
   useAddonDataset: jest.fn().mockReturnValue({client: {}}),
-}))
-
-jest.mock('../documentTable/useDocumentPreviewValues', () => ({
-  useDocumentPreviewValues: ({document}: {document: SanityDocument}) => ({
-    previewValues: {title: document?.title},
-  }),
 }))
 
 jest.mock('../../../../store', () => ({
@@ -30,28 +24,54 @@ jest.mock('../../../../user-color', () => ({
 
 const timeNow = new Date()
 
-const releaseDocuments = [
+const releaseDocuments: DocumentInBundleResult[] = [
   {
-    _id: '123',
-    _type: 'document',
-    // 3 days ago
-    _createdAt: new Date(timeNow.getTime() - 24 * 60 * 60 * 1000 * 3).toISOString(),
-    // 2 days ago
-    _updatedAt: new Date(timeNow.getTime() - 24 * 60 * 60 * 1000 * 2).toISOString(),
-    _version: {},
-    _rev: 'abc',
-    title: 'First document',
+    document: {
+      _id: '123',
+      _type: 'document',
+      // 3 days ago
+      _createdAt: new Date(timeNow.getTime() - 24 * 60 * 60 * 1000 * 3).toISOString(),
+      // 2 days ago
+      _updatedAt: new Date(timeNow.getTime() - 24 * 60 * 60 * 1000 * 2).toISOString(),
+      _version: {},
+      _rev: 'abc',
+      title: 'First document',
+    },
+    previewValues: {
+      values: {
+        title: 'First document',
+      },
+      isLoading: false,
+    },
+    validation: {
+      hasError: false,
+      isValidating: true,
+      validation: [],
+    },
   },
   {
-    _id: '456',
-    _type: 'document',
-    // 24 hrs ago
-    _createdAt: new Date(timeNow.getTime() - 24 * 60 * 60 * 1000).toISOString(),
-    // 12 hrs ago
-    _updatedAt: new Date(timeNow.getTime() - 12 * 60 * 60 * 1000).toISOString(),
-    _version: {},
-    _rev: 'abc',
-    title: 'Second document',
+    document: {
+      _id: '456',
+      _type: 'document',
+      // 24 hrs ago
+      _createdAt: new Date(timeNow.getTime() - 24 * 60 * 60 * 1000).toISOString(),
+      // 12 hrs ago
+      _updatedAt: new Date(timeNow.getTime() - 12 * 60 * 60 * 1000).toISOString(),
+      _version: {},
+      _rev: 'abc',
+      title: 'Second document',
+    },
+    previewValues: {
+      values: {
+        title: 'Second document',
+      },
+      isLoading: false,
+    },
+    validation: {
+      hasError: false,
+      isValidating: true,
+      validation: [],
+    },
   },
 ]
 
@@ -87,6 +107,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
       router={route.create('/test', [route.intents('/intent')])}
     >
       <ReleaseSummary
+        scrollContainerRef={{current: null}}
         documents={releaseDocuments}
         documentsHistory={{
           '123': {
@@ -107,7 +128,6 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
             authorId: 'author-id',
           } as BundleDocument
         }
-        validation={{}}
         {...props}
       />
     </RouterProvider>,
@@ -147,7 +167,7 @@ describe('ReleaseSummary', () => {
   })
 
   describe('documents table', () => {
-    it.only('shows list of all documents in release', () => {
+    it('shows list of all documents in release', () => {
       const documents = screen.getAllByTestId('table-row')
 
       expect(documents).toHaveLength(2)

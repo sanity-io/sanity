@@ -24,7 +24,7 @@ export function DocumentActions({
   const handleDiscardVersion = async () => {
     try {
       setDiscardStatus('discarding')
-      await client.delete(document._id)
+      await client.delete(document.document._id)
       setDiscardStatus('idle')
     } catch (e) {
       setDiscardStatus('error')
@@ -70,7 +70,10 @@ export function DocumentActions({
           }}
         >
           <Card marginBottom={4} radius={2} border>
-            <SanityDefaultPreview {...document.previewValues} isPlaceholder={document.isLoading} />
+            <SanityDefaultPreview
+              {...document.previewValues}
+              isPlaceholder={document.previewValues.isLoading}
+            />
           </Card>
           <Text muted size={1}>
             The <strong>{bundleTitle}</strong> version of this document will be permanently deleted.

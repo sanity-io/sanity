@@ -14,21 +14,21 @@ export const getDocumentTableColumnDefs: (
     id: 'search',
     width: null,
     header: (props) => <Headers.TableHeaderSearch {...props} placeholder="Search documents" />,
-    cell: ({cellProps, datum: document}) => (
+    cell: ({cellProps, datum: {document, previewValues, validation}}) => (
       <Box {...cellProps} flex={1} padding={1}>
         <ReleaseDocumentPreview
           documentId={document._id}
           documentTypeName={document._type}
           releaseSlug={releaseSlug}
-          previewValues={document.previewValues}
-          isLoading={!!document.isLoading}
-          hasValidationError={document.validation?.hasError}
+          previewValues={previewValues.values}
+          isLoading={!!document.isLoading || !!previewValues.isLoading}
+          hasValidationError={validation?.hasError}
         />
       </Box>
     ),
   },
   {
-    id: '_createdAt',
+    id: 'document._createdAt',
     sorting: true,
     width: 130,
     header: (props) => (
@@ -36,13 +36,11 @@ export const getDocumentTableColumnDefs: (
         <Headers.SortHeaderButton text="Created" {...props} />
       </Flex>
     ),
-    cell: ({cellProps, datum: document}) => (
+    cell: ({cellProps, datum: {document, history}}) => (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
         {document._createdAt && (
           <Flex align="center" gap={2}>
-            {document.history?.createdBy && (
-              <UserAvatar size={0} user={document.history.createdBy} />
-            )}
+            {history?.createdBy && <UserAvatar size={0} user={history.createdBy} />}
             <Text muted size={1}>
               <RelativeTime time={document._createdAt} useTemporalPhrase minimal />
             </Text>
@@ -52,7 +50,7 @@ export const getDocumentTableColumnDefs: (
     ),
   },
   {
-    id: '_updatedAt',
+    id: 'document._updatedAt',
     sorting: true,
     width: 130,
     header: (props) => (
@@ -60,13 +58,11 @@ export const getDocumentTableColumnDefs: (
         <Headers.SortHeaderButton text="Edited" {...props} />
       </Flex>
     ),
-    cell: ({cellProps, datum: document}) => (
+    cell: ({cellProps, datum: {document, history}}) => (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
         {document._updatedAt && (
           <Flex align="center" gap={2}>
-            {document.history?.lastEditedBy && (
-              <UserAvatar size={0} user={document.history.lastEditedBy} />
-            )}
+            {history?.lastEditedBy && <UserAvatar size={0} user={history.lastEditedBy} />}
             <Text muted size={1}>
               <RelativeTime time={document._updatedAt} useTemporalPhrase minimal />
             </Text>
@@ -76,7 +72,7 @@ export const getDocumentTableColumnDefs: (
     ),
   },
   {
-    id: '_publishedAt',
+    id: 'document._publishedAt',
     sorting: true,
     width: 130,
     header: (props) => (
@@ -84,7 +80,7 @@ export const getDocumentTableColumnDefs: (
         <Headers.SortHeaderButton text="Published" {...props} />
       </Flex>
     ),
-    cell: ({cellProps, datum: document}) => (
+    cell: ({cellProps, datum: {document}}) => (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
         {/* TODO: How to get the publishedAt date from the document, consider history API */}
         {/* {document._publishedAt && (
