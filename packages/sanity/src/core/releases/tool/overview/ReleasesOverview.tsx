@@ -32,7 +32,7 @@ export function ReleasesOverview() {
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const bundleSlugs = useMemo(() => bundles?.map((bundle) => bundle.slug) || [], [bundles])
   const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
-  const loading = loadingBundles || loadingBundlesMetadata
+  const loading = loadingBundles || (loadingBundlesMetadata && !bundlesMetadata)
   const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleSlugs.length))
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)

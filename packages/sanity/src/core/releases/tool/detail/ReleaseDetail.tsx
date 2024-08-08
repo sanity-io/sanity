@@ -76,16 +76,7 @@ export const ReleaseDetail = () => {
     const isBundleDeleted = !!deletedBundle
 
     return (
-      <Card
-        flex="none"
-        padding={3}
-        // style={{
-        //   position: 'sticky',
-        //   top: 0,
-        //   zIndex: 100,
-        //   backgroundColor: 'var(--card-bg-color)',
-        // }}
-      >
+      <Card flex="none" padding={3}>
         <Flex>
           <Flex align="baseline" flex={1} gap={2}>
             <Flex gap={1}>

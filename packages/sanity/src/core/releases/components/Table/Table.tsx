@@ -10,6 +10,7 @@ import {
   Fragment,
   type HTMLProps,
   type MutableRefObject,
+  type ReactNode,
   type RefAttributes,
   useMemo,
   useRef,
@@ -46,7 +47,7 @@ export interface TableProps<TableData, AdditionalRowTableData> {
     datum,
   }: {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
-  }) => JSX.Element
+  }) => ReactNode
   rowProps: (datum: TableData) => Partial<TableRowProps>
   scrollContainerRef: MutableRefObject<HTMLDivElement | null>
 }

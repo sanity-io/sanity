@@ -1,5 +1,5 @@
 import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
-import {type User} from '@sentry/types'
+import {type User} from '@sanity/types'
 import {
   BehaviorSubject,
   catchError,
@@ -221,7 +221,7 @@ export function createBundlesStore(context: {
               type: 'BUNDLE_DELETED',
               id: event.documentId,
               deletedByUserId: event.identity,
-              currentUserId: currentUser?.id?.toString() || '',
+              currentUserId: currentUser?.id?.toString(),
             })
           }
 

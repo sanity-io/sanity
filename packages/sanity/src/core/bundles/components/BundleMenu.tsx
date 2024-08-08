@@ -34,24 +34,25 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
   const {deletedBundles} = useBundles()
   const {currentGlobalBundle, setPerspective} = usePerspective()
-  const deletedBundlesArray = Object.values(deletedBundles).map((bundle) => ({
-    ...bundle,
-    isDeleted: true,
-  }))
 
-  const bundlesToDisplay = useMemo(
-    () =>
-      (
-        (
-          [...(bundles || []), ...deletedBundlesArray] as (BundleDocument & {isDeleted?: boolean})[]
-        ).filter((bundle) => !isDraftOrPublished(bundle.slug) && !bundle.archivedAt) || []
-      ).sort(
-        ({isDeleted: AIsDeleted = false}, {isDeleted: BIsDeleted = false}) =>
-          Number(AIsDeleted) - Number(BIsDeleted),
-      ),
-    [bundles, deletedBundlesArray],
-  )
-  const hasBundles = bundlesToDisplay.length > 0
+  const sortedBundlesToDisplay = useMemo(() => {
+    const deletedBundlesArray = Object.values(deletedBundles).map((bundle) => ({
+      ...bundle,
+      isDeleted: true,
+    }))
+    const allBundles: (BundleDocument & {isDeleted?: boolean})[] = [
+      ...(bundles || []),
+      ...deletedBundlesArray,
+    ]
+
+    return allBundles
+      .filter((bundle) => !isDraftOrPublished(bundle.slug) && !bundle.archivedAt)
+      .sort(
+        ({isDeleted: aIsDeleted = false}, {isDeleted: bIsDeleted = false}) =>
+          Number(aIsDeleted) - Number(bIsDeleted),
+      )
+  }, [bundles, deletedBundles])
+  const hasBundles = sortedBundlesToDisplay.length > 0
 
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
@@ -60,11 +61,6 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
       }
     },
     [setPerspective],
-  )
-
-  const isBundleDisabled = useCallback(
-    ({slug}: BundleDocument) => Boolean(deletedBundles[slug]),
-    [deletedBundles],
   )
 
   return (
@@ -95,17 +91,17 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                   <>
                     <MenuDivider />
                     <StyledBox data-testid="bundles-list">
-                      {bundlesToDisplay.map((bundle) => (
+                      {sortedBundlesToDisplay.map((bundle) => (
                         <MenuItem
                           key={bundle.slug}
                           onClick={handleBundleChange(bundle)}
                           padding={1}
                           pressed={false}
-                          disabled={isBundleDisabled(bundle)}
+                          disabled={bundle.isDeleted}
                           data-testid={`bundle-${bundle.slug}`}
                         >
                           <Tooltip
-                            disabled={!isBundleDisabled(bundle)}
+                            disabled={!bundle.isDeleted}
                             content="This release has been deleted"
                             placement="bottom-start"
                           >
@@ -114,7 +110,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                 hue={bundle.hue}
                                 icon={bundle.icon}
                                 padding={2}
-                                isDisabled={isBundleDisabled(bundle)}
+                                isDisabled={bundle.isDeleted}
                               />
 
                               <Box flex={1} padding={2} style={{minWidth: 100}}>

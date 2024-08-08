@@ -2,7 +2,7 @@ import {type BundleDocument} from './types'
 
 interface BundleDeletedAction {
   id: string
-  currentUserId: string
+  currentUserId?: string
   deletedByUserId: string
   type: 'BUNDLE_DELETED'
 }
@@ -94,7 +94,7 @@ export function bundlesReducer(
 
       // only capture the deleted bundle if deleted by another user
       const nextDeletedBundles =
-        !isDeletedByCurrentUser && localDeletedBundle
+        !!isDeletedByCurrentUser && localDeletedBundle
           ? {
               ...state.deletedBundles,
               [localDeletedBundle.slug]: localDeletedBundle,

@@ -72,11 +72,9 @@ export const releasesOverviewColumnDefs: Column<TableBundle>[] = [
     ),
     cell: ({datum: {documentsMetadata}, cellProps}) => (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        {!!documentsMetadata?.documentCount && (
-          <Text muted size={1}>
-            {documentsMetadata.documentCount}
-          </Text>
-        )}
+        <Text muted size={1}>
+          {documentsMetadata?.documentCount || 0}
+        </Text>
       </Flex>
     ),
   },
