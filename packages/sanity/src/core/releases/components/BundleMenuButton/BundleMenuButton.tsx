@@ -121,9 +121,10 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
           onClose={resetSelectedAction}
           // remove body padding if no documents in release
           padding={bundleHasDocuments}
+          data-testid="delete-dialog"
           footer={{
             confirmButton: {
-              text: 'Delete',
+              text: t('action.delete'),
               tone: 'default',
               onClick: handleOnDeleteBundle,
               loading: discardStatus === 'discarding',
