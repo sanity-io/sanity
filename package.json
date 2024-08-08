@@ -111,6 +111,7 @@
     "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/pkg-utils": "6.10.9",
     "@sanity/prettier-config": "^1.0.2",
+    "@sanity/styled-components": "^6.1.13",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.90",
     "@sanity/ui": "^2.8.8",

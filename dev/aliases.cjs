@@ -1,6 +1,5 @@
-'use strict'
-
 /* eslint-disable tsdoc/syntax */
+const path = require('node:path')
 
 /**
  * The path mappings/aliases used by various tools in the monorepo to map imported modules to
@@ -26,6 +25,8 @@ const devAliases = {
   '@sanity/util': './packages/@sanity/util/src/_exports',
   '@sanity/vision': './packages/@sanity/vision/src',
   'sanity': './packages/sanity/src/_exports',
+  // in the monorepo, use our fork of styled-components with `useInsertionEffect`
+  'styled-components': path.dirname(require.resolve('@sanity/styled-components/package.json')),
 }
 
 module.exports = devAliases
