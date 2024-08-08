@@ -165,13 +165,13 @@ export function ReleasesOverview() {
           <Flex align="flex-start" flex={1} gap={4}>
             <Stack paddingY={1} space={4}>
               <Heading as="h1" size={2} style={{margin: '1px 0'}}>
-                {t('release.overview.title')}
+                {t('overview.title')}
               </Heading>
               {!loading && !hasBundles && (
                 <Container style={{margin: 0}} width={0}>
                   <Stack space={5}>
                     <Text data-testid="no-bundles-info-text" muted size={2}>
-                      {t('release.overview.description')}
+                      {t('overview.description')}
                     </Text>
                     <Box>{createReleaseButton}</Box>
                   </Stack>
@@ -191,7 +191,7 @@ export function ReleasesOverview() {
             data={groupedBundles[bundleGroupMode]}
             columnDefs={releasesOverviewColumnDefs}
             searchFilter={applySearchTermToBundles}
-            emptyState={t('release.no-releases')}
+            emptyState={t('no-releases')}
             // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             rowId="_id"
             rowActions={renderRowActions}
