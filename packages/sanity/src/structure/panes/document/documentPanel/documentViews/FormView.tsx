@@ -69,14 +69,14 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
 
   const conditionalToastParams = useMemo(
     () => ({
-      id: `sync-lock-${documentId}`,
+      id: `sync-lock`,
       status: 'warning' as const,
       enabled: isLocked,
       title: t('document-view.form-view.sync-lock-toast.title'),
       description: t('document-view.form-view.sync-lock-toast.description'),
       closable: true,
     }),
-    [documentId, isLocked, t],
+    [isLocked, t],
   )
 
   useConditionalToast(conditionalToastParams)
