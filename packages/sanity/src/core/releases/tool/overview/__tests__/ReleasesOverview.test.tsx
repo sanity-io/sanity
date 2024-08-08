@@ -21,6 +21,7 @@ jest.mock('../../../../store', () => ({
 
 jest.mock('sanity', () => ({
   useCurrentUser: jest.fn().mockReturnValue({user: {id: 'user-id'}}),
+  useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
 }))
 
 jest.mock('sanity/router', () => ({

@@ -103,6 +103,7 @@ export const ReleaseDetail = () => {
                 onClick={navigateToSummary}
                 selected={activeScreen === 'summary'}
                 text={t('actions.summary')}
+                data-testid="summary-button"
               />
               {/* StudioButton supports tooltip when button is disabled */}
               {!bundle?.publishedAt && (
@@ -118,6 +119,7 @@ export const ReleaseDetail = () => {
                   onClick={navigateToReview}
                   selected={activeScreen === 'review'}
                   text={t('action.review')}
+                  data-testid="review-button"
                 />
               )}
             </Flex>

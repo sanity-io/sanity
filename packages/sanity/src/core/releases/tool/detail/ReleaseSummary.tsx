@@ -138,6 +138,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             {/* Created */}
             <Chip
               avatar={<UserAvatar size={0} user={release.authorId} />}
+              data-testid="release-created"
               text={
                 <span>
                   <Translate

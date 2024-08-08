@@ -143,6 +143,7 @@ export const ReleasePublishAllButton = ({
         text={t('action.publish-all')}
         onClick={() => setPublishBundleStatus('confirm')}
         loading={publishBundleStatus === 'publishing'}
+        data-testid="publish-all-button"
       />
       {confirmPublishDialog}
     </>

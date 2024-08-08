@@ -4,7 +4,8 @@ import {type BundleDocument, defineType} from 'sanity'
 import {route, RouterProvider} from 'sanity/router'
 
 import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
-import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
 import {type DocumentInBundleResult} from '../useBundleDocuments'
@@ -76,7 +77,7 @@ const releaseDocuments: DocumentInBundleResult[] = [
 ]
 
 const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
-  const wrapper = await createWrapper({
+  const wrapper = await createTestProvider({
     config: {
       projectId: 'test',
       dataset: 'test',
@@ -98,6 +99,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
         ],
       },
     },
+    resources: [releasesUsEnglishLocaleBundle],
   })
 
   return render(
@@ -154,6 +156,7 @@ describe('ReleaseSummary', () => {
   })
 
   it('shows the creator and date of release', () => {
+    /** ERROR */
     within(screen.getByTestId('summary')).getByText('just now')
   })
 
