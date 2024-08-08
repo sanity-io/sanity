@@ -87,6 +87,8 @@ const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
   'copy-paste.on-copy.validation.copy-document-success.title': 'Document "{{fieldNames}}" copied',
   /** The success message that is shown when a field is copied */
   'copy-paste.on-copy.validation.copy-field_one-success.title': 'Field "{{fieldName}}" copied',
+  /** The success message that is shown when a array item is copied */
+  'copy-paste.on-copy.validation.copy-item_one-success.title': 'Item "{{typeName}}" copied',
 })
 
 /**

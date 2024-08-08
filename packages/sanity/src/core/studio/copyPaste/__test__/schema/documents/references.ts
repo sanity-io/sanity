@@ -10,7 +10,7 @@ export const referencesDocument = defineType({
     eventsArray,
     defineField({
       name: 'arrayOfReferences',
-      title: 'Array of references to authors',
+      title: 'Array of references to editors',
       type: 'array',
       of: [{type: 'reference', to: [{type: 'editor'}]}],
     }),
@@ -40,7 +40,7 @@ export const referencesDocument = defineType({
     }),
     defineField({
       name: 'arrayOfReferencesWithFilter',
-      title: 'Array of references to authors with filter',
+      title: 'Array of references to editors with filter',
       type: 'array',
       of: [
         {

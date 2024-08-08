@@ -1,23 +1,25 @@
 /* eslint-disable max-statements */
 import {useTelemetry} from '@sanity/telemetry/react'
+import {isIndexSegment, isKeySegment, type Path, type PathSegment} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
-import {flatten, isEqual} from 'lodash'
+import {flatten, isEqual, last} from 'lodash'
 import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {CopyPasteContext} from 'sanity/_singletons'
+
 import {
   type FormDocumentValue,
   type FormPatch,
   getPublishedId,
   getValueAtPath,
+  insert,
   PatchEvent,
-  type Path,
   set,
+  setIfMissing,
   useClient,
   useSchema,
   useTranslation,
-} from 'sanity'
-import {CopyPasteContext} from 'sanity/_singletons'
-
+} from '../..'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
@@ -94,14 +96,34 @@ export const CopyPasteProvider: React.FC<{
         return
       }
 
+      const lastSegment = path.length > 0 ? (last(path) as PathSegment) : undefined
+      const isLastSegmentKeyOrIndex =
+        lastSegment && (isKeySegment(lastSegment) || isIndexSegment(lastSegment))
+
+      // If copying an array item, we always set the patch type to append
+      // This only means that it will be appended IF the target schema type is an array
+      const isAppend =
+        options.context.source === 'arrayItem' ||
+        isLastSegmentKeyOrIndex ||
+        options.patchType === 'append'
+      const normalizedPath = isAppend && isLastSegmentKeyOrIndex ? path.slice(0, -1) : path
+      const patchType = isAppend ? 'append' : 'replace'
+
+      // If append and the last path segment is a key or index segment, remove it and wrap in array
+      // This simplifies the logic when we want to paste into another document that can't look up existing
+      // value by key or index
+      const shouldWrapInArray = isLastSegmentKeyOrIndex && !Array.isArray(valueAtPath)
+
+      const isArrayItem = options.context.source === 'arrayItem'
       const payloadValue: SanityClipboardItem = {
         type: 'sanityClipboardItem',
         documentId,
         documentType,
         isDocument,
         schemaTypeName: schemaTypeAtPath.name,
-        valuePath: path,
-        value: valueAtPath,
+        valuePath: normalizedPath,
+        value: shouldWrapInArray ? [valueAtPath] : valueAtPath,
+        patchType,
       }
 
       telemetry.log(FieldCopied, {
@@ -121,15 +143,21 @@ export const CopyPasteProvider: React.FC<{
 
       const fields = schemaTypeAtPath.title || schemaType.name || 'unknown'
 
+      const fieldSuccessTitle = isArrayItem
+        ? t('copy-paste.on-copy.validation.copy-item_one-success.title', {
+            typeName: fields,
+          })
+        : t('copy-paste.on-copy.validation.copy-field_one-success.title', {
+            fieldName: fields,
+          })
+
       toast.push({
         status: 'success',
         title: isDocument
           ? t('copy-paste.on-copy.validation.copy-document-success.title', {
               fieldNames: fields,
             })
-          : t('copy-paste.on-copy.validation.copy-field_one-success.title', {
-              fieldName: fields,
-            }),
+          : fieldSuccessTitle,
       })
     },
     [documentMeta, telemetry, toast, t],
@@ -259,7 +287,31 @@ export const CopyPasteProvider: React.FC<{
           return
         }
 
-        updateItems.push({patches: [set(targetValue, targetPath)], targetSchemaTypeTitle})
+        const patchType = clipboardItem?.patchType || 'replace'
+
+        // If transferring a non-array value into an array, we need to append to it instead
+        const isAppendable =
+          (clipboardItem.schemaTypeName !== 'array' && targetSchemaType.jsonType === 'array') ||
+          patchType === 'append'
+
+        // When pasting into an array, we need to insert the value at the correct index
+        const isAppendPath = isAppendable && targetPath.length > 0
+        const isAppendArray = isAppendPath && targetSchemaType.jsonType === 'array'
+        const insertPath =
+          isAppendable && targetPath.length > 0
+            ? [...targetPath.slice(0, -1), `${targetPath.slice(-1)?.[0]}[-1]`]
+            : targetPath
+
+        // Always ensure the array exists
+        const prefixPatches =
+          targetSchemaType.jsonType === 'array' ? [setIfMissing([], targetPath)] : []
+
+        updateItems.push({
+          patches: isAppendArray
+            ? [...prefixPatches, insert(targetValue as unknown[], 'after', insertPath)]
+            : [...prefixPatches, set(targetValue, targetPath)],
+          targetSchemaTypeTitle,
+        })
       } catch (error) {
         toast.push({
           status: 'error',

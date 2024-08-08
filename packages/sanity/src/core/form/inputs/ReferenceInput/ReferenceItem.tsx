@@ -1,6 +1,7 @@
 import {
+  AddDocumentIcon,
   CloseIcon,
-  CopyIcon as DuplicateIcon,
+  CopyIcon,
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
   TrashIcon,
@@ -81,6 +82,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     value,
     open,
     onInsert,
+    onCopy,
     presence,
     validation,
     inputId,
@@ -125,6 +127,12 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       position: 'after',
     })
   }, [onInsert, value])
+
+  const handleCopy = useCallback(() => {
+    onCopy({
+      items: [{...value, _key: randomKey()}],
+    })
+  }, [onCopy, value])
 
   const handleInsert = useCallback(
     (pos: 'before' | 'after', insertType: SchemaType) => {
@@ -238,8 +246,13 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                       onClick={handleReplace}
                     />
                     <MenuItem
+                      text={t('inputs.reference.action.copy')}
+                      icon={CopyIcon}
+                      onClick={handleCopy}
+                    />
+                    <MenuItem
                       text={t('inputs.reference.action.duplicate')}
-                      icon={DuplicateIcon}
+                      icon={AddDocumentIcon}
                       onClick={handleDuplicate}
                     />
                     {insertBefore.menuItem}
@@ -266,6 +279,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       ),
     [
       OpenLink,
+      handleCopy,
       handleDuplicate,
       handleReplace,
       hasRef,

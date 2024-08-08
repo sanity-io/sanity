@@ -17,7 +17,7 @@ import {
 import {type FocusEvent, type ReactElement, type ReactNode} from 'react'
 
 import {type FormNodePresence} from '../../presence'
-import {type ArrayInputInsertEvent} from './event'
+import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from './event'
 import {type ObjectInputProps} from './inputProps'
 
 /** @public */
@@ -69,6 +69,11 @@ export interface BaseItemProps<T> {
    * @hidden
    * @beta */
   onInsert: (event: Omit<ArrayInputInsertEvent<T>, 'referenceItem'>) => void
+
+  /**
+   * @hidden
+   * @beta */
+  onCopy: (event: Omit<ArrayInputCopyEvent<T>, 'referenceItem'>) => void
 
   /** The children of the item. */
   children: ReactNode

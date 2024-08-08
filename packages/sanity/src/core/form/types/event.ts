@@ -16,6 +16,13 @@ export interface ArrayInputInsertEvent<Item> {
 /**
  * @hidden
  * @beta */
+export interface ArrayInputCopyEvent<Item> {
+  items: Item[]
+}
+
+/**
+ * @hidden
+ * @beta */
 export interface ArrayInputMoveItemEvent {
   fromIndex: number
   toIndex: number

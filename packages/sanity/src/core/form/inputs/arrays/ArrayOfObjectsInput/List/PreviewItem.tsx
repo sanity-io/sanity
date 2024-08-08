@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary, react/jsx-no-bind */
-import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
+import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
@@ -57,6 +57,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     value,
     open,
     onInsert,
+    onCopy,
     onFocus,
     onOpen,
     onClose,
@@ -99,6 +100,12 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
       position: 'after',
     })
   }, [onInsert, value])
+
+  const handleCopy = useCallback(() => {
+    onCopy({
+      items: [{...value, _key: randomKey()}],
+    })
+  }, [onCopy, value])
 
   const handleInsert = useCallback(
     (pos: 'before' | 'after', insertType: SchemaType) => {
@@ -162,8 +169,13 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
                   onClick={onRemove}
                 />
                 <MenuItem
+                  text={t('inputs.array.action.copy')}
+                  icon={CopyIcon}
+                  onClick={handleCopy}
+                />
+                <MenuItem
                   text={t('inputs.array.action.duplicate')}
-                  icon={DuplicateIcon}
+                  icon={AddDocumentIcon}
                   onClick={handleDuplicate}
                 />
                 {insertBefore.menuItem}
@@ -176,7 +188,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           {insertAfter.popover}
         </>
       ),
-    [insertBefore, insertAfter, handleDuplicate, onRemove, props.inputId, readOnly, t],
+    [readOnly, insertBefore, insertAfter, props.inputId, t, onRemove, handleCopy, handleDuplicate],
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
