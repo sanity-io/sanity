@@ -1,9 +1,9 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {Button} from '@sanity/ui'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {fireEvent, render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {act} from 'react'
-import {type BundleDocument} from 'sanity'
+import {type BundleDocument, useBundles} from 'sanity'
 
 import {createWrapper} from '../../../../../test/testUtils/createWrapper'
 import {usePerspective} from '../../hooks/usePerspective'
@@ -20,6 +20,12 @@ jest.mock('../../hooks/usePerspective', () => ({
 jest.mock('../../util/util', () => ({
   isDraftOrPublished: jest.fn(),
 }))
+
+jest.mock('../../../store/bundles/useBundles', () => ({
+  useBundles: jest.fn().mockReturnValue({deletedBundles: {}}),
+}))
+
+const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 
 describe('BundleMenu', () => {
   const mockUsePerspective = usePerspective as jest.Mock
@@ -206,5 +212,33 @@ describe('BundleMenu', () => {
     act(() => {
       expect(screen.getByRole('button', {name: 'Actions'})).toBeInTheDocument()
     })
+  })
+
+  it('should show deleted bundled', async () => {
+    mockUseBundles.mockReturnValue({
+      dispatch: jest.fn(),
+      loading: false,
+      data: [],
+      deletedBundles: {
+        'mock-deleted-bundle': {
+          _id: 'mock-deleted-bundle',
+          _type: 'bundle',
+          slug: 'mock-deleted-bundle',
+          title: 'Mock Deleted Bundle',
+        } as BundleDocument,
+      },
+    })
+    const wrapper = await createWrapper()
+    render(<BundleMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
+      wrapper,
+    })
+
+    fireEvent.click(screen.getByRole('button', {name: 'Button Test'}))
+
+    const allMenuBundles = within(screen.getByTestId('bundles-list')).getAllByRole('menuitem')
+    // deleted should be at the end of the bundle list
+    const [deletedBundle] = allMenuBundles.reverse()
+
+    within(deletedBundle).getByText('Mock Deleted Bundle')
   })
 })

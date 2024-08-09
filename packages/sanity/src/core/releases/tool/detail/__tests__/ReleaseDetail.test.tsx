@@ -448,4 +448,20 @@ describe('after bundles have loaded', () => {
       expect(screen.getByLabelText('Release menu')).toBeDisabled()
     })
   })
+
+  describe('with missing release', () => {
+    beforeEach(async () => {
+      mockUseBundles.mockReturnValue({
+        data: [],
+        loading: false,
+        dispatch: jest.fn(),
+        deletedBundles: {},
+      })
+      await renderTest()
+    })
+
+    it('should show missing release message', () => {
+      screen.getByText('Release not found: test-bundle-slug')
+    })
+  })
 })
