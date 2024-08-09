@@ -2,7 +2,7 @@ import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {type BundleDocument, useBundles} from 'sanity'
 
-import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../../hooks/usePerspective'
 import {BundleDetailsDialog} from '../BundleDetailsDialog'
@@ -52,7 +52,7 @@ describe('BundleDetailsDialog', () => {
 
       //mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
-      const wrapper = await createWrapper()
+      const wrapper = await createTestProvider()
       render(<BundleDetailsDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
     })
 
@@ -117,7 +117,7 @@ describe('BundleDetailsDialog', () => {
 
       //mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
-      const wrapper = await createWrapper()
+      const wrapper = await createTestProvider()
       render(
         <BundleDetailsDialog
           onCancel={onCancelMock}
