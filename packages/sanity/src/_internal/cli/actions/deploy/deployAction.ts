@@ -34,6 +34,7 @@ export default async function deployStudioAction(
     (cliConfig && 'autoUpdates' in cliConfig && cliConfig.autoUpdates === true) ||
     false
   const installedSanityVersion = await getInstalledSanityVersion()
+  const configStudioHost = cliConfig && 'studioHost' in cliConfig && cliConfig.studioHost
 
   const client = apiClient({
     requireUser: true,
@@ -74,12 +75,12 @@ export default async function deployStudioAction(
 
   try {
     // If the user has provided a studioHost in the config, use that
-    if (cliConfig && 'studioHost' in cliConfig && cliConfig.studioHost) {
+    if (configStudioHost) {
       userApplication = await getOrCreateUserApplicationFromConfig({
         client,
         context,
         spinner,
-        appHost: cliConfig.studioHost,
+        appHost: configStudioHost,
       })
     } else {
       userApplication = await getOrCreateUserApplication({
@@ -143,6 +144,14 @@ export default async function deployStudioAction(
 
     // And let the user know we're done
     output.print(`\nSuccess! Studio deployed to ${chalk.cyan(location)}`)
+
+    if (!configStudioHost) {
+      output.print(
+        `\nPlease remember to add ${chalk.cyan(`studioHost: '${userApplication.appHost}'`)}`,
+      )
+      output.print('to defineCliConfig in your sanity.cli.js or sanity.cli.ts file')
+      output.print('to re-deploy or undeploy this studio in the future.')
+    }
   } catch (err) {
     spinner.fail()
     debug('Error deploying studio', err)
