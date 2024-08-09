@@ -9,6 +9,10 @@ import {useBundleOperations} from '../../../../store/bundles/useBundleOperations
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {BundleMenuButton} from '../BundleMenuButton'
 
+jest.mock('sanity', () => ({
+  useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
+}))
+
 jest.mock('../../../../store/bundles/useBundleOperations', () => ({
   useBundleOperations: jest.fn().mockReturnValue({
     deleteBundle: jest.fn(),
@@ -50,10 +54,10 @@ describe('BundleMenuButton', () => {
 
     await renderTest(activeBundle)
 
-    fireEvent.click(screen.getByLabelText('Release menu'))
+    fireEvent.click(screen.getByTestId('release-menu-button'))
 
     await act(() => {
-      fireEvent.click(screen.getByText('Archive'))
+      fireEvent.click(screen.getByTestId('archive-release'))
     })
 
     expect(useBundleOperations().updateBundle).toHaveBeenCalledWith({
@@ -78,10 +82,10 @@ describe('BundleMenuButton', () => {
     }
     await renderTest(archivedBundle)
 
-    fireEvent.click(screen.getByLabelText('Release menu'))
+    fireEvent.click(screen.getByTestId('release-menu-button'))
 
     await act(() => {
-      fireEvent.click(screen.getByText('Unarchive'))
+      fireEvent.click(screen.getByTestId('archive-release'))
     })
 
     expect(useBundleOperations().updateBundle).toHaveBeenCalledWith({
@@ -106,17 +110,16 @@ describe('BundleMenuButton', () => {
     }
     await renderTest(activeBundle)
 
-    fireEvent.click(screen.getByLabelText('Release menu'))
+    fireEvent.click(screen.getByTestId('release-menu-button'))
 
     await act(() => {
-      fireEvent.click(screen.getByText('Delete'))
+      fireEvent.click(screen.getByTestId('delete-release'))
     })
     expect(useBundleOperations().deleteBundle).not.toHaveBeenCalled()
-    // TODO: remove not exact once i18n used for strings
-    screen.getByText('This will also delete 2 document versions', {exact: false})
+    expect(screen.getByTestId('confirm-delete-body')).toBeVisible()
 
     await act(() => {
-      fireEvent.click(screen.getByText('Delete'))
+      fireEvent.click(screen.getByTestId('confirm-button'))
     })
 
     expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(activeBundle)
@@ -139,17 +142,17 @@ describe('BundleMenuButton', () => {
     }
     await renderTest(activeEmptyBundle, 0)
 
-    fireEvent.click(screen.getByLabelText('Release menu'))
+    fireEvent.click(screen.getByTestId('release-menu-button'))
 
     await act(() => {
-      fireEvent.click(screen.getByText('Delete'))
+      fireEvent.click(screen.getByTestId('delete-release'))
     })
     expect(useBundleOperations().deleteBundle).not.toHaveBeenCalled()
     // confirm dialog body is hidden when no documents in bundle
     expect(screen.queryByTestId('confirm-delete-body')).toBeNull()
 
     await act(() => {
-      fireEvent.click(screen.getByText('Delete'))
+      fireEvent.click(screen.getByTestId('confirm-button'))
     })
 
     expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(activeEmptyBundle)

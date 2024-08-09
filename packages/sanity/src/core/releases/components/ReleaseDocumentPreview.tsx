@@ -2,11 +2,12 @@ import {ErrorOutlineIcon} from '@sanity/icons'
 import {type PreviewValue} from '@sanity/types'
 import {Card, Text, Tooltip} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
-import {DocumentPreviewPresence, useDocumentPresence} from 'sanity'
+import {DocumentPreviewPresence, useDocumentPresence, useTranslation} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
 import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
 import {getPublishedId} from '../../util/draftUtils'
+import {releasesLocaleNamespace} from '../i18n'
 
 interface ReleaseDocumentPreviewProps {
   documentId: string
@@ -26,6 +27,7 @@ export function ReleaseDocumentPreview({
   hasValidationError,
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const LinkComponent = useMemo(
     () =>
@@ -65,8 +67,7 @@ export function ReleaseDocumentPreview({
             portal
             content={
               <Text muted size={1}>
-                {/* TODO: clarify copy */}
-                There are validation errors in this document
+                {t('document-validation.error')}
               </Text>
             }
           >

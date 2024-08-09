@@ -1,6 +1,7 @@
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config'
+import {releasesUsEnglishLocaleBundle} from '../i18n'
 import {ReleasesTool} from '../tool/ReleasesTool'
 import {ReleasesStudioLayout} from './ReleasesStudioLayout'
 
@@ -36,4 +37,7 @@ export const releases = definePlugin({
       },
     },
   ],
+  i18n: {
+    bundles: [releasesUsEnglishLocaleBundle],
+  },
 })
