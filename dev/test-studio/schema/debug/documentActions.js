@@ -9,5 +9,10 @@ export default {
       title: 'Title',
     },
     {type: 'datetime', name: 'publishedAt', title: 'Published at'},
+    {
+      name: 'someBoolean',
+      title: 'Some Boolean',
+      type: 'boolean',
+    },
   ],
 }
