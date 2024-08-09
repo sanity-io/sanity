@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import {act} from 'react'
 import {type BundleDocument} from 'sanity'
 
-import {createWrapper} from '../../../../../test/testUtils/createWrapper'
+import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {usePerspective} from '../../hooks/usePerspective'
 import {LATEST} from '../../util/const'
 import {BundleMenu} from '../BundleMenu'
@@ -70,7 +70,7 @@ describe('BundleMenu', () => {
   })
 
   it('should render loading spinner when loading is true', async () => {
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<BundleMenu button={ButtonTest} bundles={[]} loading />, {
       wrapper,
     })
@@ -86,7 +86,7 @@ describe('BundleMenu', () => {
   })
 
   it('should render latest bundle menu item when bundles are null', async () => {
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<BundleMenu button={ButtonTest} bundles={null} loading={false} />, {
       wrapper,
     })
@@ -100,7 +100,7 @@ describe('BundleMenu', () => {
   })
 
   it('should render latest bundle menu item when bundles are archived', async () => {
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     const archivedBundles = mockBundles.map((bundle) => ({
       ...bundle,
       archivedAt: '2024-07-29T01:49:56.066Z',
@@ -123,7 +123,7 @@ describe('BundleMenu', () => {
       setPerspective: jest.fn(),
     })
 
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<BundleMenu button={ButtonTest} bundles={[]} loading={false} />, {
       wrapper,
     })
@@ -142,7 +142,7 @@ describe('BundleMenu', () => {
       setPerspective: jest.fn(),
     })
 
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<BundleMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
       wrapper,
     })
@@ -156,7 +156,7 @@ describe('BundleMenu', () => {
   })
 
   it('should render bundle menu items when bundles are provided', async () => {
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<BundleMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
       wrapper,
     })
@@ -177,7 +177,7 @@ describe('BundleMenu', () => {
       setPerspective,
     })
 
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<BundleMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
       wrapper,
     })
@@ -193,7 +193,7 @@ describe('BundleMenu', () => {
   it('should render actions when actions prop is provided', async () => {
     const actions = <Button>Actions</Button>
 
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(
       <BundleMenu button={ButtonTest} bundles={mockBundles} loading={false} actions={actions} />,
       {

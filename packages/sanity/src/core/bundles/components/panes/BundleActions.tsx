@@ -2,7 +2,7 @@ import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
-import {useDocumentOperation, useDocumentStore} from 'sanity'
+import {useDocumentOperation, useDocumentStore, useTranslation} from 'sanity'
 
 import {Button} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -28,6 +28,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
 
   const toast = useToast()
   const {newVersion} = useDocumentOperation(documentId, documentType)
+  const {t} = useTranslation()
 
   useEffect(() => {
     if (documentVersions) {
@@ -80,8 +81,11 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
   return (
     <Button
       data-testid={`action-add-to-${slug}`}
-      // localize text
-      text={isInVersion ? `Already in release ${title}` : `Add to ${title}`}
+      text={
+        isInVersion
+          ? t('bundle.action.already-in-release', {title})
+          : t('bundle.action.add-to-release', {title})
+      }
       icon={isInVersion ? CheckmarkIcon : AddIcon}
       tone="primary"
       onClick={handleAddVersion}

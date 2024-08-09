@@ -3,7 +3,7 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {type BundleDocument, usePerspective} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {createWrapper} from '../../../../../../../../test/testUtils/createWrapper'
+import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentPerspectiveMenu} from '../DocumentPerspectiveMenu'
@@ -86,14 +86,14 @@ describe('DocumentPerspectiveMenu', () => {
       ],
     }))
 
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<DocumentPerspectiveMenu documentId="spring-drop.document-id" />, {wrapper})
 
     expect(screen.getByTestId('button-document-release')).toBeInTheDocument()
   })
 
   it('should not render the bundle badge if the document does not exist in the bundle', async () => {
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<DocumentPerspectiveMenu documentId="document-id" />, {wrapper})
 
     expect(screen.queryByTestId('button-document-release')).toBeNull()
@@ -117,7 +117,7 @@ describe('DocumentPerspectiveMenu', () => {
       ],
     }))
 
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<DocumentPerspectiveMenu documentId="spring-drop.document-1" />, {wrapper})
 
     expect(screen.queryByTestId('button-document-release')).toBeInTheDocument()
