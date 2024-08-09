@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 //import {CalendarIcon} from '@sanity/icons'
 import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
@@ -6,6 +5,7 @@ import {
   FormFieldHeaderText,
   type FormNodeValidation,
   useBundles,
+  useTranslation,
   //useDateTimeFormat,
   //useTranslation,
 } from 'sanity'
@@ -28,6 +28,7 @@ export function BundleForm(props: {
   // only editing existing bundles will provide a value.slug
   const {current: action} = useRef(value.slug ? 'edit' : 'create')
   const isEditing = action === 'edit'
+  const {t} = useTranslation()
 
   //const dateFormatter = useDateTimeFormat()
 
@@ -172,8 +173,7 @@ export function BundleForm(props: {
         <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
       </Flex>
       <Stack space={3}>
-        {/* localize text */}
-        <FormFieldHeaderText title="Title" validation={titleErrors} />
+        <FormFieldHeaderText title={t('bundle.form.title')} validation={titleErrors} />
         <TextInput
           data-testid="bundle-form-title"
           onChange={handleBundleTitleChange}
@@ -184,8 +184,7 @@ export function BundleForm(props: {
 
       <Stack space={3}>
         <Text size={1} weight="medium">
-          {/* localize text */}
-          Description
+          {t('bundle.form.description')}
         </Text>
         <TextArea
           onChange={handleBundleDescriptionChange}

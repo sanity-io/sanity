@@ -3,7 +3,7 @@ import {act, fireEvent, render, screen, within} from '@testing-library/react'
 import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
-import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseReview} from '../ReleaseReview'
@@ -143,7 +143,7 @@ describe('ReleaseReview', () => {
         document: null,
         loading: true,
       })
-      const wrapper = await createWrapper({
+      const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle],
       })
       render(<ReleaseReview {...MOCKED_PROPS} documents={MOCKED_PROPS.documents.slice(0, 1)} />, {
@@ -160,7 +160,7 @@ describe('ReleaseReview', () => {
         document: null,
         loading: false,
       })
-      const wrapper = await createWrapper({
+      const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle],
       })
       render(<ReleaseReview {...MOCKED_PROPS} documents={MOCKED_PROPS.documents.slice(0, 1)} />, {
@@ -179,7 +179,7 @@ describe('ReleaseReview', () => {
         loading: false,
       })
 
-      const wrapper = await createWrapper({
+      const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle],
       })
       render(<ReleaseReview {...MOCKED_PROPS} documents={MOCKED_PROPS.documents.slice(0, 1)} />, {
@@ -201,7 +201,7 @@ describe('ReleaseReview', () => {
         }
       })
 
-      const wrapper = await createWrapper({
+      const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle],
       })
       render(
@@ -263,7 +263,7 @@ describe('ReleaseReview', () => {
     beforeEach(async () => {
       mockedUseObserveDocument.mockReturnValue({document: null, loading: false})
 
-      const wrapper = await createWrapper({
+      const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle],
       })
       render(<ReleaseReview {...MOCKED_PROPS} />, {wrapper})
