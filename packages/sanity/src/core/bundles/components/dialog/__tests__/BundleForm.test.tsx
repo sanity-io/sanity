@@ -2,7 +2,7 @@ import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type BundleDocument, useDateTimeFormat} from 'sanity'
 
-import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundles} from '../../../../store/bundles'
 import {BundleForm} from '../BundleForm'
 
@@ -54,7 +54,7 @@ describe('BundleForm', () => {
 
       mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
-      const wrapper = await createWrapper()
+      const wrapper = await createTestProvider()
       render(<BundleForm onChange={onChangeMock} value={valueMock} onError={onErrorMock} />, {
         wrapper,
       })
@@ -165,7 +165,7 @@ describe('BundleForm', () => {
 
       mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
-      const wrapper = await createWrapper()
+      const wrapper = await createTestProvider()
       render(
         <BundleForm onChange={onChangeMock} value={existingBundleValue} onError={onErrorMock} />,
         {

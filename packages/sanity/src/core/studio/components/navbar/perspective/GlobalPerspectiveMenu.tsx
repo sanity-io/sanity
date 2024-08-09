@@ -1,6 +1,7 @@
 import {AddIcon} from '@sanity/icons'
 import {Button, MenuItem} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {useTranslation} from 'sanity'
 
 import {BundleBadge} from '../../../../bundles/components/BundleBadge'
 import {BundleMenu} from '../../../../bundles/components/BundleMenu'
@@ -15,6 +16,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
 
   const {currentGlobalBundle} = usePerspective()
   const {title, hue, icon} = currentGlobalBundle
+  const {t} = useTranslation()
 
   /* create new bundle */
   const handleCreateBundleClick = useCallback(() => {
@@ -36,9 +38,11 @@ export function GlobalPerspectiveMenu(): JSX.Element {
         bundles={bundles}
         loading={loading}
         actions={
-          // localize text
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          <MenuItem icon={AddIcon} onClick={handleCreateBundleClick} text="Create release" />
+          <MenuItem
+            icon={AddIcon}
+            onClick={handleCreateBundleClick}
+            text={t('bundle.action.create')}
+          />
         }
       />
 
