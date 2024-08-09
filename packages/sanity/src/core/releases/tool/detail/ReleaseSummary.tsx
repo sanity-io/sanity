@@ -1,7 +1,6 @@
 import {DocumentsIcon} from '@sanity/icons'
 import {AvatarStack, Box, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
 import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
-import {Translate, useTranslation} from 'sanity'
 
 import {
   BundleIconEditorPicker,
@@ -9,6 +8,7 @@ import {
 } from '../../../bundles/components/dialog/BundleIconEditorPicker'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
+import {Translate, useTranslation} from '../../../i18n'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {Chip} from '../../components/Chip'

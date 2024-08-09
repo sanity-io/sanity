@@ -281,7 +281,6 @@ describe('after bundles have loaded', () => {
       })
 
       it('should require confirmation to publish', () => {
-        /** ERROR */
         fireEvent.click(screen.getByTestId('publish-all-button'))
         screen.getByText('Are you sure you want to publish the release and all document versions?')
         fireEvent.click(screen.getByText('Cancel'))
@@ -290,7 +289,6 @@ describe('after bundles have loaded', () => {
       })
 
       it('should perform publish', () => {
-        /** ERROR */
         fireEvent.click(screen.getByText('Publish all'))
         fireEvent.click(screen.getByText('Publish'))
 

@@ -156,7 +156,6 @@ describe('ReleaseSummary', () => {
   })
 
   it('shows the creator and date of release', () => {
-    /** ERROR */
     within(screen.getByTestId('summary')).getByText('just now')
   })
 

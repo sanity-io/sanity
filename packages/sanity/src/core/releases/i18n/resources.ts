@@ -95,6 +95,8 @@ const releasesLocaleStrings = {
 
   /** Placeholder for search of documents in a release */
   'search-documents-placeholder': 'Search documents',
+  /** Text for when the release was created */
+  'summary.created': 'Created <RelativeTime/>',
   /** Text for when the release was published */
   'summary.published': 'Published <RelativeTime/>',
   /** Text for when the release has not published */
