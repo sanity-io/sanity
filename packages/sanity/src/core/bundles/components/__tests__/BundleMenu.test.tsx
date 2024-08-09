@@ -228,7 +228,7 @@ describe('BundleMenu', () => {
         } as BundleDocument,
       },
     })
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<BundleMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
       wrapper,
     })

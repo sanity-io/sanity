@@ -178,6 +178,6 @@ describe('BundleMenuButton', () => {
     }
     await renderTest({bundle: disabledActionBundle, disabled: true, documentCount: 0})
 
-    fireEvent.click(screen.getByLabelText('Release menu'))
+    fireEvent.click(screen.getByTestId('release-menu-button'))
   })
 })

@@ -449,7 +449,7 @@ describe('after bundles have loaded', () => {
     })
 
     it('should disable Bundle menu', () => {
-      expect(screen.getByLabelText('Release menu')).toBeDisabled()
+      expect(screen.getByTestId('release-menu-button')).toBeDisabled()
     })
   })
 
