@@ -87,7 +87,7 @@ const releasesLocaleStrings = {
     'Are you sure you want to publish the release and all document versions?',
   /** Description for the dialog confirming the publish of a release with one document */
   'publish-dialog.confirm-publish-description_one':
-    'The <strong>{{title}}</strong> release and its document will be published.',
+    "The '<strong>{{title}}</strong>' release and its document will be published.",
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'publish-dialog.confirm-publish-description_other':
     "The '<strong>{{title}}</strong>' release and its {{bundleDocumentsLength}} documents will be published.",

@@ -5,7 +5,7 @@ import {LoadingBlock} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Translate, useTranslation} from '../../../i18n'
 import {useBundles} from '../../../store/bundles'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {ReleasePublishAllButton} from '../../components/ReleasePublishAllButton/ReleasePublishAllButton'
@@ -168,7 +168,9 @@ export const ReleaseDetail = () => {
         <Card flex={1} tone="critical">
           <Container width={0}>
             <Stack paddingY={4} space={1}>
-              <Heading>{t('deleted-release', {title: deletedBundle.title})}</Heading>
+              <Heading>
+                <Translate t={t} i18nKey="deleted-release" values={{title: deletedBundle.title}} />
+              </Heading>
             </Stack>
           </Container>
         </Card>

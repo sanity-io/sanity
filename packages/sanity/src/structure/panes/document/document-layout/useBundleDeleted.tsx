@@ -1,6 +1,6 @@
 import {Text, useToast} from '@sanity/ui'
 import {useEffect, useState} from 'react'
-import {useBundles, usePerspective, useTranslation} from 'sanity'
+import {Translate, useBundles, usePerspective, useTranslation} from 'sanity'
 
 import {releasesLocaleNamespace} from '../../../../core/releases/i18n'
 
@@ -26,7 +26,7 @@ export const useBundleDeleted = () => {
         status: 'warning',
         title: (
           <Text muted size={1}>
-            {t('deleted-release', {title: deletedBundleTitle})}
+            <Translate t={t} i18nKey="deleted-release" values={{title: deletedBundleTitle}} />
           </Text>
         ),
         closable: false,

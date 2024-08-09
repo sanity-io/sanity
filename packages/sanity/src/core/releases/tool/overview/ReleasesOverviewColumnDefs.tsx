@@ -1,5 +1,5 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type TFunction, useTranslation} from 'sanity'
+import {type TFunction, Translate, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Tooltip} from '../../../../ui-components'
@@ -27,7 +27,11 @@ const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}
     <Box {...cellProps} flex={1} padding={1}>
       <Tooltip
         disabled={!bundle.isDeleted}
-        content={<Text size={1}>{t('deleted-release', {title: bundle.title})}</Text>}
+        content={
+          <Text size={1}>
+            <Translate t={t} i18nKey="deleted-release" values={{title: bundle.title}} />
+          </Text>
+        }
       >
         <Card {...cardProps} padding={2} radius={2}>
           <Flex align="center" gap={2}>
