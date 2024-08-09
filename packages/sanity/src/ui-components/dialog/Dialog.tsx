@@ -75,6 +75,7 @@ export const Dialog = forwardRef(function Dialog(
                 text={t('common.dialog.cancel-button.text')}
                 tone="default"
                 onClick={props.onClose}
+                data-testid="cancel-button"
                 {...footer.cancelButton}
               />
             )}
@@ -84,6 +85,7 @@ export const Dialog = forwardRef(function Dialog(
                 padding={2}
                 text={t('common.dialog.confirm-button.text')}
                 tone="critical"
+                data-testid="confirm-button"
                 {...footer.confirmButton}
               />
             )}

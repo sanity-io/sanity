@@ -1,12 +1,13 @@
 import {CloseIcon} from '@sanity/icons'
 import {Card, Menu, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
-import {SanityDefaultPreview} from 'sanity'
+import {SanityDefaultPreview, Translate, useTranslation} from 'sanity'
 
 import {Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useClient} from '../../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {releasesLocaleNamespace} from '../../../i18n'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 
 export function DocumentActions({
@@ -20,6 +21,7 @@ export function DocumentActions({
   const [discardStatus, setDiscardStatus] = useState<'idle' | 'discarding' | 'error'>('idle')
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const handleDiscardVersion = async () => {
     try {
@@ -46,7 +48,7 @@ export function DocumentActions({
           menu={
             <Menu>
               <MenuItem
-                text="Discard version"
+                text={t('action.discard-version')}
                 icon={CloseIcon}
                 onClick={() => setShowDiscardDialog(true)}
               />
@@ -57,11 +59,11 @@ export function DocumentActions({
       {showDiscardDialog && (
         <Dialog
           id="discard-version-dialog"
-          header="Are you sure you want to discard the document version?"
+          header={t('discard-version-dialog.header')}
           onClose={() => setShowDiscardDialog(false)}
           footer={{
             confirmButton: {
-              text: 'Discard version',
+              text: t('discard-version-dialog.title'),
               tone: 'default',
               onClick: handleDiscardVersion,
               loading: discardStatus === 'discarding',
@@ -76,7 +78,11 @@ export function DocumentActions({
             />
           </Card>
           <Text muted size={1}>
-            The <strong>{bundleTitle}</strong> version of this document will be permanently deleted.
+            <Translate
+              t={t}
+              i18nKey={'discard-version-dialog.description'}
+              values={{title: bundleTitle}}
+            />
           </Text>
         </Dialog>
       )}

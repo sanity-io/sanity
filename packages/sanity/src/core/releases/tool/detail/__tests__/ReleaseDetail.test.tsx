@@ -2,10 +2,11 @@ import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {route, RouterProvider} from 'sanity/router'
 
-import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useListener} from '../../../../hooks/useListener'
 import {useBundles} from '../../../../store/bundles'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
+import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseDetail} from '../ReleaseDetail'
 import {useBundleDocuments} from '../useBundleDocuments'
 
@@ -33,6 +34,7 @@ jest.mock('sanity', () => ({
   LoadingBlock: () => <div data-testid="mocked-loading-block" />,
   useClient: jest.fn().mockReturnValue({getUrl: jest.fn(), config: jest.fn().mockReturnValue({})}),
   useCurrentUser: jest.fn().mockReturnValue({id: 'test-user-id'}),
+  useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
 }))
 
 jest.mock('../../../components/ReleasePublishAllButton/useObserveDocumentRevisions', () => ({
@@ -57,7 +59,9 @@ const mockUseBundleDocuments = useBundleDocuments as jest.Mock<typeof useBundleD
 const mockRouterNavigate = jest.fn()
 
 const renderTest = async () => {
-  const wrapper = await createWrapper()
+  const wrapper = await createTestProvider({
+    resources: [releasesUsEnglishLocaleBundle],
+  })
   return render(
     <RouterProvider
       state={{
@@ -82,7 +86,7 @@ const publishAgnosticTests = () => {
   })
 
   it('should default to showing summary screen', () => {
-    expect(screen.getByText('Summary').closest('button')).toHaveAttribute('data-selected', '')
+    expect(screen.getByTestId('summary-button')).toHaveAttribute('data-selected', '')
   })
 }
 
@@ -142,10 +146,10 @@ describe('ReleaseDetail', () => {
 
     it('should show the header', () => {
       screen.getByText('Test bundle')
-      screen.getByText('Summary')
-      expect(screen.getByText('Review changes').closest('button')).toBeDisabled()
-      screen.getByLabelText('Release menu')
-      expect(screen.getByText('Publish all').closest('button')).toBeDisabled()
+      screen.getByTestId('summary-button')
+      expect(screen.getByTestId('review-button').closest('button')).toBeDisabled()
+      screen.getByTestId('release-menu-button')
+      expect(screen.getByTestId('publish-all-button').closest('button')).toBeDisabled()
     })
   })
 })
@@ -192,13 +196,13 @@ describe('after bundles have loaded', () => {
 
     const loadedBundleAndDocumentsTests = () => {
       it('should allow for the release to be archived', () => {
-        fireEvent.click(screen.getByLabelText('Release menu'))
-        screen.getByText('Archive')
+        fireEvent.click(screen.getByTestId('release-menu-button'))
+        screen.getByTestId('archive-release')
       })
 
       it('should navigate to release review changes screen', () => {
-        expect(screen.getByText('Review changes').closest('button')).not.toBeDisabled()
-        fireEvent.click(screen.getByText('Review changes'))
+        expect(screen.getByTestId('review-button').closest('button')).not.toBeDisabled()
+        fireEvent.click(screen.getByTestId('review-button'))
         expect(mockRouterNavigate).toHaveBeenCalledWith({
           path: '/test-bundle-slug?screen=review',
         })
@@ -237,7 +241,7 @@ describe('after bundles have loaded', () => {
       loadedBundleAndDocumentsTests()
 
       it('should disable publish all button', () => {
-        expect(screen.getByText('Publish all').closest('button')).toBeDisabled()
+        expect(screen.getByTestId('publish-all-button').closest('button')).toBeDisabled()
       })
     })
 
@@ -273,11 +277,11 @@ describe('after bundles have loaded', () => {
       loadedBundleAndDocumentsTests()
 
       it('should show publish all button when release not published', () => {
-        expect(screen.getByText('Publish all').closest('button')).not.toBeDisabled()
+        expect(screen.getByTestId('publish-all-button').closest('button')).not.toBeDisabled()
       })
 
       it('should require confirmation to publish', () => {
-        fireEvent.click(screen.getByText('Publish all'))
+        fireEvent.click(screen.getByTestId('publish-all-button'))
         screen.getByText('Are you sure you want to publish the release and all document versions?')
         fireEvent.click(screen.getByText('Cancel'))
 
@@ -342,8 +346,8 @@ describe('after bundles have loaded', () => {
       loadedBundleAndDocumentsTests()
 
       it('should disable publish all button', () => {
-        expect(screen.getByText('Publish all').closest('button')).toBeDisabled()
-        fireEvent.mouseOver(screen.getByText('Publish all'))
+        expect(screen.getByTestId('publish-all-button')).toBeDisabled()
+        fireEvent.mouseOver(screen.getByTestId('publish-all-button'))
       })
     })
   })
@@ -395,8 +399,8 @@ describe('after bundles have loaded', () => {
     })
 
     it('should allow for the release to be unarchived', () => {
-      fireEvent.click(screen.getByLabelText('Release menu'))
-      screen.getByText('Unarchive')
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+      screen.getByTestId('archive-release')
     })
 
     it('should not show the review changes button', () => {
