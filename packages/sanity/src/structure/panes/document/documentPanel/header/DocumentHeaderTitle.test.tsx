@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
+import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {render, waitFor} from '@testing-library/react'
 import {
   defineConfig,
@@ -39,6 +39,7 @@ jest.mock('sanity', () => {
     unstable_useValuePreview: jest.fn(),
     getBundleSlug: jest.fn(() => ''),
     useDocumentVersions: jest.fn(),
+    useTranslation: jest.fn(() => ({t: (key: string) => key})),
   }
 })
 
@@ -80,10 +81,6 @@ describe('DocumentHeaderTitle', () => {
       dispatch: jest.fn(),
       deletedBundles: {},
     })
-  })
-
-  afterEach(() => {
-    jest.resetAllMocks()
   })
 
   it('should render without crashing', async () => {

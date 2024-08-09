@@ -1,8 +1,9 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import {createElement, type ReactElement} from 'react'
-import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
+import {unstable_useValuePreview as useValuePreview} from 'sanity'
 
+import {useTranslation} from '../../../../../core/i18n'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPerspectiveMenu} from './perspective/DocumentPerspectiveMenu'
