@@ -2,11 +2,13 @@ import {diffInput, wrap} from '@sanity/diff'
 import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
+import {useTranslation} from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {buildChangeList} from '../../../../field/diff/changes/buildChangeList'
 import {ChangeResolver} from '../../../../field/diff/components/ChangeResolver'
 import {type ObjectDiff} from '../../../../field/types'
+import {releasesLocaleNamespace} from '../../../i18n'
 import {ChangesWrapper, FieldWrapper} from './DocumentDiff.styled'
 
 const buildDocumentForDiffInput = (document: SanityDocument) => {
@@ -42,15 +44,16 @@ export function DocumentDiff({
     const changeList = buildChangeList(schemaType, diff, [], [], {})
     return {changesList: changeList, rootDiff: diff}
   }, [baseDocument, document, schemaType])
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const isChanged = !!rootDiff?.isChanged
 
   if (!baseDocument) {
-    return <Text>New document</Text>
+    return <Text>{t('diff.new-document')}</Text>
   }
 
   if (!isChanged) {
-    return <Text>No changes</Text>
+    return <Text>{t('diff.no-changes')}</Text>
   }
 
   return (
@@ -70,7 +73,7 @@ export function DocumentDiff({
         {changesList.length ? (
           changesList.map((change) => <ChangeResolver key={change.key} change={changesList[0]} />)
         ) : (
-          <Text>Changes list is empty, see document</Text>
+          <Text>{t('diff.list-empty')}</Text>
         )}
       </ChangesWrapper>
     </DocumentChangeContext.Provider>
