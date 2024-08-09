@@ -134,7 +134,7 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
         >
           {bundleHasDocuments && (
             <Text data-testid="confirm-delete-body" muted size={1}>
-              {t('delete.warning', {documentCount, count: documentCount})}
+              {t('delete.warning', {count: documentCount})}
             </Text>
           )}
         </Dialog>
