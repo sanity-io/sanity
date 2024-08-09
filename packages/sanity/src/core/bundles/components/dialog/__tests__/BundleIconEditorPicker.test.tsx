@@ -1,8 +1,12 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 
-import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from '../BundleIconEditorPicker'
+
+jest.mock('sanity', () => ({
+  useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
+}))
 
 describe('BundleIconEditorPicker', () => {
   const onChangeMock = jest.fn()
@@ -14,7 +18,7 @@ describe('BundleIconEditorPicker', () => {
   beforeEach(async () => {
     onChangeMock.mockClear()
 
-    const wrapper = await createWrapper()
+    const wrapper = await createTestProvider()
     render(<BundleIconEditorPicker onChange={onChangeMock} value={valueMock} />, {wrapper})
   })
 
