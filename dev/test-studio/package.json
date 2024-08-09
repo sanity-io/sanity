@@ -16,11 +16,11 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/editor": "^1.0.11",
+    "@portabletext/editor": "^1.0.12",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.0.2",
     "@sanity/block-tools": "3.53.0",
-    "@sanity/client": "^6.21.1",
+    "@sanity/client": "^6.21.2",
     "@sanity/color": "^3.0.0",
     "@sanity/google-maps-input": "^4.0.0",
     "@sanity/icons": "^3.3.1",
@@ -41,7 +41,7 @@
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "workspace:*",
-    "@sanity/visual-editing": "2.1.7",
+    "@sanity/visual-editing": "2.1.8",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "@vercel/stega": "0.1.2",
