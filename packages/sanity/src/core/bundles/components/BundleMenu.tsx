@@ -1,6 +1,7 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
 import {type ReactElement, useCallback, useMemo} from 'react'
+import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
@@ -34,6 +35,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button} = props
   const {deletedBundles} = useBundles()
   const {currentGlobalBundle, setPerspective} = usePerspective()
+  const {t} = useTranslation()
 
   const sortedBundlesToDisplay = useMemo(() => {
     const deletedBundlesArray = Object.values(deletedBundles).map((bundle) => ({
@@ -102,7 +104,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                         >
                           <Tooltip
                             disabled={!bundle.isDeleted}
-                            content="This release has been deleted"
+                            content={t('bundle.deleted-tooltip')}
                             placement="bottom-start"
                           >
                             <Flex>

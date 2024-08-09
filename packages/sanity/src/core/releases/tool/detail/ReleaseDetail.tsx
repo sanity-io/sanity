@@ -1,13 +1,14 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
-import {LoadingBlock} from 'sanity'
+import {LoadingBlock, useTranslation} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components'
 import {useBundles} from '../../../store/bundles'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {ReleasePublishAllButton} from '../../components/ReleasePublishAllButton/ReleasePublishAllButton'
+import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleasesRouterState} from '../../types/router'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseReview} from './ReleaseReview'
@@ -48,6 +49,8 @@ export const ReleaseDetail = () => {
   const bundleHasDocuments = !!results.length
   const showPublishButton = loading || !bundle?.publishedAt
   const isPublishButtonDisabled = loading || !bundle || !bundleHasDocuments
+
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const navigateToReview = useCallback(() => {
     router.navigate({
@@ -102,14 +105,15 @@ export const ReleaseDetail = () => {
                 mode="bleed"
                 onClick={navigateToSummary}
                 selected={activeScreen === 'summary'}
-                text="Summary"
+                text={t('actions.summary')}
+                data-testid="summary-button"
               />
               {/* StudioButton supports tooltip when button is disabled */}
               {!headerBundle?.publishedAt && (
                 <Button
                   tooltipProps={{
                     disabled: bundleHasDocuments || isBundleDeleted,
-                    content: 'Add documents to this release to review changes',
+                    content: t('review.description'),
                     placement: 'bottom',
                   }}
                   key="review"
@@ -117,7 +121,8 @@ export const ReleaseDetail = () => {
                   mode="bleed"
                   onClick={navigateToReview}
                   selected={activeScreen === 'review'}
-                  text="Review changes"
+                  text={t('action.review')}
+                  data-testid="review-button"
                 />
               )}
             </Flex>
@@ -151,6 +156,7 @@ export const ReleaseDetail = () => {
     results,
     router,
     showPublishButton,
+    t,
   ])
 
   const scrollContainerRef = useRef(null)
@@ -161,9 +167,7 @@ export const ReleaseDetail = () => {
         <Card flex={1} tone="critical">
           <Container width={0}>
             <Stack paddingY={4} space={1}>
-              <Heading>
-                '<strong>{deletedBundle.title}</strong>' release has been deleted
-              </Heading>
+              <Heading>{t('deleted-release', {title: deletedBundle.title})}</Heading>
             </Stack>
           </Container>
         </Card>
@@ -200,10 +204,13 @@ export const ReleaseDetail = () => {
     history.collaborators,
     history.documentsHistory,
     results,
+    t,
   ])
 
   if (loading) {
-    return <LoadingBlock title="Loading release" fill data-testid="bundle-documents-table-loader" />
+    return (
+      <LoadingBlock title={t('loading-release')} fill data-testid="bundle-documents-table-loader" />
+    )
   }
 
   if (!bundle && !deletedBundle) {
@@ -211,7 +218,7 @@ export const ReleaseDetail = () => {
       <Card flex={1} tone="critical">
         <Container width={0}>
           <Stack paddingX={4} paddingY={6} space={1}>
-            <Heading>Release not found: {bundleSlug}</Heading>
+            <Heading>{t('not-found', {bundleSlug})}</Heading>
           </Stack>
         </Container>
       </Card>
@@ -223,7 +230,7 @@ export const ReleaseDetail = () => {
       {header}
       <Flex paddingX={4} ref={scrollContainerRef} overflow="auto">
         <Container width={2} paddingX={2}>
-          {documentsLoading ? <LoadingBlock title="Loading documents" /> : detailContent}
+          {documentsLoading ? <LoadingBlock title={t('document-loading')} /> : detailContent}
         </Container>
       </Flex>
     </Flex>

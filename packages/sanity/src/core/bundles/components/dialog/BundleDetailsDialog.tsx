@@ -1,6 +1,7 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
+import {useTranslation} from 'sanity'
 
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
@@ -19,6 +20,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
   const {createBundle, updateBundle} = useBundleOperations()
   const [hasErrors, setHasErrors] = useState(false)
   const formAction = bundle ? 'edit' : 'create'
+  const {t} = useTranslation()
 
   const [value, setValue] = useState<Partial<BundleDocument>>(() => {
     if (bundle) {
@@ -94,7 +96,8 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
     setHasErrors(errorsExist)
   }, [])
 
-  const dialogTitle = formAction === 'edit' ? 'Edit release' : 'Create release'
+  const dialogTitle =
+    formAction === 'edit' ? t('bundle.dialog.edit.title') : t('bundle.dialog.create.title')
 
   return (
     <Dialog

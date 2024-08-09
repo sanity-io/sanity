@@ -7,12 +7,14 @@ import {
 } from '@sanity/icons'
 import {Button, Menu, MenuButton, Spinner, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
+import {useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Dialog, MenuItem} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
+import {releasesLocaleNamespace} from '../../i18n'
 
 export type BundleMenuButtonProps = {
   disabled?: boolean
@@ -30,6 +32,7 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
 
   const bundleMenuDisabled = !bundle || disabled
   const toast = useToast()
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const resetSelectedAction = () => setSelectedAction(undefined)
 
@@ -78,19 +81,31 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
             icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
             mode="bleed"
             padding={2}
-            aria-label="Release menu"
+            aria-label={t('menu.label')}
+            data-testid="release-menu-button"
           />
         }
         id="bundle-menu"
         menu={
           <Menu>
-            <MenuItem onClick={() => setSelectedAction('edit')} icon={EditIcon} text="Edit" />
+            <MenuItem
+              onClick={() => setSelectedAction('edit')}
+              icon={EditIcon}
+              text={t('action.edit')}
+              data-testid="edit-release"
+            />
             <MenuItem
               onClick={handleOnToggleArchive}
               icon={isBundleArchived ? UnarchiveIcon : ArchiveIcon}
-              text={isBundleArchived ? 'Unarchive' : 'Archive'}
+              text={isBundleArchived ? t('action.unarchive') : t('action.archive')}
+              data-testid="archive-release"
             />
-            <MenuItem onClick={() => setSelectedAction('delete')} icon={TrashIcon} text="Delete" />
+            <MenuItem
+              onClick={() => setSelectedAction('delete')}
+              icon={TrashIcon}
+              text={t('action.delete')}
+              data-testid="delete-release"
+            />
           </Menu>
         }
         popover={{
@@ -103,13 +118,14 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
       {selectedAction === 'delete' && (
         <Dialog
           id="discard-version-dialog"
-          header={`Are you sure you want to delete the '${bundle?.title}' release?`}
+          header={t('delete-dialog.header', {title: bundle?.title})}
           onClose={resetSelectedAction}
           // remove body padding if no documents in release
           padding={bundleHasDocuments}
+          data-testid="delete-dialog"
           footer={{
             confirmButton: {
-              text: 'Delete',
+              text: t('action.delete'),
               tone: 'default',
               onClick: handleOnDeleteBundle,
               loading: discardStatus === 'discarding',
@@ -119,7 +135,7 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
         >
           {bundleHasDocuments && (
             <Text data-testid="confirm-delete-body" muted size={1}>
-              This will also delete {documentCount} document version{documentCount > 1 ? 's' : ''}.
+              {t('delete.warning', {count: documentCount})}
             </Text>
           )}
         </Dialog>

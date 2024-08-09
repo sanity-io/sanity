@@ -1,12 +1,14 @@
-/* eslint-disable i18next/no-literal-string */
 import {Text, useToast} from '@sanity/ui'
 import {useEffect, useState} from 'react'
-import {useBundles, usePerspective} from 'sanity'
+import {useBundles, usePerspective, useTranslation} from 'sanity'
+
+import {releasesLocaleNamespace} from '../../../../core/releases/i18n'
 
 export const useBundleDeleted = () => {
   const {currentGlobalBundle} = usePerspective()
   const {data: bundles, deletedBundles} = useBundles()
   const toast = useToast()
+  const {t} = useTranslation(releasesLocaleNamespace)
   const [checkedOutBundleSlug, setCheckedOutBundleSlug] = useState<string | undefined>()
   const {slug: currentGlobalBundleSlug} = currentGlobalBundle
 
@@ -24,12 +26,12 @@ export const useBundleDeleted = () => {
         status: 'warning',
         title: (
           <Text muted size={1}>
-            The <strong>{deletedBundleTitle}</strong> release has been deleted
+            {t('deleted-release', {title: deletedBundleTitle})}
           </Text>
         ),
         closable: false,
         duration: 10000,
       })
     }
-  }, [bundles?.length, checkedOutBundleSlug, currentGlobalBundleSlug, deletedBundles, toast])
+  }, [bundles?.length, checkedOutBundleSlug, currentGlobalBundleSlug, deletedBundles, toast, t])
 }

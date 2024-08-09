@@ -8,10 +8,12 @@ import {
 } from '../../../bundles/components/dialog/BundleIconEditorPicker'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
+import {Translate, useTranslation} from '../../../i18n'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {Chip} from '../../components/Chip'
 import {Table, type TableProps} from '../../components/Table/Table'
+import {releasesLocaleNamespace} from '../../i18n'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
@@ -42,6 +44,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, collaborators, scrollContainerRef} = props
   const {hue, icon} = release
   const {client} = useAddonDataset()
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const [iconValue, setIconValue] = useState<BundleIconEditorPickerValue>(setIconHue({hue, icon}))
   const toast = useToast()
@@ -51,7 +54,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         toast.push({
           closable: true,
           status: 'error',
-          title: 'Failed to save changes',
+          title: t('failed-edit-title'),
           description: 'AddonDataset client not found',
         })
         return
@@ -64,11 +67,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         toast.push({
           closable: true,
           status: 'error',
-          title: 'Failed to save changes',
+          title: t('failed-edit-title'),
         })
       }
     },
-    [client, release._id, toast],
+    [client, release._id, toast, t],
   )
 
   const aggregatedData = useMemo(
@@ -91,8 +94,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     )
 
   const documentTableColumnDefs = useMemo(
-    () => getDocumentTableColumnDefs(release.slug),
-    [release.slug],
+    () => getDocumentTableColumnDefs(release.slug, t),
+    [release.slug, t],
   )
   // update hue and icon when release changes
   useEffect(() => setIconValue(setIconHue({hue, icon})), [hue, icon])
@@ -127,7 +130,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         <Flex>
           <Flex flex={1} gap={2}>
             <Chip
-              text={<>{documents.length} documents</>}
+              text={<>{t('summary.document-count', {count: documents.length})}</>}
               icon={
                 <Text size={1}>
                   <DocumentsIcon />
@@ -138,9 +141,18 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             {/* Created */}
             <Chip
               avatar={<UserAvatar size={0} user={release.authorId} />}
+              data-testid="release-created"
               text={
                 <span>
-                  Created <RelativeTime time={release._createdAt} useTemporalPhrase />
+                  <Translate
+                    t={t}
+                    i18nKey="summary.created"
+                    components={{
+                      RelativeTime: () => (
+                        <RelativeTime time={release._createdAt} useTemporalPhrase />
+                      ),
+                    }}
+                  />
                 </span>
               }
             />
@@ -154,10 +166,19 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
                 text={
                   release.publishedAt ? (
                     <span>
-                      Published <RelativeTime time={release.publishedAt} useTemporalPhrase />
+                      <Translate
+                        t={t}
+                        i18nKey={'summary.published'}
+                        components={{
+                          RelativeTime: () =>
+                            release.publishedAt && (
+                              <RelativeTime time={release.publishedAt} useTemporalPhrase />
+                            ),
+                        }}
+                      />
                     </span>
                   ) : (
-                    'Not published'
+                    t('summary.not-published')
                   )
                 }
               />
@@ -177,7 +198,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
       <Table<DocumentWithHistory>
         data={aggregatedData}
-        emptyState="No documents"
+        emptyState={t('summary.no-documents')}
+        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
         rowId="document._id"
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}
