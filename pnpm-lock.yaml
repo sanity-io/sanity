@@ -30,9 +30,6 @@ importers:
       '@babel/preset-typescript':
         specifier: ^7.24.7
         version: 7.24.7(@babel/core@7.25.2)
-      '@bjoerge/mutiny':
-        specifier: ^0.7.1
-        version: 0.7.1(debug@4.3.6)
       '@google-cloud/storage':
         specifier: ^7.11.0
         version: 7.11.0(encoding@0.1.13)
@@ -57,6 +54,9 @@ importers:
       '@sanity/eslint-config-studio':
         specifier: ^4.0.0
         version: 4.0.0(eslint@8.57.0)(typescript@5.5.4)
+      '@sanity/mutate':
+        specifier: ^0.8.0
+        version: 0.8.0(debug@4.3.6)
       '@sanity/pkg-utils':
         specifier: 6.10.9
         version: 6.10.9(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
@@ -1038,12 +1038,12 @@ importers:
 
   packages/@sanity/migrate:
     dependencies:
-      '@bjoerge/mutiny':
-        specifier: ^0.7.0
-        version: 0.7.1(debug@4.3.6)
       '@sanity/client':
         specifier: ^6.21.1
         version: 6.21.1(debug@4.3.6)
+      '@sanity/mutate':
+        specifier: ^0.8.0
+        version: 0.8.0(debug@4.3.6)
       '@sanity/types':
         specifier: 3.53.0
         version: link:../types
@@ -2606,10 +2606,6 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
-
-  '@bjoerge/mutiny@0.7.1':
-    resolution: {integrity: sha512-j2WzqTM/HoO6kpoFdozNknLAgzEDoaa1TILfKeYKHbr3PQRoZits1ov/+q+M5hZwV2uST+mOEhkAMcyTe+BY3A==}
-    engines: {node: '>=18'}
 
   '@codemirror/autocomplete@6.17.0':
     resolution: {integrity: sha512-fdfj6e6ZxZf8yrkMHUSJJir7OJkHkZKaOZGzLWIYp2PZ3jd+d+UjG8zVPqJF6d3bKxkhvXTPan/UZ1t7Bqm0gA==}
@@ -4388,6 +4384,10 @@ packages:
     peerDependencies:
       '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
       react: ^18.3 || >=19.0.0-rc
+
+  '@sanity/mutate@0.8.0':
+    resolution: {integrity: sha512-70tVQD2HjRx9O273BZbqOT8llFAsQFjYUz3lLvbybo8nvcxu/of2PHyTTHe3QIqkB63FHEQ5T7UBrWxlccCX8Q==}
+    engines: {node: '>=18'}
 
   '@sanity/mutator@3.37.2':
     resolution: {integrity: sha512-F0MvseVtgPBaPxNZtSidF6BQeygviYThgmhRbjZ89AhlRhWiLODvLakdogFmwD1NEQ0tpKn+8m0pQIOHgt2C3w==}
@@ -12348,17 +12348,6 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@bjoerge/mutiny@0.7.1(debug@4.3.6)':
-    dependencies:
-      '@sanity/client': 6.21.1(debug@4.3.6)
-      '@sanity/diff-match-patch': 3.1.1
-      hotscript: 1.0.13
-      mendoza: 3.0.7
-      nanoid: 5.0.7
-      rxjs: 7.8.1
-    transitivePeerDependencies:
-      - debug
-
   '@codemirror/autocomplete@6.17.0(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.29.1)(@lezer/common@1.2.1)':
     dependencies:
       '@codemirror/language': 6.10.2
@@ -14232,6 +14221,17 @@ snapshots:
     dependencies:
       '@sanity/color': 3.0.6
       react: 18.3.1
+
+  '@sanity/mutate@0.8.0(debug@4.3.6)':
+    dependencies:
+      '@sanity/client': 6.21.1(debug@4.3.6)
+      '@sanity/diff-match-patch': 3.1.1
+      hotscript: 1.0.13
+      mendoza: 3.0.7
+      nanoid: 5.0.7
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - debug
 
   '@sanity/mutator@3.37.2':
     dependencies:

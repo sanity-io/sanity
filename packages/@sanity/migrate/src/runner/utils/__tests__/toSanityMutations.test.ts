@@ -3,14 +3,14 @@
 import {afterEach, describe, expect, it, jest} from '@jest/globals'
 /* eslint-enable simple-import-sort/imports */
 
-import {SanityEncoder} from '@bjoerge/mutiny'
+import {SanityEncoder} from '@sanity/mutate'
 
 import {type Mutation, type Transaction} from '../../../mutations'
 import {toSanityMutations, type TransactionPayload} from '../toSanityMutations'
 
-jest.mock('@bjoerge/mutiny', () => {
+jest.mock('@sanity/mutate', () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = jest.requireActual<typeof import('@bjoerge/mutiny')>('@bjoerge/mutiny')
+  const actual = jest.requireActual<typeof import('@sanity/mutate')>('@sanity/mutate')
   return {
     ...actual,
     SanityEncoder: {

@@ -50,8 +50,8 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@bjoerge/mutiny": "^0.7.0",
     "@sanity/client": "^6.21.1",
+    "@sanity/mutate": "^0.8.0",
     "@sanity/types": "3.53.0",
     "@sanity/util": "3.53.0",
     "arrify": "^2.0.1",
