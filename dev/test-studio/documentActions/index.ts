@@ -1,6 +1,9 @@
 import {type DocumentActionsResolver} from 'sanity'
 
-import {createCustomPublishAction} from './actions/createCustomPublishAction'
+import {
+  createCustomPublishAction,
+  createNoopPatchPublishAction,
+} from './actions/createCustomPublishAction'
 import {TestConfirmDialogAction} from './actions/TestConfirmDialogAction'
 import {TestCustomComponentAction} from './actions/TestCustomComponentAction'
 import {TestCustomRestoreAction} from './actions/TestCustomRestoreAction'
@@ -15,12 +18,12 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
       TestPopoverDialogAction,
       TestCustomComponentAction,
       ...prev,
-    ].map((action) => {
+    ].flatMap((action) => {
       if (action.action === 'restore') {
         return TestCustomRestoreAction(action)
       }
       if (action.action === 'publish') {
-        return createCustomPublishAction(action)
+        return [createCustomPublishAction(action), createNoopPatchPublishAction(action)]
       }
       return action
     })
