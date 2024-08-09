@@ -3,7 +3,7 @@ import {fireEvent, render, screen, waitFor, within} from '@testing-library/react
 import {useRouter} from 'sanity/router'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
-import {createWrapper} from '../../../../../../test/testUtils/createWrapper'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundles} from '../../../../store'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
@@ -46,7 +46,7 @@ describe('ReleasesOverview', () => {
         data: null,
       })
 
-      const wrapper = await createWrapper({
+      const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle],
       })
 
@@ -84,7 +84,9 @@ describe('ReleasesOverview', () => {
         error: null,
         data: null,
       })
-      const wrapper = await createWrapper()
+      const wrapper = await createTestProvider({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
 
       return render(<ReleasesOverview />, {wrapper})
     })
@@ -162,7 +164,9 @@ describe('ReleasesOverview', () => {
           ]),
         ),
       })
-      const wrapper = await createWrapper()
+      const wrapper = await createTestProvider({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
 
       return render(<ReleasesOverview />, {wrapper})
     })
