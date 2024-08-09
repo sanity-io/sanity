@@ -48,7 +48,7 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   }: {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
   }) => ReactNode
-  rowProps: (datum: TableData) => Partial<TableRowProps>
+  rowProps?: (datum: TableData) => Partial<TableRowProps>
   scrollContainerRef: MutableRefObject<HTMLDivElement | null>
 }
 
