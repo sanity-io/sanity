@@ -2,13 +2,11 @@ import {Text, useToast} from '@sanity/ui'
 import {useEffect, useState} from 'react'
 import {Translate, useBundles, usePerspective, useTranslation} from 'sanity'
 
-import {releasesLocaleNamespace} from '../../../../core/releases/i18n'
-
 export const useBundleDeleted = () => {
   const {currentGlobalBundle} = usePerspective()
   const {data: bundles, deletedBundles} = useBundles()
   const toast = useToast()
-  const {t} = useTranslation(releasesLocaleNamespace)
+  const {t} = useTranslation()
   const [checkedOutBundleSlug, setCheckedOutBundleSlug] = useState<string | undefined>()
   const {slug: currentGlobalBundleSlug} = currentGlobalBundle
 
@@ -26,7 +24,11 @@ export const useBundleDeleted = () => {
         status: 'warning',
         title: (
           <Text muted size={1}>
-            <Translate t={t} i18nKey="deleted-release" values={{title: deletedBundleTitle}} />
+            <Translate
+              t={t}
+              i18nKey="bundle.deleted-toast-title"
+              values={{title: deletedBundleTitle}}
+            />
           </Text>
         ),
         closable: false,

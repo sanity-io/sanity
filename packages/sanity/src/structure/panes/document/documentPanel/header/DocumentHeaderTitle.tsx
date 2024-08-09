@@ -3,7 +3,7 @@ import {Flex, Text} from '@sanity/ui'
 import {createElement, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview} from 'sanity'
 
-import {useTranslation} from '../../../../../core/i18n'
+import {useTranslation} from '../../../../../core'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPerspectiveMenu} from './perspective/DocumentPerspectiveMenu'

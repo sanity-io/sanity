@@ -39,7 +39,7 @@ jest.mock('sanity', () => {
     unstable_useValuePreview: jest.fn(),
     getBundleSlug: jest.fn(() => ''),
     useDocumentVersions: jest.fn(),
-    useTranslation: jest.fn(() => ({t: (key: string) => key})),
+    useTranslation: jest.fn(() => ({t: jest.fn()})),
   }
 })
 
