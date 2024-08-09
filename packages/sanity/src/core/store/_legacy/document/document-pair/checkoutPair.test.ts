@@ -331,10 +331,22 @@ describe('checkoutPair -- server actions', () => {
     ])
     draft.commit()
 
-    expect(mockedActionRequest).toHaveBeenCalledWith([], {
-      tag: 'document.commit',
-      transactionId: expect.any(String),
-    })
+    expect(mockedActionRequest).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.edit',
+          draftId: idPair.draftId,
+          publishedId: idPair.publishedId,
+          patch: {
+            unset: ['_empty_action_guard_pseudo_field_'],
+          },
+        },
+      ],
+      {
+        tag: 'document.commit',
+        transactionId: expect.any(String),
+      },
+    )
 
     sub.unsubscribe()
   })

@@ -96,7 +96,7 @@ function isLiveEditMutation(mutationParams: Mutation['params'], publishedId: str
 }
 
 function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[] {
-  return mutationParams.mutations.flatMap((mutations) => {
+  const actions = mutationParams.mutations.flatMap<Action>((mutations) => {
     // This action is not always interoperable with the equivalent mutation. It will fail if the
     // published version of the document already exists.
     if (mutations.createIfNotExists) {
@@ -123,6 +123,24 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
     }
     throw new Error('Cannot map mutation to action')
   })
+
+  // Empty action invocations are a noop; although Content Lake accepts them, no transaction will
+  // be executed, causing Studio to become stuck in a pending state. To prevent this occurring, a
+  // fake unset mutation is added whenever an empty set of actions would otherwise be executed.
+  if (actions.length === 0) {
+    return [
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: idPair.draftId,
+        publishedId: idPair.publishedId,
+        patch: {
+          unset: ['_empty_action_guard_pseudo_field_'],
+        },
+      },
+    ]
+  }
+
+  return actions
 }
 
 function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
