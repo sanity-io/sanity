@@ -1,4 +1,5 @@
 import {isValidationErrorMarker, type SanityDocument} from '@sanity/types'
+import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest} from 'rxjs'
@@ -16,6 +17,7 @@ export interface DocumentValidationStatus extends ValidationStatus {
 }
 
 export interface DocumentInBundleResult {
+  memoKey: string
   document: SanityDocument
   validation: DocumentValidationStatus
   previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
@@ -83,6 +85,7 @@ export function useBundleDocuments(bundle: string): {
             document,
             validation,
             previewValues,
+            memoKey: uuid(),
           })),
         )
       }),

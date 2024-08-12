@@ -1,5 +1,6 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {act, fireEvent, render, screen, within} from '@testing-library/react'
+import {type ReactNode} from 'react'
 import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
@@ -32,6 +33,7 @@ const BASE_DOCUMENTS_MOCKS = {
 
 const MOCKED_DOCUMENTS: DocumentInBundleResult[] = [
   {
+    memoKey: 'key123',
     document: {
       _rev: 'FvEfB9CaLlljeKWNkQgpz9',
       _type: 'author',
@@ -59,6 +61,7 @@ const MOCKED_DOCUMENTS: DocumentInBundleResult[] = [
     },
   },
   {
+    memoKey: 'key123',
     document: {
       _rev: 'FvEfB9CaLlljeKWNkQg1232',
       _type: 'author',
