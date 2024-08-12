@@ -387,6 +387,9 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
+      sanity-plugin-media:
+        specifier: ^2.3.1
+        version: 2.3.2(@sanity/ui@2.8.8(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       sanity-plugin-mux-input:
         specifier: ^2.2.1
         version: 2.3.6(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
@@ -7481,8 +7484,8 @@ packages:
     resolution: {integrity: sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==}
     engines: {node: '>= 4'}
 
-  immer@10.0.4:
-    resolution: {integrity: sha512-cuBuGK40P/sk5IzWa9QPUaAdvPHjkk1c+xYsd9oZw+YQQEV+10G0P5uMpGctZZKnyQ+ibRO08bD25nWLmYi2pw==}
+  immer@10.1.1:
+    resolution: {integrity: sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==}
 
   immer@9.0.21:
     resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
@@ -11138,8 +11141,8 @@ packages:
       terser:
         optional: true
 
-  vite@5.3.5:
-    resolution: {integrity: sha512-MdjglKR6AQXQb9JGiS7Rc2wC6uMjcm7Go/NHNO63EwiJXfuk9PgqiP/n5IDJCziMkfw9n4Ubp7lttNwz+8ZVKA==}
+  vite@5.4.0:
+    resolution: {integrity: sha512-5xokfMX0PIiwCMCMb9ZJcMyh5wbBun0zUzKib+L65vAZ8GY9ePZMXxFrHbr/Kyll2+LSCY7xtERPpxkBDKngwg==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -11147,6 +11150,7 @@ packages:
       less: '*'
       lightningcss: ^1.21.0
       sass: '*'
+      sass-embedded: '*'
       stylus: '*'
       sugarss: '*'
       terser: ^5.4.0
@@ -11158,6 +11162,8 @@ packages:
       lightningcss:
         optional: true
       sass:
+        optional: true
+      sass-embedded:
         optional: true
       stylus:
         optional: true
@@ -11359,8 +11365,8 @@ packages:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
 
-  yaml@2.4.2:
-    resolution: {integrity: sha512-B3VqDZ+JAg1nZpaEmWtTXUlBneoGx6CPM9b0TENK6aoSu5t73dItudwdgmi6tHlIZZId4dZ9skcAQ2UbcyAeVA==}
+  yaml@2.5.0:
+    resolution: {integrity: sha512-2wWLbGbYDiSqqIKoPjar3MPgB94ErzCtrNE1FdqGuaO0pi2JGjmE8aW8TDZwzU7vuxcGRdL/4gPQwQ7hD5AMSw==}
     engines: {node: '>= 14'}
     hasBin: true
 
@@ -13744,12 +13750,13 @@ snapshots:
     dependencies:
       playwright: 1.44.1
       playwright-core: 1.44.1
-      vite: 5.3.5(@types/node@18.19.31)(terser@5.30.3)
+      vite: 5.4.0(@types/node@18.19.31)(terser@5.30.3)
     transitivePeerDependencies:
       - '@types/node'
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - terser
@@ -13763,6 +13770,7 @@ snapshots:
       - less
       - lightningcss
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14103,7 +14111,7 @@ snapshots:
       rimraf: 3.0.2
       split2: 4.2.0
       tar: 7.1.0
-      yaml: 2.4.2
+      yaml: 2.5.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14369,7 +14377,7 @@ snapshots:
       '@sanity/pkg-utils': 6.10.9(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
       '@sanity/ui': 2.8.8(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.1(vite@5.3.5(@types/node@18.19.31)(terser@5.30.3))
+      '@vitejs/plugin-react': 4.3.1(vite@5.4.0(@types/node@18.19.31)(terser@5.30.3))
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 3.6.0
@@ -14393,7 +14401,7 @@ snapshots:
       styled-components: 6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tmp: 0.2.3
       typescript: 5.5.4
-      vite: 5.3.5(@types/node@18.19.31)(terser@5.30.3)
+      vite: 5.4.0(@types/node@18.19.31)(terser@5.30.3)
     transitivePeerDependencies:
       - '@types/babel__core'
       - '@types/node'
@@ -14402,6 +14410,7 @@ snapshots:
       - lightningcss
       - react-is
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14421,7 +14430,7 @@ snapshots:
       '@sanity/pkg-utils': 6.10.9(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
       '@sanity/ui': 2.8.8(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.1(vite@5.3.5(@types/node@18.19.31)(terser@5.30.3))
+      '@vitejs/plugin-react': 4.3.1(vite@5.4.0(@types/node@18.19.31)(terser@5.30.3))
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 3.6.0
@@ -14445,7 +14454,7 @@ snapshots:
       styled-components: 6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tmp: 0.2.3
       typescript: 5.5.4
-      vite: 5.3.5(@types/node@18.19.31)(terser@5.30.3)
+      vite: 5.4.0(@types/node@18.19.31)(terser@5.30.3)
     transitivePeerDependencies:
       - '@types/babel__core'
       - '@types/node'
@@ -14454,6 +14463,7 @@ snapshots:
       - lightningcss
       - react-is
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -14473,7 +14483,7 @@ snapshots:
       '@sanity/pkg-utils': 6.10.9(@types/babel__core@7.20.5)(@types/node@18.19.31)(debug@4.3.6)(typescript@5.5.4)
       '@sanity/ui': 2.8.8(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.1(vite@5.3.5(@types/node@18.19.31)(terser@5.30.3))
+      '@vitejs/plugin-react': 4.3.1(vite@5.4.0(@types/node@18.19.31)(terser@5.30.3))
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 3.6.0
@@ -14497,7 +14507,7 @@ snapshots:
       styled-components: 6.1.12(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
       tmp: 0.2.3
       typescript: 5.5.4
-      vite: 5.3.5(@types/node@18.19.31)(terser@5.30.3)
+      vite: 5.4.0(@types/node@18.19.31)(terser@5.30.3)
     transitivePeerDependencies:
       - '@types/babel__core'
       - '@types/node'
@@ -14506,6 +14516,7 @@ snapshots:
       - lightningcss
       - react-is
       - sass
+      - sass-embedded
       - stylus
       - sugarss
       - supports-color
@@ -15305,14 +15316,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitejs/plugin-react@4.3.1(vite@5.3.5(@types/node@18.19.31)(terser@5.30.3))':
+  '@vitejs/plugin-react@4.3.1(vite@5.4.0(@types/node@18.19.31)(terser@5.30.3))':
     dependencies:
       '@babel/core': 7.25.2
       '@babel/plugin-transform-react-jsx-self': 7.24.5(@babel/core@7.25.2)
       '@babel/plugin-transform-react-jsx-source': 7.24.1(@babel/core@7.25.2)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 5.3.5(@types/node@18.19.31)(terser@5.30.3)
+      vite: 5.4.0(@types/node@18.19.31)(terser@5.30.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -18373,7 +18384,7 @@ snapshots:
 
   ignore@5.3.1: {}
 
-  immer@10.0.4: {}
+  immer@10.1.1: {}
 
   immer@9.0.21: {}
 
@@ -21682,7 +21693,7 @@ snapshots:
 
   slate@0.103.0:
     dependencies:
-      immer: 10.0.4
+      immer: 10.1.1
       is-plain-object: 5.0.0
       tiny-warning: 1.0.3
 
@@ -22672,7 +22683,7 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.30.3
 
-  vite@5.3.5(@types/node@18.19.31)(terser@5.30.3):
+  vite@5.4.0(@types/node@18.19.31)(terser@5.30.3):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.40
@@ -22889,7 +22900,7 @@ snapshots:
 
   yaml@1.10.2: {}
 
-  yaml@2.4.2: {}
+  yaml@2.5.0: {}
 
   yargs-parser@20.2.9: {}
 
