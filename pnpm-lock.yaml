@@ -485,7 +485,7 @@ importers:
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.19(@sanity/client@6.21.2(debug@4.3.6))
+        version: 1.6.20(@sanity/client@6.21.2(debug@4.3.6))
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.10.5(@sanity/client@6.21.2)(react@18.3.1)
@@ -1423,8 +1423,8 @@ importers:
         specifier: 3.53.0
         version: link:../@sanity/mutator
       '@sanity/presentation':
-        specifier: 1.16.3
-        version: 1.16.3(@sanity/client@6.21.2(debug@4.3.6))(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 1.16.4
+        version: 1.16.4(@sanity/client@6.21.2(debug@4.3.6))(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
         specifier: 3.53.0
         version: link:../@sanity/schema
@@ -4402,22 +4402,22 @@ packages:
     peerDependencies:
       typescript: 5.4.x || 5.5.x
 
-  '@sanity/presentation@1.16.3':
-    resolution: {integrity: sha512-W9FN7+uD6ui+wU40QoLd1p5CZVfEEF2jnwVq28QS0tHn4BTMIP5VnQ1kRvV/CAd/qylTYRyu91B2DRVZngGTNw==}
+  '@sanity/presentation@1.16.4':
+    resolution: {integrity: sha512-NuphMX/XW3TpCfmVRevuna7ExjpvKZu4dXBu6sZKcE09JZh4wRvBDySfWUm/a1qwN8elm05TC24kEwv8RHxRrQ==}
     engines: {node: '>=16.14'}
     peerDependencies:
-      '@sanity/client': ^6.21.1
+      '@sanity/client': ^6.21.2
 
   '@sanity/prettier-config@1.0.2':
     resolution: {integrity: sha512-V4HinfhMYxQoyXefJ2B8zJnwlf7A8mVzAzKk24B/iCg4pkVlMGc8bj0buu9Uieh4bNeHvEAHOIQv+Xd7tiLuNA==}
     peerDependencies:
       prettier: ^3.2.5
 
-  '@sanity/preview-url-secret@1.6.19':
-    resolution: {integrity: sha512-uOeC0+cca5uQzQUfAEXK3a48A07PJczHsPfSNh9sbtSgDBaBlMoiQjV/jE/eMADvKmKnJ13Yrobn2jscavI9TA==}
+  '@sanity/preview-url-secret@1.6.20':
+    resolution: {integrity: sha512-+UB02o1it0Dg7r73ewe+gyDAX/McmyJYcbEQYaEvwOi8VAxXUSyugyjJVKDIlljiyEkG8K4g3DV1tz2SL3N+tw==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.21.1
+      '@sanity/client': ^6.21.2
 
   '@sanity/react-loader@1.10.5':
     resolution: {integrity: sha512-VQ2f37aT9kb0MxA2OnO6R7bavvWJpYokj+MRyJgTPhlrrb3abeNnALjV/XwsN1mCEabq30CmQi7WP4PNMc1Cbw==}
@@ -14301,11 +14301,11 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation@1.16.3(@sanity/client@6.21.2(debug@4.3.6))(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/presentation@1.16.4(@sanity/client@6.21.2(debug@4.3.6))(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@sanity/client': 6.21.2(debug@4.3.6)
       '@sanity/icons': 3.3.1(react@18.3.1)
-      '@sanity/preview-url-secret': 1.6.19(@sanity/client@6.21.2(debug@4.3.6))
+      '@sanity/preview-url-secret': 1.6.20(@sanity/client@6.21.2(debug@4.3.6))
       '@sanity/ui': 2.8.8(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -14329,7 +14329,7 @@ snapshots:
       prettier: 3.3.3
       prettier-plugin-packagejson: 2.5.0(prettier@3.3.3)
 
-  '@sanity/preview-url-secret@1.6.19(@sanity/client@6.21.2(debug@4.3.6))':
+  '@sanity/preview-url-secret@1.6.20(@sanity/client@6.21.2(debug@4.3.6))':
     dependencies:
       '@sanity/client': 6.21.2(debug@4.3.6)
       '@sanity/uuid': 3.0.2
@@ -14664,7 +14664,7 @@ snapshots:
 
   '@sanity/visual-editing@2.1.8(@sanity/client@6.21.2)(next@15.0.0-rc.0(@babel/core@7.25.2)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@sanity/preview-url-secret': 1.6.19(@sanity/client@6.21.2(debug@4.3.6))
+      '@sanity/preview-url-secret': 1.6.20(@sanity/client@6.21.2(debug@4.3.6))
       '@vercel/stega': 0.1.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
