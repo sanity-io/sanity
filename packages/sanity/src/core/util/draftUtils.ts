@@ -113,8 +113,8 @@ export function getVersionId(id: string, bundle: string): string {
 /** @internal */
 export function getPublishedId(id: string): PublishedId {
   if (isVersionId(id)) {
-    const [version, bundle, ...publishedId] = id.split('.')
-    return publishedId.join('.') as PublishedId
+    // always return the last segment of the id
+    return id.split('.').pop() as PublishedId
   }
 
   if (isDraftId(id)) {
