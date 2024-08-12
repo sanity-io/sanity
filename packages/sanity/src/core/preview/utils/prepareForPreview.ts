@@ -25,14 +25,17 @@ export type PrepareInvocationResult = {
 }
 
 const errorCollector = (() => {
-  let errorsByType: Record<string, {error: Error; type: SchemaType; value: SelectedValue}[]> = {}
+  let errorsByType: Record<string, {error: Error; type: PreviewableType; value: SelectedValue}[]> =
+    {}
 
   return {
-    add: (type: SchemaType, value: SelectedValue, error: Error) => {
-      if (!errorsByType[type.name]) {
-        errorsByType[type.name] = []
+    add: (type: PreviewableType, value: SelectedValue, error: Error) => {
+      // cross dataset referenced types have a `type` (string) property instead of `name`
+      const typeName = 'name' in type ? type.name : type.type
+      if (!errorsByType[typeName]) {
+        errorsByType[typeName] = []
       }
-      errorsByType[type.name].push({error: error, type: type, value})
+      errorsByType[typeName].push({error: error, type: type, value})
     },
     getAll() {
       return errorsByType
@@ -219,7 +222,7 @@ export function invokePrepare(
 
 function withErrors(
   result: {errors: Error[]},
-  type: SchemaType,
+  type: PreviewableType,
   selectedValue: SelectedValue,
 ): PreviewValue {
   result.errors.forEach((error) => errorCollector.add(type, selectedValue, error))
@@ -258,7 +261,7 @@ function getListOptions(type: SchemaType): TitledListValue[] | undefined {
 /** @internal */
 export function prepareForPreview(
   rawValue: unknown,
-  type: SchemaType,
+  type: PreviewableType,
   viewOptions: PrepareViewOptions = {},
 ): PreviewValue & {_createdAt?: string; _updatedAt?: string} {
   const hasCustomPrepare = typeof type.preview?.prepare === 'function'
