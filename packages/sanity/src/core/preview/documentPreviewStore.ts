@@ -1,4 +1,9 @@
-import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
+import {
+  type MutationEvent,
+  type QueryParams,
+  type SanityClient,
+  type WelcomeEvent,
+} from '@sanity/client'
 import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
@@ -10,6 +15,7 @@ import {createObserveDocument} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
+import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './liveDocumentIdSet'
 import {createObserveFields} from './observeFields'
 import {
   type ApiConfig,
@@ -57,6 +63,30 @@ export interface DocumentPreviewStore {
     id: string,
     paths: PreviewPath[],
   ) => Observable<DraftsModelDocument<T>>
+
+  /**
+   * Observes a set of document IDs that matches the given groq-filter. The document ids are returned in ascending order and will update in real-time
+   * Whenever a document appears or disappears from the set, a new array with the updated set of IDs will be pushed to subscribers.
+   * The query is performed once, initially, and thereafter the set of ids are patched based on the `appear` and `disappear`
+   * transitions on the received listener events.
+   * This provides a lightweight way of subscribing to a list of ids for simple cases where you just want to subscribe to a set of documents ids
+   * that matches a particular filter.
+   * @hidden
+   * @beta
+   * @param filter - A groq filter to use for the document set
+   * @param params - Parameters to use with the groq filter
+   * @param options - Options for the observer
+   */
+  unstable_observeDocumentIdSet: (
+    filter: string,
+    params?: QueryParams,
+    options?: {
+      /**
+       * Where to insert new items into the set. Defaults to 'sorted' which is based on the lexicographic order of the id
+       */
+      insert?: 'sorted' | 'prepend' | 'append'
+    },
+  ) => Observable<DocumentIdSetObserverState>
 
   /**
    * Observe a complete document with the given ID
@@ -107,6 +137,10 @@ export function createDocumentPreviewStore({
     )
   }
 
+  const observeDocumentIdSet = createDocumentIdSetObserver(
+    versionedClient.withConfig({apiVersion: '2024-07-22'}),
+  )
+
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
   const observeDocumentPairAvailability = createPreviewAvailabilityObserver(
     versionedClient,
@@ -125,6 +159,7 @@ export function createDocumentPreviewStore({
     observeForPreview,
     observeDocumentTypeFromId,
 
+    unstable_observeDocumentIdSet: observeDocumentIdSet,
     unstable_observeDocument: observeDocument,
     unstable_observeDocuments: (ids: string[]) =>
       combineLatest(ids.map((id) => observeDocument(id))),
