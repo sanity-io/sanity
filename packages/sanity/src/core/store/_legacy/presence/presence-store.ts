@@ -211,6 +211,8 @@ export function __tmp_wrap_presenceStore(context: {
   }
 
   const states$: Observable<{[sessionId: string]: Session}> = merge(syncEvent$, useMock$).pipe(
+    // do not respond to my own state events
+    filter((event) => event.sessionId !== SESSION_ID),
     scan(
       (keyed, event: StateEvent | DisconnectEvent): {[sessionId: string]: Session} =>
         event.type === 'disconnect'
