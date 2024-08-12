@@ -1,31 +1,27 @@
-import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
 import {getIdPair, isRecord} from '../util'
-import {create_preview_availability} from './availability'
-import {type DraftsModelDocument, type ObservePathsFn, type PreviewPath} from './types'
+import {
+  type DraftsModelDocument,
+  type ObserveDocumentAvailabilityFn,
+  type ObservePathsFn,
+  type PreviewPath,
+} from './types'
 
-export function create_preview_documentPair(
-  versionedClient: SanityClient,
-  observePaths: ObservePathsFn,
-): {
-  observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
-    id: string,
-    paths: PreviewPath[],
-  ) => Observable<DraftsModelDocument<T>>
-} {
-  const {observeDocumentPairAvailability} = create_preview_availability(
-    versionedClient,
-    observePaths,
-  )
+export function createObservePathsDocumentPair(options: {
+  observeDocumentPairAvailability: ObserveDocumentAvailabilityFn
+  observePaths: ObservePathsFn
+}): <T extends SanityDocument = SanityDocument>(
+  id: string,
+  paths: PreviewPath[],
+) => Observable<DraftsModelDocument<T>> {
+  const {observeDocumentPairAvailability, observePaths} = options
 
   const ALWAYS_INCLUDED_SNAPSHOT_PATHS: PreviewPath[] = [['_updatedAt'], ['_createdAt'], ['_type']]
 
-  return {observePathsDocumentPair}
-
-  function observePathsDocumentPair<T extends SanityDocument = SanityDocument>(
+  return function observePathsDocumentPair<T extends SanityDocument = SanityDocument>(
     id: string,
     paths: PreviewPath[],
   ): Observable<DraftsModelDocument<T>> {
