@@ -1,26 +1,25 @@
 import {Text, useToast} from '@sanity/ui'
-import {useEffect, useState} from 'react'
+import {useEffect} from 'react'
 import {Translate, useBundles, usePerspective, useTranslation} from 'sanity'
 
-export const useBundleDeleted = () => {
+export const useBundleDeletedToast = () => {
   const {currentGlobalBundle} = usePerspective()
   const {data: bundles, deletedBundles} = useBundles()
   const toast = useToast()
   const {t} = useTranslation()
-  const [checkedOutBundleSlug, setCheckedOutBundleSlug] = useState<string | undefined>()
   const {slug: currentGlobalBundleSlug} = currentGlobalBundle
 
-  useEffect(() => setCheckedOutBundleSlug(currentGlobalBundleSlug), [currentGlobalBundleSlug])
-
   useEffect(() => {
-    if (!checkedOutBundleSlug || !Object.keys(deletedBundles).length || !bundles?.length) return
+    if (!currentGlobalBundleSlug || !Object.keys(deletedBundles).length || !bundles?.length) return
 
-    const hasCheckedOutBundleBeenDeleted = Boolean(deletedBundles[checkedOutBundleSlug])
+    const hasCheckedOutBundleBeenDeleted = Boolean(deletedBundles[currentGlobalBundleSlug])
 
     if (hasCheckedOutBundleBeenDeleted) {
-      const {title: deletedBundleTitle} = deletedBundles[checkedOutBundleSlug]
+      const {title: deletedBundleTitle, slug: deletedBundleSlug} =
+        deletedBundles[currentGlobalBundleSlug]
 
       toast.push({
+        id: `bundle-deleted-toast-${deletedBundleSlug}`,
         status: 'warning',
         title: (
           <Text muted size={1}>
@@ -31,9 +30,8 @@ export const useBundleDeleted = () => {
             />
           </Text>
         ),
-        closable: false,
         duration: 10000,
       })
     }
-  }, [bundles?.length, checkedOutBundleSlug, currentGlobalBundleSlug, deletedBundles, toast, t])
+  }, [bundles?.length, currentGlobalBundleSlug, deletedBundles, toast, t])
 }

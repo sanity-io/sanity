@@ -41,7 +41,7 @@ import {DocumentStatusBar} from '../statusBar'
 import {useDocumentPane} from '../useDocumentPane'
 import {usePreviewUrl} from '../usePreviewUrl'
 import {DocumentLayoutError} from './DocumentLayoutError'
-import {useBundleDeleted} from './useBundleDeleted'
+import {useBundleDeletedToast} from './useBundleDeletedToast'
 
 const EMPTY_ARRAY: [] = []
 
@@ -100,7 +100,7 @@ export function DocumentLayout() {
     focusPath,
     value,
   })
-  useBundleDeleted()
+  useBundleDeletedToast()
 
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])

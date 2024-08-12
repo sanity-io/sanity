@@ -214,7 +214,7 @@ describe('BundleMenu', () => {
     })
   })
 
-  it('should show deleted bundled', async () => {
+  it('should not show deleted bundles when not included in the list', async () => {
     mockUseBundles.mockReturnValue({
       dispatch: jest.fn(),
       loading: false,
@@ -235,10 +235,52 @@ describe('BundleMenu', () => {
 
     fireEvent.click(screen.getByRole('button', {name: 'Button Test'}))
 
+    expect(
+      within(screen.getByTestId('bundles-list')).queryByText('Mock Deleted Bundle'),
+    ).not.toBeInTheDocument()
+  })
+
+  it('should show deleted bundles that are included in the list', async () => {
+    mockUseBundles.mockReturnValue({
+      dispatch: jest.fn(),
+      loading: false,
+      data: [],
+      deletedBundles: {
+        'mock-deleted-bundle': {
+          _id: 'mock-deleted-bundle',
+          _type: 'bundle',
+          slug: 'mock-deleted-bundle',
+          title: 'Mock Deleted Bundle',
+        } as BundleDocument,
+      },
+    })
+    const wrapper = await createTestProvider()
+    render(
+      <BundleMenu
+        button={ButtonTest}
+        bundles={[
+          ...mockBundles,
+          {
+            _id: 'mock-deleted-bundle',
+            _type: 'bundle',
+            slug: 'mock-deleted-bundle',
+            title: 'Mock Deleted Bundle',
+          } as BundleDocument,
+        ]}
+        loading={false}
+      />,
+      {
+        wrapper,
+      },
+    )
+
+    fireEvent.click(screen.getByRole('button', {name: 'Button Test'}))
+
     const allMenuBundles = within(screen.getByTestId('bundles-list')).getAllByRole('menuitem')
     // deleted should be at the end of the bundle list
     const [deletedBundle] = allMenuBundles.reverse()
 
     within(deletedBundle).getByText('Mock Deleted Bundle')
+    expect(deletedBundle).toBeDisabled()
   })
 })

@@ -38,20 +38,13 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
   const {t} = useTranslation()
 
   const sortedBundlesToDisplay = useMemo(() => {
-    const deletedBundlesArray = Object.values(deletedBundles).map((bundle) => ({
-      ...bundle,
-      isDeleted: true,
-    }))
-    const allBundles: (BundleDocument & {isDeleted?: boolean})[] = [
-      ...(bundles || []),
-      ...deletedBundlesArray,
-    ]
+    if (!bundles) return []
 
-    return allBundles
-      .filter((bundle) => !isDraftOrPublished(bundle.slug) && !bundle.archivedAt)
+    return bundles
+      .filter(({slug, archivedAt}) => !isDraftOrPublished(slug) && !archivedAt)
       .sort(
-        ({isDeleted: aIsDeleted = false}, {isDeleted: bIsDeleted = false}) =>
-          Number(aIsDeleted) - Number(bIsDeleted),
+        ({slug: aSlug}, {slug: bSlug}) =>
+          Number(deletedBundles[aSlug]) - Number(deletedBundles[bSlug]),
       )
   }, [bundles, deletedBundles])
   const hasBundles = sortedBundlesToDisplay.length > 0
@@ -63,6 +56,11 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
       }
     },
     [setPerspective],
+  )
+
+  const isBundleDeleted = useCallback(
+    (slug: string) => Boolean(deletedBundles[slug]),
+    [deletedBundles],
   )
 
   return (
@@ -99,11 +97,11 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                           onClick={handleBundleChange(bundle)}
                           padding={1}
                           pressed={false}
-                          disabled={bundle.isDeleted}
+                          disabled={isBundleDeleted(bundle.slug)}
                           data-testid={`bundle-${bundle.slug}`}
                         >
                           <Tooltip
-                            disabled={!bundle.isDeleted}
+                            disabled={!isBundleDeleted(bundle.slug)}
                             content={t('bundle.deleted-tooltip')}
                             placement="bottom-start"
                           >
@@ -112,7 +110,7 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                 hue={bundle.hue}
                                 icon={bundle.icon}
                                 padding={2}
-                                isDisabled={bundle.isDeleted}
+                                isDisabled={isBundleDeleted(bundle.slug)}
                               />
 
                               <Box flex={1} padding={2} style={{minWidth: 100}}>
