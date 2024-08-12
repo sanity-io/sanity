@@ -21,7 +21,7 @@ describe('getBundleSlug', () => {
 
 describe('getDocumentIsInPerspective', () => {
   it('should return true if document is in the current perspective', () => {
-    expect(getDocumentIsInPerspective('summer.my-document-id', 'bundle.summer')).toBe(true)
+    expect(getDocumentIsInPerspective('versions.summer.my-document-id', 'bundle.summer')).toBe(true)
   })
 
   it('should return false if document is not a version  document a perspective is provided', () => {
@@ -29,11 +29,13 @@ describe('getDocumentIsInPerspective', () => {
   })
 
   it('should return false if document is not in the current perspective', () => {
-    expect(getDocumentIsInPerspective('summer.my-document-id', 'bundle.winter')).toBe(false)
+    expect(getDocumentIsInPerspective('versions.summer.my-document-id', 'bundle.winter')).toBe(
+      false,
+    )
   })
 
   it('should return false if document is a version  document a no perspective is provided', () => {
-    expect(getDocumentIsInPerspective('summer.my-document-id', undefined)).toBe(false)
+    expect(getDocumentIsInPerspective('versions.summer.my-document-id', undefined)).toBe(false)
   })
 
   it("should return true if the document is in the 'Published' perspective, and no perspective is provided", () => {
@@ -45,7 +47,7 @@ describe('getDocumentIsInPerspective', () => {
 
   it('should handle complex document ids correctly', () => {
     expect(
-      getDocumentIsInPerspective('complex-summer.my-document-id', 'bundle.complex-summer'),
+      getDocumentIsInPerspective('versions.complex-summer.my-document-id', 'bundle.complex-summer'),
     ).toBe(true)
   })
 })
