@@ -1,3 +1,4 @@
+import {isVersionId} from 'sanity'
 import speakingurl from 'speakingurl'
 
 import {type BundleDocument} from '../../store/bundles/types'
@@ -11,8 +12,12 @@ const PUBLISHED_SLUG = 'Published'
 export function getBundleSlug(documentId: string): string {
   if (documentId.indexOf('.') === -1) return PUBLISHED_SLUG
 
-  const [_, bundleSlug, ...PublishedId] = documentId.split('.')
-  return bundleSlug
+  if (isVersionId(documentId)) {
+    const [_, bundleSlug, ...PublishedId] = documentId.split('.')
+    return bundleSlug
+  }
+
+  return 'drafts'
 }
 
 /**
