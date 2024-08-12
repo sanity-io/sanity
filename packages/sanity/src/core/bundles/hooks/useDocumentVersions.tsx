@@ -37,7 +37,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
   const {documentId} = props
 
   const {data: bundles} = useBundles()
-  const publishedId = getPublishedId(documentId, documentId.includes('.'))
+  const publishedId = getPublishedId(documentId)
 
   const documentPreviewStore = useDocumentPreviewStore()
 
