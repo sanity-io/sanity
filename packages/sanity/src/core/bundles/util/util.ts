@@ -10,8 +10,9 @@ const PUBLISHED_SLUG = 'Published'
  */
 export function getBundleSlug(documentId: string): string {
   if (documentId.indexOf('.') === -1) return PUBLISHED_SLUG
-  const version = documentId.slice(0, documentId.indexOf('.'))
-  return version
+
+  const [_, bundleSlug, ...PublishedId] = documentId.split('.')
+  return bundleSlug
 }
 
 /**
