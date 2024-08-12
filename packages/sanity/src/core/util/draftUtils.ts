@@ -14,8 +14,10 @@ export type PublishedId = Opaque<string, 'publishedId'>
 
 /** @internal */
 export const DRAFTS_FOLDER = 'drafts'
+export const VERSION_FOLDER = 'versions'
 const PATH_SEPARATOR = '.'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
+const VERSION_PREFIX = `${VERSION_FOLDER}${PATH_SEPARATOR}`
 
 /**
  *
@@ -56,6 +58,11 @@ export function isDraftId(id: string): id is DraftId {
   return id.startsWith(DRAFTS_PREFIX)
 }
 
+/* @interal */
+export function isVersionId(id: string): boolean {
+  return id.startsWith(VERSION_PREFIX)
+}
+
 /**
  * TODO: Improve return type based on presence of `version` option.
  *
@@ -82,7 +89,7 @@ export function getIdPair(
 
 /** @internal */
 export function isPublishedId(id: string): id is PublishedId {
-  return !isDraftId(id)
+  return !isDraftId(id) && !isVersionId(id)
 }
 
 /** @internal */
@@ -90,10 +97,24 @@ export function getDraftId(id: string): DraftId {
   return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
+/* @internal */
+export function getVersionId(id: string, bundle: string): string {
+  if (isVersionId(id)) {
+    const [version, bundleName, ...publishedId] = id.split('.')
+    if (bundleName === bundle) return id
+    return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
+  }
+
+  const publishedId = getPublishedId(id)
+
+  return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
+}
+
 /** @internal */
-export function getPublishedId(id: string, isVersion?: boolean): PublishedId {
-  if (isVersion) {
-    return id.split(PATH_SEPARATOR).slice(1).join(PATH_SEPARATOR) as PublishedId
+export function getPublishedId(id: string): PublishedId {
+  if (isVersionId(id)) {
+    const [version, bundle, ...publishedId] = id.split('.')
+    return publishedId.join('.') as PublishedId
   }
 
   if (isDraftId(id)) {
@@ -157,8 +178,8 @@ export function collate<
   },
 >(documents: T[], {bundlePerspective}: CollateOptions = {}): CollatedHit<T>[] {
   const byId = documents.reduce((res, doc) => {
-    const isVersion = Boolean(doc._version)
-    const publishedId = getPublishedId(doc._id, isVersion)
+    const publishedId = getPublishedId(doc._id)
+    const isVersion = isVersionId(doc._id)
     const bundle = isVersion ? doc._id.split('.').at(0) : undefined
 
     let entry = res.get(publishedId)
