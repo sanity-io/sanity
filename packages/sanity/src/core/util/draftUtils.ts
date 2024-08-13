@@ -81,7 +81,7 @@ export function getIdPair(
     draftId: getDraftId(id),
     ...(version
       ? {
-          versionId: id.startsWith(`${version}.`) ? id : [version, getPublishedId(id)].join('.'),
+          versionId: isVersionId(id) ? id : getVersionId(id, version),
         }
       : {}),
   }
@@ -112,7 +112,7 @@ export function getVersionId(id: string, bundle: string): string {
 
 /** @internal */
 export function getPublishedId(id: string): PublishedId {
-  if (isVersionId(id)) {
+  if (isVersionId(id) || id.includes(PATH_SEPARATOR)) {
     // always return the last segment of the id
     return id.split('.').pop() as PublishedId
   }

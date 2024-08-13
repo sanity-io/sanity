@@ -109,7 +109,7 @@ export function useBundleOperations() {
 
       const transaction = studioClient.transaction()
       bundleDocuments.forEach((bundleDocument) => {
-        const publishedDocumentId = getPublishedId(bundleDocument._id, true)
+        const publishedDocumentId = getPublishedId(bundleDocument._id)
         const versionDocument = omit(bundleDocument, ['_version']) as SanityDocument
         const publishedDocumentRevisionId = publishedDocumentsRevisions[publishedDocumentId]
 
