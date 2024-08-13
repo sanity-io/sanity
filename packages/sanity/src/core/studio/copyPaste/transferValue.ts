@@ -324,7 +324,9 @@ export async function transferValue({
 
     // Check if it's an object source with array of objects target
     // and the source value is a typed object with '_type' of 'object',
-    // OR if the source value is not a typed object
+    // OR if the source value is not a typed object. This handles inline objects
+    // where we need to pull the type from the path vs objects that includes a `_type` property
+    // See test case: ./transferValue.test.ts#L771
     if (
       (isObjectSourceAndArrayOfObjectsTarget &&
         isTypedObject(sourceValueAtPath) &&
