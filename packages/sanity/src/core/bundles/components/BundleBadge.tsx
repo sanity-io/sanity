@@ -10,6 +10,7 @@ import {type BundleDocument} from '../../store/bundles/types'
 
 const BadgeRoot = styled(Flex)<{
   $hue: ColorHueKey
+  $isDisabled: boolean
 }>((props) => {
   const {color} = getTheme_v2(props.theme)
   const hue: ColorHueKey = props.$hue
@@ -20,6 +21,7 @@ const BadgeRoot = styled(Flex)<{
     --card-icon-color: ${hues[hue][color._dark ? 400 : 600].hex};
     background-color: var(--card-bg-color);
     border-radius: 9999px;
+    opacity: ${props.$isDisabled ? 0.5 : 1};
   `
 })
 /**
@@ -33,13 +35,20 @@ export function BundleBadge(
       openButton: boolean
       padding: number
       title: string
+      isDisabled: boolean
     }
   >,
 ): JSX.Element {
-  const {hue = 'gray', icon, openButton, padding = 3, title} = props
+  const {hue = 'gray', icon, openButton, padding = 3, title, isDisabled = false} = props
 
   return (
-    <BadgeRoot gap={padding} padding={padding} data-testid={`bundle-badge-color-${hue}`} $hue={hue}>
+    <BadgeRoot
+      gap={padding}
+      padding={padding}
+      data-testid={`bundle-badge-color-${hue}`}
+      $hue={hue}
+      $isDisabled={isDisabled}
+    >
       {icon && (
         <Box flex="none">
           <Text size={1}>

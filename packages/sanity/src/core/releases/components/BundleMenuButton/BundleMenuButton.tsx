@@ -16,12 +16,13 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 
-type Props = {
+export type BundleMenuButtonProps = {
+  disabled?: boolean
   bundle?: BundleDocument
-  documentCount: number
+  documentCount?: number
 }
 
-export const BundleMenuButton = ({bundle, documentCount}: Props) => {
+export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuButtonProps) => {
   const {deleteBundle, updateBundle} = useBundleOperations()
   const router = useRouter()
   const isBundleArchived = !!bundle?.archivedAt
@@ -29,7 +30,7 @@ export const BundleMenuButton = ({bundle, documentCount}: Props) => {
   const [selectedAction, setSelectedAction] = useState<'edit' | 'delete'>()
   const [discardStatus, setDiscardStatus] = useState<'idle' | 'discarding' | 'error'>('idle')
 
-  const bundleMenuDisabled = !bundle
+  const bundleMenuDisabled = !bundle || disabled
   const toast = useToast()
   const {t} = useTranslation(releasesLocaleNamespace)
 
