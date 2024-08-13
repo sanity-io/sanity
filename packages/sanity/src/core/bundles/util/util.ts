@@ -4,6 +4,7 @@ import {type BundleDocument} from '../../store/bundles/types'
 import {isVersionId} from '../../util'
 
 const PUBLISHED_SLUG = 'Published'
+const DRAFTS_SLUG = 'Drafts'
 
 /**
  * @internal
@@ -17,7 +18,7 @@ export function getBundleSlug(documentId: string): string {
     return bundleSlug
   }
 
-  return 'drafts'
+  return DRAFTS_SLUG
 }
 
 /**
