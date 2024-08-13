@@ -31,6 +31,7 @@ const timeNow = new Date()
 
 const releaseDocuments: DocumentInBundleResult[] = [
   {
+    memoKey: 'key123',
     document: {
       _id: '123',
       _type: 'document',
@@ -55,6 +56,7 @@ const releaseDocuments: DocumentInBundleResult[] = [
     },
   },
   {
+    memoKey: 'key123',
     document: {
       _id: '456',
       _type: 'document',

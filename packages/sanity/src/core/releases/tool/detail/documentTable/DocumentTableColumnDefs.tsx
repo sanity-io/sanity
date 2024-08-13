@@ -1,4 +1,5 @@
 import {AvatarStack, Box, Flex, Text} from '@sanity/ui'
+import {memo} from 'react'
 import {type BundleDocument, type TFunction, UserAvatar} from 'sanity'
 
 import {RelativeTime} from '../../../../components/RelativeTime'
@@ -6,6 +7,29 @@ import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview
 import {Headers} from '../../../components/Table/TableHeader'
 import {type Column} from '../../../components/Table/types'
 import {type BundleDocumentRow} from '../ReleaseSummary'
+import {type DocumentInBundleResult} from '../useBundleDocuments'
+
+const MemoReleaseDocumentPreview = memo(
+  function MemoReleaseDocumentPreview({
+    item,
+    releaseSlug,
+  }: {
+    item: DocumentInBundleResult
+    releaseSlug: string
+  }) {
+    return (
+      <ReleaseDocumentPreview
+        documentId={item.document._id}
+        documentTypeName={item.document._type}
+        releaseSlug={releaseSlug}
+        previewValues={item.previewValues.values}
+        isLoading={item.previewValues.isLoading}
+        hasValidationError={item.validation?.hasError}
+      />
+    )
+  },
+  (prev, next) => prev.item.memoKey === next.item.memoKey && prev.releaseSlug === next.releaseSlug,
+)
 
 export const getDocumentTableColumnDefs: (
   releaseSlug: BundleDocument['slug'],
@@ -17,16 +41,9 @@ export const getDocumentTableColumnDefs: (
     header: (props) => (
       <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
     ),
-    cell: ({cellProps, datum: {document, previewValues, validation}}) => (
+    cell: ({cellProps, datum}) => (
       <Box {...cellProps} flex={1} padding={1}>
-        <ReleaseDocumentPreview
-          documentId={document._id}
-          documentTypeName={document._type}
-          releaseSlug={releaseSlug}
-          previewValues={previewValues.values}
-          isLoading={!!document.isLoading || !!previewValues.isLoading}
-          hasValidationError={validation?.hasError}
-        />
+        <MemoReleaseDocumentPreview item={datum} releaseSlug={releaseSlug} />
       </Box>
     ),
   },

@@ -1,5 +1,6 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {act, fireEvent, render, screen, within} from '@testing-library/react'
+import {type ReactNode} from 'react'
 import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
@@ -32,6 +33,7 @@ const BASE_DOCUMENTS_MOCKS = {
 
 const MOCKED_DOCUMENTS: DocumentInBundleResult[] = [
   {
+    memoKey: 'key123',
     document: {
       _rev: 'FvEfB9CaLlljeKWNkQgpz9',
       _type: 'author',
@@ -59,6 +61,7 @@ const MOCKED_DOCUMENTS: DocumentInBundleResult[] = [
     },
   },
   {
+    memoKey: 'key123',
     document: {
       _rev: 'FvEfB9CaLlljeKWNkQg1232',
       _type: 'author',
@@ -140,6 +143,20 @@ jest.mock('../../../../preview/useObserveDocument', () => {
 
 const mockedUseObserveDocument = useObserveDocument as jest.Mock<typeof useObserveDocument>
 
+async function createReleaseReviewWrapper() {
+  const wrapper = await createTestProvider({
+    resources: [releasesUsEnglishLocaleBundle],
+  })
+  return ({children}: {children: ReactNode}) =>
+    wrapper({
+      children: (
+        <ColorSchemeProvider>
+          <UserColorManagerProvider>{children}</UserColorManagerProvider>
+        </ColorSchemeProvider>
+      ),
+    })
+}
+
 describe('ReleaseReview', () => {
   describe('when loading baseDocument', () => {
     beforeEach(async () => {
@@ -147,9 +164,7 @@ describe('ReleaseReview', () => {
         document: null,
         loading: true,
       })
-      const wrapper = await createTestProvider({
-        resources: [releasesUsEnglishLocaleBundle],
-      })
+      const wrapper = await createReleaseReviewWrapper()
       render(<ReleaseReview {...MOCKED_PROPS} documents={MOCKED_PROPS.documents.slice(0, 1)} />, {
         wrapper,
       })
@@ -164,15 +179,33 @@ describe('ReleaseReview', () => {
         document: null,
         loading: false,
       })
-      const wrapper = await createTestProvider({
-        resources: [releasesUsEnglishLocaleBundle],
-      })
-      render(<ReleaseReview {...MOCKED_PROPS} documents={MOCKED_PROPS.documents.slice(0, 1)} />, {
+      const wrapper = await createReleaseReviewWrapper()
+      render(<ReleaseReview {...MOCKED_PROPS} />, {
         wrapper,
       })
     })
-    it('should render the new document ui', async () => {
-      expect(screen.getByText('New document')).toBeInTheDocument()
+    it('should render the new document ui, showing the complete values as added', async () => {
+      const firstDocumentDiff = screen.getByTestId(
+        `doc-differences-${MOCKED_DOCUMENTS[0].document._id}`,
+      )
+      const secondDocumentDiff = screen.getByTestId(
+        `doc-differences-${MOCKED_DOCUMENTS[1].document._id}`,
+      )
+
+      expect(
+        within(firstDocumentDiff).getByText(
+          (content, el) =>
+            el?.tagName.toLowerCase() === 'ins' && content === 'William Faulkner added',
+        ),
+      ).toBeInTheDocument()
+      expect(within(firstDocumentDiff).getByText('Designer')).toBeInTheDocument()
+
+      expect(
+        within(secondDocumentDiff).getByText(
+          (content, el) => el?.tagName.toLowerCase() === 'ins' && content === 'Virginia Woolf test',
+        ),
+      ).toBeInTheDocument()
+      expect(within(secondDocumentDiff).getByText('Developer')).toBeInTheDocument()
     })
   })
 
@@ -183,9 +216,7 @@ describe('ReleaseReview', () => {
         loading: false,
       })
 
-      const wrapper = await createTestProvider({
-        resources: [releasesUsEnglishLocaleBundle],
-      })
+      const wrapper = await createReleaseReviewWrapper()
       render(<ReleaseReview {...MOCKED_PROPS} documents={MOCKED_PROPS.documents.slice(0, 1)} />, {
         wrapper,
       })
@@ -205,17 +236,8 @@ describe('ReleaseReview', () => {
         }
       })
 
-      const wrapper = await createTestProvider({
-        resources: [releasesUsEnglishLocaleBundle],
-      })
-      render(
-        <ColorSchemeProvider>
-          <UserColorManagerProvider>
-            <ReleaseReview {...MOCKED_PROPS} />
-          </UserColorManagerProvider>
-        </ColorSchemeProvider>,
-        {wrapper},
-      )
+      const wrapper = await createReleaseReviewWrapper()
+      render(<ReleaseReview {...MOCKED_PROPS} />, {wrapper})
     })
     it('should should show the changes', async () => {
       // Find an ins tag with the text "added"
@@ -265,11 +287,16 @@ describe('ReleaseReview', () => {
   })
   describe('filtering documents', () => {
     beforeEach(async () => {
-      mockedUseObserveDocument.mockReturnValue({document: null, loading: false})
-
-      const wrapper = await createTestProvider({
-        resources: [releasesUsEnglishLocaleBundle],
+      mockedUseObserveDocument.mockImplementation((docId: string) => {
+        return {
+          // @ts-expect-error - key is valid, ts won't infer it
+          document: BASE_DOCUMENTS_MOCKS[docId],
+          loading: false,
+        }
       })
+
+      const wrapper = await createReleaseReviewWrapper()
+
       render(<ReleaseReview {...MOCKED_PROPS} />, {wrapper})
     })
 
@@ -281,7 +308,7 @@ describe('ReleaseReview', () => {
         screen.queryByText(MOCKED_DOCUMENTS[1].previewValues.values.title as string),
       ).toBeInTheDocument()
     })
-    it('should show support filtering by title', () => {
+    it('should show support filtering by title', async () => {
       const searchInput = screen.getByPlaceholderText('Search documents')
       act(() => {
         fireEvent.change(searchInput, {target: {value: 'Virginia'}})
@@ -290,6 +317,7 @@ describe('ReleaseReview', () => {
       expect(
         screen.queryByText(MOCKED_DOCUMENTS[0].previewValues.values.title as string),
       ).not.toBeInTheDocument()
+
       expect(
         screen.queryByText(MOCKED_DOCUMENTS[1].previewValues.values.title as string),
       ).toBeInTheDocument()
