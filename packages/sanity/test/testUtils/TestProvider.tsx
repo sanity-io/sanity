@@ -2,9 +2,9 @@ import {type SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {noop} from 'lodash'
 import {type ReactNode} from 'react'
+import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {
-  AddonDatasetProvider,
   LocaleProviderBase,
   type LocaleResourceBundle,
   ResourceCacheProvider,
@@ -53,7 +53,16 @@ export async function createTestProvider({
                 <WorkspaceProvider workspace={workspace}>
                   <SourceProvider source={workspace.unstable_sources[0]}>
                     <ResourceCacheProvider>
-                      <AddonDatasetProvider>{children}</AddonDatasetProvider>
+                      <AddonDatasetContext.Provider
+                        value={{
+                          createAddonDataset: async () => Promise.resolve(null),
+                          isCreatingDataset: false,
+                          client: null,
+                          ready: true,
+                        }}
+                      >
+                        {children}
+                      </AddonDatasetContext.Provider>
                     </ResourceCacheProvider>
                   </SourceProvider>
                 </WorkspaceProvider>
