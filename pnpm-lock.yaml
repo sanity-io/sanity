@@ -46,7 +46,7 @@ importers:
         specifier: workspace:*
         version: link:packages/@repo/tsconfig
       '@sanity/client':
-        specifier: ^6.21.1
+        specifier: ^6.21.2
         version: 6.21.2(debug@4.3.6)
       '@sanity/eslint-config-i18n':
         specifier: 1.0.0
@@ -739,7 +739,7 @@ importers:
         specifier: ^7.23.5
         version: 7.25.3
       '@sanity/client':
-        specifier: ^6.21.1
+        specifier: ^6.21.2
         version: 6.21.2(debug@4.3.6)
       '@sanity/codegen':
         specifier: 3.53.0
@@ -1042,7 +1042,7 @@ importers:
   packages/@sanity/migrate:
     dependencies:
       '@sanity/client':
-        specifier: ^6.21.1
+        specifier: ^6.21.2
         version: 6.21.2(debug@4.3.6)
       '@sanity/mutate':
         specifier: ^0.8.0
@@ -1171,7 +1171,7 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^6.21.1
+        specifier: ^6.21.2
         version: 6.21.2(debug@4.3.6)
       '@types/react':
         specifier: ^18.3.3
@@ -1193,7 +1193,7 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: ^6.21.1
+        specifier: ^6.21.2
         version: 6.21.2(debug@4.3.6)
       '@sanity/types':
         specifier: 3.53.0
@@ -1294,7 +1294,7 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: ^6.21.1
+        specifier: ^6.21.2
         version: 6.21.2(debug@4.3.6)
       '@sanity/codegen':
         specifier: workspace:*
@@ -1384,7 +1384,7 @@ importers:
         specifier: 3.53.0
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^6.21.1
+        specifier: ^6.21.2
         version: 6.21.2(debug@4.3.6)
       '@sanity/color':
         specifier: ^3.0.0
@@ -1868,7 +1868,7 @@ importers:
         specifier: 1.44.1
         version: 1.44.1
       '@sanity/client':
-        specifier: ^6.21.1
+        specifier: ^6.21.2
         version: 6.21.2(debug@4.3.6)
       '@sanity/uuid':
         specifier: ^3.0.1
