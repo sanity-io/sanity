@@ -1,4 +1,4 @@
-import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
+import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
@@ -73,6 +73,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     value,
     open,
     onInsert,
+    onCopy,
     onFocus,
     onOpen,
     onClose,
@@ -115,6 +116,12 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       position: 'after',
     })
   }, [onInsert, value])
+
+  const handleCopy = useCallback(() => {
+    onCopy({
+      items: [{...value, _key: randomKey()}],
+    })
+  }, [onCopy, value])
 
   const handleInsert = useCallback(
     (pos: 'before' | 'after', insertType: SchemaType) => {
@@ -178,8 +185,13 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
                   onClick={onRemove}
                 />
                 <MenuItem
+                  text={t('inputs.array.action.copy')}
+                  icon={CopyIcon}
+                  onClick={handleCopy}
+                />
+                <MenuItem
                   text={t('inputs.array.action.duplicate')}
-                  icon={DuplicateIcon}
+                  icon={AddDocumentIcon}
                   onClick={handleDuplicate}
                 />
                 {insertBefore.menuItem}
@@ -192,7 +204,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           {insertAfter.popover}
         </>
       ),
-    [insertBefore, insertAfter, handleDuplicate, onRemove, props.inputId, readOnly, t],
+    [insertBefore, insertAfter, handleCopy, handleDuplicate, onRemove, props.inputId, readOnly, t],
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})

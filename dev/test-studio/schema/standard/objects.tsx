@@ -2,7 +2,7 @@
 // import {FaPuzzlePiece as icon} from 'react-icons/fa'
 
 import {useCallback} from 'react'
-import {defineType, type FormPatch, set, TransformPatches} from 'sanity'
+import {defineField, defineType, type FormPatch, set, TransformPatches} from 'sanity'
 
 export const myObject = defineType({
   type: 'object',
@@ -108,6 +108,21 @@ export default defineType({
       title: 'MyObject',
       description: 'The first field here should be the title',
     },
+    defineField({
+      type: 'object',
+      name: 'color',
+      title: 'Color with a long title',
+      fields: [
+        {
+          name: 'title',
+          type: 'string',
+        },
+        {
+          name: 'name',
+          type: 'string',
+        },
+      ],
+    }),
     {
       name: 'fieldWithObjectType',
       title: 'Field of object type',

@@ -2,12 +2,16 @@ import {isBooleanSchemaType, isNumberSchemaType, type SchemaType} from '@sanity/
 import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useState} from 'react'
 
 import {type FIXME} from '../../../../FIXME'
+import {useCopyPaste} from '../../../../studio'
+import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {getEmptyValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
 import {insert, type PatchArg, PatchEvent, set, unset} from '../../../patch'
 import {type ArrayOfPrimitivesItemMember} from '../../../store'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
+  type ArrayInputCopyEvent,
+  type FormDocumentValue,
   type PrimitiveInputProps,
   type PrimitiveItemProps,
   type RenderArrayOfPrimitivesItemCallback,
@@ -39,6 +43,8 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const [localValue, setLocalValue] = useState<undefined | string>()
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
+  const getFormValue = useGetFormValue()
+  const {onCopy} = useCopyPaste()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -169,6 +175,17 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     [member.index, onChange],
   )
 
+  const handleCopy = useCallback(
+    (_: ArrayInputCopyEvent<unknown>) => {
+      const documentValue = getFormValue([]) as FormDocumentValue
+      onCopy(member.item.path, documentValue, {
+        context: {source: 'arrayItem'},
+        patchType: 'append',
+      })
+    },
+    [getFormValue, member.item.path, onCopy],
+  )
+
   const itemProps = useMemo((): Omit<PrimitiveItemProps, 'renderDefault'> => {
     return {
       key: member.key,
@@ -180,6 +197,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       schemaType: member.item.schemaType as FIXME,
       parentSchemaType: member.parentSchemaType,
       onInsert,
+      onCopy: handleCopy,
       onRemove,
       presence: member.item.presence,
       validation: member.item.validation,
@@ -205,6 +223,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.item.path,
     member.parentSchemaType,
     onInsert,
+    handleCopy,
     onRemove,
     handleFocus,
     handleBlur,

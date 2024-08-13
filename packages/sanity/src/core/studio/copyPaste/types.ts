@@ -12,6 +12,7 @@ export interface SanityClipboardItem {
   schemaTypeName: string
   valuePath: Path
   value: unknown
+  patchType?: 'replace' | 'append'
 }
 
 /**
@@ -46,7 +47,7 @@ export interface CopyPasteContextType {
  */
 export interface BaseOptions {
   context: {
-    source: 'fieldAction' | 'documentFieldAction' | 'keyboardShortcut' | 'unknown'
+    source: 'fieldAction' | 'documentFieldAction' | 'keyboardShortcut' | 'arrayItem' | 'unknown'
   }
 }
 
@@ -54,7 +55,9 @@ export interface BaseOptions {
  * @beta
  * @hidden
  */
-export interface CopyOptions extends BaseOptions {}
+export interface CopyOptions extends BaseOptions {
+  patchType?: 'replace' | 'append'
+}
 
 /**
  * @beta

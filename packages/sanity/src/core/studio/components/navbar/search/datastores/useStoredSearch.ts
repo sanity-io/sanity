@@ -8,7 +8,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 export const RECENT_SEARCH_VERSION = 2
 const STORED_SEARCHES_NAMESPACE = 'studio.search.recent'
 
-interface StoredSearch {
+export interface StoredSearch {
   version: number
   recentSearches: any[]
 }

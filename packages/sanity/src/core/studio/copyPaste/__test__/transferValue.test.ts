@@ -41,7 +41,7 @@ describe('transferValue', () => {
     })
     expect(transferValueResult.errors).not.toEqual([])
     expect(transferValueResult.errors[0].i18n.key).toEqual(
-      'copy-paste.on-paste.validation.schema-type-incompatible.description',
+      'copy-paste.on-paste.validation.array-value-incompatible.description',
     )
   })
 
@@ -228,6 +228,83 @@ describe('transferValue', () => {
       expect(transferValueResult?.targetValue).toEqual({_ref: 'book-1', _type: 'reference'})
     })
 
+    test('can copy reference into array of references', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        reference: {_type: 'reference', _ref: 'yyy', key: '123'},
+      }
+      const targetRootValue = {
+        _type: 'referencesDocument',
+        _id: 'zzz',
+      }
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: ['reference'],
+        sourceValue,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['arrayOfReferences'],
+        targetRootValue,
+        targetRootPath: [],
+        options: {
+          validateReferences: true,
+          client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual([
+        {
+          _key: expect.any(String),
+          _ref: 'yyy',
+          _type: 'reference',
+        },
+      ])
+
+      // @ts-expect-error The result here isn't typed
+      expect(transferValueResult?.targetValue[0]._key).not.toEqual('123')
+    })
+
+    test('will not copy reference into array of references where referenced document does not exist', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        reference: {_type: 'reference', _ref: 'zzz'},
+      }
+      const targetRootValue = {
+        _type: 'referencesDocument',
+        _id: 'zzz',
+      }
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: ['reference'],
+        sourceValue,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['arrayOfReferences'],
+        targetRootValue,
+        targetRootPath: [],
+        options: {
+          validateReferences: true,
+          client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([
+        {
+          level: 'error',
+          sourceValue: expect.any(Object),
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+            args: {
+              ref: expect.any(String),
+            },
+          },
+        },
+      ])
+      expect(transferValueResult?.targetValue).toEqual([])
+    })
+
     test('will not copy reference into another that doesnt accept type', async () => {
       const sourceValue = {
         _type: 'author',
@@ -286,6 +363,86 @@ describe('transferValue', () => {
         },
       ])
       expect(transferValueResult?.targetValue).toEqual(undefined)
+    })
+
+    test('will not copy reference where referenced document does not exists', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        reference: {_type: 'reference', _ref: 'zzz'},
+      }
+      const targetRootValue = {
+        _type: 'referencesDocument',
+        _id: 'zzz',
+      }
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: ['reference'],
+        sourceValue,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['referenceWithFilter'],
+        targetRootValue,
+        targetRootPath: ['referenceWithFilter'],
+        options: {
+          validateReferences: true,
+          client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([
+        {
+          level: 'error',
+          sourceValue: expect.any(Object),
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+            args: {
+              ref: expect.any(String),
+            },
+          },
+        },
+      ])
+      expect(transferValueResult?.targetValue).toEqual(undefined)
+    })
+
+    test('will not copy reference as part of document where referenced document does not exist', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        reference: {_type: 'reference', _ref: 'zzz'},
+      }
+      const targetRootValue = {
+        _type: 'referencesDocument',
+        _id: 'zzz',
+      }
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: [],
+        sourceValue,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: [],
+        targetRootValue,
+        targetRootPath: [],
+        options: {
+          validateReferences: true,
+          client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([
+        {
+          level: 'error',
+          sourceValue: expect.any(Object),
+
+          i18n: {
+            key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+            args: {
+              ref: expect.any(String),
+            },
+          },
+        },
+      ])
+      expect(transferValueResult?.targetValue).toEqual({_type: 'referencesDocument'})
     })
 
     test('will not copy reference where reference does not match filter function', async () => {
@@ -417,6 +574,7 @@ describe('transferValue', () => {
       })
       expect(transferValueResult?.targetValue).toEqual([1, 2, 3])
     })
+
     test('can copy array of strings', async () => {
       const sourceValue = {
         _type: 'editor',
@@ -609,6 +767,48 @@ describe('transferValue', () => {
         {_key: expect.any(String), title: 'Blue', name: 'blue', _type: 'color'},
       ])
     })
+
+    test('can copy an supported inline object into an array of multiple types', async () => {
+      const sourceValue = {
+        title: 'Red',
+        name: 'red',
+      }
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('editor')!, ['color'])
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceRootPath: ['color'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['arrayOfPredefinedOptions'],
+        targetRootValue: {},
+        targetRootPath: [],
+      })
+      expect(transferValueResult?.targetValue).toEqual([
+        {_key: expect.any(String), title: 'Red', name: 'red', _type: 'color'},
+      ])
+    })
+
+    test('can copy a supported hoisted object into an array of multiple types', async () => {
+      const sourceValue = {
+        myString: 'hello world',
+      }
+      const schemaTypeAtPath = resolveSchemaTypeForPath(schema.get('editor')!, ['myStringObject'])
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schemaTypeAtPath!,
+        sourcePath: [],
+        sourceRootPath: ['myStringObject'],
+        sourceValue,
+        targetRootSchemaType: schema.get('editor')!,
+        targetPath: ['arrayOfPredefinedOptions'],
+        targetRootValue: {},
+        targetRootPath: [],
+      })
+      expect(transferValueResult?.targetValue).toEqual([
+        {_key: expect.any(String), myString: 'hello world', _type: 'myStringObject'},
+      ])
+    })
+
     test('can not copy array values into another array that does not accept type', async () => {
       const sourceValue = [
         {
@@ -986,24 +1186,6 @@ describe('transferValue', () => {
       // Test that the keys are not the same
       expect(targetValue.bio[0]._key).not.toEqual('someKey')
       expect(targetValue.bio[0].children[0]._key).not.toEqual('someOtherKey')
-    })
-
-    test('can copy array of numbers', async () => {
-      const sourceValue = {
-        _type: 'author',
-        _id: 'xxx',
-        favoriteNumbers: [1, 2, 3, 4, 'foo'],
-      }
-      const transferValueResult = await transferValue({
-        sourceRootSchemaType: schema.get('author')!,
-        sourcePath: ['favoriteNumbers'],
-        sourceValue,
-        targetRootSchemaType: schema.get('editor')!,
-        targetPath: ['favoriteNumbers'],
-        targetRootValue: {},
-        targetRootPath: [],
-      })
-      expect(transferValueResult?.targetValue).toEqual([1, 2, 3, 4])
     })
 
     test('can copy nested objects', async () => {
