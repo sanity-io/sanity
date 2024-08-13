@@ -26,6 +26,7 @@ export function useInitialValue(props: {
   const defaultValue: SanityDocumentLike = useMemo(() => {
     const base: SanityDocumentLike = {_id: documentId, _type: documentType}
     if (version) {
+      // TODO: this would need to be updated once the CL changes land for the new id format.
       base._version = {}
       // TODO: Use getVersionId function.
       base._id = `${version}.${documentId}`
