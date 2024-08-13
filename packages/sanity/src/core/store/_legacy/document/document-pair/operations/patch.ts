@@ -5,10 +5,23 @@ import {type OperationImpl} from './types'
 export const patch: OperationImpl<[patches: any[], initialDocument?: Record<string, any>]> = {
   disabled: (): false => false,
   execute: (
-    {schema, snapshots, idPair, draft, published, typeName},
+    {schema, snapshots, idPair, draft, published, version, typeName},
     patches = [],
     initialDocument,
   ): void => {
+    // TODO: This is exactly the same strategy as live-editing. Can we avoid duplication?
+    if (version) {
+      // No drafting, so patch and commit the published document
+      version.mutate([
+        version.createIfNotExists({
+          _type: typeName,
+          ...initialDocument,
+        }),
+        ...version.patch(patches),
+      ])
+      return
+    }
+
     if (isLiveEditEnabled(schema, typeName)) {
       // No drafting, so patch and commit the published document
       published.mutate([
@@ -19,13 +32,11 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
         ...published.patch(patches),
       ])
     } else {
-      // TODO: Should be dynamic
-      const draftIndex = 0
       draft.mutate([
         draft.createIfNotExists({
           ...initialDocument,
           ...snapshots.published,
-          _id: idPair.draftIds[draftIndex],
+          _id: idPair.draftId,
           _type: typeName,
         }),
         ...draft.patch(patches),

@@ -21,10 +21,24 @@ export interface EditStateFor {
   type: string
   transactionSyncLock: TransactionSyncLockState | null
   draft: SanityDocument | null
-  // TODO: Rename -> `public`
   published: SanityDocument | null
+  version: SanityDocument | null
+  /**
+   * Whether live edit is enabled. This may be true for various reasons:
+   *
+   * - The schema type has live edit enabled.
+   * - A version of the document is checked out.
+   */
   liveEdit: boolean
+  /**
+   * Whether the schema type has live edit enabled.
+   */
+  liveEditSchemaType: boolean
   ready: boolean
+  /**
+   * When editing a version, the slug of the bundle the document belongs to.
+   */
+  bundleSlug?: string
 }
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
@@ -40,37 +54,44 @@ export const editState = memoize(
     idPair: IdPair,
     typeName: string,
   ): Observable<EditStateFor> => {
-    const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
-    // TODO: Should be dynamic
-    const draftIndex = 0
+    const liveEditSchemaType = isLiveEditEnabled(ctx.schema, typeName)
+    const liveEdit = typeof idPair.versionId !== 'undefined' || liveEditSchemaType
+
     return snapshotPair(ctx.client, idPair, typeName, ctx.serverActionsEnabled).pipe(
       switchMap((versions) =>
         combineLatest([
-          versions.drafts[draftIndex].snapshots$,
+          versions.draft.snapshots$,
           versions.published.snapshots$,
           versions.transactionsPendingEvents$.pipe(
             map((ev: PendingMutationsEvent) => (ev.phase === 'begin' ? LOCKED : NOT_LOCKED)),
             startWith(NOT_LOCKED),
           ),
+          ...(typeof versions.version === 'undefined' ? [] : [versions.version.snapshots$]),
         ]),
       ),
-      map(([draftSnapshot, publishedSnapshot, transactionSyncLock]) => ({
+      map(([draftSnapshot, publishedSnapshot, transactionSyncLock, versionSnapshot]) => ({
         id: idPair.publishedId,
         type: typeName,
         draft: draftSnapshot,
         published: publishedSnapshot,
+        version: typeof idPair.versionId === 'undefined' ? null : versionSnapshot,
         liveEdit,
+        liveEditSchemaType,
         ready: true,
         transactionSyncLock,
+        bundleSlug: idPair.versionId?.split('.').at(0),
       })),
       startWith({
         id: idPair.publishedId,
         type: typeName,
         draft: null,
         published: null,
+        version: null,
         liveEdit,
+        liveEditSchemaType,
         ready: false,
         transactionSyncLock: null,
+        bundleSlug: idPair.versionId?.split('.').at(0),
       }),
       publishReplay(1),
       refCount(),

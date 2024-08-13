@@ -7,7 +7,7 @@ import {Tooltip} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {type BundleDocument} from '../../store/bundles/types'
 import {useBundles} from '../../store/bundles/useBundles'
-import {usePerspective} from '../hooks/usePerspective'
+import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/util'
 import {BundleBadge} from './BundleBadge'
@@ -26,15 +26,16 @@ interface BundleListProps {
   bundles: BundleDocument[] | null
   loading: boolean
   actions?: ReactElement
+  perspective?: string
 }
 
 /**
  * @internal
  */
 export function BundleMenu(props: BundleListProps): JSX.Element {
-  const {bundles, loading, actions, button} = props
+  const {bundles, loading, actions, button, perspective} = props
   const {deletedBundles} = useBundles()
-  const {currentGlobalBundle, setPerspective} = usePerspective()
+  const {currentGlobalBundle, setPerspective} = usePerspective(perspective)
   const {t} = useTranslation()
 
   const sortedBundlesToDisplay = useMemo(() => {

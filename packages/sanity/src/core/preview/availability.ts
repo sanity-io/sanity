@@ -71,25 +71,36 @@ export function createPreviewAvailabilityObserver(
   versionedClient: SanityClient,
   observePaths: ObservePathsFn,
 ): {
-  observeDocumentPairAvailability(id: string): Observable<DraftsModelDocumentAvailability>
+  observeDocumentPairAvailability(
+    id: string,
+    options?: {version?: string},
+  ): Observable<DraftsModelDocumentAvailability>
 } {
   /**
    * Returns an observable of metadata for a given drafts model document
    */
   function observeDocumentPairAvailability(
     id: string,
+    {version}: {version?: string} = {},
   ): Observable<DraftsModelDocumentAvailability> {
     const draftId = getDraftId(id)
     const publishedId = getPublishedId(id)
+    const versionId = version ? [version, publishedId].join('.') : undefined
     return combineLatest([
       observeDocumentAvailability(draftId),
       observeDocumentAvailability(publishedId),
+      ...(versionId ? [observeDocumentAvailability(versionId)] : []),
     ]).pipe(
       distinctUntilChanged(shallowEquals),
-      map(([draftReadability, publishedReadability]) => {
+      map(([draftReadability, publishedReadability, versionReadability]) => {
         return {
           draft: draftReadability,
           published: publishedReadability,
+          ...(versionReadability
+            ? {
+                version: versionReadability,
+              }
+            : {}),
         }
       }),
     )

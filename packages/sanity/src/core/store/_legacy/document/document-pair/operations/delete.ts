@@ -10,9 +10,7 @@ export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
       return tx.commit({tag: 'document.delete'})
     }
 
-    idPair.draftIds.forEach((draftId) => tx.delete(draftId))
-
-    return tx.commit({
+    return tx.delete(idPair.draftId).commit({
       tag: 'document.delete',
       // this disables referential integrity for cross-dataset references. we
       // have this set because we warn against deletes in the `ConfirmDeleteDialog`

@@ -16,6 +16,7 @@ import {
 interface Snapshots {
   draft: SanityDocument | null
   published: SanityDocument | null
+  version: SanityDocument | null
 }
 
 /** @internal */
@@ -64,16 +65,14 @@ export function getPairListener(
   idPair: IdPair,
   options: PairListenerOptions = {},
 ): Observable<ListenerEvent> {
-  const {publishedId, draftIds} = idPair
-  // TODO: Should be dynamic
-  const draftIndex = 0
+  const {publishedId, draftId, versionId} = idPair
+
   return defer(
     () =>
       client.observable.listen(
-        `*[_id == $publishedId || _id in($draftIds)]`,
+        `*[_id in $ids]`,
         {
-          publishedId,
-          draftIds,
+          ids: [publishedId, draftId, versionId].filter((id) => typeof id !== 'undefined'),
         },
         {
           includeResult: false,
@@ -87,8 +86,9 @@ export function getPairListener(
       event.type === 'welcome'
         ? fetchInitialDocumentSnapshots().pipe(
             concatMap((snapshots) => [
-              createSnapshotEvent(draftIds[draftIndex], snapshots.draft),
+              createSnapshotEvent(draftId, snapshots.draft),
               createSnapshotEvent(publishedId, snapshots.published),
+              ...(versionId ? [createSnapshotEvent(versionId, snapshots.version)] : []),
             ]),
           )
         : observableOf(event),
@@ -133,11 +133,15 @@ export function getPairListener(
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
     return client.observable
-      .getDocuments<SanityDocument>([...draftIds, publishedId], {tag: 'document.snapshots'})
+      .getDocuments<SanityDocument>(
+        [publishedId, draftId, versionId].filter((id): id is string => typeof id === 'string'),
+        {tag: 'document.snapshots'},
+      )
       .pipe(
-        map(([draft, published]) => ({
+        map(([published, draft, version]) => ({
           draft,
           published,
+          version,
         })),
       )
   }

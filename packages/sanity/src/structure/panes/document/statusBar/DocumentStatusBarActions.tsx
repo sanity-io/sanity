@@ -6,6 +6,7 @@ import {
   BundleActions,
   type DocumentActionComponent,
   type DocumentActionDescription,
+  type DocumentActionProps,
   isBundleDocument,
   LATEST,
   shouldArrayDialogOpen,
@@ -15,7 +16,7 @@ import {
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState} from '../../../components'
+import {RenderActionCollectionState, usePaneRouter} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
@@ -25,15 +26,17 @@ interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
   showMenu: boolean
   states: DocumentActionDescription[]
+  actionProps?: Omit<DocumentActionProps, 'onComplete'> | null
 }
 
 const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInner(
   props: DocumentStatusBarActionsInnerProps,
 ) {
-  const {disabled, showMenu, states} = props
+  const {disabled, showMenu, states, actionProps} = props
   const {__internal_tasks, schemaType, openPath, documentId, documentType, documentVersions} =
     useDocumentPane()
 
+  const paneRouter = usePaneRouter()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const isTreeArrayEditingEnabled = useSource().beta?.treeArrayEditing?.enabled
@@ -69,7 +72,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   /* Version / Bundling handling */
 
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentGlobalBundle} = usePerspective()
+  const {currentGlobalBundle} = usePerspective(paneRouter.perspective)
 
   return (
     <Flex align="center" gap={1}>
@@ -101,6 +104,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                         documentId={documentId}
                         documentType={documentType}
                         documentVersions={documentVersions}
+                        {...actionProps}
                       />
                     ) : (
                       <div>
@@ -156,9 +160,10 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
         states={states}
         // Use document ID as key to make sure that the actions state is reset when the document changes
         key={documentId}
+        actionProps={editState}
       />
     ),
-    [actions.length, connectionState, documentId],
+    [actions.length, connectionState, documentId, editState],
   )
 
   if (actions.length === 0 || !editState) {

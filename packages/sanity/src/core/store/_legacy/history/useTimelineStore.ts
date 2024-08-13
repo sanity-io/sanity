@@ -6,14 +6,19 @@ import {
   catchError,
   distinctUntilChanged,
   map,
+  type Observable,
   of,
   type Subscription,
+  switchMap,
   tap,
 } from 'rxjs'
 
 import {
   type Annotation,
   type Chunk,
+  DRAFTS_FOLDER,
+  remoteSnapshots,
+  type RemoteSnapshotVersionEvent,
   type SelectionState,
   type TimelineController,
   useHistoryStore,
@@ -21,7 +26,6 @@ import {
 } from '../../..'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'
 import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
 
 interface UseTimelineControllerOpts {
@@ -30,6 +34,7 @@ interface UseTimelineControllerOpts {
   onError?: (err: Error) => void
   rev?: string
   since?: string
+  version?: string
 }
 
 /** @internal */
@@ -97,6 +102,7 @@ export function useTimelineStore({
   onError,
   rev,
   since,
+  version,
 }: UseTimelineControllerOpts): TimelineStore {
   const historyStore = useHistoryStore()
   const snapshotsSubscriptionRef = useRef<Subscription | null>(null)
@@ -111,10 +117,10 @@ export function useTimelineStore({
     () =>
       historyStore.getTimelineController({
         client,
-        documentId,
+        documentId: version ? [version, documentId].join('.') : documentId,
         documentType,
       }),
-    [client, documentId, documentType, historyStore],
+    [client, documentId, documentType, historyStore, version],
   )
 
   /**
@@ -173,12 +179,22 @@ export function useTimelineStore({
     if (!snapshotsSubscriptionRef.current) {
       snapshotsSubscriptionRef.current = remoteSnapshots(
         client,
-        {draftIds: [`drafts.${documentId}`], publishedId: documentId},
+        {
+          draftId: [DRAFTS_FOLDER, documentId].join('.'),
+          publishedId: documentId,
+          ...(version
+            ? {
+                versionId: [version, documentId].join('.'),
+              }
+            : {}),
+        },
         documentType,
         serverActionsEnabled,
-      ).subscribe((ev: RemoteSnapshotVersionEvent) => {
-        controller.handleRemoteMutation(ev)
-      })
+      )
+        .pipe(mapVersion(version))
+        .subscribe((ev: RemoteSnapshotVersionEvent) => {
+          controller.handleRemoteMutation(ev)
+        })
     }
     return () => {
       if (snapshotsSubscriptionRef.current) {
@@ -186,7 +202,7 @@ export function useTimelineStore({
         snapshotsSubscriptionRef.current = null
       }
     }
-  }, [client, controller, documentId, documentType, serverActionsEnabled])
+  }, [client, controller, documentId, documentType, serverActionsEnabled, version])
 
   const timelineStore = useMemo(() => {
     return {
@@ -254,4 +270,32 @@ export function useTimelineStore({
   }, [controller, onError, timelineController$])
 
   return timelineStore
+}
+
+/**
+ * When computing the timeline for a version document, the version id cannot simply be treated as
+ * the primary document id. This would result in multiple document pairs being checked out with
+ * different parameters, which causes multiple listeners to be created.
+ *
+ * Instead, the timeline store checks out a document pair including the version, and maps the
+ * emitted version snapshots to published and draft snapshots. This allows the underyling timeline
+ * controller to be used without modification.
+ */
+function mapVersion(version?: string) {
+  return switchMap<RemoteSnapshotVersionEvent, Observable<RemoteSnapshotVersionEvent>>((ev) => {
+    if (version) {
+      return of<RemoteSnapshotVersionEvent[]>(
+        {
+          ...ev,
+          version: 'published',
+        },
+        {
+          ...ev,
+          version: 'draft',
+        },
+      )
+    }
+
+    return of(ev)
+  })
 }
