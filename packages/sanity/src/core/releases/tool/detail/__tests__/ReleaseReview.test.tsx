@@ -131,6 +131,10 @@ jest.mock('sanity/router', () => ({
   }),
 }))
 
+jest.mock('../../../../bundles/components/BundleMenu', () => ({
+  BundleMenu: () => <div>BundleMenu</div>,
+}))
+
 jest.mock('../../../../preview/useObserveDocument', () => {
   return {
     useObserveDocument: jest.fn(),

@@ -131,6 +131,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'bundle.action.already-in-release': 'Already in release {{title}}',
   /** Action message for creating releases */
   'bundle.action.create': 'Create release',
+  /** Label when a release has been deleted by a different user */
+  'bundle.deleted-toast-title': "The '<strong>{{title}}</strong>' release has been deleted",
+  /** Label for tooltip on deleted release */
+  'bundle.deleted-tooltip': 'This release has been deleted',
   /** Title for creating releases dialog */
   'bundle.dialog.create.title': 'Create release',
   /** Title for editing releases dialog */
