@@ -2,10 +2,11 @@
 
 import {type BifurClient} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
-import {flatten, groupBy, omit, uniq} from 'lodash'
+import {flatten, groupBy, isEqual, omit, uniq} from 'lodash'
 import {nanoid} from 'nanoid'
 import {
   BehaviorSubject,
+  combineLatest,
   defer,
   EMPTY,
   from,
@@ -19,7 +20,6 @@ import {
   auditTime,
   distinctUntilChanged,
   filter,
-  flatMap,
   map,
   mergeMapTo,
   scan,
@@ -29,7 +29,6 @@ import {
   switchMapTo,
   takeUntil,
   tap,
-  toArray,
   withLatestFrom,
 } from 'rxjs/operators'
 
@@ -292,29 +291,35 @@ export function __tmp_wrap_presenceStore(context: {
     ),
   )
 
+  // Create a single shared observable for all documents
+  const allDocumentsPresence$ = combineLatest([allSessions$, debugIntrospect$]).pipe(
+    map(([userAndSessions, debugIntrospect]) =>
+      userAndSessions
+        .flatMap((userAndSession) =>
+          (userAndSession.session.locations || []).map((location) => ({
+            documentId: location.documentId,
+            presence: {
+              user: userAndSession.user,
+              lastActiveAt: userAndSession.session.lastActiveAt,
+              path: location.path || [],
+              sessionId: userAndSession.session.sessionId,
+              selection: location?.selection,
+            },
+          })),
+        )
+        .filter((item) => debugIntrospect || item.presence.sessionId !== SESSION_ID),
+    ),
+    shareReplay(1),
+  )
+
   // export
   const documentPresence = (documentId: string): Observable<DocumentPresence[]> => {
-    return allSessions$.pipe(
-      withLatestFrom(debugIntrospect$),
-      switchMap(([userAndSessions, debugIntrospect]) =>
-        from(userAndSessions).pipe(
-          filter(
-            (userAndSession) => debugIntrospect || userAndSession.session.sessionId !== SESSION_ID,
-          ),
-          flatMap((userAndSession) =>
-            (userAndSession.session.locations || [])
-              .filter((item) => item.documentId === documentId)
-              .map((location) => ({
-                user: userAndSession.user,
-                lastActiveAt: userAndSession.session.lastActiveAt,
-                path: location.path || [],
-                sessionId: userAndSession.session.sessionId,
-                selection: location?.selection,
-              })),
-          ),
-          toArray(),
-        ),
+    return allDocumentsPresence$.pipe(
+      map((allPresence) =>
+        allPresence.filter((item) => item.documentId === documentId).map((item) => item.presence),
       ),
+      // Only emit if the presence has changed for this document id
+      distinctUntilChanged((prev, curr) => isEqual(prev, curr)),
     )
   }
 
