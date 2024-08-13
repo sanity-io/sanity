@@ -1,11 +1,11 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {useCallback, useEffect, useMemo, useRef} from 'react'
-import {LoadingBlock, useTranslation} from 'sanity'
+import {LoadingBlock} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components'
+import {Translate, useTranslation} from '../../../i18n'
 import {useBundles} from '../../../store/bundles'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
 import {ReleasePublishAllButton} from '../../components/ReleasePublishAllButton/ReleasePublishAllButton'
@@ -38,7 +38,8 @@ export const ReleaseDetail = () => {
 
   const {bundleSlug}: ReleasesRouterState = router.state
   const parsedSlug = decodeURIComponent(bundleSlug || '')
-  const {data, loading} = useBundles()
+  const {data, loading, deletedBundles} = useBundles()
+  const deletedBundle = deletedBundles[parsedSlug]
 
   const {loading: documentsLoading, results} = useBundleDocuments(parsedSlug)
 
@@ -74,8 +75,11 @@ export const ReleaseDetail = () => {
     }
   }, [activeScreen, bundle?.publishedAt, navigateToSummary])
 
-  const header = useMemo(
-    () => (
+  const header = useMemo(() => {
+    const headerBundle = bundle || deletedBundle
+    const isBundleDeleted = !!deletedBundle
+
+    return (
       <Card flex="none" padding={3}>
         <Flex>
           <Flex align="baseline" flex={1} gap={2}>
@@ -91,7 +95,7 @@ export const ReleaseDetail = () => {
               />
               <Box paddingX={1} paddingY={2}>
                 <Text as="h1" size={1} weight="semibold">
-                  {bundle?.title}
+                  {headerBundle?.title}
                 </Text>
               </Box>
             </Flex>
@@ -106,15 +110,15 @@ export const ReleaseDetail = () => {
                 data-testid="summary-button"
               />
               {/* StudioButton supports tooltip when button is disabled */}
-              {!bundle?.publishedAt && (
+              {!headerBundle?.publishedAt && (
                 <Button
                   tooltipProps={{
-                    disabled: bundleHasDocuments,
+                    disabled: bundleHasDocuments || isBundleDeleted,
                     content: t('review.description'),
                     placement: 'bottom',
                   }}
                   key="review"
-                  disabled={!bundleHasDocuments}
+                  disabled={!bundleHasDocuments || isBundleDeleted}
                   mode="bleed"
                   onClick={navigateToReview}
                   selected={activeScreen === 'review'}
@@ -126,34 +130,52 @@ export const ReleaseDetail = () => {
           </Flex>
 
           <Flex flex="none" gap={2}>
-            {showPublishButton && bundle && (
+            {!isBundleDeleted && showPublishButton && bundle && (
               <ReleasePublishAllButton
                 bundle={bundle}
                 bundleDocuments={results}
                 disabled={isPublishButtonDisabled}
               />
             )}
-            <BundleMenuButton bundle={bundle} documentCount={results.length} />
+            <BundleMenuButton
+              disabled={isBundleDeleted}
+              bundle={headerBundle}
+              documentCount={results.length}
+            />
           </Flex>
         </Flex>
       </Card>
-    ),
-    [
-      activeScreen,
-      bundle,
-      bundleHasDocuments,
-      isPublishButtonDisabled,
-      navigateToReview,
-      navigateToSummary,
-      results,
-      router,
-      showPublishButton,
-      t,
-    ],
-  )
+    )
+  }, [
+    activeScreen,
+    bundle,
+    bundleHasDocuments,
+    deletedBundle,
+    isPublishButtonDisabled,
+    navigateToReview,
+    navigateToSummary,
+    results,
+    router,
+    showPublishButton,
+    t,
+  ])
+
   const scrollContainerRef = useRef(null)
 
   const detailContent = useMemo(() => {
+    if (deletedBundle) {
+      return (
+        <Card flex={1} tone="critical">
+          <Container width={0}>
+            <Stack paddingY={4} space={1}>
+              <Heading>
+                <Translate t={t} i18nKey="deleted-release" values={{title: deletedBundle.title}} />
+              </Heading>
+            </Stack>
+          </Container>
+        </Card>
+      )
+    }
     if (!bundle) return null
 
     if (activeScreen === 'summary') {
@@ -178,13 +200,23 @@ export const ReleaseDetail = () => {
       )
     }
     return null
-  }, [activeScreen, bundle, history.collaborators, history.documentsHistory, results])
+  }, [
+    activeScreen,
+    bundle,
+    deletedBundle,
+    history.collaborators,
+    history.documentsHistory,
+    results,
+    t,
+  ])
 
   if (loading) {
-    return <LoadingBlock title="Loading release" fill data-testid="bundle-documents-table-loader" />
+    return (
+      <LoadingBlock title={t('loading-release')} fill data-testid="bundle-documents-table-loader" />
+    )
   }
 
-  if (!bundle) {
+  if (!bundle && !deletedBundle) {
     return (
       <Card flex={1} tone="critical">
         <Container width={0}>

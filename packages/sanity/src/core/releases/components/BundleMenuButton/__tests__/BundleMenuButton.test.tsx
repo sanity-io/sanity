@@ -7,7 +7,7 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
-import {BundleMenuButton} from '../BundleMenuButton'
+import {BundleMenuButton, type BundleMenuButtonProps} from '../BundleMenuButton'
 
 jest.mock('sanity', () => ({
   useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
@@ -25,11 +25,14 @@ jest.mock('sanity/router', () => ({
   useRouter: jest.fn().mockReturnValue({state: {}, navigate: jest.fn()}),
 }))
 
-const renderTest = async (bundle: BundleDocument, documentCount: number = 2) => {
+const renderTest = async ({bundle, documentCount = 2, disabled = false}: BundleMenuButtonProps) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  return render(<BundleMenuButton bundle={bundle} documentCount={documentCount} />, {wrapper})
+  return render(
+    <BundleMenuButton disabled={disabled} bundle={bundle} documentCount={documentCount} />,
+    {wrapper},
+  )
 }
 
 describe('BundleMenuButton', () => {
@@ -52,7 +55,7 @@ describe('BundleMenuButton', () => {
       icon: 'cube',
     }
 
-    await renderTest(activeBundle)
+    await renderTest({bundle: activeBundle})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
 
@@ -80,7 +83,7 @@ describe('BundleMenuButton', () => {
       hue: 'gray',
       icon: 'cube',
     }
-    await renderTest(archivedBundle)
+    await renderTest({bundle: archivedBundle})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
 
@@ -108,7 +111,7 @@ describe('BundleMenuButton', () => {
       hue: 'gray',
       icon: 'cube',
     }
-    await renderTest(activeBundle)
+    await renderTest({bundle: activeBundle})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
 
@@ -140,7 +143,7 @@ describe('BundleMenuButton', () => {
       hue: 'gray',
       icon: 'cube',
     }
-    await renderTest(activeEmptyBundle, 0)
+    await renderTest({bundle: activeEmptyBundle, documentCount: 0})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
 
@@ -157,5 +160,24 @@ describe('BundleMenuButton', () => {
 
     expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(activeEmptyBundle)
     expect(useRouter().navigate).not.toHaveBeenCalled()
+  })
+
+  test('will be disabled', async () => {
+    const disabledActionBundle: BundleDocument = {
+      _id: 'activeEmptyBundle',
+      _type: 'bundle',
+      archivedAt: new Date().toISOString(),
+      title: 'activeEmptyBundle',
+      slug: 'activeEmptyBundle',
+      authorId: 'author',
+      _createdAt: new Date().toISOString(),
+      _updatedAt: new Date().toISOString(),
+      _rev: '',
+      hue: 'gray',
+      icon: 'cube',
+    }
+    await renderTest({bundle: disabledActionBundle, disabled: true, documentCount: 0})
+
+    fireEvent.click(screen.getByTestId('release-menu-button'))
   })
 })

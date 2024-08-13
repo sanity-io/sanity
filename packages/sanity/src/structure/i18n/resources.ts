@@ -361,6 +361,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text when a duplicate operation succeeded  */
   'panes.document-operation-results.operation-success_duplicate':
     'The document was successfully duplicated',
+  /**  */
+  'panes.document-operation-results.operation-success_newVersion':
+    '<Strong>{{title}}</Strong> was added to the release',
   /** The text when a publish operation succeeded  */
   'panes.document-operation-results.operation-success_publish':
     '<Strong>{{title}}</Strong> was published',

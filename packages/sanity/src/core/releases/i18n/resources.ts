@@ -37,14 +37,14 @@ const releasesLocaleStrings = {
   /** Warning for deleting a release that it will delete multiple document version */
   'delete.warning_other': 'This will also delete {{count}} document versions.',
   /** Header for deleting a release dialog */
-  'delete-dialog.header': 'Are you sure you want to delete the release "{{title}}"?',
+  'delete-dialog.header': "Are you sure you want to delete the release '{{title}}'?",
   /** Text for when there's no changes in a release diff */
   'diff.no-changes': 'No changes',
   /** Text for when there's no changes in a release diff */
   'diff.list-empty': 'Changes list is empty, see document',
   /** Description for discarding a version of a document dialog */
   'discard-version-dialog.description':
-    'The <strong>{{title}}</strong> version of this document will be permanently deleted.',
+    "The '<strong>{{title}}</strong>' version of this document will be permanently deleted.",
   /** Header for discarding a version of a document dialog */
   'discard-version-dialog.header': 'Are you sure you want to discard the document version?',
   /** Title for dialog for discarding a version of a document */
@@ -53,6 +53,14 @@ const releasesLocaleStrings = {
   'document-loading': 'Loading documents',
   /** Label for when documents in release have validation warnings */
   'document-validation.error': 'There are validation errors in this document',
+  /** Label when a release has been deleted by a different user */
+  'deleted-release': "The '<strong>{{title}}</strong>' release has been deleted",
+
+  /** Title text when error during release update */
+  'failed-edit-title': 'Failed to save changes',
+
+  /** Label text for the loading state whilst release is being loaded */
+  'loading-release': 'Loading release',
 
   /** Label for the release menu */
   'menu.label': 'Release menu',
@@ -77,10 +85,10 @@ const releasesLocaleStrings = {
     'Are you sure you want to publish the release and all document versions?',
   /** Description for the dialog confirming the publish of a release with one document */
   'publish-dialog.confirm-publish-description_one':
-    'The <strong>{{title}}</strong> release and its document will be published.',
+    "The '<strong>{{title}}</strong>' release and its document will be published.",
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'publish-dialog.confirm-publish-description_other':
-    'The <strong>{{title}}</strong> release and its {{bundleDocumentsLength}} documents will be published.',
+    "The '<strong>{{title}}</strong>' release and its {{bundleDocumentsLength}} documents will be published.",
   /** Label for when documents are being validated */
   'publish-dialog.validation.loading': 'Validating documents...',
   /** Label for when documents in release have validation errors */
@@ -117,9 +125,9 @@ const releasesLocaleStrings = {
   /** Header for the document table in the release tool - published */
   'table-header.published': 'Published',
   /** Text for toast when release failed to publish */
-  'toast.error': 'Failed to publish the <strong>{{title}}</strong> ',
+  'toast.error': "Failed to publish the '<strong>{{title}}</strong>'",
   /** Text for toast when release has been published */
-  'toast.published': 'The <strong>{{title}}</strong> release was published.',
+  'toast.published': "The '<strong>{{title}}</strong>' release was published.",
 }
 
 /**

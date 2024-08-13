@@ -18,6 +18,7 @@ jest.mock('sanity', () => {
       currentGlobalBundle: {},
       setPerspective: jest.fn(),
     }),
+    useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
   }
 })
 
