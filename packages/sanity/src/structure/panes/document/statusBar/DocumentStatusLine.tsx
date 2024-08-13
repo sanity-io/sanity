@@ -56,15 +56,25 @@ export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
   return (
     <Tooltip
       content={
-        <DocumentStatus absoluteDate draft={editState?.draft} published={editState?.published} />
+        <DocumentStatus
+          absoluteDate
+          draft={editState?.draft}
+          published={editState?.published}
+          version={editState?.version}
+        />
       }
       placement="top"
     >
       <Flex align="center" gap={3}>
-        <DocumentStatusIndicator draft={editState?.draft} published={editState?.published} />
+        <DocumentStatusIndicator
+          draft={editState?.draft}
+          published={editState?.published}
+          version={editState?.version}
+        />
         <DocumentStatus
           draft={editState?.draft}
           published={editState?.published}
+          version={editState?.version}
           singleLine={singleLine}
         />
       </Flex>
