@@ -1,8 +1,9 @@
-import {Box, Button, Stack, useToast} from '@sanity/ui'
+import {Box, Stack, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef} from 'react'
 import {SANITY_VERSION} from 'sanity'
 import semver from 'semver'
 
+import {Button} from '../../../ui-components'
 import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../i18n'
 import {checkForLatestVersions} from './checkForLatestVersions'
@@ -34,6 +35,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         <Stack space={2} paddingBottom={2}>
           <Box>
             <Button
+              size="large"
               aria-label={t('package-version.new-package-available.reload-button')}
               onClick={onClick}
               text={t('package-version.new-package-available.reload-button')}

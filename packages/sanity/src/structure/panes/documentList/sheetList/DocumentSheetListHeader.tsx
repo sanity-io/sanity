@@ -1,11 +1,11 @@
 import {CloseIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
-import {Box, Flex, Menu, MenuButton, Text} from '@sanity/ui'
+import {Box, Flex, Menu, Text} from '@sanity/ui'
 import {flexRender, type Header as HeaderType, type HeaderGroup} from '@tanstack/react-table'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, MenuItem, Tooltip} from '../../../../ui-components'
+import {Button, MenuButton, MenuItem, Tooltip} from '../../../../ui-components'
 
 const Header = styled.th<{width: number}>`
   margin: 16px;

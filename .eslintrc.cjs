@@ -174,7 +174,12 @@ const config = {
 
     // Prefer local components vs certain @sanity/ui imports (in sanity package)
     {
-      files: ['packages/sanity/**'],
+      files: ['packages/sanity/src/**'],
+      excludedFiles: [
+        '**/__workshop__/**',
+        'packages/sanity/src/_singletons/**',
+        'packages/sanity/src/_createContext/**',
+      ],
       rules: {
         'no-restricted-imports': [
           'error',
@@ -212,33 +217,9 @@ const config = {
               },
               {
                 name: 'react',
-                importNames: ['default'],
+                importNames: ['default', 'createContext'],
                 message:
-                  'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.',
-              },
-            ],
-          },
-        ],
-      },
-    },
-
-    // Prefer createContext in _singletons
-    {
-      files: ['packages/sanity/src/**'],
-      excludedFiles: [
-        '**/__workshop__/**',
-        'packages/sanity/src/_singletons/**',
-        'packages/sanity/src/_createContext/**',
-      ],
-      rules: {
-        'no-restricted-imports': [
-          'error',
-          {
-            paths: [
-              {
-                name: 'react',
-                importNames: ['createContext'],
-                message: 'Please place context in _singletons',
+                  'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.\nPlease place "context" in _singletons',
               },
             ],
           },
