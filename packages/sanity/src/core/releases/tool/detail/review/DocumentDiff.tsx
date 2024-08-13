@@ -11,7 +11,7 @@ import {type ObjectDiff} from '../../../../field/types'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {ChangesWrapper, FieldWrapper} from './DocumentDiff.styled'
 
-const buildDocumentForDiffInput = (document: SanityDocument) => {
+const buildDocumentForDiffInput = (document: Partial<SanityDocument>) => {
   // Remove internal fields and undefined values
   const {_id, _rev, _createdAt, _updatedAt, _type, _version, ...rest} = JSON.parse(
     JSON.stringify(document),
@@ -34,9 +34,8 @@ export function DocumentDiff({
   schemaType: ObjectSchemaType
 }) {
   const {changesList, rootDiff} = useMemo(() => {
-    if (!baseDocument) return {changesList: [], rootDiff: null}
     const diff = diffInput(
-      wrap(buildDocumentForDiffInput(baseDocument), null),
+      wrap(buildDocumentForDiffInput(baseDocument ?? {}), null),
       wrap(buildDocumentForDiffInput(document), null),
     ) as ObjectDiff
 
@@ -47,10 +46,6 @@ export function DocumentDiff({
   const {t} = useTranslation(releasesLocaleNamespace)
 
   const isChanged = !!rootDiff?.isChanged
-
-  if (!baseDocument) {
-    return <Text>{t('diff.new-document')}</Text>
-  }
 
   if (!isChanged) {
     return <Text>{t('diff.no-changes')}</Text>
@@ -67,6 +62,7 @@ export function DocumentDiff({
           return <FieldWrapper>{props.children}</FieldWrapper>
         },
         value: document,
+        showFromValue: !!baseDocument,
       }}
     >
       <ChangesWrapper width={1}>
