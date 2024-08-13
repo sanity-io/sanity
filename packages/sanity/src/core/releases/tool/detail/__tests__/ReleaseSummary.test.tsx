@@ -23,6 +23,10 @@ jest.mock('../../../../user-color', () => ({
   useUserColor: jest.fn().mockReturnValue('red'),
 }))
 
+jest.mock('../../../../bundles/components/BundleMenu', () => ({
+  BundleMenu: () => <div>BundleMenu</div>,
+}))
+
 const timeNow = new Date()
 
 const releaseDocuments: DocumentInBundleResult[] = [

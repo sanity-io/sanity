@@ -1,9 +1,12 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
-import {type ReactElement, useCallback} from 'react'
+import {type ReactElement, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
+import {Tooltip} from '../../../ui-components'
+import {useTranslation} from '../../i18n'
 import {type BundleDocument} from '../../store/bundles/types'
+import {useBundles} from '../../store/bundles/useBundles'
 import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/util'
@@ -31,11 +34,21 @@ interface BundleListProps {
  */
 export function BundleMenu(props: BundleListProps): JSX.Element {
   const {bundles, loading, actions, button, perspective} = props
+  const {deletedBundles} = useBundles()
   const {currentGlobalBundle, setPerspective} = usePerspective(perspective)
+  const {t} = useTranslation()
 
-  const bundlesToDisplay =
-    bundles?.filter((bundle) => !isDraftOrPublished(bundle.slug) && !bundle.archivedAt) || []
-  const hasBundles = bundlesToDisplay.length > 0
+  const sortedBundlesToDisplay = useMemo(() => {
+    if (!bundles) return []
+
+    return bundles
+      .filter(({slug, archivedAt}) => !isDraftOrPublished(slug) && !archivedAt)
+      .sort(
+        ({slug: aSlug}, {slug: bSlug}) =>
+          Number(deletedBundles[aSlug]) - Number(deletedBundles[bSlug]),
+      )
+  }, [bundles, deletedBundles])
+  const hasBundles = sortedBundlesToDisplay.length > 0
 
   const handleBundleChange = useCallback(
     (bundle: Partial<BundleDocument>) => () => {
@@ -44,6 +57,11 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
       }
     },
     [setPerspective],
+  )
+
+  const isBundleDeleted = useCallback(
+    (slug: string) => Boolean(deletedBundles[slug]),
+    [deletedBundles],
   )
 
   return (
@@ -74,24 +92,35 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                   <>
                     <MenuDivider />
                     <StyledBox data-testid="bundles-list">
-                      {bundlesToDisplay.map((bundle) => (
+                      {sortedBundlesToDisplay.map((bundle) => (
                         <MenuItem
                           key={bundle.slug}
                           onClick={handleBundleChange(bundle)}
                           padding={1}
                           pressed={false}
+                          disabled={isBundleDeleted(bundle.slug)}
                           data-testid={`bundle-${bundle.slug}`}
                         >
-                          <Flex>
-                            <BundleBadge hue={bundle.hue} icon={bundle.icon} padding={2} />
+                          <Tooltip
+                            disabled={!isBundleDeleted(bundle.slug)}
+                            content={t('bundle.deleted-tooltip')}
+                            placement="bottom-start"
+                          >
+                            <Flex>
+                              <BundleBadge
+                                hue={bundle.hue}
+                                icon={bundle.icon}
+                                padding={2}
+                                isDisabled={isBundleDeleted(bundle.slug)}
+                              />
 
-                            <Box flex={1} padding={2} style={{minWidth: 100}}>
-                              <Text size={1} weight="medium">
-                                {bundle.title}
-                              </Text>
-                            </Box>
+                              <Box flex={1} padding={2} style={{minWidth: 100}}>
+                                <Text size={1} weight="medium">
+                                  {bundle.title}
+                                </Text>
+                              </Box>
 
-                            {/*<Box padding={2}>
+                              {/*<Box padding={2}>
                                 <Text muted size={1}>
                                   {bundle.publishAt ? (
                                     <RelativeTime time={bundle.publishAt as Date} useTemporalPhrase />
@@ -101,17 +130,18 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
                                 </Text>
                               </Box>*/}
 
-                            <Box padding={2}>
-                              <Text size={1}>
-                                <CheckmarkIcon
-                                  style={{
-                                    opacity: currentGlobalBundle.slug === bundle.slug ? 1 : 0,
-                                  }}
-                                  data-testid={`${bundle.slug}-checkmark-icon`}
-                                />
-                              </Text>
-                            </Box>
-                          </Flex>
+                              <Box padding={2}>
+                                <Text size={1}>
+                                  <CheckmarkIcon
+                                    style={{
+                                      opacity: currentGlobalBundle.slug === bundle.slug ? 1 : 0,
+                                    }}
+                                    data-testid={`${bundle.slug}-checkmark-icon`}
+                                  />
+                                </Text>
+                              </Box>
+                            </Flex>
+                          </Tooltip>
                         </MenuItem>
                       ))}
                     </StyledBox>
