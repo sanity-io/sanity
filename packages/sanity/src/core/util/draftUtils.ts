@@ -112,7 +112,7 @@ export function getVersionId(id: string, bundle: string): string {
 
 /** @internal */
 export function getPublishedId(id: string): PublishedId {
-  if (isVersionId(id) || id.includes(PATH_SEPARATOR)) {
+  if (isVersionId(id)) {
     // always return the last segment of the id
     return id.split('.').pop() as PublishedId
   }
