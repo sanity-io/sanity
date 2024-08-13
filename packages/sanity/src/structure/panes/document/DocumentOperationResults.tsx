@@ -53,6 +53,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
             i18nKey="panes.document-operation-results.operation-success"
             t={t}
             values={{
+              op: event.op,
               title: documentTitle,
             }}
             components={{

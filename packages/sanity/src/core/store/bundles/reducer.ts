@@ -2,6 +2,8 @@ import {type BundleDocument} from './types'
 
 interface BundleDeletedAction {
   id: string
+  currentUserId?: string
+  deletedByUserId: string
   type: 'BUNDLE_DELETED'
 }
 
@@ -37,6 +39,7 @@ export type bundlesReducerAction =
 
 export interface bundlesReducerState {
   bundles: Map<string, BundleDocument>
+  deletedBundles: Record<string, BundleDocument>
   state: 'initialising' | 'loading' | 'loaded' | 'error'
   error?: Error
 }
@@ -84,11 +87,24 @@ export function bundlesReducer(
 
     case 'BUNDLE_DELETED': {
       const currentBundles = new Map(state.bundles)
-      currentBundles.delete(action.id)
+      const deletedBundleId = action.id
+      const isDeletedByCurrentUser = action.currentUserId === action.deletedByUserId
+      const localDeletedBundle = currentBundles.get(deletedBundleId)
+      currentBundles.delete(deletedBundleId)
+
+      // only capture the deleted bundle if deleted by another user
+      const nextDeletedBundles =
+        !isDeletedByCurrentUser && localDeletedBundle
+          ? {
+              ...state.deletedBundles,
+              [localDeletedBundle.slug]: localDeletedBundle,
+            }
+          : state.deletedBundles
 
       return {
         ...state,
         bundles: currentBundles,
+        deletedBundles: nextDeletedBundles,
       }
     }
 

@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons'
 import {Button, MenuItem} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {BundleBadge} from '../../../../bundles/components/BundleBadge'
@@ -10,7 +10,7 @@ import {usePerspective} from '../../../../bundles/hooks/usePerspective'
 import {useBundles} from '../../../../store/bundles'
 
 export function GlobalPerspectiveMenu(): JSX.Element {
-  const {data: bundles, loading} = useBundles()
+  const {data: bundles, loading, deletedBundles} = useBundles()
 
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
 
@@ -27,6 +27,11 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     setCreateBundleDialogOpen(false)
   }, [])
 
+  const menuBundles = useMemo(
+    () => [...(bundles || []), ...Object.values(deletedBundles)],
+    [bundles, deletedBundles],
+  )
+
   return (
     <>
       <BundleMenu
@@ -35,7 +40,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
             <BundleBadge hue={hue} icon={icon} openButton padding={2} title={title} />
           </Button>
         }
-        bundles={bundles}
+        bundles={menuBundles}
         loading={loading}
         actions={
           <MenuItem
