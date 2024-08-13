@@ -10,7 +10,7 @@ import {RelativeTime} from '../../../components/RelativeTime'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {Translate, useTranslation} from '../../../i18n'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
+import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {Chip} from '../../components/Chip'
 import {Table} from '../../components/Table/Table'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -40,26 +40,17 @@ const setIconHue = ({hue, icon}: {hue: BundleDocument['hue']; icon: BundleDocume
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, collaborators, scrollContainerRef} = props
   const {hue, icon} = release
-  const {client} = useAddonDataset()
+
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {updateBundle} = useBundleOperations()
 
   const [iconValue, setIconValue] = useState<BundleIconEditorPickerValue>(setIconHue({hue, icon}))
   const toast = useToast()
   const handleIconValueChange = useCallback(
     async (value: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}) => {
-      if (!client) {
-        toast.push({
-          closable: true,
-          status: 'error',
-          title: 'Failed to save changes',
-          description: 'AddonDataset client not found',
-        })
-        return
-      }
-
       setIconValue(value)
       try {
-        await client?.patch(release._id).set(value).commit()
+        await updateBundle({...value, _id: release._id})
       } catch (e) {
         toast.push({
           closable: true,
@@ -68,7 +59,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         })
       }
     },
-    [client, release._id, toast],
+    [toast, updateBundle, release._id],
   )
 
   const aggregatedData = useMemo(

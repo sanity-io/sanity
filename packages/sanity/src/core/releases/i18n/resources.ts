@@ -38,8 +38,6 @@ const releasesLocaleStrings = {
   'delete.warning_other': 'This will also delete {{count}} document versions.',
   /** Header for deleting a release dialog */
   'delete-dialog.header': 'Are you sure you want to delete the release "{{title}}"?',
-  /** Text for when there's a new document in a release diff */
-  'diff.new-document': 'New document',
   /** Text for when there's no changes in a release diff */
   'diff.no-changes': 'No changes',
   /** Text for when there's no changes in a release diff */
