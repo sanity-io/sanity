@@ -67,6 +67,7 @@ export function extractSchema(
   extractOptions: ExtractSchemaOptions = {},
 ): SchemaType {
   const inlineFields = new Set<SanitySchemaType>()
+  const documentTypes = new Map<string, DocumentSchemaType>()
   const schema: SchemaType = []
 
   // get a list of all the types in the schema, sorted by their dependencies. This ensures that when we check for inline/reference types, we have already processed the type
@@ -82,6 +83,9 @@ export function extractSchema(
     }
     if (base.type === 'type') {
       inlineFields.add(schemaType)
+    }
+    if (base.type === 'document') {
+      documentTypes.set(typeName, base)
     }
 
     schema.push(base)
@@ -147,10 +151,6 @@ export function extractSchema(
   }
 
   function convertSchemaType(schemaType: SanitySchemaType): TypeNode {
-    if (lastType(schemaType)?.name === 'document') {
-      return createReferenceTypeNode(schemaType.name)
-    }
-
     // if we have already seen the base type, we can just reference it
     if (inlineFields.has(schemaType.type!)) {
       return {type: 'inline', name: schemaType.type!.name} satisfies InlineTypeNode
@@ -190,6 +190,14 @@ export function extractSchema(
 
     if (isObjectType(schemaType)) {
       return createObject(schemaType)
+    }
+
+    if (lastType(schemaType)?.name === 'document') {
+      const doc = documentTypes.get(schemaType.name)
+      if (doc === undefined) {
+        return {type: 'unknown'} satisfies UnknownTypeNode
+      }
+      return {type: 'object', attributes: doc?.attributes} satisfies ObjectTypeNode
     }
 
     throw new Error(`Type "${schemaType.name}" not found`)
