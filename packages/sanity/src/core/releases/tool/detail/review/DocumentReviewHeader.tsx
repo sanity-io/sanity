@@ -6,7 +6,6 @@ import {Translate, useTranslation} from 'sanity'
 import {Button} from '../../../../../ui-components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
-import {type BundleDocument} from '../../../../store/bundles/types'
 import {Chip} from '../../../components/Chip'
 import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -17,7 +16,7 @@ export function DocumentReviewHeader({
   document,
   isLoading,
   history,
-  release,
+  releaseSlug,
   validation,
   isExpanded,
   toggleIsExpanded,
@@ -25,7 +24,7 @@ export function DocumentReviewHeader({
   document: SanityDocument
   previewValues: PreviewValue
   isLoading: boolean
-  release: BundleDocument
+  releaseSlug: string
   validation?: DocumentValidationStatus
   isExpanded: boolean
   toggleIsExpanded: () => void
@@ -53,7 +52,7 @@ export function DocumentReviewHeader({
           <ReleaseDocumentPreview
             documentId={document._id}
             documentTypeName={document._type}
-            releaseSlug={release.slug}
+            releaseSlug={releaseSlug}
             previewValues={previewValues}
             isLoading={isLoading}
             hasValidationError={validation?.hasError}

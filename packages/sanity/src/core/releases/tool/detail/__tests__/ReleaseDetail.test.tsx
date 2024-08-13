@@ -215,6 +215,7 @@ describe('after bundles have loaded', () => {
           loading: false,
           results: [
             {
+              memoKey: 'key123',
               document: {
                 _id: 'test-id',
                 _type: 'document',
@@ -251,6 +252,7 @@ describe('after bundles have loaded', () => {
           loading: false,
           results: [
             {
+              memoKey: 'key123',
               document: {
                 _id: 'test-id',
                 _type: 'document',
@@ -314,6 +316,7 @@ describe('after bundles have loaded', () => {
           loading: false,
           results: [
             {
+              memoKey: 'key123',
               document: {
                 _id: '123',
                 _type: 'test',
