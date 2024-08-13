@@ -12,7 +12,7 @@ import {Translate, useTranslation} from '../../../i18n'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {Chip} from '../../components/Chip'
-import {Table} from '../../components/Table/Table'
+import {Table, type TableProps} from '../../components/Table/Table'
 import {releasesLocaleNamespace} from '../../i18n'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
@@ -37,6 +37,9 @@ const setIconHue = ({hue, icon}: {hue: BundleDocument['hue']; icon: BundleDocume
   icon: icon ?? 'documents',
 })
 
+const getRowProps: TableProps<DocumentWithHistory, undefined>['rowProps'] = (datum) =>
+  datum?.validation?.hasError ? {tone: 'critical'} : {}
+
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, collaborators, scrollContainerRef} = props
   const {hue, icon} = release
@@ -55,11 +58,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         toast.push({
           closable: true,
           status: 'error',
-          title: 'Failed to save changes',
+          title: t('failed-edit-title'),
         })
       }
     },
-    [toast, updateBundle, release._id],
+    [release._id, t, toast, updateBundle],
   )
 
   const aggregatedData = useMemo(
@@ -192,6 +195,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}
         searchFilter={filterRows}
+        rowProps={getRowProps}
         scrollContainerRef={scrollContainerRef}
       />
     </>
