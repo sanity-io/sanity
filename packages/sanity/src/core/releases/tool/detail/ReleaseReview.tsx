@@ -92,7 +92,8 @@ export function ReleaseReview({
       <VirtualizerRoot style={{height: virtualizer.getTotalSize()}}>
         <VirtualizerTrack style={{transform: `translateY(${items[0]?.start ?? 0}px)`}}>
           {items.map((virtualRow) => {
-            const {document, validation, previewValues} = filteredList[virtualRow.index]
+            const item = filteredList[virtualRow.index]
+            const documentId = item.document._id
 
             return (
               <Box
@@ -102,15 +103,13 @@ export function ReleaseReview({
                 ref={virtualizer.measureElement}
               >
                 <DocumentDiffContainer
-                  key={document._id}
-                  release={release}
-                  history={documentsHistory[document._id]}
-                  document={document}
-                  validation={validation}
-                  previewValues={previewValues}
-                  isExpanded={expandedItems[document._id] ?? true}
+                  key={documentId}
+                  item={item}
+                  releaseSlug={release.slug}
+                  history={documentsHistory[documentId]}
+                  isExpanded={expandedItems[documentId] ?? true}
                   // eslint-disable-next-line react/jsx-no-bind
-                  toggleIsExpanded={() => toggleIsExpanded(document._id)}
+                  toggleIsExpanded={() => toggleIsExpanded(documentId)}
                 />
               </Box>
             )
