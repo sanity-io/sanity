@@ -1,7 +1,7 @@
-import {isVersionId} from 'sanity'
 import speakingurl from 'speakingurl'
 
 import {type BundleDocument} from '../../store/bundles/types'
+import {isVersionId} from '../../util'
 
 const PUBLISHED_SLUG = 'Published'
 
