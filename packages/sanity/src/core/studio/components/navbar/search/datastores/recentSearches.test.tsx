@@ -1,8 +1,8 @@
 /* eslint-disable max-nested-callbacks */
-import {afterEach, describe, expect, it} from '@jest/globals'
+import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {defineType, type ObjectSchemaType} from '@sanity/types'
-import {act, renderHook, waitFor} from '@testing-library/react'
+import {act, renderHook} from '@testing-library/react'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {type SearchTerms} from '../../../../../search'
@@ -10,6 +10,13 @@ import {filterDefinitions} from '../definitions/defaultFilters'
 import {createFieldDefinitions} from '../definitions/fields'
 import {type SearchFilter} from '../types'
 import {MAX_RECENT_SEARCHES, useRecentSearchesStore} from './recentSearches'
+import * as useStoredSearchModule from './useStoredSearch'
+import {RECENT_SEARCH_VERSION, type StoredSearch} from './useStoredSearch'
+
+// Mock useStoredSearch
+jest.mock('./useStoredSearch', () => ({
+  useStoredSearch: jest.fn(),
+}))
 
 const mockSchemaTypes = [
   defineType({
@@ -70,22 +77,37 @@ afterEach(() => {
 })
 
 describe('search-store', () => {
+  let mockStoredSearch: StoredSearch
+  let mockSetStoredSearch: jest.MockedFunction<(newValue: StoredSearch) => void>
+
+  beforeEach(() => {
+    mockStoredSearch = {
+      version: RECENT_SEARCH_VERSION,
+      recentSearches: [],
+    }
+    mockSetStoredSearch = jest.fn((newValue: StoredSearch) => {
+      mockStoredSearch = newValue
+    })
+    jest
+      .spyOn(useStoredSearchModule, 'useStoredSearch')
+      .mockImplementation(() => [mockStoredSearch, mockSetStoredSearch])
+  })
+
   describe('getRecentSearchTerms', () => {
     it('should return empty array for empty storage', async () => {
-      const {result} = await constructRecentSearchesStore()
+      const {result, rerender} = await constructRecentSearchesStore()
       /*
        * the getRecentSearches function can mutate state,
        * which is warned against in the react-hooks testing library.
-       * All calls and dependencies on this function
-       * are wrapped in a waitFor block to manage rerenders and updated state.
+       * After calling this we will force a rerender every time to make sure the state is up to date.
        */
-      await waitFor(() => {
-        expect(result.current.getRecentSearches()).toEqual([])
-      })
+      rerender()
+
+      expect(result.current.getRecentSearches()).toEqual([])
     })
 
     it('should filter out search terms with missing document types', async () => {
-      const {result} = await constructRecentSearchesStore()
+      const {result, rerender} = await constructRecentSearchesStore()
       const mockInvalidType = {
         ...mockArticle,
         name: 'invalid',
@@ -110,27 +132,31 @@ describe('search-store', () => {
       act(() => {
         result.current.addSearch(searchTerms1)
       })
+      rerender()
       act(() => {
         result.current.addSearch(searchTerms2)
       })
+      rerender()
       act(() => {
         result.current.addSearch(searchTerms2)
       })
+      rerender()
       act(() => {
         result.current.addSearch(searchTerms3)
       })
+      rerender()
       act(() => {
         result.current.addSearch(searchTerms4)
       })
 
-      await waitFor(() => {
-        const recentTerms = result.current.getRecentSearches()
-        expect(recentTerms.length).toEqual(1)
-      })
+      rerender()
+
+      const recentTerms = result.current.getRecentSearches()
+      expect(recentTerms.length).toEqual(1)
     })
 
     it('should filter out search terms with document types hidden from omnisearch', async () => {
-      const {result} = await constructRecentSearchesStore()
+      const {result, rerender} = await constructRecentSearchesStore()
       const searchTerms1: SearchTerms = {
         query: 'foo',
         types: [mockArticle],
@@ -144,18 +170,20 @@ describe('search-store', () => {
         result.current.addSearch(searchTerms1)
       })
 
+      rerender()
+
       act(() => {
         result.current.addSearch(searchTerms2)
       })
 
-      await waitFor(() => {
-        const recentTerms = result.current.getRecentSearches()
-        expect(recentTerms.length).toEqual(1)
-      })
+      rerender()
+
+      const recentTerms = result.current.getRecentSearches()
+      expect(recentTerms.length).toEqual(1)
     })
 
     it('should filter out searches that contain invalid filters', async () => {
-      const {result} = await constructRecentSearchesStore()
+      const {result, rerender} = await constructRecentSearchesStore()
       const referenceFieldDef = mockFieldDefinitions.find((def) => def.filterName === 'reference')
 
       const searchTerms: SearchTerms = {query: 'foo', types: [mockArticle]}
@@ -200,34 +228,43 @@ describe('search-store', () => {
         result.current.addSearch(searchTerms, [invalidFilter1])
       })
 
+      rerender()
+
       act(() => {
         result.current.addSearch(searchTerms, [invalidFilter2])
       })
+
+      rerender()
 
       act(() => {
         result.current.addSearch(searchTerms, [invalidFilter3])
       })
 
+      rerender()
+
       act(() => {
         result.current.addSearch(searchTerms, [invalidFilter4])
       })
+
+      rerender()
 
       act(() => {
         result.current.addSearch(searchTerms, [validFilter1])
       })
 
+      rerender()
+
       act(() => {
         result.current.addSearch(searchTerms)
       })
 
-      await waitFor(() => {
-        const recentTerms = result.current.getRecentSearches()
-        expect(recentTerms.length).toEqual(2)
-      })
+      rerender()
+      const recentTerms = result.current.getRecentSearches()
+      expect(recentTerms.length).toEqual(2)
     })
 
     it('should return recent terms', async () => {
-      const {result} = await constructRecentSearchesStore()
+      const {result, rerender} = await constructRecentSearchesStore()
       const searchTerms: SearchTerms = {
         query: 'test1',
         types: [mockArticle],
@@ -237,16 +274,15 @@ describe('search-store', () => {
         result.current.addSearch(searchTerms)
       })
 
-      await waitFor(() => {
-        const recentTerms = result.current.getRecentSearches()
+      rerender()
+      const recentTerms = result.current.getRecentSearches()
 
-        expect(recentTerms.length).toEqual(1)
-        expect(recentTerms[0]).toMatchObject(searchTerms)
-      })
+      expect(recentTerms.length).toEqual(1)
+      expect(recentTerms[0]).toMatchObject(searchTerms)
     })
 
     it('should remove duplicate terms', async () => {
-      const {result} = await constructRecentSearchesStore()
+      const {result, rerender} = await constructRecentSearchesStore()
 
       const search1: SearchTerms = {
         query: '1',
@@ -261,66 +297,60 @@ describe('search-store', () => {
         result.current.addSearch(search1)
       })
 
+      rerender()
+
       act(() => {
         result.current.addSearch(search2)
       })
 
       let recentTerms: SearchTerms[] = []
 
-      await waitFor(() => {
-        recentTerms = result.current.getRecentSearches()
-        expect(recentTerms.length).toEqual(2)
+      rerender()
 
-        /* There's unfortunately a bit of flakiness with the schema
-         * and the studio config in the testing environment, so the
-         * match object logic fails when this test is not run in isolation.
-         */
-        // expect reverse order
-        // expect(result.current.getRecentSearches()[0]).toMatchObject(search2)
-        // expect(recentTerms[1]).toMatchObject(search1)
+      recentTerms = result.current.getRecentSearches()
+      expect(recentTerms.length).toEqual(2)
 
-        // expect reverse order
-        expect(recentTerms[0].query).toBe('2')
-        expect(recentTerms[1].query).toBe('1')
-      })
+      // expect reverse order
+      expect(recentTerms[0].query).toBe('2')
+      expect(recentTerms[1].query).toBe('1')
 
       act(() => {
         result.current.addSearch(search1)
       })
 
-      await waitFor(() => {
-        recentTerms = result.current.getRecentSearches()
-        // still 2 recent, since duplicate is removed
-        expect(recentTerms.length).toEqual(2)
+      rerender()
 
-        //expect order to change now, since search1 was more recent
-        expect(recentTerms[0].query).toBe('1')
-        expect(recentTerms[1].query).toBe('2')
-      })
+      recentTerms = result.current.getRecentSearches()
+      // still 2 recent, since duplicate is removed
+      expect(recentTerms.length).toEqual(2)
+
+      //expect order to change now, since search1 was more recent
+      expect(recentTerms[0].query).toBe('1')
+      expect(recentTerms[1].query).toBe('2')
     })
 
     it('should limit number of saved searches', async () => {
-      const {result} = await constructRecentSearchesStore()
+      const {result, rerender} = await constructRecentSearchesStore()
 
-      ;[...Array(MAX_RECENT_SEARCHES + 10).keys()].forEach((i) =>
+      ;[...Array(MAX_RECENT_SEARCHES + 10).keys()].forEach((i) => {
         act(() =>
           result.current.addSearch({
             query: `${i}`,
             types: [],
           }),
-        ),
-      )
-
-      await waitFor(() => {
-        const recentSearches = result.current.getRecentSearches()
-        expect(recentSearches.length).toEqual(MAX_RECENT_SEARCHES)
-        expect(recentSearches[0].query).toEqual(`${MAX_RECENT_SEARCHES + 9}`)
+        )
+        rerender()
       })
+
+      rerender()
+      const recentSearches = result.current.getRecentSearches()
+      expect(recentSearches.length).toEqual(MAX_RECENT_SEARCHES)
+      expect(recentSearches[0].query).toEqual(`${MAX_RECENT_SEARCHES + 9}`)
     })
   })
   describe('addSearchTerms', () => {
     it('should trim search queries before adding', async () => {
-      const {result} = await constructRecentSearchesStore()
+      const {result, rerender} = await constructRecentSearchesStore()
       const searchTerms1: SearchTerms = {
         query: 'foo',
         types: [mockArticle],
@@ -334,13 +364,12 @@ describe('search-store', () => {
         result.current.addSearch(searchTerms1)
       })
 
-      await waitFor(() => {
-        const recentSearches = result.current.addSearch(searchTerms2)
-        expect(recentSearches.length).toEqual(1)
-      })
+      rerender()
+      const recentSearches = result.current.addSearch(searchTerms2)
+      expect(recentSearches.length).toEqual(1)
     })
     it('should also include filters', async () => {
-      const {result} = await constructRecentSearchesStore()
+      const {result, rerender} = await constructRecentSearchesStore()
       const searchTerms: SearchTerms = {
         query: 'foo',
         types: [mockArticle],
@@ -354,22 +383,21 @@ describe('search-store', () => {
         value: null,
       }
 
-      await waitFor(() => {
-        const recentSearches = result.current.addSearch(searchTerms, [searchFilter])
+      rerender()
+      const recentSearches = result.current.addSearch(searchTerms, [searchFilter])
 
-        expect(recentSearches[0]?.filters).toEqual([
-          {
-            fieldId: stringFieldDef?.id,
-            filterName: 'string',
-            operatorType: 'defined',
-            value: null,
-          },
-        ])
-      })
+      expect(recentSearches[0]?.filters).toEqual([
+        {
+          fieldId: stringFieldDef?.id,
+          filterName: 'string',
+          operatorType: 'defined',
+          value: null,
+        },
+      ])
     })
     describe('removeSearchTerms', () => {
       it('should delete all saved searches', async () => {
-        const {result} = await constructRecentSearchesStore()
+        const {result, rerender} = await constructRecentSearchesStore()
         const searchTerms1: SearchTerms = {
           query: '1',
           types: [mockArticle],
@@ -387,15 +415,14 @@ describe('search-store', () => {
           result.current.addSearch(searchTerms2)
         })
 
-        await waitFor(() => {
-          const recentSearches = result.current.removeSearch()
-          expect(recentSearches.length).toEqual(0)
-        })
+        rerender()
+        const recentSearches = result.current.removeSearch()
+        expect(recentSearches.length).toEqual(0)
       })
     })
     describe('removeSearchTermAtIndex', () => {
       it('should delete saved searches by index', async () => {
-        const {result} = await constructRecentSearchesStore()
+        const {result, rerender} = await constructRecentSearchesStore()
         const searchTerms1: SearchTerms = {
           query: '1',
           types: [mockArticle],
@@ -408,51 +435,98 @@ describe('search-store', () => {
         act(() => {
           result.current.addSearch(searchTerms1)
         })
+
+        rerender()
 
         act(() => {
           // Added search terms are unshifted
           result.current.addSearch(searchTerms2)
         })
 
-        await waitFor(() => {
-          // This should remove search with query '2'
-          const recentSearches = result.current.removeSearchAtIndex(0)
+        rerender()
+        // This should remove search with query '2'
+        const recentSearches = result.current.removeSearchAtIndex(0)
 
-          expect(recentSearches.length).toEqual(1)
-          expect(recentSearches[0].query).toEqual('1')
-        })
+        expect(recentSearches.length).toEqual(1)
+        expect(recentSearches[0].query).toEqual('1')
       })
 
       it('should no-op when deleting out of range indices', async () => {
-        const {result} = await constructRecentSearchesStore()
-        const searchTerms: SearchTerms = {
-          query: '1',
-          types: [mockArticle],
-        }
-
-        act(() => {
-          result.current.addSearch(searchTerms)
-        })
-
-        act(() => {
-          result.current.removeSearchAtIndex(9000)
-        })
+        const {result, rerender} = await constructRecentSearchesStore()
 
         let recentSearches = []
 
-        await waitFor(() => {
-          recentSearches = result.current.getRecentSearches()
-          expect(recentSearches.length).toEqual(1)
+        // Add a search term
+        await act(async () => {
+          result.current.addSearch({query: '1', types: [mockArticle]})
         })
 
-        act(() => {
+        rerender()
+
+        expect(mockSetStoredSearch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            recentSearches: expect.arrayContaining([
+              {
+                created: expect.any(String),
+                filters: [],
+                terms: {query: '1', typeNames: ['article']},
+              },
+            ]),
+          }),
+        )
+
+        rerender()
+
+        recentSearches = result.current.getRecentSearches()
+        expect(mockSetStoredSearch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            recentSearches: [
+              {
+                created: expect.any(String),
+                filters: [],
+                terms: {
+                  query: '1',
+                  typeNames: ['article'],
+                },
+              },
+            ],
+            version: 2,
+          }),
+        )
+        expect(recentSearches.length).toBe(1)
+        expect(recentSearches[0].query).toBe('1')
+        expect(recentSearches[0].filters).toEqual([])
+
+        // Try to remove an out-of-range index
+        await act(async () => {
+          result.current.removeSearchAtIndex(9000)
+        })
+
+        rerender()
+
+        // Check that the search term is still there
+        recentSearches = result.current.getRecentSearches()
+        expect(recentSearches.length).toBe(1)
+        expect(recentSearches[0].query).toBe('1')
+
+        // Try to remove with a negative index
+        await act(async () => {
           result.current.removeSearchAtIndex(-1)
         })
 
-        await waitFor(() => {
-          recentSearches = result.current.getRecentSearches()
-          expect(recentSearches.length).toEqual(1)
-        })
+        rerender()
+
+        // Check that the search term is still there
+        recentSearches = result.current.getRecentSearches()
+        expect(recentSearches.length).toBe(1)
+        expect(recentSearches[0].query).toBe('1')
+
+        // Verify that setStoredSearch was never called with an empty array
+        expect(mockSetStoredSearch).not.toHaveBeenCalledWith(
+          expect.objectContaining({
+            recentSearches: [],
+          }),
+        )
       })
     })
   })

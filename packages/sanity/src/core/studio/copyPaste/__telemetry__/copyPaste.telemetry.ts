@@ -4,7 +4,7 @@ interface FieldCopiedInfo {
   /**
    * The context the action was triggered from
    */
-  context: 'fieldAction' | 'documentFieldAction' | 'keyboardShortcut' | 'unknown'
+  context: 'fieldAction' | 'documentFieldAction' | 'keyboardShortcut' | 'arrayItem' | 'unknown'
   /**
    * The schema type(s) that was copied
    */
@@ -15,7 +15,7 @@ interface FieldPastedInfo {
   /**
    * The context the action was triggered from
    */
-  context: 'fieldAction' | 'documentFieldAction' | 'keyboardShortcut' | 'unknown'
+  context: 'fieldAction' | 'documentFieldAction' | 'keyboardShortcut' | 'arrayItem' | 'unknown'
   /**
    * The schema(s) type that was copied
    */
