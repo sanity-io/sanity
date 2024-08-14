@@ -1,9 +1,10 @@
 import {SearchIcon} from '@sanity/icons'
-import {Card, Flex, Popover, type PopoverProps, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {Popover, type PopoverProps} from '../../../../../../ui-components'
 import {useSearchableList} from '../../hooks'
 import {type TreeEditingMenuItem} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
@@ -138,7 +139,6 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
 
   return (
     <StyledPopover
-      animate
       constrainSize
       content={content}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}

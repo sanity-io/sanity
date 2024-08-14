@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Popover, type PopoverProps, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {
   cloneElement,
@@ -12,6 +12,7 @@ import ReactFocusLock from 'react-focus-lock'
 import {type Path} from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {Popover, type PopoverProps} from '../../../../../../ui-components'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
 import {TreeEditingBreadcrumbsMenu} from './TreeEditingBreadcrumbsMenu'
@@ -158,7 +159,6 @@ export function TreeEditingBreadcrumbsMenuButton(
 
   return (
     <StyledPopover
-      animate
       constrainSize
       content={content}
       data-testid="tree-editing-breadcrumbs-menu-popover"
