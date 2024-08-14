@@ -3,7 +3,9 @@ import {
   Flex,
   type HotkeysProps,
   Text,
+  // eslint-disable-next-line no-restricted-imports
   Tooltip as UITooltip,
+  // eslint-disable-next-line no-restricted-imports
   type TooltipProps as UITooltipProps,
 } from '@sanity/ui'
 import {type ForwardedRef, forwardRef} from 'react'
