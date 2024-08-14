@@ -1,18 +1,21 @@
 import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
-import {useDocumentOperation, useDocumentStore, useTranslation} from 'sanity'
+import {getPublishedId, useDocumentOperation, useDocumentStore, useTranslation} from 'sanity'
 
 import {Button} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {versionDocumentExists} from '../../util/util'
+import {getBundleSlug} from '../../util/util'
 
 interface BundleActionsProps {
   currentGlobalBundle: BundleDocument
+  /**
+   * The id of the document that is displayed in the form, might be a draft, a version, or the published one.
+   * e.g: foo, drafts.foo, version.summer.foo
+   */
   documentId: string
   documentType: string
-  documentVersions: BundleDocument[] | null
   bundleSlug?: string
 }
 
@@ -20,26 +23,28 @@ interface BundleActionsProps {
  * @internal
  */
 export function BundleActions(props: BundleActionsProps): ReactNode {
-  const {currentGlobalBundle, documentId, documentType, documentVersions, bundleSlug} = props
+  const {currentGlobalBundle, documentType, documentId, bundleSlug} = props
+  const publishedId = getPublishedId(documentId)
+
   const {slug, title, archivedAt} = currentGlobalBundle
   const documentStore = useDocumentStore()
   const [creatingVersion, setCreatingVersion] = useState<boolean>(false)
-  const [isInVersion, setIsInVersion] = useState<boolean>(false)
+  const [isInVersion, setIsInVersion] = useState<boolean>(() => getBundleSlug(documentId) === slug)
 
   const toast = useToast()
-  const {newVersion} = useDocumentOperation(documentId, documentType, bundleSlug)
+  const {newVersion} = useDocumentOperation(publishedId, documentType, bundleSlug)
   const {t} = useTranslation()
 
-  useEffect(() => {
-    if (documentVersions) {
-      const exists = versionDocumentExists(documentVersions, slug) ?? false
-      setIsInVersion(exists)
-    }
-  }, [documentVersions, slug])
-
   const handleAddVersion = useCallback(async () => {
+    if (!documentId) {
+      toast.push({
+        status: 'error',
+        title: "Can't add version without a base document",
+      })
+      return
+    }
     // only add to version if there isn't already a version in that bundle of this doc
-    if (documentVersions && versionDocumentExists(documentVersions, slug)) {
+    if (getBundleSlug(documentId) === slug) {
       toast.push({
         status: 'error',
         title: `There's already a version of this document in the bundle ${title}`,
@@ -47,7 +52,8 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
       return
     }
 
-    const bundleId = `${slug}.${documentId}`
+    // TODO: Replace for getVersionId function
+    const bundleId = `${slug}.${publishedId}`
 
     setCreatingVersion(true)
 
@@ -63,16 +69,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
     // only change if the version was created successfully
     await createVersionSuccess
     setIsInVersion(true)
-  }, [
-    documentId,
-    documentStore.pair,
-    documentType,
-    documentVersions,
-    slug,
-    newVersion,
-    title,
-    toast,
-  ])
+  }, [documentId, slug, publishedId, documentStore.pair, documentType, newVersion, toast, title])
 
   /** TODO what should happen when you add a version if we don't have the ready button */
 
@@ -90,7 +87,6 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
       tone="primary"
       onClick={handleAddVersion}
       disabled={isInVersion || creatingVersion}
-      loading={!documentVersions}
     />
   )
 }
