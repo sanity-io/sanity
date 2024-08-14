@@ -1,7 +1,8 @@
-import assert from 'node:assert'
+import assert, {strictEqual} from 'node:assert'
 
 import {describe, expect, test} from '@jest/globals'
 import {defineField, defineType} from '@sanity/types'
+import {type DocumentSchemaType} from 'groq-js'
 
 import {Schema} from '../../src/legacy/Schema'
 import {extractSchema} from '../../src/sanity/extractSchema'
@@ -37,7 +38,7 @@ const builtinTypes = [
 ]
 
 // taken from sanity/src/core/schema/createSchema.ts
-function createSchema(schemaDef: {name: string; types: any[]}) {
+function createSchema(schemaDef: {name: string; types: any[]}, skipBuiltins = false) {
   const validated = validateSchema(schemaDef.types).getTypes()
   const validation = groupProblems(validated)
   const hasErrors = validation.some((group) =>
@@ -46,7 +47,9 @@ function createSchema(schemaDef: {name: string; types: any[]}) {
 
   return Schema.compile({
     name: 'test',
-    types: hasErrors ? [] : [...schemaDef.types, ...builtinTypes].filter(Boolean),
+    types: hasErrors
+      ? []
+      : [...schemaDef.types, ...(skipBuiltins ? [] : builtinTypes)].filter(Boolean),
   })
 }
 
@@ -549,4 +552,111 @@ describe('Extract schema test', () => {
       // Add a test for the skipped cases so we can track them in the test report
     })
   })
+
+  test('Can extract inline documents', () => {
+    const schema = createSchema(
+      {
+        name: 'test',
+        types: [
+          defineType({
+            title: 'Valid document',
+            name: 'validDocument',
+            type: 'document',
+            fields: [
+              {
+                title: 'inline author',
+                name: 'inlineAuthor',
+                type: 'author',
+              },
+              {
+                title: 'inline author',
+                name: 'inlineAuthors',
+                type: 'array',
+                of: [{type: 'author'}],
+              },
+              {
+                title: 'reference author',
+                name: 'referenceAuthor',
+                type: 'reference',
+                to: [{type: 'author'}],
+              },
+              {
+                title: 'references author',
+                name: 'referenceAuthors',
+                type: 'array',
+                of: [{type: 'reference', to: [{type: 'author'}]}],
+              },
+            ],
+          }),
+          {
+            title: 'Author',
+            name: 'author',
+            type: 'document',
+            fields: [
+              {
+                title: 'Name',
+                name: 'name',
+                type: 'string',
+              },
+            ],
+          },
+        ],
+      },
+      true,
+    )
+
+    const extracted = extractSchema(schema)
+    expect(extracted.map((v) => v.name)).toStrictEqual(['validDocument', 'author'])
+    const validDocument = extracted.find((type) => type.name === 'validDocument')
+    expect(validDocument).toBeDefined()
+    assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+
+    const authorDocument = extracted.find(
+      (type): type is DocumentSchemaType => type.name === 'author' && type.type === 'document',
+    )
+    expect(authorDocument).toBeDefined()
+    assert(authorDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+
+    expect(validDocument.name).toEqual('validDocument')
+    expect(validDocument.type).toEqual('document')
+    assert(validDocument.type === 'document') // this is a workaround for TS https://github.com/DefinitelyTyped/DefinitelyTyped/issues/41179
+    expect(Object.keys(validDocument.attributes)).toStrictEqual([
+      '_id',
+      '_type',
+      '_createdAt',
+      '_updatedAt',
+      '_rev',
+      'inlineAuthor',
+      'inlineAuthors',
+      'referenceAuthor',
+      'referenceAuthors',
+    ])
+
+    strictEqual(validDocument.attributes.inlineAuthor.value.type, 'object')
+    expect(validDocument.attributes.inlineAuthor.value.attributes).toEqual(
+      removeBuiltinAttributes(authorDocument).attributes,
+    )
+
+    strictEqual(validDocument.attributes.inlineAuthors.value.type, 'array')
+    strictEqual(validDocument.attributes.inlineAuthors.value.of.type, 'object')
+    expect(validDocument.attributes.inlineAuthors.value.of.attributes).toEqual(
+      removeBuiltinAttributes(authorDocument).attributes,
+    )
+    strictEqual(validDocument.attributes.inlineAuthors.value.of.rest?.type, 'object')
+    expect(validDocument.attributes.inlineAuthors.value.of.rest?.attributes).toEqual({
+      _key: {type: 'objectAttribute', value: {type: 'string'}},
+    })
+
+    expect(extracted).toMatchSnapshot()
+  })
 })
+
+const builtinAttrs = ['_id', '_createdAt', '_updatedAt', '_rev']
+function removeBuiltinAttributes(doc: DocumentSchemaType): DocumentSchemaType {
+  return {
+    ...doc,
+    attributes: Object.fromEntries(
+      Object.entries(doc.attributes).filter(([key]) => !builtinAttrs.includes(key)),
+    ),
+  }
+}

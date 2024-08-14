@@ -1,5 +1,225 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Extract schema test Can extract inline documents 1`] = `
+Array [
+  Object {
+    "attributes": Object {
+      "_createdAt": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_id": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_rev": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_type": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+          "value": "validDocument",
+        },
+      },
+      "_updatedAt": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "inlineAuthor": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "attributes": Object {
+            "_type": Object {
+              "type": "objectAttribute",
+              "value": Object {
+                "type": "string",
+                "value": "author",
+              },
+            },
+            "name": Object {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": Object {
+                "type": "string",
+              },
+            },
+          },
+          "type": "object",
+        },
+      },
+      "inlineAuthors": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "of": Object {
+            "attributes": Object {
+              "_type": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                  "value": "author",
+                },
+              },
+              "name": Object {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                },
+              },
+            },
+            "rest": Object {
+              "attributes": Object {
+                "_key": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                  },
+                },
+              },
+              "type": "object",
+            },
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "referenceAuthor": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "attributes": Object {
+            "_ref": Object {
+              "type": "objectAttribute",
+              "value": Object {
+                "type": "string",
+              },
+            },
+            "_type": Object {
+              "type": "objectAttribute",
+              "value": Object {
+                "type": "string",
+                "value": "reference",
+              },
+            },
+            "_weak": Object {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": Object {
+                "type": "boolean",
+              },
+            },
+          },
+          "dereferencesTo": "author",
+          "type": "object",
+        },
+      },
+      "referenceAuthors": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "of": Object {
+            "attributes": Object {
+              "_ref": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                },
+              },
+              "_type": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                  "value": "reference",
+                },
+              },
+              "_weak": Object {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "boolean",
+                },
+              },
+            },
+            "dereferencesTo": "author",
+            "rest": Object {
+              "attributes": Object {
+                "_key": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                  },
+                },
+              },
+              "type": "object",
+            },
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+    },
+    "name": "validDocument",
+    "type": "document",
+  },
+  Object {
+    "attributes": Object {
+      "_createdAt": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_id": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_rev": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_type": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+          "value": "author",
+        },
+      },
+      "_updatedAt": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "name": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+    },
+    "name": "author",
+    "type": "document",
+  },
+]
+`;
+
 exports[`Extract schema test Extracts  schema general 1`] = `
 Array [
   Object {
@@ -972,28 +1192,97 @@ Array [
               "of": Array [
                 Object {
                   "attributes": Object {
-                    "_ref": Object {
-                      "type": "objectAttribute",
-                      "value": Object {
-                        "type": "string",
-                      },
-                    },
                     "_type": Object {
                       "type": "objectAttribute",
                       "value": Object {
                         "type": "string",
-                        "value": "reference",
+                        "value": "author",
                       },
                     },
-                    "_weak": Object {
+                    "name": Object {
                       "optional": true,
                       "type": "objectAttribute",
                       "value": Object {
-                        "type": "boolean",
+                        "type": "string",
+                      },
+                    },
+                    "profilePicture": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "attributes": Object {
+                          "_type": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                              "value": "image",
+                            },
+                          },
+                          "asset": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "attributes": Object {
+                                "_ref": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "reference",
+                                  },
+                                },
+                                "_weak": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "boolean",
+                                  },
+                                },
+                              },
+                              "dereferencesTo": "sanity.imageAsset",
+                              "type": "object",
+                            },
+                          },
+                          "attribution": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "caption": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "crop": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "name": "sanity.imageCrop",
+                              "type": "inline",
+                            },
+                          },
+                          "hotspot": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "name": "sanity.imageHotspot",
+                              "type": "inline",
+                            },
+                          },
+                        },
+                        "type": "object",
                       },
                     },
                   },
-                  "dereferencesTo": "author",
                   "rest": Object {
                     "attributes": Object {
                       "_key": Object {
@@ -1107,28 +1396,97 @@ Array [
                                   "value": Object {
                                     "of": Object {
                                       "attributes": Object {
-                                        "_ref": Object {
-                                          "type": "objectAttribute",
-                                          "value": Object {
-                                            "type": "string",
-                                          },
-                                        },
                                         "_type": Object {
                                           "type": "objectAttribute",
                                           "value": Object {
                                             "type": "string",
-                                            "value": "reference",
+                                            "value": "author",
                                           },
                                         },
-                                        "_weak": Object {
+                                        "name": Object {
                                           "optional": true,
                                           "type": "objectAttribute",
                                           "value": Object {
-                                            "type": "boolean",
+                                            "type": "string",
+                                          },
+                                        },
+                                        "profilePicture": Object {
+                                          "optional": true,
+                                          "type": "objectAttribute",
+                                          "value": Object {
+                                            "attributes": Object {
+                                              "_type": Object {
+                                                "type": "objectAttribute",
+                                                "value": Object {
+                                                  "type": "string",
+                                                  "value": "image",
+                                                },
+                                              },
+                                              "asset": Object {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": Object {
+                                                  "attributes": Object {
+                                                    "_ref": Object {
+                                                      "type": "objectAttribute",
+                                                      "value": Object {
+                                                        "type": "string",
+                                                      },
+                                                    },
+                                                    "_type": Object {
+                                                      "type": "objectAttribute",
+                                                      "value": Object {
+                                                        "type": "string",
+                                                        "value": "reference",
+                                                      },
+                                                    },
+                                                    "_weak": Object {
+                                                      "optional": true,
+                                                      "type": "objectAttribute",
+                                                      "value": Object {
+                                                        "type": "boolean",
+                                                      },
+                                                    },
+                                                  },
+                                                  "dereferencesTo": "sanity.imageAsset",
+                                                  "type": "object",
+                                                },
+                                              },
+                                              "attribution": Object {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": Object {
+                                                  "type": "string",
+                                                },
+                                              },
+                                              "caption": Object {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": Object {
+                                                  "type": "string",
+                                                },
+                                              },
+                                              "crop": Object {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": Object {
+                                                  "name": "sanity.imageCrop",
+                                                  "type": "inline",
+                                                },
+                                              },
+                                              "hotspot": Object {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": Object {
+                                                  "name": "sanity.imageHotspot",
+                                                  "type": "inline",
+                                                },
+                                              },
+                                            },
+                                            "type": "object",
                                           },
                                         },
                                       },
-                                      "dereferencesTo": "author",
                                       "rest": Object {
                                         "attributes": Object {
                                           "_key": Object {
@@ -1418,28 +1776,97 @@ Array [
                       },
                       Object {
                         "attributes": Object {
-                          "_ref": Object {
-                            "type": "objectAttribute",
-                            "value": Object {
-                              "type": "string",
-                            },
-                          },
                           "_type": Object {
                             "type": "objectAttribute",
                             "value": Object {
                               "type": "string",
-                              "value": "reference",
+                              "value": "author",
                             },
                           },
-                          "_weak": Object {
+                          "name": Object {
                             "optional": true,
                             "type": "objectAttribute",
                             "value": Object {
-                              "type": "boolean",
+                              "type": "string",
+                            },
+                          },
+                          "profilePicture": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "attributes": Object {
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "image",
+                                  },
+                                },
+                                "asset": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "attributes": Object {
+                                      "_ref": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "string",
+                                        },
+                                      },
+                                      "_type": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "string",
+                                          "value": "reference",
+                                        },
+                                      },
+                                      "_weak": Object {
+                                        "optional": true,
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "boolean",
+                                        },
+                                      },
+                                    },
+                                    "dereferencesTo": "sanity.imageAsset",
+                                    "type": "object",
+                                  },
+                                },
+                                "attribution": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                                "caption": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                                "crop": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "name": "sanity.imageCrop",
+                                    "type": "inline",
+                                  },
+                                },
+                                "hotspot": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "name": "sanity.imageHotspot",
+                                    "type": "inline",
+                                  },
+                                },
+                              },
+                              "type": "object",
                             },
                           },
                         },
-                        "dereferencesTo": "author",
                         "rest": Object {
                           "attributes": Object {
                             "_key": Object {
@@ -1874,28 +2301,97 @@ Array [
                 },
                 Object {
                   "attributes": Object {
-                    "_ref": Object {
-                      "type": "objectAttribute",
-                      "value": Object {
-                        "type": "string",
-                      },
-                    },
                     "_type": Object {
                       "type": "objectAttribute",
                       "value": Object {
                         "type": "string",
-                        "value": "reference",
+                        "value": "author",
                       },
                     },
-                    "_weak": Object {
+                    "name": Object {
                       "optional": true,
                       "type": "objectAttribute",
                       "value": Object {
-                        "type": "boolean",
+                        "type": "string",
+                      },
+                    },
+                    "profilePicture": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "attributes": Object {
+                          "_type": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                              "value": "image",
+                            },
+                          },
+                          "asset": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "attributes": Object {
+                                "_ref": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "reference",
+                                  },
+                                },
+                                "_weak": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "boolean",
+                                  },
+                                },
+                              },
+                              "dereferencesTo": "sanity.imageAsset",
+                              "type": "object",
+                            },
+                          },
+                          "attribution": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "caption": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "crop": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "name": "sanity.imageCrop",
+                              "type": "inline",
+                            },
+                          },
+                          "hotspot": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "name": "sanity.imageHotspot",
+                              "type": "inline",
+                            },
+                          },
+                        },
+                        "type": "object",
                       },
                     },
                   },
-                  "dereferencesTo": "author",
                   "rest": Object {
                     "attributes": Object {
                       "_key": Object {
@@ -2439,28 +2935,97 @@ Array [
                 },
                 Object {
                   "attributes": Object {
-                    "_ref": Object {
-                      "type": "objectAttribute",
-                      "value": Object {
-                        "type": "string",
-                      },
-                    },
                     "_type": Object {
                       "type": "objectAttribute",
                       "value": Object {
                         "type": "string",
-                        "value": "reference",
+                        "value": "author",
                       },
                     },
-                    "_weak": Object {
+                    "name": Object {
                       "optional": true,
                       "type": "objectAttribute",
                       "value": Object {
-                        "type": "boolean",
+                        "type": "string",
+                      },
+                    },
+                    "profilePicture": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "attributes": Object {
+                          "_type": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                              "value": "image",
+                            },
+                          },
+                          "asset": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "attributes": Object {
+                                "_ref": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "reference",
+                                  },
+                                },
+                                "_weak": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "boolean",
+                                  },
+                                },
+                              },
+                              "dereferencesTo": "sanity.imageAsset",
+                              "type": "object",
+                            },
+                          },
+                          "attribution": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "caption": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "crop": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "name": "sanity.imageCrop",
+                              "type": "inline",
+                            },
+                          },
+                          "hotspot": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "name": "sanity.imageHotspot",
+                              "type": "inline",
+                            },
+                          },
+                        },
+                        "type": "object",
                       },
                     },
                   },
-                  "dereferencesTo": "author",
                   "rest": Object {
                     "attributes": Object {
                       "_key": Object {
