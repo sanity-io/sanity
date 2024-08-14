@@ -48,6 +48,8 @@ describe('BundleDetailsDialog', () => {
         data: [],
         loading: true,
         dispatch: jest.fn(),
+        error: undefined,
+        deletedBundles: {},
       })
 
       //mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
@@ -72,6 +74,7 @@ describe('BundleDetailsDialog', () => {
         title: 'Bundle 1',
         hue: 'gray',
         icon: 'cube',
+        description: '',
         //publishAt: undefined,
       }
 
@@ -113,6 +116,8 @@ describe('BundleDetailsDialog', () => {
         data: [],
         loading: true,
         dispatch: jest.fn(),
+        error: undefined,
+        deletedBundles: {},
       })
 
       //mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})

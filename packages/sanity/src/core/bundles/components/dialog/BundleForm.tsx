@@ -15,7 +15,7 @@ import {
 //import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
-import {useGetBundleSlug} from './getBundleSlug'
+import {useGetBundleSlug} from './useGetBundleSlug'
 
 interface BaseBundleDocument extends Partial<BundleDocument> {
   hue: ColorHueKey

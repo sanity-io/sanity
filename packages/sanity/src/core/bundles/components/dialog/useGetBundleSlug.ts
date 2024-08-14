@@ -3,6 +3,8 @@ import speakingurl from 'speakingurl'
 
 import {useBundles} from '../../../store/bundles'
 
+const PROTECTED_SLUGS = ['drafts', 'published']
+
 export function useGetBundleSlug() {
   const {data: bundles} = useBundles()
 
@@ -14,13 +16,16 @@ export function useGetBundleSlug() {
       if (!bundles) return -1
 
       const suffixRegex = new RegExp(`^${baseSlug}(?:-(\\d+))?$`)
-      return bundles.reduce((maxSlugSuffix, {slug}) => {
-        const isBaseSlugMatch = slug.match(suffixRegex)
-        if (!isBaseSlugMatch) return maxSlugSuffix
+      return [...bundles, ...PROTECTED_SLUGS.map((slug) => ({slug}))].reduce(
+        (maxSlugSuffix, {slug}) => {
+          const isBaseSlugMatch = slug.match(suffixRegex)
+          if (!isBaseSlugMatch) return maxSlugSuffix
 
-        const suffixNumber = parseInt(isBaseSlugMatch[1] || '0', 10)
-        return Math.max(maxSlugSuffix, suffixNumber)
-      }, -1)
+          const suffixNumber = parseInt(isBaseSlugMatch[1] || '0', 10)
+          return Math.max(maxSlugSuffix, suffixNumber)
+        },
+        -1,
+      )
     },
     [bundles],
   )
