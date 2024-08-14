@@ -174,7 +174,7 @@ const config = {
 
     // Prefer local components vs certain @sanity/ui imports (in sanity package)
     {
-      files: ['packages/sanity/src/**'],
+      files: ['packages/sanity/**'],
       excludedFiles: [
         '**/__workshop__/**',
         'packages/sanity/src/_singletons/**',
