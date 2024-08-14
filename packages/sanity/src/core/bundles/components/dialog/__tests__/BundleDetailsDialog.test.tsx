@@ -143,10 +143,15 @@ describe('BundleDetailsDialog', () => {
       fireEvent.change(screen.getByTestId('bundle-form-title'), {target: {value: ''}})
 
       expect(screen.getByTestId('submit-release-button')).toBeDisabled()
+
+      // whitespace should be trimmed
+      fireEvent.change(screen.getByTestId('bundle-form-title'), {target: {value: '   '}})
+
+      expect(screen.getByTestId('submit-release-button')).toBeDisabled()
     })
 
     it('should patch the bundle document when submitted', () => {
-      fireEvent.change(screen.getByTestId('bundle-form-title'), {target: {value: 'New title'}})
+      fireEvent.change(screen.getByTestId('bundle-form-title'), {target: {value: 'New title  '}})
       fireEvent.change(screen.getByTestId('bundle-form-description'), {
         target: {value: 'New description'},
       })

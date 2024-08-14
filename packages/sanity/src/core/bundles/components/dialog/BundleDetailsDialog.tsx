@@ -60,8 +60,10 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         try {
           event.preventDefault()
           setIsSubmitting(true)
-          await bundleOperation(value)
-          setValue(value)
+
+          const submitValue = {...value, title: value.title?.trim()}
+          await bundleOperation(submitValue)
+          setValue(submitValue)
           if (formAction === 'create') {
             setPerspective(value.slug)
           }
@@ -103,7 +105,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         </Box>
         <Flex justify="flex-end" padding={3}>
           <Button
-            disabled={!value.title || isSubmitting}
+            disabled={!value.title?.trim() || isSubmitting}
             iconRight={ArrowRightIcon}
             type="submit"
             text={dialogTitle}
