@@ -16,16 +16,23 @@ export function useInitialValue(props: {
   documentType: string
   templateName?: string
   templateParams?: Record<string, unknown>
+  version?: string
 }): InitialValueState {
-  const {documentId, documentType, templateName, templateParams: templateParamsRaw} = props
+  const {documentId, documentType, templateName, templateParams: templateParamsRaw, version} = props
   const templateParams = useUnique(templateParamsRaw)
   const documentStore = useDocumentStore()
   const context = useInitialValueResolverContext()
 
-  const defaultValue: SanityDocumentLike = useMemo(
-    () => ({_id: documentId, _type: documentType}),
-    [documentId, documentType],
-  )
+  const defaultValue: SanityDocumentLike = useMemo(() => {
+    const base: SanityDocumentLike = {_id: documentId, _type: documentType}
+    if (version) {
+      // TODO: this would need to be updated once the CL changes land for the new id format.
+      base._version = {}
+      // TODO: Use getVersionId function.
+      base._id = `${version}.${documentId}`
+    }
+    return base
+  }, [documentId, documentType, version])
 
   const [state, setState] = useState<InitialValueState>({
     loading: false,
