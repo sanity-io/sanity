@@ -108,8 +108,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                     isBundleDocument(currentGlobalBundle) && formState?.value?._id ? (
                       <BundleActions
                         currentGlobalBundle={currentGlobalBundle}
-                        documentId={documentId}
-                        formDocumentId={formState.value._id as string}
+                        documentId={formState.value._id as string}
                         documentType={documentType}
                         {...actionProps}
                         key={formState.value._id as string}
