@@ -177,7 +177,7 @@ export async function getOrCreateUserApplication({
 
   // otherwise, prompt the user for a hostname
   output.print('Your project has not been assigned a studio hostname.')
-  output.print('To deploy your Sanity Studio to our hosted Sanity.Studio service,')
+  output.print('To deploy your Sanity Studio to our hosted sanity.studio service,')
   output.print('you will need one. Please enter the part you want to use.')
 
   const {promise, resolve} = promiseWithResolvers<UserApplication>()
