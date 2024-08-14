@@ -5,6 +5,8 @@ import {useBundles} from '../../../store/bundles'
 
 const PROTECTED_SLUGS = ['drafts', 'published']
 
+const NO_EXISTING_SLUG: number = -1
+
 export function useGetBundleSlug() {
   const {data: bundles} = useBundles()
 
@@ -13,7 +15,7 @@ export function useGetBundleSlug() {
   // if slug does exist, return the highest suffix number (or 0 if no suffix)
   const getMaxSuffixForSlug = useCallback(
     (baseSlug: string): number => {
-      if (!bundles) return -1
+      if (!bundles) return NO_EXISTING_SLUG
 
       const suffixRegex = new RegExp(`^${baseSlug}(?:-(\\d+))?$`)
       return [...bundles, ...PROTECTED_SLUGS.map((slug) => ({slug}))].reduce(
@@ -24,7 +26,7 @@ export function useGetBundleSlug() {
           const suffixNumber = parseInt(isBaseSlugMatch[1] || '0', 10)
           return Math.max(maxSlugSuffix, suffixNumber)
         },
-        -1,
+        NO_EXISTING_SLUG,
       )
     },
     [bundles],
@@ -36,7 +38,7 @@ export function useGetBundleSlug() {
       const existingSlugMaxSuffix = getMaxSuffixForSlug(newSlug)
 
       // newSlug doesn't exist yet
-      if (existingSlugMaxSuffix === -1) return newSlug
+      if (existingSlugMaxSuffix === NO_EXISTING_SLUG) return newSlug
 
       return `${newSlug}-${existingSlugMaxSuffix + 1}`
     },
