@@ -50,17 +50,6 @@ const mockSpinner = {
 const mockFetch = jest.fn<typeof fetch>()
 global.fetch = mockFetch
 
-// Mock the Gzip stream
-class MockGzip {
-  constructor(private chunks: AsyncIterable<Buffer> | Iterable<Buffer>) {}
-  [Symbol.asyncIterator]() {
-    const chunks = this.chunks
-    return (async function* thing() {
-      for await (const chunk of chunks) yield chunk
-    })()
-  }
-}
-
 const context = {output: mockOutput, prompt: mockPrompt}
 
 describe('getOrCreateUserApplication', () => {
@@ -215,8 +204,6 @@ describe('createDeployment', () => {
     const applicationId = 'test-app-id'
     const version = '1.0.0'
 
-    mockFetch.mockResolvedValueOnce(new Response())
-
     await createDeployment({
       client: mockClient,
       applicationId,
@@ -230,12 +217,13 @@ describe('createDeployment', () => {
     // Extract and validate form data
     const mockRequestCalls = mockClientRequest.mock.calls as Parameters<typeof mockClientRequest>[]
     const {uri, method, body} = mockRequestCalls[0][0]
-    const mockFetchCalls = mockFetch.mock.calls as Parameters<typeof fetch>[]
-    const formData = mockFetchCalls[0][1]?.body as unknown as Readable
+
+    expect(uri).toBe(`/user-applications/${applicationId}/deployments`)
+    expect(method).toBe('POST')
 
     // dump the raw content of the form data into a string
     let content = ''
-    for await (const chunk of formData) {
+    for await (const chunk of body) {
       content += chunk
     }
 
@@ -244,10 +232,6 @@ describe('createDeployment', () => {
     expect(content).toContain('version')
     expect(content).toContain(version)
     expect(content).toContain('example chunk')
-
-    expect(uri).toBe(`/user-applications/${applicationId}/deployments`)
-    expect(method).toBe('POST')
-
   })
 
   it('streams the tarball contents', async () => {
@@ -282,72 +266,6 @@ describe('createDeployment', () => {
     let emissions = 0
     let content = ''
     for await (const chunk of body) {
-      content += chunk
-      emissions++
-    }
-
-    expect(emissions).toBeGreaterThan(1)
-
-    expect(content).toContain('isAutoUpdating')
-    expect(content).toContain('true')
-
-    expect(content).toContain('version')
-    expect(content).toContain(version)
-
-    expect(content).toContain(firstEmission)
-    expect(content).toContain(secondEmission)
-    expect(content).toContain('application/gzip')
-  })
-
-  it('streams the tarball contents', async () => {
-    const firstEmission = 'first emission\n'
-    const secondEmission = 'second emission\n'
-
-    async function* createMockStream() {
-      await new Promise((resolve) => setTimeout(resolve, 0))
-      yield Buffer.from(firstEmission, 'utf-8')
-      await new Promise((resolve) => setTimeout(resolve, 0))
-      yield Buffer.from(secondEmission, 'utf-8')
-    }
-
-    const mockTarball = Readable.from(createMockStream()) as Gzip
-    const applicationId = 'test-app-id'
-
-    mockFetch.mockResolvedValueOnce(new Response())
-
-    const version = '1.0.0'
-
-    await createDeployment({
-      client: mockClient,
-      applicationId,
-      version,
-      isAutoUpdating: true,
-      tarball: mockTarball,
-    })
-
-    // Check URL and method
-    expect(mockClient.getUrl).toHaveBeenCalledWith(
-      `/user-applications/${applicationId}/deployments`,
-    )
-    expect(mockFetch).toHaveBeenCalledTimes(1)
-    const url = mockFetch.mock.calls[0][0] as URL
-    expect(url.toString()).toBe(
-      'http://example.api.sanity.io/user-applications/test-app-id/deployments',
-    )
-
-    // Extract and validate form data
-    const mockFetchCalls = mockFetch.mock.calls as Parameters<typeof fetch>[]
-    const requestInit = mockFetchCalls[0][1] as any
-
-    // this is required to enable streaming with the native fetch API
-    // https://github.com/nodejs/node/issues/46221
-    expect(requestInit.duplex).toBe('half')
-
-    const formData = requestInit.body as Readable
-
-    let emissions = 0
-    let content = ''
-    for await (const chunk of formData) {
       content += chunk
       emissions++
     }

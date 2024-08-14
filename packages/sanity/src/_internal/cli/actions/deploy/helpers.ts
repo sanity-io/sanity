@@ -277,31 +277,17 @@ export async function createDeployment({
   applicationId,
   isAutoUpdating,
   version,
-}: CreateDeploymentOptions): Promise<void> {
-  const config = client.config()
-
+}: CreateDeploymentOptions): Promise<{location: string}> {
   const formData = new FormData()
   formData.append('isAutoUpdating', isAutoUpdating.toString())
   formData.append('version', version)
-  formData.append('tarball', tarball, {contentType: 'application/gzip'})
+  formData.append('tarball', tarball, {contentType: 'application/gzip', filename: 'app.tar.gz'})
 
-  const url = new URL(client.getUrl(`/user-applications/${applicationId}/deployments`))
-  const headers = new Headers({
-    ...(config.token && {Authorization: `Bearer ${config.token}`}),
-  })
-
-  await fetch(url, {
+  return client.request({
+    uri: `/user-applications/${applicationId}/deployments`,
     method: 'POST',
-    headers,
-    // NOTE:
-    // - the fetch API in node.js supports streams but it's not in the types
-    // - the PassThrough is required because `form-data` does not fully conform
-    //   to the node.js stream API
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    body: formData.pipe(new PassThrough()) as any,
-    // @ts-expect-error the `duplex` param is required in order to send a stream
-    // https://github.com/nodejs/node/issues/46221#issuecomment-1383246036
-    duplex: 'half',
+    headers: formData.getHeaders(),
+    body: formData.pipe(new PassThrough()),
   })
 }
 
