@@ -4,9 +4,11 @@ import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
+  LATEST,
   type Template,
   type TemplatePermissionsResult,
   useGetI18nText,
+  usePerspective,
   useSchema,
   useTemplatePermissions,
   useTemplates,
@@ -31,19 +33,23 @@ const getIntent = (
   schema: Schema,
   templates: Template[],
   item: InitialValueTemplateItem,
+  version?: string,
 ): PaneHeaderIntentProps | null => {
+  const isBundleIntent = version && version !== LATEST.slug
   const typeName = templates.find((t) => t.id === item.templateId)?.schemaType
   if (!typeName) return null
 
   const baseParams = {
     template: item.templateId,
     type: typeName,
+    version: isBundleIntent ? version : undefined,
     id: item.initialDocumentId,
   }
 
   return {
     type: 'create',
     params: item.parameters ? [baseParams, item.parameters] : baseParams,
+    searchParams: isBundleIntent ? [['perspective', `bundle.${version}`]] : undefined,
   }
 }
 
@@ -54,6 +60,7 @@ interface PaneHeaderCreateButtonProps {
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const schema = useSchema()
   const templates = useTemplates()
+  const {currentGlobalBundle} = usePerspective()
 
   const {t} = useTranslation(structureLocaleNamespace)
   const getI18nText = useGetI18nText([...templateItems, ...templates])
@@ -104,7 +111,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
-    const intent = getIntent(schema, templates, firstItem)
+    const intent = getIntent(schema, templates, firstItem, currentGlobalBundle.slug)
     if (!intent) return null
 
     return (
@@ -142,7 +149,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(schema, templates, item)
+            const intent = getIntent(schema, templates, item, currentGlobalBundle.slug)
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
 
@@ -154,6 +161,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                   {...linkProps}
                   intent={intent.type}
                   params={intent.params}
+                  searchParams={intent.searchParams}
                   ref={linkRef}
                 />
               ),
