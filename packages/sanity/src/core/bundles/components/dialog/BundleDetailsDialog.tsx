@@ -63,7 +63,6 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
 
           const submitValue = {...value, title: value.title?.trim()}
           await bundleOperation(submitValue)
-          setValue(submitValue)
           if (formAction === 'create') {
             setPerspective(value.slug)
           }
