@@ -174,7 +174,6 @@ export function collate<
   T extends {
     _id: string
     _type: string
-    _version?: Record<string, never>
   },
 >(documents: T[], {bundlePerspective}: CollateOptions = {}): CollatedHit<T>[] {
   const byId = documents.reduce((res, doc) => {
