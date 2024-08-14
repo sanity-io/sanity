@@ -96,6 +96,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
+  const {perspective} = paneRouter
+
+  const bundlePerspective = perspective?.startsWith('bundle.')
+    ? perspective.split('bundle.').at(1)
+    : undefined
+
+  /* Version and the global perspective should match.
+   * If user clicks on add document, and then switches to another version, he should click again on create document.
+   */
+  const newDocumentVersion = params.version === bundlePerspective ? params.version : undefined
+
   const panePayload = useUnique(paneRouter.payload)
   const {templateName, templateParams} = useMemo(
     () =>
@@ -113,13 +124,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     templateName,
     templateParams,
+    version: newDocumentVersion,
   })
-
-  const {perspective} = paneRouter
-
-  const bundlePerspective = perspective?.startsWith('bundle.')
-    ? perspective.split('bundle.').at(1)
-    : undefined
 
   const initialValue = useUnique(initialValueRaw)
   const {patch} = useDocumentOperation(documentId, documentType, bundlePerspective)
@@ -216,8 +222,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     if (!timelineReady) {
       return false
     }
-    return Boolean(!editState?.draft && !editState?.published) && !isPristine
-  }, [editState?.draft, editState?.published, isPristine, timelineReady])
+    return Boolean(!editState?.draft && !editState?.published && !editState?.version) && !isPristine
+  }, [editState?.draft, editState?.published, editState?.version, isPristine, timelineReady])
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
