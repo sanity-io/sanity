@@ -1,31 +1,51 @@
-import {promises as fs} from 'node:fs'
+/* eslint-disable max-statements */
 import path from 'node:path'
 import zlib from 'node:zlib'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {type SanityClient} from '@sanity/client'
 import tar from 'tar-fs'
 
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
+import {
+  checkDir,
+  createDeployment,
+  debug,
+  dirIsEmptyOrNonExistent,
+  getInstalledSanityVersion,
+  getOrCreateUserApplication,
+  getOrCreateUserApplicationFromConfig,
+  type UserApplication,
+} from './helpers'
 
 export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
   build?: boolean
 }
 
-export default async function deployStudio(
+export default async function deployStudioAction(
   args: CliCommandArguments<DeployStudioActionFlags>,
   context: CliCommandContext,
 ): Promise<void> {
-  const {apiClient, workDir, chalk, output, prompt} = context
+  const {apiClient, workDir, chalk, output, prompt, cliConfig} = context
   const flags = {build: true, ...args.extOptions}
-  const destFolder = args.argsWithoutOptions[0]
-  const sourceDir = path.resolve(process.cwd(), destFolder || path.join(workDir, 'dist'))
+  const customSourceDir = args.argsWithoutOptions[0]
+  const sourceDir = path.resolve(process.cwd(), customSourceDir || path.join(workDir, 'dist'))
+  const isAutoUpdating =
+    flags['auto-updates'] ||
+    (cliConfig && 'autoUpdates' in cliConfig && cliConfig.autoUpdates === true) ||
+    false
+  const installedSanityVersion = await getInstalledSanityVersion()
+  const configStudioHost = cliConfig && 'studioHost' in cliConfig && cliConfig.studioHost
 
-  if (destFolder === 'graphql') {
+  const client = apiClient({
+    requireUser: true,
+    requireProject: true,
+  }).withConfig({apiVersion: 'v2024-08-01'})
+
+  if (customSourceDir === 'graphql') {
     throw new Error('Did you mean `sanity graphql deploy`?')
   }
 
-  if (destFolder) {
+  if (customSourceDir) {
     let relativeOutput = path.relative(process.cwd(), sourceDir)
     if (relativeOutput[0] !== '.') {
       relativeOutput = `./${relativeOutput}`
@@ -48,34 +68,41 @@ export default async function deployStudio(
     output.print(`Building to ${relativeOutput}\n`)
   }
 
-  const client = apiClient({
-    requireUser: true,
-    requireProject: true,
-  })
-
   // Check that the project has a studio hostname
   let spinner = output.spinner('Checking project info').start()
-  const project = await client.projects.getById(client.config().projectId as string)
-  let studioHostname = project && project.studioHost
-  spinner.succeed()
 
-  if (!studioHostname) {
-    output.print('Your project has not been assigned a studio hostname.')
-    output.print('To deploy your Sanity Studio to our hosted Sanity.Studio service,')
-    output.print('you will need one. Please enter the part you want to use.')
+  let userApplication: UserApplication
 
-    studioHostname = await prompt.single({
-      type: 'input',
-      filter: (inp: string) => inp.replace(/\.sanity\.studio$/i, ''),
-      message: 'Studio hostname (<value>.sanity.studio):',
-      validate: (name: string) => validateHostname(name, client),
-    })
+  try {
+    // If the user has provided a studioHost in the config, use that
+    if (configStudioHost) {
+      userApplication = await getOrCreateUserApplicationFromConfig({
+        client,
+        context,
+        spinner,
+        appHost: configStudioHost,
+      })
+    } else {
+      userApplication = await getOrCreateUserApplication({
+        client,
+        context,
+        spinner,
+      })
+    }
+  } catch (err) {
+    if (err.message) {
+      output.error(chalk.red(err.message))
+      return
+    }
+
+    debug('Error creating user application', err)
+    throw err
   }
 
   // Always build the project, unless --no-build is passed
   const shouldBuild = flags.build
   if (shouldBuild) {
-    const buildArgs = [destFolder].filter(Boolean)
+    const buildArgs = [customSourceDir].filter(Boolean)
     const {didCompile} = await buildSanityStudio(
       {...args, extOptions: flags, argsWithoutOptions: buildArgs},
       context,
@@ -94,6 +121,7 @@ export default async function deployStudio(
     spinner.succeed()
   } catch (err) {
     spinner.fail()
+    debug('Error checking directory', err)
     throw err
   }
 
@@ -104,89 +132,27 @@ export default async function deployStudio(
 
   spinner = output.spinner('Deploying to Sanity.Studio').start()
   try {
-    const response = await client.request({
-      method: 'POST',
-      url: '/deploy',
-      body: tarball,
-      maxRedirects: 0,
+    const {location} = await createDeployment({
+      client,
+      applicationId: userApplication.id,
+      version: installedSanityVersion,
+      isAutoUpdating,
+      tarball,
     })
 
     spinner.succeed()
 
     // And let the user know we're done
-    output.print(`\nSuccess! Studio deployed to ${chalk.cyan(response.location)}`)
+    output.print(`\nSuccess! Studio deployed to ${chalk.cyan(location)}`)
+
+    if (!configStudioHost) {
+      output.print(`\nAdd ${chalk.cyan(`studioHost: '${userApplication.appHost}'`)}`)
+      output.print('to defineCliConfig root properties in sanity.cli.js or sanity.cli.ts')
+      output.print('to avoid prompting for hostname on next deploy.')
+    }
   } catch (err) {
     spinner.fail()
+    debug('Error deploying studio', err)
     throw err
-  }
-}
-
-async function dirIsEmptyOrNonExistent(sourceDir: string): Promise<boolean> {
-  try {
-    const stats = await fs.stat(sourceDir)
-    if (!stats.isDirectory()) {
-      throw new Error(`Directory ${sourceDir} is not a directory`)
-    }
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      return true
-    }
-
-    throw err
-  }
-
-  const content = await fs.readdir(sourceDir)
-  return content.length === 0
-}
-
-async function checkDir(sourceDir: string) {
-  try {
-    const stats = await fs.stat(sourceDir)
-    if (!stats.isDirectory()) {
-      throw new Error(`Directory ${sourceDir} is not a directory`)
-    }
-  } catch (err) {
-    const error = err.code === 'ENOENT' ? new Error(`Directory "${sourceDir}" does not exist`) : err
-
-    throw error
-  }
-
-  try {
-    await fs.stat(path.join(sourceDir, 'index.html'))
-  } catch (err) {
-    const error =
-      err.code === 'ENOENT'
-        ? new Error(
-            [
-              `"${sourceDir}/index.html" does not exist -`,
-              '[SOURCE_DIR] must be a directory containing',
-              'a Sanity studio built using "sanity build"',
-            ].join(' '),
-          )
-        : err
-
-    throw error
-  }
-}
-
-async function validateHostname(value: string, client: SanityClient): Promise<boolean | string> {
-  const projectId = client.config().projectId
-  const uri = `/projects/${projectId}`
-  const studioHost = value || ''
-
-  // Check that it matches allowed character range
-  if (!/^[a-z0-9_-]+$/i.test(studioHost)) {
-    return 'Hostname can contain only A-Z, 0-9, _ and -'
-  }
-
-  // Check that the hostname is not already taken
-  try {
-    await client.request({uri, method: 'PATCH', body: {studioHost}})
-    return true
-  } catch (error) {
-    if (error?.response?.body?.message) {
-      return error.response.body.message
-    }
-    throw error
   }
 }
