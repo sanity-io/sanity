@@ -147,10 +147,10 @@ export default async function deployStudioAction(
 
     if (!configStudioHost) {
       output.print(
-        `\nPlease remember to add ${chalk.cyan(`studioHost: '${userApplication.appHost}'`)}`,
+        `\nAdd ${chalk.cyan(`studioHost: '${userApplication.appHost}'`)}`,
       )
-      output.print('to defineCliConfig in your sanity.cli.js or sanity.cli.ts file')
-      output.print('to re-deploy or undeploy this studio in the future.')
+      output.print('to defineCliConfig root properties in sanity.cli.js or sanity.cli.ts')
+      output.print('to avoid prompting for hostname on next deploy.')
     }
   } catch (err) {
     spinner.fail()
