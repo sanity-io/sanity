@@ -26,43 +26,56 @@ describe('useGetBundleSlug', () => {
 
     const {
       result: {current},
-    } = renderHook(() => useGetBundleSlug())
+    } = renderHook(useGetBundleSlug)
 
-    expect(current('New Bundle')).toBe('new-bundle')
+    expect(current('New Bundle')).toEqual('new-bundle')
   })
 
-  it("should generate a new slug when the slug doesn' already exist", () => {
+  it("should generate a new slug when the slug doesn't already exist", () => {
     generateMockUseBundles([{slug: 'test-bundle-1'}])
 
     const {
       result: {current},
-    } = renderHook(() => useGetBundleSlug())
+    } = renderHook(useGetBundleSlug)
 
-    expect(current('New Bundle')).toBe('new-bundle')
+    expect(current('New Bundle')).toEqual('new-bundle')
   })
 
-  it('should generate a new slug with the correct suffix when similar slugs exist', () => {
-    generateMockUseBundles([
-      {slug: 'test-bundle'},
-      {slug: 'test-bundle-1'},
-      {slug: 'test-bundle-2'},
-    ])
+  it.each([
+    [[{slug: 'test-bundle'}], 'Test Bundle', 'test-bundle-1'],
+    [[{slug: 'test-bundle'}], 'Test Bundle 3', 'test-bundle-3'],
+    [
+      [{slug: 'test-bundle'}, {slug: 'test-bundle-1'}, {slug: 'test-bundle-2'}],
+      'Test Bundle',
+      'test-bundle-3',
+    ],
+    [
+      [{slug: 'test-bundle'}, {slug: 'test-bundle-3'}, {slug: 'test-bundle-2'}],
+      'Test Bundle',
+      'test-bundle-1',
+    ],
+    [[{slug: 'test-bundle-3'}, {slug: 'test-bundle-2'}], 'Test Bundle', 'test-bundle'],
+  ])(
+    'should generate the next lowest suffix when the slug already exists',
+    (existingBundleSlugs, requestBundleTitle, resultSlug) => {
+      generateMockUseBundles(existingBundleSlugs)
 
-    const {
-      result: {current},
-    } = renderHook(() => useGetBundleSlug())
+      const {
+        result: {current},
+      } = renderHook(useGetBundleSlug)
 
-    expect(current('Test Bundle')).toBe('test-bundle-3')
-  })
+      expect(current(requestBundleTitle)).toEqual(resultSlug)
+    },
+  )
 
   it('should generate a new slug when a suffix count is already provided', () => {
-    generateMockUseBundles([{slug: 'test-bundle-1'}])
+    generateMockUseBundles([{slug: 'test-bundle-1-2'}])
 
     const {
       result: {current},
-    } = renderHook(() => useGetBundleSlug())
+    } = renderHook(useGetBundleSlug)
 
-    expect(current('Test Bundle 1')).toBe('test-bundle-1-1')
+    expect(current('Test Bundle 1 2')).toEqual('test-bundle-1-2-1')
   })
 
   it('should handle protected slugs', () => {
@@ -70,10 +83,10 @@ describe('useGetBundleSlug', () => {
 
     const {
       result: {current},
-    } = renderHook(() => useGetBundleSlug())
+    } = renderHook(useGetBundleSlug)
 
-    expect(current('Drafts')).toBe('drafts-1')
-    expect(current('published')).toBe('published-1')
+    expect(current('Drafts')).toEqual('drafts-1')
+    expect(current('published')).toEqual('published-1')
   })
 
   it('should handle no bundles', () => {
@@ -81,8 +94,8 @@ describe('useGetBundleSlug', () => {
 
     const {
       result: {current},
-    } = renderHook(() => useGetBundleSlug())
+    } = renderHook(useGetBundleSlug)
 
-    expect(current('New Bundle')).toBe('new-bundle')
+    expect(current('New Bundle')).toEqual('new-bundle')
   })
 })
