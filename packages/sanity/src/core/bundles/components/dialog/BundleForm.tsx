@@ -1,28 +1,40 @@
 //import {CalendarIcon} from '@sanity/icons'
+import {type ColorHueKey} from '@sanity/color'
+import {type IconSymbol} from '@sanity/icons'
 import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   FormFieldHeaderText,
   type FormNodeValidation,
-  useBundles,
   useTranslation,
   //useDateTimeFormat,
   //useTranslation,
 } from 'sanity'
-import speakingurl from 'speakingurl'
 
 //import {type CalendarLabels} from '../../../form/inputs/DateInputs/base/calendar/types'
 //import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {isDraftOrPublished} from '../../util/util'
 import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
+import {useGetBundleSlug} from './useGetBundleSlug'
+
+interface BaseBundleDocument extends Partial<BundleDocument> {
+  hue: ColorHueKey
+  icon: IconSymbol
+}
+
+export const DEFAULT_BUNDLE: BaseBundleDocument = {
+  slug: '',
+  title: '',
+  description: '',
+  hue: 'gray',
+  icon: 'cube',
+}
 
 export function BundleForm(props: {
   onChange: (params: Partial<BundleDocument>) => void
-  onError: (errorsExist: boolean) => void
   value: Partial<BundleDocument>
 }): JSX.Element {
-  const {onChange, onError, value} = props
+  const {onChange, value} = props
   const {title, description, icon, hue /*, publishAt*/} = value
   // derive the action from whether the initial value prop has a slug
   // only editing existing bundles will provide a value.slug
@@ -35,7 +47,6 @@ export function BundleForm(props: {
   const [showDatePicker, setShowDatePicker] = useState(false)
 
   const [isInitialRender, setIsInitialRender] = useState(true)
-  const {data} = useBundles()
 
   const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
   /*const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
@@ -51,69 +62,37 @@ export function BundleForm(props: {
 
   const iconValue: BundleIconEditorPickerValue = useMemo(
     () => ({
-      icon: icon ?? 'cube',
-      hue: hue ?? 'gray',
+      icon: icon ?? DEFAULT_BUNDLE.icon,
+      hue: hue ?? DEFAULT_BUNDLE.hue,
     }),
     [icon, hue],
   )
 
-  const generateSlugFromTitle = useCallback(
-    (pickedTitle: string) => {
-      if (isEditing && value.slug) {
-        const slug = value.slug
-        return {slug, slugExists: false}
-      }
-      const newSlug = speakingurl(pickedTitle)
-      const slugExists = Boolean(data && data.find((bundle) => bundle.slug === newSlug))
-
-      return {slug: newSlug, slugExists}
-    },
-    [isEditing, value, data],
-  )
+  const generateSlugFromTitle = useGetBundleSlug()
 
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
-      const {slug: newSlug, slugExists} = generateSlugFromTitle(pickedTitle)
-      const isEmptyTitle = pickedTitle.trim() === '' && !isInitialRender
+      const {slug: existingSlug} = value
 
-      if (isDraftOrPublished(pickedTitle) || slugExists || (isEmptyTitle && !isInitialRender)) {
-        if (isEmptyTitle && !isInitialRender) {
-          // if the title is empty and it's not the first opening of the dialog, show an error
-          // TODO localize text
+      const nextSlug = (isEditing && existingSlug) || generateSlugFromTitle(pickedTitle)
 
-          setTitleErrors([{level: 'error', message: 'Bundle needs a name', path: []}])
-        }
-        if (isDraftOrPublished(pickedTitle)) {
-          // if the title is 'drafts' or 'published', show an error
-          // TODO localize text
-          setTitleErrors([
-            {level: 'error', message: "Title cannot be 'drafts' or 'published'", path: []},
-          ])
-        }
-        if (slugExists) {
-          // if the bundle already exists, show an error
-          // TODO localize text
-          setTitleErrors([{level: 'error', message: 'Bundle already exists', path: []}])
-        }
-
-        onError(true)
-      } else {
-        setTitleErrors([])
-        onError(false)
-      }
-
-      setIsInitialRender(false)
-      onChange({...value, title: pickedTitle, slug: newSlug})
+      onChange({
+        ...value,
+        title: pickedTitle,
+        slug: nextSlug,
+      })
     },
-    [generateSlugFromTitle, isInitialRender, onChange, onError, value],
+    [generateSlugFromTitle, isEditing, onChange, value],
   )
 
   const handleBundleDescriptionChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const v = event.target.value
+      const {value: descriptionValue} = event.target
 
-      onChange({...value, description: v || undefined})
+      if (typeof descriptionValue !== 'undefined') {
+        onChange({...value, description: descriptionValue})
+      }
     },
     [onChange, value],
   )
