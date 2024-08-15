@@ -179,57 +179,23 @@ export interface CollatedHit<T extends {_id: string} = {_id: string}> {
   type: string
   draft?: T
   published?: T
-  version?: T
-}
-
-interface CollateOptions {
-  bundlePerspective?: string
 }
 
 /** @internal */
-export function collate<
-  T extends {
-    _id: string
-    _type: string
-  },
->(documents: T[], {bundlePerspective}: CollateOptions = {}): CollatedHit<T>[] {
+export function collate<T extends {_id: string; _type: string}>(documents: T[]): CollatedHit<T>[] {
   const byId = documents.reduce((res, doc) => {
     const publishedId = getPublishedId(doc._id)
-    const isVersion = isVersionId(doc._id)
-    const bundle = getVersionFromId(doc._id)
-
     let entry = res.get(publishedId)
     if (!entry) {
-      entry = {
-        id: publishedId,
-        type: doc._type,
-        published: undefined,
-        draft: undefined,
-        version: undefined,
-      }
+      entry = {id: publishedId, type: doc._type, published: undefined, draft: undefined}
       res.set(publishedId, entry)
     }
 
-    if (bundlePerspective && bundle === bundlePerspective) {
-      entry.version = doc
-    }
-
-    if (!isVersion) {
-      entry[publishedId === doc._id ? 'published' : 'draft'] = doc
-    }
-
+    entry[publishedId === doc._id ? 'published' : 'draft'] = doc
     return res
   }, new Map())
 
-  return (
-    Array.from(byId.values())
-      // Remove entries that have no data, because all the following conditions are true:
-      //
-      // 1. They have no published version.
-      // 2. They have no draft version.
-      // 3. They have a version, but not the one that is currently checked out.
-      .filter((entry) => entry.published ?? entry.version ?? entry.draft)
-  )
+  return Array.from(byId.values())
 }
 
 /** @internal */

@@ -20,7 +20,13 @@ import {
 } from 'rxjs'
 import {tap} from 'rxjs/operators'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {createSearch, getSearchableTypes, type SanityDocumentLike, type Schema} from 'sanity'
+import {
+  createSearch,
+  DRAFTS_FOLDER,
+  getSearchableTypes,
+  type SanityDocumentLike,
+  type Schema,
+} from 'sanity'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
 import {ENABLE_LRU_MEMO} from './constants'
@@ -138,6 +144,9 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
               perspective: omitBundlePerspective(perspective),
+              bundlePerspective: perspective?.startsWith('bundle.')
+                ? [perspective.split('bundle.').at(1), DRAFTS_FOLDER].join(',')
+                : undefined,
               skipSortByScore: true,
               sort: sortBy,
             }
