@@ -6,7 +6,7 @@ import {useTranslation} from 'sanity'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../hooks/usePerspective'
-import {BundleForm} from './BundleForm'
+import {BundleForm, DEFAULT_BUNDLE} from './BundleForm'
 
 interface BundleDetailsDialogProps {
   onCancel: () => void
@@ -18,7 +18,6 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
   const {onCancel, onSubmit, bundle} = props
   const toast = useToast()
   const {createBundle, updateBundle} = useBundleOperations()
-  const [hasErrors, setHasErrors] = useState(false)
   const formAction = bundle ? 'edit' : 'create'
   const {t} = useTranslation()
 
@@ -33,13 +32,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
       }
     }
 
-    return {
-      slug: '',
-      title: '',
-      hue: 'gray',
-      icon: 'cube',
-      //publishAt: undefined,
-    }
+    return DEFAULT_BUNDLE
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -67,8 +60,9 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         try {
           event.preventDefault()
           setIsSubmitting(true)
-          await bundleOperation(value)
-          setValue(value)
+
+          const submitValue = {...value, title: value.title?.trim()}
+          await bundleOperation(submitValue)
           if (formAction === 'create') {
             setPerspective(value.slug)
           }
@@ -92,10 +86,6 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
     setValue(changedValue)
   }, [])
 
-  const handleOnError = useCallback((errorsExist: boolean) => {
-    setHasErrors(errorsExist)
-  }, [])
-
   const dialogTitle =
     formAction === 'edit' ? t('bundle.dialog.edit.title') : t('bundle.dialog.create.title')
 
@@ -110,14 +100,13 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
     >
       <form onSubmit={handleOnSubmit}>
         <Box padding={6}>
-          <BundleForm onChange={handleOnChange} onError={handleOnError} value={value} />
+          <BundleForm onChange={handleOnChange} value={value} />
         </Box>
         <Flex justify="flex-end" padding={3}>
           <Button
-            disabled={!value.title || isSubmitting || hasErrors}
+            disabled={!value.title?.trim() || isSubmitting}
             iconRight={ArrowRightIcon}
             type="submit"
-            // localize Text
             text={dialogTitle}
             loading={isSubmitting}
             data-testid="submit-release-button"
