@@ -1,5 +1,6 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 
+import {getBundleSlug} from '../bundles/util/util'
 import {isNonNullable} from './isNonNullable'
 
 /** @internal */
@@ -179,7 +180,7 @@ export function collate<
   const byId = documents.reduce((res, doc) => {
     const publishedId = getPublishedId(doc._id)
     const isVersion = isVersionId(doc._id)
-    const bundle = isVersion ? doc._id.split('.').at(0) : undefined
+    const bundle = isVersion ? getBundleSlug(doc._id) : undefined
 
     let entry = res.get(publishedId)
     if (!entry) {

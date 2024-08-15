@@ -22,7 +22,7 @@ export function removePublishedWithDrafts(
   documents: SanityDocumentLike[],
   {bundlePerspective}: {bundlePerspective?: string} = {},
 ): DocumentListPaneItem[] {
-  return collate(documents).map((entry) => {
+  return collate(documents, {bundlePerspective}).map((entry) => {
     const doc = entry.version || entry.draft || entry.published
     const isVersion = isVersionId(doc?._id || '')
     const hasDraft = Boolean(entry.draft)
