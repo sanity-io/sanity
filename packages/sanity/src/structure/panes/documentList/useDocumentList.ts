@@ -67,13 +67,8 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
   // Filter out published documents that have drafts to avoid duplicates in the list.
   const items = useMemo(
-    () =>
-      documents
-        ? removePublishedWithDrafts(documents, {
-            bundlePerspective: (perspective ?? '').split('bundle.').at(1),
-          })
-        : EMPTY_ARRAY,
-    [documents, perspective],
+    () => (documents ? removePublishedWithDrafts(documents) : EMPTY_ARRAY),
+    [documents],
   )
 
   // A state variable to keep track of whether we are currently lazy loading the list.
