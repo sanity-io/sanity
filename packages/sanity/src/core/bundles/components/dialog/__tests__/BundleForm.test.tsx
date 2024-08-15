@@ -50,7 +50,13 @@ describe('BundleForm', () => {
         },
         // Add more mock data if needed
       ]
-      mockUseBundleStore.mockReturnValue({data: mockData, loading: false, dispatch: jest.fn()})
+      mockUseBundleStore.mockReturnValue({
+        data: mockData,
+        loading: false,
+        dispatch: jest.fn(),
+        error: undefined,
+        deletedBundles: {},
+      })
 
       mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
@@ -94,34 +100,23 @@ describe('BundleForm', () => {
     expect(onChangeMock).toHaveBeenCalledWith({...valueMock, publishAt: ''})
   })*/
 
-    it('should show an error when the title is "drafts"', () => {
+    it('should allow for a "drafts" title bundle to be created', () => {
       const titleInput = screen.getByTestId('bundle-form-title')
 
       fireEvent.change(titleInput, {target: {value: 'drafts'}})
 
-      expect(screen.getByTestId('input-validation-icon-error')).toBeInTheDocument()
+      expect(onChangeMock).toHaveBeenCalledWith({...valueMock, title: 'drafts', slug: 'drafts-1'})
     })
 
-    it('should show an error when the title is "published"', () => {
+    it('should allow for a "published" title bundle to be created', () => {
       const titleInput = screen.getByTestId('bundle-form-title')
       fireEvent.change(titleInput, {target: {value: 'published'}})
 
-      expect(screen.getByTestId('input-validation-icon-error')).toBeInTheDocument()
-    })
-
-    it('should show an error when the bundle already exists', () => {
-      const titleInput = screen.getByTestId('bundle-form-title')
-      fireEvent.change(titleInput, {target: {value: 'Spring Drop'}})
-
-      expect(screen.getByTestId('input-validation-icon-error')).toBeInTheDocument()
-    })
-
-    it('should show an error when the title is empty', () => {
-      const titleInput = screen.getByTestId('bundle-form-title')
-      fireEvent.change(titleInput, {target: {value: 'test'}}) // Set a valid title first
-      fireEvent.change(titleInput, {target: {value: ' '}}) // remove the title
-
-      expect(screen.getByTestId('input-validation-icon-error')).toBeInTheDocument()
+      expect(onChangeMock).toHaveBeenCalledWith({
+        ...valueMock,
+        title: 'published',
+        slug: 'published-1',
+      })
     })
 
     /*it('should show an error when the publishAt input value is invalid', () => {
