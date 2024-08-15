@@ -40,7 +40,7 @@ export function getDocumentIsInPerspective(
 ): boolean {
   const bundleSlug = getBundleSlug(documentId)
 
-  if (!perspective) return bundleSlug === PUBLISHED_SLUG || bundleSlug === 'drafts'
+  if (!perspective) return bundleSlug === PUBLISHED_SLUG || bundleSlug === DRAFTS_SLUG
 
   if (!perspective.startsWith('bundle.')) return false
   // perspective is `bundle.${bundleSlug}`
