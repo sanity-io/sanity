@@ -1,6 +1,8 @@
 import {isEqual} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {DRAFTS_FOLDER} from 'sanity'
 import {SearchContext} from 'sanity/_singletons'
+import {useRouter} from 'sanity/router'
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
@@ -30,7 +32,7 @@ interface SearchProviderProps {
 export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
-
+  const perspective = useRouter().stickyParams.perspective
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const {
@@ -140,6 +142,10 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
+          perspective: omitBundlePerspective(perspective),
+          bundlePerspective: perspective?.startsWith('bundle.')
+            ? [perspective.split('bundle.').at(1), DRAFTS_FOLDER].join(',')
+            : undefined,
         },
         terms: {
           ...terms,
@@ -165,6 +171,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     searchState.terms,
     terms,
     cursor,
+    perspective,
   ])
 
   /**
@@ -196,4 +203,12 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   )
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
+}
+
+function omitBundlePerspective(perspective: string | undefined): string | undefined {
+  if (perspective?.startsWith('bundle.')) {
+    return undefined
+  }
+
+  return perspective
 }

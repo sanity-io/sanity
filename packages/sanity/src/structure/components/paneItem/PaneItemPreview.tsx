@@ -10,7 +10,6 @@ import {
   DocumentStatus,
   DocumentStatusIndicator,
   type GeneralPreviewLayoutKey,
-  getDocumentIsInPerspective,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   isRecord,
@@ -66,12 +65,9 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     draft: null,
     isLoading: true,
     published: null,
+    version: null,
+    perspective,
   })
-
-  const isInPerspective = useMemo(
-    () => getDocumentIsInPerspective(value._id, perspective),
-    [perspective, value._id],
-  )
 
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
@@ -85,7 +81,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const tooltip = <DocumentStatus draft={draft} published={published} version={version} />
 
   return (
-    <Root $isInPerspective={isInPerspective}>
+    <Root $isInPerspective={!perspective || Boolean(version)}>
       <SanityDefaultPreview
         {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
         isPlaceholder={isLoading}
