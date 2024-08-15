@@ -15,6 +15,7 @@ export type PublishedId = Opaque<string, 'publishedId'>
 
 /** @internal */
 export const DRAFTS_FOLDER = 'drafts'
+/** @internal */
 export const VERSION_FOLDER = 'versions'
 const PATH_SEPARATOR = '.'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
@@ -59,7 +60,7 @@ export function isDraftId(id: string): id is DraftId {
   return id.startsWith(DRAFTS_PREFIX)
 }
 
-/* @interal */
+/** @internal */
 export function isVersionId(id: string): boolean {
   return id.startsWith(VERSION_PREFIX)
 }
