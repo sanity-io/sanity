@@ -18,12 +18,9 @@ export function getDocumentKey(value: DocumentListPaneItem, index: number): stri
   return value._id ? getPublishedId(value._id) : `item-${index}`
 }
 
-export function removePublishedWithDrafts(
-  documents: SanityDocumentLike[],
-  {bundlePerspective}: {bundlePerspective?: string} = {},
-): DocumentListPaneItem[] {
-  return collate(documents, {bundlePerspective}).map((entry) => {
-    const doc = entry.version || entry.draft || entry.published
+export function removePublishedWithDrafts(documents: SanityDocumentLike[]): DocumentListPaneItem[] {
+  return collate(documents).map((entry) => {
+    const doc = entry.draft || entry.published
     const isVersion = doc?.id && isVersionId(doc._id)
     const hasDraft = Boolean(entry.draft)
 

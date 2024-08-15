@@ -142,11 +142,14 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       searchOptions.includeDrafts === false && "!(_id in path('drafts.**'))",
       factoryOptions.filter ? `(${factoryOptions.filter})` : false,
       searchTerms.filter ? `(${searchTerms.filter})` : false,
+      // Versions are collated server-side using the `bundlePerspective` option. Therefore, they
+      // must not be fetched individually.
       '!(_id in path("versions.**"))',
     ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
     const textSearchParams: TextSearchParams = {
       perspective: searchOptions.perspective,
+      bundlePerspective: searchOptions.bundlePerspective,
       query: {
         string: getQueryString(searchTerms.query, searchOptions),
       },

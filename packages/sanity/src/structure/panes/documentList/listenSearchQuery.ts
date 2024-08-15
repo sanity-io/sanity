@@ -18,6 +18,7 @@ import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {
   createSearch,
   createSWR,
+  DRAFTS_FOLDER,
   getSearchableTypes,
   type SanityDocumentLike,
   type Schema,
@@ -140,6 +141,9 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
               perspective: omitBundlePerspective(perspective),
+              bundlePerspective: perspective?.startsWith('bundle.')
+                ? [perspective.split('bundle.').at(1), DRAFTS_FOLDER].join(',')
+                : undefined,
               skipSortByScore: true,
               sort: sortBy,
             }
