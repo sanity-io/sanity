@@ -1,19 +1,6 @@
-import {observableCallback} from 'observable-callback'
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {concat, fromEvent, merge, of} from 'rxjs'
-import {
-  catchError,
-  filter,
-  map,
-  mergeMap,
-  scan,
-  share,
-  shareReplay,
-  take,
-  takeUntil,
-  withLatestFrom,
-} from 'rxjs/operators'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {concat, fromEvent, merge, of, Subject, throwError} from 'rxjs'
+import {catchError, map, mergeMap, scan, startWith, take} from 'rxjs/operators'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   useClient,
@@ -25,7 +12,15 @@ import {
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {findStaticTypesInFilter, removePublishedWithDrafts} from './helpers'
 import {listenSearchQuery} from './listenSearchQuery'
-import {type DocumentListPaneItem, type SortOrder} from './types'
+import {type DocumentListPaneItem, type QueryResult, type SortOrder} from './types'
+
+const EMPTY_ARRAY: [] = []
+
+const INITIAL_STATE: QueryResult = {
+  error: null,
+  onRetry: undefined,
+  result: null,
+}
 
 interface UseDocumentListOpts {
   apiVersion?: string
@@ -38,37 +33,25 @@ interface UseDocumentListOpts {
 
 interface DocumentListState {
   error: {message: string} | null
-  isLoadingFullList: boolean
+  hasMaxItems?: boolean
+  isLazyLoading: boolean
   isLoading: boolean
-  fromCache?: boolean
+  isSearchReady: boolean
   items: DocumentListPaneItem[]
+  onListChange: () => void
+  onRetry?: (event: unknown) => void
 }
 
-const INITIAL_QUERY_STATE: DocumentListState = {
+const INITIAL_QUERY_RESULTS: QueryResult = {
+  result: null,
   error: null,
-  isLoading: true,
-  isLoadingFullList: false,
-  fromCache: false,
-  items: [],
-}
-
-interface UseDocumentListHookValue extends DocumentListState {
-  onRetry: () => void
-  onLoadFullList: () => void
 }
 
 /**
  * @internal
  */
 export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
-  const {
-    filter: searchFilter,
-    params: paramsProp,
-    sortOrder,
-    searchQuery,
-    perspective,
-    apiVersion,
-  } = opts
+  const {filter, params: paramsProp, sortOrder, searchQuery, perspective, apiVersion} = opts
   const client = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
@@ -77,141 +60,174 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
 
-  // Get the type name from the filter, if it is a simple type filter.
-  const typeNameFromFilter = useMemo(
-    () => findStaticTypesInFilter(searchFilter, paramsProp),
-    [searchFilter, paramsProp],
+  const [resultState, setResult] = useState<QueryResult>(INITIAL_STATE)
+  const {onRetry, error, result} = resultState
+
+  const documents = result?.documents
+
+  // Filter out published documents that have drafts to avoid duplicates in the list.
+  const items = useMemo(
+    () => (documents ? removePublishedWithDrafts(documents) : EMPTY_ARRAY),
+    [documents],
   )
 
-  const [onRetry$, onRetry] = useMemo(() => observableCallback(), [])
-  const [onFetchFullList$, onLoadFullList] = useMemo(() => observableCallback(), [])
+  // A state variable to keep track of whether we are currently lazy loading the list.
+  // This is used to determine whether we should show the loading spinner at the bottom of the list.
+  const [isLazyLoading, setIsLazyLoading] = useState<boolean>(false)
+
+  // A state to keep track of whether we have fetched the full list of documents.
+  const [hasFullList, setHasFullList] = useState<boolean>(false)
+
+  // A state to keep track of whether we should fetch the full list of documents.
+  const [shouldFetchFullList, setShouldFetchFullList] = useState<boolean>(false)
+
+  // Get the type name from the filter, if it is a simple type filter.
+  const typeNameFromFilter = useMemo(
+    () => findStaticTypesInFilter(filter, paramsProp),
+    [filter, paramsProp],
+  )
+
+  // We can't have the loading state as part of the result state, since the loading
+  // state would be updated whenever a mutation is performed in a document in the list.
+  // Instead, we determine if the list is loading by checking if the result is null.
+  // The result is null when:
+  // 1. We are making the initial request
+  // 2. The user has performed a search or changed the sort order
+  const isLoading = result === null && !error
+
+  // A flag to indicate whether we have reached the maximum number of documents.
+  const hasMaxItems = documents?.length === FULL_LIST_LIMIT
+
+  // This function is triggered when the user has scrolled to the bottom of the list
+  // and we need to fetch more items.
+  const onListChange = useCallback(() => {
+    if (isLoading || hasFullList || shouldFetchFullList) return
+
+    setShouldFetchFullList(true)
+  }, [isLoading, hasFullList, shouldFetchFullList])
+
+  const handleSetResult = useCallback(
+    (res: QueryResult) => {
+      if (res.error) {
+        setResult(res)
+        return
+      }
+
+      const documentsLength = res.result?.documents?.length || 0
+      const isLoadingMoreItems = !res.error && res?.result === null && shouldFetchFullList
+
+      // 1. When the result is null and shouldFetchFullList is true, we are loading _more_ items.
+      // In this case, we want to wait for the next result and set the isLazyLoading state to true.
+      if (isLoadingMoreItems) {
+        setIsLazyLoading(true)
+        return
+      }
+
+      // 2. If the result is not null, and less than the partial page limit, we know that
+      // we have fetched the full list of documents. In this case, we want to set the
+      // hasFullList state to true to prevent further requests.
+      if (documentsLength < PARTIAL_PAGE_LIMIT && documentsLength !== 0 && !shouldFetchFullList) {
+        setHasFullList(true)
+      }
+
+      // 3. If the result is null, we are loading items. In this case, we want to
+      // wait for the next result.
+      if (res?.result === null) {
+        setResult((prev) => ({...(prev.error ? res : prev)}))
+        return
+      }
+
+      // 4. Finally, set the result
+      setIsLazyLoading(false)
+      setResult(res)
+    },
+    [shouldFetchFullList],
+  )
 
   const queryResults$ = useMemo(() => {
-    const listenSearchQueryArgs = {
+    const onRetry$ = new Subject<void>()
+    const _onRetry = () => onRetry$.next()
+
+    const limit = shouldFetchFullList ? FULL_LIST_LIMIT : PARTIAL_PAGE_LIMIT
+    const sort = sortOrder || DEFAULT_ORDERING
+
+    return listenSearchQuery({
       client,
-      filter: searchFilter,
-      limit: PARTIAL_PAGE_LIMIT,
+      filter,
+      limit,
       params: paramsProp,
       schema,
       perspective,
       searchQuery: searchQuery || '',
-      sort: sortOrder || DEFAULT_ORDERING,
+      sort,
       staticTypeNames: typeNameFromFilter,
       maxFieldDepth,
       enableLegacySearch,
-    }
-
-    const partialList$ = listenSearchQuery(listenSearchQueryArgs).pipe(
-      shareReplay({refCount: true, bufferSize: 1}),
-    )
-
-    // we want to fetch the full list if the last result of the partial list is at the limit
-    const fullList$ = onFetchFullList$.pipe(
-      withLatestFrom(partialList$),
-      filter(([, result]) => result?.documents.length === PARTIAL_PAGE_LIMIT),
-      // we want to set up the full list listener only once
-      take(1),
-      mergeMap(() =>
-        concat(
-          of({type: 'loadFullList' as const}),
-          listenSearchQuery({...listenSearchQueryArgs, limit: FULL_LIST_LIMIT}).pipe(
-            map((result) => ({type: 'result' as const, result})),
-          ),
-        ),
-      ),
-      share(),
-    )
-
-    // The combined search results from both partial page and full list
-    return merge(
-      partialList$.pipe(
-        map((result) => ({
-          type: 'result' as const,
-          result,
-        })),
-        // when the full list listener kicks off, we want to stop the partial list listener
-        takeUntil(fullList$),
-      ),
-      fullList$,
-    ).pipe(
-      catchError((err: unknown, caught$) => {
+    }).pipe(
+      map((results) => ({
+        result: {documents: results},
+        error: null,
+      })),
+      startWith(INITIAL_QUERY_RESULTS),
+      catchError((err) => {
+        if (err instanceof ProgressEvent) {
+          // todo: hack to work around issue with get-it (used by sanity/client) that propagates connection errors as ProgressEvent instances. This if-block can be removed once @sanity/client is par with a version of get-it that includes this fix: https://github.com/sanity-io/get-it/pull/127
+          return throwError(() => new Error(`Request error`))
+        }
+        return throwError(() => err)
+      }),
+      catchError((err, caught$) => {
         return concat(
-          of({type: 'error' as const, error: safeError(err)}),
+          of({result: null, error: err}),
           merge(fromEvent(window, 'online'), onRetry$).pipe(
             take(1),
             mergeMap(() => caught$),
           ),
         )
       }),
-      scan((prev, event) => {
-        if (event.type === 'error') {
-          return {
-            ...prev,
-            error: event.error,
-          }
-        }
-        if (event.type === 'result') {
-          return {
-            ...prev,
-            error: null,
-            fromCache: event.result.fromCache,
-            isLoading: false,
-            items: removePublishedWithDrafts(event.result.documents),
-            isLoadingFullList: false,
-          }
-        }
-        if (event.type === 'loadFullList') {
-          return {
-            ...prev,
-            error: null,
-            isLoadingFullList: true,
-          }
-        }
-        throw new Error('Unexpected')
-      }, INITIAL_QUERY_STATE),
+      scan((prev, next) => ({...prev, ...next, onRetry: _onRetry})),
     )
   }, [
+    shouldFetchFullList,
+    sortOrder,
     client,
-    searchFilter,
+    filter,
     paramsProp,
     schema,
     perspective,
     searchQuery,
-    sortOrder,
     typeNameFromFilter,
     maxFieldDepth,
     enableLegacySearch,
-    onFetchFullList$,
-    onRetry$,
   ])
 
-  const {error, items, isLoading, fromCache, isLoadingFullList} = useObservable(
-    queryResults$,
-    INITIAL_QUERY_STATE,
-  )
+  useEffect(() => {
+    const sub = queryResults$.subscribe(handleSetResult)
+
+    return () => {
+      sub.unsubscribe()
+    }
+  }, [handleSetResult, queryResults$])
+
+  const reset = useCallback(() => {
+    setHasFullList(false)
+    setIsLazyLoading(false)
+    setResult(INITIAL_STATE)
+    setShouldFetchFullList(false)
+  }, [])
+
+  useEffect(() => {
+    reset()
+  }, [reset, filter, paramsProp, sortOrder, searchQuery])
 
   return {
     error,
-    onRetry,
+    hasMaxItems,
+    isLazyLoading,
     isLoading,
+    isSearchReady: !error,
     items,
-    fromCache,
-    onLoadFullList,
-    isLoadingFullList,
+    onListChange,
+    onRetry,
   }
-}
-
-// todo: candidate for re-use
-const nonErrorThrownWarning = `[WARNING: This was thrown as a non-error. Only Error instances should be thrown]`
-function safeError(thrown: unknown): Error {
-  if (thrown instanceof Error) {
-    return thrown
-  }
-  if (typeof thrown === 'object' && thrown !== null) {
-    if ('message' in thrown && typeof thrown.message === 'string') {
-      return new Error(`${thrown.message} ${nonErrorThrownWarning}`)
-    }
-    return new Error(`${String(thrown)} ${nonErrorThrownWarning}`)
-  }
-  return new Error(`${String(thrown)} ${nonErrorThrownWarning}`)
 }

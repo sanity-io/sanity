@@ -147,7 +147,7 @@ describe('createSearchQuery', () => {
 
       const result = [
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]{_type, _id, object{field}}',
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]{_type, _id, _version, object{field}}',
         '|order(_id asc)[0...$__limit]',
         '{_type, _id, _version, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
       ].join('')
