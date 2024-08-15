@@ -49,7 +49,9 @@ const resultsDir = path.join(
   workspaceDir,
   'results',
   // e.g. run__2024-08-14__9:21:23am
-  `run__${timestamp.getTime()}__${timestamp.toLocaleDateString('en-US')}__${timestamp
+  `run__${timestamp.getTime()}__${timestamp
+    .toLocaleDateString('en-US')
+    .replaceAll('/', '-')}__${timestamp
     .toLocaleTimeString('en-US')
     .replaceAll(' ', '')
     .replaceAll(':', '-')
