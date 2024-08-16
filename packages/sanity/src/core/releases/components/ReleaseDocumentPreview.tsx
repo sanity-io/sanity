@@ -39,7 +39,7 @@ export function ReleaseDocumentPreview({
             {...linkProps}
             intent="edit"
             params={{
-              id: getPublishedId(documentId, true),
+              id: getPublishedId(documentId),
               type: documentTypeName,
             }}
             searchParams={[['perspective', `bundle.${releaseSlug}`]]}

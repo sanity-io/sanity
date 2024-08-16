@@ -1,6 +1,20 @@
 import {describe, expect, it} from '@jest/globals'
 
-import {getDocumentIsInPerspective} from './util'
+import {getBundleSlug, getDocumentIsInPerspective} from './util'
+
+describe('getBundleSlug', () => {
+  it('should return the bundle slug', () => {
+    expect(getBundleSlug('versions.summer.my-document-id')).toBe('summer')
+  })
+
+  it('should return the undefined if no bundle slug is found and document is a draft', () => {
+    expect(getBundleSlug('drafts.my-document-id')).toBe(undefined)
+  })
+
+  it('should return the undefined if no bundle slug is found and document is published', () => {
+    expect(getBundleSlug('my-document-id')).toBe(undefined)
+  })
+})
 
 // * - document: `summer.my-document-id`, perspective: `bundle.summer` : **true**
 // * - document: `my-document-id`, perspective: `bundle.summer` : **false**
@@ -11,7 +25,7 @@ import {getDocumentIsInPerspective} from './util'
 
 describe('getDocumentIsInPerspective', () => {
   it('should return true if document is in the current perspective', () => {
-    expect(getDocumentIsInPerspective('summer.my-document-id', 'bundle.summer')).toBe(true)
+    expect(getDocumentIsInPerspective('versions.summer.my-document-id', 'bundle.summer')).toBe(true)
   })
 
   it('should return false if document is not a version  document a perspective is provided', () => {
@@ -19,11 +33,13 @@ describe('getDocumentIsInPerspective', () => {
   })
 
   it('should return false if document is not in the current perspective', () => {
-    expect(getDocumentIsInPerspective('summer.my-document-id', 'bundle.winter')).toBe(false)
+    expect(getDocumentIsInPerspective('versions.summer.my-document-id', 'bundle.winter')).toBe(
+      false,
+    )
   })
 
-  it('should return false if document is a version  document a no perspective is provided', () => {
-    expect(getDocumentIsInPerspective('summer.my-document-id', undefined)).toBe(false)
+  it('should return false if document is a version document a no perspective is provided', () => {
+    expect(getDocumentIsInPerspective('versions.summer.my-document-id', undefined)).toBe(false)
   })
 
   it("should return true if the document is in the 'Published' perspective, and no perspective is provided", () => {
@@ -35,7 +51,7 @@ describe('getDocumentIsInPerspective', () => {
 
   it('should handle complex document ids correctly', () => {
     expect(
-      getDocumentIsInPerspective('complex-summer.my-document-id', 'bundle.complex-summer'),
+      getDocumentIsInPerspective('versions.complex-summer.my-document-id', 'bundle.complex-summer'),
     ).toBe(true)
   })
 })

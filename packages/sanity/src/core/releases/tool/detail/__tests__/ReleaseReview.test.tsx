@@ -40,7 +40,7 @@ const MOCKED_DOCUMENTS: DocumentInBundleResult[] = [
       role: 'designer',
       _createdAt: '2024-07-10T12:10:38Z',
       name: 'William Faulkner added',
-      _id: 'differences.doc1',
+      _id: 'versions.differences.doc1',
       _updatedAt: '2024-07-15T10:46:02Z',
     },
     previewValues: {
@@ -68,7 +68,7 @@ const MOCKED_DOCUMENTS: DocumentInBundleResult[] = [
       role: 'developer',
       _createdAt: '2024-07-10T12:10:38Z',
       name: 'Virginia Woolf test',
-      _id: 'differences.doc2',
+      _id: 'versions.differences.doc2',
       _updatedAt: '2024-07-15T10:46:02Z',
     },
     previewValues: {

@@ -17,6 +17,8 @@ import {
   type Annotation,
   type Chunk,
   DRAFTS_FOLDER,
+  getVersionId,
+  isVersionId,
   remoteSnapshots,
   type RemoteSnapshotVersionEvent,
   type SelectionState,
@@ -117,7 +119,8 @@ export function useTimelineStore({
     () =>
       historyStore.getTimelineController({
         client,
-        documentId: version ? [version, documentId].join('.') : documentId,
+        documentId:
+          isVersionId(documentId) && version ? getVersionId(documentId, version) : documentId,
         documentType,
       }),
     [client, documentId, documentType, historyStore, version],
@@ -184,7 +187,7 @@ export function useTimelineStore({
           publishedId: documentId,
           ...(version
             ? {
-                versionId: [version, documentId].join('.'),
+                versionId: getVersionId(documentId, version),
               }
             : {}),
         },
