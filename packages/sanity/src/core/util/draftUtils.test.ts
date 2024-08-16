@@ -57,6 +57,7 @@ test.each([
   ['from published id', 'agot', 'agot'],
   ['from draft id', 'drafts.agot', 'agot'],
   ['from version id', 'versions.summer-drop.agot', 'agot'],
+  ['from complex id with version', 'versions.summer-drop.foo.agot', 'foo.agot'],
 ])('getPublishedId(): %s', (_, documentId, shouldEqual) => {
   expect(getPublishedId(documentId)).toEqual(shouldEqual)
 })

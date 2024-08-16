@@ -115,8 +115,8 @@ export function getVersionId(id: string, bundle: string): string {
 /** @internal */
 export function getPublishedId(id: string): PublishedId {
   if (isVersionId(id)) {
-    // always return the last segment of the id
-    return id.split('.').pop() as PublishedId
+    // make sure to only remove the versions prefix and the bundle name
+    return id.split(PATH_SEPARATOR).slice(2).join(PATH_SEPARATOR) as PublishedId as PublishedId
   }
 
   if (isDraftId(id)) {
