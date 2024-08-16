@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {Box, Button, Card, Dialog, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
+import {addWeeks, isAfter, isBefore} from 'date-fns'
 import {useCallback, useEffect, useState} from 'react'
 import {
   type CurrentUser,
@@ -34,6 +35,7 @@ export function RequestAccessScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [hasPendingRequest, setHasPendingRequest] = useState<boolean>(false)
+  const [hasExpiredPendingRequest, setExpiredHasPendingRequest] = useState<boolean>(false)
   const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean>(false)
   const [hasBeenDenied, setHasBeenDenied] = useState<boolean>(false)
 
@@ -83,9 +85,21 @@ export function RequestAccessScreen() {
             (request) =>
               request.status === 'pending' &&
               // Access request is less than 2 weeks old
-              new Date(request.createdAt).getTime() > Date.now() - 2 * 1000 * 60 * 60 * 24 * 7,
+              isAfter(addWeeks(new Date(request.createdAt), 2), new Date()),
           )
-          if (pendingRequest) setHasPendingRequest(true)
+          if (pendingRequest) {
+            setHasPendingRequest(true)
+            return
+          }
+          const oldPendingRequest = projectRequests.find(
+            (request) =>
+              request.status === 'pending' &&
+              // Access request is more than 2 weeks old
+              isBefore(addWeeks(new Date(request.createdAt), 2), new Date()),
+          )
+          if (oldPendingRequest) {
+            setExpiredHasPendingRequest(true)
+          }
         }
       })
       .catch((err) => {
@@ -178,8 +192,18 @@ export function RequestAccessScreen() {
             ) : (
               <>
                 <Text>
-                  You can request access below with an optional note. The administrator(s) will
-                  receive an email letting them know that you are requesting access.
+                  {hasExpiredPendingRequest ? (
+                    <>
+                      Your previous request has expired. You may again request access below with an
+                      optional note. The administrator(s) will receive an email letting them know
+                      that you are requesting access.
+                    </>
+                  ) : (
+                    <>
+                      You can request access below with an optional note. The administrator(s) will
+                      receive an email letting them know that you are requesting access.
+                    </>
+                  )}
                 </Text>
                 <TextInput
                   disabled={isSubmitting}
