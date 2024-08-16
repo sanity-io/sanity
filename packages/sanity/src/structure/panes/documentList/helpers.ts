@@ -24,7 +24,7 @@ export function removePublishedWithDrafts(
 ): DocumentListPaneItem[] {
   return collate(documents, {bundlePerspective}).map((entry) => {
     const doc = entry.version || entry.draft || entry.published
-    const isVersion = isVersionId(doc?._id || '')
+    const isVersion = doc?.id && isVersionId(doc._id)
     const hasDraft = Boolean(entry.draft)
 
     return {
