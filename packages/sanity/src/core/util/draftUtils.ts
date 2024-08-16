@@ -1,5 +1,6 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 
+import {getBundleSlug} from '../bundles/util/util'
 import {isNonNullable} from './isNonNullable'
 
 /** @internal */
@@ -14,7 +15,10 @@ export type PublishedId = Opaque<string, 'publishedId'>
 
 /** @internal */
 export const DRAFTS_FOLDER = 'drafts'
+
+/** @internal */
 export const VERSION_FOLDER = 'versions'
+
 const PATH_SEPARATOR = '.'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
 const VERSION_PREFIX = `${VERSION_FOLDER}${PATH_SEPARATOR}`
@@ -81,7 +85,7 @@ export function getIdPair(
     draftId: getDraftId(id),
     ...(version
       ? {
-          versionId: id.startsWith(`${version}.`) ? id : [version, getPublishedId(id)].join('.'),
+          versionId: isVersionId(id) ? id : getVersionId(id, version),
         }
       : {}),
   }
@@ -188,13 +192,12 @@ export function collate<
   T extends {
     _id: string
     _type: string
-    _version?: Record<string, never>
   },
 >(documents: T[], {bundlePerspective}: CollateOptions = {}): CollatedHit<T>[] {
   const byId = documents.reduce((res, doc) => {
-    const isVersion = Boolean(doc._version)
-    const publishedId = getPublishedId(doc._id, isVersion)
-    const bundle = isVersion ? doc._id.split('.').at(0) : undefined
+    const publishedId = getPublishedId(doc._id)
+    const isVersion = isVersionId(doc._id)
+    const bundle = getBundleSlug(doc._id)
 
     let entry = res.get(publishedId)
     if (!entry) {

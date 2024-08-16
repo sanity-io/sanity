@@ -27,7 +27,7 @@ export function useBundleDocuments(bundle: string): {
   loading: boolean
   results: DocumentInBundleResult[]
 } {
-  const groqFilter = `defined(_version) &&  _id in path("${bundle}.*")`
+  const groqFilter = `_id in path("versions.${bundle}.*")`
   const documentPreviewStore = useDocumentPreviewStore()
   const {getClient, i18n} = useSource()
   const schema = useSchema()

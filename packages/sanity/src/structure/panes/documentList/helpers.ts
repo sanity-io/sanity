@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {type ExprNode, parse} from 'groq-js'
-import {collate, getPublishedId} from 'sanity'
+import {collate, getPublishedId, isVersionId} from 'sanity'
 
 import {type DocumentListPaneItem, type SortOrder} from './types'
 
@@ -24,7 +24,7 @@ export function removePublishedWithDrafts(
 ): DocumentListPaneItem[] {
   return collate(documents, {bundlePerspective}).map((entry) => {
     const doc = entry.version || entry.draft || entry.published
-    const isVersion = Boolean(doc?._version)
+    const isVersion = doc?.id && isVersionId(doc._id)
     const hasDraft = Boolean(entry.draft)
 
     return {
