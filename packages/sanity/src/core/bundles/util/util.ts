@@ -14,7 +14,7 @@ export function getBundleSlug(documentId: string): string {
   if (documentId.indexOf('.') === -1) return PUBLISHED_SLUG
 
   if (isVersionId(documentId)) {
-    const [_, bundleSlug, ...PublishedId] = documentId.split('.')
+    const [_, bundleSlug] = documentId.split('.')
     return bundleSlug
   }
 
