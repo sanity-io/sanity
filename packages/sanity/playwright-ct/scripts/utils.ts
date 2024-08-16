@@ -136,14 +136,25 @@ function generateMarkdownTable(rows: SummaryRow[]) {
   ].join('\n')
 }
 
+function generateTestingSummary(rows: SummaryRow[]) {
+  const hasFailedTests = rows.some((row) => row.totalFailed > 0)
+
+  return `${hasFailedTests ? '❌ Failed Tests' : '✅ All Tests Passed'} -- open for details`
+}
+
+function formatAsCollapsable(summary: string, detail: string) {
+  return `<details><summary>${summary}</summary>${detail}</details>`
+}
+
 /**
  * Generate PR comment output
  */
 export function generateComment(rows: SummaryRow[]) {
   const updatedAtUtc = getCurrentUTCDate()
   const table = generateMarkdownTable(rows)
+  const testingSummary = generateTestingSummary(rows)
 
-  return `**Component Testing Report** Updated ${updatedAtUtc} (UTC)\n\n${table}\n\n`
+  return `**Component Testing Report** Updated ${updatedAtUtc} (UTC)\n\n${formatAsCollapsable(testingSummary, table)}\n\n`
 }
 
 /**
