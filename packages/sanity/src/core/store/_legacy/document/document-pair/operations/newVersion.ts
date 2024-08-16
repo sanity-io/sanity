@@ -22,7 +22,6 @@ export const newVersion: OperationImpl<[baseDocumentId: string], 'NO_NEW_VERSION
         // we have guardrails for this on the front
         _id: dupeId,
         _type: source._type,
-        _version: {},
       },
       {
         tag: 'document.newVersion',
