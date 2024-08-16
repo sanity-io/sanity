@@ -7,11 +7,11 @@ describe('getBundleSlug', () => {
     expect(getBundleSlug('versions.summer.my-document-id')).toBe('summer')
   })
 
-  it('should return the undefined if no bundle slug is found / is published id', () => {
+  it('should return the undefined if no bundle slug is found and document is a draft', () => {
     expect(getBundleSlug('drafts.my-document-id')).toBe(undefined)
   })
 
-  it('should return the undefined if no bundle slug is found', () => {
+  it('should return the undefined if no bundle slug is found and document is published', () => {
     expect(getBundleSlug('my-document-id')).toBe(undefined)
   })
 })
