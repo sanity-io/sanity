@@ -38,7 +38,7 @@ describe('getDocumentIsInPerspective', () => {
     )
   })
 
-  it('should return false if document is a version  document a no perspective is provided', () => {
+  it('should return false if document is a version document a no perspective is provided', () => {
     expect(getDocumentIsInPerspective('versions.summer.my-document-id', undefined)).toBe(false)
   })
 

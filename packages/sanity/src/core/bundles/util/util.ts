@@ -38,7 +38,7 @@ export function getDocumentIsInPerspective(
 ): boolean {
   const bundleSlug = getBundleSlug(documentId)
 
-  if (!perspective) return true
+  if (!perspective) return !isVersionId(documentId)
 
   if (!perspective.startsWith('bundle.')) return false
   // perspective is `bundle.${bundleSlug}`
