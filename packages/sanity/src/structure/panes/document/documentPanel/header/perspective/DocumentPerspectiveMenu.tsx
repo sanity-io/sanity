@@ -1,7 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons'
+// eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Box, Button} from '@sanity/ui'
-import {useCallback} from 'react'
-import {BundleBadge, BundleMenu, usePerspective} from 'sanity'
+import {memo, useCallback, useMemo} from 'react'
+import {BundleBadge, BundlesMenu, usePerspective} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -12,7 +13,7 @@ const BadgeButton = styled(Button)({
   cursor: 'pointer',
 })
 
-export function DocumentPerspectiveMenu(): JSX.Element {
+export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   const paneRouter = usePaneRouter()
   const {currentGlobalBundle} = usePerspective(paneRouter.perspective)
 
@@ -24,6 +25,11 @@ export function DocumentPerspectiveMenu(): JSX.Element {
   const handleBundleClick = useCallback(() => {
     router.navigateIntent('release', {slug})
   }, [router, slug])
+
+  const bundlesMenuButton = useMemo(
+    () => <Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />,
+    [],
+  )
 
   return (
     <>
@@ -42,8 +48,8 @@ export function DocumentPerspectiveMenu(): JSX.Element {
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
 
       <Box flex="none">
-        <BundleMenu
-          button={<Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />}
+        <BundlesMenu
+          button={bundlesMenuButton}
           bundles={documentVersions}
           loading={!documentVersions}
           perspective={paneRouter.perspective}
@@ -51,4 +57,4 @@ export function DocumentPerspectiveMenu(): JSX.Element {
       </Box>
     </>
   )
-}
+})

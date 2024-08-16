@@ -115,14 +115,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text shown in usage dialog for an image asset when there are zero, one or more documents using the *unnamed* image **/
   'asset-source.usage-list.documents-using-image_unnamed_zero': 'No documents are using this image',
 
+  /** Label when a release has been deleted by a different user */
+  'banners.deleted-bundle-banner.text':
+    "The '<strong>{{title}}</strong>' release has been deleted.",
   /** Action message to add document to release */
   'bundle.action.add-to-release': 'Add to {{title}}',
   /** Action message for when document is already in release  */
   'bundle.action.already-in-release': 'Already in release {{title}}',
   /** Action message for creating releases */
   'bundle.action.create': 'Create release',
-  /** Label when a release has been deleted by a different user */
-  'bundle.deleted-toast-title': "The '<strong>{{title}}</strong>' release has been deleted",
   /** Label for tooltip on deleted release */
   'bundle.deleted-tooltip': 'This release has been deleted',
   /** Title for creating releases dialog */
