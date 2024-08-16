@@ -137,13 +137,13 @@ function generateMarkdownTable(rows: SummaryRow[]) {
 }
 
 function generateTestingSummary(rows: SummaryRow[]) {
-  const hasFailedTests = rows.some((row) => row.totalFailed > 0)
+  const failedTestCount = sumBy(rows, 'totalFailed')
 
-  return `${hasFailedTests ? '❌ Failed Tests' : '✅ All Tests Passed'} -- open for details`
+  return `${failedTestCount > 0 ? `❌ Failed Tests (${failedTestCount})` : '✅ All Tests Passed'} -- expand for details`
 }
 
 function formatAsCollapsable(summary: string, detail: string) {
-  return `<details><summary>${summary}</summary>${detail}</details>`
+  return `<details>\n<summary>${summary}</summary>\n\n${detail}\n</details>`
 }
 
 /**
