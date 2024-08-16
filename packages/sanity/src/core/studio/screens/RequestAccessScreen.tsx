@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Box, Button, Card, Dialog, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {addWeeks, isAfter, isBefore} from 'date-fns'
 import {useCallback, useEffect, useState} from 'react'
 import {
@@ -10,6 +10,7 @@ import {
   useActiveWorkspace,
 } from 'sanity'
 
+import {Button, Dialog} from '../../../ui-components'
 import {NotAuthenticatedScreen} from './NotAuthenticatedScreen'
 
 interface AccessRequest {
@@ -158,7 +159,7 @@ export function RequestAccessScreen() {
   if (error) return <NotAuthenticatedScreen />
   return (
     <Card height="fill">
-      <Dialog id="not-authorized-dialog" header="Not authorized" width={1} animate>
+      <Dialog id="not-authorized-dialog" header="Not authorized" width={1}>
         <Box>
           <Stack padding={4} space={4}>
             <Text>
@@ -218,17 +219,10 @@ export function RequestAccessScreen() {
             )}
           </Stack>
           <Flex align={'center'} justify={'space-between'} paddingY={3} paddingX={4}>
-            <Button
-              mode="bleed"
-              padding={3}
-              text={'Sign out'}
-              tone="default"
-              onClick={handleLogout}
-            />
+            <Button mode="bleed" text={'Sign out'} tone="default" onClick={handleLogout} />
             {!hasTooManyRequests && (
               <Button
                 mode="default"
-                padding={3}
                 text={hasPendingRequest ? 'Request sent' : 'Request access'}
                 disabled={hasPendingRequest || isSubmitting}
                 loading={isSubmitting}
