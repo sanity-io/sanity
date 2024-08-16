@@ -26,7 +26,7 @@ const getFetchQuery = (bundleSlugs: string[]) => {
     ({subquery: accSubquery, projection: accProjection}, bundleSlug) => {
       const safeSlug = getSafeSlug(bundleSlug)
 
-      const subquery = `${accSubquery}"${safeSlug}": *[_id in path("${bundleSlug}.*")]{_updatedAt } | order(_updatedAt desc),`
+      const subquery = `${accSubquery}"${safeSlug}": *[_id in path("versions.${bundleSlug}.*")]{_updatedAt } | order(_updatedAt desc),`
 
       // conforms to BundlesMetadata
       const projection = `${accProjection}"${bundleSlug}": {
@@ -83,9 +83,9 @@ export const createBundlesMetadataAggregator = (client: SanityClient | null) => 
 
     return client.observable
       .listen(
-        `*[defined(_version) && (${bundleSlugs.reduce(
+        `(${bundleSlugs.reduce(
           (accQuery, bundleSlug, index) =>
-            `${accQuery}${index === 0 ? '' : '||'} _id in path("${bundleSlug}.*")`,
+            `${accQuery}${index === 0 ? '' : '||'} _id in path("versions.${bundleSlug}.*")`,
           '',
         )})]`,
         {},
