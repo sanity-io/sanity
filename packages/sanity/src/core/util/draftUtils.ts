@@ -181,7 +181,7 @@ export function collate<
   const byId = documents.reduce((res, doc) => {
     const publishedId = getPublishedId(doc._id)
     const isVersion = isVersionId(doc._id)
-    const bundle = isVersion ? getBundleSlug(doc._id) : undefined
+    const bundle = getBundleSlug(doc._id)
 
     let entry = res.get(publishedId)
     if (!entry) {

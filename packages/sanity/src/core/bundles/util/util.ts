@@ -3,15 +3,12 @@ import speakingurl from 'speakingurl'
 import {type BundleDocument} from '../../store/bundles/types'
 import {isVersionId} from '../../util'
 
-const PUBLISHED_SLUG = 'Published'
-const DRAFTS_SLUG = 'Drafts'
-
 /**
  * @internal
  * @hidden
  */
-export function getBundleSlug(documentId: string): string {
-  if (documentId.indexOf('.') === -1) return PUBLISHED_SLUG
+export function getBundleSlug(documentId: string): string | undefined {
+  if (documentId.indexOf('.') === -1) return undefined
 
   if (isVersionId(documentId)) {
     // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
@@ -19,7 +16,7 @@ export function getBundleSlug(documentId: string): string {
     return bundleSlug
   }
 
-  return DRAFTS_SLUG
+  return undefined
 }
 
 /**
@@ -41,7 +38,7 @@ export function getDocumentIsInPerspective(
 ): boolean {
   const bundleSlug = getBundleSlug(documentId)
 
-  if (!perspective) return bundleSlug === PUBLISHED_SLUG || bundleSlug === DRAFTS_SLUG
+  if (!perspective) return true
 
   if (!perspective.startsWith('bundle.')) return false
   // perspective is `bundle.${bundleSlug}`
