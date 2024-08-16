@@ -10,7 +10,7 @@ import {
 
 export const useObserveDocumentRevisions = (documents: SanityDocument[]) => {
   const previewStore = useDocumentPreviewStore()
-  const publishedDocumentIds = documents.map(({_id}) => getPublishedId(_id, true))
+  const publishedDocumentIds = documents.map(({_id}) => getPublishedId(_id))
 
   const memoObservable = useMemo(
     () =>

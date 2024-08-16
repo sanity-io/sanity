@@ -2,7 +2,13 @@ import {AddIcon, CheckmarkIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
-import {getPublishedId, useDocumentOperation, useDocumentStore, useTranslation} from 'sanity'
+import {
+  getPublishedId,
+  getVersionId,
+  useDocumentOperation,
+  useDocumentStore,
+  useTranslation,
+} from 'sanity'
 
 import {Button} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -52,8 +58,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
       return
     }
 
-    // TODO: Replace for getVersionId function
-    const bundleId = `${slug}.${publishedId}`
+    const bundleId = getVersionId(documentId, slug)
 
     setCreatingVersion(true)
 
@@ -69,7 +74,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
     // only change if the version was created successfully
     await createVersionSuccess
     setIsInVersion(true)
-  }, [documentId, slug, publishedId, documentStore.pair, documentType, newVersion, toast, title])
+  }, [documentId, slug, documentStore.pair, documentType, newVersion, toast, title])
 
   /** TODO what should happen when you add a version if we don't have the ready button */
 
