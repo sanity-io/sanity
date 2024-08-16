@@ -104,7 +104,7 @@ export function RequestAccessScreen() {
       .request<AccessRequest | null>({
         url: `/access/project/${projectId}/requests`,
         method: 'post',
-        body: {note},
+        body: {note, requestUrl: window?.location.href},
       })
       .then((request) => {
         if (request) setHasPendingRequest(true)
