@@ -33,10 +33,11 @@ export function RequestAccessScreen() {
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const [hasPendingRequest, setHasPendingRequest] = useState<boolean | undefined>()
-  const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean | undefined>()
+  const [hasPendingRequest, setHasPendingRequest] = useState<boolean>(false)
+  const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean>(false)
+  const [hasBeenDenied, setHasBeenDenied] = useState<boolean>(false)
 
-  const [note, setNote] = useState<string>('')
+  const [note, setNote] = useState<string | undefined>()
 
   const {activeWorkspace} = useActiveWorkspace()
 
@@ -72,16 +73,19 @@ export function RequestAccessScreen() {
       })
       .then((requests) => {
         if (requests && requests?.length) {
-          const pendingRequests = requests.filter(
+          const projectRequests = requests.filter((request) => request.resourceId === projectId)
+          const declinedRequest = projectRequests.find((request) => request.status === 'declined')
+          if (declinedRequest) {
+            setHasBeenDenied(true)
+            return
+          }
+          const pendingRequest = projectRequests.find(
             (request) =>
-              // Access request is for this project
-              request.resourceId === projectId &&
-              // Access request is still pending
               request.status === 'pending' &&
               // Access request is less than 2 weeks old
               new Date(request.createdAt).getTime() > Date.now() - 2 * 1000 * 60 * 60 * 24 * 7,
           )
-          if (pendingRequests.length) setHasPendingRequest(true)
+          if (pendingRequest) setHasPendingRequest(true)
         }
       })
       .catch((err) => {
@@ -111,13 +115,17 @@ export function RequestAccessScreen() {
       })
       .catch((err) => {
         const statusCode = err && err.response && err.response.statusCode
-        // If we get a 403, that means the user
-        // is over their cross-project request limit
-        if (statusCode === 403) {
+        if (statusCode === 429) {
+          // User is over their cross-project request limit
           setHasTooManyRequests(true)
+        }
+        if (statusCode === 409) {
+          // If we get a 409, user has been denied on this project or has a valid pending request
+          // valid pending request should be handled by GET request above
+          setHasBeenDenied(true)
         } else {
           toast.push({
-            title: 'There was a problem submitting your request. Please try again later.',
+            title: 'There was a problem submitting your request.',
             status: 'error',
           })
         }
@@ -140,13 +148,14 @@ export function RequestAccessScreen() {
         <Box>
           <Stack padding={4} space={4}>
             <Text>
-              You are not authorized to access this studio. You are currently signed in as{' '}
+              You are not authorized to access this studio (currently signed in as{' '}
               <strong>
                 {currentUser?.name} ({currentUser?.email})
               </strong>
-              {providerHelp}.
+              {providerHelp}
+              ).
             </Text>
-            {hasTooManyRequests || hasPendingRequest ? (
+            {hasTooManyRequests || hasPendingRequest || hasBeenDenied ? (
               <Card
                 tone={hasPendingRequest ? 'transparent' : 'caution'}
                 padding={3}
@@ -163,13 +172,14 @@ export function RequestAccessScreen() {
                   {hasPendingRequest && (
                     <>Your request to access this project is pending approval.</>
                   )}
+                  {hasBeenDenied && <>Your request to access this project has been declined.</>}
                 </Text>
               </Card>
             ) : (
               <>
                 <Text>
-                  You can request access to collaborate on this project. If you'd like, you can
-                  include a note.
+                  You can request access below with an optional note. The administrator(s) will
+                  receive an email letting them know that you are requesting access.
                 </Text>
                 <TextInput
                   disabled={isSubmitting}
@@ -178,6 +188,7 @@ export function RequestAccessScreen() {
                   }}
                   onChange={(e) => setNote(e.currentTarget.value)}
                   value={note}
+                  placeholder="Add your note…"
                 />
               </>
             )}
