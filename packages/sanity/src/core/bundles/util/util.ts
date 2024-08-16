@@ -11,8 +11,7 @@ export function getBundleSlug(documentId: string): string | undefined {
   if (documentId.indexOf('.') === -1) return undefined
 
   if (isVersionId(documentId)) {
-    // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-    const [_versionPrefix, bundleSlug] = documentId.split('.')
+    const [, bundleSlug] = documentId.split('.')
     return bundleSlug
   }
 
