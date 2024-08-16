@@ -20,6 +20,7 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  isVersionId,
   type OnPathFocusPayload,
   type PatchEvent,
   setAtPath,
@@ -539,10 +540,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
 
   const isNonExistent = !value?._id
-  const isNonExistentInBundle =
-    typeof bundlePerspective !== 'undefined' && !value._id.startsWith(`${bundlePerspective}.`)
-  const existsInBundle =
-    typeof bundlePerspective !== 'undefined' && value._id.startsWith(`${bundlePerspective}.`)
+  const isNonExistentInBundle = typeof bundlePerspective !== 'undefined' && !isVersionId(value._id)
+  const existsInBundle = typeof bundlePerspective !== 'undefined' && isVersionId(value._id)
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted

@@ -3,7 +3,7 @@ import {type ReactNode} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
-import {getDraftId, getPublishedId} from '../../util/draftUtils'
+import {getDraftId, getPublishedId, getVersionId} from '../../util/draftUtils'
 import {type DocumentPreviewStore} from '../documentPreviewStore'
 
 export interface PreviewState {
@@ -31,16 +31,15 @@ export function getPreviewStateObservable(
     ? of({snapshot: null})
     : documentPreviewStore.observeForPreview({_id: getDraftId(documentId)}, schemaType)
 
-  // TODO: Create `getVersionId` abstraction
   const version$ = bundlePerspective
     ? documentPreviewStore.observeForPreview(
-        {_type: 'reference', _ref: [bundlePerspective, getPublishedId(documentId, true)].join('.')},
+        {_id: getVersionId(documentId, bundlePerspective)},
         schemaType,
       )
     : of({snapshot: null})
 
   const published$ = documentPreviewStore.observeForPreview(
-    {_id: getPublishedId(documentId, documentId.startsWith(`${bundlePerspective}.`))},
+    {_id: getPublishedId(documentId)},
     schemaType,
   )
 

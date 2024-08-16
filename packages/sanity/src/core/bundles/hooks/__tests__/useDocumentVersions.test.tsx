@@ -4,6 +4,7 @@ import {of} from 'rxjs'
 
 import {type DocumentPreviewStore} from '../../../preview'
 import {type BundleDocument} from '../../../store'
+import {type PublishedId} from '../../../util/draftUtils'
 import {useDocumentVersions} from '../useDocumentVersions'
 
 // Mock the entire module
@@ -61,8 +62,18 @@ async function setupMocks({
   const useDocumentPreviewStore = sanityModule.useDocumentPreviewStore as jest.Mock<
     typeof sanityModule.useDocumentPreviewStore
   >
+  const getPublishedId = sanityModule.getPublishedId as jest.Mock<
+    typeof sanityModule.getPublishedId
+  >
 
-  useBundles.mockReturnValue({data: bundles, loading: false, dispatch: jest.fn()})
+  useBundles.mockReturnValue({
+    data: bundles,
+    loading: false,
+    dispatch: jest.fn(),
+    deletedBundles: {},
+  })
+
+  getPublishedId.mockReturnValue('document-1' as PublishedId)
 
   useDocumentPreviewStore.mockReturnValue({
     unstable_observeDocumentIdSet: jest
@@ -89,7 +100,7 @@ describe('useDocumentVersions', () => {
   it('should return the bundles if versions are found', async () => {
     await setupMocks({
       bundles: [mockBundles[0]],
-      versionIds: ['spring-drop.document-1'],
+      versionIds: ['versions.spring-drop.document-1'],
     })
     const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
     expect(result.current.data).toEqual([mockBundles[0]])

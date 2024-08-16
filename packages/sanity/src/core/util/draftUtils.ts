@@ -1,5 +1,6 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 
+import {getBundleSlug} from '../bundles/util/util'
 import {isNonNullable} from './isNonNullable'
 
 /** @internal */
@@ -14,8 +15,11 @@ export type PublishedId = Opaque<string, 'publishedId'>
 
 /** @internal */
 export const DRAFTS_FOLDER = 'drafts'
+/** @internal */
+export const VERSION_FOLDER = 'versions'
 const PATH_SEPARATOR = '.'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
+const VERSION_PREFIX = `${VERSION_FOLDER}${PATH_SEPARATOR}`
 
 /**
  *
@@ -56,6 +60,11 @@ export function isDraftId(id: string): id is DraftId {
   return id.startsWith(DRAFTS_PREFIX)
 }
 
+/** @internal */
+export function isVersionId(id: string): boolean {
+  return id.startsWith(VERSION_PREFIX)
+}
+
 /**
  * TODO: Improve return type based on presence of `version` option.
  *
@@ -74,7 +83,7 @@ export function getIdPair(
     draftId: getDraftId(id),
     ...(version
       ? {
-          versionId: id.startsWith(`${version}.`) ? id : [version, getPublishedId(id)].join('.'),
+          versionId: isVersionId(id) ? id : getVersionId(id, version),
         }
       : {}),
   }
@@ -82,7 +91,7 @@ export function getIdPair(
 
 /** @internal */
 export function isPublishedId(id: string): id is PublishedId {
-  return !isDraftId(id)
+  return !isDraftId(id) && !isVersionId(id)
 }
 
 /** @internal */
@@ -90,10 +99,24 @@ export function getDraftId(id: string): DraftId {
   return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
+/**  @internal */
+export function getVersionId(id: string, bundle: string): string {
+  if (isVersionId(id)) {
+    const [version, bundleName, ...publishedId] = id.split('.')
+    if (bundleName === bundle) return id
+    return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
+  }
+
+  const publishedId = getPublishedId(id)
+
+  return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
+}
+
 /** @internal */
-export function getPublishedId(id: string, isVersion?: boolean): PublishedId {
-  if (isVersion) {
-    return id.split(PATH_SEPARATOR).slice(1).join(PATH_SEPARATOR) as PublishedId
+export function getPublishedId(id: string): PublishedId {
+  if (isVersionId(id)) {
+    // make sure to only remove the versions prefix and the bundle name
+    return id.split(PATH_SEPARATOR).slice(2).join(PATH_SEPARATOR) as PublishedId as PublishedId
   }
 
   if (isDraftId(id)) {
@@ -153,13 +176,12 @@ export function collate<
   T extends {
     _id: string
     _type: string
-    _version?: Record<string, never>
   },
 >(documents: T[], {bundlePerspective}: CollateOptions = {}): CollatedHit<T>[] {
   const byId = documents.reduce((res, doc) => {
-    const isVersion = Boolean(doc._version)
-    const publishedId = getPublishedId(doc._id, isVersion)
-    const bundle = isVersion ? doc._id.split('.').at(0) : undefined
+    const publishedId = getPublishedId(doc._id)
+    const isVersion = isVersionId(doc._id)
+    const bundle = getBundleSlug(doc._id)
 
     let entry = res.get(publishedId)
     if (!entry) {
