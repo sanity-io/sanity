@@ -1,20 +1,11 @@
 import {COLOR_HUES, type ColorHueKey} from '@sanity/color'
 import {icons, type IconSymbol, SearchIcon} from '@sanity/icons'
-import {
-  Avatar,
-  Box,
-  Button,
-  Container,
-  Flex,
-  Popover,
-  Stack,
-  TextInput,
-  useClickOutside,
-} from '@sanity/ui'
+import {Avatar, Box, Container, Flex, Stack, TextInput, useClickOutside} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
+import {Button, Popover, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleBadge} from '../BundleBadge'
 
@@ -75,18 +66,24 @@ export function BundleIconEditorPicker(props: {
       content={
         <Container data-testid="popover-content">
           <Flex gap={1} padding={1}>
-            {COLOR_HUES.map((hue) => (
-              <Button
-                key={hue}
-                mode="bleed"
-                onClick={handleHueChange(hue)}
-                padding={1}
-                selected={value.hue === hue}
-                data-testid={`hue-button-${hue}`}
-              >
-                <Avatar color={hue} size={0} />
-              </Button>
-            ))}
+            <TooltipDelayGroupProvider>
+              {COLOR_HUES.map((hue) => (
+                <Button
+                  tooltipProps={{content: hue.replace(/-/g, ' ')}}
+                  key={hue}
+                  mode="bleed"
+                  onClick={handleHueChange(hue)}
+                  paddingY={1}
+                  style={{padding: 0}}
+                  selected={value.hue === hue}
+                  data-testid={`hue-button-${hue}`}
+                >
+                  <Box style={{margin: '0 -4px'}}>
+                    <Avatar color={hue} size={0} style={{padding: 0}} />
+                  </Box>
+                </Button>
+              ))}
+            </TooltipDelayGroupProvider>
           </Flex>
           <StyledStack>
             <Box padding={1}>
@@ -101,18 +98,22 @@ export function BundleIconEditorPicker(props: {
               />
             </Box>
             <IconPickerFlex gap={1} overflow="auto" padding={1} wrap="wrap">
-              {Object.entries(icons)
-                .filter(([key]) => !iconSearchQuery || key.includes(iconSearchQuery.toLowerCase()))
-                .map(([key, icon]) => (
-                  <Button
-                    icon={icon}
-                    key={key}
-                    mode="bleed"
-                    onClick={handleIconChange(key as IconSymbol)}
-                    padding={2}
-                    data-testId={`icon-button-${key}`}
-                  />
-                ))}
+              <TooltipDelayGroupProvider>
+                {Object.entries(icons)
+                  .filter(
+                    ([key]) => !iconSearchQuery || key.includes(iconSearchQuery.toLowerCase()),
+                  )
+                  .map(([key, icon]) => (
+                    <Button
+                      tooltipProps={{content: key.replace(/-/g, ' ')}}
+                      icon={icon}
+                      key={key}
+                      mode="bleed"
+                      onClick={handleIconChange(key as IconSymbol)}
+                      data-testId={`icon-button-${key}`}
+                    />
+                  ))}
+              </TooltipDelayGroupProvider>
             </IconPickerFlex>
           </StyledStack>
         </Container>
@@ -124,15 +125,17 @@ export function BundleIconEditorPicker(props: {
     >
       <div>
         <Button
+          tooltipProps={{content: t('bundle.form.search-icon-tooltip')}}
           mode="bleed"
           onClick={handleOnPickerOpen}
-          padding={0}
           ref={setButton}
           selected={open}
           radius="full"
           data-testid="icon-picker-button"
         >
-          <BundleBadge hue={value.hue} icon={value.icon} />
+          <Box style={{margin: -8}}>
+            <BundleBadge hue={value.hue} icon={value.icon} />
+          </Box>
         </Button>
       </div>
     </Popover>

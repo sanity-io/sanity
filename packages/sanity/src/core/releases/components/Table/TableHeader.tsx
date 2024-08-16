@@ -1,4 +1,5 @@
 import {ArrowDownIcon, ArrowUpIcon, SearchIcon} from '@sanity/icons'
+// eslint-disable-next-line no-restricted-imports -- Table header using fine-grained styling
 import {Button, type ButtonProps, Card, Flex, Stack, TextInput} from '@sanity/ui'
 
 import {useTableContext} from './TableProvider'

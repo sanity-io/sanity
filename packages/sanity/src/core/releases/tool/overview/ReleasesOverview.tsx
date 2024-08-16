@@ -1,9 +1,9 @@
 import {AddIcon} from '@sanity/icons'
-import {Box, Button, type ButtonMode, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Box, type ButtonMode, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {isBefore} from 'date-fns'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button as StudioButton} from '../../../../ui-components'
+import {Button, Button as StudioButton} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
 import {useTranslation} from '../../../i18n'
 import {type BundleDocument, useBundles} from '../../../store'
@@ -134,8 +134,7 @@ export function ReleasesOverview() {
         icon={AddIcon}
         disabled={isCreateBundleDialogOpen}
         onClick={() => setIsCreateBundleDialogOpen(true)}
-        padding={2}
-        space={2}
+        style={{padding: 2}}
         text={tCore('bundle.action.create')}
       />
     ),

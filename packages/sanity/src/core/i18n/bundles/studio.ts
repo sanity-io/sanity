@@ -134,6 +134,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'bundle.form.description': 'Description',
   /** Placeholder for the icon and colour picker */
   'bundle.form.search-icon': 'Search icons',
+  /** Tooltip label for the icon display */
+  'bundle.form.search-icon-tooltip': 'Select release icon',
   /** Label for the title form field when creating releases */
   'bundle.form.title': 'Title',
 

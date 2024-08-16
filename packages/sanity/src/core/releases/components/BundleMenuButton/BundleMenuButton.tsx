@@ -5,12 +5,12 @@ import {
   TrashIcon,
   UnarchiveIcon,
 } from '@sanity/icons'
-import {Button, Menu, MenuButton, Spinner, Text, useToast} from '@sanity/ui'
+import {Menu, Spinner, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
 import {useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {Dialog, MenuItem} from '../../../../ui-components'
+import {Button, Dialog, MenuButton, MenuItem} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
@@ -80,7 +80,8 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
             disabled={bundleMenuDisabled || isPerformingOperation}
             icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
             mode="bleed"
-            padding={2}
+            style={{padding: 2}}
+            tooltipProps={{content: t('menu.tooltip')}}
             aria-label={t('menu.label')}
             data-testid="release-menu-button"
           />
