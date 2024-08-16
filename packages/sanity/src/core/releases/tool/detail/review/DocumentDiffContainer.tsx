@@ -13,7 +13,7 @@ import {DocumentDiff} from './DocumentDiff'
 
 const DocumentDiffExpanded = memo(
   function DocumentDiffExpanded({document}: {document: DocumentInBundleResult['document']}) {
-    const publishedId = getPublishedId(document._id, true)
+    const publishedId = getPublishedId(document._id)
 
     const schema = useSchema()
     const schemaType = schema.get(document._type) as ObjectSchemaType
