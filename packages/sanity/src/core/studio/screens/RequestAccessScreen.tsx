@@ -228,7 +228,7 @@ export function RequestAccessScreen() {
           </Stack>
           <Flex align={'center'} justify={'space-between'} paddingY={3} paddingX={4}>
             <Button mode="bleed" text={'Sign out'} tone="default" onClick={handleLogout} />
-            {!hasTooManyRequests && (
+            {!hasTooManyRequests && !hasBeenDenied && (
               <Button
                 mode="default"
                 text={hasPendingRequest ? 'Request sent' : 'Request access'}
