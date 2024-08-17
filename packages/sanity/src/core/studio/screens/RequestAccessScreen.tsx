@@ -207,6 +207,7 @@ export function RequestAccessScreen() {
                   )}
                 </Text>
                 <TextInput
+                  maxLength={150}
                   disabled={isSubmitting}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleSubmitRequest()
