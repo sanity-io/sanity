@@ -25,6 +25,8 @@ interface AccessRequest {
   note: string
 }
 
+const MAX_NOTE_LENGTH = 150
+
 export function RequestAccessScreen() {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
   const [client, setClient] = useState<SanityClient | undefined>()
@@ -41,6 +43,7 @@ export function RequestAccessScreen() {
   const [hasBeenDenied, setHasBeenDenied] = useState<boolean>(false)
 
   const [note, setNote] = useState<string | undefined>()
+  const [noteLength, setNoteLength] = useState<number>(0)
 
   const {activeWorkspace} = useActiveWorkspace()
 
@@ -207,15 +210,19 @@ export function RequestAccessScreen() {
                   )}
                 </Text>
                 <TextInput
-                  maxLength={150}
+                  maxLength={MAX_NOTE_LENGTH}
                   disabled={isSubmitting}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleSubmitRequest()
                   }}
-                  onChange={(e) => setNote(e.currentTarget.value)}
+                  onChange={(e) => {
+                    setNote(e.currentTarget.value)
+                    setNoteLength(e.currentTarget.value.length)
+                  }}
                   value={note}
                   placeholder="Add your note…"
                 />
+                <Text align="right" muted size={1}>{`${noteLength}/${MAX_NOTE_LENGTH}`}</Text>
               </>
             )}
           </Stack>
