@@ -100,15 +100,15 @@
     "@babel/preset-env": "^7.24.7",
     "@babel/preset-react": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
-    "@bjoerge/mutiny": "^0.7.1",
     "@google-cloud/storage": "^7.11.0",
     "@jest/globals": "^29.7.0",
     "@playwright/test": "1.44.1",
     "@repo/package.config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/client": "^6.21.1",
+    "@sanity/client": "^6.21.2",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
+    "@sanity/mutate": "^0.8.0",
     "@sanity/pkg-utils": "6.10.9",
     "@sanity/prettier-config": "^1.0.2",
     "@sanity/test": "0.0.1-alpha.1",
@@ -173,7 +173,7 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "pnpm@9.6.0",
+  "packageManager": "pnpm@9.7.0",
   "pnpm": {
     "peerDependencyRules": {
       "allowAny": [

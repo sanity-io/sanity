@@ -3,6 +3,7 @@ import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
+import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {imageAssetSource} from 'sanity-test-studio/assetSources'
 import {resolveDocumentActions as documentActions} from 'sanity-test-studio/documentActions'
@@ -91,6 +92,7 @@ export default defineConfig({
     }),
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
+    media(),
   ],
   beta: {
     treeArrayEditing: {

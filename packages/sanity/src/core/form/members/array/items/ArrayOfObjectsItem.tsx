@@ -5,13 +5,17 @@ import {tap} from 'rxjs/operators'
 
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
+import {useCopyPaste} from '../../../../studio'
+import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {type ArrayOfObjectsItemMember} from '../../../store'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
+  type ArrayInputCopyEvent,
   type ArrayInputInsertEvent,
+  type FormDocumentValue,
   type ObjectInputProps,
   type ObjectItem,
   type ObjectItemProps,
@@ -72,6 +76,8 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onFieldGroupSelect,
   } = useFormCallbacks()
   const resolveInitialValue = useResolveInitialValueForType()
+  const getFormValue = useGetFormValue()
+  const {onCopy} = useCopyPaste()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -152,6 +158,17 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       toast,
       t,
     ],
+  )
+
+  const handleCopy = useCallback(
+    (_: Omit<ArrayInputCopyEvent<ObjectItem>, 'referenceItem'>) => {
+      const documentValue = getFormValue([]) as FormDocumentValue
+      onCopy(member.item.path, documentValue, {
+        context: {source: 'arrayItem'},
+        patchType: 'append',
+      })
+    },
+    [getFormValue, onCopy, member.item.path],
   )
 
   const handleBlur = useCallback(() => {
@@ -336,6 +353,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       schemaType: member.item.schemaType,
       parentSchemaType: member.parentSchemaType,
       onInsert: handleInsert,
+      onCopy: handleCopy,
       onRemove,
       presence: member.item.presence,
       validation: member.item.validation,
@@ -360,7 +378,6 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     member.item.level,
     member.item.value,
     member.item.schemaType,
-    member.parentSchemaType,
     member.item.presence,
     member.item.validation,
     member.item.readOnly,
@@ -370,8 +387,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     member.item.changed,
     member.collapsible,
     member.collapsed,
+    member.parentSchemaType,
     member.open,
     handleInsert,
+    handleCopy,
     onRemove,
     handleOpen,
     handleClose,

@@ -474,6 +474,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * eg. will prompt the user to select a type once triggered
    */
   'inputs.array.action.add-item-select-type': 'Add item...',
+  /** Label for copying an array item  */
+  'inputs.array.action.copy': 'Copy',
   /** Array drag handle button tooltip */
   'inputs.array.action.drag.tooltip': 'Drag to re-order',
   /** Label for duplicating an array item  */
@@ -866,6 +868,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.style.quote': 'Quote',
   /** Label for action to clear the current value of the reference field */
   'inputs.reference.action.clear': 'Clear',
+  /** Label for action to copy the current item (used within arrays) */
+  'inputs.reference.action.copy': 'Copy',
   /** Label for action to create a new document from the reference input */
   'inputs.reference.action.create-new-document': 'Create',
   /** Label for action to create a new document from the reference input, when there are multiple templates or document types to choose from */

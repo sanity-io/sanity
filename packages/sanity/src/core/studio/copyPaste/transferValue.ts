@@ -10,6 +10,9 @@ import {
   isBlockSchemaType,
   isFileSchemaType,
   isImageSchemaType,
+  isIndexSegment,
+  isIndexTuple,
+  isKeySegment,
   isNumberSchemaType,
   isObjectSchemaType,
   isPortableTextSpan,
@@ -25,6 +28,7 @@ import {
   type StringSchemaType,
   type TypedObject,
 } from '@sanity/types'
+import {last} from 'lodash'
 import {
   type FIXME,
   getIdPair,
@@ -49,6 +53,24 @@ export interface TransferValueError {
     key: string
     args?: Record<string, unknown>
   }
+}
+
+function getObjectTypeFromPath(path: Path): string {
+  if (path.length === 0) {
+    return 'object'
+  }
+
+  const lastPathSegment = path[path.length - 1]
+
+  if (
+    isKeySegment(lastPathSegment) ||
+    isIndexSegment(lastPathSegment) ||
+    isIndexTuple(lastPathSegment)
+  ) {
+    return 'object'
+  }
+
+  return lastPathSegment
 }
 
 function isCompatiblePrimitiveType(value: unknown, targetJsonTypes: string[]): boolean {
@@ -112,6 +134,7 @@ export async function transferValue({
   sourceRootSchemaType,
   sourcePath,
   sourceValue,
+  sourceRootPath = [],
   targetRootSchemaType,
   targetRootValue,
   targetRootPath,
@@ -126,6 +149,7 @@ export async function transferValue({
 }: {
   sourceRootSchemaType: SchemaType
   sourcePath: Path
+  sourceRootPath?: Path
   sourceValue: unknown
   targetRootSchemaType: SchemaType
   targetPath: Path
@@ -211,14 +235,28 @@ export async function transferValue({
   // - Primitive values to array of primitives is allowed
   const sourceJsonType = sourceSchemaTypeAtPath.jsonType
   const targetJsonType = targetSchemaTypeAtPath.jsonType
+  const lastSourcePathSegment = last(sourceRootPath)
+  const isIndexSourcePathSegmentKey =
+    typeof lastSourcePathSegment !== 'undefined' && isIndexSegment(lastSourcePathSegment)
+
+  // Special handling for single primitive array items
+  const isSourceSinglePrimitiveArrayItem =
+    sourcePath.length === 0 &&
+    sourceJsonType === 'array' &&
+    !Array.isArray(sourceValue) &&
+    isIndexSourcePathSegmentKey
   const isSourcePrimitive = ['number', 'string', 'boolean'].includes(sourceJsonType)
   const isPrimitiveSourceAndPrimitiveArrayTarget =
-    isSourcePrimitive && isArrayOfPrimitivesSchemaType(targetSchemaTypeAtPath)
+    (isSourcePrimitive || isSourceSinglePrimitiveArrayItem) &&
+    isArrayOfPrimitivesSchemaType(targetSchemaTypeAtPath)
+  const isObjectSourceAndArrayOfObjectsTarget =
+    sourceJsonType === 'object' && isArrayOfObjectsSchemaType(targetSchemaTypeAtPath)
   const isCompatibleSchemaTypes =
     sourceJsonType === targetJsonType ||
     isNumberToStringSchemaType(sourceSchemaTypeAtPath, targetSchemaTypeAtPath) ||
     isNumberToArrayOfStrings(sourceSchemaTypeAtPath, targetSchemaTypeAtPath) ||
-    isPrimitiveSourceAndPrimitiveArrayTarget
+    isPrimitiveSourceAndPrimitiveArrayTarget ||
+    isObjectSourceAndArrayOfObjectsTarget
 
   // Test that the target schematypes are compatible
   if (!isCompatibleSchemaTypes) {
@@ -258,24 +296,66 @@ export async function transferValue({
 
   // Arrays
   if (sourceSchemaTypeAtPath.jsonType === 'array' && targetSchemaTypeAtPath.jsonType === 'array') {
+    // There will be a mismatch between the sourceSchemaTypeAtPath (uses []) vs sourceValueAtPath (returns 'String')
+    // when copying a single array item that is a primitive value. We will do an extra check here to make sure we
+    // allow for this conversion
+    // @todo Refactor sourcePath to allways be the relative or complete path
+    const wrappedSourceValueAtPath =
+      isSourceSinglePrimitiveArrayItem && !Array.isArray(sourceValueAtPath)
+        ? [sourceValueAtPath]
+        : sourceValueAtPath
+
     return collateArrayValue({
-      sourceValue: sourceValueAtPath as unknown[],
+      sourceValue: wrappedSourceValueAtPath,
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
       targetRootValue,
       targetRootPath,
       errors,
+      options,
       keyGenerator,
     })
   }
 
-  // If this is a primitive source and primitive array target, we need to wrap the source value in an array
-  if (isPrimitiveSourceAndPrimitiveArrayTarget) {
+  // If this is a primitive source and primitive array target OR an object source and array of objects target, we need to wrap the source value in an array
+  if (isPrimitiveSourceAndPrimitiveArrayTarget || isObjectSourceAndArrayOfObjectsTarget) {
+    // Here we check if the source value does not contain a type for some reason, or its the type "object". This happens if you copy a object into a array
+    // Then we need to get the type from the path
+    let objectType
+
+    // Check if it's an object source with array of objects target
+    // and the source value is a typed object with '_type' of 'object',
+    // OR if the source value is not a typed object. This handles inline objects
+    // where we need to pull the type from the path vs objects that includes a `_type` property
+    // See test case: ./transferValue.test.ts#L771
+    if (
+      (isObjectSourceAndArrayOfObjectsTarget &&
+        isTypedObject(sourceValueAtPath) &&
+        sourceValueAtPath._type === 'object') ||
+      !isTypedObject(sourceValueAtPath)
+    ) {
+      // In this case, determine the object type from the source root path
+      objectType = getObjectTypeFromPath(sourceRootPath)
+    } else if (isTypedObject(sourceValueAtPath)) {
+      // If the source value is a typed object, use its '_type' property
+      objectType = sourceValueAtPath._type
+    } else {
+      // Default case: if none of the above conditions are met, set type to 'object'
+      objectType = 'object'
+    }
+
+    // If the source value is an object, we wrap it in an array
+    const wrappedSourceValue =
+      isObjectSourceAndArrayOfObjectsTarget && !Array.isArray(sourceValueAtPath)
+        ? [{...(sourceValueAtPath as TypedObject), _type: objectType, _key: keyGenerator()}]
+        : ([sourceValueAtPath] as unknown[])
+
     return collateArrayValue({
-      sourceValue: [sourceValueAtPath] as unknown[],
+      sourceValue: Array.isArray(sourceValueAtPath) ? sourceValueAtPath : wrappedSourceValue,
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
       targetRootValue,
       targetRootPath,
       errors,
+      options,
       keyGenerator,
     })
   }
@@ -310,7 +390,7 @@ async function collateObjectValue({
   targetPath: Path
   errors: TransferValueError[]
   keyGenerator: () => string
-  options?: TransferValueOptions
+  options: TransferValueOptions
 }) {
   if (isEmptyValue(sourceValue)) {
     return {
@@ -455,6 +535,9 @@ async function collateObjectValue({
 
             i18n: {
               key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+              args: {
+                ref: sourceValue._ref,
+              },
             },
           })
 
@@ -465,7 +548,8 @@ async function collateObjectValue({
         }
 
         // Test that the actual referenced type is allowed by the schema.
-        if (!targetReferenceTypes.includes(reference._type)) {
+        // This will not trigger if the reference does not exist
+        if (reference && !targetReferenceTypes.includes(reference._type)) {
           errors.push({
             level: 'error',
             sourceValue: sourceValue,
@@ -522,6 +606,9 @@ async function collateObjectValue({
 
           i18n: {
             key: 'copy-paste.on-paste.validation.reference-validation-failed.description',
+            args: {
+              ref: sourceValue._ref,
+            },
           },
         })
 
@@ -592,6 +679,7 @@ async function collateObjectValue({
         targetRootValue,
         targetRootPath,
         errors,
+        options,
         keyGenerator,
       })
 
@@ -610,6 +698,7 @@ async function collateObjectValue({
         targetRootValue,
         targetRootPath,
         errors,
+        options,
         keyGenerator,
       })
 
@@ -671,6 +760,7 @@ async function collateArrayValue({
   targetRootValue,
   targetRootPath,
   errors,
+  options,
   keyGenerator,
 }: {
   sourceValue: unknown
@@ -678,6 +768,7 @@ async function collateArrayValue({
   targetRootPath: Path
   targetSchemaType: ArraySchemaType
   errors: TransferValueError[]
+  options: TransferValueOptions
   keyGenerator: () => string
 }): Promise<{
   targetValue: unknown
@@ -769,6 +860,7 @@ async function collateArrayValue({
             targetRootValue,
             targetRootPath,
             errors,
+            options,
             keyGenerator,
           }),
         ),

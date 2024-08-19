@@ -1,8 +1,9 @@
-import {Box, Button, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
+import {Box, Checkbox, Flex, Menu, Stack, Text} from '@sanity/ui'
 import {type Column, type Table} from '@tanstack/react-table'
 import {useCallback} from 'react'
 import {type SanityDocument, useTranslation} from 'sanity'
 
+import {Button, MenuButton} from '../../../../ui-components'
 import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
 type ColumnsControlProps = {
@@ -32,7 +33,7 @@ export function ColumnsControl({table}: ColumnsControlProps) {
 
   return (
     <MenuButton
-      button={<Button mode="bleed" text={t('sheet-list.edit-columns')} size={1} />}
+      button={<Button mode="bleed" text={t('sheet-list.edit-columns')} />}
       id="columns-control"
       menu={
         <Menu padding={3} paddingTop={4} style={{width: 240}}>
@@ -68,7 +69,6 @@ export function ColumnsControl({table}: ColumnsControlProps) {
             <Button
               width="fill"
               mode="ghost"
-              size={1}
               text={t('sheet-list.reset-columns')}
               onClick={setInitialColumns}
             />

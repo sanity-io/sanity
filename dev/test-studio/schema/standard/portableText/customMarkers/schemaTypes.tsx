@@ -1,5 +1,5 @@
 import {LinkIcon, RocketIcon} from '@sanity/icons'
-import {defineType} from 'sanity'
+import {type BlockAnnotationProps, defineType} from 'sanity'
 
 import {CustomContentInput} from './CustomContentInput'
 
@@ -9,7 +9,9 @@ const boostRender = (props: any) => (
 
 const normalRender = (props: any) => <span style={{fontFamily: 'monospace'}}>{props.children}</span>
 
-const hyperLinkRender = (props: any) => <span style={{color: 'blue'}}>{props.children}</span>
+const hyperLinkRender = (props: BlockAnnotationProps) => (
+  <span style={{color: 'blue'}}>{props.textElement}</span>
+)
 
 export const ptCustomMarkersTestType = defineType({
   type: 'document',

@@ -10,7 +10,6 @@ import {
 } from '@sanity/codegen'
 import createDebug from 'debug'
 import {typeEvaluate, type TypeNode} from 'groq-js'
-import {format as prettierFormat, type Options as PrettierOptions} from 'prettier'
 
 const $info = createDebug('sanity:codegen:generate:info')
 const $warn = createDebug('sanity:codegen:generate:warn')
@@ -20,7 +19,6 @@ export interface TypegenGenerateTypesWorkerData {
   workspaceName?: string
   schemaPath: string
   searchPath: string | string[]
-  prettierConfig: PrettierOptions | null
   overloadClientMethods?: boolean
 }
 
@@ -52,7 +50,6 @@ export type TypegenGenerateTypesWorkerMessage =
     }
   | {
       type: 'typemap'
-      filename: string
       typeMap: string
     }
   | {
@@ -67,35 +64,18 @@ const opts = _workerData as TypegenGenerateTypesWorkerData
 
 registerBabel()
 
-function maybeFormatCode(code: string, prettierConfig: PrettierOptions | null): Promise<string> {
-  if (!prettierConfig) {
-    return Promise.resolve(`${code}\n`) // add an extra new newline, poor mans formatting
-  }
-
-  try {
-    return prettierFormat(code, {
-      ...prettierConfig,
-      parser: 'typescript' as const,
-    })
-  } catch (err) {
-    $warn(`Error formatting: ${err.message}`)
-  }
-  return Promise.resolve(code)
-}
-
 async function main() {
   const schema = await readSchema(opts.schemaPath)
 
   const typeGenerator = new TypeGenerator(schema)
-  const schemaTypes = await maybeFormatCode(
-    [typeGenerator.generateSchemaTypes(), TypeGenerator.generateKnownTypes()].join('\n').trim(),
-    opts.prettierConfig,
-  )
+  const schemaTypes = [typeGenerator.generateSchemaTypes(), TypeGenerator.generateKnownTypes()]
+    .join('\n')
+    .trim()
   const resolver = getResolver()
 
   parentPort?.postMessage({
     type: 'schema',
-    schema: schemaTypes,
+    schema: `${schemaTypes.trim()}\n`,
     filename: 'schema.json',
     length: schema.length,
   } satisfies TypegenGenerateTypesWorkerMessage)
@@ -104,6 +84,8 @@ async function main() {
     path: opts.searchPath,
     resolver,
   })
+
+  const allQueries = []
 
   for await (const result of queries) {
     if (result.type === 'error') {
@@ -134,7 +116,6 @@ async function main() {
 
         const typeName = `${queryName}Result`
         const type = typeGenerator.generateTypeNodeTypes(typeName, queryTypes)
-        const code = await maybeFormatCode(type.trim(), opts.prettierConfig)
 
         const queryTypeStats = walkAndCountQueryTypeNodeStats(queryTypes)
         fileQueryTypes.push({
@@ -142,7 +123,7 @@ async function main() {
           query,
           typeName,
           typeNode: queryTypes,
-          type: code,
+          type: `${type.trim()}\n`,
           unknownTypeNodesGenerated: queryTypeStats.unknownTypes,
           typeNodesGenerated: queryTypeStats.allTypes,
           emptyUnionTypeNodesGenerated: queryTypeStats.emptyUnions,
@@ -169,14 +150,17 @@ async function main() {
       } satisfies TypegenGenerateTypesWorkerMessage)
     }
 
-    if (fileQueryTypes.length > 0 && opts.overloadClientMethods) {
-      const typeMap = typeGenerator.generateQueryMap(fileQueryTypes)
-      parentPort?.postMessage({
-        type: 'typemap',
-        filename: result.filename,
-        typeMap,
-      } satisfies TypegenGenerateTypesWorkerMessage)
+    if (fileQueryTypes.length > 0) {
+      allQueries.push(...fileQueryTypes)
     }
+  }
+
+  if (opts.overloadClientMethods && allQueries.length > 0) {
+    const typeMap = `${typeGenerator.generateQueryMap(allQueries).trim()}\n`
+    parentPort?.postMessage({
+      type: 'typemap',
+      typeMap,
+    } satisfies TypegenGenerateTypesWorkerMessage)
   }
 
   parentPort?.postMessage({
