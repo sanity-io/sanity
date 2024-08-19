@@ -39,14 +39,14 @@ export function getReferenceInfo(
   return pairAvailability$.pipe(
     switchMap((pairAvailability) => {
       if (!pairAvailability.draft.available && !pairAvailability.published.available) {
-        // combine availability of draft + published
+        // combine availability of draft + published + version
         const availability =
           pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
           pairAvailability.published.reason === 'PERMISSION_DENIED'
             ? PERMISSION_DENIED
             : NOT_FOUND
 
-        // short circuit, neither draft nor published is available so no point in trying to get preview
+        // short circuit, neither draft nor published nor version is available so no point in trying to get preview
         return of({
           id,
           type: undefined,
@@ -54,6 +54,7 @@ export function getReferenceInfo(
           preview: {
             draft: undefined,
             published: undefined,
+            version: undefined,
           },
         } as const)
       }
@@ -65,7 +66,7 @@ export function getReferenceInfo(
         documentPreviewStore.observeDocumentTypeFromId(draftId),
         documentPreviewStore.observeDocumentTypeFromId(publishedId),
       ]).pipe(
-        // assume draft + published are always same type
+        // assume draft + published + version are always same type
         map(([draftTypeName, publishedTypeName]) => draftTypeName || publishedTypeName),
       )
 
@@ -83,6 +84,7 @@ export function getReferenceInfo(
               preview: {
                 draft: undefined,
                 published: undefined,
+                version: undefined,
               },
             } as const)
           }
@@ -98,6 +100,7 @@ export function getReferenceInfo(
               preview: {
                 draft: undefined,
                 published: undefined,
+                version: undefined,
               },
             } as const)
           }
@@ -131,7 +134,10 @@ export function getReferenceInfo(
             )
 
           const value$ = combineLatest([draftPreview$, publishedPreview$]).pipe(
-            map(([draft, published]) => ({draft, published})),
+            map(([draft, published]) => ({
+              draft,
+              published,
+            })),
           )
 
           return value$.pipe(
@@ -144,7 +150,6 @@ export function getReferenceInfo(
                       pairAvailability.published.reason === 'PERMISSION_DENIED'
                     ? PERMISSION_DENIED
                     : NOT_FOUND
-
               return {
                 type: typeName,
                 id: publishedId,
@@ -201,7 +206,7 @@ export function referenceSearch(
   })
   return search(textTerm, {includeDrafts: true}).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
-    map(collate),
+    map((docs) => collate(docs)),
     // pick the 100 best matches
     map((collated) => collated.slice(0, 100)),
     mergeMap((collated) => {
