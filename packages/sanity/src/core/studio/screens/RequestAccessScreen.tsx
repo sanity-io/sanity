@@ -34,6 +34,7 @@ export function RequestAccessScreen() {
   const toast = useToast()
 
   const [error, setError] = useState<unknown>(null)
+  const [msgError, setMsgError] = useState<string | undefined>()
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -133,18 +134,21 @@ export function RequestAccessScreen() {
       })
       .catch((err) => {
         const statusCode = err && err.response && err.response.statusCode
+        const errMessage = err && err.response && err.response.body && err.response.body.message
         if (statusCode === 429) {
           // User is over their cross-project request limit
           setHasTooManyRequests(true)
+          setMsgError(errMessage)
         }
         if (statusCode === 409) {
           // If we get a 409, user has been denied on this project or has a valid pending request
           // valid pending request should be handled by GET request above
           setHasBeenDenied(true)
+          setMsgError(errMessage)
         } else {
           toast.push({
             title: 'There was a problem submitting your request.',
-            status: 'error',
+            status: errMessage,
           })
         }
       })
@@ -183,14 +187,17 @@ export function RequestAccessScreen() {
                 <Text size={1}>
                   {hasTooManyRequests && !hasPendingRequest && (
                     <>
-                      You've reached the limit for access requests across all projects. Please wait
-                      before submitting more requests or contact an admin for assistance.
+                      {msgError ??
+                        `You've reached the limit for access requests across all projects. Please wait
+                      before submitting more requests or contact an admin for assistance.`}
                     </>
                   )}
                   {hasPendingRequest && (
                     <>Your request to access this project is pending approval.</>
                   )}
-                  {hasBeenDenied && <>Your request to access this project has been declined.</>}
+                  {hasBeenDenied && (
+                    <>{msgError ?? `Your request to access this project has been declined.`}</>
+                  )}
                 </Text>
               </Card>
             ) : (
@@ -209,24 +216,26 @@ export function RequestAccessScreen() {
                     </>
                   )}
                 </Text>
-                <TextInput
-                  maxLength={MAX_NOTE_LENGTH}
-                  disabled={isSubmitting}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleSubmitRequest()
-                  }}
-                  onChange={(e) => {
-                    setNote(e.currentTarget.value)
-                    setNoteLength(e.currentTarget.value.length)
-                  }}
-                  value={note}
-                  placeholder="Add your note…"
-                />
-                <Text align="right" muted size={1}>{`${noteLength}/${MAX_NOTE_LENGTH}`}</Text>
+                <Stack space={3} paddingBottom={0}>
+                  <TextInput
+                    maxLength={MAX_NOTE_LENGTH}
+                    disabled={isSubmitting}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSubmitRequest()
+                    }}
+                    onChange={(e) => {
+                      setNote(e.currentTarget.value)
+                      setNoteLength(e.currentTarget.value.length)
+                    }}
+                    value={note}
+                    placeholder="Add your note…"
+                  />
+                  <Text align="right" muted size={1}>{`${noteLength}/${MAX_NOTE_LENGTH}`}</Text>
+                </Stack>
               </>
             )}
           </Stack>
-          <Flex align={'center'} justify={'space-between'} paddingTop={5}>
+          <Flex align={'center'} justify={'space-between'} paddingTop={4}>
             <Button
               mode="bleed"
               text={'Sign out'}
