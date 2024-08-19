@@ -1,9 +1,10 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
-import {type ReactElement, useCallback, useMemo} from 'react'
+// eslint-disable-next-line no-restricted-imports -- MenuItem requires props, only supported by @sanity/ui
+import {Box, Flex, Menu, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
+import {memo, type ReactElement, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
+import {MenuButton, Tooltip} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {type BundleDocument} from '../../store/bundles/types'
 import {useBundles} from '../../store/bundles/useBundles'
@@ -32,7 +33,7 @@ interface BundleListProps {
 /**
  * @internal
  */
-export function BundleMenu(props: BundleListProps): JSX.Element {
+export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): ReactElement {
   const {bundles, loading, actions, button, perspective} = props
   const {deletedBundles} = useBundles()
   const {currentGlobalBundle, setPerspective} = usePerspective(perspective)
@@ -166,4 +167,4 @@ export function BundleMenu(props: BundleListProps): JSX.Element {
       />
     </>
   )
-}
+})
