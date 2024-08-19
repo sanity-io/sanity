@@ -80,7 +80,6 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
             disabled={bundleMenuDisabled || isPerformingOperation}
             icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
             mode="bleed"
-            style={{padding: 2}}
             tooltipProps={{content: t('menu.tooltip')}}
             aria-label={t('menu.label')}
             data-testid="release-menu-button"

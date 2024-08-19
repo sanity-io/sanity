@@ -130,7 +130,7 @@ export function BundleIconEditorPicker(props: {
           onClick={handleOnPickerOpen}
           ref={setButton}
           selected={open}
-          radius="full"
+          style={{borderRadius: '50%'}}
           data-testid="icon-picker-button"
         >
           <Box style={{margin: -8}}>

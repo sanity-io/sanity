@@ -134,7 +134,6 @@ export function ReleasesOverview() {
         icon={AddIcon}
         disabled={isCreateBundleDialogOpen}
         onClick={() => setIsCreateBundleDialogOpen(true)}
-        style={{padding: 2}}
         text={tCore('bundle.action.create')}
       />
     ),

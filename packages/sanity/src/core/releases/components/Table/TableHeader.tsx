@@ -1,11 +1,17 @@
 import {ArrowDownIcon, ArrowUpIcon, SearchIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- Table header using fine-grained styling
-import {Button, type ButtonProps, Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Card, Flex, Stack, TextInput} from '@sanity/ui'
 
+import {Button, type ButtonProps} from '../../../../ui-components'
 import {useTableContext} from './TableProvider'
 import {type HeaderProps, type TableHeaderProps} from './types'
 
-const SortHeaderButton = ({header, text}: ButtonProps & HeaderProps) => {
+const SortHeaderButton = ({
+  header,
+  text,
+}: Omit<ButtonProps, 'text'> &
+  HeaderProps & {
+    text: string
+  }) => {
   const {sort, setSortColumn} = useTableContext()
   const sortIcon = sort?.direction === 'asc' ? ArrowUpIcon : ArrowDownIcon
 
@@ -14,9 +20,7 @@ const SortHeaderButton = ({header, text}: ButtonProps & HeaderProps) => {
       iconRight={header.sorting && sort?.column === header.id ? sortIcon : undefined}
       onClick={() => setSortColumn(String(header.id))}
       mode="bleed"
-      padding={2}
-      radius={3}
-      space={1}
+      size="default"
       text={text}
     />
   )

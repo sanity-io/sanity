@@ -26,6 +26,9 @@ const useIsLocaleBundleDeleted = () => {
   )
 
   useEffect(() => {
+    /**
+     * only named versions other than default (drafts and published) are considered checked-out
+     */
     if (currentGlobalBundleSlug !== LATEST.slug) {
       setCheckedOutBundleSlug(currentGlobalBundleSlug)
     }

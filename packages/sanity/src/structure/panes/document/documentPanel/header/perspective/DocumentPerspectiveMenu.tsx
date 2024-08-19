@@ -2,10 +2,11 @@ import {ChevronDownIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Box, Button} from '@sanity/ui'
 import {memo, useCallback, useMemo} from 'react'
-import {BundleBadge, BundlesMenu, usePerspective} from 'sanity'
+import {BundleBadge, BundlesMenu, usePerspective, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
+import {Button as StudioButton} from '../../../../../../ui-components'
 import {usePaneRouter} from '../../../../../components'
 import {useDocumentPane} from '../../../useDocumentPane'
 
@@ -15,6 +16,7 @@ const BadgeButton = styled(Button)({
 
 export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   const paneRouter = usePaneRouter()
+  const {t} = useTranslation()
   const {currentGlobalBundle} = usePerspective(paneRouter.perspective)
 
   const {documentVersions, existsInBundle} = useDocumentPane()
@@ -27,8 +29,14 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   }, [router, slug])
 
   const bundlesMenuButton = useMemo(
-    () => <Button icon={ChevronDownIcon} mode="bleed" padding={2} space={2} />,
-    [],
+    () => (
+      <StudioButton
+        tooltipProps={{content: t('bundle.version-list.tooltip')}}
+        icon={ChevronDownIcon}
+        mode="bleed"
+      />
+    ),
+    [t],
   )
 
   return (

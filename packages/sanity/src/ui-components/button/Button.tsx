@@ -23,7 +23,6 @@ type BaseButtonProps = Pick<
   | 'tone'
   | 'type'
   | 'width'
-  | 'radius'
 > & {
   size?: 'default' | 'large'
 }

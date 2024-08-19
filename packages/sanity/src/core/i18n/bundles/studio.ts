@@ -138,6 +138,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'bundle.form.search-icon-tooltip': 'Select release icon',
   /** Label for the title form field when creating releases */
   'bundle.form.title': 'Title',
+  /** Tooltip for the dropdown to show all versions of document */
+  'bundle.version-list.tooltip': 'See all document versions',
 
   /** Action message for navigating to next month */
   'calendar.action.go-to-next-month': 'Go to next month',
