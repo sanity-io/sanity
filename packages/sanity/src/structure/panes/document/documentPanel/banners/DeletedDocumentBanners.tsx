@@ -1,18 +1,11 @@
 import {DocumentRemoveIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
-import {
-  type BundleDocument,
-  LATEST,
-  Translate,
-  useBundles,
-  useDocumentOperation,
-  usePerspective,
-  useTimelineSelector,
-  useTranslation,
-} from 'sanity'
+import {type BundleDocument, LATEST, Translate, useDocumentOperation, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {usePerspective} from '../../../../../core/bundles'
+import {useBundles, useTimelineSelector} from '../../../../../core/store'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
