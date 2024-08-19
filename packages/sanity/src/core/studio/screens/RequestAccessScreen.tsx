@@ -164,7 +164,7 @@ export function RequestAccessScreen() {
     <Card height="fill">
       <Dialog id="not-authorized-dialog" header="Not authorized" width={1}>
         <Box>
-          <Stack padding={4} space={4}>
+          <Stack space={4}>
             <Text>
               You are not authorized to access this studio (currently signed in as{' '}
               <strong>
@@ -226,8 +226,14 @@ export function RequestAccessScreen() {
               </>
             )}
           </Stack>
-          <Flex align={'center'} justify={'space-between'} paddingY={3} paddingX={4}>
-            <Button mode="bleed" text={'Sign out'} tone="default" onClick={handleLogout} />
+          <Flex align={'center'} justify={'space-between'} paddingTop={5}>
+            <Button
+              mode="bleed"
+              text={'Sign out'}
+              tone="default"
+              onClick={handleLogout}
+              size="large"
+            />
             {!hasTooManyRequests && !hasBeenDenied && (
               <Button
                 mode="default"
@@ -236,6 +242,7 @@ export function RequestAccessScreen() {
                 loading={isSubmitting}
                 tone="default"
                 onClick={handleSubmitRequest}
+                size="large"
               />
             )}
           </Flex>
