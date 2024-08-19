@@ -49,6 +49,7 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactEle
         textOverflow="ellipsis"
         weight={value?.title ? 'semibold' : undefined}
         style={{maxWidth: '100%', minWidth: '0'}}
+        title={value?.title}
       >
         {value?.title || (
           <span style={{color: 'var(--card-muted-fg-color)'}}>
