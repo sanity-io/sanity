@@ -1,10 +1,11 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {type PreviewValue} from '@sanity/types'
-import {Card, Text, Tooltip} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {DocumentPreviewPresence, useDocumentPresence} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
+import {Tooltip} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
 import {getPublishedId} from '../../util/draftUtils'

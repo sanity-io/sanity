@@ -1,8 +1,9 @@
 import {ArrowRightIcon} from '@sanity/icons'
-import {Box, Button, Dialog, Flex, useToast} from '@sanity/ui'
+import {Box, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 
+import {Button, Dialog} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../hooks/usePerspective'
@@ -90,20 +91,14 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
     formAction === 'edit' ? t('bundle.dialog.edit.title') : t('bundle.dialog.create.title')
 
   return (
-    <Dialog
-      animate
-      header={dialogTitle}
-      id="create-bundle-dialog"
-      onClose={onCancel}
-      zOffset={5000}
-      width={1}
-    >
+    <Dialog header={dialogTitle} id="create-bundle-dialog" onClose={onCancel} width={1}>
       <form onSubmit={handleOnSubmit}>
-        <Box padding={6}>
+        <Box padding={4}>
           <BundleForm onChange={handleOnChange} value={value} />
         </Box>
-        <Flex justify="flex-end" padding={3}>
+        <Flex justify="flex-end" paddingTop={5}>
           <Button
+            size="large"
             disabled={!value.title?.trim() || isSubmitting}
             iconRight={ArrowRightIcon}
             type="submit"

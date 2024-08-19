@@ -43,6 +43,8 @@ export interface DocumentPanelHeaderProps {
   menuItems: PaneMenuItem[]
 }
 
+const documentPaneHeaderTitle = <DocumentHeaderTitle />
+
 export const DocumentPanelHeader = memo(
   forwardRef(function DocumentPanelHeader(
     _props: DocumentPanelHeaderProps,
@@ -138,7 +140,7 @@ export const DocumentPanelHeader = memo(
           border
           ref={ref}
           loading={connectionState === 'connecting'}
-          title={<DocumentHeaderTitle />}
+          title={documentPaneHeaderTitle}
           tabs={showTabs && <DocumentHeaderTabs />}
           tabIndex={tabIndex}
           backButton={
