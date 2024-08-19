@@ -41,23 +41,21 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactEle
   }
 
   return (
-    <Flex flex={1} gap={0}>
-      <Flex flex="none" gap={3} padding={2}>
-        <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
-        <Text
-          muted={!value?.title}
-          size={1}
-          textOverflow="ellipsis"
-          weight={value?.title ? 'semibold' : undefined}
-        >
-          {value?.title || (
-            <span style={{color: 'var(--card-muted-fg-color)'}}>
-              {t('panes.document-header-title.untitled.text')}
-            </span>
-          )}
-        </Text>
-      </Flex>
-
+    <Flex flex="none" gap={3} paddingX={2} style={{flex: 1, alignItems: 'center'}}>
+      <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
+      <Text
+        muted={!value?.title}
+        size={1}
+        textOverflow="ellipsis"
+        weight={value?.title ? 'semibold' : undefined}
+        style={{maxWidth: '100%', minWidth: '0'}}
+      >
+        {value?.title || (
+          <span style={{color: 'var(--card-muted-fg-color)'}}>
+            {t('panes.document-header-title.untitled.text')}
+          </span>
+        )}
+      </Text>
       <Flex flex="none" gap={1}>
         <DocumentPerspectiveMenu />
       </Flex>
