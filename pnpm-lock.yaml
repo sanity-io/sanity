@@ -766,8 +766,8 @@ importers:
         specifier: ^3.5.0
         version: 3.6.0(esbuild@0.21.5)
       get-it:
-        specifier: ^8.6.4
-        version: 8.6.4(debug@4.3.6)
+        specifier: ^8.6.5
+        version: 8.6.5(debug@4.3.6)
       groq-js:
         specifier: ^1.12.0
         version: 1.12.0
@@ -1531,8 +1531,8 @@ importers:
         specifier: 11.0.8
         version: 11.0.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       get-it:
-        specifier: ^8.6.4
-        version: 8.6.4(debug@4.3.6)
+        specifier: ^8.6.5
+        version: 8.6.5(debug@4.3.6)
       get-random-values-esm:
         specifier: 1.0.2
         version: 1.0.2
@@ -4774,6 +4774,9 @@ packages:
   '@types/express-serve-static-core@4.19.0':
     resolution: {integrity: sha512-bGyep3JqPCRry1wq+O5n7oiBgGWmeIJXPjXXCo8EK0u8duZGSYar7cGqd3ML2JUsLGeB7fmc06KYo9fLGWqPvQ==}
 
+  '@types/follow-redirects@1.14.4':
+    resolution: {integrity: sha512-GWXfsD0Jc1RWiFmMuMFCpXMzi9L7oPDVwxUnZdg89kDNnqsRfUKXEtUYtA98A6lig1WXH/CYY/fvPW9HuN5fTA==}
+
   '@types/glob@7.2.0':
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
 
@@ -4855,6 +4858,9 @@ packages:
 
   '@types/prismjs@1.26.3':
     resolution: {integrity: sha512-A0D0aTXvjlqJ5ZILMz3rNfDBOx9hHxLZYv2by47Sm/pqW35zzjusrZTryatjN/Rf8Us2gZrJD+KeHbUSTux1Cw==}
+
+  '@types/progress-stream@2.0.5':
+    resolution: {integrity: sha512-5YNriuEZkHlFHHepLIaxzq3atGeav1qCTGzB74HKWpo66qjfostF+rHc785YYYHeBytve8ZG3ejg42jEIfXNiQ==}
 
   '@types/prop-types@15.7.12':
     resolution: {integrity: sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==}
@@ -7128,8 +7134,8 @@ packages:
     resolution: {integrity: sha512-5uYhsJH8VJBTv7oslg4BznJYhDoRI6waYCxMmCdnTrcCrHA/fCFKoTFz2JKKE0HdDFUF7/oQuhzumXJK7paBRQ==}
     engines: {node: '>= 0.4'}
 
-  get-it@8.6.4:
-    resolution: {integrity: sha512-4bYWtWFPwkHoru0OLVsPhgScATPo8/Ne3PFar0WTrs85Th7qOnRm/y1stJfQzVZfjssBwBM5l0eAVK4ScgLGeg==}
+  get-it@8.6.5:
+    resolution: {integrity: sha512-o1hjPwrb/icm3WJbCweTSq8mKuDfJlqwbFauI+Pdgid99at/BFaBXFBJZE+uqvHyOVARE4z680S44vrDm8SsCw==}
     engines: {node: '>=14.0.0'}
 
   get-latest-version@5.1.0:
@@ -14122,7 +14128,7 @@ snapshots:
   '@sanity/client@6.21.2(debug@4.3.6)':
     dependencies:
       '@sanity/eventsource': 5.0.2
-      get-it: 8.6.4(debug@4.3.6)
+      get-it: 8.6.5(debug@4.3.6)
       rxjs: 7.8.1
     transitivePeerDependencies:
       - debug
@@ -14179,7 +14185,7 @@ snapshots:
       '@sanity/util': 3.37.2(debug@4.3.6)
       archiver: 7.0.1
       debug: 4.3.6(supports-color@9.4.0)
-      get-it: 8.6.4(debug@4.3.6)
+      get-it: 8.6.5(debug@4.3.6)
       lodash: 4.17.21
       mississippi: 4.0.0
       p-queue: 2.4.2
@@ -14231,7 +14237,7 @@ snapshots:
       '@sanity/uuid': 3.0.2
       debug: 4.3.6(supports-color@9.4.0)
       file-url: 2.0.2
-      get-it: 8.6.4(debug@4.3.6)
+      get-it: 8.6.5(debug@4.3.6)
       get-uri: 2.0.4
       globby: 10.0.2
       gunzip-maybe: 1.4.2
@@ -15081,6 +15087,10 @@ snapshots:
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
 
+  '@types/follow-redirects@1.14.4':
+    dependencies:
+      '@types/node': 18.19.31
+
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
@@ -15166,6 +15176,10 @@ snapshots:
   '@types/parse-json@4.0.2': {}
 
   '@types/prismjs@1.26.3': {}
+
+  '@types/progress-stream@2.0.5':
+    dependencies:
+      '@types/node': 18.19.31
 
   '@types/prop-types@15.7.12': {}
 
@@ -17999,8 +18013,10 @@ snapshots:
       has-symbols: 1.0.3
       hasown: 2.0.2
 
-  get-it@8.6.4(debug@4.3.6):
+  get-it@8.6.5(debug@4.3.6):
     dependencies:
+      '@types/follow-redirects': 1.14.4
+      '@types/progress-stream': 2.0.5
       decompress-response: 7.0.0
       follow-redirects: 1.15.6(debug@4.3.6)
       is-retry-allowed: 2.2.0
@@ -18011,7 +18027,7 @@ snapshots:
 
   get-latest-version@5.1.0(debug@4.3.6):
     dependencies:
-      get-it: 8.6.4(debug@4.3.6)
+      get-it: 8.6.5(debug@4.3.6)
       registry-auth-token: 5.0.2
       registry-url: 5.1.0
       semver: 7.6.3
