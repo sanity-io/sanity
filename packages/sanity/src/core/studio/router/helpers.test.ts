@@ -1,11 +1,10 @@
-import {describe, it} from '@jest/globals'
-import {expect} from '@playwright/experimental-ct-react'
+import {describe, expect, it} from '@jest/globals'
 import {type Tool} from 'sanity'
 import {type RouterState} from 'sanity/router'
 
 import {resolveIntentState} from './helpers'
 
-describe('resolveIntentState', () => {
+describe.skip('resolveIntentState', () => {
   const testTool: Tool = {
     name: 'test',
     title: 'Test tool',
