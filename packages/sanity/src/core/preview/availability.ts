@@ -67,17 +67,21 @@ function mutConcat<T>(array: T[], chunks: T[]) {
   return array
 }
 
-export function create_preview_availability(
+export function createPreviewAvailabilityObserver(
   versionedClient: SanityClient,
   observePaths: ObservePathsFn,
 ): {
-  observeDocumentPairAvailability(id: string): Observable<DraftsModelDocumentAvailability>
+  observeDocumentPairAvailability(
+    id: string,
+    options?: {version?: string},
+  ): Observable<DraftsModelDocumentAvailability>
 } {
   /**
    * Returns an observable of metadata for a given drafts model document
    */
   function observeDocumentPairAvailability(
     id: string,
+    {version}: {version?: string} = {},
   ): Observable<DraftsModelDocumentAvailability> {
     const draftId = getDraftId(id)
     const publishedId = getPublishedId(id)
