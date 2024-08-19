@@ -28,7 +28,10 @@ function isReference(value: unknown): value is {_ref: string} {
   return isPlainObject(value)
 }
 
-// Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
+/**
+ * Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
+ * @internal
+ */
 export function createPreviewObserver(context: {
   observeDocumentTypeFromId: ObserveDocumentTypeFromIdFn
   observePaths: ObservePathsFn

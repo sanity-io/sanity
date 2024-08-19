@@ -50,6 +50,7 @@ type Cache = {
  * Creates a function that allows observing individual fields on a document.
  * It will automatically debounce and batch requests, and maintain an in-memory cache of the latest field values
  * @param options - Options to use when creating the observer
+ * @internal
  */
 export function createObserveFields(options: {
   client: SanityClient
