@@ -64,6 +64,8 @@ const releasesLocaleStrings = {
 
   /** Label for the release menu */
   'menu.label': 'Release menu',
+  /** Tooltip for the release menu */
+  'menu.tooltip': 'Actions',
 
   /** Text for when no archived releases are found */
   'no-archived-release': 'No archived releases',

@@ -1,14 +1,14 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {createElement, type ReactElement} from 'react'
+import {createElement, memo, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPerspectiveMenu} from './perspective/DocumentPerspectiveMenu'
 
-export function DocumentHeaderTitle(): ReactElement {
-  const {documentId, connectionState, schemaType, title, value: documentValue} = useDocumentPane()
+export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactElement {
+  const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
   const subscribed = Boolean(documentValue) && connectionState !== 'connecting'
 
   const {error, value} = useValuePreview({
@@ -63,4 +63,4 @@ export function DocumentHeaderTitle(): ReactElement {
       </Flex>
     </Flex>
   )
-}
+})
