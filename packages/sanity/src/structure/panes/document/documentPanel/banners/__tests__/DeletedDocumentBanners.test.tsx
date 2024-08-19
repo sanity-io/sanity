@@ -1,11 +1,9 @@
 import {describe, expect, it, jest} from '@jest/globals'
 import {render, screen} from '@testing-library/react'
-import {type BundleDocument, LATEST} from 'sanity'
+import {type BundleDocument, LATEST, useBundles, usePerspective} from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {usePerspective} from '../../../../../../core/bundles/hooks/usePerspective'
-import {useBundles} from '../../../../../../core/store/bundles/useBundles'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {DeletedDocumentBanners} from '../DeletedDocumentBanners'
 
