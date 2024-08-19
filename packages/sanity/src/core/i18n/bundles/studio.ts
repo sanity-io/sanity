@@ -125,14 +125,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text shown in usage dialog for an image asset when there are zero, one or more documents using the *unnamed* image **/
   'asset-source.usage-list.documents-using-image_unnamed_zero': 'No documents are using this image',
 
+  /** Label when a release has been deleted by a different user */
+  'banners.deleted-bundle-banner.text':
+    "The '<strong>{{title}}</strong>' release has been deleted.",
   /** Action message to add document to release */
   'bundle.action.add-to-release': 'Add to {{title}}',
   /** Action message for when document is already in release  */
   'bundle.action.already-in-release': 'Already in release {{title}}',
   /** Action message for creating releases */
   'bundle.action.create': 'Create release',
-  /** Label when a release has been deleted by a different user */
-  'bundle.deleted-toast-title': "The '<strong>{{title}}</strong>' release has been deleted",
   /** Label for tooltip on deleted release */
   'bundle.deleted-tooltip': 'This release has been deleted',
   /** Title for creating releases dialog */
@@ -143,8 +144,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'bundle.form.description': 'Description',
   /** Placeholder for the icon and colour picker */
   'bundle.form.search-icon': 'Search icons',
+  /** Tooltip label for the icon display */
+  'bundle.form.search-icon-tooltip': 'Select release icon',
   /** Label for the title form field when creating releases */
   'bundle.form.title': 'Title',
+  /** Tooltip for the dropdown to show all versions of document */
+  'bundle.version-list.tooltip': 'See all document versions',
 
   /** Action message for navigating to next month */
   'calendar.action.go-to-next-month': 'Go to next month',
