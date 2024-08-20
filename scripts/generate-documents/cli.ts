@@ -63,6 +63,7 @@ const HELP_TEXT = `Usage: tsx --env-file=.env.local ./${path.relative(process.cw
       --amount, -n <int>: Number of documents to generate
       --draft: Generate draft documents
       --published: Generate published documents
+      --bundle <string>: Bundle to generate documents in
       --size <bytes>: Size (in bytes) of the generated document (will be approximated)
       --concurrency, -c <int>: Number of concurrent requests
       --help, -h: Show this help message
