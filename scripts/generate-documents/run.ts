@@ -43,8 +43,7 @@ export function run(_args: ProgramArgs) {
       const bundleDocument = bundle
         ? {
             ...template({...templateOptions, title: `${title} - Published`}),
-            _id: `${bundle}.${id}`,
-            _version: {},
+            _id: `versions.${bundle}.${id}`,
             title: `${title} - Bundle: ${bundle}`,
           }
         : undefined
