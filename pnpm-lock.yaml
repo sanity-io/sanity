@@ -1363,8 +1363,8 @@ importers:
         specifier: ^3.3.1
         version: 3.4.0
       '@portabletext/editor':
-        specifier: ^1.0.13
-        version: 1.0.14(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@sanity/util@packages+@sanity+util)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: ^1.0.15
+        version: 1.0.15(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@sanity/util@packages+@sanity+util)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.1.0(react@18.3.1)
@@ -4188,8 +4188,8 @@ packages:
       rxjs: ^7
       styled-components: ^6.1
 
-  '@portabletext/editor@1.0.14':
-    resolution: {integrity: sha512-2yis4F5ZRobDAAXhwBy3RU3CeFJi/9DjyaoMpMtSSs0ZzZQKclJ+H8nPNRUeVau2bNCnI9k3JGrQW8Wo0CR/Lg==}
+  '@portabletext/editor@1.0.15':
+    resolution: {integrity: sha512-o1lXZ8pJR/U9e+5i7gWYnYzdzbcNZLyvEgCDtDNFJFZlI3vM2aLJ1oYzPLrxuTvYwI+yGVwK9BTiE9Q+qgKagQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/block-tools': ^3.47.1
@@ -5013,6 +5013,9 @@ packages:
   '@types/express-serve-static-core@4.19.5':
     resolution: {integrity: sha512-y6W03tvrACO72aijJ5uF02FRq5cgDR9lUxddQ8vyF+GvmjJQqbzDcJngEjURc+ZsG31VI3hODNZJ2URj86pzmg==}
 
+  '@types/follow-redirects@1.14.4':
+    resolution: {integrity: sha512-GWXfsD0Jc1RWiFmMuMFCpXMzi9L7oPDVwxUnZdg89kDNnqsRfUKXEtUYtA98A6lig1WXH/CYY/fvPW9HuN5fTA==}
+
   '@types/glob@7.2.0':
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
 
@@ -5094,6 +5097,9 @@ packages:
 
   '@types/prismjs@1.26.4':
     resolution: {integrity: sha512-rlAnzkW2sZOjbqZ743IHUhFcvzaGbqijwOu8QZnZCjfQzBqFE3s4lOTJEsxikImav9uzz/42I+O7YUs1mWgMlg==}
+
+  '@types/progress-stream@2.0.5':
+    resolution: {integrity: sha512-5YNriuEZkHlFHHepLIaxzq3atGeav1qCTGzB74HKWpo66qjfostF+rHc785YYYHeBytve8ZG3ejg42jEIfXNiQ==}
 
   '@types/prop-types@15.7.12':
     resolution: {integrity: sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==}
@@ -7378,8 +7384,8 @@ packages:
     resolution: {integrity: sha512-5uYhsJH8VJBTv7oslg4BznJYhDoRI6waYCxMmCdnTrcCrHA/fCFKoTFz2JKKE0HdDFUF7/oQuhzumXJK7paBRQ==}
     engines: {node: '>= 0.4'}
 
-  get-it@8.6.4:
-    resolution: {integrity: sha512-4bYWtWFPwkHoru0OLVsPhgScATPo8/Ne3PFar0WTrs85Th7qOnRm/y1stJfQzVZfjssBwBM5l0eAVK4ScgLGeg==}
+  get-it@8.6.5:
+    resolution: {integrity: sha512-o1hjPwrb/icm3WJbCweTSq8mKuDfJlqwbFauI+Pdgid99at/BFaBXFBJZE+uqvHyOVARE4z680S44vrDm8SsCw==}
     engines: {node: '>=14.0.0'}
 
   get-latest-version@5.1.0:
@@ -14239,7 +14245,7 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.0.14(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@sanity/util@packages+@sanity+util)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@portabletext/editor@1.0.15(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@sanity/util@packages+@sanity+util)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@portabletext/patches': 1.1.0
       '@sanity/block-tools': link:packages/@sanity/block-tools
@@ -15601,6 +15607,10 @@ snapshots:
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
 
+  '@types/follow-redirects@1.14.4':
+    dependencies:
+      '@types/node': 18.19.44
+
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
@@ -15686,6 +15696,10 @@ snapshots:
   '@types/parse-json@4.0.2': {}
 
   '@types/prismjs@1.26.4': {}
+
+  '@types/progress-stream@2.0.5':
+    dependencies:
+      '@types/node': 18.19.44
 
   '@types/prop-types@15.7.12': {}
 
@@ -18597,7 +18611,7 @@ snapshots:
       has-symbols: 1.0.3
       hasown: 2.0.2
 
-  get-it@8.6.4(debug@4.3.6):
+  get-it@8.6.5(debug@4.3.6):
     dependencies:
       '@types/follow-redirects': 1.14.4
       '@types/progress-stream': 2.0.5
@@ -22404,6 +22418,8 @@ snapshots:
   slate-react@0.107.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate@0.103.0):
     dependencies:
       '@juggle/resize-observer': 3.4.0
+      '@types/is-hotkey': 0.1.10
+      '@types/lodash': 4.17.7
       direction: 1.0.4
       is-hotkey: 0.2.0
       is-plain-object: 5.0.0
