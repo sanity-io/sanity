@@ -2,10 +2,16 @@ import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import {createElement, memo, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
+import {styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPerspectiveMenu} from './perspective/DocumentPerspectiveMenu'
+
+const TitleContainer = styled(Text)`
+  max-width: 100%;
+  min-width: 0;
+`
 
 export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactElement {
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
@@ -41,14 +47,13 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactEle
   }
 
   return (
-    <Flex flex="none" gap={3} paddingX={2} style={{flex: 1, alignItems: 'center'}}>
+    <Flex flex={1} align="center" gap={3} paddingX={2}>
       <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
-      <Text
+      <TitleContainer
         muted={!value?.title}
         size={1}
         textOverflow="ellipsis"
         weight={value?.title ? 'semibold' : undefined}
-        style={{maxWidth: '100%', minWidth: '0'}}
         title={value?.title}
       >
         {value?.title || (
@@ -56,7 +61,7 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactEle
             {t('panes.document-header-title.untitled.text')}
           </span>
         )}
-      </Text>
+      </TitleContainer>
       <Flex flex="none" gap={1}>
         <DocumentPerspectiveMenu />
       </Flex>
