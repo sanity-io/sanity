@@ -1,4 +1,10 @@
-import {Box, Button, Stack, Text} from '@sanity/ui'
+import {
+  Box,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Custom button needed, special children support required
+  Stack,
+  Text,
+} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
 import {

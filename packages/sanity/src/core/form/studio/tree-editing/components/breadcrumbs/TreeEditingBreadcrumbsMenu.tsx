@@ -1,5 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {Button, Flex, Stack, Text} from '@sanity/ui'
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Custom button needed, support for children
+  Flex,
+  Stack,
+  Text,
+} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
 import {

@@ -18,6 +18,7 @@ export default {
       title: 'Species',
       type: 'string',
     },
+    {name: 'description', type: 'text', title: 'Description'},
     {
       name: 'image',
       title: 'Image',

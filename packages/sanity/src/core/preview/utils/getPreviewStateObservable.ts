@@ -27,13 +27,10 @@ export function getPreviewStateObservable(
 ): Observable<PreviewState> {
   const draft$ = isLiveEditEnabled(schemaType)
     ? of({snapshot: null})
-    : documentPreviewStore.observeForPreview(
-        {_type: 'reference', _ref: getDraftId(documentId)},
-        schemaType,
-      )
+    : documentPreviewStore.observeForPreview({_id: getDraftId(documentId)}, schemaType)
 
   const published$ = documentPreviewStore.observeForPreview(
-    {_type: 'reference', _ref: getPublishedId(documentId)},
+    {_id: getPublishedId(documentId)},
     schemaType,
   )
 

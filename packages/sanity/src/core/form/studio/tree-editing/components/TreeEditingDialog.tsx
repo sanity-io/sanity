@@ -1,4 +1,9 @@
-import {Button, Card, Dialog, Flex} from '@sanity/ui'
+import {
+  Card,
+  // eslint-disable-next-line no-restricted-imports
+  Dialog, // Custom dialog needed
+  Flex,
+} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
@@ -16,6 +21,7 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {Button} from '../../../../../ui-components'
 import {
   buildTreeEditingState,
   type BuildTreeEditingStateProps,
@@ -219,6 +225,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
           <Card borderTop>
             <Flex align="center" justify="flex-end" paddingX={3} paddingY={2} sizing="border">
               <Button
+                size="large"
                 data-testid="tree-editing-done"
                 text={t('tree-editing-dialog.sidebar.action.done')}
                 onClick={onClose}
