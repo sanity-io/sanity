@@ -17,6 +17,7 @@ import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-co
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {type DocumentFieldActionNode} from '../../../config'
 import {useTranslation} from '../../../i18n'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormField} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
@@ -223,10 +224,13 @@ export function ReferenceField(props: ReferenceFieldProps) {
     [handleClear, handleReplace, inputId, OpenLink, readOnly, t, value?._ref],
   )
 
-  const handleFocus = useCallback(() => inputProps.onPathFocus([]), [inputProps])
-  const handleBlur = useCallback(
-    (event: FocusEvent) => inputProps.elementProps.onBlur(event),
-    [inputProps.elementProps],
+  const handleFocus = useCallback(
+    (event: FocusEvent) => {
+      if (event.target === elementRef.current) {
+        inputProps.onPathFocus(EMPTY_ARRAY)
+      }
+    },
+    [inputProps],
   )
 
   return (
@@ -279,7 +283,6 @@ export function ReferenceField(props: ReferenceFieldProps) {
                       selected={selected}
                       tone="inherit"
                       onFocus={handleFocus}
-                      onBlur={handleBlur}
                     >
                       <PreviewReferenceValue
                         value={value}
