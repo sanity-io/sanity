@@ -363,4 +363,29 @@ describe('findQueries with defineQuery', () => {
     const queries = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
+
+  test('can import from next-sanity', () => {
+    const source = `
+    import { defineQuery } from "next-sanity";
+    const postQuery = defineQuery("*[_type == 'author']");
+    const res = sanity.fetch(postQuery);
+  `
+
+    const queries = findQueriesInSource(source, 'test.ts')
+    expect(queries.length).toBe(1)
+    const queryResult = queries[0]
+
+    expect(queryResult?.result).toEqual("*[_type == 'author']")
+  })
+
+  test('wont import from other package names', () => {
+    const source = `
+    import { defineQuery } from "other";
+    const postQuery = defineQuery("*[_type == 'author']");
+    const res = sanity.fetch(postQuery);
+  `
+
+    const queries = findQueriesInSource(source, 'test.ts')
+    expect(queries.length).toBe(0)
+  })
 })
