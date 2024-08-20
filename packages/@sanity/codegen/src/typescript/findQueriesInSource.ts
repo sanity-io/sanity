@@ -13,6 +13,7 @@ const require = createRequire(__filename)
 const groqTagName = 'groq'
 const defineQueryFunctionName = 'defineQuery'
 const groqModuleName = 'groq'
+const nextSanityModuleName = 'next-sanity'
 
 const ignoreValue = '@sanity-typegen-ignore'
 
@@ -52,7 +53,8 @@ export function findQueriesInSource(
       // Look for strings wrapped in a defineQuery function call
       const isDefineQueryCall =
         babelTypes.isCallExpression(init) &&
-        isImportFrom(groqModuleName, defineQueryFunctionName, scope, init.callee)
+        (isImportFrom(groqModuleName, defineQueryFunctionName, scope, init.callee) ||
+          isImportFrom(nextSanityModuleName, defineQueryFunctionName, scope, init.callee))
 
       if (babelTypes.isIdentifier(node.id) && (isGroqTemplateTag || isDefineQueryCall)) {
         // If we find a comment leading the decleration which macthes with ignoreValue we don't add
