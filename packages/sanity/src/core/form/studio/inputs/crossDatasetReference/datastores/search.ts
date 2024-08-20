@@ -31,7 +31,7 @@ export function search(
     isCrossDataset: true,
   }).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
-    map((docs) => collate(docs)),
+    map(collate),
     map((collated) =>
       collated.map((entry) => ({
         id: entry.id,

@@ -131,10 +131,7 @@ export function getReferenceInfo(
             )
 
           const value$ = combineLatest([draftPreview$, publishedPreview$]).pipe(
-            map(([draft, published]) => ({
-              draft,
-              published,
-            })),
+            map(([draft, published]) => ({draft, published})),
           )
 
           return value$.pipe(
@@ -147,6 +144,7 @@ export function getReferenceInfo(
                       pairAvailability.published.reason === 'PERMISSION_DENIED'
                     ? PERMISSION_DENIED
                     : NOT_FOUND
+
               return {
                 type: typeName,
                 id: publishedId,
@@ -203,7 +201,7 @@ export function referenceSearch(
   })
   return search(textTerm, {includeDrafts: true}).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
-    map((docs) => collate(docs)),
+    map(collate),
     // pick the 100 best matches
     map((collated) => collated.slice(0, 100)),
     mergeMap((collated) => {
