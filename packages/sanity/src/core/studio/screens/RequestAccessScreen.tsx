@@ -133,8 +133,8 @@ export function RequestAccessScreen() {
         if (request) setHasPendingRequest(true)
       })
       .catch((err) => {
-        const statusCode = err && err.response && err.response.statusCode
-        const errMessage = err && err.response && err.response.body && err.response.body.message
+        const statusCode = err?.response?.statusCode
+        const errMessage = err?.response?.body?.message
         if (statusCode === 429) {
           // User is over their cross-project request limit
           setHasTooManyRequests(true)
