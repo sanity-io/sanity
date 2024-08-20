@@ -1,5 +1,5 @@
 import {
-  type PreviewConfig,
+  type CrossDatasetType,
   type PreviewValue,
   type Reference,
   type SanityDocumentLike,
@@ -55,10 +55,7 @@ export type AvailabilityReason = 'READABLE' | 'PERMISSION_DENIED' | 'NOT_FOUND'
 /**
  * @hidden
  * @beta */
-export interface PreviewableType {
-  fields?: {name: string; type: SchemaType}[]
-  preview?: PreviewConfig
-}
+export type PreviewableType = SchemaType | CrossDatasetType
 
 /**
  * @hidden
@@ -113,6 +110,17 @@ export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocume
 }
 
 /**
+ * Event emitted to notify preview subscribers when they need to refetch a document being previewed
+ * - 'connected' will happen when the store is connected to the invalidation channel, both initially and after a reconnect after a connection loss
+ * - 'mutation' will happen when a document has been mutated and the store needs to refetch a document
+ * @hidden
+ * @beta
+ */
+export type InvalidationChannelEvent =
+  | {type: 'connected'}
+  | {type: 'mutation'; documentId: string; visibility: string}
+
+/**
  * @hidden
  * @beta */
 export interface PreparedSnapshot {
@@ -121,7 +129,10 @@ export interface PreparedSnapshot {
 }
 
 /** @internal */
-export type ObserveDocumentTypeFromIdFn = (id: string) => Observable<string | undefined>
+export type ObserveDocumentTypeFromIdFn = (
+  id: string,
+  apiConfig?: ApiConfig,
+) => Observable<string | undefined>
 
 /**
  * @hidden
@@ -132,4 +143,11 @@ export interface ObservePathsFn {
     paths: (string | PreviewPath)[],
     apiConfig?: ApiConfig,
   ): Observable<PreviewValue | SanityDocumentLike | Reference | string | null>
+}
+
+/**
+ * @hidden
+ * @beta */
+export interface ObserveDocumentAvailabilityFn {
+  (id: string): Observable<{draft: DocumentAvailability; published: DocumentAvailability}>
 }

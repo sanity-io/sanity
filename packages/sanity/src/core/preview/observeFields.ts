@@ -5,7 +5,6 @@ import {
   concat,
   defer,
   EMPTY,
-  from,
   fromEvent,
   merge,
   type Observable,
@@ -29,8 +28,7 @@ import {
   type ApiConfig,
   type FieldName,
   type Id,
-  type ObservePathsFn,
-  type PreviewPath,
+  type InvalidationChannelEvent,
   type Selection,
 } from './types'
 import {debounceCollect} from './utils/debounceCollect'
@@ -48,58 +46,20 @@ type Cache = {
   [id: string]: CachedFieldObserver[]
 }
 
-export function create_preview_observeFields(context: {
-  observePaths: ObservePathsFn
-  versionedClient: SanityClient
+/**
+ * Creates a function that allows observing individual fields on a document.
+ * It will automatically debounce and batch requests, and maintain an in-memory cache of the latest field values
+ * @param options - Options to use when creating the observer
+ * @internal
+ */
+export function createObserveFields(options: {
+  client: SanityClient
+  invalidationChannel: Observable<InvalidationChannelEvent>
 }) {
-  const {observePaths, versionedClient} = context
-
-  let _globalListener: any
-
-  const getGlobalEvents = () => {
-    if (!_globalListener) {
-      const allEvents$ = from(
-        versionedClient.listen(
-          '*[!(_id in path("_.**"))]',
-          {},
-          {
-            events: ['welcome', 'mutation'],
-            includeResult: false,
-            visibility: 'query',
-            tag: 'preview.global',
-          },
-        ),
-      ).pipe(share())
-
-      // This is a stream of welcome events from the server, each telling us that we have established listener connection
-      // We map these to snapshot fetch/sync. It is good to wait for the first welcome event before fetching any snapshots as, we may miss
-      // events that happens in the time period after initial fetch and before the listener is established.
-      const welcome$ = allEvents$.pipe(
-        filter((event: any) => event.type === 'welcome'),
-        shareReplay({refCount: true, bufferSize: 1}),
-      )
-
-      // This will keep the listener active forever and in turn reduce the number of initial fetches
-      // as less 'welcome' events will be emitted.
-      // @todo: see if we can delay unsubscribing or connect with some globally defined shared listener
-      welcome$.subscribe()
-
-      const mutations$ = allEvents$.pipe(filter((event: any) => event.type === 'mutation'))
-
-      _globalListener = {
-        welcome$,
-        mutations$,
-      }
-    }
-
-    return _globalListener
-  }
-
+  const {client: currentDatasetClient, invalidationChannel} = options
   function listen(id: Id) {
-    const globalEvents = getGlobalEvents()
-    return merge(
-      globalEvents.welcome$,
-      globalEvents.mutations$.pipe(filter((event: any) => event.documentId === id)),
+    return invalidationChannel.pipe(
+      filter((event) => event.type === 'connected' || event.documentId === id),
     )
   }
 
@@ -112,13 +72,20 @@ export function create_preview_observeFields(context: {
     }
   }
 
-  const fetchDocumentPathsFast = debounceCollect(fetchAllDocumentPathsWith(versionedClient), 100)
-  const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPathsWith(versionedClient), 1000)
+  const fetchDocumentPathsFast = debounceCollect(
+    fetchAllDocumentPathsWith(currentDatasetClient),
+    100,
+  )
 
-  function currentDatasetListenFields(id: Id, fields: PreviewPath[]) {
+  const fetchDocumentPathsSlow = debounceCollect(
+    fetchAllDocumentPathsWith(currentDatasetClient),
+    1000,
+  )
+
+  function currentDatasetListenFields(id: Id, fields: FieldName[]) {
     return listen(id).pipe(
-      switchMap((event: any) => {
-        if (event.type === 'welcome' || event.visibility === 'query') {
+      switchMap((event) => {
+        if (event.type === 'connected' || event.visibility === 'query') {
           return fetchDocumentPathsFast(id, fields as any).pipe(
             mergeMap((result) => {
               return concat(
@@ -137,17 +104,11 @@ export function create_preview_observeFields(context: {
     )
   }
 
-  // keep for debugging purposes for now
-  // function fetchDocumentPaths(id, selection) {
-  //   return client.observable.fetch(`*[_id==$id]{_id,_type,${selection.join(',')}}`, {id})
-  //     .map(result => result[0])
-  // }
-
   const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
   const getBatchFetcherForDataset = memoize(
     function getBatchFetcherForDataset(apiConfig: ApiConfig) {
-      const client = versionedClient.withConfig(apiConfig)
+      const client = currentDatasetClient.withConfig(apiConfig)
       const fetchAll = fetchAllDocumentPathsWith(client)
       return debounceCollect(fetchAll, 10)
     },
@@ -165,19 +126,19 @@ export function create_preview_observeFields(context: {
     share(),
   )
 
-  function crossDatasetListenFields(id: Id, fields: PreviewPath[], apiConfig: ApiConfig) {
+  function crossDatasetListenFields(id: Id, fields: FieldName[], apiConfig: ApiConfig) {
     return visiblePoll$.pipe(startWith(0)).pipe(
       switchMap(() => {
         const batchFetcher = getBatchFetcherForDataset(apiConfig)
-        return batchFetcher(id, fields as any)
+        return batchFetcher(id, fields)
       }),
     )
   }
 
   function createCachedFieldObserver<T>(
-    id: any,
-    fields: any,
-    apiConfig: ApiConfig,
+    id: string,
+    fields: FieldName[],
+    apiConfig?: ApiConfig,
   ): CachedFieldObserver {
     let latest: T | null = null
     const changes$ = merge(
@@ -209,7 +170,7 @@ export function create_preview_observeFields(context: {
     )
 
     if (missingFields.length > 0) {
-      existingObservers.push(createCachedFieldObserver(id, fields, apiConfig as any))
+      existingObservers.push(createCachedFieldObserver(id, fields, apiConfig))
     }
 
     const cachedFieldObservers = existingObservers
@@ -226,8 +187,7 @@ export function create_preview_observeFields(context: {
     )
   }
 
-  // API
-  return {observeFields: cachedObserveFields}
+  return cachedObserveFields
 
   function pickFrom(objects: Record<string, any>[], fields: string[]) {
     return [...INCLUDE_FIELDS, ...fields].reduce((result, fieldName) => {
