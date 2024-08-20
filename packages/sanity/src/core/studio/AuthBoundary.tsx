@@ -2,7 +2,7 @@ import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
-import {AuthenticateScreen, NotAuthenticatedScreen} from './screens'
+import {AuthenticateScreen, NotAuthenticatedScreen, RequestAccessScreen} from './screens'
 
 interface AuthBoundaryProps {
   children: ReactNode
@@ -23,6 +23,7 @@ export function AuthBoundary({
   const [loggedIn, setLoggedIn] = useState<'logged-in' | 'logged-out' | 'loading' | 'unauthorized'>(
     'loading',
   )
+  const [loginProvider, setLoginProvider] = useState<string | undefined>()
   const {activeWorkspace} = useActiveWorkspace()
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export function AuthBoundary({
       next: ({authenticated, currentUser}) => {
         if (currentUser?.roles?.length === 0) {
           setLoggedIn('unauthorized')
-
+          if (currentUser?.provider) setLoginProvider(currentUser.provider)
           return
         }
 
@@ -50,7 +51,13 @@ export function AuthBoundary({
 
   if (loggedIn === 'loading') return <LoadingComponent />
 
-  if (loggedIn === 'unauthorized') return <NotAuthenticatedComponent />
+  if (loggedIn === 'unauthorized') {
+    // If using unverified `sanity` login provider, send them
+    // to basic NotAuthorized component.
+    if (!loginProvider || loginProvider === 'sanity') return <NotAuthenticatedComponent />
+    // Otherwise, send user to request access screen
+    return <RequestAccessScreen />
+  }
 
   // NOTE: there is currently a bug where the `AuthenticateComponent` will
   // flash after the first login with cookieless mode. See `createAuthStore`
