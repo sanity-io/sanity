@@ -3,7 +3,6 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {route, RouterProvider} from 'sanity/router'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useListener} from '../../../../hooks/useListener'
 import {useBundles} from '../../../../store/bundles'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
@@ -18,10 +17,6 @@ jest.mock('../../../../store/bundles/useBundleOperations', () => ({
   useBundleOperations: jest.fn().mockReturnValue({
     publishBundle: jest.fn(),
   }),
-}))
-
-jest.mock('../../../../hooks/useListener', () => ({
-  useListener: jest.fn().mockReturnValue({documents: [], loading: false}),
 }))
 
 jest.mock('../useBundleDocuments', () => ({
@@ -54,7 +49,6 @@ jest.mock('../documentTable/useReleaseHistory', () => ({
 }))
 
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
-const mockUseListener = useListener as jest.Mock<typeof useListener>
 const mockUseBundleDocuments = useBundleDocuments as jest.Mock<typeof useBundleDocuments>
 const mockRouterNavigate = jest.fn()
 
@@ -137,12 +131,6 @@ describe('ReleaseDetail', () => {
         dispatch: jest.fn(),
         deletedBundles: {},
       })
-      mockUseListener.mockReturnValue({
-        documents: [],
-        loading: true,
-        error: null,
-        dispatch: jest.fn(),
-      })
       await renderTest()
     })
 
@@ -184,20 +172,6 @@ describe('after bundles have loaded', () => {
         loading: false,
         dispatch: jest.fn(),
         deletedBundles: {},
-      })
-      mockUseListener.mockReturnValue({
-        documents: [
-          {
-            _id: 'test-id',
-            _type: 'document',
-            _rev: 'abc',
-            _createdAt: currentDate,
-            _updatedAt: currentDate,
-          },
-        ],
-        loading: false,
-        dispatch: jest.fn(),
-        error: null,
       })
     })
 
@@ -384,20 +358,6 @@ describe('after bundles have loaded', () => {
         loading: false,
         dispatch: jest.fn(),
         deletedBundles: {},
-      })
-      mockUseListener.mockReturnValue({
-        documents: [
-          {
-            _id: 'test-id',
-            _type: 'document',
-            _rev: 'abc',
-            _createdAt: new Date().toISOString(),
-            _updatedAt: new Date().toISOString(),
-          },
-        ],
-        loading: false,
-        dispatch: jest.fn(),
-        error: null,
       })
 
       await renderTest()
