@@ -67,34 +67,10 @@ function mutConcat<T>(array: T[], chunks: T[]) {
   return array
 }
 
-export function create_preview_availability(
+export function createPreviewAvailabilityObserver(
   versionedClient: SanityClient,
   observePaths: ObservePathsFn,
-): {
-  observeDocumentPairAvailability(id: string): Observable<DraftsModelDocumentAvailability>
-} {
-  /**
-   * Returns an observable of metadata for a given drafts model document
-   */
-  function observeDocumentPairAvailability(
-    id: string,
-  ): Observable<DraftsModelDocumentAvailability> {
-    const draftId = getDraftId(id)
-    const publishedId = getPublishedId(id)
-    return combineLatest([
-      observeDocumentAvailability(draftId),
-      observeDocumentAvailability(publishedId),
-    ]).pipe(
-      distinctUntilChanged(shallowEquals),
-      map(([draftReadability, publishedReadability]) => {
-        return {
-          draft: draftReadability,
-          published: publishedReadability,
-        }
-      }),
-    )
-  }
-
+): (id: string) => Observable<DraftsModelDocumentAvailability> {
   /**
    * Observable of metadata for the document with the given id
    * If we can't read a document it is either because it's not readable or because it doesn't exist
@@ -158,5 +134,25 @@ export function create_preview_availability(
     })
   }
 
-  return {observeDocumentPairAvailability}
+  /**
+   * Returns an observable of metadata for a given drafts model document
+   */
+  return function observeDocumentPairAvailability(
+    id: string,
+  ): Observable<DraftsModelDocumentAvailability> {
+    const draftId = getDraftId(id)
+    const publishedId = getPublishedId(id)
+    return combineLatest([
+      observeDocumentAvailability(draftId),
+      observeDocumentAvailability(publishedId),
+    ]).pipe(
+      distinctUntilChanged(shallowEquals),
+      map(([draftReadability, publishedReadability]) => {
+        return {
+          draft: draftReadability,
+          published: publishedReadability,
+        }
+      }),
+    )
+  }
 }
