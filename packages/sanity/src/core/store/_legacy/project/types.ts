@@ -7,12 +7,20 @@ import {type Observable} from 'rxjs'
 export interface ProjectData {
   id: string
   displayName: string
+  /**
+   * @deprecated Use the `/user-applications` endpoint instead, which lists all deployed studios/applications
+   * @see https://www.sanity.io/help/studio-host-user-applications
+   */
   studioHost: string | null
   isBlocked: boolean
   isDisabled: boolean
   isDisabledByUser: boolean
   metadata: {
     color: string
+    /**
+     * @deprecated Use the `/user-applications` endpoint instead, which lists all deployed studios/applications
+     * @see https://www.sanity.io/help/studio-host-user-applications
+     */
     externalStudioHost: string
   }
   maxRetentionDays: number
