@@ -39,14 +39,14 @@ export function getReferenceInfo(
   return pairAvailability$.pipe(
     switchMap((pairAvailability) => {
       if (!pairAvailability.draft.available && !pairAvailability.published.available) {
-        // combine availability of draft + published + version
+        // combine availability of draft + published
         const availability =
           pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
           pairAvailability.published.reason === 'PERMISSION_DENIED'
             ? PERMISSION_DENIED
             : NOT_FOUND
 
-        // short circuit, neither draft nor published nor version is available so no point in trying to get preview
+        // short circuit, neither draft nor published is available so no point in trying to get preview
         return of({
           id,
           type: undefined,
@@ -54,7 +54,6 @@ export function getReferenceInfo(
           preview: {
             draft: undefined,
             published: undefined,
-            version: undefined,
           },
         } as const)
       }
@@ -66,7 +65,7 @@ export function getReferenceInfo(
         documentPreviewStore.observeDocumentTypeFromId(draftId),
         documentPreviewStore.observeDocumentTypeFromId(publishedId),
       ]).pipe(
-        // assume draft + published + version are always same type
+        // assume draft + published are always same type
         map(([draftTypeName, publishedTypeName]) => draftTypeName || publishedTypeName),
       )
 
@@ -84,7 +83,6 @@ export function getReferenceInfo(
               preview: {
                 draft: undefined,
                 published: undefined,
-                version: undefined,
               },
             } as const)
           }
@@ -100,7 +98,6 @@ export function getReferenceInfo(
               preview: {
                 draft: undefined,
                 published: undefined,
-                version: undefined,
               },
             } as const)
           }
