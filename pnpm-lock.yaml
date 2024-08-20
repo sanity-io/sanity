@@ -1659,6 +1659,9 @@ importers:
       rxjs-exhaustmap-with-trailing:
         specifier: ^2.1.1
         version: 2.1.1(rxjs@7.8.1)
+      rxjs-mergemap-array:
+        specifier: ^0.1.0
+        version: 0.1.0(rxjs@7.8.1)
       sanity-diff-patch:
         specifier: ^3.0.2
         version: 3.0.2
@@ -10016,6 +10019,12 @@ packages:
 
   rxjs-exhaustmap-with-trailing@2.1.1:
     resolution: {integrity: sha512-gK7nsKyPFsbjDeJ0NYTcZYGW5TbTFjT3iACa28Pwp3fIf9wT/JUR8vdlKYCjUOZKXYnXEk8eRZ4zcQyEURosIA==}
+    peerDependencies:
+      rxjs: 7.x
+
+  rxjs-mergemap-array@0.1.0:
+    resolution: {integrity: sha512-19fXxPXN4X8LPWu7fg/nyX+nr0G97qSNXhEvF32cdgWuoyUVQ4MrFr+UL4HGip6iO5kbZOL4puAjPeQ/D5qSlA==}
+    engines: {node: '>=18.0.0'}
     peerDependencies:
       rxjs: 7.x
 
@@ -21460,6 +21469,10 @@ snapshots:
       rxjs: 7.8.1
 
   rxjs-exhaustmap-with-trailing@2.1.1(rxjs@7.8.1):
+    dependencies:
+      rxjs: 7.8.1
+
+  rxjs-mergemap-array@0.1.0(rxjs@7.8.1):
     dependencies:
       rxjs: 7.8.1
 
