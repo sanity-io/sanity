@@ -1,5 +1,5 @@
 import {type DocGenTemplate} from '../types'
-import {lorem} from '../utils/lorem-bytes'
+import {loremString} from '../utils/lorem'
 
 export const validation: DocGenTemplate = (options) => ({
   _type: 'validationTest',
@@ -19,7 +19,7 @@ export const validation: DocGenTemplate = (options) => ({
         {
           _type: 'span',
           marks: [],
-          text: lorem(options.size / 2),
+          text: loremString(options.size / 2),
         },
       ],
       markDefs: [],
@@ -30,7 +30,7 @@ export const validation: DocGenTemplate = (options) => ({
   checkbox: true,
   dropdown: 'one',
   infoValidation: 'moop',
-  intro: lorem(options.size / 2),
+  intro: loremString(options.size / 2),
   lowestTemperature: 50,
   myFancyUrlField: 'http://www.sanity.io',
   myUrlField: 'https://www.sanity.io',

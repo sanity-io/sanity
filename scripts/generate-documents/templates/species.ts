@@ -1,5 +1,5 @@
 import {type DocGenTemplate} from '../types'
-import {lorem} from '../utils/lorem-bytes'
+import {loremString} from '../utils/lorem'
 
 export const species: DocGenTemplate = (options) => ({
   _type: 'species',
@@ -7,5 +7,5 @@ export const species: DocGenTemplate = (options) => ({
   foo: 'bar',
   genus: 'Foo',
   species: 'Bar',
-  description: lorem(options.size),
+  description: loremString(options.size),
 })
