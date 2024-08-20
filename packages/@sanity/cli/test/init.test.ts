@@ -40,7 +40,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
     })
   })
 
-  testConcurrent('adds autoUpdate: true to cli config for javascript projects', async () => {
+  testConcurrent('adds autoUpdates: true to cli config for javascript projects', async () => {
     const version = 'v3'
     const testRunArgs = getTestRunArgs(version)
     const outpath = `test-template-${version}`
@@ -64,5 +64,31 @@ describeCliTest('CLI: `sanity init v3`', () => {
     expect(cliConfig).toContain(`projectId: '${cliProjectId}'`)
     expect(cliConfig).toContain(`dataset: '${testRunArgs.dataset}'`)
     expect(cliConfig).toContain(`autoUpdates: true`)
+  })
+
+  testConcurrent('adds autoUpdates: false to cli config if flag provided', async () => {
+    const version = 'v3'
+    const testRunArgs = getTestRunArgs(version)
+    const outpath = `test-template-${version}`
+
+    await runSanityCmdCommand(version, [
+      'init',
+      '--y',
+      '--project',
+      cliProjectId,
+      '--dataset',
+      testRunArgs.dataset,
+      '--output-path',
+      `${baseTestPath}/${outpath}`,
+      '--package-manager',
+      'manual',
+      '--no-auto-updates',
+    ])
+
+    const cliConfig = await fs.readFile(path.join(baseTestPath, outpath, 'sanity.cli.ts'), 'utf-8')
+
+    expect(cliConfig).toContain(`projectId: '${cliProjectId}'`)
+    expect(cliConfig).toContain(`dataset: '${testRunArgs.dataset}'`)
+    expect(cliConfig).toContain(`autoUpdates: false`)
   })
 })
