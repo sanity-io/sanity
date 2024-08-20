@@ -168,13 +168,7 @@ export function isEmptyValue(value: unknown): boolean {
 
 export function isNativeEditableElement(el: EventTarget): boolean {
   if (el instanceof HTMLElement && el.isContentEditable) return true
-  if (el instanceof HTMLInputElement) {
-    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#input_types
-    if (/|text|email|number|password|search|tel|url/.test(el.type || '')) {
-      return !(el.disabled || el.readOnly)
-    }
-  }
-  if (el instanceof HTMLTextAreaElement) return !(el.disabled || el.readOnly)
+  if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) return true
   return false
 }
 
