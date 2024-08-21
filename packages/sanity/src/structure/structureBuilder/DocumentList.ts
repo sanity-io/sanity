@@ -142,7 +142,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Set Document list filter
-   * @param filter - GROQ-filter used to determine which documents to display. Do not support joins, since they operate on individual documents, and will ignore order-clauses and projections. See https://www.sanity.io/docs/realtime-updates
+   * @param filter - GROQ-filter used to determine which documents to display. Do not support joins, since they operate on individual documents, and will ignore order-clauses and projections. See {@link https://www.sanity.io/docs/realtime-updates}
    * @returns document list builder based on the options and filter provided. See {@link DocumentListBuilder}
    */
   filter(filter: string): DocumentListBuilder {
