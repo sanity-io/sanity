@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {getBundleSlug, isVersionId} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
@@ -263,6 +264,10 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     }
   }, [replies])
 
+  const label = isVersionId(props.parentComment.target.document._ref)
+    ? getBundleSlug(props.parentComment.target.document._ref)
+    : 'published'
+
   const renderedReplies = useMemo(
     () =>
       splicedReplies.map((reply) => (
@@ -331,6 +336,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         space={4}
       >
         <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
+          <div>{label}</div>
           <CommentsListItemLayout
             avatarSize={avatarConfig.avatarSize}
             canDelete={parentComment.authorId === currentUser.id}
