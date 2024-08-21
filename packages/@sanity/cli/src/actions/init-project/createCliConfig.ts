@@ -33,36 +33,38 @@ export function createCliConfig(options: GenerateCliConfigOptions): string {
     StringLiteral: {
       enter({node}) {
         const value = node.value
-        if (value.startsWith('%') && value.endsWith('%')) {
-          const variableName = value.slice(1, -1) as keyof GenerateCliConfigOptions
-          if (!(variableName in variables)) {
-            throw new Error(`Template variable '${value}' not defined`)
-          }
-          const newValue = variables[variableName]
-          /*
-           * although there are valid non-strings in our config,
-           * they're not in StringLiteral nodes, so assume undefined
-           */
-          node.value = typeof newValue === 'string' ? newValue : ''
+        if (!value.startsWith('%') || !value.endsWith('%')) {
+          return
         }
+        const variableName = value.slice(1, -1) as keyof GenerateCliConfigOptions
+        if (!(variableName in variables)) {
+          throw new Error(`Template variable '${value}' not defined`)
+        }
+        const newValue = variables[variableName]
+        /*
+         * although there are valid non-strings in our config,
+         * they're not in StringLiteral nodes, so assume undefined
+         */
+        node.value = typeof newValue === 'string' ? newValue : ''
       },
     },
     Identifier: {
       enter({node}) {
-        if (node.name.startsWith('__BOOL__')) {
-          const variableName = node.name.replace(
-            /^__BOOL__(.+?)__$/,
-            '$1',
-          ) as keyof GenerateCliConfigOptions
-          if (!(variableName in variables)) {
-            throw new Error(`Template variable '${variableName}' not defined`)
-          }
-          const value = variables[variableName]
-          if (typeof value !== 'boolean') {
-            throw new Error(`Expected boolean value for '${variableName}'`)
-          }
-          node.name = value.toString()
+        if (!node.name.startsWith('__BOOL__')) {
+          return
         }
+        const variableName = node.name.replace(
+          /^__BOOL__(.+?)__$/,
+          '$1',
+        ) as keyof GenerateCliConfigOptions
+        if (!(variableName in variables)) {
+          throw new Error(`Template variable '${variableName}' not defined`)
+        }
+        const value = variables[variableName]
+        if (typeof value !== 'boolean') {
+          throw new Error(`Expected boolean value for '${variableName}'`)
+        }
+        node.name = value.toString()
       },
     },
   })
