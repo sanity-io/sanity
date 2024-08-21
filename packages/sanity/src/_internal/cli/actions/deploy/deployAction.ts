@@ -5,6 +5,7 @@ import zlib from 'node:zlib'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 
+import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
 import {
   checkDir,
@@ -29,10 +30,8 @@ export default async function deployStudioAction(
   const flags = {build: true, ...args.extOptions}
   const customSourceDir = args.argsWithoutOptions[0]
   const sourceDir = path.resolve(process.cwd(), customSourceDir || path.join(workDir, 'dist'))
-  const isAutoUpdating =
-    flags['auto-updates'] ||
-    (cliConfig && 'autoUpdates' in cliConfig && cliConfig.autoUpdates === true) ||
-    false
+  const isAutoUpdating = shouldAutoUpdate({flags, cliConfig})
+
   const installedSanityVersion = await getInstalledSanityVersion()
   const configStudioHost = cliConfig && 'studioHost' in cliConfig && cliConfig.studioHost
 
