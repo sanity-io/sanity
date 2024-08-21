@@ -1100,7 +1100,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title of the alert for studio users when packages in their studio are out-of-date */
   'package-version.new-package-available.title': 'Sanity Studio is ready to update!',
   /** Label for action to manage members of the current studio project */
-  'presence.action.manage-members': 'Manage members',
+  'presence.action.manage-members': 'Invite collaborators',
   /** Accessibility label for presence menu button */
   'presence.aria-label': 'Global presence',
   /** Message description for when no one else is currently present */

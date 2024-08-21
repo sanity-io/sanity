@@ -1,4 +1,4 @@
-import {CogIcon, UsersIcon} from '@sanity/icons'
+import {AddIcon, UsersIcon} from '@sanity/icons'
 import {Box, Menu, MenuDivider, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
@@ -107,8 +107,8 @@ export function PresenceMenu() {
 
             <MenuItem
               as="a"
-              href={`https://sanity.io/manage/project/${projectId}`}
-              iconRight={CogIcon}
+              href={`https://sanity.io/manage/project/${projectId}/members`}
+              iconRight={AddIcon}
               onFocus={handleClearFocusedItem}
               rel="noopener noreferrer"
               target="_blank"
