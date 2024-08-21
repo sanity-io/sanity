@@ -2,7 +2,6 @@ import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/c
 import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {catchError, of} from 'rxjs'
 
-import {getPublishedId} from '../../util'
 import {type CommentDocument, type Loadable} from '../types'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
 
@@ -64,7 +63,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
 
   const didInitialFetch = useRef<boolean>(false)
 
-  const params = useMemo(() => ({documentId: getPublishedId(documentId)}), [documentId])
+  const params = useMemo(() => ({documentId: documentId}), [documentId])
 
   const initialFetch = useCallback(async () => {
     if (!client) {
@@ -84,7 +83,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   const handleListenerEvent = useCallback(
     async (event: ListenEvent<Record<string, CommentDocument>>) => {
       // Fetch all comments on initial connection
-      if (event.type === 'welcome' && !didInitialFetch.current) {
+      if (event.type === 'welcome') {
         setLoading(true)
         await initialFetch()
         setLoading(false)

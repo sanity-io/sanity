@@ -3,6 +3,7 @@ import {
   COMMENTS_INSPECTOR_NAME,
   CommentsEnabledProvider,
   CommentsProvider,
+  getVersionId,
   useCommentsEnabled,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -37,10 +38,11 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {children, documentId, documentType} = props
 
   const {enabled} = useCommentsEnabled()
-  const {connectionState, onPathOpen, inspector, openInspector} = useDocumentPane()
+  const {connectionState, onPathOpen, inspector, openInspector, version} = useDocumentPane()
   const router = useRouter()
   const {params, setParams, createPathWithParams, ...paneRouter} = usePaneRouter()
   const perspective = paneRouter.perspective ?? router.stickyParams.perspective
+  let id = documentId
 
   const selectedCommentId = params?.comment
   const paramsRef = useRef(params)
@@ -80,9 +82,13 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
     return <>{children}</>
   }
 
+  if (version) {
+    id = getVersionId(documentId, version)
+  }
+
   return (
     <CommentsProvider
-      documentId={documentId}
+      documentId={id}
       documentType={documentType}
       getCommentLink={getCommentLink}
       isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
