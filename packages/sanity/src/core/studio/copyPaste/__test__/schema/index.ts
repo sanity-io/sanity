@@ -11,40 +11,42 @@ import {linkType, myStringObjectType, nestedObjectType} from './objects'
 import {postDocument} from './post'
 import {pteCustomMarkersDocument} from './pteCustomerMarkers'
 
+export const mockTypes = [
+  linkType,
+  myStringObjectType,
+  nestedObjectType,
+  {
+    name: 'customNamedBlock',
+    type: 'block',
+    title: 'A named custom block',
+    marks: {
+      annotations: [linkType, myStringObjectType],
+    },
+    of: [
+      {
+        type: 'object',
+        name: 'test',
+        fields: [myStringObjectType],
+      },
+      {
+        type: 'reference',
+        name: 'strongAuthorRef',
+        title: 'A strong author ref',
+        to: {type: 'author'},
+      },
+    ],
+  },
+  authorDocument,
+  editorDocument,
+  postDocument,
+  pteCustomMarkersDocument,
+  hotspotDocument,
+  objectsDocument,
+  referencesDocument,
+  bookDocument,
+]
+
 export const schema = createSchema({
   name: 'default',
-  types: [
-    linkType,
-    myStringObjectType,
-    nestedObjectType,
-    {
-      name: 'customNamedBlock',
-      type: 'block',
-      title: 'A named custom block',
-      marks: {
-        annotations: [linkType, myStringObjectType],
-      },
-      of: [
-        {
-          type: 'object',
-          name: 'test',
-          fields: [myStringObjectType],
-        },
-        {
-          type: 'reference',
-          name: 'strongAuthorRef',
-          title: 'A strong author ref',
-          to: {type: 'author'},
-        },
-      ],
-    },
-    authorDocument,
-    editorDocument,
-    postDocument,
-    pteCustomMarkersDocument,
-    hotspotDocument,
-    objectsDocument,
-    referencesDocument,
-    bookDocument,
-  ],
+  types: mockTypes,
 }) as Schema

@@ -86,7 +86,6 @@ function createI18nApi({
     },
 
     /** @internal */
-    // @ts-expect-error types are missing
     i18next: i18nInstance,
   }
 }

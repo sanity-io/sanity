@@ -1,5 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Box, Button, Flex, Text, useElementSize} from '@sanity/ui'
+import {
+  Box,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Custom button needed, special padding support required
+  Flex,
+  Text,
+  useElementSize,
+} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {isEqual} from 'lodash'

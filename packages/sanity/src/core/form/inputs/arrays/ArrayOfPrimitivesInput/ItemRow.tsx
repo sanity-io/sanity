@@ -1,4 +1,4 @@
-import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
+import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Flex, Menu} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
@@ -29,6 +29,7 @@ export const ItemRow = forwardRef(function ItemRow(
     value,
     insertableTypes,
     onInsert,
+    onCopy,
     onRemove,
     readOnly,
     inputId,
@@ -51,6 +52,12 @@ export const ItemRow = forwardRef(function ItemRow(
   const handleDuplicate = useCallback(() => {
     if (value) onInsert({position: 'after', items: [value]})
   }, [onInsert, value])
+
+  const handleCopy = useCallback(() => {
+    onCopy({
+      items: [value],
+    })
+  }, [onCopy, value])
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -78,9 +85,10 @@ export const ItemRow = forwardRef(function ItemRow(
             icon={TrashIcon}
             onClick={onRemove}
           />
+          <MenuItem text={t('inputs.array.action.copy')} icon={CopyIcon} onClick={handleCopy} />
           <MenuItem
             text={t('inputs.array.action.duplicate')}
-            icon={DuplicateIcon}
+            icon={AddDocumentIcon}
             onClick={handleDuplicate}
           />
           <InsertMenuGroups types={insertableTypes} onInsert={handleInsert} />

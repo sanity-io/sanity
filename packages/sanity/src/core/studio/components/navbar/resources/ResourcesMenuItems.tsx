@@ -2,6 +2,7 @@ import {Box, MenuDivider, Text} from '@sanity/ui'
 
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
+import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../../../i18n'
 import {SANITY_VERSION} from '../../../../version'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
@@ -15,6 +16,7 @@ interface ResourcesMenuItemProps {
 export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
   const latestStudioVersion = value?.latestVersion
+  const isAutoUpdating = hasSanityPackageInImportMap()
   const {t} = useTranslation()
 
   if (isLoading) {
@@ -61,7 +63,7 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
         <Text size={1} muted weight="medium" textOverflow="ellipsis">
           {t('help-resources.studio-version', {studioVersion: SANITY_VERSION})}
         </Text>
-        {!error && latestStudioVersion && (
+        {!error && latestStudioVersion && !isAutoUpdating && (
           <Box paddingTop={2}>
             <Text size={1} muted textOverflow="ellipsis">
               {t('help-resources.latest-sanity-version', {

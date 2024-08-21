@@ -47,7 +47,7 @@ export function pathToString(path: Path): string {
 /** @internal */
 export function getValueAtPath(rootValue: unknown, path: Path): unknown {
   const segment = path[0]
-  if (!segment) {
+  if (typeof segment === 'undefined') {
     return rootValue
   }
 

@@ -368,7 +368,7 @@ export default defineType({
       title: 'A geopoint',
       description: 'Required, must be in Norway somewhere',
       validation: (Rule) =>
-        Rule.required().custom((geoPoint) => {
+        Rule.custom((geoPoint) => {
           if (!geoPoint) {
             return true
           }

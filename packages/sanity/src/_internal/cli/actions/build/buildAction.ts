@@ -16,6 +16,7 @@ import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 
 const rimraf = promisify(rimrafCallback)
 
@@ -58,9 +59,7 @@ export default async function buildSanityStudio(
     return {didCompile: false}
   }
 
-  const autoUpdatesEnabled =
-    flags['auto-updates'] ||
-    (cliConfig && 'autoUpdates' in cliConfig && cliConfig.autoUpdates === true)
+  const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
 
   // Get the version without any tags if any
   const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
