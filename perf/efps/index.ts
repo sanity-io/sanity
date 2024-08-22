@@ -5,10 +5,8 @@ import 'dotenv/config'
 import fs from 'node:fs'
 import {createServer} from 'node:http'
 import path from 'node:path'
-import process from 'node:process'
 import {fileURLToPath} from 'node:url'
 
-import {createClient} from '@sanity/client'
 import react from '@vitejs/plugin-react'
 import chalk from 'chalk'
 import Ora from 'ora'
@@ -23,6 +21,7 @@ import {exec} from './helpers/exec'
 import {getCurrentGitBranchSync, getCurrentGitCommitSync} from './helpers/git'
 //import {remapCpuProfile} from './helpers/remapCpuProfile'
 import {metricsClient} from './metricsClient'
+import {testClient as client} from './testClient'
 import longProse from './tests/longProse/longProse'
 import singlePte from './tests/singlePte/singlePte'
 import singleString from './tests/singleString/singleString'
@@ -31,20 +30,7 @@ import {type EfpsTest, type EfpsTestRunnerContext} from './types'
 const tests = [singlePte, singleString, longProse]
 const headless = true
 
-// eslint-disable-next-line turbo/no-undeclared-env-vars
-const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID
-// eslint-disable-next-line turbo/no-undeclared-env-vars
-const dataset = process.env.VITE_PERF_EFPS_DATASET
-// eslint-disable-next-line turbo/no-undeclared-env-vars
-const token = process.env.PERF_EFPS_SANITY_TOKEN
-
-const client = createClient({
-  projectId,
-  dataset,
-  token,
-  useCdn: false,
-  apiVersion: 'v2024-08-08',
-})
+const {token, projectId} = client.config()
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
 const monorepoRoot = path.resolve(workspaceDir, '../..')
