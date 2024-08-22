@@ -20,7 +20,9 @@ import handler from 'serve-handler'
 import * as vite from 'vite'
 
 import {exec} from './helpers/exec'
-import {remapCpuProfile} from './helpers/remapCpuProfile'
+import {getCurrentGitBranchSync, getCurrentGitCommitSync} from './helpers/git'
+//import {remapCpuProfile} from './helpers/remapCpuProfile'
+import {metricsClient} from './metricsClient'
 import longProse from './tests/longProse/longProse'
 import singlePte from './tests/singlePte/singlePte'
 import singleString from './tests/singleString/singleString'
@@ -29,8 +31,11 @@ import {type EfpsTest, type EfpsTestRunnerContext} from './types'
 const tests = [singlePte, singleString, longProse]
 const headless = true
 
+// eslint-disable-next-line turbo/no-undeclared-env-vars
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID
+// eslint-disable-next-line turbo/no-undeclared-env-vars
 const dataset = process.env.VITE_PERF_EFPS_DATASET
+// eslint-disable-next-line turbo/no-undeclared-env-vars
 const token = process.env.PERF_EFPS_SANITY_TOKEN
 
 const client = createClient({
@@ -85,13 +90,51 @@ const formatFps = (fps: number) => {
   return chalk.yellow(rounded)
 }
 
+async function uploadFile(filePath: string, contentType: string, filename: string) {
+  const readableStream = fs.createReadStream(filePath)
+  const asset = await metricsClient.assets.upload('file', readableStream, {
+    contentType,
+    filename,
+  })
+  return asset
+}
+
+const branch = getCurrentGitBranchSync()
+const commit = getCurrentGitCommitSync()
+
+const doc = await metricsClient.create({
+  _type: 'eFPSRun',
+  branch,
+  commit,
+  timestamp: new Date(),
+})
+
 for (let i = 0; i < tests.length; i++) {
   const test = tests[i]
   const prefix = `Running '${test.name}' [${i + 1}/${tests.length}]…`
-  const results = await runTest(prefix, test)
+  const run = await runTest(prefix, test)
+  const assets = []
 
-  for (const result of results) {
+  for (const file of run.files) {
+    spinner.text = `${prefix}\n  └ Uploading file ${file}`
+    const asset = await uploadFile(file, 'application/json', path.basename(file))
+    assets.push(asset)
+  }
+
+  for (const result of run.results) {
     table += `${result.label} | ${formatFps(result.p50)} | ${formatFps(result.p75)} | ${formatFps(result.p90)}\n`
+
+    const testResult = {
+      _type: 'testResult',
+      ...result,
+      files: assets.map((asset) => ({_type: 'reference', _ref: asset._id})),
+    }
+
+    await metricsClient
+      .patch(doc._id)
+      .setIfMissing({tests: []})
+      .append('tests', [testResult])
+      .commit({autoGenerateArrayKeys: true})
   }
 }
 
@@ -192,25 +235,25 @@ async function runTest(loggerPrefix: string, test: EfpsTest) {
     results = results.map((r) => ({...r, label: r.label ? `${test.name} (${r.label})` : test.name}))
 
     const {profile} = await cdp.send('Profiler.stop')
-    const remappedProfile = await remapCpuProfile(profile, outDir)
+    //const remappedProfile = await remapCpuProfile(profile, outDir)
 
     await fs.promises.mkdir(testResultsDir, {recursive: true})
-    await fs.promises.writeFile(
-      path.join(testResultsDir, 'results.json'),
-      JSON.stringify(results, null, 2),
-    )
-    await fs.promises.writeFile(
-      path.join(testResultsDir, 'raw.cpuprofile'),
-      JSON.stringify(profile),
-    )
-    await fs.promises.writeFile(
-      path.join(testResultsDir, 'mapped.cpuprofile'),
-      JSON.stringify(remappedProfile),
-    )
+
+    const resultsPath = path.join(testResultsDir, 'results.json')
+    await fs.promises.writeFile(resultsPath, JSON.stringify(results, null, 2))
+
+    const rawProfilePath = path.join(testResultsDir, 'raw.cpuprofile')
+    await fs.promises.writeFile(rawProfilePath, JSON.stringify(profile))
+
+    //const remappedProfilePath = path.join(testResultsDir, 'mapped.cpuprofile')
+    //await fs.promises.writeFile(remappedProfilePath, JSON.stringify(remappedProfile))
 
     spinner.succeed(`Ran benchmark '${test.name}' ${formatFps(results[0].p50)} eFPS`)
 
-    return results
+    return {
+      results,
+      files: [rawProfilePath /*remappedProfilePath*/],
+    }
   } finally {
     await new Promise<void>((resolve, reject) =>
       server.close((err) => (err ? reject(err) : resolve())),
