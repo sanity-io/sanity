@@ -107,7 +107,7 @@ export function PresenceMenu() {
 
             <MenuItem
               as="a"
-              href={`https://sanity.io/manage/project/${projectId}/members`}
+              href={`https://sanity.io/manage/project/${projectId}/members?invite=true`}
               iconRight={AddIcon}
               onFocus={handleClearFocusedItem}
               rel="noopener noreferrer"
