@@ -901,10 +901,11 @@ interface BetaFeatures {
   /**
    * @beta
    * @hidden
+   * @deprecated beta feature is no longer available.
    * */
   treeArrayEditing?: {
     /**
-     * Enables the tree array editing feature.
+     * @deprecated beta feature is no longer available.
      */
     enabled: boolean
   }

@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
-test.describe('basic - open and close', () => {
+test.skip('basic - open and close', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // wait for form to be attached
     await createDraftDocument('/test/content/input-debug;objectsDebug')
@@ -40,7 +40,7 @@ test.describe('basic - open and close', () => {
   })
 })
 
-test.describe('basic - main document action', () => {
+test.skip('basic - main document action', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // wait for form to be attached
     await createDraftDocument('/test/content/input-debug;objectsDebug')
