@@ -19,7 +19,6 @@ import {operatorDefinitions} from '../studio/components/navbar/search/definition
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
-  arrayEditingReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
@@ -629,7 +628,8 @@ function resolveSource({
     },
     beta: {
       treeArrayEditing: {
-        enabled: arrayEditingReducer({config, initialValue: false}),
+        // This beta feature is no longer available.
+        enabled: false,
       },
     },
   }
