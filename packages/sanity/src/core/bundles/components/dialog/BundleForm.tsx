@@ -1,18 +1,20 @@
 //import {CalendarIcon} from '@sanity/icons'
 import {type ColorHueKey} from '@sanity/color'
-import {type IconSymbol} from '@sanity/icons'
-import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {CalendarIcon, type IconSymbol} from '@sanity/icons'
+import {Box, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   FormFieldHeaderText,
   type FormNodeValidation,
+  useDateTimeFormat,
   useTranslation,
-  //useDateTimeFormat,
-  //useTranslation,
 } from 'sanity'
 
-//import {type CalendarLabels} from '../../../form/inputs/DateInputs/base/calendar/types'
-//import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
+import {Button, Popover} from '../../../../ui-components'
+import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
+import {DatePicker} from '../../../../ui-components/inputs/DateInputs/DatePicker'
+import {LazyTextInput} from '../../../../ui-components/inputs/DateInputs/LazyTextInput'
+import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
 import {useGetBundleSlug} from './useGetBundleSlug'
@@ -35,30 +37,30 @@ export function BundleForm(props: {
   value: Partial<BundleDocument>
 }): JSX.Element {
   const {onChange, value} = props
-  const {title, description, icon, hue /*, publishAt*/} = value
+  const {title, description, icon, hue, publishedAt} = value
   // derive the action from whether the initial value prop has a slug
   // only editing existing bundles will provide a value.slug
   const {current: action} = useRef(value.slug ? 'edit' : 'create')
   const isEditing = action === 'edit'
   const {t} = useTranslation()
 
-  //const dateFormatter = useDateTimeFormat()
+  const dateFormatter = useDateTimeFormat()
 
   const [showDatePicker, setShowDatePicker] = useState(false)
 
   const [isInitialRender, setIsInitialRender] = useState(true)
 
   const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
-  /*const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
+  const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
 
-  /*const publishAtDisplayValue = useMemo(() => {
-    if (!publishAt) return ''
-    return dateFormatter.format(new Date(publishAt as Date))
-  }, [dateFormatter, publishAt])
+  const publishAtDisplayValue = useMemo(() => {
+    if (!publishedAt) return ''
+    return dateFormatter.format(new Date(publishedAt))
+  }, [dateFormatter, publishedAt])
 
   const [displayDate, setDisplayDate] = useState(publishAtDisplayValue)
   const {t: coreT} = useTranslation()
-  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])*/
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
 
   const iconValue: BundleIconEditorPickerValue = useMemo(
     () => ({
@@ -101,10 +103,10 @@ export function BundleForm(props: {
     setShowDatePicker(!showDatePicker)
   }, [showDatePicker])
 
-  /*const handleBundlePublishAtChange = useCallback(
+  const handleBundlePublishAtChange = useCallback(
     (nextDate: Date | undefined) => {
-      onChange({...value, publishAt: nextDate})
-      setDisplayDate(dateFormatter.format(new Date(nextDate as Date)))
+      onChange({...value, publishedAt: nextDate?.toString()})
+      setDisplayDate(dateFormatter.format(new Date(nextDate as unknown as Date)))
 
       setShowDatePicker(false)
     },
@@ -128,16 +130,14 @@ export function BundleForm(props: {
           },
         ])
         setDisplayDate(dateValue)
-        onError(true)
       } else {
         setDateErrors([])
         setDisplayDate(dateValue)
-        onChange({...value, publishAt: dateValue})
-        onError(false)
+        onChange({...value, publishedAt: dateValue})
       }
     },
-    [onChange, value, onError],
-  )*/
+    [onChange, value],
+  )
 
   const handleIconValueChange = useCallback(
     (pickedIcon: BundleIconEditorPickerValue) => {
@@ -172,10 +172,10 @@ export function BundleForm(props: {
         />
       </Stack>
 
-      {/*<Stack space={3}>
+      <Stack space={3}>
         <FormFieldHeaderText title="Schedule for publishing at" validation={dateErrors} />
 
-        <TextInput
+        <LazyTextInput
           suffix={
             <Popover
               constrainSize
@@ -184,7 +184,7 @@ export function BundleForm(props: {
                   <DatePicker
                     onChange={handleBundlePublishAtChange}
                     calendarLabels={calendarLabels}
-                    value={publishAt as Date}
+                    value={publishedAt as unknown as Date}
                     selectTime
                   />
                 </Box>
@@ -197,8 +197,8 @@ export function BundleForm(props: {
                 <Button
                   icon={CalendarIcon}
                   mode="bleed"
-                  padding={2}
                   onClick={handleOpenDatePicker}
+                  tooltipProps={null}
                 />
               </Box>
             </Popover>
@@ -208,7 +208,7 @@ export function BundleForm(props: {
           data-testid="bundle-form-publish-at"
           customValidity={dateErrors.length > 0 ? 'error' : undefined}
         />
-      </Stack>*/}
+      </Stack>
     </Stack>
   )
 }
