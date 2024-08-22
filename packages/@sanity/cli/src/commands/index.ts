@@ -5,6 +5,7 @@ import docsCommand from './docs/docsCommand'
 import helpCommand from './help/helpCommand'
 import initCommand from './init/initCommand'
 import installCommand from './install/installCommand'
+import learnCommand from './learn/learnCommand'
 import loginCommand from './login/loginCommand'
 import logoutCommand from './logout/logoutCommand'
 import manageCommand from './manage/manageCommand'
@@ -31,6 +32,7 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   debugCommand,
   helpCommand,
   projectsGroup,
+  learnCommand,
   listProjectsCommand,
   codemodCommand,
   telemetryGroup,
