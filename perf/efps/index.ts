@@ -53,12 +53,15 @@ const spinner = Ora()
 
 spinner.info(`Running ${tests.length} tests: ${tests.map((t) => `'${t.name}'`).join(', ')}`)
 
+/*
 await exec({
   text: ['Building the monorepo…', 'Built monorepo'],
   command: 'pnpm run build',
   spinner,
   cwd: monorepoRoot,
 })
+*/
+// We will instead expect the monorepo to be built before running this script
 
 await exec({
   text: ['Ensuring playwright is installed…', 'Playwright is installed'],
