@@ -1,7 +1,6 @@
-//import {CalendarIcon} from '@sanity/icons'
 import {type ColorHueKey} from '@sanity/color'
-import {CalendarIcon, type IconSymbol} from '@sanity/icons'
-import {Box, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {type IconSymbol} from '@sanity/icons'
+import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   FormFieldHeaderText,
@@ -10,10 +9,8 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {Button, Popover} from '../../../../ui-components'
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
-import {DatePicker} from '../../../../ui-components/inputs/DateInputs/DatePicker'
-import {LazyTextInput} from '../../../../ui-components/inputs/DateInputs/LazyTextInput'
+import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
@@ -49,6 +46,7 @@ export function BundleForm(props: {
   const [showDatePicker, setShowDatePicker] = useState(false)
 
   const [isInitialRender, setIsInitialRender] = useState(true)
+  const [inputValue, setInputValue] = useState<string | undefined>(undefined)
 
   const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
   const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
@@ -99,44 +97,12 @@ export function BundleForm(props: {
     [onChange, value],
   )
 
-  const handleOpenDatePicker = useCallback(() => {
-    setShowDatePicker(!showDatePicker)
-  }, [showDatePicker])
-
   const handleBundlePublishAtChange = useCallback(
-    (nextDate: Date | undefined) => {
-      onChange({...value, publishedAt: nextDate?.toString()})
-      setDisplayDate(dateFormatter.format(new Date(nextDate as unknown as Date)))
-
-      setShowDatePicker(false)
+    (date: Date | null) => {
+      setInputValue(date ? dateFormatter.format(date) : undefined)
+      onChange({...value, publishedAt: date?.toDateString()})
     },
     [dateFormatter, onChange, value],
-  )
-
-  const handlePublishAtInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const dateValue = event.target.value.trim()
-
-      // there's likely a better way of doing this
-      // needs to check that the date is not invalid & not empty
-      // in which case it can update the input value but not the actual bundle value
-      if (new Date(event.target.value).toString() === 'Invalid Date' && dateValue !== '') {
-        // if the date is invalid, show an error
-        setDateErrors([
-          {
-            level: 'error',
-            message: 'Should be an empty or valid date',
-            path: [],
-          },
-        ])
-        setDisplayDate(dateValue)
-      } else {
-        setDateErrors([])
-        setDisplayDate(dateValue)
-        onChange({...value, publishedAt: dateValue})
-      }
-    },
-    [onChange, value],
   )
 
   const handleIconValueChange = useCallback(
@@ -175,38 +141,12 @@ export function BundleForm(props: {
       <Stack space={3}>
         <FormFieldHeaderText title="Schedule for publishing at" validation={dateErrors} />
 
-        <LazyTextInput
-          suffix={
-            <Popover
-              constrainSize
-              content={
-                <Box overflow="auto">
-                  <DatePicker
-                    onChange={handleBundlePublishAtChange}
-                    calendarLabels={calendarLabels}
-                    value={publishedAt as unknown as Date}
-                    selectTime
-                  />
-                </Box>
-              }
-              open={showDatePicker}
-              placement="bottom-end"
-              radius={2}
-            >
-              <Box padding={1} style={{border: '1px solid transparent'}}>
-                <Button
-                  icon={CalendarIcon}
-                  mode="bleed"
-                  onClick={handleOpenDatePicker}
-                  tooltipProps={null}
-                />
-              </Box>
-            </Popover>
-          }
-          value={displayDate}
-          onChange={handlePublishAtInputChange}
-          data-testid="bundle-form-publish-at"
-          customValidity={dateErrors.length > 0 ? 'error' : undefined}
+        <DateTimeInput
+          selectTime
+          onChange={handleBundlePublishAtChange}
+          calendarLabels={calendarLabels}
+          value={value.publishedAt ? new Date(value.publishedAt) : undefined}
+          inputValue={inputValue || ''}
         />
       </Stack>
     </Stack>
