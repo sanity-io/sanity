@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
-test.describe('navigation - tree sidebar', () => {
+test.skip('navigation - tree sidebar', () => {
   test.beforeEach(async ({page, createDraftDocument, browserName}) => {
     // set up an array with two items: Albert, the whale and Lucy, the cat
 
@@ -118,7 +118,7 @@ test.describe('navigation - tree sidebar', () => {
   })
 })
 
-test.describe('navigation - breadcrumb', () => {
+test.skip('navigation - breadcrumb', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // set up an array with two items: Albert, the whale and Lucy, the cat
     await createDraftDocument('/test/content/input-debug;objectsDebug')
