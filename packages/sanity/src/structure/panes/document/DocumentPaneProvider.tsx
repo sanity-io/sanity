@@ -407,6 +407,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         return true
       }
 
+      if (item.action === 'copy-document-url') {
+        navigator.clipboard.writeText(window.location.toString())
+        pushToast({
+          id: 'copy-document-url',
+          status: 'info',
+          title: t('panes.document-operation-results.operation-success_copy-url'),
+        })
+        return true
+      }
+
       if (item.action === 'inspect') {
         toggleLegacyInspect(true)
         return true
@@ -434,6 +444,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       return false
     },
     [
+      t,
       closeInspector,
       handleHistoryOpen,
       inspectorName,
@@ -441,6 +452,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       openInspector,
       previewUrl,
       toggleLegacyInspect,
+      pushToast,
     ],
   )
 
