@@ -72,6 +72,7 @@ export function getMenuItems(params: GetMenuItemsParams): PaneMenuItem[] {
   ].filter(Boolean) as PaneMenuItem[]
 
   return [
+    // Always present document menu item to copy current url to clipboard
     {
       action: 'copy-document-url',
       showAsAction: true,
