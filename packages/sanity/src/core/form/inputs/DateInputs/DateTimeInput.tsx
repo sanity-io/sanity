@@ -7,10 +7,10 @@ import {
 import {getMinutes, parseISO, setMinutes} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 
+import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {useTranslation} from '../../../i18n'
 import {set, unset} from '../../patch'
 import {type StringInputProps} from '../../types'
-import {type CalendarLabels} from './base/calendar/types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {type ParseResult} from './types'
 import {getCalendarLabels, isValidDate} from './utils'

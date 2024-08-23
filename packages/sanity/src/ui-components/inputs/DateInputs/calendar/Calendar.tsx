@@ -14,7 +14,7 @@ import {
   useRef,
 } from 'react'
 
-import {Button} from '../../../../../../ui-components'
+import {Button} from '../../../button'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
 import {features} from './features'

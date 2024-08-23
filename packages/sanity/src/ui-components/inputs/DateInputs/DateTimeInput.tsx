@@ -12,7 +12,8 @@ import {
 } from 'react'
 import FocusLock from 'react-focus-lock'
 
-import {Button, Popover} from '../../../../../ui-components'
+import {Button} from '../../button'
+import {Popover} from '../../popover'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'

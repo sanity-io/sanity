@@ -12,9 +12,9 @@ import {
   useState,
 } from 'react'
 
+import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
+import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {type CalendarLabels} from './base/calendar/types'
-import {DateTimeInput} from './base/DateTimeInput'
 import {type ParseResult} from './types'
 
 export interface CommonDateTimeInputProps {
