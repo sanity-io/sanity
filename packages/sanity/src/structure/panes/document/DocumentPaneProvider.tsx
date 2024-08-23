@@ -407,7 +407,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         return true
       }
 
-      if (item.action === 'copy-document-url') {
+      if (item.action === 'copy-document-url' && navigator) {
         navigator.clipboard.writeText(window.location.toString())
         pushToast({
           id: 'copy-document-url',
