@@ -88,8 +88,8 @@ export default async function extractAction(
 
     spinner.succeed(
       enforceRequiredFields
-        ? 'Extracted schema, with enforced required fields'
-        : 'Extracted schema',
+        ? `Extracted schema to ${path} with enforced required fields`
+        : `Extracted schema to ${path}`,
     )
   } catch (err) {
     trace.error(err)
