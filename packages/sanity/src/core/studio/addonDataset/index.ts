@@ -1,3 +1,2 @@
-export * from './AddonDatasetProvider'
+export * from './createAddonDatasetStore'
 export * from './types'
-export * from './useAddonDataset'

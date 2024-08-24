@@ -1,7 +1,8 @@
 import {useCallback, useMemo} from 'react'
+import {filter, firstValueFrom, map} from 'rxjs'
+import {isClientStoreReady} from 'sanity'
 
-import {useCurrentUser} from '../../store'
-import {useAddonDataset} from '../../studio'
+import {useAddonDatasetStore, useCurrentUser} from '../../store'
 import {type TaskCreatePayload, type TaskDocument, type TaskEditPayload} from '../types'
 
 /**
@@ -19,7 +20,7 @@ export interface TaskOperations {
  * @hidden
  */
 export function useTaskOperations(): TaskOperations {
-  const {client, createAddonDataset} = useAddonDataset()
+  const {client$} = useAddonDatasetStore()
   const currentUser = useCurrentUser()
 
   const handleCreate = useCallback(
@@ -34,19 +35,14 @@ export function useTaskOperations(): TaskOperations {
         _type: 'tasks.task',
       } satisfies Partial<TaskDocument>
 
-      if (!client) {
-        try {
-          const newCreatedClient = await createAddonDataset()
-          if (!newCreatedClient) throw new Error('No addon client found. Unable to create task.')
-          const created = await newCreatedClient.create(task)
-          return created
-        } catch (err) {
-          // TODO: Handle error
-          throw err
-        }
-      }
-
       try {
+        const client = await firstValueFrom(
+          client$.pipe(
+            filter(isClientStoreReady),
+            map((clientStore) => clientStore.client),
+          ),
+        )
+
         const created = await client.create(task)
         return created
       } catch (err) {
@@ -54,15 +50,19 @@ export function useTaskOperations(): TaskOperations {
         throw err
       }
     },
-    [client, createAddonDataset, currentUser],
+    [client$, currentUser],
   )
 
   const handleEdit = useCallback(
     async (id: string, set: TaskEditPayload) => {
       try {
-        if (!client) {
-          throw new Error('No client. Unable to create task.')
-        }
+        const client = await firstValueFrom(
+          client$.pipe(
+            filter(isClientStoreReady),
+            map((clientStore) => clientStore.client),
+          ),
+        )
+
         const edited = (await client.patch(id).set(set).commit()) as TaskDocument
         return edited
       } catch (e) {
@@ -70,21 +70,25 @@ export function useTaskOperations(): TaskOperations {
         throw e
       }
     },
-    [client],
+    [client$],
   )
   const handleRemove = useCallback(
     async (id: string) => {
       try {
-        if (!client) {
-          throw new Error('No client. Unable to create task.')
-        }
+        const client = await firstValueFrom(
+          client$.pipe(
+            filter(isClientStoreReady),
+            map((clientStore) => clientStore.client),
+          ),
+        )
+
         await client.delete(id)
       } catch (e) {
         // TODO: Handle error
         throw e
       }
     },
-    [client],
+    [client$],
   )
 
   const operations: TaskOperations = useMemo(

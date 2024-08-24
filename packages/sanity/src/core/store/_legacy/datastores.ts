@@ -5,7 +5,12 @@ import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
-import {useSource, useWorkspace} from '../../studio'
+import {
+  type AddonDatasetStore,
+  createAddonDatasetStore,
+  useSource,
+  useWorkspace,
+} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
 import {useCurrentUser} from '../user'
@@ -272,4 +277,28 @@ export function useKeyValueStore(): KeyValueStore {
 
     return keyValueStore
   }, [client, resourceCache, workspace])
+}
+
+/**
+ * @internal
+ */
+export function useAddonDatasetStore(): AddonDatasetStore {
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const resourceCache = useResourceCache()
+
+  return useMemo(() => {
+    const addonDatasetStore =
+      resourceCache.get<AddonDatasetStore>({
+        namespace: 'addonDatasetStore',
+        dependencies: [client],
+      }) || createAddonDatasetStore({client})
+
+    resourceCache.set({
+      namespace: 'addonDatasetStore',
+      dependencies: [client],
+      value: addonDatasetStore,
+    })
+
+    return addonDatasetStore
+  }, [client, resourceCache])
 }

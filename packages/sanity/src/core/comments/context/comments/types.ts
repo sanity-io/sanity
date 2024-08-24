@@ -21,8 +21,6 @@ export interface CommentsContextValue {
   selectedCommentId?: string | undefined
   onClearSelectedComment?: () => void
 
-  isCreatingDataset: boolean
-
   isCommentsOpen?: boolean
   onCommentsOpen?: () => void
 

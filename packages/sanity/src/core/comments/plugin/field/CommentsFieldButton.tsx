@@ -27,7 +27,6 @@ interface CommentsFieldButtonProps {
   count: number
   currentUser: CurrentUser
   fieldTitle: string
-  isCreatingDataset: boolean
   mentionOptions: UserListWithPermissionsHookValue
   onChange: (value: PortableTextBlock[]) => void
   onClick?: () => void
@@ -44,7 +43,6 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     count,
     currentUser,
     fieldTitle,
-    isCreatingDataset,
     mentionOptions,
     onChange,
     onClick,
@@ -143,7 +141,6 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
           onKeyDown={handleInputKeyDown}
           onSubmit={handleSubmit}
           placeholder={placeholder}
-          readOnly={isCreatingDataset}
           ref={commentInputHandle}
           value={value}
         />
@@ -164,7 +161,6 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         <div>
           <Button
             aria-label={t('field-button.aria-label-add')}
-            disabled={isCreatingDataset}
             icon={AddCommentIcon}
             mode="bleed"
             onClick={onClick}
