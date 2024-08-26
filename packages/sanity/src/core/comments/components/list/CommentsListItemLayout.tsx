@@ -166,6 +166,7 @@ interface CommentsListItemLayoutProps {
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
   withAvatar?: boolean
+  version?: string
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -193,6 +194,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     onStatusChange,
     readOnly,
     withAvatar = true,
+    version,
   } = props
   const {_createdAt, authorId, message, _id, lastEditedAt} = comment
   const [user] = useUser(authorId)
@@ -336,6 +338,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     <TextSkeleton size={1} style={SKELETON_INLINE_STYLE} />
   )
 
+  // TODO - it's still unclear if we want to show that the comments belong to a specific version
+  // we can do that by displaying the version somewhere in the UI
+
   return (
     <RootStack
       data-menu-open={menuOpen ? 'true' : 'false'}
@@ -398,7 +403,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
               </Box>
             )}
           </Flex>
-
           {!isEditing && !displayError && (
             <ContextMenuBox data-root-menu={isParent ? 'true' : 'false'} onClick={stopPropagation}>
               <CommentsListItemContextMenu

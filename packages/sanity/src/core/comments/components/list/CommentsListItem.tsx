@@ -266,7 +266,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
 
   const label = isVersionId(props.parentComment.target.document._ref)
     ? getBundleSlug(props.parentComment.target.document._ref)
-    : 'published'
+    : undefined
 
   const renderedReplies = useMemo(
     () =>
@@ -291,24 +291,26 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
             onReactionSelect={onReactionSelect}
             readOnly={readOnly}
             withAvatar={avatarConfig.threadCommentsAvatar}
+            version={label}
           />
         </Stack>
       )),
     [
-      avatarConfig.threadCommentsAvatar,
+      splicedReplies,
       avatarConfig.avatarSize,
+      avatarConfig.threadCommentsAvatar,
       currentUser,
-      handleInputKeyDown,
+      parentComment,
       mentionOptions,
+      mode,
       onCopyLink,
       onCreateRetry,
       onDelete,
       onEdit,
+      handleInputKeyDown,
       onReactionSelect,
-      parentComment,
       readOnly,
-      splicedReplies,
-      mode,
+      label,
     ],
   )
 
@@ -336,7 +338,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         space={4}
       >
         <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
-          <div>{label}</div>
           <CommentsListItemLayout
             avatarSize={avatarConfig.avatarSize}
             canDelete={parentComment.authorId === currentUser.id}
@@ -359,6 +360,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
             onStatusChange={onStatusChange}
             readOnly={readOnly}
             withAvatar={avatarConfig.parentCommentAvatar}
+            version={label}
           />
         </Stack>
 
