@@ -28,18 +28,31 @@ export const DocumentActions = memo(
       try {
         setDiscardStatus('discarding')
         await client.delete(document.document._id)
+
+        toast.push({
+          closable: true,
+          status: 'success',
+          description: (
+            <Translate
+              t={t}
+              i18nKey={'action.discard-version.success'}
+              values={{title: document.document.title as string}}
+            />
+          ),
+        })
         setDiscardStatus('idle')
       } catch (e) {
         setDiscardStatus('error')
         toast.push({
           closable: true,
           status: 'error',
-          title: 'Failed to discard version',
+          title: t('action.discard-version.failure'),
         })
       } finally {
         setShowDiscardDialog(false)
       }
     }
+
     return (
       <>
         <Card tone="default" display="flex">
