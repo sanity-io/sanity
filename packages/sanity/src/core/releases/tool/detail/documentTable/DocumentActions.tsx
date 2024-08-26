@@ -34,12 +34,24 @@ export const DocumentActions = memo(
         toast.push({
           closable: true,
           status: 'error',
-          title: 'Failed to discard version',
+          title: t('action.discard-version.failure'),
         })
       } finally {
+        toast.push({
+          closable: true,
+          status: 'success',
+          description: (
+            <Translate
+              t={t}
+              i18nKey={'action.discard-version.success'}
+              values={{title: document.document.title as string}}
+            />
+          ),
+        })
         setShowDiscardDialog(false)
       }
     }
+
     return (
       <>
         <Card tone="default" display="flex">
