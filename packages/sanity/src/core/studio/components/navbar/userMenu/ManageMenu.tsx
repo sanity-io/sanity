@@ -27,7 +27,7 @@ export function ManageMenu() {
         <MenuItem
           as="a"
           aria-label={t('user-menu.action.invite-members-aria-label')}
-          href={`https://www.sanity.io/manage/project/${projectId}/members`}
+          href={`https://www.sanity.io/manage/project/${projectId}/members?invite=true`}
           target="_blank"
           text={t('user-menu.action.invite-members')}
           icon={AddUserIcon}
