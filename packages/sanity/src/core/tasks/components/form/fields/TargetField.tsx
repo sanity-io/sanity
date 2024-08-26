@@ -17,6 +17,7 @@ import {
   SearchResultItemPreview,
   useWorkspace,
 } from '../../../../studio'
+import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
 import {tasksLocaleNamespace} from '../../../i18n'
 import {type FormMode, type TaskTarget} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
@@ -98,12 +99,15 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const CardLink = useMemo(
     () =>
       forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
+        const versionId = getVersionFromId(documentId)
+
         return (
           <StyledIntentLink
             {...linkProps}
             intent="edit"
-            params={{id: documentId, type: documentType}}
+            params={{id: getPublishedId(documentId), type: documentType}}
             ref={ref}
+            searchParams={versionId ? [['perspective', `bundle.${versionId}`]] : undefined}
           />
         )
       }),
