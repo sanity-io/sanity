@@ -37,7 +37,6 @@ jest.mock('sanity', () => {
   return {
     ...actual,
     unstable_useValuePreview: jest.fn(),
-    getBundleSlug: jest.fn(() => ''),
     useDocumentVersions: jest.fn(),
   }
 })

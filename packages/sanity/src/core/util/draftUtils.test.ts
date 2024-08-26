@@ -1,7 +1,14 @@
-import {expect, test} from '@jest/globals'
+import {describe, expect, it, test} from '@jest/globals'
 import {type SanityDocument} from '@sanity/types'
 
-import {collate, documentIdEquals, getPublishedId, getVersionId, removeDupes} from './draftUtils'
+import {
+  collate,
+  documentIdEquals,
+  getPublishedId,
+  getVersionFromId,
+  getVersionId,
+  removeDupes,
+} from './draftUtils'
 
 test('collate()', () => {
   const foo = {_type: 'foo', _id: 'foo'}
@@ -60,4 +67,18 @@ test.each([
   ['from complex id with version', 'versions.summer-drop.foo.agot', 'foo.agot'],
 ])('getPublishedId(): %s', (_, documentId, shouldEqual) => {
   expect(getPublishedId(documentId)).toEqual(shouldEqual)
+})
+
+describe('getVersionFromId', () => {
+  it('should return the bundle slug', () => {
+    expect(getVersionFromId('versions.summer.my-document-id')).toBe('summer')
+  })
+
+  it('should return the undefined if no bundle slug is found and document is a draft', () => {
+    expect(getVersionFromId('drafts.my-document-id')).toBe(undefined)
+  })
+
+  it('should return the undefined if no bundle slug is found and document is published', () => {
+    expect(getVersionFromId('my-document-id')).toBe(undefined)
+  })
 })

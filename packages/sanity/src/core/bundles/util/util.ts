@@ -1,22 +1,7 @@
 import speakingurl from 'speakingurl'
 
 import {type BundleDocument} from '../../store/bundles/types'
-import {isVersionId} from '../../util'
-
-/**
- * @internal
- * @hidden
- */
-export function getBundleSlug(documentId: string): string | undefined {
-  if (documentId.indexOf('.') === -1) return undefined
-
-  if (isVersionId(documentId)) {
-    const [, bundleSlug] = documentId.split('.')
-    return bundleSlug
-  }
-
-  return undefined
-}
+import {getVersionFromId, isVersionId} from '../../util'
 
 /**
  * @beta
@@ -35,7 +20,7 @@ export function getDocumentIsInPerspective(
   documentId: string,
   perspective: string | undefined,
 ): boolean {
-  const bundleSlug = getBundleSlug(documentId)
+  const bundleSlug = getVersionFromId(documentId)
 
   if (!perspective) return !isVersionId(documentId)
 
