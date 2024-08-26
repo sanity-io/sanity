@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import {isActionEnabled} from '@sanity/schema/_internal'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {
   type ObjectSchemaType,
   type Path,
@@ -47,6 +48,7 @@ import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {DocumentURLCopied} from './__telemetry__'
 import {
   DEFAULT_MENU_ITEM_GROUPS,
   EMPTY_PARAMS,
@@ -400,6 +402,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [inspectOpen, params, setPaneParams],
   )
 
+  const telemetry = useTelemetry()
+
   const handleMenuAction = useCallback(
     (item: PaneMenuItem) => {
       if (item.action === 'production-preview' && previewUrl) {
@@ -408,6 +412,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       }
 
       if (item.action === 'copy-document-url' && navigator) {
+        telemetry.log(DocumentURLCopied)
         navigator.clipboard.writeText(window.location.toString())
         pushToast({
           id: 'copy-document-url',
@@ -453,6 +458,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       previewUrl,
       toggleLegacyInspect,
       pushToast,
+      telemetry,
     ],
   )
 
