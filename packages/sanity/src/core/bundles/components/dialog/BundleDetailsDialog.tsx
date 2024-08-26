@@ -30,6 +30,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         description: bundle.description,
         hue: bundle.hue,
         icon: bundle.icon,
+        publishedAt: bundle.publishedAt,
       }
     }
 
