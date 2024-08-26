@@ -7,11 +7,11 @@ import {
 } from '@sanity/icons'
 import {Menu, Spinner, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
-import {useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../ui-components'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
+import {Translate, useTranslation} from '../../../i18n'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -41,6 +41,13 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
     try {
       setDiscardStatus('discarding')
       await deleteBundle(bundle)
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate t={t} i18nKey={'action.delete.success'} values={{title: bundle.title}} />
+        ),
+      })
       setDiscardStatus('idle')
       if (router.state.bundleSlug) {
         // navigate back to bundle overview
@@ -51,7 +58,7 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
       toast.push({
         closable: true,
         status: 'error',
-        title: 'Failed to delete bundle',
+        title: t('action.delete.failure'),
         description: e.message,
       })
     } finally {
