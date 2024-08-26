@@ -41,6 +41,13 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
     try {
       setDiscardStatus('discarding')
       await deleteBundle(bundle)
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate t={t} i18nKey={'action.delete.success'} values={{title: bundle.title}} />
+        ),
+      })
       setDiscardStatus('idle')
       if (router.state.bundleSlug) {
         // navigate back to bundle overview
@@ -55,13 +62,6 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
         description: e.message,
       })
     } finally {
-      toast.push({
-        closable: true,
-        status: 'success',
-        description: (
-          <Translate t={t} i18nKey={'action.delete.success'} values={{title: bundle.title}} />
-        ),
-      })
       resetSelectedAction()
     }
   }

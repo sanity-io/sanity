@@ -28,15 +28,7 @@ export const DocumentActions = memo(
       try {
         setDiscardStatus('discarding')
         await client.delete(document.document._id)
-        setDiscardStatus('idle')
-      } catch (e) {
-        setDiscardStatus('error')
-        toast.push({
-          closable: true,
-          status: 'error',
-          title: t('action.discard-version.failure'),
-        })
-      } finally {
+
         toast.push({
           closable: true,
           status: 'success',
@@ -48,6 +40,15 @@ export const DocumentActions = memo(
             />
           ),
         })
+        setDiscardStatus('idle')
+      } catch (e) {
+        setDiscardStatus('error')
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('action.discard-version.failure'),
+        })
+      } finally {
         setShowDiscardDialog(false)
       }
     }
