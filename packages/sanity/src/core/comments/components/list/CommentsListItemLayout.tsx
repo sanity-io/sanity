@@ -338,8 +338,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     <TextSkeleton size={1} style={SKELETON_INLINE_STYLE} />
   )
 
-  // TODO - it's still unclear if we want to show that the comments belong to a specific version
-  // we can do that by displaying the version somewhere in the UI
+  /* TODO - it's still unclear if we want to show that the comments belong to a specific version 
+  we can do that by displaying the version somewhere in the UI */
 
   return (
     <RootStack
