@@ -7,6 +7,8 @@ import {defineLocalesResources} from 'sanity'
  * @internal
  */
 const structureLocaleStrings = defineLocalesResources('structure', {
+  /** Label for the "Copy Document URL" document action */
+  'action.copy-document-url.label': 'Copy Document URL',
   /** Tooltip when action button is disabled because the operation is not ready   */
   'action.delete.disabled.not-ready': 'Operation not ready',
   /** Tooltip when action button is disabled because the document does not exist */
@@ -348,6 +350,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'An error occurred while attempting to unpublish this document. This usually means that there are other documents that refers to it.',
   /** The text when a generic operation succeeded (fallback, generally not shown)  */
   'panes.document-operation-results.operation-success': 'Successfully performed {{op}} on document',
+  /** The text when copy URL operation succeeded  */
+  'panes.document-operation-results.operation-success_copy-url': 'Document URL copied to clipboard',
   /** The text when a delete operation succeeded  */
   'panes.document-operation-results.operation-success_delete':
     'The document was successfully deleted',
