@@ -4,8 +4,8 @@ import {map, of} from 'rxjs'
 import {catchError, scan} from 'rxjs/operators'
 import {
   type BundleDocument,
-  getBundleSlug,
   getPublishedId,
+  getVersionFromId,
   useBundles,
   useDocumentPreviewStore,
 } from 'sanity'
@@ -48,7 +48,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
         map(({documentIds}) => {
           return documentIds.flatMap((id) => {
             // eslint-disable-next-line max-nested-callbacks
-            const matchingBundle = bundles?.find((bundle) => getBundleSlug(id) === bundle.slug)
+            const matchingBundle = bundles?.find((bundle) => getVersionFromId(id) === bundle.slug)
             return matchingBundle || []
           })
         }),

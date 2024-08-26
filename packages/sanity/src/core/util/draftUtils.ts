@@ -1,6 +1,5 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 
-import {getBundleSlug} from '../bundles/util/util'
 import {isNonNullable} from './isNonNullable'
 
 /** @internal */
@@ -102,14 +101,28 @@ export function getDraftId(id: string): DraftId {
 /**  @internal */
 export function getVersionId(id: string, bundle: string): string {
   if (isVersionId(id)) {
-    const [version, bundleName, ...publishedId] = id.split('.')
-    if (bundleName === bundle) return id
+    const [_versionPrefix, versionId, ...publishedId] = id.split('.')
+    if (versionId === bundle) return id
     return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
   }
 
   const publishedId = getPublishedId(id)
 
   return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
+}
+
+/**
+ *  @internal
+ *  Given an id, returns the versionId if it exists.
+ *  e.g. `versions.summer-drop.foo` = `summer-drop`
+ *  e.g. `drafts.foo` = `undefined`
+ *  e.g. `foo` = `undefined`
+ */
+export function getVersionFromId(id: string): string | undefined {
+  if (!isVersionId(id)) return undefined
+  const [_versionPrefix, versionId, ..._publishedId] = id.split(PATH_SEPARATOR)
+
+  return versionId
 }
 
 /** @internal */
@@ -181,7 +194,7 @@ export function collate<
   const byId = documents.reduce((res, doc) => {
     const publishedId = getPublishedId(doc._id)
     const isVersion = isVersionId(doc._id)
-    const bundle = getBundleSlug(doc._id)
+    const bundle = getVersionFromId(doc._id)
 
     let entry = res.get(publishedId)
     if (!entry) {
