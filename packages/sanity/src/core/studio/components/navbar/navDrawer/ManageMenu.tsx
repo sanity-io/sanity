@@ -1,4 +1,4 @@
-import {CogIcon, UsersIcon} from '@sanity/icons'
+import {AddUserIcon, CogIcon} from '@sanity/icons'
 import {Card, Stack} from '@sanity/ui'
 
 import {Button} from '../../../../../ui-components'
@@ -39,8 +39,8 @@ export function ManageMenu() {
             <Button
               aria-label={t('user-menu.action.invite-members-aria-label')}
               as="a"
-              href={`https://sanity.io/manage/project/${projectId}/members`}
-              icon={UsersIcon}
+              href={`https://www.sanity.io/manage/project/${projectId}/members`}
+              icon={AddUserIcon}
               justify="flex-start"
               mode="bleed"
               size="large"
