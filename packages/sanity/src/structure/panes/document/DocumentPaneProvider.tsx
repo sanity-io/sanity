@@ -43,7 +43,6 @@ import {
   useValidationStatus,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
-import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
@@ -404,7 +403,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const telemetry = useTelemetry()
-  const {resolveIntentLink} = useRouter()
 
   const handleMenuAction = useCallback(
     (item: PaneMenuItem) => {
@@ -415,8 +413,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
       if (item.action === 'copy-document-url' && navigator) {
         telemetry.log(DocumentURLCopied)
-        const documentIntentLink = resolveIntentLink('edit', {id: documentId})
-        navigator.clipboard.writeText(window.location.origin + documentIntentLink)
+        navigator.clipboard.writeText(window.location.toString())
         pushToast({
           id: 'copy-document-url',
           status: 'info',
@@ -462,8 +459,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       toggleLegacyInspect,
       pushToast,
       telemetry,
-      resolveIntentLink,
-      documentId,
     ],
   )
 
