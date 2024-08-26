@@ -51,7 +51,7 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
       toast.push({
         closable: true,
         status: 'error',
-        title: 'Failed to delete bundle',
+        title: t('action.delete.failure'),
         description: e.message,
       })
     } finally {
