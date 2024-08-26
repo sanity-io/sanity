@@ -413,6 +413,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
       if (item.action === 'copy-document-url' && navigator) {
         telemetry.log(DocumentURLCopied)
+        // Chose to copy the user's current URL instead of
+        // the document's edit intent link because
+        // of bugs when resolving a document that has
+        // multiple access paths within Structure
         navigator.clipboard.writeText(window.location.toString())
         pushToast({
           id: 'copy-document-url',
