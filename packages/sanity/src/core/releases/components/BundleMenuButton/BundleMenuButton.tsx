@@ -7,7 +7,7 @@ import {
 } from '@sanity/icons'
 import {Menu, Spinner, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
-import {useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../ui-components'
@@ -55,6 +55,13 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
         description: e.message,
       })
     } finally {
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate t={t} i18nKey={'action.delete.success'} values={{title: bundle.title}} />
+        ),
+      })
       resetSelectedAction()
     }
   }
