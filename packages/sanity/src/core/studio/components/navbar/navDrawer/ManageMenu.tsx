@@ -39,7 +39,7 @@ export function ManageMenu() {
             <Button
               aria-label={t('user-menu.action.invite-members-aria-label')}
               as="a"
-              href={`https://www.sanity.io/manage/project/${projectId}/members`}
+              href={`https://www.sanity.io/manage/project/${projectId}/members?invite=true`}
               icon={AddUserIcon}
               justify="flex-start"
               mode="bleed"
