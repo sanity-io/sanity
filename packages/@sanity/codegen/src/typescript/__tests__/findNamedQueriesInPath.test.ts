@@ -3,11 +3,11 @@ import path from 'node:path'
 
 import {describe, expect, test} from '@jest/globals'
 
-import {findQueriesInPath} from '../findQueriesInPath'
+import {findNamedQueriesInPath} from '../findQueriesInPath'
 
-describe('findQueriesInPath', () => {
+describe('findNamedQueriesInPath', () => {
   test('Can find queries in path', async () => {
-    const stream = findQueriesInPath({
+    const stream = findNamedQueriesInPath({
       path: path.join('**', 'typescript', '__tests__', 'fixtures', 'source1.ts'),
     })
     const res = []
@@ -28,7 +28,7 @@ describe('findQueriesInPath', () => {
     expect(res[0].queries[0].result).toBe('*[_type == "author"]')
   })
   test('should throw an error if the query name already exists', async () => {
-    const stream = findQueriesInPath({
+    const stream = findNamedQueriesInPath({
       path: path.join('**', 'fixtures', '{source1,source2}.ts'),
     })
     await stream.next()
