@@ -43,22 +43,14 @@ export function BundleForm(props: {
 
   const dateFormatter = useDateTimeFormat()
 
-  const [showDatePicker, setShowDatePicker] = useState(false)
-
-  const [isInitialRender, setIsInitialRender] = useState(true)
-  const [inputValue, setInputValue] = useState<string | undefined>(undefined)
-
   const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
   const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
 
-  const publishAtDisplayValue = useMemo(() => {
-    if (!publishedAt) return ''
-    return dateFormatter.format(new Date(publishedAt))
-  }, [dateFormatter, publishedAt])
-
-  const [displayDate, setDisplayDate] = useState(publishAtDisplayValue)
   const {t: coreT} = useTranslation()
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
+  const [inputValue, setInputValue] = useState<string | undefined>(
+    publishedAt ? dateFormatter.format(new Date(publishedAt)) : undefined,
+  )
 
   const iconValue: BundleIconEditorPickerValue = useMemo(
     () => ({
