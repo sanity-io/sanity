@@ -2,7 +2,6 @@ export {
   BundleActions,
   BundleBadge,
   BundlesMenu,
-  getBundleSlug,
   getDocumentIsInPerspective,
   LATEST,
   useDocumentVersions,

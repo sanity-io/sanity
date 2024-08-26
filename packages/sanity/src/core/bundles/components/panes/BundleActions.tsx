@@ -4,6 +4,7 @@ import {type ReactNode, useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   getPublishedId,
+  getVersionFromId,
   getVersionId,
   useDocumentOperation,
   useDocumentStore,
@@ -12,7 +13,6 @@ import {
 
 import {Button} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {getBundleSlug} from '../../util/util'
 
 interface BundleActionsProps {
   currentGlobalBundle: BundleDocument
@@ -35,7 +35,9 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
   const {slug, title, archivedAt} = currentGlobalBundle
   const documentStore = useDocumentStore()
   const [creatingVersion, setCreatingVersion] = useState<boolean>(false)
-  const [isInVersion, setIsInVersion] = useState<boolean>(() => getBundleSlug(documentId) === slug)
+  const [isInVersion, setIsInVersion] = useState<boolean>(
+    () => getVersionFromId(documentId) === slug,
+  )
 
   const toast = useToast()
   const {newVersion} = useDocumentOperation(publishedId, documentType, bundleSlug)
@@ -50,7 +52,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
       return
     }
     // only add to version if there isn't already a version in that bundle of this doc
-    if (getBundleSlug(documentId) === slug) {
+    if (getVersionFromId(documentId) === slug) {
       toast.push({
         status: 'error',
         title: `There's already a version of this document in the bundle ${title}`,

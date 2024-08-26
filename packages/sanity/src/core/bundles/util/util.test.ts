@@ -1,20 +1,6 @@
 import {describe, expect, it} from '@jest/globals'
 
-import {getBundleSlug, getDocumentIsInPerspective} from './util'
-
-describe('getBundleSlug', () => {
-  it('should return the bundle slug', () => {
-    expect(getBundleSlug('versions.summer.my-document-id')).toBe('summer')
-  })
-
-  it('should return the undefined if no bundle slug is found and document is a draft', () => {
-    expect(getBundleSlug('drafts.my-document-id')).toBe(undefined)
-  })
-
-  it('should return the undefined if no bundle slug is found and document is published', () => {
-    expect(getBundleSlug('my-document-id')).toBe(undefined)
-  })
-})
+import {getDocumentIsInPerspective} from './util'
 
 // * - document: `summer.my-document-id`, perspective: `bundle.summer` : **true**
 // * - document: `my-document-id`, perspective: `bundle.summer` : **false**
