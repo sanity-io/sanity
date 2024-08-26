@@ -139,6 +139,7 @@ export function BundleForm(props: {
           calendarLabels={calendarLabels}
           value={value.publishedAt ? new Date(value.publishedAt) : undefined}
           inputValue={inputValue || ''}
+          constrainSize={false}
         />
       </Stack>
     </Stack>
