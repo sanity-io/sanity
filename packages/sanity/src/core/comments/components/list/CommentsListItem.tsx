@@ -268,6 +268,9 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     ? getBundleSlug(props.parentComment.target.document._ref)
     : undefined
 
+  /* TODO - once we understand how to set up with "finished" releases
+  we need to add a condition to the readOnly prop in this component */
+
   const renderedReplies = useMemo(
     () =>
       splicedReplies.map((reply) => (
