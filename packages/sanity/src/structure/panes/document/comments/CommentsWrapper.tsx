@@ -1,4 +1,4 @@
-import {useCallback, useLayoutEffect, useRef} from 'react'
+import {useCallback, useLayoutEffect, useMemo, useRef} from 'react'
 import {
   COMMENTS_INSPECTOR_NAME,
   CommentsEnabledProvider,
@@ -42,7 +42,10 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const router = useRouter()
   const {params, setParams, createPathWithParams, ...paneRouter} = usePaneRouter()
   const perspective = paneRouter.perspective ?? router.stickyParams.perspective
-  const docId = version ? getVersionId(documentId, version) : documentId
+  const versionOrPublishedId = useMemo(
+    () => (version ? getVersionId(documentId, version) : documentId),
+    [documentId, version],
+  )
 
   const selectedCommentId = params?.comment
   const paramsRef = useRef(params)
@@ -84,7 +87,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
 
   return (
     <CommentsProvider
-      documentId={docId}
+      documentId={versionOrPublishedId}
       documentType={documentType}
       getCommentLink={getCommentLink}
       isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
