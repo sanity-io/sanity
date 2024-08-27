@@ -198,6 +198,20 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         rowProps={getRowProps}
         scrollContainerRef={scrollContainerRef}
       />
+
+      <div>
+        {aggregatedData.map(
+          (document) =>
+            document.validation.hasError && (
+              <div key={document.document._id}>
+                <Text>{document.document._id}</Text>
+                {document.validation.validation.map((error) => (
+                  <div key={error.path.toString()}>{error.message}</div>
+                ))}
+              </div>
+            ),
+        )}
+      </div>
     </>
   )
 }
