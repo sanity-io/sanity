@@ -9,12 +9,21 @@ import {type ApiConfig} from './types'
 import {applyMutationEventEffects} from './utils/applyMendozaPatch'
 import {debounceCollect} from './utils/debounceCollect'
 
+export type ListenerMutationEventLike = Pick<
+  MutationEvent,
+  'type' | 'documentId' | 'previousRev' | 'resultRev'
+> & {
+  effects?: {
+    apply: unknown[]
+  }
+}
+
 export function createObserveDocument({
   mutationChannel,
   client,
 }: {
   client: SanityClient
-  mutationChannel: Observable<WelcomeEvent | MutationEvent>
+  mutationChannel: Observable<WelcomeEvent | ListenerMutationEventLike>
 }) {
   const getBatchFetcher = memoize(
     function getBatchFetcher(apiConfig: {dataset: string; projectId: string}) {
@@ -72,7 +81,7 @@ export function createObserveDocument({
   }
 }
 
-function applyMutationEvent(current: SanityDocument | undefined, event: MutationEvent) {
+function applyMutationEvent(current: SanityDocument | undefined, event: ListenerMutationEventLike) {
   if (event.previousRev !== current?._rev) {
     console.warn('Document out of sync, skipping mutation')
     return current
