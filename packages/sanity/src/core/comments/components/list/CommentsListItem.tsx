@@ -11,7 +11,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import {getBundleSlug, isVersionId} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
@@ -264,10 +263,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     }
   }, [replies])
 
-  const label = isVersionId(props.parentComment.target.document._ref)
-    ? getBundleSlug(props.parentComment.target.document._ref)
-    : undefined
-
   /* TODO - once we understand how to set up with "finished" releases
   we need to add a condition to the readOnly prop in this component */
 
@@ -294,26 +289,24 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
             onReactionSelect={onReactionSelect}
             readOnly={readOnly}
             withAvatar={avatarConfig.threadCommentsAvatar}
-            version={label}
           />
         </Stack>
       )),
     [
-      splicedReplies,
-      avatarConfig.avatarSize,
       avatarConfig.threadCommentsAvatar,
+      avatarConfig.avatarSize,
       currentUser,
-      parentComment,
+      handleInputKeyDown,
       mentionOptions,
-      mode,
       onCopyLink,
       onCreateRetry,
       onDelete,
       onEdit,
-      handleInputKeyDown,
       onReactionSelect,
+      parentComment,
       readOnly,
-      label,
+      splicedReplies,
+      mode,
     ],
   )
 
@@ -363,7 +356,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
             onStatusChange={onStatusChange}
             readOnly={readOnly}
             withAvatar={avatarConfig.parentCommentAvatar}
-            version={label}
           />
         </Stack>
 
