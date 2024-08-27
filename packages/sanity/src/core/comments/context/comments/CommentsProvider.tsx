@@ -89,7 +89,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     ? perspective.split('bundle.').at(1)
     : undefined
 
-  // TODO: Allow versions to have separate comments.
   const editState = useEditState(publishedId, documentType, 'default', bundlePerspective)
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
