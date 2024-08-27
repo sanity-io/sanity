@@ -87,7 +87,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   const handleListenerEvent = useCallback(
     async (event: ListenEvent<Record<string, CommentDocument>>) => {
       // Fetch all comments on initial connection
-      if (event.type === 'welcome') {
+      if (event.type === 'welcome' && !didInitialFetch.current) {
         setLoading(true)
         await initialFetch()
         setLoading(false)
