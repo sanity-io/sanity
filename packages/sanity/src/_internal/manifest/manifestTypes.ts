@@ -8,7 +8,13 @@ export type ManifestSerializable =
 export interface ManifestV1 {
   version: 1
   createdAt: string
-  workspaces: ManifestWorkspace[]
+  workspaces: SerializedManifestWorkspace[]
+}
+
+export interface SerializedManifestWorkspace {
+  name: string
+  dataset: string
+  schema: string // filename
 }
 
 export interface ManifestWorkspace {

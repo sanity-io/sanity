@@ -2,13 +2,14 @@ import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_t
 
 import {extractSchema} from '@sanity/schema/_internal'
 import {type SchemaType} from 'groq-js'
-import {type SchemaTypeDefinition, type Workspace} from 'sanity'
+import {type Workspace} from 'sanity'
 
 import {extractWorkspace} from '../../manifest/extractManifest'
+import {type ManifestWorkspace} from '../../manifest/manifestTypes'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 
-const formats = ['direct', 'groq-type-nodes'] as const
+const formats = ['manifest', 'groq-type-nodes'] as const
 type Format = (typeof formats)[number]
 
 /** @internal */
@@ -22,8 +23,7 @@ export interface ExtractSchemaWorkerData {
 type WorkspaceTransformer = (workspace: Workspace) => ExtractSchemaWorkerResult
 
 const workspaceTransformers: Record<Format, WorkspaceTransformer> = {
-  // @ts-expect-error FIXME
-  'direct': extractWorkspace,
+  'manifest': extractWorkspace,
   'groq-type-nodes': (workspace) => ({
     schema: extractSchema(workspace.schema, {
       enforceRequiredFields: opts.enforceRequiredFields,
@@ -33,7 +33,7 @@ const workspaceTransformers: Record<Format, WorkspaceTransformer> = {
 
 /** @internal */
 export type ExtractSchemaWorkerResult<TargetFormat extends Format = Format> = {
-  'direct': Pick<Workspace, 'name' | 'dataset'> & {schema: SchemaTypeDefinition[]} // xxx
+  'manifest': ManifestWorkspace
   'groq-type-nodes': {schema: SchemaType}
 }[TargetFormat]
 

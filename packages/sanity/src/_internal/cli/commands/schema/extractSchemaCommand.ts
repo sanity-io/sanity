@@ -1,8 +1,5 @@
 import {type CliCommandDefinition} from '@sanity/cli'
 
-// xxx tmp
-import mod from '../../actions/schema/extractAction'
-
 const description = 'Extracts a JSON representation of a Sanity schema within a Studio context.'
 
 const helpText = `
@@ -26,10 +23,8 @@ const extractSchemaCommand: CliCommandDefinition = {
   description,
   helpText,
   action: async (args, context) => {
-    // const mod = await import('../../actions/schema/extractAction')
-    //
-    // return mod.default(args, context)
-    return mod(args, context)
+    const mod = await import('../../actions/schema/extractAction')
+    return mod.default(args, context)
   },
 } satisfies CliCommandDefinition
 

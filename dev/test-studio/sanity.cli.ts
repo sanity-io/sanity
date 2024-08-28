@@ -9,8 +9,6 @@ export default defineCliConfig({
     dataset: 'test',
   },
 
-  unstable_extractManifestOnBuild: true,
-
   // Can be overriden by:
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above

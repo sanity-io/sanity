@@ -21,7 +21,6 @@ const devAliases = {
   '@sanity/cli': './packages/@sanity/cli/src',
   '@sanity/mutator': './packages/@sanity/mutator/src',
   '@sanity/schema': './packages/@sanity/schema/src/_exports',
-  '@sanity/manifest': './packages/@sanity/manifrst/src/_exports',
   '@sanity/migrate': './packages/@sanity/migrate/src/_exports',
   '@sanity/types': './packages/@sanity/types/src',
   '@sanity/util': './packages/@sanity/util/src/_exports',

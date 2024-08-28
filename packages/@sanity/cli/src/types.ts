@@ -314,26 +314,6 @@ export interface CliConfig {
   autoUpdates?: boolean
 
   studioHost?: string
-
-  /**
-   * Whether or not to extract a Studio Manifest to the static assets directory when building
-   * (or deploying) the project.
-   *
-   * Optional, defaults to `false`.
-   */
-  unstable_extractManifestOnBuild?: boolean
-
-  /**
-   * The path Sanity CLI will write static assets (such as the Studio Manifest) to when used inside
-   * an embedded Studio project. Relative to the CLI config file.
-   *
-   * Sanity CLI will attempt to create this path if it does not exist.
-   *
-   * You should not define a value if your Studio is not embedded.
-   *
-   * Optional, defaults to `dist/static`.
-   */
-  unstable_staticAssetsPath?: string
 }
 
 export type UserViteConfig =
