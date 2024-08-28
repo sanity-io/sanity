@@ -3,6 +3,7 @@ import {type SanityDocument, type Schema} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
 
+import {getVersionFromId} from '../../../../util'
 import {type IdPair, type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
@@ -79,7 +80,7 @@ export const editState = memoize(
         liveEditSchemaType,
         ready: true,
         transactionSyncLock,
-        bundleSlug: idPair.versionId?.split('.').at(0),
+        bundleSlug: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
       })),
       startWith({
         id: idPair.publishedId,
@@ -91,7 +92,7 @@ export const editState = memoize(
         liveEditSchemaType,
         ready: false,
         transactionSyncLock: null,
-        bundleSlug: idPair.versionId?.split('.').at(0),
+        bundleSlug: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
       }),
       publishReplay(1),
       refCount(),
