@@ -1,8 +1,9 @@
 import {type ColorHueKey} from '@sanity/color'
 import {type IconSymbol} from '@sanity/icons'
 import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {
+  type FormBundleDocument,
   FormFieldHeaderText,
   type FormNodeValidation,
   useDateTimeFormat,
@@ -14,7 +15,6 @@ import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTim
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
-import {useGetBundleSlug} from './useGetBundleSlug'
 
 interface BaseBundleDocument extends Partial<BundleDocument> {
   hue: ColorHueKey
@@ -22,7 +22,6 @@ interface BaseBundleDocument extends Partial<BundleDocument> {
 }
 
 export const DEFAULT_BUNDLE: BaseBundleDocument = {
-  slug: '',
   title: '',
   description: '',
   hue: 'gray',
@@ -30,19 +29,18 @@ export const DEFAULT_BUNDLE: BaseBundleDocument = {
 }
 
 export function BundleForm(props: {
-  onChange: (params: Partial<BundleDocument>) => void
-  value: Partial<BundleDocument>
+  onChange: (params: FormBundleDocument) => void
+  value: FormBundleDocument
 }): JSX.Element {
   const {onChange, value} = props
   const {title, description, icon, hue, publishedAt} = value
   // derive the action from whether the initial value prop has a slug
   // only editing existing bundles will provide a value.slug
-  const {current: action} = useRef(value.slug ? 'edit' : 'create')
-  const isEditing = action === 'edit'
   const {t} = useTranslation()
 
   const dateFormatter = useDateTimeFormat()
 
+  // todo: figure out if these are needed
   const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
   const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
 
@@ -60,22 +58,15 @@ export function BundleForm(props: {
     [icon, hue],
   )
 
-  const generateSlugFromTitle = useGetBundleSlug()
-
   const handleBundleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
-      const {slug: existingSlug} = value
-
-      const nextSlug = (isEditing && existingSlug) || generateSlugFromTitle(pickedTitle)
-
       onChange({
         ...value,
         title: pickedTitle,
-        slug: nextSlug,
       })
     },
-    [generateSlugFromTitle, isEditing, onChange, value],
+    [onChange, value],
   )
 
   const handleBundleDescriptionChange = useCallback(

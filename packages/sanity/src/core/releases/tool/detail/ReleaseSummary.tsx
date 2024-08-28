@@ -85,8 +85,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     )
 
   const documentTableColumnDefs = useMemo(
-    () => getDocumentTableColumnDefs(release.slug, t),
-    [release.slug, t],
+    () => getDocumentTableColumnDefs(release._id, t),
+    [release._id, t],
   )
   // update hue and icon when release changes
   useEffect(() => setIconValue(setIconHue({hue, icon})), [hue, icon])

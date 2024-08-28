@@ -33,9 +33,8 @@ describe('BundlesMenu', () => {
   const mockBundles: BundleDocument[] = [
     {
       hue: 'magenta',
-      _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
+      _id: 'spring-drop',
       _type: 'bundle',
-      slug: 'spring-drop',
       _rev: '6z08CvvPnPe5pWSKJ5zPRR',
       icon: 'heart-filled',
       description: 'What a spring drop, allergies galore 🌸',
@@ -49,11 +48,10 @@ describe('BundlesMenu', () => {
       title: 'Autumn Drop',
       _type: 'bundle',
       hue: 'yellow',
-      _id: '0e87530e-4378-45ff-9d6f-58207e89f3ed',
+      _id: 'autumn-drop',
       _createdAt: '2024-07-02T11:37:06Z',
       _rev: '6z08CvvPnPe5pWSKJ5zJiK',
       _updatedAt: '2024-07-02T11:37:06Z',
-      slug: 'autumn-drop',
       authorId: '',
     },
     {
@@ -66,7 +64,7 @@ describe('BundlesMenu', () => {
       _type: 'bundle',
       hue: 'red',
       _id: 'f6b2c2cc-1732-4465-bfb3-dd205b5d78e9',
-      slug: 'summer-drop',
+      _id: 'summer-drop',
       authorId: '',
     },
   ]
@@ -157,7 +155,7 @@ describe('BundlesMenu', () => {
 
     act(() => {
       expect(screen.getByText(mockBundles[0].title)).toBeInTheDocument()
-      expect(screen.getByTestId(`${mockBundles[0].slug}-checkmark-icon`)).toBeInTheDocument()
+      expect(screen.getByTestId(`${mockBundles[0]._id}-checkmark-icon`)).toBeInTheDocument()
     })
   })
 
@@ -223,7 +221,7 @@ describe('BundlesMenu', () => {
         'mock-deleted-bundle': {
           _id: 'mock-deleted-bundle',
           _type: 'bundle',
-          slug: 'mock-deleted-bundle',
+          _id: 'mock-deleted-bundle',
           title: 'Mock Deleted Bundle',
         } as BundleDocument,
       },
@@ -249,7 +247,7 @@ describe('BundlesMenu', () => {
         'mock-deleted-bundle': {
           _id: 'mock-deleted-bundle',
           _type: 'bundle',
-          slug: 'mock-deleted-bundle',
+          _id: 'mock-deleted-bundle',
           title: 'Mock Deleted Bundle',
         } as BundleDocument,
       },
@@ -263,7 +261,7 @@ describe('BundlesMenu', () => {
           {
             _id: 'mock-deleted-bundle',
             _type: 'bundle',
-            slug: 'mock-deleted-bundle',
+            _id: 'mock-deleted-bundle',
             title: 'Mock Deleted Bundle',
           } as BundleDocument,
         ]}

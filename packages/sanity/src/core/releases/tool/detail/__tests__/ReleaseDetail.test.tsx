@@ -59,10 +59,10 @@ const renderTest = async () => {
   return render(
     <RouterProvider
       state={{
-        bundleSlug: 'test-bundle-slug',
+        bundleId: 'test-bundle-slug',
       }}
       onNavigate={mockRouterNavigate}
-      router={route.create('/', [route.create('/:bundleSlug')])}
+      router={route.create('/', [route.create('/:bundleId')])}
     >
       <ReleaseDetail />
     </RouterProvider>,

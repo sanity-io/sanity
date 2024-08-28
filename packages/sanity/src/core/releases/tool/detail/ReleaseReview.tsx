@@ -105,7 +105,7 @@ export function ReleaseReview({
                 <DocumentDiffContainer
                   key={documentId}
                   item={item}
-                  releaseSlug={release.slug}
+                  releaseSlug={release._id}
                   history={documentsHistory[documentId]}
                   isExpanded={expandedItems[documentId] ?? true}
                   // eslint-disable-next-line react/jsx-no-bind

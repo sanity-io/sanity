@@ -142,7 +142,6 @@ describe('ReleasesOverview', () => {
         title: 'Bundle 4',
         _id: '4',
         archivedAt: new Date().toISOString(),
-        slug: 'bundle-4',
         _createdAt: new Date().toISOString(),
       },
     ] as BundleDocument[]
@@ -156,7 +155,6 @@ describe('ReleasesOverview', () => {
           'deleted-bundle-slug': {
             title: 'Deleted Bundle',
             _id: 'deleted-bundle-id',
-            slug: 'deleted-bundle-slug',
             _createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * 5).toISOString(),
           } as BundleDocument,
         },
@@ -166,7 +164,7 @@ describe('ReleasesOverview', () => {
         error: null,
         data: Object.fromEntries(
           bundles.map((bundle, index) => [
-            bundle.slug,
+            bundle._id,
             {
               documentCount: 1,
               updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * (index + 1)).toISOString(),
@@ -286,7 +284,7 @@ describe('ReleasesOverview', () => {
       const bundleRow = screen.getAllByTestId('table-row')[1]
       fireEvent.click(within(bundleRow).getByText('Bundle 1'))
 
-      expect(useRouter().navigate).toHaveBeenCalledWith({bundleSlug: 'bundle-1'})
+      expect(useRouter().navigate).toHaveBeenCalledWith({bundleId: 'bundle-1'})
     })
   })
 })

@@ -49,9 +49,9 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
         ),
       })
       setDiscardStatus('idle')
-      if (router.state.bundleSlug) {
+      if (router.state.bundleId) {
         // navigate back to bundle overview
-        router.navigate({bundleSlug: undefined})
+        router.navigate({bundleId: undefined})
       }
     } catch (e) {
       setDiscardStatus('error')

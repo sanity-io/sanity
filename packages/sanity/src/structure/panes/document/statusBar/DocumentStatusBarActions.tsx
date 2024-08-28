@@ -88,7 +88,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              {currentGlobalBundle.slug === LATEST.slug ? (
+              {currentGlobalBundle._id === 'draft' ? (
                 <Button
                   data-testid={`action-${firstActionState.label}`}
                   disabled={
@@ -130,7 +130,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
        * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
        * SPECIFICALLY FOR ISDRAFT
        */}
-      {showMenu && menuActionStates.length > 0 && currentGlobalBundle.slug === LATEST.slug && (
+      {showMenu && menuActionStates.length > 0 && currentGlobalBundle._id === LATEST._id && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (

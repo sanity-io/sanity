@@ -126,7 +126,7 @@ jest.mock('sanity/router', () => ({
   ...(jest.requireActual('sanity/router') || {}),
   IntentLink: jest.fn().mockImplementation((props: any) => <a> {props.children}</a>),
   useRouter: jest.fn().mockReturnValue({
-    state: {bundleSlug: 'differences'},
+    state: {bundleId: 'differences'},
     navigate: jest.fn(),
   }),
 }))
