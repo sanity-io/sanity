@@ -1,4 +1,8 @@
-import {createBatchedStore, createSessionId} from '@sanity/telemetry'
+import {
+  createBatchedStore,
+  type CreateBatchedStoreOptions,
+  createSessionId,
+} from '@sanity/telemetry'
 import {TelemetryProvider} from '@sanity/telemetry/react'
 import arrify from 'arrify'
 import {type ReactNode, useEffect, useMemo} from 'react'
@@ -9,14 +13,42 @@ import {SANITY_VERSION} from '../version'
 
 const sessionId = createSessionId()
 
+const DEBUG_TELEMETRY = process.env.SANITY_STUDIO_DEBUG_TELEMETRY
+
+/* eslint-disable no-console */
+const debugLoggingStore: CreateBatchedStoreOptions = {
+  // submit any pending events every <n> ms
+  flushInterval: 1000,
+
+  // implements user consent resolving
+  resolveConsent: () => Promise.resolve({status: 'granted'}),
+
+  // implements sending events to backend
+  sendEvents: async (batch) => {
+    console.log('--- telemetry ---')
+    console.log(batch)
+  },
+  // opts into a different strategy for sending events when the browser close, reload or navigate away from the current page
+  sendBeacon: (batch) => {
+    console.log('--- telemetry ---')
+    console.log(batch)
+    return true
+  },
+}
+/* eslint-enable no-console */
+
 // Wrap the app in a TelemetryProvider
 // This will enable usage of the `useTelemetry()` hook
 export function StudioTelemetryProvider(props: {children: ReactNode; config: Config}) {
   const client = useClient({apiVersion: 'v2023-12-18'})
 
   const projectId = client.config().projectId
-  const store = useMemo(() => {
-    return createBatchedStore(sessionId, {
+
+  const storeOptions = useMemo((): CreateBatchedStoreOptions => {
+    if (DEBUG_TELEMETRY) {
+      return debugLoggingStore
+    }
+    return {
       // submit any pending events every <n> ms
       flushInterval: 30000,
 
@@ -35,8 +67,10 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
       // opts into a different strategy for sending events when the browser close, reload or navigate away from the current page
       sendBeacon: (batch) =>
         navigator.sendBeacon(client.getUrl('/intake/batch'), JSON.stringify({projectId, batch})),
-    })
+    }
   }, [client, projectId])
+
+  const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
 
   useEffect(() => {
     store.logger.updateUserProperties({
