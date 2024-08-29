@@ -20,7 +20,7 @@ describe('IntentLink', () => {
       />,
       {
         wrapper: ({children}) => (
-          <RouterProvider onNavigate={() => null} router={router} state={{}}>
+          <RouterProvider onNavigate={noop} router={router} state={{}}>
             {children}
           </RouterProvider>
         ),
