@@ -57,3 +57,21 @@ export const PublishedRelease = defineEvent({
   version: 1,
   description: 'User published a release',
 })
+
+/** When a release is successfully archived
+ * @internal
+ */
+export const ArchivedRelease = defineEvent({
+  name: 'Archive release',
+  version: 1,
+  description: 'User archived a release',
+})
+
+/** When a release is successfully unarchived
+ * @internal
+ */
+export const UnarchivedRelease = defineEvent({
+  name: 'Unarchive release',
+  version: 1,
+  description: 'User unarchived a release',
+})
