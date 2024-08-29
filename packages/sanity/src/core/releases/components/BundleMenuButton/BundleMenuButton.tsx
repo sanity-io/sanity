@@ -5,11 +5,13 @@ import {
   TrashIcon,
   UnarchiveIcon,
 } from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, Spinner, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../ui-components'
+import {DeletedRelease} from '../../../bundles/__telemetry__/releases.telemetry'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
 import {Translate, useTranslation} from '../../../i18n'
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -33,6 +35,7 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
   const bundleMenuDisabled = !bundle || disabled
   const toast = useToast()
   const {t} = useTranslation(releasesLocaleNamespace)
+  const telemetry = useTelemetry()
 
   const resetSelectedAction = () => setSelectedAction(undefined)
 
@@ -41,6 +44,7 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
     try {
       setDiscardStatus('discarding')
       await deleteBundle(bundle)
+      telemetry.log(DeletedRelease)
       toast.push({
         closable: true,
         status: 'success',

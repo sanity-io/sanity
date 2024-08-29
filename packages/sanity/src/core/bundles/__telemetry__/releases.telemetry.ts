@@ -39,3 +39,12 @@ export const UpdatedRelease = defineEvent({
   version: 1,
   description: 'User updated a release',
 })
+
+/** When a release is successfully deleted
+ * @internal
+ */
+export const DeletedRelease = defineEvent({
+  name: 'Delete release',
+  version: 1,
+  description: 'User deleted a release',
+})
