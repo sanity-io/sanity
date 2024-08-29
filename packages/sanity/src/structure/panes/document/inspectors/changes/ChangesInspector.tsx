@@ -38,7 +38,7 @@ const Grid = styled(Box)`
   gap: 0.25em;
 `
 
-export function ChangesInspector(): ReactElement {
+export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactElement {
   const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
 
@@ -108,13 +108,15 @@ export function ChangesInspector(): ReactElement {
         <BoundaryElementProvider element={scrollRef.current}>
           <Scroller data-ui="Scroller" ref={scrollRef}>
             <Box flex={1} padding={3} paddingTop={2} height="fill">
-              <Content
-                diff={diff}
-                documentContext={documentContext}
-                error={timelineError}
-                loading={loading}
-                schemaType={schemaType}
-              />
+              {showChanges && (
+                <Content
+                  diff={diff}
+                  documentContext={documentContext}
+                  error={timelineError}
+                  loading={loading}
+                  schemaType={schemaType}
+                />
+              )}
             </Box>
           </Scroller>
         </BoundaryElementProvider>
