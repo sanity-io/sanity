@@ -18,6 +18,7 @@ import {compareStudioDependencyVersions} from '../../util/compareStudioDependenc
 import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 import {extractManifestSafe} from '../manifest/extractManifestAction'
 import {pick} from 'lodash'
+import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 
 const rimraf = promisify(rimrafCallback)
 

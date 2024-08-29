@@ -1039,55 +1039,6 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
 
-  packages/@sanity/manifest:
-    dependencies:
-      '@sanity/generate-help-url':
-        specifier: ^3.0.0
-        version: 3.0.0
-      '@sanity/types':
-        specifier: 3.38.0
-        version: link:../types
-      arrify:
-        specifier: ^1.0.1
-        version: 1.0.1
-      groq-js:
-        specifier: ^1.7.0
-        version: 1.7.0
-      humanize-list:
-        specifier: ^1.0.1
-        version: 1.0.1
-      leven:
-        specifier: ^3.1.0
-        version: 3.1.0
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      object-inspect:
-        specifier: ^1.13.1
-        version: 1.13.1
-    devDependencies:
-      '@jest/globals':
-        specifier: ^29.7.0
-        version: 29.7.0
-      '@repo/package.config':
-        specifier: workspace:*
-        version: link:../../@repo/package.config
-      '@sanity/icons':
-        specifier: ^2.11.8
-        version: 2.11.8(react@18.2.0)
-      '@types/arrify':
-        specifier: ^1.0.4
-        version: 1.0.4
-      '@types/object-inspect':
-        specifier: ^1.13.0
-        version: 1.13.0
-      '@types/react':
-        specifier: ^18.2.78
-        version: 18.2.78
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
-
   packages/@sanity/migrate:
     dependencies:
       '@sanity/client':
@@ -1744,9 +1695,6 @@ importers:
       yargs:
         specifier: ^17.3.0
         version: 17.7.2
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
     devDependencies:
       '@jest/expect':
         specifier: ^29.7.0
