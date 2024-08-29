@@ -1,4 +1,4 @@
-import {partition} from 'lodash'
+import {fromPairs, partition, toPairs} from 'lodash'
 import {type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
@@ -88,10 +88,13 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
         intent: intentName,
         params,
         payload,
-        _searchParams,
+        _searchParams: toPairs({
+          ...fromPairs((state._searchParams ?? []).filter(([key]) => STICKY.includes(key))),
+          ...fromPairs(_searchParams ?? []),
+        }),
       })
     },
-    [routerProp],
+    [routerProp, state._searchParams],
   )
 
   const resolvePathFromState = useCallback(
