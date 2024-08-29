@@ -137,6 +137,8 @@ const sharedSettings = definePlugin({
     visionTool({
       defaultApiVersion: '2022-08-08',
     }),
+    // eslint-disable-next-line camelcase
+    muxInput({mp4_support: 'standard'}),
     imageHotspotArrayPlugin(),
     routerDebugTool(),
     errorReportingTestPlugin(),

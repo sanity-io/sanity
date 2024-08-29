@@ -18,25 +18,25 @@ const SCHEMA_FILENAME_SUFFIX = '.studioschema.json'
 interface ExtractFlags {
   workspace?: string
   path?: string
-  level?: string | 'trace'
+  silent?: boolean
 }
 
-export async function extractManifest(
+export async function extractManifestSafe(
   args: CliCommandArguments<ExtractFlags>,
   context: CliCommandContext,
 ): Promise<void> {
   try {
-    await extractManifestInner(args, context)
+    await extractManifest(args, context)
   } catch (err) {
     // best-effort extraction
     context.output.print('Complicated schema detected.')
-    if (process.env.SANITY_MANIFEST_LOG_ERROR) {
+    if (!args.extOptions.silent) {
       context.output.error(err)
     }
   }
 }
 
-async function extractManifestInner(
+async function extractManifest(
   args: CliCommandArguments<ExtractFlags>,
   context: CliCommandContext,
 ): Promise<void> {
@@ -66,7 +66,8 @@ async function extractManifestInner(
     'extractSchema.js',
   )
 
-  const spinner = output.spinner({}).start('Analyzing schema')
+  const start = Date.now()
+  const spinner = output.spinner({}).start('Extracting manifest')
 
   const worker = new Worker(workerPath, {
     workerData: {
@@ -102,9 +103,9 @@ async function extractManifestInner(
 
     await writeFile(path, JSON.stringify(manifestV1, null, 2))
 
-    //spinner.succeed(`Extracted manifest to ${chalk.cyan(path)}`)
+    spinner.succeed(`Extracted manifest to ${chalk.cyan(path)}: (${Date.now() - start}ms)`)
   } catch (err) {
-    spinner.fail('Failed to extract manifest')
+    spinner.fail(`Failed to extract manifest (${Date.now() - start}ms)`)
     throw err
   }
 }
@@ -126,7 +127,9 @@ async function externalizeSchema(
 ): Promise<SerializedManifestWorkspace> {
   const schemaString = JSON.stringify(workspace.schema, null, 2)
   const hash = createHash('sha1').update(schemaString).digest('hex')
-  const filename = `${hash.slice(0, 8)}.${workspace.name}.${SCHEMA_FILENAME_SUFFIX}`
+  const filename = `${hash.slice(0, 8)}.${SCHEMA_FILENAME_SUFFIX}`
+
+  // workspaces with identical schemas will overwrite each others schema file. This is ok, since they are identical and can be shared
   await writeFile(join(staticPath, filename), schemaString)
 
   return {

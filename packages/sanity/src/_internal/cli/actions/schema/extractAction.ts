@@ -9,7 +9,7 @@ import {
   type ExtractSchemaWorkerData,
   type ExtractSchemaWorkerResult,
 } from '../../threads/extractSchema'
-import {extractManifest} from '../manifest/extractManifestAction'
+import {extractManifestSafe} from '../manifest/extractManifestAction'
 import {SchemaExtractedTrace} from './extractSchema.telemetry'
 
 interface ExtractFlags {
@@ -30,7 +30,7 @@ export default async function extractAction(
   const {workDir, output, telemetry} = context
 
   if (formatFlag === 'manifest') {
-    return extractManifest(args, context)
+    return extractManifestSafe(args, context)
   }
 
   const enforceRequiredFields = flags['enforce-required-fields'] || false
