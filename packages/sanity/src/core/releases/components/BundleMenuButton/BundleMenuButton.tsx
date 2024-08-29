@@ -11,7 +11,11 @@ import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../ui-components'
-import {DeletedRelease} from '../../../bundles/__telemetry__/releases.telemetry'
+import {
+  ArchivedRelease,
+  DeletedRelease,
+  UnarchivedRelease,
+} from '../../../bundles/__telemetry__/releases.telemetry'
 import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
 import {Translate, useTranslation} from '../../../i18n'
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -78,6 +82,12 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
       ...bundle,
       archivedAt: isBundleArchived ? undefined : new Date().toISOString(),
     })
+
+    if (isBundleArchived) {
+      telemetry.log(UnarchivedRelease)
+    } else {
+      telemetry.log(ArchivedRelease)
+    }
     setIsPerformingOperation(false)
   }
 
