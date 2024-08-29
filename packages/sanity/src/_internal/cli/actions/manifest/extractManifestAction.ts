@@ -127,7 +127,7 @@ async function externalizeSchema(
 ): Promise<SerializedManifestWorkspace> {
   const schemaString = JSON.stringify(workspace.schema, null, 2)
   const hash = createHash('sha1').update(schemaString).digest('hex')
-  const filename = `${hash.slice(0, 8)}.${SCHEMA_FILENAME_SUFFIX}`
+  const filename = `${hash.slice(0, 8)}${SCHEMA_FILENAME_SUFFIX}`
 
   // workspaces with identical schemas will overwrite each others schema file. This is ok, since they are identical and can be shared
   await writeFile(join(staticPath, filename), schemaString)
