@@ -88,7 +88,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              {currentGlobalBundle._id === 'draft' ? (
+              {currentGlobalBundle._id === LATEST._id ? (
                 <Button
                   data-testid={`action-${firstActionState.label}`}
                   disabled={
