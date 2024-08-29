@@ -1099,8 +1099,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'package-version.new-package-available.reload-button': 'Push to reload',
   /** Title of the alert for studio users when packages in their studio are out-of-date */
   'package-version.new-package-available.title': 'Sanity Studio is ready to update!',
-  /** Label for action to manage members of the current studio project */
-  'presence.action.manage-members': 'Manage members',
+  /** Label for action to invite members to the current studio project */
+  'presence.action.manage-members': 'Invite members',
   /** Accessibility label for presence menu button */
   'presence.aria-label': 'Global presence',
   /** Message description for when no one else is currently present */

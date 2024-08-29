@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import {isActionEnabled} from '@sanity/schema/_internal'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {
   type ObjectSchemaType,
   type Path,
@@ -47,6 +48,7 @@ import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {DocumentURLCopied} from './__telemetry__'
 import {
   DEFAULT_MENU_ITEM_GROUPS,
   EMPTY_PARAMS,
@@ -400,10 +402,27 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [inspectOpen, params, setPaneParams],
   )
 
+  const telemetry = useTelemetry()
+
   const handleMenuAction = useCallback(
     (item: PaneMenuItem) => {
       if (item.action === 'production-preview' && previewUrl) {
         window.open(previewUrl)
+        return true
+      }
+
+      if (item.action === 'copy-document-url' && navigator) {
+        telemetry.log(DocumentURLCopied)
+        // Chose to copy the user's current URL instead of
+        // the document's edit intent link because
+        // of bugs when resolving a document that has
+        // multiple access paths within Structure
+        navigator.clipboard.writeText(window.location.toString())
+        pushToast({
+          id: 'copy-document-url',
+          status: 'info',
+          title: t('panes.document-operation-results.operation-success_copy-url'),
+        })
         return true
       }
 
@@ -434,6 +453,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       return false
     },
     [
+      t,
       closeInspector,
       handleHistoryOpen,
       inspectorName,
@@ -441,6 +461,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       openInspector,
       previewUrl,
       toggleLegacyInspect,
+      pushToast,
+      telemetry,
     ],
   )
 

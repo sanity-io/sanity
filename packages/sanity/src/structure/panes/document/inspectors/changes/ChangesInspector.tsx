@@ -55,6 +55,7 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
       rootDiff: diff,
       isComparingCurrent,
       value,
+      showFromValue: true,
     }),
     [documentId, diff, isComparingCurrent, schemaType, value],
   )
