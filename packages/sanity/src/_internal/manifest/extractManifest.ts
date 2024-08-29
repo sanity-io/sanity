@@ -6,6 +6,7 @@ import {
   ConcreteRuleClass,
   createSchema,
   type FileSchemaType,
+  type MultiFieldSet,
   type NumberSchemaType,
   type ObjectField,
   type ObjectSchemaType,
@@ -30,12 +31,13 @@ import {
 } from './manifestTypeHelpers'
 import {
   type ManifestField,
+  type ManifestFieldset,
   type ManifestSchemaType,
   type ManifestSerializable,
+  type ManifestTitledValue,
   type ManifestValidationGroup,
   type ManifestValidationRule,
   type ManifestWorkspace,
-  type TitledValue,
 } from './manifestTypes'
 
 interface Context {
@@ -51,6 +53,7 @@ type SchemaTypeKey =
   | keyof StringSchemaType
   | keyof ReferenceSchemaType
   | keyof BlockDefinition
+  | 'group' // we strip this from fields
 
 type Validation = {validation: ManifestValidationGroup[]} | Record<string, never>
 type ObjectFields = {fields: ManifestField[]} | Record<string, never>
@@ -87,7 +90,7 @@ export function extractManifestSchemaTypes(schema: Schema): ManifestSchemaType[]
     .map((type) => transformType(type, context))
 }
 
-function transformCommonTypeFields(type: SchemaType, context: Context) {
+function transformCommonTypeFields(type: SchemaType & {fieldset?: string}, context: Context) {
   const shouldCreateDefinition = !context.schema.get(type.name) || isCustomized(type)
 
   const arrayProperties = type.jsonType === 'array' ? transformArrayMember(type, context) : {}
@@ -102,17 +105,43 @@ function transformCommonTypeFields(type: SchemaType, context: Context) {
       : {}
 
   return {
-    ...retainUserlandTypeProps(type),
+    ...retainCustomTypeProps(type),
     ...transformValidation(type.validation),
-    ...objectFields,
     ...ensureCustomTitle(type.name, type.title),
     ...ensureString('description', type.description),
+    ...objectFields,
     ...arrayProperties,
     ...referenceProperties,
     ...ensureConditional('readOnly', type.readOnly),
     ...ensureConditional('hidden', type.hidden),
+    ...transformFieldsets(type),
+    // fieldset prop gets instrumented via getCustomFields
+    ...ensureString('fieldset', type.fieldset),
     ...transformBlockType(type, context),
   }
+}
+
+function transformFieldsets(
+  type: SchemaType,
+): {fieldsets: ManifestFieldset[]} | Record<string, never> {
+  if (type.jsonType !== 'object') {
+    return {}
+  }
+  const fieldsets = type.fieldsets
+    ?.filter((fs): fs is MultiFieldSet => !fs.single)
+    .map((fs) => {
+      const options = isRecord(fs.options) ? {options: retainSerializableProps(fs.options)} : {}
+      return {
+        name: fs.name,
+        ...ensureCustomTitle(fs.name, fs.title),
+        ...ensureString('description', fs.description),
+        ...ensureConditional('readOnly', fs.readOnly),
+        ...ensureConditional('hidden', fs.hidden),
+        ...options,
+      }
+    })
+
+  return fieldsets?.length ? {fieldsets} : {}
 }
 
 function transformType(type: SchemaType, context: Context): ManifestSchemaType {
@@ -125,49 +154,52 @@ function transformType(type: SchemaType, context: Context): ManifestSchemaType {
   }
 }
 
-function retainUserlandTypeProps(type: SchemaType): Record<string, SerializableProp> {
+function retainCustomTypeProps(type: SchemaType): Record<string, SerializableProp> {
   const manuallySerializedFields: SchemaTypeKey[] = [
+    //explicitly added
     'name',
     'title',
     'description',
     'readOnly',
     'hidden',
-    'deprecated',
+    'validation',
+    'fieldsets',
+    'fields',
+    'to',
+    'of',
+    // not serialized
     'type',
     'jsonType',
     '__experimental_actions',
     '__experimental_formPreviewTitle',
     '__experimental_omnisearch_visibility',
     '__experimental_search',
-    'groups',
     'components',
     'icon',
     'orderings',
-    'validation',
-    'fieldsets',
     'preview',
-    'fields',
-    'to',
-    'of',
+    'groups',
+    //only exists on fields
+    'group',
     // we know about these, but let them be generically handled
     // deprecated
-    // rows
+    // rows (from text)
     // initialValue
     // options
-    // reference stuff
+    // crossDatasetReference props
   ]
   const typeWithoutManuallyHandledFields = Object.fromEntries(
     Object.entries(type).filter(
       ([key]) => !manuallySerializedFields.includes(key as unknown as SchemaTypeKey),
     ),
   )
-  return retainSerializableProperties(typeWithoutManuallyHandledFields) as Record<
+  return retainSerializableProps(typeWithoutManuallyHandledFields) as Record<
     string,
     SerializableProp
   >
 }
 
-function retainSerializableProperties(maybeSerializable: unknown, depth = 0): SerializableProp {
+function retainSerializableProps(maybeSerializable: unknown, depth = 0): SerializableProp {
   if (depth > MAX_CUSTOM_PROPERTY_DEPTH) {
     return undefined
   }
@@ -191,7 +223,7 @@ function retainSerializableProperties(maybeSerializable: unknown, depth = 0): Se
 
   if (Array.isArray(maybeSerializable)) {
     const arrayItems = maybeSerializable
-      .map((item) => retainSerializableProperties(item, depth + 1))
+      .map((item) => retainSerializableProps(item, depth + 1))
       .filter((item): item is ManifestSerializable => isDefined(item))
     return arrayItems.length ? arrayItems : undefined
   }
@@ -199,7 +231,7 @@ function retainSerializableProperties(maybeSerializable: unknown, depth = 0): Se
   if (isRecord(maybeSerializable)) {
     const serializableEntries = Object.entries(maybeSerializable)
       .map(([key, value]) => {
-        return [key, retainSerializableProperties(value, depth + 1)]
+        return [key, retainSerializableProps(value, depth + 1)]
       })
       .filter(([, value]) => isDefined(value))
     return serializableEntries.length ? Object.fromEntries(serializableEntries) : undefined
@@ -208,11 +240,13 @@ function retainSerializableProperties(maybeSerializable: unknown, depth = 0): Se
   return undefined
 }
 
-function transformField(field: ObjectField, context: Context): ManifestField {
+function transformField(field: ObjectField & {fieldset?: string}, context: Context): ManifestField {
   return {
     ...transformCommonTypeFields(field.type, context),
     name: field.name,
     type: field.type.name,
+    // this prop gets added synthetically via getCustomFields
+    ...ensureString('fieldset', field.fieldset),
   }
 }
 
@@ -233,7 +267,7 @@ function transformArrayMember(
 function transformReference(reference: ReferenceSchemaType): Pick<ManifestSchemaType, 'to'> {
   return {
     to: (reference.to ?? []).map((type) => ({
-      ...retainUserlandTypeProps(type),
+      ...retainCustomTypeProps(type),
       type: type.name,
     })),
   }
@@ -246,7 +280,7 @@ const transformTypeValidationRule: ValidationRuleTransformer = (rule) => {
       'constraint' in rule &&
       (typeof rule.constraint === 'string'
         ? rule.constraint.toLowerCase()
-        : retainSerializableProperties(rule.constraint)),
+        : retainSerializableProps(rule.constraint)),
   }
 }
 
@@ -294,7 +328,7 @@ function transformValidation(validation: SchemaValidationValue): Validation {
         .reduce<ManifestValidationRule[]>((rules, rule) => {
           const transformer: ValidationRuleTransformer =
             validationRuleTransformers[rule.flag] ??
-            ((spec) => retainSerializableProperties(spec) as ManifestValidationRule)
+            ((spec) => retainSerializableProps(spec) as ManifestValidationRule)
 
           const transformedRule = transformer(rule)
           if (!transformedRule) {
@@ -326,7 +360,7 @@ function ensureCustomTitle<const Value>(typeName: string, value: Value) {
   return titleObject
 }
 
-function ensureString<Key extends string, const Value>(key: Key, value: Value) {
+function ensureString<Key extends string>(key: Key, value: unknown) {
   if (typeof value === 'string') {
     return {
       [key]: value,
@@ -336,7 +370,7 @@ function ensureString<Key extends string, const Value>(key: Key, value: Value) {
   return {}
 }
 
-function ensureConditional<Key extends string, const Value>(key: Key, value: Value) {
+function ensureConditional<Key extends string>(key: Key, value: unknown) {
   if (typeof value === 'boolean') {
     return {
       [key]: value,
@@ -417,21 +451,21 @@ export function transformBlockType(
   }
 }
 
-function resolveEnabledStyles(blockType: ObjectSchemaType): TitledValue[] | undefined {
+function resolveEnabledStyles(blockType: ObjectSchemaType): ManifestTitledValue[] | undefined {
   const styleField = blockType.fields?.find((btField) => btField.name === 'style')
   return resolveTitleValueArray(styleField?.type.options.list)
 }
 
-function resolveEnabledDecorators(spanType: ObjectSchemaType): TitledValue[] | undefined {
+function resolveEnabledDecorators(spanType: ObjectSchemaType): ManifestTitledValue[] | undefined {
   return 'decorators' in spanType ? resolveTitleValueArray(spanType.decorators) : undefined
 }
 
-function resolveEnabledListItems(blockType: ObjectSchemaType): TitledValue[] | undefined {
+function resolveEnabledListItems(blockType: ObjectSchemaType): ManifestTitledValue[] | undefined {
   const listField = blockType.fields?.find((btField) => btField.name === 'listItem')
   return resolveTitleValueArray(listField?.type?.options.list)
 }
 
-function resolveTitleValueArray(possibleArray: unknown): TitledValue[] | undefined {
+function resolveTitleValueArray(possibleArray: unknown): ManifestTitledValue[] | undefined {
   if (!possibleArray || !Array.isArray(possibleArray)) {
     return undefined
   }
@@ -443,7 +477,7 @@ function resolveTitleValueArray(possibleArray: unknown): TitledValue[] | undefin
       return {
         value: item.value,
         ...ensureString('title', item.title),
-      } satisfies TitledValue
+      } satisfies ManifestTitledValue
     })
   if (!titledValues?.length) {
     return undefined

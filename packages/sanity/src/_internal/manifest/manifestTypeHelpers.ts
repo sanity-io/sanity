@@ -5,8 +5,19 @@ const DEFAULT_FILE_FIELDS = ['asset']
 const DEFAULT_GEOPOINT_FIELDS = ['lat', 'lng', 'alt']
 const DEFAULT_SLUG_FIELDS = ['current', 'source']
 
-export function getCustomFields(type: ObjectSchemaType): ObjectField[] {
-  const fields = type.fields
+export function getCustomFields(type: ObjectSchemaType): (ObjectField & {fieldset?: string})[] {
+  const fields = type.fieldsets
+    ? type.fieldsets.flatMap((fs) => {
+        if (fs.single) {
+          return fs.field
+        }
+        return fs.fields.map((field) => ({
+          ...field,
+          fieldset: fs.name,
+        }))
+      })
+    : type.fields
+
   if (isType(type, 'block')) {
     return []
   }

@@ -72,8 +72,21 @@ describe('Extract studio manifest', () => {
         name: 'test',
         types: [
           defineType({
+            //include
             name: documentType,
             type: 'document',
+            title: 'My document',
+            description: 'Stuff',
+            deprecated: {
+              reason: 'old',
+            },
+            options: {
+              custom: 'value',
+            },
+            initialValue: {title: 'Default'},
+            liveEdit: true,
+
+            //omit
             icon: () => 'remove-icon',
             groups: [{name: 'groups-are-removed'}],
             __experimental_omnisearch_visibility: true,
@@ -94,6 +107,7 @@ describe('Extract studio manifest', () => {
               defineField({
                 name: 'string',
                 type: 'string',
+                group: 'groups-are-removed',
               }),
             ],
             preview: {
@@ -108,6 +122,16 @@ describe('Extract studio manifest', () => {
       expect(serializedDoc).toEqual({
         type: 'document',
         name: documentType,
+        title: 'My document',
+        description: 'Stuff',
+        deprecated: {
+          reason: 'old',
+        },
+        options: {
+          custom: 'value',
+        },
+        initialValue: {title: 'Default'},
+        liveEdit: true,
         fields: [
           {
             name: 'string',
@@ -766,6 +790,78 @@ describe('Extract studio manifest', () => {
           },
         ],
         name: documentType,
+        type: 'document',
+      })
+    })
+
+    test('fieldsets and fieldset on fields is serialized', () => {
+      const documentType = 'basic'
+      const schema = createSchema({
+        name: 'test',
+        types: [
+          defineType({
+            name: documentType,
+            type: 'document',
+            fieldsets: [
+              {
+                name: 'test',
+                title: 'Test fieldset',
+                hidden: false,
+                readOnly: true,
+                options: {
+                  collapsed: true,
+                },
+                description: 'my fieldset',
+              },
+              {
+                name: 'conditional',
+                hidden: () => true,
+                readOnly: () => true,
+              },
+            ],
+            fields: [
+              defineField({name: 'title', type: 'string', fieldset: 'test'}),
+              defineField({name: 'other', type: 'string', fieldset: 'conditional'}),
+            ],
+          }),
+        ],
+      })
+
+      const extracted = extractManifestSchemaTypes(schema)
+      const serializedDoc = extracted.find((serialized) => serialized.name === documentType)
+      expect(serializedDoc).toEqual({
+        fields: [
+          {
+            fieldset: 'test',
+            name: 'title',
+            title: 'Title',
+            type: 'string',
+          },
+          {
+            fieldset: 'conditional',
+            name: 'other',
+            title: 'Other',
+            type: 'string',
+          },
+        ],
+        fieldsets: [
+          {
+            description: 'my fieldset',
+            hidden: false,
+            name: 'test',
+            options: {
+              collapsed: true,
+            },
+            readOnly: true,
+            title: 'Test fieldset',
+          },
+          {
+            hidden: 'conditional',
+            name: 'conditional',
+            readOnly: 'conditional',
+          },
+        ],
+        name: 'basic',
         type: 'document',
       })
     })

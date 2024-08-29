@@ -39,23 +39,31 @@ export interface ManifestSchemaType {
   preview?: {
     select: Record<string, string>
   }
+  fieldsets?: ManifestFieldset[]
   options?: Record<string, ManifestSerializable>
-
   //portable text
   marks?: {
     annotations?: ManifestArrayMember[]
-    decorators?: TitledValue[]
+    decorators?: ManifestTitledValue[]
   }
-  lists?: TitledValue[]
-  styles?: TitledValue[]
+  lists?: ManifestTitledValue[]
+  styles?: ManifestTitledValue[]
+  // userland (assignable to ManifestSerializable | undefined)
+  [index: string]: unknown
 }
 
-export interface TitledValue {
+export interface ManifestFieldset {
+  name: string
+  title?: string
+  [index: string]: ManifestSerializable | undefined
+}
+
+export interface ManifestTitledValue {
   value: string
   title?: string
 }
 
-export type ManifestField = ManifestSchemaType
+export type ManifestField = ManifestSchemaType & {fieldset?: string}
 export type ManifestArrayMember = Omit<ManifestSchemaType, 'name'> & {name?: string}
 export type ManifestReferenceMember = Omit<ManifestSchemaType, 'name'> & {name?: string}
 
