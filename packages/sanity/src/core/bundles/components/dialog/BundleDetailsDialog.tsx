@@ -25,7 +25,7 @@ const randomBundleId = customAlphabet(
   8,
 )
 function getRandomBundleId() {
-  return `b${randomBundleId()}`
+  return `r${randomBundleId()}`
 }
 
 export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Element {
@@ -38,7 +38,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
   const [value, setValue] = useState((): FormBundleDocument => {
     return {
       _id: bundle?._id || getRandomBundleId(),
-      _type: 'bundle',
+      _type: 'release',
       title: bundle?.title,
       description: bundle?.description,
       hue: bundle?.hue || 'gray',

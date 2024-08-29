@@ -13,7 +13,7 @@ import {type bundlesReducerAction, type bundlesReducerState} from './reducer'
  */
 export interface BundleDocument
   extends Pick<SanityDocument, '_id' | '_createdAt' | '_updatedAt' | '_rev' | '_version'> {
-  _type: 'bundle'
+  _type: 'release'
   title: string
   description?: string
   hue: ColorHueKey

@@ -70,7 +70,7 @@ describe('BundleDetailsDialog', () => {
 
     it('should call createBundle, setPerspective, and onCreate when form is submitted with a valid slug', async () => {
       const value: Partial<BundleDocument> = {
-        _type: 'bundle',
+        _type: 'release',
         title: 'Bundle 1',
         hue: 'gray',
         icon: 'cube',
@@ -85,13 +85,13 @@ describe('BundleDetailsDialog', () => {
 
       await expect(useBundleOperations().createBundle).toHaveBeenCalledWith(
         expect.objectContaining({
-          _id: expect.stringMatching(/b\w{8}/),
+          _id: expect.stringMatching(/r\w{8}/),
           ...value,
         }),
       )
 
       expect(usePerspective().setPerspective).toHaveBeenCalledWith(
-        expect.stringMatching(/b\w{8}-bundle-1/),
+        expect.stringMatching(/r\w{8}-bundle-1/),
       )
       expect(onSubmitMock).toHaveBeenCalled()
     })
@@ -102,7 +102,7 @@ describe('BundleDetailsDialog', () => {
     const onSubmitMock = jest.fn()
     const existingBundleValue: BundleDocument = {
       _id: 'existing-bundle',
-      _type: 'bundle',
+      _type: 'release',
       _rev: '123',
       _createdAt: '2024-07-02T11:37:51Z',
       _updatedAt: '2024-07-12T10:39:32Z',
@@ -165,7 +165,7 @@ describe('BundleDetailsDialog', () => {
       const {hue, icon, _id} = existingBundleValue
       expect(useBundleOperations().updateBundle).toHaveBeenCalledWith({
         _id,
-        _type: 'bundle',
+        _type: 'release',
         hue,
         icon,
         title: 'New title',

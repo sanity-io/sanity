@@ -45,7 +45,7 @@ export function useBundleOperations() {
 
       const document = {
         ...bundle,
-        _type: 'bundle',
+        _type: 'release',
         authorId: currentUser?.id,
         _id: bundle._id ?? uuid(),
       } as BundleDocument
@@ -83,7 +83,7 @@ export function useBundleOperations() {
 
       const document = {
         ...bundle,
-        _type: 'bundle',
+        _type: 'release',
       } as BundleDocument
       const unsetKeys = Object.entries(bundle)
         .filter(([_, value]) => value === undefined)

@@ -95,7 +95,7 @@ const MOCKED_PROPS = {
   release: {
     _updatedAt: '2024-07-12T10:39:32Z',
     authorId: 'p8xDvUMxC',
-    _type: 'bundle',
+    _type: 'release',
     description: 'To test differences in documents',
     hue: 'gray',
     title: 'Differences',

@@ -34,7 +34,7 @@ describe('BundlesMenu', () => {
     {
       hue: 'magenta',
       _id: 'spring-drop',
-      _type: 'bundle',
+      _type: 'release',
       _rev: '6z08CvvPnPe5pWSKJ5zPRR',
       icon: 'heart-filled',
       description: 'What a spring drop, allergies galore 🌸',
@@ -46,7 +46,7 @@ describe('BundlesMenu', () => {
     {
       icon: 'drop',
       title: 'Autumn Drop',
-      _type: 'bundle',
+      _type: 'release',
       hue: 'yellow',
       _id: 'autumn-drop',
       _createdAt: '2024-07-02T11:37:06Z',
@@ -61,7 +61,7 @@ describe('BundlesMenu', () => {
       description: 'What a summer drop woo hoo! ☀️',
       _updatedAt: '2024-07-02T11:36:00Z',
       title: 'Summer Drop',
-      _type: 'bundle',
+      _type: 'release',
       hue: 'red',
       _id: 'f6b2c2cc-1732-4465-bfb3-dd205b5d78e9',
       _id: 'summer-drop',
@@ -220,7 +220,7 @@ describe('BundlesMenu', () => {
       deletedBundles: {
         'mock-deleted-bundle': {
           _id: 'mock-deleted-bundle',
-          _type: 'bundle',
+          _type: 'release',
           _id: 'mock-deleted-bundle',
           title: 'Mock Deleted Bundle',
         } as BundleDocument,
@@ -246,7 +246,7 @@ describe('BundlesMenu', () => {
       deletedBundles: {
         'mock-deleted-bundle': {
           _id: 'mock-deleted-bundle',
-          _type: 'bundle',
+          _type: 'release',
           _id: 'mock-deleted-bundle',
           title: 'Mock Deleted Bundle',
         } as BundleDocument,
@@ -260,7 +260,7 @@ describe('BundlesMenu', () => {
           ...mockBundles,
           {
             _id: 'mock-deleted-bundle',
-            _type: 'bundle',
+            _type: 'release',
             _id: 'mock-deleted-bundle',
             title: 'Mock Deleted Bundle',
           } as BundleDocument,

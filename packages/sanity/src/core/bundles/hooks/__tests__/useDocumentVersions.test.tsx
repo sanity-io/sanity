@@ -24,7 +24,7 @@ const mockBundles = [
   {
     description: 'What a spring drop, allergies galore 🌸',
     _id: 'spring-drop',
-    _type: 'bundle',
+    _type: 'release',
     _updatedAt: '2024-07-12T10:39:32Z',
     _rev: 'HdJONGqRccLIid3oECLjYZ',
     authorId: 'pzAhBTkNX',
@@ -35,7 +35,7 @@ const mockBundles = [
   },
   {
     _id: 'winter-drop',
-    _type: 'bundle',
+    _type: 'release',
     description: 'What a winter drop',
     _updatedAt: '2024-07-12T10:39:32Z',
     _rev: 'HdJONGqRccLIid3oECLjYZ',

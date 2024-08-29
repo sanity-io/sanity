@@ -22,7 +22,7 @@ describe('BundleForm', () => {
   const onErrorMock = jest.fn()
   const valueMock: FormBundleDocument = {
     _id: 'very-random',
-    _type: 'bundle',
+    _type: 'release',
     title: '',
     description: '',
     icon: 'cube',
@@ -45,7 +45,7 @@ describe('BundleForm', () => {
           title: 'Spring Drop',
           icon: 'heart-filled',
           _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
-          _type: 'bundle',
+          _type: 'release',
           hue: 'magenta',
           _createdAt: '2024-07-02T11:37:51Z',
         },
@@ -130,7 +130,7 @@ describe('BundleForm', () => {
           title: 'Spring Drop',
           icon: 'heart-filled',
           _id: 'db76c50e',
-          _type: 'bundle',
+          _type: 'release',
           hue: 'magenta',
           _createdAt: '2024-07-02T11:37:51Z',
         },
