@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "3.54.0",
+  "version": "3.56.0",
   "description": "",
   "keywords": [
     "sanity",
@@ -64,9 +64,9 @@
   },
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "3.54.0",
+    "@sanity/types": "3.56.0",
     "arrify": "^1.0.1",
-    "groq-js": "^1.12.0",
+    "groq-js": "^1.13.0",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
     "lodash": "^4.17.21",
@@ -75,7 +75,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
-    "@sanity/icons": "^3.3.1",
+    "@sanity/icons": "^3.4.0",
     "@types/arrify": "^1.0.4",
     "@types/object-inspect": "^1.13.0",
     "@types/react": "^18.3.3",

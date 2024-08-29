@@ -86,7 +86,7 @@ const DOCUMENT_VALUE: SanityDocument = {
   ],
 }
 
-test.describe('Tree editing', () => {
+test.skip('Tree editing', () => {
   test('should open tree editing dialog when adding an item and close it when clicking done', async ({
     mount,
     page,

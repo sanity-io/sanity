@@ -12,7 +12,8 @@ import {
 } from 'react'
 import FocusLock from 'react-focus-lock'
 
-import {Button, Popover} from '../../../../../ui-components'
+import {Button} from '../../button'
+import {Popover} from '../../popover'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'
@@ -29,6 +30,7 @@ export interface DateTimeInputProps {
   timeStep?: number
   value?: Date
   calendarLabels: CalendarLabels
+  constrainSize?: boolean
 }
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
@@ -43,6 +45,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     selectTime,
     timeStep,
     calendarLabels,
+    constrainSize = true,
     ...rest
   } = props
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -102,7 +105,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
           // see https://github.com/sanity-io/design/issues/519
           <LayerProvider zOffset={1000}>
             <Popover
-              constrainSize
+              constrainSize={constrainSize}
               data-testid="date-input-dialog"
               portal
               content={

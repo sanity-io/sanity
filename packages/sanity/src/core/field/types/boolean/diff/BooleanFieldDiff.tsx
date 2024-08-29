@@ -1,6 +1,6 @@
 import {Box, Flex, Text} from '@sanity/ui'
 
-import {DiffTooltip, FromToArrow, useDiffAnnotationColor} from '../../../diff'
+import {DiffTooltip, FromToArrow, useDiffAnnotationColor, useDocumentChange} from '../../../diff'
 import {type BooleanDiff, type DiffComponent} from '../../../types'
 import {Checkbox, Switch} from '../preview'
 
@@ -9,20 +9,22 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
   const {title, options} = schemaType
   const Preview = options?.layout === 'checkbox' ? Checkbox : Switch
   const userColor = useDiffAnnotationColor(diff, [])
-
+  const {showFromValue} = useDocumentChange()
   const showToValue = toValue !== undefined && toValue !== null
 
   return (
     <Flex align="center">
       <DiffTooltip diff={diff}>
         <Flex align="center">
-          <Preview checked={fromValue} color={userColor} />
+          {showFromValue && <Preview checked={fromValue} color={userColor} />}
 
           {showToValue && (
             <>
-              <Box marginX={2}>
-                <FromToArrow />
-              </Box>
+              {showFromValue && (
+                <Box marginX={2}>
+                  <FromToArrow />
+                </Box>
+              )}
               <Preview checked={toValue} color={userColor} />
             </>
           )}
