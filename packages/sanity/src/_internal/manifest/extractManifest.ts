@@ -66,6 +66,7 @@ type ManifestValidationFlag = ManifestValidationRule['flag']
 type ValidationRuleTransformer = (rule: RuleSpec) => ManifestValidationRule | undefined
 
 const MAX_CUSTOM_PROPERTY_DEPTH = 5
+const INLINE_TYPES = ['document', 'object', 'image', 'file']
 
 export function extractWorkspace(workspace: Workspace): ManifestWorkspace {
   const serializedSchema = extractManifestSchemaTypes(workspace.schema)
@@ -94,10 +95,13 @@ export function extractManifestSchemaTypes(schema: Schema): ManifestSchemaType[]
     .map((type) => transformType(type, context))
 }
 
-function transformCommonTypeFields(type: SchemaType & {fieldset?: string}, context: Context) {
-  const shouldCreateDefinition = !context.schema.get(type.name) || isCustomized(type)
-
-  const arrayProps = type.jsonType === 'array' ? transformArrayMember(type, context) : {}
+function transformCommonTypeFields(
+  type: SchemaType & {fieldset?: string},
+  typeName: string,
+  context: Context,
+): Omit<ManifestSchemaType, 'name' | 'title' | 'type'> {
+  const arrayProps =
+    typeName === 'array' && type.jsonType === 'array' ? transformArrayMember(type, context) : {}
 
   const referenceProps = isReference(type) ? transformReference(type) : {}
   const crossDatasetRefProps = isCrossDatasetReference(type)
@@ -105,7 +109,7 @@ function transformCommonTypeFields(type: SchemaType & {fieldset?: string}, conte
     : {}
 
   const objectFields: ObjectFields =
-    type.jsonType === 'object' && type.type && shouldCreateDefinition
+    type.jsonType === 'object' && type.type && INLINE_TYPES.includes(typeName) && isCustomized(type)
       ? {
           fields: getCustomFields(type).map((objectField) => transformField(objectField, context)),
         }
@@ -155,7 +159,7 @@ function transformType(type: SchemaType, context: Context): ManifestSchemaType {
   const typeName = type.type ? type.type.name : type.jsonType
 
   return {
-    ...transformCommonTypeFields(type, context),
+    ...transformCommonTypeFields(type, typeName, context),
     name: type.name,
     type: typeName,
     ...ensureCustomTitle(type.name, type.title),
@@ -249,11 +253,14 @@ function retainSerializableProps(maybeSerializable: unknown, depth = 0): Seriali
 }
 
 function transformField(field: ObjectField & {fieldset?: string}, context: Context): ManifestField {
+  const fieldType = field.type
+  const typeNameExists = !!context.schema.get(fieldType.name)
+  const typeName = typeNameExists ? fieldType.name : (fieldType.type?.name ?? fieldType.name)
   return {
-    ...transformCommonTypeFields(field.type, context),
+    ...transformCommonTypeFields(fieldType, typeName, context),
     name: field.name,
-    type: field.type.name,
-    ...ensureCustomTitle(field.name, field.type.title),
+    type: typeName,
+    ...ensureCustomTitle(field.name, fieldType.title),
     // this prop gets added synthetically via getCustomFields
     ...ensureString('fieldset', field.fieldset),
   }
@@ -265,9 +272,12 @@ function transformArrayMember(
 ): Pick<ManifestField, 'of'> {
   return {
     of: arrayMember.of.map((type) => {
+      const typeNameExists = !!context.schema.get(type.name)
+      const typeName = typeNameExists ? type.name : (type.type?.name ?? type.name)
       return {
-        ...transformCommonTypeFields(type, context),
-        type: type.name,
+        ...transformCommonTypeFields(type, typeName, context),
+        type: typeName,
+        ...(typeName === type.name ? {} : {name: type.name}),
         ...ensureCustomTitle(type.name, type.title),
       }
     }),
@@ -398,7 +408,7 @@ function ensureString<Key extends string>(key: Key, value: unknown) {
   return {}
 }
 
-function ensureConditional<Key extends string>(key: Key, value: unknown) {
+function ensureConditional<const Key extends string>(key: Key, value: unknown) {
   if (typeof value === 'boolean') {
     return {
       [key]: value,

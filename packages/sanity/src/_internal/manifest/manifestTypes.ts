@@ -30,8 +30,8 @@ export interface ManifestSchemaType {
   deprecated?: {
     reason: string
   }
-  readOnly?: boolean | 'function'
-  hidden?: boolean | 'function'
+  readOnly?: boolean | 'conditional'
+  hidden?: boolean | 'conditional'
   validation?: ManifestValidationGroup[]
   fields?: ManifestField[]
   to?: ManifestReferenceMember[]
@@ -48,8 +48,10 @@ export interface ManifestSchemaType {
   }
   lists?: ManifestTitledValue[]
   styles?: ManifestTitledValue[]
+
   // userland (assignable to ManifestSerializable | undefined)
-  [index: string]: unknown
+  // not included to add some typesafty to extractManifest
+  // [index: string]: unknown
 }
 
 export interface ManifestFieldset {

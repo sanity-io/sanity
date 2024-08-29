@@ -361,6 +361,10 @@ describe('Extract studio manifest', () => {
           defineType({
             fields: [
               {
+                name: 'existingType',
+                type: documentType,
+              },
+              {
                 fields: [
                   {
                     name: 'nestedString',
@@ -418,6 +422,11 @@ describe('Extract studio manifest', () => {
       const serializedDoc = extracted.find((serialized) => serialized.name === documentType)
       expect(serializedDoc).toEqual({
         fields: [
+          {
+            name: 'existingType',
+            type: 'field-types',
+          },
+
           {
             fields: [
               {
@@ -497,20 +506,33 @@ describe('Extract studio manifest', () => {
                 of: [{type: 'boolean'}],
               }),
               defineField({
-                title: 'Object array',
                 name: 'objectArray',
                 type: 'array',
                 of: [
                   defineArrayMember({
-                    title: 'Array item',
+                    title: 'Anonymous object item',
                     type: 'object',
                     fields: [
                       defineField({
-                        title: 'Item title',
                         name: 'itemTitle',
                         type: 'string',
                       }),
                     ],
+                  }),
+                  defineArrayMember({
+                    type: 'object',
+                    title: 'Inline named object item',
+                    name: 'item',
+                    fields: [
+                      defineField({
+                        name: 'otherTitle',
+                        type: 'string',
+                      }),
+                    ],
+                  }),
+                  defineArrayMember({
+                    title: 'Existing type object item',
+                    type: documentType,
                   }),
                 ],
               }),
@@ -546,12 +568,21 @@ describe('Extract studio manifest', () => {
             name: 'objectArray',
             of: [
               {
-                fields: [{name: 'itemTitle', title: 'Item title', type: 'string'}],
-                title: 'Array item',
+                title: 'Anonymous object item',
                 type: 'object',
+                fields: [{name: 'itemTitle', type: 'string'}],
+              },
+              {
+                fields: [{name: 'otherTitle', type: 'string'}],
+                title: 'Inline named object item',
+                type: 'object',
+                name: 'item',
+              },
+              {
+                title: 'Existing type object item',
+                type: 'all-types',
               },
             ],
-            title: 'Object array',
             type: 'array',
           },
         ],
@@ -561,7 +592,7 @@ describe('Extract studio manifest', () => {
       })
     })
 
-    test('serialize array fields with typename override', () => {
+    test('serialize array with type reference and overridden typename', () => {
       const arrayType = 'someArray'
       const objectBaseType = 'someObject'
       const schema = createSchema({
@@ -590,15 +621,65 @@ describe('Extract studio manifest', () => {
       const serializedDoc = extracted.find((serialized) => serialized.name === arrayType)
       expect(serializedDoc).toEqual({
         name: arrayType,
-        of: [
-          {
-            fields: [{name: 'title', type: 'string'}],
-            title: 'Some Object',
-            type: 'override',
-          },
-        ],
+        of: [{title: 'Some Object', type: objectBaseType, name: 'override'}],
         type: 'array',
       })
+    })
+
+    test('serialize schema with indirectly recursive structure', () => {
+      const arrayType = 'someArray'
+      const objectBaseType = 'someObject'
+      const otherObjectType = 'other'
+      const schema = createSchema({
+        name: 'test',
+        types: [
+          defineType({
+            name: objectBaseType,
+            type: 'object',
+            fields: [
+              defineField({
+                name: 'recurse',
+                type: otherObjectType,
+              }),
+            ],
+          }),
+          defineType({
+            name: otherObjectType,
+            type: 'object',
+            fields: [
+              defineField({
+                name: 'recurse2',
+                type: arrayType,
+              }),
+            ],
+          }),
+          defineType({
+            name: arrayType,
+            type: 'array',
+            of: [{type: objectBaseType}],
+          }),
+        ],
+      })
+
+      const extracted = extractManifestSchemaTypes(schema)
+
+      expect(extracted).toEqual([
+        {
+          fields: [{name: 'recurse', type: 'other'}],
+          name: 'someObject',
+          type: 'object',
+        },
+        {
+          fields: [{name: 'recurse2', type: 'someArray'}],
+          name: 'other',
+          type: 'object',
+        },
+        {
+          name: 'someArray',
+          of: [{type: 'someObject'}],
+          type: 'array',
+        },
+      ])
     })
 
     test('serialize portable text field', () => {

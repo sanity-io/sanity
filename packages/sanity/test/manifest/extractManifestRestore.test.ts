@@ -32,6 +32,7 @@ describe('Extract studio manifest', () => {
             defineField({name: 'file', type: 'file'}),
             defineField({name: 'slug', type: 'slug'}),
             defineField({name: 'url', type: 'url'}),
+            defineField({name: 'object', type: documentType}),
             defineField({
               type: 'object',
               name: 'nestedObject',
@@ -47,6 +48,11 @@ describe('Extract studio manifest', () => {
               name: 'customFile',
               fields: [{name: 'title', type: 'string'}],
               options: {storeOriginalFilename: true},
+            }),
+            defineField({
+              name: 'typeAliasArray',
+              type: 'array',
+              of: [{type: documentType}],
             }),
             defineField({
               name: 'stringArray',
@@ -163,8 +169,12 @@ describe('Extract studio manifest', () => {
   })
 })
 
-function typeForComparison(_type: SchemaType): unknown {
+function typeForComparison(_type: SchemaType, depth = 0): unknown {
   const type = pick(_type, 'jsonType', 'name', 'title', 'fields', 'of', 'to')
+
+  if (depth > 10) {
+    return undefined
+  }
 
   if ('to' in type) {
     return {
@@ -180,14 +190,14 @@ function typeForComparison(_type: SchemaType): unknown {
       ...type,
       fields: type.fields.map((field) => ({
         ...field,
-        type: typeForComparison(field.type),
+        type: typeForComparison(field.type, depth + 1),
       })),
     }
   }
   if (type.jsonType === 'array' && 'of' in type) {
     return {
       ...type,
-      of: (type.of as SchemaType[]).map((item) => typeForComparison(item)),
+      of: (type.of as SchemaType[]).map((item) => typeForComparison(item, depth + 1)),
     }
   }
 
