@@ -67,7 +67,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
     // set up the listener before executing
     const createVersionSuccess = firstValueFrom(
       documentStore.pair
-        .operationEvents(versionId, documentType)
+        .operationEvents(getPublishedId(bundleId), documentType)
         .pipe(filter((e) => e.op === 'newVersion' && e.type === 'success')),
     )
 
