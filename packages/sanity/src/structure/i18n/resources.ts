@@ -136,7 +136,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.split-pane-close-button.title': 'Close split pane',
   /** The title for the close group button on the split pane on the document panel header */
   'buttons.split-pane-close-group-button.title': 'Close pane group',
-
+  /** The label used in the changes inspector for the from selector */
+  'changes.from.label': 'From',
+  /* The label for the history tab in the changes inspector*/
+  'changes.tab.history': 'History',
+  /* The label for the review tab in the changes inspector*/
+  'changes.tab.review-changes': 'Review changes',
+  /** The label used in the changes inspector for the to selector */
+  'changes.to.label': 'To',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action and closes the dialog */
   'confirm-delete-dialog.cancel-button.text': 'Cancel',
   /** Used in `confirm-delete-dialog.cdr-summary.title` */

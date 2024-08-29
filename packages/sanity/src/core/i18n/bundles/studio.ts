@@ -1646,7 +1646,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter (`timestamp`).
    */
-  'timeline.since': 'Since: {{timestamp, datetime}}',
+  'timeline.since': '{{timestamp, datetime}}',
   /** Label for missing change version for timeline menu dropdown are showing */
   'timeline.since-version-missing': 'Since: unknown version',
   /** Aria label for the action buttons in the PTE toolbar */

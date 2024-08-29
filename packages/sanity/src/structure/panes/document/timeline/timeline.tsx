@@ -19,6 +19,10 @@ interface TimelineProps {
   lastChunk?: Chunk | null
   onLoadMore: () => void
   onSelect: (chunk: Chunk) => void
+  /**
+   * The list needs a predefined max height for the scroller to work.
+   */
+  listMaxHeight?: string
 }
 
 export const Timeline = ({
@@ -29,6 +33,7 @@ export const Timeline = ({
   onLoadMore,
   onSelect,
   firstChunk,
+  listMaxHeight = 'calc(100vh - 198px)',
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
   const {t} = useTranslation('studio')
@@ -97,7 +102,7 @@ export const Timeline = ({
       )}
 
       {filteredChunks.length > 0 && (
-        <ListWrapper direction="column">
+        <ListWrapper direction="column" $maxHeight={listMaxHeight}>
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('timeline.list.aria-label')}

@@ -10,12 +10,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {
-  type DocumentActionDescription,
-  useFieldActions,
-  useTimelineSelector,
-  useTranslation,
-} from 'sanity'
+import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {
@@ -33,7 +28,6 @@ import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {isRestoreAction} from '../../statusBar/DocumentStatusBarActions'
-import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -83,9 +77,6 @@ export const DocumentPanelHeader = memo(
     const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
     const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
     const showTabs = views.length > 1
-
-    // Subscribe to external timeline state changes
-    const rev = useTimelineSelector(timelineStore, (state) => state.revTime)
 
     const {collapsed, isLast} = usePane()
     // Prevent focus if this is the last (non-collapsed) pane.
@@ -152,7 +143,6 @@ export const DocumentPanelHeader = memo(
               />
             )
           }
-          subActions={<TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />}
           actions={
             <Flex align="center" gap={1}>
               {unstable_languageFilter.length > 0 && (
