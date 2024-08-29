@@ -21,3 +21,12 @@ export const AddedVersion = defineEvent<VersionInfo>({
   version: 1,
   description: 'User added a document to a release',
 })
+
+/** When a release is successfully created
+ * @internal
+ */
+export const CreatedRelease = defineEvent({
+  name: 'Create release',
+  version: 1,
+  description: 'User created a release',
+})
