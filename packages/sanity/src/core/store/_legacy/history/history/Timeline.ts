@@ -24,7 +24,7 @@ export type ParsedTimeRef = Chunk | 'loading' | 'invalid'
  * @hidden
  * @beta */
 export interface TimelineOptions {
-  publishedId: string
+  documentId: string
   enableTrace?: boolean
 }
 
@@ -43,7 +43,7 @@ export interface TimelineOptions {
 export class Timeline {
   reachedEarliestEntry = false
 
-  publishedId: string
+  documentId: string
   draftId: string
   private _transactions = new TwoEndedArray<Transaction>()
   private _chunks = new TwoEndedArray<Chunk>()
@@ -60,14 +60,15 @@ export class Timeline {
   private _trace?: TraceEvent[]
 
   constructor(opts: TimelineOptions) {
-    this.publishedId = opts.publishedId
-    this.draftId = isVersionId(opts.publishedId) ? opts.publishedId : `drafts.${opts.publishedId}`
+    const {documentId} = opts
+    this.documentId = documentId
+    this.draftId = isVersionId(documentId) ? documentId : `drafts.${documentId}`
 
     if (opts.enableTrace) {
       this._trace = []
       this._trace.push({
         type: 'initial',
-        publishedId: opts.publishedId,
+        publishedId: documentId,
       })
       ;(window as any).__sanityTimelineTrace = this._trace
     }
@@ -149,7 +150,7 @@ export class Timeline {
       author: event.author,
       timestamp: event.timestamp,
       draftEffect: event.effects[this.draftId],
-      publishedEffect: event.effects[this.publishedId],
+      publishedEffect: event.effects[this.documentId],
     })
   }
 

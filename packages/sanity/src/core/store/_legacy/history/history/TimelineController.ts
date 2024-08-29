@@ -273,7 +273,7 @@ export class TimelineController {
   }
 
   private async fetchMoreTransactions() {
-    const publishedId = this.timeline.publishedId
+    const publishedId = this.timeline.documentId
     const draftId = this.timeline.draftId
     const clientConfig = this.client.config()
     const limit = TRANSLOG_ENTRY_LIMIT
