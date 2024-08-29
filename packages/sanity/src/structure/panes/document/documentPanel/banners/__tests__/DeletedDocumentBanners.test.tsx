@@ -56,7 +56,7 @@ describe('DeletedDocumentBanners', () => {
   })
 
   it('prefers to show bundle deleted banner when document was in a bundle', async () => {
-    const mockBundleDocument: BundleDocument = {slug: 'test'} as BundleDocument
+    const mockBundleDocument = {_id: 'test'} as BundleDocument
     mockUsePerspective.mockReturnValue({currentGlobalBundle: mockBundleDocument} as ReturnType<
       typeof usePerspective
     >)

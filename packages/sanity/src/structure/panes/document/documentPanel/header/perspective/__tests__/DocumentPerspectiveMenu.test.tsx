@@ -51,9 +51,8 @@ describe('DocumentPerspectiveMenu', () => {
     authorId: 'pzAhBTkNX',
     title: 'Spring Drop',
     icon: 'heart-filled',
-    _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
+    _id: 'spring-drop',
     _type: 'bundle',
-    slug: 'spring-drop',
     hue: 'magenta',
     _createdAt: '2024-07-02T11:37:51Z',
   }
@@ -74,13 +73,12 @@ describe('DocumentPerspectiveMenu', () => {
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [
         {
-          slug: 'spring-drop',
+          _id: 'spring-drop',
           title: 'Spring Drop',
           hue: 'magenta',
           icon: 'heart-filled',
           _type: 'bundle',
           authorId: '',
-          _id: '',
           _createdAt: '',
           _updatedAt: '',
           _rev: '',
@@ -131,6 +129,6 @@ describe('DocumentPerspectiveMenu', () => {
     fireEvent.click(screen.getByTestId('button-document-release'))
 
     expect(navigateIntent).toHaveBeenCalledTimes(1)
-    expect(navigateIntent).toHaveBeenCalledWith('release', {slug: 'spring-drop'})
+    expect(navigateIntent).toHaveBeenCalledWith('release', {id: 'spring-drop'})
   })
 })

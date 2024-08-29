@@ -116,7 +116,7 @@ describe('ReleaseDetail', () => {
             title: 'Test bundle',
             publishedAt: undefined,
             archivedAt: undefined,
-            _id: 'test-id',
+            _id: 'test-bundle-id',
             _createdAt: new Date().toISOString(),
             _type: 'bundle',
             hue: 'blue',
@@ -157,7 +157,7 @@ describe('after bundles have loaded', () => {
             title: 'Test bundle',
             publishedAt: undefined,
             archivedAt: undefined,
-            _id: 'test-id',
+            _id: 'test-bundle-id',
             _createdAt: currentDate,
             _type: 'bundle',
             hue: 'blue',
@@ -196,7 +196,7 @@ describe('after bundles have loaded', () => {
             {
               memoKey: 'key123',
               document: {
-                _id: 'test-id',
+                _id: 'test-bundle-id',
                 _type: 'document',
                 _rev: 'abc',
                 _createdAt: currentDate,
@@ -233,7 +233,7 @@ describe('after bundles have loaded', () => {
             {
               memoKey: 'key123',
               document: {
-                _id: 'test-id',
+                _id: 'test-bundle-id',
                 _type: 'document',
                 _rev: 'abc',
                 _createdAt: currentDate,
@@ -274,11 +274,11 @@ describe('after bundles have loaded', () => {
         fireEvent.click(screen.getByText('Publish'))
 
         expect(useBundleOperations().publishBundle).toHaveBeenCalledWith(
-          'test-id',
+          'test-bundle-id',
           [
             {
               _createdAt: currentDate,
-              _id: 'test-id',
+              _id: 'test-bundle-id',
               _rev: 'abc',
               _type: 'document',
               _updatedAt: currentDate,
@@ -342,7 +342,7 @@ describe('after bundles have loaded', () => {
             title: 'Test bundle',
             publishedAt: new Date().toISOString(),
             archivedAt: new Date().toISOString(),
-            _id: 'test-id',
+            _id: 'test-bundle-id',
             _createdAt: new Date().toISOString(),
             _type: 'bundle',
             hue: 'blue',
@@ -387,7 +387,7 @@ describe('after bundles have loaded', () => {
             title: 'Test bundle',
             publishedAt: undefined,
             archivedAt: undefined,
-            _id: 'test-id',
+            _id: 'test-bundle-id',
             _createdAt: new Date().toISOString(),
             _type: 'bundle',
             hue: 'blue',
