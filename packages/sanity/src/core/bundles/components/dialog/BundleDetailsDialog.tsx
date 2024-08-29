@@ -1,6 +1,5 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {Box, Flex, useToast} from '@sanity/ui'
-import {customAlphabet} from 'nanoid'
 import {type FormEvent, useCallback, useMemo, useState} from 'react'
 import {type FormBundleDocument, useTranslation} from 'sanity'
 import speakingurl from 'speakingurl'
@@ -9,23 +8,13 @@ import {Button, Dialog} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../hooks/usePerspective'
+import {createReleaseId} from '../../util/createReleaseId'
 import {BundleForm} from './BundleForm'
 
 interface BundleDetailsDialogProps {
   onCancel: () => void
   onSubmit: () => void
   bundle?: BundleDocument
-}
-
-/**
- * ~24 years (or 7.54e+8 seconds) needed, in order to have a 1% probability of at least one collision if 10 ID's are generated every hour.
- */
-const randomBundleId = customAlphabet(
-  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-  8,
-)
-function getRandomBundleId() {
-  return `r${randomBundleId()}`
 }
 
 export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Element {
@@ -37,7 +26,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
 
   const [value, setValue] = useState((): FormBundleDocument => {
     return {
-      _id: bundle?._id || getRandomBundleId(),
+      _id: bundle?._id || createReleaseId(),
       _type: 'release',
       title: bundle?.title,
       description: bundle?.description,
