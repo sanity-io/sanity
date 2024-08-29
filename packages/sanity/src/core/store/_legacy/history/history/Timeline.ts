@@ -43,8 +43,8 @@ export interface TimelineOptions {
 export class Timeline {
   reachedEarliestEntry = false
 
-  documentId: string
-  draftId: string
+  publishedId: string
+  versionId: string
   private _transactions = new TwoEndedArray<Transaction>()
   private _chunks = new TwoEndedArray<Chunk>()
 
@@ -61,8 +61,8 @@ export class Timeline {
 
   constructor(opts: TimelineOptions) {
     const {documentId} = opts
-    this.documentId = documentId
-    this.draftId = isVersionId(documentId) ? documentId : `drafts.${documentId}`
+    this.publishedId = documentId
+    this.versionId = isVersionId(documentId) ? documentId : `drafts.${documentId}`
 
     if (opts.enableTrace) {
       this._trace = []
@@ -149,8 +149,8 @@ export class Timeline {
       id: event.id,
       author: event.author,
       timestamp: event.timestamp,
-      draftEffect: event.effects[this.draftId],
-      publishedEffect: event.effects[this.documentId],
+      draftEffect: event.effects[this.versionId],
+      publishedEffect: event.effects[this.publishedId],
     })
   }
 

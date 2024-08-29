@@ -90,8 +90,8 @@ export class Aligner {
   constructor(timeline: Timeline) {
     this.timeline = timeline
     this._states = {
-      draft: emptyVersionState(timeline.draftId),
-      published: emptyVersionState(timeline.documentId),
+      draft: emptyVersionState(timeline.versionId),
+      published: emptyVersionState(timeline.publishedId),
     }
   }
 
