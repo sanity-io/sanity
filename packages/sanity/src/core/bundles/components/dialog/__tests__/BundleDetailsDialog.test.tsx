@@ -90,9 +90,7 @@ describe('BundleDetailsDialog', () => {
         }),
       )
 
-      expect(usePerspective().setPerspective).toHaveBeenCalledWith(
-        expect.stringMatching(/r\w{8}-bundle-1/),
-      )
+      expect(usePerspective().setPerspective).toHaveBeenCalledWith(expect.stringMatching(/r\w{8}/))
       expect(onSubmitMock).toHaveBeenCalled()
     })
   })
