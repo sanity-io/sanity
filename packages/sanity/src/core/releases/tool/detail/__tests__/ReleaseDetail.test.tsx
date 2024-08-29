@@ -59,7 +59,7 @@ const renderTest = async () => {
   return render(
     <RouterProvider
       state={{
-        bundleId: 'test-bundle-slug',
+        bundleId: 'test-bundle-id',
       }}
       onNavigate={mockRouterNavigate}
       router={route.create('/', [route.create('/:bundleId')])}
@@ -119,7 +119,6 @@ describe('ReleaseDetail', () => {
             _id: 'test-id',
             _createdAt: new Date().toISOString(),
             _type: 'bundle',
-            slug: 'test-bundle-slug',
             hue: 'blue',
             icon: 'string',
             authorId: 'author-id',
@@ -161,7 +160,6 @@ describe('after bundles have loaded', () => {
             _id: 'test-id',
             _createdAt: currentDate,
             _type: 'bundle',
-            slug: 'test-bundle-slug',
             hue: 'blue',
             icon: 'string',
             authorId: 'author-id',
@@ -185,7 +183,7 @@ describe('after bundles have loaded', () => {
         expect(screen.getByTestId('review-button').closest('button')).not.toBeDisabled()
         fireEvent.click(screen.getByTestId('review-button'))
         expect(mockRouterNavigate).toHaveBeenCalledWith({
-          path: '/test-bundle-slug?screen=review',
+          path: '/test-bundle-id?screen=review',
         })
       })
     }
@@ -347,7 +345,6 @@ describe('after bundles have loaded', () => {
             _id: 'test-id',
             _createdAt: new Date().toISOString(),
             _type: 'bundle',
-            slug: 'test-bundle-slug',
             hue: 'blue',
             icon: 'string',
             authorId: 'author-id',
@@ -386,14 +383,13 @@ describe('after bundles have loaded', () => {
         loading: false,
         dispatch: jest.fn(),
         deletedBundles: {
-          'test-bundle-slug': {
+          'test-bundle-id': {
             title: 'Test bundle',
             publishedAt: undefined,
             archivedAt: undefined,
             _id: 'test-id',
             _createdAt: new Date().toISOString(),
             _type: 'bundle',
-            slug: 'test-bundle-slug',
             hue: 'blue',
             icon: 'string',
             authorId: 'author-id',
@@ -428,7 +424,7 @@ describe('after bundles have loaded', () => {
     })
 
     it('should show missing release message', () => {
-      screen.getByText('Release not found: test-bundle-slug')
+      screen.getByText('Release not found: test-bundle-id')
     })
   })
 })

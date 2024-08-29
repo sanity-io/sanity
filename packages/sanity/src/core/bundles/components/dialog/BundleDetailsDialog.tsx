@@ -53,17 +53,9 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
 
   const submit = useCallback(
     (formValue: FormBundleDocument) => {
-      if (formAction === 'edit' && bundle?._id) {
-        const updatedBundle: FormBundleDocument = {
-          ...formValue,
-          _id: bundle._id,
-        }
-
-        return updateBundle(updatedBundle)
-      }
-      return createBundle(formValue)
+      return formAction === 'edit' ? updateBundle(formValue) : createBundle(formValue)
     },
-    [bundle?._id, createBundle, formAction, updateBundle],
+    [createBundle, formAction, updateBundle],
   )
 
   const slug = useMemo(() => {

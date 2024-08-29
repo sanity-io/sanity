@@ -110,13 +110,12 @@ describe('DocumentPerspectiveMenu', () => {
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [
         {
-          slug: 'spring-drop',
           title: 'Spring Drop',
           hue: 'magenta',
           icon: 'heart-filled',
           _type: 'bundle',
           authorId: '',
-          _id: '',
+          _id: 'spring-drop',
           _createdAt: '',
           _updatedAt: '',
           _rev: '',
