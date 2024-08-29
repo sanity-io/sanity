@@ -7,7 +7,7 @@ import {type FormBundleDocument, useTranslation} from 'sanity'
 import {Button, Dialog} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
-import {CreatedRelease} from '../../__telemetry__/releases.telemetry'
+import {CreatedRelease, UpdatedRelease} from '../../__telemetry__/releases.telemetry'
 import {usePerspective} from '../../hooks/usePerspective'
 import {createReleaseId} from '../../util/createReleaseId'
 import {BundleForm} from './BundleForm'
@@ -60,6 +60,8 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         if (formAction === 'create') {
           setPerspective(value._id)
           telemetry.log(CreatedRelease)
+        } else {
+          telemetry.log(UpdatedRelease)
         }
       } catch (err) {
         console.error(err)

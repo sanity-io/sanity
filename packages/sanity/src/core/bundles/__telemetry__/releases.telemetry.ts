@@ -30,3 +30,12 @@ export const CreatedRelease = defineEvent({
   version: 1,
   description: 'User created a release',
 })
+
+/** When a release is successfully updated
+ * @internal
+ */
+export const UpdatedRelease = defineEvent({
+  name: 'Update release',
+  version: 1,
+  description: 'User updated a release',
+})
