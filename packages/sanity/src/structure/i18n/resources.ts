@@ -69,15 +69,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',
 
-  /** Message prompting the user to confirm that they want to restore to an earlier version*/
+  /** Message prompting the user to confirm that they want to restore to an earlier revision*/
   'action.restore.confirm.message': 'Are you sure you want to restore this document?',
-  /** Fallback tooltip for when user is looking at the initial version */
-  'action.restore.disabled.cannot-restore-initial': "You can't restore to the initial version",
+  /** Fallback tooltip for when user is looking at the initial revision */
+  'action.restore.disabled.cannot-restore-initial': "You can't restore to the initial revision",
 
   /** Label for the "Restore" document action */
   'action.restore.label': 'Restore',
   /** Default tooltip for the action */
-  'action.restore.tooltip': 'Restore to this version',
+  'action.restore.tooltip': 'Restore to this revision',
 
   /** Tooltip when action is disabled because the document is not already published */
   'action.unpublish.disabled.not-published': 'This document is not published',
@@ -90,7 +90,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'This document has live edit enabled and cannot be unpublished',
 
   /** The text for the restore button on the deleted document banner */
-  'banners.deleted-document-banner.restore-button.text': 'Restore most recent version',
+  'banners.deleted-document-banner.restore-button.text': 'Restore most recent revision',
   /** The text content for the deleted document banner */
   'banners.deleted-document-banner.text': 'This document has been deleted.',
   /** The text content for the deprecated document type banner */
@@ -377,7 +377,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     '<Strong>{{title}}</Strong> was restored',
   /** The text when an unpublish operation succeeded  */
   'panes.document-operation-results.operation-success_unpublish':
-    '<Strong>{{title}}</Strong> was unpublished. A draft has been created from the latest published version.',
+    '<Strong>{{title}}</Strong> was unpublished. A draft has been created from the latest published revision.',
   /** The document title shown when document title is "undefined" in operation message */
   'panes.document-operation-results.operation-undefined-title': 'Untitled',
   /** The title of the reconnecting toast */
