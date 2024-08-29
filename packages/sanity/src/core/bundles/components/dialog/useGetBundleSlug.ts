@@ -20,7 +20,7 @@ export function useGetBundleSlug() {
       const suffixRegex = new RegExp(`^${baseSlug}(?:-(\\d+))?$`)
       const descExistingSlugSuffixes = [...bundles, ...PROTECTED_SLUGS.map((slug) => ({slug}))]
         .reduce<number[]>((existingSuffixes, {slug: existingBundleSlug}) => {
-          const isBaseSlugMatch = existingBundleSlug.match(suffixRegex)
+          const isBaseSlugMatch = existingBundleSlug?.match(suffixRegex)
           if (!isBaseSlugMatch) return existingSuffixes
 
           const suffixNumber = parseInt(isBaseSlugMatch[1] ?? String(NO_EXISTING_SLUG), 10)
