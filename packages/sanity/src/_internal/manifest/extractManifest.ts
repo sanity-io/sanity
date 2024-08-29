@@ -5,6 +5,7 @@ import {
   type BooleanSchemaType,
   ConcreteRuleClass,
   createSchema,
+  type CrossDatasetReferenceSchemaType,
   type FileSchemaType,
   type MultiFieldSet,
   type NumberSchemaType,
@@ -23,9 +24,12 @@ import {
 
 import {
   getCustomFields,
+  isCrossDatasetReference,
+  isCustomized,
   isDefined,
   isPrimitive,
   isRecord,
+  isReference,
   isString,
   isType,
 } from './manifestTypeHelpers'
@@ -93,9 +97,12 @@ export function extractManifestSchemaTypes(schema: Schema): ManifestSchemaType[]
 function transformCommonTypeFields(type: SchemaType & {fieldset?: string}, context: Context) {
   const shouldCreateDefinition = !context.schema.get(type.name) || isCustomized(type)
 
-  const arrayProperties = type.jsonType === 'array' ? transformArrayMember(type, context) : {}
+  const arrayProps = type.jsonType === 'array' ? transformArrayMember(type, context) : {}
 
-  const referenceProperties = isReferenceSchemaType(type) ? transformReference(type) : {}
+  const referenceProps = isReference(type) ? transformReference(type) : {}
+  const crossDatasetRefProps = isCrossDatasetReference(type)
+    ? transformCrossDatasetReference(type)
+    : {}
 
   const objectFields: ObjectFields =
     type.jsonType === 'object' && type.type && shouldCreateDefinition
@@ -109,8 +116,9 @@ function transformCommonTypeFields(type: SchemaType & {fieldset?: string}, conte
     ...transformValidation(type.validation),
     ...ensureString('description', type.description),
     ...objectFields,
-    ...arrayProperties,
-    ...referenceProperties,
+    ...arrayProps,
+    ...referenceProps,
+    ...crossDatasetRefProps,
     ...ensureConditional('readOnly', type.readOnly),
     ...ensureConditional('hidden', type.hidden),
     ...transformFieldsets(type),
@@ -268,10 +276,29 @@ function transformArrayMember(
 
 function transformReference(reference: ReferenceSchemaType): Pick<ManifestSchemaType, 'to'> {
   return {
-    to: (reference.to ?? []).map((type) => ({
-      ...retainCustomTypeProps(type),
-      type: type.name,
-    })),
+    to: (reference.to ?? []).map((type) => {
+      return {
+        ...retainCustomTypeProps(type),
+        type: type.name,
+      }
+    }),
+  }
+}
+
+function transformCrossDatasetReference(
+  reference: CrossDatasetReferenceSchemaType,
+): Pick<ManifestSchemaType, 'to' | 'preview'> {
+  return {
+    to: (reference.to ?? []).map((crossDataset) => {
+      const preview = crossDataset.preview?.select
+        ? {preview: {select: crossDataset.preview.select}}
+        : {}
+      return {
+        type: crossDataset.type,
+        ...ensureCustomTitle(crossDataset.type, crossDataset.title),
+        ...preview,
+      }
+    }),
   }
 }
 
@@ -385,32 +412,6 @@ function ensureConditional<Key extends string>(key: Key, value: unknown) {
   }
 
   return {}
-}
-
-function isReferenceSchemaType(type: unknown): type is ReferenceSchemaType {
-  return typeof type === 'object' && type !== null && 'name' in type && type.name === 'reference'
-}
-
-function isObjectField(maybeOjectField: unknown) {
-  return (
-    typeof maybeOjectField === 'object' && maybeOjectField !== null && 'name' in maybeOjectField
-  )
-}
-
-function isCustomized(maybeCustomized: SchemaType) {
-  const hasFieldsArray =
-    isObjectField(maybeCustomized) &&
-    !isType(maybeCustomized, 'reference') &&
-    !isType(maybeCustomized, 'crossDatasetReference') &&
-    'fields' in maybeCustomized &&
-    Array.isArray(maybeCustomized.fields)
-
-  if (!hasFieldsArray) {
-    return false
-  }
-
-  const fields = getCustomFields(maybeCustomized)
-  return !!fields.length
 }
 
 export function transformBlockType(

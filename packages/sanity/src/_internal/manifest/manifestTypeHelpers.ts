@@ -1,4 +1,10 @@
-import {type ObjectField, type ObjectSchemaType, type SchemaType} from '@sanity/types'
+import {
+  type CrossDatasetReferenceSchemaType,
+  type ObjectField,
+  type ObjectSchemaType,
+  type ReferenceSchemaType,
+  type SchemaType,
+} from '@sanity/types'
 
 const DEFAULT_IMAGE_FIELDS = ['asset', 'hotspot', 'crop']
 const DEFAULT_FILE_FIELDS = ['asset']
@@ -34,6 +40,36 @@ export function getCustomFields(type: ObjectSchemaType): (ObjectField & {fieldse
     return fields.filter((f) => !DEFAULT_FILE_FIELDS.includes(f.name))
   }
   return fields
+}
+
+export function isReference(type: SchemaType): type is ReferenceSchemaType {
+  return isType(type, 'reference')
+}
+
+export function isCrossDatasetReference(type: SchemaType): type is CrossDatasetReferenceSchemaType {
+  return isType(type, 'crossDatasetReference')
+}
+
+export function isObjectField(maybeOjectField: unknown): boolean {
+  return (
+    typeof maybeOjectField === 'object' && maybeOjectField !== null && 'name' in maybeOjectField
+  )
+}
+
+export function isCustomized(maybeCustomized: SchemaType): boolean {
+  const hasFieldsArray =
+    isObjectField(maybeCustomized) &&
+    !isType(maybeCustomized, 'reference') &&
+    !isType(maybeCustomized, 'crossDatasetReference') &&
+    'fields' in maybeCustomized &&
+    Array.isArray(maybeCustomized.fields)
+
+  if (!hasFieldsArray) {
+    return false
+  }
+
+  const fields = getCustomFields(maybeCustomized)
+  return !!fields.length
 }
 
 export function isType(schemaType: SchemaType, typeName: string): boolean {

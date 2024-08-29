@@ -503,7 +503,6 @@ describe('Extract studio manifest', () => {
                 of: [
                   defineArrayMember({
                     title: 'Array item',
-                    name: 'item',
                     type: 'object',
                     fields: [
                       defineField({
@@ -549,7 +548,7 @@ describe('Extract studio manifest', () => {
               {
                 fields: [{name: 'itemTitle', title: 'Item title', type: 'string'}],
                 title: 'Array item',
-                type: 'item',
+                type: 'object',
               },
             ],
             title: 'Object array',
@@ -740,7 +739,7 @@ describe('Extract studio manifest', () => {
               }),
               defineField({
                 title: 'Reference array',
-                name: 'objectArray',
+                name: 'refArray',
                 type: 'array',
                 of: [
                   defineArrayMember({
@@ -772,9 +771,17 @@ describe('Extract studio manifest', () => {
             name: 'crossDatasetReference',
             title: 'Cross dataset ref',
             type: 'crossDatasetReference',
+            to: [
+              {
+                type: documentType,
+                preview: {
+                  select: {title: 'title'},
+                },
+              },
+            ],
           },
           {
-            name: 'objectArray',
+            name: 'refArray',
             of: [
               {
                 title: 'Reference to',
