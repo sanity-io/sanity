@@ -1,8 +1,7 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {Box, Flex, useToast} from '@sanity/ui'
-import {type FormEvent, useCallback, useMemo, useState} from 'react'
+import {type FormEvent, useCallback, useState} from 'react'
 import {type FormBundleDocument, useTranslation} from 'sanity'
-import speakingurl from 'speakingurl'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -47,10 +46,6 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
     [createBundle, formAction, updateBundle],
   )
 
-  const slug = useMemo(() => {
-    return value.title ? speakingurl(value.title) : undefined
-  }, [value.title])
-
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       try {
@@ -60,7 +55,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         const submitValue = {...value, title: value.title?.trim()}
         await submit(submitValue)
         if (formAction === 'create') {
-          setPerspective(`${value._id!}-${slug}`)
+          setPerspective(value._id)
         }
       } catch (err) {
         console.error(err)
@@ -74,7 +69,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         onSubmit()
       }
     },
-    [value, submit, formAction, setPerspective, slug, toast, onSubmit],
+    [value, submit, formAction, setPerspective, toast, onSubmit],
   )
 
   const handleOnChange = useCallback((changedValue: FormBundleDocument) => {
