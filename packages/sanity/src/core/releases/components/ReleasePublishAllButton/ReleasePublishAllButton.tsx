@@ -1,9 +1,11 @@
 import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {type BundleDocument} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
+import {PublishedRelease} from '../../../bundles/__telemetry__/releases.telemetry'
 import {Translate, useTranslation} from '../../../i18n'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -24,6 +26,7 @@ export const ReleasePublishAllButton = ({
   const toast = useToast()
   const {publishBundle} = useBundleOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
+  const telemetry = useTelemetry()
   const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
     'idle',
   )
@@ -47,6 +50,7 @@ export const ReleasePublishAllButton = ({
         bundleDocuments.map(({document}) => document),
         publishedDocumentsRevisions,
       )
+      telemetry.log(PublishedRelease)
       toast.push({
         closable: true,
         status: 'success',
@@ -69,7 +73,7 @@ export const ReleasePublishAllButton = ({
     } finally {
       setPublishBundleStatus('idle')
     }
-  }, [bundle, bundleDocuments, publishBundle, publishedDocumentsRevisions, t, toast])
+  }, [bundle, bundleDocuments, publishBundle, publishedDocumentsRevisions, t, telemetry, toast])
 
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null
