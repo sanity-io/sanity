@@ -15,7 +15,7 @@ import {
 
 import {Button} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {AddedVersion} from '../../__telemetry__/bundles.telemetry'
+import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 
 interface BundleActionsProps {
   currentGlobalBundle: BundleDocument
