@@ -181,7 +181,7 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
 
   return <RouterContext.Provider value={router}>{props.children}</RouterContext.Provider>
 }
-const STICKY = ['perspective']
+const STICKY: string[] = []
 
 function replaceStickyParam(
   current: SearchParam[],
