@@ -1,6 +1,7 @@
 import {type Diff} from '@sanity/diff'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch, incremental} from 'mendoza'
+import {isVersionId} from 'sanity'
 
 import {type Annotation, type Chunk} from '../../../../field'
 import {chunkFromTransaction, mergeChunk} from './chunker'
@@ -60,7 +61,7 @@ export class Timeline {
 
   constructor(opts: TimelineOptions) {
     this.publishedId = opts.publishedId
-    this.draftId = `drafts.${opts.publishedId}`
+    this.draftId = isVersionId(opts.publishedId) ? opts.publishedId : `drafts.${opts.publishedId}`
 
     if (opts.enableTrace) {
       this._trace = []
