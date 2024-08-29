@@ -222,7 +222,6 @@ describe('Extract studio manifest', () => {
         fields: [
           {
             name: 'nested',
-            title: 'Nested',
             type: 'object',
             fields: [
               {
@@ -430,7 +429,6 @@ describe('Extract studio manifest', () => {
                 fields: [
                   {
                     name: 'inner',
-                    title: 'Inner',
                     type: 'number',
                   },
                 ],
@@ -440,7 +438,6 @@ describe('Extract studio manifest', () => {
               },
             ],
             name: 'nested',
-            title: 'Nested',
             type: 'object',
           },
           {
@@ -596,7 +593,7 @@ describe('Extract studio manifest', () => {
         name: arrayType,
         of: [
           {
-            fields: [{name: 'title', title: 'Title', type: 'string'}],
+            fields: [{name: 'title', type: 'string'}],
             title: 'Some Object',
             type: 'override',
           },
@@ -834,13 +831,11 @@ describe('Extract studio manifest', () => {
           {
             fieldset: 'test',
             name: 'title',
-            title: 'Title',
             type: 'string',
           },
           {
             fieldset: 'conditional',
             name: 'other',
-            title: 'Other',
             type: 'string',
           },
         ],
@@ -862,6 +857,44 @@ describe('Extract studio manifest', () => {
           },
         ],
         name: 'basic',
+        type: 'document',
+      })
+    })
+
+    test('do not serialize default titles (default titles added by Schema.compile based on type/field name)', () => {
+      const documentType = 'basic-document'
+      const schema = createSchema({
+        name: 'test',
+        types: [
+          defineType({
+            name: documentType,
+            type: 'document',
+            fieldsets: [
+              {name: 'someFieldset'},
+              {
+                name: 'conditional',
+                hidden: () => true,
+                readOnly: () => true,
+              },
+            ],
+            fields: [
+              defineField({name: 'title', type: 'string'}),
+              defineField({name: 'someField', type: 'array', of: [{type: 'string'}]}),
+              defineField({name: 'customTitleField', type: 'string', title: 'Custom'}),
+            ],
+          }),
+        ],
+      })
+
+      const extracted = extractManifestSchemaTypes(schema)
+      const serializedDoc = extracted.find((serialized) => serialized.name === documentType)
+      expect(serializedDoc).toEqual({
+        fields: [
+          {name: 'title', type: 'string'},
+          {name: 'someField', of: [{type: 'string'}], type: 'array'},
+          {name: 'customTitleField', type: 'string', title: 'Custom'},
+        ],
+        name: 'basic-document',
         type: 'document',
       })
     })

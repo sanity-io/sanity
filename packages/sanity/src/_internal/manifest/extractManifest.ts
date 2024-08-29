@@ -107,7 +107,6 @@ function transformCommonTypeFields(type: SchemaType & {fieldset?: string}, conte
   return {
     ...retainCustomTypeProps(type),
     ...transformValidation(type.validation),
-    ...ensureCustomTitle(type.name, type.title),
     ...ensureString('description', type.description),
     ...objectFields,
     ...arrayProperties,
@@ -151,6 +150,7 @@ function transformType(type: SchemaType, context: Context): ManifestSchemaType {
     ...transformCommonTypeFields(type, context),
     name: type.name,
     type: typeName,
+    ...ensureCustomTitle(type.name, type.title),
   }
 }
 
@@ -245,6 +245,7 @@ function transformField(field: ObjectField & {fieldset?: string}, context: Conte
     ...transformCommonTypeFields(field.type, context),
     name: field.name,
     type: field.type.name,
+    ...ensureCustomTitle(field.name, field.type.title),
     // this prop gets added synthetically via getCustomFields
     ...ensureString('fieldset', field.fieldset),
   }
@@ -259,6 +260,7 @@ function transformArrayMember(
       return {
         ...transformCommonTypeFields(type, context),
         type: type.name,
+        ...ensureCustomTitle(type.name, type.title),
       }
     }),
   }
@@ -348,11 +350,10 @@ function transformValidation(validation: SchemaValidationValue): Validation {
   return serializedValidation.length ? {validation: serializedValidation} : {}
 }
 
-function ensureCustomTitle<const Value>(typeName: string, value: Value) {
+function ensureCustomTitle(typeName: string, value: unknown) {
   const titleObject = ensureString('title', value)
 
   const defaultTitle = startCase(typeName)
-
   // omit title if its the same as default, to reduce payload
   if (titleObject.title === defaultTitle) {
     return {}
