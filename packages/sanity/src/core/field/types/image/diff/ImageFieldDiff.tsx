@@ -2,7 +2,13 @@ import {type Image} from '@sanity/types'
 import {Box, Card, Text} from '@sanity/ui'
 
 import {type TFunction, useTranslation} from '../../../../i18n'
-import {ChangeList, DiffCard, DiffTooltip, getAnnotationAtPath} from '../../../diff'
+import {
+  ChangeList,
+  DiffCard,
+  DiffTooltip,
+  getAnnotationAtPath,
+  useDocumentChange,
+} from '../../../diff'
 import {FromTo} from '../../../diff/components'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
 import {ImagePreview, NoImagePreview} from './ImagePreview'
@@ -16,7 +22,7 @@ const CARD_STYLES = {
 
 export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaType}) => {
   const {t} = useTranslation()
-
+  const {showFromValue} = useDocumentChange()
   const {fromValue, toValue, fields, isChanged} = diff
   const fromRef = fromValue?.asset?._ref
   const toRef = toValue?.asset?._ref
@@ -96,7 +102,9 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
     ) : null
   }
 
-  const imageDiff = <FromTo align="center" from={from} layout="grid" to={to} />
+  const imageDiff = (
+    <FromTo align="center" from={showFromValue ? from : undefined} layout="grid" to={to} />
+  )
 
   return (
     <>
