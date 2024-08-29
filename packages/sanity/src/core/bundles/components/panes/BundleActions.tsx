@@ -1,4 +1,5 @@
 import {AddIcon, CheckmarkIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
@@ -6,6 +7,7 @@ import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
+  isVersionId,
   useDocumentOperation,
   useDocumentStore,
   useTranslation,
@@ -13,6 +15,7 @@ import {
 
 import {Button} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
+import {AddedVersion} from '../../__telemetry__/bundles.telemetry'
 
 interface BundleActionsProps {
   currentGlobalBundle: BundleDocument
@@ -42,6 +45,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
   const toast = useToast()
   const {newVersion} = useDocumentOperation(publishedId, documentType, bundleId)
   const {t} = useTranslation()
+  const telemetry = useTelemetry()
 
   const handleAddVersion = useCallback(async () => {
     if (!documentId) {
@@ -67,7 +71,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
     // set up the listener before executing
     const createVersionSuccess = firstValueFrom(
       documentStore.pair
-        .operationEvents(getPublishedId(bundleId), documentType)
+        .operationEvents(getPublishedId(documentId), documentType)
         .pipe(filter((e) => e.op === 'newVersion' && e.type === 'success')),
     )
 
@@ -76,7 +80,22 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
     // only change if the version was created successfully
     await createVersionSuccess
     setIsInVersion(true)
-  }, [documentId, globalBundleId, documentStore.pair, documentType, newVersion, toast, title])
+
+    telemetry.log(AddedVersion, {
+      schemaType: documentType,
+      documentOrigin: isVersionId(documentId) ? 'version' : 'draft',
+    })
+  }, [
+    documentId,
+    globalBundleId,
+    documentStore.pair,
+    bundleId,
+    documentType,
+    newVersion,
+    telemetry,
+    toast,
+    title,
+  ])
 
   /** TODO what should happen when you add a version if we don't have the ready button */
 
