@@ -1,4 +1,5 @@
 import {ArrowRightIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
 import {type FormBundleDocument, useTranslation} from 'sanity'
@@ -6,6 +7,7 @@ import {type FormBundleDocument, useTranslation} from 'sanity'
 import {Button, Dialog} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
+import {CreatedRelease} from '../../__telemetry__/releases.telemetry'
 import {usePerspective} from '../../hooks/usePerspective'
 import {createReleaseId} from '../../util/createReleaseId'
 import {BundleForm} from './BundleForm'
@@ -22,6 +24,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
   const {createBundle, updateBundle} = useBundleOperations()
   const formAction = bundle ? 'edit' : 'create'
   const {t} = useTranslation()
+  const telemetry = useTelemetry()
 
   const [value, setValue] = useState((): FormBundleDocument => {
     return {
@@ -56,6 +59,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         await submit(submitValue)
         if (formAction === 'create') {
           setPerspective(value._id)
+          telemetry.log(CreatedRelease)
         }
       } catch (err) {
         console.error(err)
@@ -69,7 +73,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         onSubmit()
       }
     },
-    [value, submit, formAction, setPerspective, toast, onSubmit],
+    [value, submit, formAction, setPerspective, telemetry, toast, onSubmit],
   )
 
   const handleOnChange = useCallback((changedValue: FormBundleDocument) => {
