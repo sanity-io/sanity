@@ -52,7 +52,8 @@
     "@sanity/types": "3.56.0",
     "@types/react": "^18.3.3",
     "get-random-values-esm": "1.0.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
