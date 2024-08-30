@@ -24,15 +24,15 @@ const getFetchQuery = (bundleIds: string[]) => {
 
   return bundleIds.reduce(
     ({subquery: accSubquery, projection: accProjection}, bundleId) => {
-      // this safeguards against bundle ids generated from UUIDs
-      const safeKey = getSafeKey(bundleId)
+      // get a version of the id that is safe to use as key in objects
+      const safeId = getSafeKey(bundleId)
 
-      const subquery = `${accSubquery}"${safeKey}": *[_id in path("versions.${bundleId}.*")]{_updatedAt } | order(_updatedAt desc),`
+      const subquery = `${accSubquery}"${safeId}": *[_id in path("versions.${bundleId}.*")]{_updatedAt } | order(_updatedAt desc),`
 
       // conforms to BundlesMetadata
-      const projection = `${accProjection}"${safeKey}": {
-              "updatedAt": ${safeKey}[0]._updatedAt,
-              "documentCount": count(${safeKey})
+      const projection = `${accProjection}"${bundleId}": {
+              "updatedAt": ${safeId}[0]._updatedAt,
+              "documentCount": count(${safeId})
             },`
 
       return {subquery, projection}
