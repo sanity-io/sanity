@@ -187,7 +187,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'calendar.weekday-names.short.wednesday': 'Wed',
 
   /** Label for the close button label in Review Changes pane */
-  'changes.action.close-label': 'Close review changes',
+  'changes.action.close-label': 'Close history',
   /** Cancel label for revert button prompt action */
   'changes.action.revert-all-cancel': 'Cancel',
   /** Revert all confirm label for revert button action - used on prompt button + review changes pane */
@@ -303,7 +303,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for when the action of the change was a removal, eg a field was cleared, an array item was removed, an asset was deselected or similar */
   'changes.removed-label': 'Removed',
   /** Title for the Review Changes pane */
-  'changes.title': 'Review changes',
+  'changes.title': 'History',
 
   /** --- Common components --- */
   /** Tooltip text for context menu buttons */
@@ -1648,7 +1648,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter (`timestamp`).
    */
-  'timeline.since': 'Since: {{timestamp, datetime}}',
+  'timeline.since': '{{timestamp, datetime}}',
   /** Label for missing change version for timeline menu dropdown are showing */
   'timeline.since-version-missing': 'Since: unknown version',
   /** Aria label for the action buttons in the PTE toolbar */

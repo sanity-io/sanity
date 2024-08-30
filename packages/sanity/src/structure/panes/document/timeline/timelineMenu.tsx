@@ -1,5 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {type Placement, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
+import {
+  Flex,
+  type Placement,
+  Text,
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+  useToast,
+} from '@sanity/ui'
 import {useCallback, useRef, useState} from 'react'
 import {type Chunk, useTimelineSelector, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
@@ -164,14 +171,22 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
       <Button
         data-testid={open ? 'timeline-menu-close-button' : 'timeline-menu-open-button'}
         disabled={!ready}
-        mode="bleed"
-        iconRight={ChevronDownIcon}
+        mode="ghost"
         onClick={open ? handleClose : handleOpen}
         ref={setButton}
         selected={open}
-        style={{maxWidth: '100%'}}
-        text={ready ? buttonLabel : t('timeline.loading-history')}
-      />
+        width="fill"
+        tooltipProps={null}
+      >
+        <Flex align={'center'} justify={'space-between'}>
+          <Text size={1} weight="medium">
+            {ready ? buttonLabel : t('timeline.loading-history')}
+          </Text>
+          <Text size={1}>
+            <ChevronDownIcon />
+          </Text>
+        </Flex>
+      </Button>
     </Root>
   )
 }
