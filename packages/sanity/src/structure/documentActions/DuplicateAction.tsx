@@ -21,16 +21,16 @@ const DISABLED_REASON_KEY = {
 }
 
 /** @internal */
-export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete, bundleSlug}) => {
+export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete, bundleId}) => {
   const documentStore = useDocumentStore()
-  const {duplicate} = useDocumentOperation(id, type, bundleSlug)
+  const {duplicate} = useDocumentOperation(id, type, bundleId)
   const {navigateIntent} = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleSlug,
+    version: bundleId,
     permission: 'duplicate',
   })
 

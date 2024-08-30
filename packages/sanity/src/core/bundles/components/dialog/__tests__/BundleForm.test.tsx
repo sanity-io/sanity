@@ -1,6 +1,6 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
-import {type BundleDocument, useDateTimeFormat} from 'sanity'
+import {type BundleDocument, type FormBundleDocument, useDateTimeFormat} from 'sanity'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundles} from '../../../../store/bundles'
@@ -20,7 +20,9 @@ const mockUseDateTimeFormat = useDateTimeFormat as jest.Mock
 describe('BundleForm', () => {
   const onChangeMock = jest.fn()
   const onErrorMock = jest.fn()
-  const valueMock: Partial<BundleDocument> = {
+  const valueMock: FormBundleDocument = {
+    _id: 'very-random',
+    _type: 'release',
     title: '',
     description: '',
     icon: 'cube',
@@ -43,8 +45,7 @@ describe('BundleForm', () => {
           title: 'Spring Drop',
           icon: 'heart-filled',
           _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
-          _type: 'bundle',
-          slug: 'spring-drop',
+          _type: 'release',
           hue: 'magenta',
           _createdAt: '2024-07-02T11:37:51Z',
         },
@@ -76,7 +77,7 @@ describe('BundleForm', () => {
       const titleInput = screen.getByTestId('bundle-form-title')
       fireEvent.change(titleInput, {target: {value: 'Bundle 1'}})
 
-      expect(onChangeMock).toHaveBeenCalledWith({...valueMock, title: 'Bundle 1', slug: 'bundle-1'})
+      expect(onChangeMock).toHaveBeenCalledWith({...valueMock, title: 'Bundle 1'})
     })
 
     it('should call onChange when description textarea value changes', () => {
@@ -100,25 +101,6 @@ describe('BundleForm', () => {
     expect(onChangeMock).toHaveBeenCalledWith({...valueMock, publishAt: ''})
   })*/
 
-    it('should allow for a "drafts" title bundle to be created', () => {
-      const titleInput = screen.getByTestId('bundle-form-title')
-
-      fireEvent.change(titleInput, {target: {value: 'drafts'}})
-
-      expect(onChangeMock).toHaveBeenCalledWith({...valueMock, title: 'drafts', slug: 'drafts-1'})
-    })
-
-    it('should allow for a "published" title bundle to be created', () => {
-      const titleInput = screen.getByTestId('bundle-form-title')
-      fireEvent.change(titleInput, {target: {value: 'published'}})
-
-      expect(onChangeMock).toHaveBeenCalledWith({
-        ...valueMock,
-        title: 'published',
-        slug: 'published-1',
-      })
-    })
-
     /*it('should show an error when the publishAt input value is invalid', () => {
     const publishAtInput = screen.getByTestId('bundle-form-publish-at')
     fireEvent.change(publishAtInput, {target: {value: 'invalid-date'}})
@@ -133,7 +115,6 @@ describe('BundleForm', () => {
       description: 'Summer time',
       icon: 'heart-filled',
       hue: 'magenta',
-      slug: 'summer-drop',
     } as BundleDocument
     beforeEach(async () => {
       onChangeMock.mockClear()
@@ -148,9 +129,8 @@ describe('BundleForm', () => {
           authorId: 'pzAhBTkNX',
           title: 'Spring Drop',
           icon: 'heart-filled',
-          _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
-          _type: 'bundle',
-          slug: 'spring-drop',
+          _id: 'db76c50e',
+          _type: 'release',
           hue: 'magenta',
           _createdAt: '2024-07-02T11:37:51Z',
         },
@@ -162,7 +142,12 @@ describe('BundleForm', () => {
 
       const wrapper = await createTestProvider()
       render(
-        <BundleForm onChange={onChangeMock} value={existingBundleValue} onError={onErrorMock} />,
+        <BundleForm
+          onChange={onChangeMock}
+          value={existingBundleValue}
+          onError={onErrorMock}
+          action="edit"
+        />,
         {
           wrapper,
         },

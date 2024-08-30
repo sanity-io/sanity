@@ -1,6 +1,6 @@
 import {AvatarStack, Box, Flex, Text} from '@sanity/ui'
 import {memo} from 'react'
-import {type BundleDocument, type TFunction, UserAvatar} from 'sanity'
+import {type TFunction, UserAvatar} from 'sanity'
 
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
@@ -32,7 +32,7 @@ const MemoReleaseDocumentPreview = memo(
 )
 
 export const getDocumentTableColumnDefs: (
-  releaseSlug: BundleDocument['slug'],
+  releaseId: string,
   t: TFunction<'releases', undefined>,
 ) => Column<BundleDocumentRow>[] = (releaseSlug, t) => [
   {
