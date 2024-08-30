@@ -30,7 +30,7 @@ const getFetchQuery = (bundleIds: string[]) => {
       const subquery = `${accSubquery}"${safeKey}": *[_id in path("versions.${bundleId}.*")]{_updatedAt } | order(_updatedAt desc),`
 
       // conforms to BundlesMetadata
-      const projection = `${accProjection}"${bundleId}": {
+      const projection = `${accProjection}"${safeKey}": {
               "updatedAt": ${safeKey}[0]._updatedAt,
               "documentCount": count(${safeKey})
             },`
