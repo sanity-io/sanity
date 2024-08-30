@@ -21,6 +21,8 @@ const config = {
   env: {
     // Support the ability to debug log the studio, for example `DEBUG="sanity:pte:* pnpm dev:next-studio"`
     DEBUG: process.env.DEBUG,
+    // Matches the behavior of `sanity dev` which sets styled-components to use the fastest way of inserting CSS rules in both dev and production. It's default behavior is to disable it in dev mode.
+    SC_DISABLE_SPEEDY: 'false',
   },
   transpilePackages: [
     '@sanity/block-tools',
