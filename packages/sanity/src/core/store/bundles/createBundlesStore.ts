@@ -32,7 +32,7 @@ type ResponseWrapper = {response: BundleDocument[]}
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'
 
-const QUERY_FILTERS = [`_type == "bundle"`]
+const QUERY_FILTERS = [`_type == "release"`]
 
 // TODO: Extend the projection with the fields needed
 const QUERY_PROJECTION = `{
