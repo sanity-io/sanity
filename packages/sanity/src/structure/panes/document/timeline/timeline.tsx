@@ -55,14 +55,10 @@ export const Timeline = ({
   const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(
     (chunk, {activeIndex}) => {
       const isFirst = activeIndex === 0
-      const isLast = (filteredChunks && activeIndex === filteredChunks.length - 1) || false
       return (
-        <Box paddingBottom={isLast ? 1 : 0} paddingTop={isFirst ? 1 : 0} paddingX={1}>
+        <Box paddingBottom={1} paddingTop={isFirst ? 1 : 0} paddingX={1}>
           <TimelineItem
             chunk={chunk}
-            isFirst={isFirst}
-            isLast={isLast}
-            isLatest={activeIndex === 0 && !disabledBeforeFirstChunk}
             isSelected={activeIndex === selectedIndex}
             onSelect={onSelect}
             timestamp={chunk.endTimestamp}
@@ -72,7 +68,7 @@ export const Timeline = ({
         </Box>
       )
     },
-    [disabledBeforeFirstChunk, filteredChunks, hasMoreChunks, onSelect, selectedIndex],
+    [filteredChunks, hasMoreChunks, onSelect, selectedIndex],
   )
 
   useEffect(() => setMounted(true), [])
