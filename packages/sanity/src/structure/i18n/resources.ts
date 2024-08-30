@@ -77,7 +77,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Label for the "Restore" document action */
   'action.restore.label': 'Revert to revision',
   /** Default tooltip for the action */
-  'action.restore.tooltip': 'Restore to this version',
+  'action.restore.tooltip': 'Restore to this revision',
 
   /** Tooltip when action is disabled because the document is not already published */
   'action.unpublish.disabled.not-published': 'This document is not published',
