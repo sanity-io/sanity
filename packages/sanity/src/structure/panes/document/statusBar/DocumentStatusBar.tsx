@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 import {type Ref, useCallback, useState} from 'react'
 import {useTimelineSelector} from 'sanity'
 
@@ -34,35 +34,37 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const shouldRender = editState?.ready && typeof collapsed === 'boolean'
 
   return (
-    <Flex direction="column" ref={setRootElement} sizing="border">
-      {shouldRender && (
-        <Flex
-          align="stretch"
-          gap={1}
-          justify="space-between"
-          paddingY={2}
-          paddingLeft={4}
-          paddingRight={3}
-        >
-          <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
-            <Flex align="center">
-              <DocumentStatusLine singleLine={!collapsed} />
-              <SpacerButton size="large" />
-            </Flex>
-            <DocumentBadges />
-          </Flex>
-
+    <Card tone={showingRevision ? 'caution' : undefined}>
+      <Flex direction="column" ref={setRootElement} sizing="border">
+        {shouldRender && (
           <Flex
-            align="flex-start"
-            justify="flex-end"
-            ref={actionsBoxRef}
-            style={{flexShrink: 0, marginLeft: 'auto'}}
+            align="stretch"
+            gap={1}
+            justify="space-between"
+            paddingY={2}
+            paddingLeft={4}
+            paddingRight={3}
           >
-            <SpacerButton size="large" />
-            {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
+            <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
+              <Flex align="center">
+                <DocumentStatusLine singleLine={!collapsed} />
+                <SpacerButton size="large" />
+              </Flex>
+              <DocumentBadges />
+            </Flex>
+
+            <Flex
+              align="flex-start"
+              justify="flex-end"
+              ref={actionsBoxRef}
+              style={{flexShrink: 0, marginLeft: 'auto'}}
+            >
+              <SpacerButton size="large" />
+              {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
+            </Flex>
           </Flex>
-        </Flex>
-      )}
-    </Flex>
+        )}
+      </Flex>
+    </Card>
   )
 }
