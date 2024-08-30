@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks'
@@ -13,13 +13,7 @@ interface AddonDatasetSetupProviderProps {
   children: React.ReactNode
 }
 
-/**
- * This provider sets the addon dataset client, currently called `comments` dataset.
- * It also exposes a `createAddonDataset` function that can be used to create the addon dataset if it does not exist.
- * @beta
- * @hidden
- */
-export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
+function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
   const {children} = props
   const {dataset, projectId} = useWorkspace()
   const originalClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -133,4 +127,17 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
   )
 
   return <AddonDatasetContext.Provider value={ctxValue}>{children}</AddonDatasetContext.Provider>
+}
+
+/**
+ * This provider sets the addon dataset client, currently called `comments` dataset.
+ * It also exposes a `createAddonDataset` function that can be used to create the addon dataset if it does not exist.
+ * @beta
+ * @hidden
+ */
+export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
+  const context = useContext(AddonDatasetContext)
+  // Avoid mounting the provider if it's already provided by a parent
+  if (context) return props.children
+  return <AddonDatasetProviderInner {...props} />
 }
