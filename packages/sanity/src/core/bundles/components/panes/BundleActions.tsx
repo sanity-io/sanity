@@ -89,7 +89,6 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
     documentId,
     globalBundleId,
     documentStore.pair,
-    bundleId,
     documentType,
     newVersion,
     telemetry,
