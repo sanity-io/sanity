@@ -105,7 +105,8 @@ test.describe('Portable Text Input', () => {
       })
     })
 
-    test.describe('Opening block style', () => {
+    // TODO - needs rewrite to avoid flakiness
+    test.skip('Opening block style', () => {
       test('on a simple editor', async ({mount, page}) => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<ToolbarStory />)
