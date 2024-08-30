@@ -70,11 +70,10 @@ describe('BundleDetailsDialog', () => {
 
     it('should call createBundle, setPerspective, and onCreate when form is submitted with a valid slug', async () => {
       const value: Partial<BundleDocument> = {
-        slug: 'bundle-1',
+        _type: 'release',
         title: 'Bundle 1',
         hue: 'gray',
         icon: 'cube',
-        description: '',
         //publishAt: undefined,
       }
 
@@ -84,9 +83,14 @@ describe('BundleDetailsDialog', () => {
       const submitButton = screen.getByTestId('submit-release-button')
       fireEvent.click(submitButton)
 
-      await expect(useBundleOperations().createBundle).toHaveBeenCalledWith(value)
+      await expect(useBundleOperations().createBundle).toHaveBeenCalledWith(
+        expect.objectContaining({
+          _id: expect.stringMatching(/r\w{8}/),
+          ...value,
+        }),
+      )
 
-      expect(usePerspective().setPerspective).toHaveBeenCalledWith(value.slug)
+      expect(usePerspective().setPerspective).toHaveBeenCalledWith(expect.stringMatching(/r\w{8}/))
       expect(onSubmitMock).toHaveBeenCalled()
     })
   })
@@ -95,8 +99,8 @@ describe('BundleDetailsDialog', () => {
     const onCancelMock = jest.fn()
     const onSubmitMock = jest.fn()
     const existingBundleValue: BundleDocument = {
-      _id: '123',
-      _type: 'bundle',
+      _id: 'existing-bundle',
+      _type: 'release',
       _rev: '123',
       _createdAt: '2024-07-02T11:37:51Z',
       _updatedAt: '2024-07-12T10:39:32Z',
@@ -104,7 +108,6 @@ describe('BundleDetailsDialog', () => {
       description: 'Existing bundle description',
       hue: 'magenta',
       icon: 'cube',
-      slug: 'existing-bundle',
       title: 'Existing bundle',
     }
 
@@ -157,13 +160,12 @@ describe('BundleDetailsDialog', () => {
       })
       fireEvent.click(screen.getByTestId('submit-release-button'))
 
-      const {hue, icon, slug, _id} = existingBundleValue
+      const {hue, icon, _id} = existingBundleValue
       expect(useBundleOperations().updateBundle).toHaveBeenCalledWith({
         _id,
+        _type: 'release',
         hue,
         icon,
-        // slug has not been updated
-        slug,
         title: 'New title',
         description: 'New description',
       })

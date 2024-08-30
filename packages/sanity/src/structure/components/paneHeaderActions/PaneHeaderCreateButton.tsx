@@ -35,7 +35,7 @@ const getIntent = (
   item: InitialValueTemplateItem,
   version?: string,
 ): PaneHeaderIntentProps | null => {
-  const isBundleIntent = version && version !== LATEST.slug
+  const isBundleIntent = version && version !== LATEST._id
   const typeName = templates.find((t) => t.id === item.templateId)?.schemaType
   if (!typeName) return null
 
@@ -111,7 +111,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
-    const intent = getIntent(schema, templates, firstItem, currentGlobalBundle.slug)
+    const intent = getIntent(schema, templates, firstItem, currentGlobalBundle._id)
     if (!intent) return null
 
     return (
@@ -149,7 +149,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(schema, templates, item, currentGlobalBundle.slug)
+            const intent = getIntent(schema, templates, item, currentGlobalBundle._id)
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
 

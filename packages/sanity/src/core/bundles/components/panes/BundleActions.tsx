@@ -22,25 +22,25 @@ interface BundleActionsProps {
    */
   documentId: string
   documentType: string
-  bundleSlug?: string
+  bundleId?: string
 }
 
 /**
  * @internal
  */
 export function BundleActions(props: BundleActionsProps): ReactNode {
-  const {currentGlobalBundle, documentType, documentId, bundleSlug} = props
+  const {currentGlobalBundle, documentType, documentId, bundleId} = props
   const publishedId = getPublishedId(documentId)
 
-  const {slug, title, archivedAt} = currentGlobalBundle
+  const {_id: globalBundleId, title, archivedAt} = currentGlobalBundle
   const documentStore = useDocumentStore()
   const [creatingVersion, setCreatingVersion] = useState<boolean>(false)
   const [isInVersion, setIsInVersion] = useState<boolean>(
-    () => getVersionFromId(documentId) === slug,
+    () => getVersionFromId(documentId) === globalBundleId,
   )
 
   const toast = useToast()
-  const {newVersion} = useDocumentOperation(publishedId, documentType, bundleSlug)
+  const {newVersion} = useDocumentOperation(publishedId, documentType, bundleId)
   const {t} = useTranslation()
 
   const handleAddVersion = useCallback(async () => {
@@ -52,7 +52,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
       return
     }
     // only add to version if there isn't already a version in that bundle of this doc
-    if (getVersionFromId(documentId) === slug) {
+    if (getVersionFromId(documentId) === globalBundleId) {
       toast.push({
         status: 'error',
         title: `There's already a version of this document in the bundle ${title}`,
@@ -60,23 +60,23 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
       return
     }
 
-    const bundleId = getVersionId(documentId, slug)
+    const versionId = getVersionId(documentId, globalBundleId)
 
     setCreatingVersion(true)
 
     // set up the listener before executing
     const createVersionSuccess = firstValueFrom(
       documentStore.pair
-        .operationEvents(bundleId, documentType)
+        .operationEvents(versionId, documentType)
         .pipe(filter((e) => e.op === 'newVersion' && e.type === 'success')),
     )
 
-    newVersion.execute(bundleId)
+    newVersion.execute(versionId)
 
     // only change if the version was created successfully
     await createVersionSuccess
     setIsInVersion(true)
-  }, [documentId, slug, documentStore.pair, documentType, newVersion, toast, title])
+  }, [documentId, globalBundleId, documentStore.pair, documentType, newVersion, toast, title])
 
   /** TODO what should happen when you add a version if we don't have the ready button */
 
@@ -84,7 +84,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
 
   return (
     <Button
-      data-testid={`action-add-to-${slug}`}
+      data-testid={`action-add-to-${globalBundleId}`}
       text={
         isInVersion
           ? t('bundle.action.already-in-release', {title})

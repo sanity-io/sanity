@@ -51,14 +51,14 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
  */
 // eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
-  const {id, type, liveEdit, draft, published, bundleSlug} = props
+  const {id, type, liveEdit, draft, published, bundleId} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
-  const {publish} = useDocumentOperation(id, type, bundleSlug)
-  const validationStatus = useValidationStatus(id, type, bundleSlug)
-  const syncState = useSyncState(id, type, {version: bundleSlug})
+  const {publish} = useDocumentOperation(id, type, bundleId)
+  const validationStatus = useValidationStatus(id, type, bundleId)
+  const syncState = useSyncState(id, type, {version: bundleId})
   const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
 
-  const editState = useEditState(documentId, documentType, 'default', bundleSlug)
+  const editState = useEditState(documentId, documentType, 'default', bundleId)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const revision = (editState?.draft || editState?.published || {})._rev
@@ -71,7 +71,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleSlug,
+    version: bundleId,
     permission: 'publish',
   })
 

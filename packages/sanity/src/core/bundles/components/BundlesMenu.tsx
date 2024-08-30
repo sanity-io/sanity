@@ -43,25 +43,20 @@ export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): Re
     if (!bundles) return []
 
     return bundles
-      .filter(({slug, archivedAt}) => !isDraftOrPublished(slug) && !archivedAt)
-      .sort(
-        ({slug: aSlug}, {slug: bSlug}) =>
-          Number(deletedBundles[aSlug]) - Number(deletedBundles[bSlug]),
-      )
+      .filter(({_id, archivedAt}) => !isDraftOrPublished(_id) && !archivedAt)
+      .sort(({_id: aId}, {_id: bId}) => Number(deletedBundles[aId]) - Number(deletedBundles[bId]))
   }, [bundles, deletedBundles])
   const hasBundles = sortedBundlesToDisplay.length > 0
 
   const handleBundleChange = useCallback(
-    (bundle: Partial<BundleDocument>) => () => {
-      if (bundle.slug) {
-        setPerspective(bundle.slug)
-      }
+    (bundleId: string) => () => {
+      setPerspective(bundleId)
     },
     [setPerspective],
   )
 
   const isBundleDeleted = useCallback(
-    (slug: string) => Boolean(deletedBundles[slug]),
+    (bundleId: string) => Boolean(deletedBundles[bundleId]),
     [deletedBundles],
   )
 
@@ -80,11 +75,11 @@ export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): Re
               <>
                 <MenuItem
                   iconRight={
-                    currentGlobalBundle.slug === LATEST.slug ? (
+                    currentGlobalBundle._id === LATEST._id ? (
                       <CheckmarkIcon data-testid="latest-checkmark-icon" />
                     ) : undefined
                   }
-                  onClick={handleBundleChange(LATEST)}
+                  onClick={handleBundleChange('drafts')}
                   pressed={false}
                   text={LATEST.title}
                   data-testid="latest-menu-item"
@@ -95,15 +90,15 @@ export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): Re
                     <StyledBox data-testid="bundles-list">
                       {sortedBundlesToDisplay.map((bundle) => (
                         <MenuItem
-                          key={bundle.slug}
-                          onClick={handleBundleChange(bundle)}
+                          key={bundle._id}
+                          onClick={handleBundleChange(bundle._id)}
                           padding={1}
                           pressed={false}
-                          disabled={isBundleDeleted(bundle.slug)}
-                          data-testid={`bundle-${bundle.slug}`}
+                          disabled={isBundleDeleted(bundle._id)}
+                          data-testid={`bundle-${bundle._id}`}
                         >
                           <Tooltip
-                            disabled={!isBundleDeleted(bundle.slug)}
+                            disabled={!isBundleDeleted(bundle._id)}
                             content={t('bundle.deleted-tooltip')}
                             placement="bottom-start"
                           >
@@ -112,7 +107,7 @@ export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): Re
                                 hue={bundle.hue}
                                 icon={bundle.icon}
                                 padding={2}
-                                isDisabled={isBundleDeleted(bundle.slug)}
+                                isDisabled={isBundleDeleted(bundle._id)}
                               />
 
                               <Box flex={1} padding={2} style={{minWidth: 100}}>
@@ -135,9 +130,9 @@ export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): Re
                                 <Text size={1}>
                                   <CheckmarkIcon
                                     style={{
-                                      opacity: currentGlobalBundle.slug === bundle.slug ? 1 : 0,
+                                      opacity: currentGlobalBundle._id === bundle._id ? 1 : 0,
                                     }}
-                                    data-testid={`${bundle.slug}-checkmark-icon`}
+                                    data-testid={`${bundle._id}-checkmark-icon`}
                                   />
                                 </Text>
                               </Box>

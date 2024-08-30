@@ -39,7 +39,7 @@ export interface EditStateFor {
   /**
    * When editing a version, the slug of the bundle the document belongs to.
    */
-  bundleSlug?: string
+  bundleId?: string
 }
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
@@ -80,7 +80,7 @@ export const editState = memoize(
         liveEditSchemaType,
         ready: true,
         transactionSyncLock,
-        bundleSlug: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
+        bundleId: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
       })),
       startWith({
         id: idPair.publishedId,
@@ -92,7 +92,7 @@ export const editState = memoize(
         liveEditSchemaType,
         ready: false,
         transactionSyncLock: null,
-        bundleSlug: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
+        bundleId: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
       }),
       publishReplay(1),
       refCount(),
