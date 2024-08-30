@@ -1,16 +1,28 @@
 import {parse} from 'groq-js'
 
+import {type QueryParameter} from './typescript/expressionResolvers'
+
 /**
  * safeParseQuery parses a GROQ query string, but first attempts to extract any parameters used in slices. This method is _only_
  * intended for use in type generation where we don't actually execute the parsed AST on a dataset, and should not be used elsewhere.
  * @internal
  */
-export function safeParseQuery(query: string) {
+export function safeParseQuery(
+  query: string,
+  parameters: QueryParameter[] = [],
+): ReturnType<typeof parse> {
   const params: Record<string, unknown> = {}
 
   for (const param of extractSliceParams(query)) {
     params[param] = 0 // we don't care about the value, just the type
   }
+  for (const param of parameters) {
+    if (param.typeNode.type === 'unknown') {
+      continue
+    }
+    params[param.name] = param.typeNode.value
+  }
+
   return parse(query, {params})
 }
 

@@ -116,6 +116,35 @@ describe('findQueries with the groq template', () => {
     expect(queries[0].result).toBe('*[_type == "foo bar"]')
   })
 
+  test('can infer parameters from comment', () => {
+    const source = `
+      import { groq } from "groq";
+
+      // @groq-parameter {string} $type - The type of the document
+      // @groq-parameter {string} $language - The wanted language
+      // @groq-parameter {string} $missing
+      const postQuery = groq\`*[_type == "foo"]{ "lang": languages[$language] } \`
+    `
+
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].parameters.type).toStrictEqual({
+      name: 'type',
+      typeNode: {type: 'string', value: ''},
+      description: 'The type of the document',
+    })
+    expect(queries[0].parameters.language).toStrictEqual({
+      name: 'language',
+      typeNode: {type: 'string', value: ''},
+      description: 'The wanted language',
+    })
+    expect(queries[0].parameters.missing).toStrictEqual({
+      name: 'missing',
+      typeNode: {type: 'string', value: ''},
+      description: undefined,
+    })
+  })
+
   test('will ignore declarations with ignore tag', () => {
     const source = `
       import { groq } from "groq";
