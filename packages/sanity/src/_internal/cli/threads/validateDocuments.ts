@@ -43,6 +43,7 @@ export interface ValidateDocumentsWorkerData {
   ndjsonFilePath?: string
   level?: ValidationMarker['level']
   maxCustomValidationConcurrency?: number
+  maxFetchConcurrency?: number
 }
 
 /** @internal */
@@ -79,6 +80,7 @@ const {
   projectId,
   level,
   maxCustomValidationConcurrency,
+  maxFetchConcurrency,
 } = _workerData as ValidateDocumentsWorkerData
 
 if (isMainThread || !parentPort) {
@@ -359,6 +361,7 @@ async function validateDocuments() {
             getDocumentExists,
             environment: 'cli',
             maxCustomValidationConcurrency,
+            maxFetchConcurrency,
           }),
           new Promise<typeof timeout>((resolve) =>
             setTimeout(() => resolve(timeout), DOCUMENT_VALIDATION_TIMEOUT),
