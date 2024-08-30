@@ -3,7 +3,6 @@ import {Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {
   type BundleDocument,
-  LATEST,
   Translate,
   useBundles,
   useDocumentOperation,
@@ -20,24 +19,24 @@ import {Banner} from './Banner'
 const useIsLocaleBundleDeleted = () => {
   const {currentGlobalBundle} = usePerspective()
   const {data: bundles, deletedBundles} = useBundles()
-  const {slug: currentGlobalBundleSlug} = currentGlobalBundle
-  const [checkedOutBundleSlug, setCheckedOutBundleSlug] = useState<string | undefined>(
-    currentGlobalBundleSlug,
+  const {_id: currentGlobalBundleId} = currentGlobalBundle
+  const [checkedOutBundleId, setCheckedOutBundleId] = useState<string | undefined>(
+    currentGlobalBundleId,
   )
 
   useEffect(() => {
     /**
      * only named versions other than default (drafts and published) are considered checked-out
      */
-    if (currentGlobalBundleSlug !== LATEST.slug) {
-      setCheckedOutBundleSlug(currentGlobalBundleSlug)
+    if (currentGlobalBundleId !== 'drafts') {
+      setCheckedOutBundleId(currentGlobalBundleId)
     }
-  }, [currentGlobalBundleSlug, setCheckedOutBundleSlug])
+  }, [currentGlobalBundleId, setCheckedOutBundleId])
 
-  if (!checkedOutBundleSlug || !Object.keys(deletedBundles).length || !bundles?.length) {
+  if (!checkedOutBundleId || !Object.keys(deletedBundles).length || !bundles?.length) {
     return null
   }
-  return deletedBundles[checkedOutBundleSlug]
+  return deletedBundles[checkedOutBundleId]
 }
 
 export function DeletedDocumentBanners() {

@@ -20,13 +20,13 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   const {currentGlobalBundle} = usePerspective(paneRouter.perspective)
 
   const {documentVersions, existsInBundle} = useDocumentPane()
-  const {title, hue, icon, slug} = currentGlobalBundle
+  const {title, hue, icon, _id: bundleId} = currentGlobalBundle
 
   const router = useRouter()
 
   const handleBundleClick = useCallback(() => {
-    router.navigateIntent('release', {slug})
-  }, [router, slug])
+    router.navigateIntent('release', {id: bundleId})
+  }, [router, bundleId])
 
   const bundlesMenuButton = useMemo(
     () => (

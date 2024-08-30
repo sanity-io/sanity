@@ -45,7 +45,7 @@ export function useBundleOperations() {
 
       const document = {
         ...bundle,
-        _type: 'bundle',
+        _type: 'release',
         authorId: currentUser?.id,
         _id: bundle._id ?? uuid(),
       } as BundleDocument
@@ -61,7 +61,7 @@ export function useBundleOperations() {
 
       // Fetch the related version documents from the main dataset, this documents will be removed
       const versionDocuments = await studioClient.fetch<SanityDocument[]>(
-        `*[_id in path("versions.${bundle.slug}.*")]`,
+        `*[_id in path("versions.${bundle._id}.*")]`,
       )
       // Starts the transaction to remove the documents.
       const transaction = studioClient.transaction()
@@ -83,7 +83,7 @@ export function useBundleOperations() {
 
       const document = {
         ...bundle,
-        _type: 'bundle',
+        _type: 'release',
       } as BundleDocument
       const unsetKeys = Object.entries(bundle)
         .filter(([_, value]) => value === undefined)

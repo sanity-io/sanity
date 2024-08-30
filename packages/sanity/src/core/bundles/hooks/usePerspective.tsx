@@ -11,7 +11,7 @@ export interface PerspectiveValue {
   /* Return the current global bundle */
   currentGlobalBundle: Partial<BundleDocument>
   /* Change the perspective in the studio based on the perspective name */
-  setPerspective: (slug: string) => void
+  setPerspective: (bundleId: string) => void
 }
 
 /**
@@ -25,18 +25,18 @@ export function usePerspective(selectedPerspective?: string): PerspectiveValue {
   const perspective = selectedPerspective ?? router.stickyParams.perspective
 
   // TODO: Should it be possible to set the perspective within a pane, rather than globally?
-  const setPerspective = (slug: string | undefined) => {
-    if (slug === 'drafts') {
+  const setPerspective = (bundleId: string | undefined) => {
+    if (bundleId === 'drafts') {
       router.navigateStickyParam('perspective', '')
     } else {
-      router.navigateStickyParam('perspective', `bundle.${slug}`)
+      router.navigateStickyParam('perspective', `bundle.${bundleId}`)
     }
   }
 
   const selectedBundle =
     perspective && bundles
-      ? bundles.find((bundle: Partial<BundleDocument>) => {
-          return `bundle.${bundle.slug}`.toLocaleLowerCase() === perspective?.toLocaleLowerCase()
+      ? bundles.find((bundle: BundleDocument) => {
+          return `bundle.${bundle._id}`.toLocaleLowerCase() === perspective?.toLocaleLowerCase()
         })
       : LATEST
 

@@ -26,14 +26,14 @@ export const UnpublishAction: DocumentActionComponent = ({
   draft,
   onComplete,
   liveEdit,
-  bundleSlug,
+  bundleId,
 }) => {
-  const {unpublish} = useDocumentOperation(id, type, bundleSlug)
+  const {unpublish} = useDocumentOperation(id, type, bundleId)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleSlug,
+    version: bundleId,
     permission: 'unpublish',
   })
   const currentUser = useCurrentUser()

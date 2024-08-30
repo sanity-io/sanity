@@ -1,13 +1,12 @@
 /*  TEMPORARY  DUMMY DATA */
 
-import {type BundleDocument} from '../../store/bundles/types'
-
 /**
  * @internal
  */
-export const LATEST: Partial<BundleDocument> = {
-  slug: 'drafts',
+export const LATEST = {
+  // this exists implicitly
+  _id: 'drafts',
   title: 'Latest',
   icon: undefined,
   hue: 'gray',
-}
+} as const

@@ -1,13 +1,14 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {Box, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
-import {useTranslation} from 'sanity'
+import {type FormBundleDocument, useTranslation} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../hooks/usePerspective'
-import {BundleForm, DEFAULT_BUNDLE} from './BundleForm'
+import {createReleaseId} from '../../util/createReleaseId'
+import {BundleForm} from './BundleForm'
 
 interface BundleDetailsDialogProps {
   onCancel: () => void
@@ -22,69 +23,56 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
   const formAction = bundle ? 'edit' : 'create'
   const {t} = useTranslation()
 
-  const [value, setValue] = useState<Partial<BundleDocument>>(() => {
-    if (bundle) {
-      return {
-        slug: bundle.slug,
-        title: bundle.title,
-        description: bundle.description,
-        hue: bundle.hue,
-        icon: bundle.icon,
-        publishedAt: bundle.publishedAt,
-      }
-    }
-
-    return DEFAULT_BUNDLE
+  const [value, setValue] = useState((): FormBundleDocument => {
+    return {
+      _id: bundle?._id || createReleaseId(),
+      _type: 'release',
+      title: bundle?.title,
+      description: bundle?.description,
+      hue: bundle?.hue || 'gray',
+      icon: bundle?.icon || 'cube',
+      publishedAt: bundle?.publishedAt,
+    } as const
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const {setPerspective} = usePerspective()
 
-  const bundleOperation = useCallback(
-    (formValue: Partial<BundleDocument>) => {
-      if (formAction === 'edit' && bundle?._id) {
-        const updatedBundle: Partial<BundleDocument> = {
-          ...formValue,
-          _id: bundle._id,
-        }
-
-        return updateBundle(updatedBundle)
-      }
-      return createBundle(formValue)
+  const submit = useCallback(
+    (formValue: FormBundleDocument) => {
+      return formAction === 'edit' ? updateBundle(formValue) : createBundle(formValue)
     },
-    [bundle?._id, createBundle, formAction, updateBundle],
+    [createBundle, formAction, updateBundle],
   )
 
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
-      if (value.slug) {
-        try {
-          event.preventDefault()
-          setIsSubmitting(true)
+      try {
+        event.preventDefault()
+        setIsSubmitting(true)
 
-          const submitValue = {...value, title: value.title?.trim()}
-          await bundleOperation(submitValue)
-          if (formAction === 'create') {
-            setPerspective(value.slug)
-          }
-        } catch (err) {
-          console.error(err)
-          toast.push({
-            closable: true,
-            status: 'error',
-            title: `Failed to ${formAction} release`,
-          })
-        } finally {
-          setIsSubmitting(false)
-          onSubmit()
+        const submitValue = {...value, title: value.title?.trim()}
+        await submit(submitValue)
+        if (formAction === 'create') {
+          setPerspective(value._id)
         }
+      } catch (err) {
+        console.error(err)
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: `Failed to ${formAction} release`,
+        })
+      } finally {
+        setIsSubmitting(false)
+        onSubmit()
       }
     },
-    [bundleOperation, formAction, onSubmit, setPerspective, value, toast],
+    [value, submit, formAction, setPerspective, toast, onSubmit],
   )
 
-  const handleOnChange = useCallback((changedValue: Partial<BundleDocument>) => {
+  const handleOnChange = useCallback((changedValue: FormBundleDocument) => {
     setValue(changedValue)
   }, [])
 

@@ -97,7 +97,7 @@ export function bundlesReducer(
         !isDeletedByCurrentUser && localDeletedBundle
           ? {
               ...state.deletedBundles,
-              [localDeletedBundle.slug]: localDeletedBundle,
+              [localDeletedBundle._id]: localDeletedBundle,
             }
           : state.deletedBundles
 

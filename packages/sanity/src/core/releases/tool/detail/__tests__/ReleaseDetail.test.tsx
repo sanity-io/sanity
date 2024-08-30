@@ -59,10 +59,10 @@ const renderTest = async () => {
   return render(
     <RouterProvider
       state={{
-        bundleSlug: 'test-bundle-slug',
+        bundleId: 'test-bundle-id',
       }}
       onNavigate={mockRouterNavigate}
-      router={route.create('/', [route.create('/:bundleSlug')])}
+      router={route.create('/', [route.create('/:bundleId')])}
     >
       <ReleaseDetail />
     </RouterProvider>,
@@ -116,10 +116,9 @@ describe('ReleaseDetail', () => {
             title: 'Test bundle',
             publishedAt: undefined,
             archivedAt: undefined,
-            _id: 'test-id',
+            _id: 'test-bundle-id',
             _createdAt: new Date().toISOString(),
-            _type: 'bundle',
-            slug: 'test-bundle-slug',
+            _type: 'release',
             hue: 'blue',
             icon: 'string',
             authorId: 'author-id',
@@ -158,10 +157,9 @@ describe('after bundles have loaded', () => {
             title: 'Test bundle',
             publishedAt: undefined,
             archivedAt: undefined,
-            _id: 'test-id',
+            _id: 'test-bundle-id',
             _createdAt: currentDate,
-            _type: 'bundle',
-            slug: 'test-bundle-slug',
+            _type: 'release',
             hue: 'blue',
             icon: 'string',
             authorId: 'author-id',
@@ -185,7 +183,7 @@ describe('after bundles have loaded', () => {
         expect(screen.getByTestId('review-button').closest('button')).not.toBeDisabled()
         fireEvent.click(screen.getByTestId('review-button'))
         expect(mockRouterNavigate).toHaveBeenCalledWith({
-          path: '/test-bundle-slug?screen=review',
+          path: '/test-bundle-id?screen=review',
         })
       })
     }
@@ -198,7 +196,7 @@ describe('after bundles have loaded', () => {
             {
               memoKey: 'key123',
               document: {
-                _id: 'test-id',
+                _id: 'test-bundle-id',
                 _type: 'document',
                 _rev: 'abc',
                 _createdAt: currentDate,
@@ -235,7 +233,7 @@ describe('after bundles have loaded', () => {
             {
               memoKey: 'key123',
               document: {
-                _id: 'test-id',
+                _id: 'test-bundle-id',
                 _type: 'document',
                 _rev: 'abc',
                 _createdAt: currentDate,
@@ -276,11 +274,11 @@ describe('after bundles have loaded', () => {
         fireEvent.click(screen.getByText('Publish'))
 
         expect(useBundleOperations().publishBundle).toHaveBeenCalledWith(
-          'test-id',
+          'test-bundle-id',
           [
             {
               _createdAt: currentDate,
-              _id: 'test-id',
+              _id: 'test-bundle-id',
               _rev: 'abc',
               _type: 'document',
               _updatedAt: currentDate,
@@ -344,10 +342,9 @@ describe('after bundles have loaded', () => {
             title: 'Test bundle',
             publishedAt: new Date().toISOString(),
             archivedAt: new Date().toISOString(),
-            _id: 'test-id',
+            _id: 'test-bundle-id',
             _createdAt: new Date().toISOString(),
-            _type: 'bundle',
-            slug: 'test-bundle-slug',
+            _type: 'release',
             hue: 'blue',
             icon: 'string',
             authorId: 'author-id',
@@ -386,14 +383,13 @@ describe('after bundles have loaded', () => {
         loading: false,
         dispatch: jest.fn(),
         deletedBundles: {
-          'test-bundle-slug': {
+          'test-bundle-id': {
             title: 'Test bundle',
             publishedAt: undefined,
             archivedAt: undefined,
-            _id: 'test-id',
+            _id: 'test-bundle-id',
             _createdAt: new Date().toISOString(),
-            _type: 'bundle',
-            slug: 'test-bundle-slug',
+            _type: 'release',
             hue: 'blue',
             icon: 'string',
             authorId: 'author-id',
@@ -428,7 +424,7 @@ describe('after bundles have loaded', () => {
     })
 
     it('should show missing release message', () => {
-      screen.getByText('Release not found: test-bundle-slug')
+      screen.getByText('Release not found: test-bundle-id')
     })
   })
 })
