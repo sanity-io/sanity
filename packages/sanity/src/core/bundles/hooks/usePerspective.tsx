@@ -35,9 +35,7 @@ export function usePerspective(selectedPerspective?: string): PerspectiveValue {
 
   const selectedBundle =
     perspective && bundles
-      ? bundles.find((bundle: BundleDocument) => {
-          return `bundle.${bundle._id}`.toLocaleLowerCase() === perspective?.toLocaleLowerCase()
-        })
+      ? bundles.find((bundle: BundleDocument) => `bundle.${bundle._id}` === perspective)
       : LATEST
 
   // TODO: Improve naming; this may not be global.
