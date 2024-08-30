@@ -33,7 +33,7 @@ export type FormBundleDocument = PartialExcept<BundleDocument, '_id' | '_type'>
  * @internal
  */
 export function isBundleDocument(doc: unknown): doc is BundleDocument {
-  return typeof doc === 'object' && doc !== null && '_type' in doc && doc._type === 'bundle'
+  return typeof doc === 'object' && doc !== null && '_type' in doc && doc._type === 'release'
 }
 
 /**
