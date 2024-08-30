@@ -1327,7 +1327,7 @@ importers:
         specifier: workspace:*
         version: link:../../sanity
       styled-components:
-        specifier: ^6.1.12
+        specifier: ^6.1.13
         version: 6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1)
 
   packages/create-sanity:
@@ -1808,7 +1808,7 @@ importers:
         specifier: ^10.6.2
         version: 10.6.2(rxjs@7.8.1)
       styled-components:
-        specifier: ^6.1.12
+        specifier: ^6.1.13
         version: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       swr:
         specifier: 2.2.5
