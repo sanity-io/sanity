@@ -124,7 +124,7 @@ export class Timeline {
         }
 
     if (entry.version === 'draft') {
-      transaction.draftEffect = entry.effects as any
+      transaction.versionEffect = entry.effects as any
     } else {
       transaction.publishedEffect = entry.effects as any
     }
@@ -149,7 +149,7 @@ export class Timeline {
       id: event.id,
       author: event.author,
       timestamp: event.timestamp,
-      draftEffect: event.effects[this.versionId],
+      versionEffect: event.effects[this.versionId],
       publishedEffect: event.effects[this.publishedId],
     })
   }
@@ -332,8 +332,8 @@ export class Timeline {
     for (let idx = lastIdx; idx >= firstIdx; idx--) {
       const transaction = this._transactions.get(idx)
 
-      if (transaction.draftEffect) {
-        draft = applyPatch(draft, transaction.draftEffect.revert)
+      if (transaction.versionEffect) {
+        draft = applyPatch(draft, transaction.versionEffect.revert)
       }
 
       if (transaction.publishedEffect) {
@@ -377,8 +377,8 @@ export class Timeline {
         const preDraftValue = draftValue
         const prePublishedValue = publishedValue
 
-        if (transaction.draftEffect) {
-          draftValue = incremental.applyPatch(draftValue, transaction.draftEffect.apply, meta)
+        if (transaction.versionEffect) {
+          draftValue = incremental.applyPatch(draftValue, transaction.versionEffect.apply, meta)
         }
 
         if (transaction.publishedEffect) {
