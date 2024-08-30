@@ -376,7 +376,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label to show in the document footer indicating the published date of the document */
   'document-status.published': 'Published {{date}}',
   /** Label to show in the document footer indicating the revision from date of the document */
-  'document-status.revision-from': 'Revision from {{date}}',
+  'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
