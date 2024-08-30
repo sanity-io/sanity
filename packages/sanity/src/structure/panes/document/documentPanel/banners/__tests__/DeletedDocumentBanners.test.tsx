@@ -35,7 +35,7 @@ const renderTest = async () => {
 
 describe('DeletedDocumentBanners', () => {
   it('does not show either banner when document is not deleted', async () => {
-    mockUsePerspective.mockReturnValue({currentGlobalBundle: {slug: 'test'}} as ReturnType<
+    mockUsePerspective.mockReturnValue({currentGlobalBundle: {_id: 'test'}} as ReturnType<
       typeof usePerspective
     >)
     mockUseBundles.mockReturnValue({
@@ -56,7 +56,7 @@ describe('DeletedDocumentBanners', () => {
   })
 
   it('prefers to show bundle deleted banner when document was in a bundle', async () => {
-    const mockBundleDocument: BundleDocument = {slug: 'test'} as BundleDocument
+    const mockBundleDocument = {_id: 'test'} as BundleDocument
     mockUsePerspective.mockReturnValue({currentGlobalBundle: mockBundleDocument} as ReturnType<
       typeof usePerspective
     >)
@@ -80,7 +80,7 @@ describe('DeletedDocumentBanners', () => {
   })
 
   it('shows the fallback document deleted banner when document was not in a bundle', async () => {
-    const mockBundleDocument: BundleDocument = {slug: 'test'} as BundleDocument
+    const mockBundleDocument: BundleDocument = {_id: 'test'} as BundleDocument
 
     mockUsePerspective.mockReturnValue({currentGlobalBundle: LATEST} as ReturnType<
       typeof usePerspective

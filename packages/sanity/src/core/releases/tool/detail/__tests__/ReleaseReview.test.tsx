@@ -95,7 +95,7 @@ const MOCKED_PROPS = {
   release: {
     _updatedAt: '2024-07-12T10:39:32Z',
     authorId: 'p8xDvUMxC',
-    _type: 'bundle',
+    _type: 'release',
     description: 'To test differences in documents',
     hue: 'gray',
     title: 'Differences',
@@ -126,7 +126,7 @@ jest.mock('sanity/router', () => ({
   ...(jest.requireActual('sanity/router') || {}),
   IntentLink: jest.fn().mockImplementation((props: any) => <a> {props.children}</a>),
   useRouter: jest.fn().mockReturnValue({
-    state: {bundleSlug: 'differences'},
+    state: {bundleId: 'differences'},
     navigate: jest.fn(),
   }),
 }))

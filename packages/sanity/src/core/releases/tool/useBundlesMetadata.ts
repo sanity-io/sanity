@@ -13,16 +13,15 @@ export interface BundlesMetadata {
   updatedAt: string | null
 }
 
-export const useBundlesMetadata = (bundleSlugs: string[]) => {
-  const {addBundleSlugsToListener, removeBundleSlugsFromListener, state} =
-    useBundlesMetadataProvider()
+export const useBundlesMetadata = (bundleIds: string[]) => {
+  const {addBundleIdsToListener, removeBundleIdsFromListener, state} = useBundlesMetadataProvider()
   const [responseData, setResponseData] = useState<Record<string, BundlesMetadata> | null>(null)
 
   useEffect(() => {
-    if (bundleSlugs.length) addBundleSlugsToListener([...new Set(bundleSlugs)])
+    if (bundleIds.length) addBundleIdsToListener([...new Set(bundleIds)])
 
-    return () => removeBundleSlugsFromListener([...new Set(bundleSlugs)])
-  }, [addBundleSlugsToListener, bundleSlugs, removeBundleSlugsFromListener])
+    return () => removeBundleIdsFromListener([...new Set(bundleIds)])
+  }, [addBundleIdsToListener, bundleIds, removeBundleIdsFromListener])
 
   const {data, loading} = state
 
@@ -33,11 +32,13 @@ export const useBundlesMetadata = (bundleSlugs: string[]) => {
       !responseData || Object.entries(responseData).some(([key, value]) => value !== data[key])
 
     if (hasUpdatedMetadata) {
-      const nextResponseData = Object.fromEntries(bundleSlugs.map((slug) => [slug, data[slug]]))
+      const nextResponseData = Object.fromEntries(
+        bundleIds.map((bundleId) => [bundleId, data[bundleId]]),
+      )
 
       setResponseData(nextResponseData)
     }
-  }, [bundleSlugs, data, responseData])
+  }, [bundleIds, data, responseData])
 
   return {
     error: state.error,

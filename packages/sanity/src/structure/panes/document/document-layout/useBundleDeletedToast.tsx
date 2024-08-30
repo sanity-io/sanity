@@ -7,19 +7,19 @@ export const useBundleDeletedToast = () => {
   const {data: bundles, deletedBundles} = useBundles()
   const toast = useToast()
   const {t} = useTranslation()
-  const {slug: currentGlobalBundleSlug} = currentGlobalBundle
+  const {_id: currentGlobalBundleId} = currentGlobalBundle
 
   useEffect(() => {
-    if (!currentGlobalBundleSlug || !Object.keys(deletedBundles).length || !bundles?.length) return
+    if (!currentGlobalBundleId || !Object.keys(deletedBundles).length || !bundles?.length) return
 
-    const hasCheckedOutBundleBeenDeleted = Boolean(deletedBundles[currentGlobalBundleSlug])
+    const hasCheckedOutBundleBeenDeleted = Boolean(deletedBundles[currentGlobalBundleId])
 
     if (hasCheckedOutBundleBeenDeleted) {
-      const {title: deletedBundleTitle, slug: deletedBundleSlug} =
-        deletedBundles[currentGlobalBundleSlug]
+      const {title: deletedBundleTitle, _id: deletedBundleId} =
+        deletedBundles[currentGlobalBundleId]
 
       toast.push({
-        id: `bundle-deleted-toast-${deletedBundleSlug}`,
+        id: `bundle-deleted-toast-${deletedBundleId}`,
         status: 'warning',
         title: (
           <Text muted size={1}>
@@ -33,5 +33,5 @@ export const useBundleDeletedToast = () => {
         duration: 10000,
       })
     }
-  }, [bundles?.length, currentGlobalBundleSlug, deletedBundles, toast, t])
+  }, [bundles?.length, currentGlobalBundleId, deletedBundles, toast, t])
 }

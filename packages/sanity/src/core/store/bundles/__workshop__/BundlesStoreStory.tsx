@@ -106,7 +106,7 @@ const BundlesStoreStory = () => {
           {data?.map((bundle) => (
             <Card key={bundle._id} padding={3} border radius={3}>
               <Flex align="center" gap={3} justify={'space-between'}>
-                <Text>{bundle.slug}</Text>
+                <Text>{bundle._id}</Text>
                 <Flex align="center" gap={2}>
                   <Button
                     text="Delete"
