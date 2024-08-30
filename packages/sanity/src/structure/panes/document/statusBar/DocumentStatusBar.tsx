@@ -7,6 +7,7 @@ import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentStatusLine} from './DocumentStatusLine'
+import {RevisionStatusLine} from './RevisionStatusLine'
 import {useResizeObserver} from './useResizeObserver'
 
 export interface DocumentStatusBarProps {
@@ -47,7 +48,11 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           >
             <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
               <Flex align="center">
-                <DocumentStatusLine singleLine={!collapsed} />
+                {showingRevision ? (
+                  <RevisionStatusLine />
+                ) : (
+                  <DocumentStatusLine singleLine={!collapsed} />
+                )}
                 <SpacerButton size="large" />
               </Flex>
               <DocumentBadges />
