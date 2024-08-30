@@ -60,7 +60,7 @@ export class Timeline {
   private _trace?: TraceEvent[]
 
   constructor(opts: TimelineOptions) {
-    const {documentId} = opts
+    const {documentId}: TimelineOptions = opts
     this.publishedId = documentId
     this.versionId = isVersionId(documentId) ? documentId : `drafts.${documentId}`
 
