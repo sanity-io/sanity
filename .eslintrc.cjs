@@ -72,7 +72,7 @@ const config = {
      * - the `.github/workflows/are-we-compiled-yet.yml` action can be deleted
      * - the `pnpm check:react-compiler` command removed
      */
-    'react-compiler/react-compiler': 'warn',
+    'react-compiler/react-compiler': 'error',
     'react/no-unescaped-entities': 'off',
     'i18next/no-literal-string': ['error'],
     '@sanity/i18n/no-attribute-string-literals': [

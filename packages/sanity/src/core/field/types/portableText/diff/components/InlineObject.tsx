@@ -129,7 +129,6 @@ function InlineObjectWithDiff({
   }, [])
 
   const value = useMemo(() => ({path: myPath}), [myPath])
-
   const popoverContent = (
     <DiffContext.Provider value={value}>
       <PopoverContent

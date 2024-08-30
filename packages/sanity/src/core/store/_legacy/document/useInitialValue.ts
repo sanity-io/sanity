@@ -63,6 +63,7 @@ export function useInitialValue(props: {
 
     setState({loading: true, error: null, value: defaultValue})
 
+    // @TODO see if it's better to useObservable here
     return () => sub.unsubscribe()
   }, [defaultValue, documentId, documentStore, documentType, templateName, templateParams, context])
 

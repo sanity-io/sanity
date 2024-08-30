@@ -47,6 +47,7 @@ export interface BufferedDocumentWrapper {
 }
 
 /** @internal */
+// @TODO run from worker
 export const createBufferedDocument = (
   documentId: string,
   // consider naming it remoteEvent$
@@ -64,6 +65,7 @@ export const createBufferedDocument = (
     remoteSnapshot$: bufferedDocument.remoteSnapshot$,
     commitRequest$: bufferedDocument.commitRequest$,
 
+    // @TODO make these easier to access? Worker related
     patch: (patches) => patches.map((patch) => ({patch: {...patch, id: documentId}})),
     create: (document) => ({create: prepareDoc(document)}),
     createIfNotExists: (document) => ({createIfNotExists: prepareDoc(document)}),

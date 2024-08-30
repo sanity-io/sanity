@@ -72,6 +72,7 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
       setCurrentMessage('messageKey' in message ? t(message.messageKey) : message.message)
     })
 
+    // @TODO see if it's better to useObservable here
     return () => sub.unsubscribe()
   }, [resolvedMessage, t])
 

@@ -7,8 +7,6 @@ import {capitalize} from 'lodash'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../i18n'
-
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',
   warning: 'caution',
@@ -27,7 +25,6 @@ const ErrorMessageText = styled(Text)`
 
 export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props
-  const {t} = useTranslation()
 
   const items = useMemo(() => {
     const ret = []

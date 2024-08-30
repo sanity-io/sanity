@@ -28,6 +28,7 @@ export function NotAuthenticatedScreen() {
     })
 
     return () => {
+      // @TODO see if it's better to useObservable here
       subscription.unsubscribe()
     }
   }, [activeWorkspace])

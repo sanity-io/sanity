@@ -11,6 +11,7 @@ export function useDatasets(client: SanityClient): string[] | Error | undefined 
       error: (err) => setDatasets(err),
     })
 
+    // @TODO see if it's better to useObservable here
     return () => datasets$.unsubscribe()
   }, [client, projectId])
 

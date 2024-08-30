@@ -33,6 +33,7 @@ export function useStructureToolSetting<ValueType>(
         next: setValue as any,
       })
 
+    // @TODO see if it's better to useObservable here
     return () => sub?.unsubscribe()
   }, [defaultValue, keyValueStoreKey, settings])
 

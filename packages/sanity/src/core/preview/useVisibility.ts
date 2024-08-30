@@ -33,6 +33,7 @@ export function useVisibility(props: {element: HTMLElement | null; hideDelay?: n
 
     const sub = visible$.subscribe(setVisible)
 
+    // @TODO see if it's better to useObservable here
     return () => sub.unsubscribe()
   }, [element, hideDelay])
 

@@ -132,6 +132,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       'process.env.SC_DISABLE_SPEEDY': JSON.stringify('false'),
       ...getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true}),
     },
+    worker: {
+      format: 'es',
+    },
   }
 
   if (mode === 'production') {

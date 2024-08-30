@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {type Observable} from 'rxjs'
-import {filter, map, publishReplay, refCount} from 'rxjs/operators'
+import {asapScheduler, type Observable} from 'rxjs'
+import {filter, map, observeOn, publishReplay, refCount} from 'rxjs/operators'
 
 import {type BufferedDocumentEvent, type MutationPayload, type SnapshotEvent} from '../buffered-doc'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
@@ -20,6 +20,7 @@ function isSnapshotEvent(event: BufferedDocumentEvent | ReconnectEvent): event i
 function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
   return {
     snapshots$: pair.events.pipe(
+      observeOn(asapScheduler),
       filter(isSnapshotEvent),
       map((event) => event.document),
       publishReplay(1),

@@ -6,6 +6,7 @@ import {
   type ReactElement,
   type ReactNode,
   useCallback,
+  useImperativeHandle,
   useMemo,
   useState,
 } from 'react'
@@ -28,6 +29,7 @@ import {
 } from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
+import {type PortableTextEditorElement} from '../Compositor'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -90,7 +92,7 @@ export function Annotation(props: AnnotationProps): ReactNode {
     () => path.slice(0, path.length - 2).concat(['markDefs', {_key: value._key}]),
     [path, value._key],
   )
-  const [spanElement, setSpanElement] = useState<HTMLSpanElement | null>(null)
+  const [referenceElement, setReferenceElement] = useState<HTMLSpanElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
   const {validation} = useMemberValidation(memberItem?.node)
   const markers = usePortableTextMarkers(path)
@@ -151,7 +153,6 @@ export function Annotation(props: AnnotationProps): ReactNode {
   const isOpen = Boolean(memberItem?.member.open)
   const input = memberItem?.input
   const nodePath = memberItem?.node.path || EMPTY_ARRAY
-  const referenceElement = spanElement
 
   const componentProps = useMemo(
     (): BlockAnnotationProps => ({
@@ -222,19 +223,17 @@ export function Annotation(props: AnnotationProps): ReactNode {
     | ComponentType<BlockAnnotationProps>
     | undefined
 
-  const setRef = useCallback(
-    (elm: HTMLSpanElement) => {
-      if (memberItem?.elementRef) {
-        memberItem.elementRef.current = elm
-      }
-      setSpanElement(elm) // update state here so the reference element is available on first render
-    },
-    [memberItem],
+  // Forward the span element ref to the member item ref
+  useImperativeHandle<PortableTextEditorElement | null, HTMLSpanElement | null>(
+    memberItem?.elementRef,
+    () => referenceElement,
+    [referenceElement],
   )
 
+  const debugStyle = useMemo(() => debugRender(), [])
   return useMemo(
     () => (
-      <span ref={setRef} style={debugRender()}>
+      <span ref={setReferenceElement} style={debugStyle}>
         {CustomComponent ? (
           <CustomComponent {...componentProps} />
         ) : (
@@ -242,7 +241,7 @@ export function Annotation(props: AnnotationProps): ReactNode {
         )}
       </span>
     ),
-    [CustomComponent, componentProps, setRef],
+    [CustomComponent, componentProps, debugStyle],
   )
 }
 

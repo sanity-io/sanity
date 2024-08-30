@@ -110,6 +110,7 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
     })
 
     return () => {
+      // @TODO see if it's better to useObservable here
       sub.unsubscribe()
     }
   }, [client, projectId])

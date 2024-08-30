@@ -248,6 +248,7 @@ export function useTimelineStore({
           )
           .subscribe()
 
+        // @TODO see if it's better to useObservable here
         return () => subscription.unsubscribe()
       },
     }

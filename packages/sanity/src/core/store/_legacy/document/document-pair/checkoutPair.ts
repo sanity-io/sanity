@@ -16,6 +16,11 @@ import {getPairListener, type ListenerEvent} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 import {actionsApiClient} from './utils/actionsApiClient'
 
+// import {
+//   unstable_NormalPriority as NormalPriority,
+//   unstable_scheduleCallback as scheduleCallback,
+// } from 'scheduler'
+
 const isMutationEventForDocId =
   (id: string) =>
   (
@@ -156,6 +161,7 @@ function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mut
 
 function commitMutations(client: SanityClient, mutationParams: Mutation['params']) {
   const {resultRev, ...mutation} = mutationParams
+  // @TODO perf investigate
   return client.dataRequest('mutate', mutation, {
     visibility: 'async',
     returnDocuments: false,
@@ -205,6 +211,8 @@ export function checkoutPair(
 
   const listenerEventsConnector = new Subject<ListenerEvent>()
   const listenerEvents$ = getPairListener(client, idPair).pipe(
+    // @TODO figure out how to schedule updates the same way react does for input change: scheduleCallback(NormalPriority, () => schedule)
+    // observeOn(asapScheduler, 10000),
     share({connector: () => listenerEventsConnector}),
   )
 

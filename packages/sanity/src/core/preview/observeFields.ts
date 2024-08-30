@@ -66,6 +66,7 @@ export function createObserveFields(options: {
   function fetchAllDocumentPathsWith(client: SanityClient) {
     return function fetchAllDocumentPath(selections: Selection[]) {
       const combinedSelections = combineSelections(selections)
+      // @TODO perf test
       return client.observable
         .fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths'} as any)
         .pipe(map((result: any) => reassemble(result, combinedSelections)))

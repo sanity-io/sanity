@@ -44,6 +44,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
           createElement(component, {
             ...restProps,
             ...restPane,
+            // @TODO this is a bit problematic, rewrite to properly handle refs and use JSX instead of createElement
             // NOTE: here we're utilizing the function form of refs so setting
             // the ref causes a re-render for `UserComponentPaneHeader`
             ...({ref: setRef} as any),

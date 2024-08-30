@@ -4,7 +4,9 @@ import {publishReplay, refCount} from 'rxjs/operators'
 
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {checkoutPair, type Pair} from './checkoutPair'
+// Test the worker implementation
+import {checkoutPair, type Pair} from './checkoutPairWithWorker'
+// import {checkoutPair, type Pair} from './checkoutPair'
 import {memoizeKeyGen} from './memoizeKeyGen'
 
 export const memoizedPair: (

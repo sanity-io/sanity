@@ -202,6 +202,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       setPresence(nextPresence)
     })
     return () => {
+      // @TODO see if it's better to useObservable here
       subscription.unsubscribe()
     }
   }, [documentId, presenceStore])

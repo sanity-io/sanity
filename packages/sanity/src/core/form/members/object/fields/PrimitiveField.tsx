@@ -32,6 +32,10 @@ export function PrimitiveField(props: {
   const focusRef = useRef<{focus: () => void}>()
 
   const [localValue, setLocalValue] = useState<string | undefined>()
+  const [optimisticValue, setOptimisticValue] = useState(() => ({
+    prev: member.field.value,
+    next: member.field.value,
+  }))
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
 
@@ -56,6 +60,7 @@ export function PrimitiveField(props: {
     [onChange, member.name],
   )
 
+  // @TODO perf check this chain
   const handleNativeChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       let inputValue: number | string | boolean = event.currentTarget.value
@@ -80,10 +85,28 @@ export function PrimitiveField(props: {
         setLocalValue(hasEmptyValue ? undefined : event.currentTarget.value)
       }
 
+      setOptimisticValue((state) => ({...state, next: inputValue}))
       onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.name))
+      setLocalValue(hasEmptyValue ? '' : event.currentTarget.value)
     },
     [member.name, member.field.schemaType, onChange],
   )
+
+  // Reset local value after a timeout
+  useEffect(() => {
+    if (member.field.value === undefined || localValue === undefined || member.field.focused) {
+      return undefined
+    }
+    const callback = requestIdleCallback(
+      () => {
+        setLocalValue(undefined)
+      },
+      {timeout: 5000},
+    )
+    return () => {
+      cancelIdleCallback(callback)
+    }
+  }, [localValue, member.field.focused, member.field.value])
 
   const validationError =
     useMemo(
@@ -104,7 +127,8 @@ export function PrimitiveField(props: {
       'onChange': handleNativeChange,
       'value': resolveNativeNumberInputValue(
         member.field.schemaType,
-        member.field.value,
+        // member.field.value,
+        localValue ?? member.field.value,
         localValue,
       ),
       'readOnly': Boolean(member.field.readOnly),
@@ -114,11 +138,11 @@ export function PrimitiveField(props: {
     [
       handleBlur,
       handleFocus,
-      handleNativeChange,
       member.field.id,
-      member.field.readOnly,
       member.field.schemaType,
       member.field.value,
+      member.field.readOnly,
+      handleNativeChange,
       localValue,
     ],
   )

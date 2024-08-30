@@ -32,7 +32,6 @@ interface RecentSearchesProps {
 
 export function RecentSearches({inputElement}: RecentSearchesProps) {
   const {
-    dispatch,
     state: {filtersVisible, fullscreen},
   } = useSearchState()
   const recentSearchesStore = useRecentSearchesStore()

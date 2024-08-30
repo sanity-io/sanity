@@ -2,8 +2,9 @@
 import {type SanityDocument} from '@sanity/client'
 import {type User} from '@sanity/types'
 import {sortBy} from 'lodash'
-import {useEffect, useMemo, useState} from 'react'
-import {concat, forkJoin, map, mergeMap, type Observable, of, switchMap} from 'rxjs'
+import {useMemo, useRef} from 'react'
+import {useObservable} from 'react-rx'
+import {forkJoin, map, mergeMap, type Observable, of, switchMap} from 'rxjs'
 
 import {
   type DocumentValuePermission,
@@ -49,8 +50,6 @@ export interface UserListWithPermissionsOptions {
   permission: DocumentValuePermission
 }
 
-let cachedSystemGroups: [] | null = null
-
 /**
  * @beta
  * Returns a list of users with the specified permission on the document.
@@ -61,11 +60,10 @@ export function useUserListWithPermissions(
 ): UserListWithPermissionsHookValue {
   const {documentValue, permission} = opts
 
+  const cachedSystemGroupsRef = useRef<[] | null>(null)
   const projectStore = useProjectStore()
   const userStore = useUserStore()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
-  const [state, setState] = useState<UserListWithPermissionsHookValue>(INITIAL_STATE)
 
   const list$ = useMemo(() => {
     // 1. Get the project members and filter out the robot users
@@ -90,14 +88,14 @@ export function useUserListWithPermissions(
     )
 
     // 3. Get all the system groups. Use the cached response if it exists to avoid unnecessary requests.
-    const cached = cachedSystemGroups
+    const cached = cachedSystemGroupsRef.current
     const systemGroup$ = cached ? of(cached) : client.observable.fetch('*[_type == "system.group"]')
 
     // 4. Check if the user has read permission on the document and set the `granted` property
     const grants$: Observable<UserWithPermission[]> = forkJoin([users$, systemGroup$]).pipe(
       mergeMap(async ([users, groups]) => {
         if (!cached) {
-          cachedSystemGroups = groups
+          cachedSystemGroupsRef.current = groups
         }
 
         const grantPromises = users?.map(async (user) => {
@@ -141,21 +139,5 @@ export function useUserListWithPermissions(
     return $alphabetical
   }, [client.observable, documentValue, projectStore, userStore, permission])
 
-  useEffect(() => {
-    const initial$ = of(INITIAL_STATE)
-    const state$ = concat(initial$, list$)
-
-    const sub = state$.subscribe({
-      next: setState,
-      error: (error) => {
-        setState({data: [], error, loading: false})
-      },
-    })
-
-    return () => {
-      sub.unsubscribe()
-    }
-  }, [list$])
-
-  return state
+  return useObservable(list$, INITIAL_STATE)
 }

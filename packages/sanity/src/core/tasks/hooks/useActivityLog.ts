@@ -12,6 +12,7 @@ export function useActivityLog(task: TaskDocument): {
   changes: FieldChange[]
 } {
   const [changes, setChanges] = useState<FieldChange[]>([])
+  const [lastRev, setLastRev] = useState<string>('')
   const client = useClient({apiVersion: API_VERSION})
   const {dataset, token} = client.config()
 
@@ -66,9 +67,11 @@ export function useActivityLog(task: TaskDocument): {
   )
 
   useEffect(() => {
-    fetchAndParse(task)
-    // Task is updated on every change, wait until the revision changes to update the activity log.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchAndParse, task._rev])
+    // `task` is updated on every change, wait until the revision changes to update the activity log.
+    if (task._rev !== lastRev) {
+      setLastRev(task._rev)
+      fetchAndParse(task)
+    }
+  }, [fetchAndParse, lastRev, task])
   return {changes}
 }

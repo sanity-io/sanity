@@ -77,6 +77,7 @@ const getDocument = <T extends {document: any}>(event: T): T['document'] => even
 /** @internal */
 // This is an observable interface for BufferedDocument in an attempt
 // to make it easier to work with the api provided by it
+// @TODO test from worker
 export const createObservableBufferedDocument = (listenerEvent$: Observable<ListenerEvent>) => {
   // Incoming local actions (e.g. a request to mutate, a request to commit pending changes, etc.)
   const actions$ = new Subject<Action>()

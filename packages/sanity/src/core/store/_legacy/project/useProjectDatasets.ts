@@ -12,6 +12,7 @@ export function useProjectDatasets(): {value: ProjectDatasetData[] | null} {
     const project$ = projectStore.getDatasets()
     const sub = project$.subscribe(setValue)
 
+    // @TODO see if it's better to useObservable here
     return () => sub.unsubscribe()
   }, [projectStore])
 

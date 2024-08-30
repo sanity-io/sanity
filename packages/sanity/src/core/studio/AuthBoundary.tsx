@@ -45,6 +45,7 @@ export function AuthBoundary({
     })
 
     return () => {
+      // @TODO see if it's better to useObservable here
       subscription.unsubscribe()
     }
   }, [activeWorkspace])

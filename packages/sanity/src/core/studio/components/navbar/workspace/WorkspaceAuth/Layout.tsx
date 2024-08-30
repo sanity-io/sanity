@@ -3,8 +3,6 @@ import {Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../../i18n'
-
 const LINKS = [
   {
     url: 'https://slack.sanity.io/',
@@ -42,7 +40,6 @@ interface LayoutProps {
 
 export function Layout(props: LayoutProps) {
   const {children, footer, header} = props
-  const {t} = useTranslation()
 
   return (
     <Stack space={6}>

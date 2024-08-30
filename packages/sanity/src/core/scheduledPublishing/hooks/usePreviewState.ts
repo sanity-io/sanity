@@ -25,6 +25,7 @@ export default function usePreviewState(
     })
 
     return () => {
+      // @TODO see if it's better to useObservable here
       subscription?.unsubscribe()
     }
   }, [documentPreviewStore, schemaType, documentId])

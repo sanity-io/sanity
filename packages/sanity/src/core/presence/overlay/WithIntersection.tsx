@@ -19,6 +19,7 @@ export const WithIntersection = (props: WithIntersectionProps & HTMLProps<HTMLDi
       .observe(el)
       .pipe(tap((entry) => onIntersection(id, entry)))
       .subscribe()
+    // @TODO see if it's better to useObservable here
     return () => subscription.unsubscribe()
   }, [io, id, onIntersection])
   return <div {...rest} ref={element} />
