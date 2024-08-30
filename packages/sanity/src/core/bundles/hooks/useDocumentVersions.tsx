@@ -48,7 +48,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
         map(({documentIds}) => {
           return documentIds.flatMap((id) => {
             // eslint-disable-next-line max-nested-callbacks
-            const matchingBundle = bundles?.find((bundle) => getVersionFromId(id) === bundle.slug)
+            const matchingBundle = bundles?.find((bundle) => getVersionFromId(id) === bundle._id)
             return matchingBundle || []
           })
         }),

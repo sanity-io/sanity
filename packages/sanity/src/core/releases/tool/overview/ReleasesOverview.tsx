@@ -32,10 +32,10 @@ export function ReleasesOverview() {
   const {data: bundles, loading: loadingBundles, deletedBundles} = useBundles()
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
-  const bundleSlugs = useMemo(() => bundles?.map((bundle) => bundle.slug) || [], [bundles])
-  const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleSlugs)
+  const bundleIds = useMemo(() => bundles?.map((bundle) => bundle._id) || [], [bundles])
+  const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleIds)
   const loading = loadingBundles || (loadingBundlesMetadata && !bundlesMetadata)
-  const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleSlugs.length))
+  const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
 
@@ -56,7 +56,7 @@ export function ReleasesOverview() {
       ...deletedTableBundles,
       ...bundles.map((bundle) => ({
         ...bundle,
-        documentsMetadata: bundlesMetadata[bundle.slug] || {},
+        documentsMetadata: bundlesMetadata[bundle._id] || {},
       })),
     ]
   }, [bundles, bundlesMetadata, deletedBundles])

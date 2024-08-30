@@ -1,5 +1,3 @@
-import speakingurl from 'speakingurl'
-
 import {type BundleDocument} from '../../store/bundles/types'
 import {getVersionFromId, isVersionId} from '../../util'
 
@@ -20,24 +18,24 @@ export function getDocumentIsInPerspective(
   documentId: string,
   perspective: string | undefined,
 ): boolean {
-  const bundleSlug = getVersionFromId(documentId)
+  const bundleId = getVersionFromId(documentId)
 
   if (!perspective) return !isVersionId(documentId)
 
   if (!perspective.startsWith('bundle.')) return false
-  // perspective is `bundle.${bundleSlug}`
+  // perspective is `bundle.${bundleId}`
 
-  if (bundleSlug === 'Published') return false
-  return bundleSlug === perspective.replace('bundle.', '')
+  if (bundleId === 'Published') return false
+  return bundleId === perspective.replace('bundle.', '')
 }
 
 export function versionDocumentExists(
   documentVersions: BundleDocument[] = [],
-  slug: string,
+  bundleId: string,
 ): boolean {
-  return documentVersions.some((version) => version.slug === slug)
+  return documentVersions.some((version) => version._id === bundleId)
 }
 
 export function isDraftOrPublished(versionName: string): boolean {
-  return speakingurl(versionName) === 'drafts' || speakingurl(versionName) === 'published'
+  return versionName === 'drafts' || versionName === 'published'
 }

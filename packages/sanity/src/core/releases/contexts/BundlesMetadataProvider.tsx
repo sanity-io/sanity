@@ -11,8 +11,8 @@ import {type BundlesMetadata} from '../tool/useBundlesMetadata'
  */
 export interface BundlesMetadataContextValue {
   state: MetadataWrapper
-  addBundleSlugsToListener: (slugs: string[]) => void
-  removeBundleSlugsFromListener: (slugs: string[]) => void
+  addBundleIdsToListener: (slugs: string[]) => void
+  removeBundleIdsFromListener: (slugs: string[]) => void
 }
 
 const DEFAULT_METADATA_STATE: MetadataWrapper = {
@@ -22,15 +22,15 @@ const DEFAULT_METADATA_STATE: MetadataWrapper = {
 }
 
 const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) => {
-  const [listenerBundleSlugs, setListenerBundleSlugs] = useState<string[]>([])
+  const [listenerBundleIds, setListenerBundleIds] = useState<string[]>([])
   const {getMetadataStateForSlugs$} = useBundlesStore()
   const [bundlesMetadata, setBundlesMetadata] = useState<Record<string, BundlesMetadata> | null>(
     null,
   )
 
   const memoObservable = useMemo(
-    () => getMetadataStateForSlugs$(listenerBundleSlugs),
-    [getMetadataStateForSlugs$, listenerBundleSlugs],
+    () => getMetadataStateForSlugs$(listenerBundleIds),
+    [getMetadataStateForSlugs$, listenerBundleIds],
   )
 
   const observedResult = useObservable(memoObservable) || DEFAULT_METADATA_STATE
@@ -46,24 +46,24 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
     [observedResult.data],
   )
 
-  const addBundleSlugsToListener = useCallback((addBundleSlugs: (string | undefined)[]) => {
-    setListenerBundleSlugs((prevSlugs) => [
+  const addBundleIdsToListener = useCallback((addBundleIds: (string | undefined)[]) => {
+    setListenerBundleIds((prevSlugs) => [
       ...prevSlugs,
-      ...addBundleSlugs.filter((slug): slug is string => typeof slug === 'string'),
+      ...addBundleIds.filter((bundleId): bundleId is string => typeof bundleId === 'string'),
     ])
   }, [])
 
-  const removeBundleSlugsFromListener = useCallback((removeBundleSlugs: string[]) => {
-    setListenerBundleSlugs((prevSlugs) => {
+  const removeBundleIdsFromListener = useCallback((bundleIds: string[]) => {
+    setListenerBundleIds((prevSlugs) => {
       const {nextSlugs} = prevSlugs.reduce<{removedSlugs: string[]; nextSlugs: string[]}>(
         (acc, slug) => {
           const {removedSlugs, nextSlugs: accNextSlugs} = acc
           /**
-           * In cases where multiple consumers are listening to the same slug
-           * the slug will appear multiple times in listenerBundleSlugs array
+           * In cases where multiple consumers are listening to the same bundle id
+           * the bundle id will appear multiple times in listenerBundleIds array
            * removing should only remove 1 instance of the slug and retain all others
            */
-          if (removeBundleSlugs.includes(slug) && !removedSlugs.includes(slug)) {
+          if (bundleIds.includes(slug) && !removedSlugs.includes(slug)) {
             return {removedSlugs: [...removedSlugs, slug], nextSlugs: accNextSlugs}
           }
           return {removedSlugs, nextSlugs: [...accNextSlugs, slug]}
@@ -75,16 +75,16 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
   }, [])
 
   const context = useMemo<{
-    addBundleSlugsToListener: (slugs: string[]) => void
-    removeBundleSlugsFromListener: (slugs: string[]) => void
+    addBundleIdsToListener: (slugs: string[]) => void
+    removeBundleIdsFromListener: (slugs: string[]) => void
     state: MetadataWrapper
   }>(
     () => ({
-      addBundleSlugsToListener,
-      removeBundleSlugsFromListener,
+      addBundleIdsToListener: addBundleIdsToListener,
+      removeBundleIdsFromListener: removeBundleIdsFromListener,
       state: {...observedResult, data: bundlesMetadata},
     }),
-    [addBundleSlugsToListener, bundlesMetadata, observedResult, removeBundleSlugsFromListener],
+    [addBundleIdsToListener, bundlesMetadata, observedResult, removeBundleIdsFromListener],
   )
 
   return (
@@ -106,8 +106,8 @@ export const useBundlesMetadataProvider = (): BundlesMetadataContextValue => {
   return (
     contextValue || {
       state: DEFAULT_METADATA_STATE,
-      addBundleSlugsToListener: () => null,
-      removeBundleSlugsFromListener: () => null,
+      addBundleIdsToListener: () => null,
+      removeBundleIdsFromListener: () => null,
     }
   )
 }

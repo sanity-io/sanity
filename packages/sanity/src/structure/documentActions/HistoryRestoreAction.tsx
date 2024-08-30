@@ -17,9 +17,9 @@ export const HistoryRestoreAction: DocumentActionComponent = ({
   type,
   revision,
   onComplete,
-  bundleSlug,
+  bundleId,
 }) => {
-  const {restore} = useDocumentOperation(id, type, bundleSlug)
+  const {restore} = useDocumentOperation(id, type, bundleId)
   const event = useDocumentOperationEvent(id, type)
   const {navigateIntent} = useRouter()
   const prevEvent = useRef(event)

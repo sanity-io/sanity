@@ -36,17 +36,18 @@ export const ReleaseDetail = () => {
 
   const activeScreen = getActiveScreen(router)
 
-  const {bundleSlug}: ReleasesRouterState = router.state
-  const parsedSlug = decodeURIComponent(bundleSlug || '')
-  const {data, loading, deletedBundles} = useBundles()
-  const deletedBundle = deletedBundles[parsedSlug]
+  const {bundleId}: ReleasesRouterState = router.state
 
-  const {loading: documentsLoading, results} = useBundleDocuments(parsedSlug)
+  const parsedBundleId = decodeURIComponent(bundleId || '')
+  const {data, loading, deletedBundles} = useBundles()
+  const deletedBundle = deletedBundles[parsedBundleId]
+
+  const {loading: documentsLoading, results} = useBundleDocuments(parsedBundleId)
 
   const documentIds = results.map((result) => result.document?._id)
   const history = useReleaseHistory(documentIds)
 
-  const bundle = data?.find((storeBundle) => storeBundle.slug === parsedSlug)
+  const bundle = data?.find((storeBundle) => storeBundle._id === parsedBundleId)
   const bundleHasDocuments = !!results.length
   const showPublishButton = loading || !bundle?.publishedAt
   const isPublishButtonDisabled = loading || !bundle || !bundleHasDocuments
@@ -221,7 +222,7 @@ export const ReleaseDetail = () => {
       <Card flex={1} tone="critical">
         <Container width={0}>
           <Stack paddingX={4} paddingY={6} space={1}>
-            <Heading>{t('not-found', {bundleSlug})}</Heading>
+            <Heading>{t('not-found', {bundleId})}</Heading>
           </Stack>
         </Container>
       </Card>

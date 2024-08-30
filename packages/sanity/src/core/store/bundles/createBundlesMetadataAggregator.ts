@@ -18,20 +18,21 @@ export type BundlesMetadataMap = Record<string, BundlesMetadata>
 
 export type MetadataWrapper = {data: BundlesMetadataMap | null; error: null; loading: boolean}
 
-const getFetchQuery = (bundleSlugs: string[]) => {
+const getFetchQuery = (bundleIds: string[]) => {
   // projection key must be string - cover the case that a bundle has a number as first char
-  const getSafeSlug = (slug: string) => `bundle_${slug.replaceAll('-', '_')}`
+  const getSafeKey = (id: string) => `bundle_${id.replaceAll('-', '_')}`
 
-  return bundleSlugs.reduce(
-    ({subquery: accSubquery, projection: accProjection}, bundleSlug) => {
-      const safeSlug = getSafeSlug(bundleSlug)
+  return bundleIds.reduce(
+    ({subquery: accSubquery, projection: accProjection}, bundleId) => {
+      // this safeguards against bundle ids generated from UUIDs
+      const safeKey = getSafeKey(bundleId)
 
-      const subquery = `${accSubquery}"${safeSlug}": *[_id in path("versions.${bundleSlug}.*")]{_updatedAt } | order(_updatedAt desc),`
+      const subquery = `${accSubquery}"${safeKey}": *[_id in path("versions.${bundleId}.*")]{_updatedAt } | order(_updatedAt desc),`
 
       // conforms to BundlesMetadata
-      const projection = `${accProjection}"${bundleSlug}": {
-              "updatedAt": ${safeSlug}[0]._updatedAt,
-              "documentCount": count(${safeSlug})
+      const projection = `${accProjection}"${bundleId}": {
+              "updatedAt": ${safeKey}[0]._updatedAt,
+              "documentCount": count(${safeKey})
             },`
 
       return {subquery, projection}
@@ -50,18 +51,16 @@ const getFetchQuery = (bundleSlugs: string[]) => {
  */
 export const createBundlesMetadataAggregator = (client: SanityClient | null) => {
   const aggregatorFetch$ = (
-    bundleSlugs: string[],
+    bundleIds: string[],
     isInitialLoad: boolean = false,
   ): Observable<MetadataWrapper> => {
-    if (!bundleSlugs?.length || !client) return of({data: null, error: null, loading: false})
+    if (!bundleIds?.length || !client) return of({data: null, error: null, loading: false})
 
-    const {subquery: queryAllDocumentsInBundleSlugs, projection: projectionToBundleMetadata} =
-      getFetchQuery(bundleSlugs)
+    const {subquery: queryAllDocumentsInBundles, projection: projectionToBundleMetadata} =
+      getFetchQuery(bundleIds)
 
     const fetchData$ = client.observable
-      .fetch<BundlesMetadataMap>(
-        `{${queryAllDocumentsInBundleSlugs}}{${projectionToBundleMetadata}}`,
-      )
+      .fetch<BundlesMetadataMap>(`{${queryAllDocumentsInBundles}}{${projectionToBundleMetadata}}`)
       .pipe(
         switchMap((response) => of({data: response, error: null, loading: false})),
         catchError((error) => {
@@ -78,14 +77,14 @@ export const createBundlesMetadataAggregator = (client: SanityClient | null) => 
     )
   }
 
-  const aggregatorListener$ = (bundleSlugs: string[]) => {
-    if (!bundleSlugs?.length || !client) return EMPTY
+  const aggregatorListener$ = (bundleIds: string[]) => {
+    if (!bundleIds?.length || !client) return EMPTY
 
     return client.observable
       .listen(
-        `(${bundleSlugs.reduce(
-          (accQuery, bundleSlug, index) =>
-            `${accQuery}${index === 0 ? '' : '||'} _id in path("versions.${bundleSlug}.*")`,
+        `(${bundleIds.reduce(
+          (accQuery, bundleId, index) =>
+            `${accQuery}${index === 0 ? '' : '||'} _id in path("versions.${bundleId}.*")`,
           '',
         )})]`,
         {},
@@ -99,19 +98,19 @@ export const createBundlesMetadataAggregator = (client: SanityClient | null) => 
         bufferTime(1_000),
         filter((entriesArray) => entriesArray.length > 0),
         switchMap((entriesArray) => {
-          const mutatedBundleSlugs = entriesArray.reduce<string[]>((accBundleSlugs, event) => {
+          const mutatedBundleIds = entriesArray.reduce<string[]>((accBundleIds, event) => {
             if ('type' in event && event.type === 'mutation') {
-              const bundleSlug = event.documentId.split('.')[0]
+              const bundleId = event.documentId.split('.')[0]
               // de-dup mutated bundle slugs
-              if (accBundleSlugs.includes(bundleSlug)) return accBundleSlugs
+              if (accBundleIds.includes(bundleId)) return accBundleIds
 
-              return [...accBundleSlugs, bundleSlug]
+              return [...accBundleIds, bundleId]
             }
-            return accBundleSlugs
+            return accBundleIds
           }, [])
 
-          if (mutatedBundleSlugs.length) {
-            return aggregatorFetch$(mutatedBundleSlugs)
+          if (mutatedBundleIds.length) {
+            return aggregatorFetch$(mutatedBundleIds)
           }
 
           return EMPTY
@@ -119,6 +118,6 @@ export const createBundlesMetadataAggregator = (client: SanityClient | null) => 
       )
   }
 
-  return (bundleSlugs: string[]) =>
-    merge(aggregatorFetch$(bundleSlugs, true), aggregatorListener$(bundleSlugs))
+  return (bundleIds: string[]) =>
+    merge(aggregatorFetch$(bundleIds, true), aggregatorListener$(bundleIds))
 }

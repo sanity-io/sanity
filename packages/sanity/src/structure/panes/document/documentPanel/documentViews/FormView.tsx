@@ -65,7 +65,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   // - Used by `withDocument` to reset value.
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
-  const isLocked = editState?.transactionSyncLock?.enabled
+  const isLocked = false //TODO: editState?.transactionSyncLock?.enabled
   const {t} = useTranslation(structureLocaleNamespace)
 
   const conditionalToastParams = useMemo(

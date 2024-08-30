@@ -43,7 +43,7 @@ describe('BundleMenuButton', () => {
   test('will archive an unarchived bundle', async () => {
     const activeBundle: BundleDocument = {
       _id: 'activeBundle',
-      _type: 'bundle',
+      _type: 'release',
       archivedAt: undefined,
       title: 'activeBundle',
       slug: 'activeBundle',
@@ -72,7 +72,7 @@ describe('BundleMenuButton', () => {
   test('will unarchive an archived bundle', async () => {
     const archivedBundle: BundleDocument = {
       _id: 'activeBundle',
-      _type: 'bundle',
+      _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeBundle',
       slug: 'activeBundle',
@@ -100,7 +100,7 @@ describe('BundleMenuButton', () => {
   test('will delete a bundle with documents', async () => {
     const activeBundle: BundleDocument = {
       _id: 'activeBundle',
-      _type: 'bundle',
+      _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeBundle',
       slug: 'activeBundle',
@@ -132,7 +132,7 @@ describe('BundleMenuButton', () => {
   test('will delete a bundle with no documents', async () => {
     const activeEmptyBundle: BundleDocument = {
       _id: 'activeEmptyBundle',
-      _type: 'bundle',
+      _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeEmptyBundle',
       slug: 'activeEmptyBundle',
@@ -165,7 +165,7 @@ describe('BundleMenuButton', () => {
   test('will be disabled', async () => {
     const disabledActionBundle: BundleDocument = {
       _id: 'activeEmptyBundle',
-      _type: 'bundle',
+      _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeEmptyBundle',
       slug: 'activeEmptyBundle',
