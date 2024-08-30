@@ -75,7 +75,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.restore.disabled.cannot-restore-initial': "You can't restore to the initial version",
 
   /** Label for the "Restore" document action */
-  'action.restore.label': 'Restore',
+  'action.restore.label': 'Revert to revision',
   /** Default tooltip for the action */
   'action.restore.tooltip': 'Restore to this version',
 
