@@ -2,6 +2,7 @@ import {fromPairs, partition, toPairs} from 'lodash'
 import {type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
+import {STICKY_PARAMS} from './stickyParams'
 import {
   type IntentParameters,
   type NavigateOptions,
@@ -89,7 +90,7 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
         params,
         payload,
         _searchParams: toPairs({
-          ...fromPairs((state._searchParams ?? []).filter(([key]) => STICKY.includes(key))),
+          ...fromPairs((state._searchParams ?? []).filter(([key]) => STICKY_PARAMS.includes(key))),
           ...fromPairs(_searchParams ?? []),
         }),
       })
@@ -101,7 +102,7 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
     (nextState: RouterState): string => {
       const currentStateParams = state._searchParams || []
       const nextStateParams = nextState._searchParams || []
-      const nextParams = STICKY.reduce((acc, param) => {
+      const nextParams = STICKY_PARAMS.reduce((acc, param) => {
         return replaceStickyParam(
           acc,
           param,
@@ -119,7 +120,7 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
 
   const handleNavigateStickyParam = useCallback(
     (param: string, value: string | undefined, options: NavigateOptions = {}) => {
-      if (!STICKY.includes(param)) {
+      if (!STICKY_PARAMS.includes(param)) {
         throw new Error('Parameter is not sticky')
       }
       onNavigate({
@@ -152,7 +153,7 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
       return [state, null]
     }
     const {_searchParams, ...rest} = state
-    const [sticky, restParams] = partition(_searchParams, ([key]) => STICKY.includes(key))
+    const [sticky, restParams] = partition(_searchParams, ([key]) => STICKY_PARAMS.includes(key))
     if (sticky.length === 0) {
       return [state, null]
     }
@@ -184,7 +185,6 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
 
   return <RouterContext.Provider value={router}>{props.children}</RouterContext.Provider>
 }
-const STICKY: string[] = []
 
 function replaceStickyParam(
   current: SearchParam[],
