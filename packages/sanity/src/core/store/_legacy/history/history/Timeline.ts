@@ -59,12 +59,11 @@ export class Timeline {
   private _recreateTransactionsFrom?: number
   private _trace?: TraceEvent[]
 
-  constructor(opts: TimelineOptions) {
-    const {documentId}: TimelineOptions = opts
+  constructor({documentId, enableTrace}: TimelineOptions) {
     this.publishedId = documentId
     this.versionId = isVersionId(documentId) ? documentId : `drafts.${documentId}`
 
-    if (opts.enableTrace) {
+    if (enableTrace) {
       this._trace = []
       this._trace.push({
         type: 'initial',
