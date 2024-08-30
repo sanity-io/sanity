@@ -1,6 +1,7 @@
 import {type Diff} from '@sanity/diff'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch, incremental} from 'mendoza'
+import {isVersionId} from 'sanity'
 
 import {type Annotation, type Chunk} from '../../../../field'
 import {chunkFromTransaction, mergeChunk} from './chunker'
@@ -23,7 +24,7 @@ export type ParsedTimeRef = Chunk | 'loading' | 'invalid'
  * @hidden
  * @beta */
 export interface TimelineOptions {
-  publishedId: string
+  documentId: string
   enableTrace?: boolean
 }
 
@@ -43,7 +44,7 @@ export class Timeline {
   reachedEarliestEntry = false
 
   publishedId: string
-  draftId: string
+  versionId: string
   private _transactions = new TwoEndedArray<Transaction>()
   private _chunks = new TwoEndedArray<Chunk>()
 
@@ -58,15 +59,15 @@ export class Timeline {
   private _recreateTransactionsFrom?: number
   private _trace?: TraceEvent[]
 
-  constructor(opts: TimelineOptions) {
-    this.publishedId = opts.publishedId
-    this.draftId = `drafts.${opts.publishedId}`
+  constructor({documentId, enableTrace}: TimelineOptions) {
+    this.publishedId = documentId
+    this.versionId = isVersionId(documentId) ? documentId : `drafts.${documentId}`
 
-    if (opts.enableTrace) {
+    if (enableTrace) {
       this._trace = []
       this._trace.push({
         type: 'initial',
-        publishedId: opts.publishedId,
+        publishedId: documentId,
       })
       ;(window as any).__sanityTimelineTrace = this._trace
     }
@@ -122,7 +123,7 @@ export class Timeline {
         }
 
     if (entry.version === 'draft') {
-      transaction.draftEffect = entry.effects as any
+      transaction.versionEffect = entry.effects as any
     } else {
       transaction.publishedEffect = entry.effects as any
     }
@@ -147,7 +148,7 @@ export class Timeline {
       id: event.id,
       author: event.author,
       timestamp: event.timestamp,
-      draftEffect: event.effects[this.draftId],
+      versionEffect: event.effects[this.versionId],
       publishedEffect: event.effects[this.publishedId],
     })
   }
@@ -330,8 +331,8 @@ export class Timeline {
     for (let idx = lastIdx; idx >= firstIdx; idx--) {
       const transaction = this._transactions.get(idx)
 
-      if (transaction.draftEffect) {
-        draft = applyPatch(draft, transaction.draftEffect.revert)
+      if (transaction.versionEffect) {
+        draft = applyPatch(draft, transaction.versionEffect.revert)
       }
 
       if (transaction.publishedEffect) {
@@ -375,8 +376,8 @@ export class Timeline {
         const preDraftValue = draftValue
         const prePublishedValue = publishedValue
 
-        if (transaction.draftEffect) {
-          draftValue = incremental.applyPatch(draftValue, transaction.draftEffect.apply, meta)
+        if (transaction.versionEffect) {
+          draftValue = incremental.applyPatch(draftValue, transaction.versionEffect.apply, meta)
         }
 
         if (transaction.publishedEffect) {

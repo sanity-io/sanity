@@ -26,6 +26,6 @@ export interface Transaction {
   id: string
   author: string
   timestamp: string
-  draftEffect?: MendozaEffectPair
+  versionEffect?: MendozaEffectPair
   publishedEffect?: MendozaEffectPair
 }
