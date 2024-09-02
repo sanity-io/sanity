@@ -106,7 +106,7 @@
     "@playwright/test": "1.44.1",
     "@repo/package.config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/client": "^6.21.2",
+    "@sanity/client": "bundle-perspective",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/mutate": "^0.8.0",
@@ -185,6 +185,7 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
+      "@sanity/client": "bundle-perspective",
       "@sanity/ui@2": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
