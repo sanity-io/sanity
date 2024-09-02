@@ -22,6 +22,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   // Subscribe to external timeline state changes
   const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
+  const showingVersion = editState?.version !== null
 
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
@@ -35,7 +36,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const shouldRender = editState?.ready && typeof collapsed === 'boolean'
 
   return (
-    <Card tone={showingRevision ? 'caution' : undefined}>
+    <Card tone={showingRevision || showingVersion ? 'caution' : undefined}>
       <Flex direction="column" ref={setRootElement} sizing="border">
         {shouldRender && (
           <Flex

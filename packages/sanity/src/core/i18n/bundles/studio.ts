@@ -120,10 +120,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     "The '<strong>{{title}}</strong>' release has been deleted.",
   /** Action message to add document to release */
   'bundle.action.add-to-release': 'Add to {{title}}',
-  /** Action message for when document is already in release  */
-  'bundle.action.already-in-release': 'Already in release {{title}}',
   /** Action message for creating releases */
   'bundle.action.create': 'Create release',
+  /** Action message for when document is already in release  */
+  'bundle.action.discard-version': 'Discard version',
+  /** Description for toast when version discarding failed */
+  'bundle.action.discard-version.failure': 'Failed to discard version',
+  /** Description for toast when version deletion is successfully discarded */
+  'bundle.action.discard-version.success':
+    '<strong>{{title}}</strong> version was successfully discarded',
+
   /** Label for tooltip on deleted release */
   'bundle.deleted-tooltip': 'This release has been deleted',
   /** Title for creating releases dialog */

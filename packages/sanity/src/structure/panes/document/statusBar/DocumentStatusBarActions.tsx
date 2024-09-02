@@ -103,23 +103,20 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                 />
               ) : (
                 <>
-                  {
-                    /** TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN? */
-                    isBundleDocument(currentGlobalBundle) && formState?.value?._id ? (
-                      <BundleActions
-                        currentGlobalBundle={currentGlobalBundle}
-                        documentId={formState.value._id as string}
-                        documentType={documentType}
-                        {...actionProps}
-                        key={formState.value._id as string}
-                      />
-                    ) : (
-                      <div>
-                        {/* eslint-disable-next-line i18next/no-literal-string */}
-                        <Text>Not a bundle</Text>
-                      </div>
-                    )
-                  }
+                  {isBundleDocument(currentGlobalBundle) && formState?.value?._id ? (
+                    <BundleActions
+                      currentGlobalBundle={currentGlobalBundle}
+                      documentId={formState.value._id as string}
+                      documentType={documentType}
+                      {...actionProps}
+                      key={formState.value._id as string}
+                    />
+                  ) : (
+                    <div>
+                      {/* eslint-disable-next-line i18next/no-literal-string */}
+                      <Text>Not a bundle</Text>
+                    </div>
+                  )}
                 </>
               )}
             </Stack>

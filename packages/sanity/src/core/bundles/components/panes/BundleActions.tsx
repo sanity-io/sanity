@@ -1,13 +1,16 @@
-import {AddIcon, CheckmarkIcon} from '@sanity/icons'
+import {AddIcon, TrashIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
   getVersionFromId,
   getVersionId,
   isVersionId,
+  Translate,
+  useClient,
   useDocumentOperation,
   useDocumentStore,
   useTranslation,
@@ -41,11 +44,13 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
   const [isInVersion, setIsInVersion] = useState<boolean>(
     () => getVersionFromId(documentId) === globalBundleId,
   )
+  const [isDiscarding, setIsDiscarding] = useState<boolean>(false)
 
   const toast = useToast()
   const {createVersion} = useDocumentOperation(publishedId, documentType, bundleId)
   const {t} = useTranslation()
   const telemetry = useTelemetry()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   const handleAddVersion = useCallback(async () => {
     if (!documentId) {
@@ -96,7 +101,34 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
     title,
   ])
 
-  /** TODO what should happen when you add a version if we don't have the ready button */
+  const handleDiscardVersion = useCallback(async () => {
+    setIsDiscarding(true)
+    try {
+      await client.delete(documentId)
+
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate
+            t={t}
+            i18nKey={'bundle.action.discard-version.success'}
+            values={{title: document.title as string}}
+          />
+        ),
+      })
+
+      setIsInVersion(false)
+    } catch (e) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: t('bundle.action.discard-version.failure'),
+      })
+    }
+
+    setIsDiscarding(false)
+  }, [client, documentId, t, toast])
 
   if (archivedAt) return null
 
@@ -105,13 +137,13 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
       data-testid={`action-add-to-${globalBundleId}`}
       text={
         isInVersion
-          ? t('bundle.action.already-in-release', {title})
+          ? t('bundle.action.discard-version', {title})
           : t('bundle.action.add-to-release', {title})
       }
-      icon={isInVersion ? CheckmarkIcon : AddIcon}
-      tone="primary"
-      onClick={handleAddVersion}
-      disabled={isInVersion || creatingVersion}
+      icon={isInVersion ? TrashIcon : AddIcon}
+      tone={isInVersion ? 'caution' : 'primary'}
+      onClick={isInVersion ? handleDiscardVersion : handleAddVersion}
+      loading={creatingVersion || isDiscarding}
     />
   )
 }
