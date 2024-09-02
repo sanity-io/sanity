@@ -61,7 +61,6 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
   // - Used by the Portable Text input to modify selections.
-  // - Used by `withDocument` to reset value.
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
   const isLocked = editState?.transactionSyncLock?.enabled
@@ -102,9 +101,13 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     }
   }, [documentId, documentStore, documentType, patchChannel])
 
-  const hasRev = Boolean(value?._rev)
+  const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
+
+  const [hasPublishedInitialMutation, setHasPublishedInitialMutation] = useState(false)
   useEffect(() => {
-    if (hasRev) {
+    const hasRev = Boolean(value?._rev)
+    // React to changes in hasRev only, by using a useState hook to track handled state so we don't have to suppress the `exhaustive-deps` linter rule
+    if (hasRev && !hasPublishedInitialMutation) {
       // this is a workaround for an issue that caused the document pushed to withDocument to get
       // stuck at the first initial value.
       // This effect is triggered only when the document goes from not having a revision, to getting one
@@ -114,12 +117,13 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
         patches: [],
         snapshot: value,
       })
+      setHasPublishedInitialMutation(true)
     }
-    // React to changes in hasRev only
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasRev])
-
-  const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
+    if (!hasRev && hasPublishedInitialMutation) {
+      // Ensure the workaround is fired if the document goes from having a revision to not having one, and later having one again
+      setHasPublishedInitialMutation(false)
+    }
+  }, [hasPublishedInitialMutation, patchChannel, value])
 
   // We only want to run it on first mount
   const [focusedFirstDescendant, setFocusedFirstDescendant] = useState(false)
