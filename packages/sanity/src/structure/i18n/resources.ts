@@ -447,6 +447,13 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'structure-error.reload-button.text': 'Reload',
   /** Labels the structure path of the structure error screen */
   'structure-error.structure-path.label': 'Structure path',
+
+  /** The aria label for the menu button in the timeline item */
+  'timeline-item.menu-button.aria-label': 'Open action menu',
+  /** The text for the tooltip in menu button the timeline item */
+  'timeline-item.menu-button.tooltip': 'Actions',
+  /** The text for the expand action in the timeline item menu */
+  'timeline-item.menu.action-expand': 'Expand',
 })
 
 /**

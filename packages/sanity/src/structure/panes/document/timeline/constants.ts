@@ -1,5 +1,5 @@
 import {
-  AddCircleIcon,
+  AddIcon,
   CloseIcon,
   EditIcon,
   type IconComponent,
@@ -9,10 +9,10 @@ import {
 } from '@sanity/icons'
 
 export const TIMELINE_ICON_COMPONENTS: {[key: string]: IconComponent | undefined} = {
-  create: AddCircleIcon,
+  create: AddIcon,
   delete: TrashIcon,
   discardDraft: CloseIcon,
-  initial: AddCircleIcon,
+  initial: AddIcon,
   editDraft: EditIcon,
   editLive: EditIcon,
   publish: PublishIcon,
