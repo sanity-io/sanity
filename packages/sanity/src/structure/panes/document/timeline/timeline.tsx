@@ -8,8 +8,10 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {ExpandableTimelineItem} from './expandableTimelineItem'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {TimelineItem} from './timelineItem'
+import {collapseChunksOnPublish, isNonPublishChunk, isPublishChunk} from './utils'
 
 interface TimelineProps {
   chunks: Chunk[]
@@ -29,7 +31,7 @@ export const Timeline = ({
   chunks,
   disabledBeforeFirstChunk,
   hasMoreChunks,
-  lastChunk,
+  lastChunk: selectedChunk,
   onLoadMore,
   onSelect,
   firstChunk,
@@ -38,37 +40,72 @@ export const Timeline = ({
   const [mounted, setMounted] = useState(false)
   const {t} = useTranslation('studio')
 
+  const selectedChunkId = selectedChunk?.id
   const filteredChunks = useMemo(() => {
-    return chunks.filter((c) => {
-      if (disabledBeforeFirstChunk && firstChunk) {
-        return c.index < firstChunk.index
-      }
-      return true
-    })
+    return collapseChunksOnPublish(
+      chunks.filter((c) => {
+        if (disabledBeforeFirstChunk && firstChunk) {
+          return c.index < firstChunk.index
+        }
+        return true
+      }),
+    )
   }, [chunks, disabledBeforeFirstChunk, firstChunk])
 
+  /**
+   * The index of the selected chunk in the filtered list, or -1 if not found.
+   * It returns the parent index for publish chunks.
+   */
   const selectedIndex = useMemo(
-    () => (lastChunk?.id ? filteredChunks.findIndex((c) => c.id === lastChunk.id) : -1),
-    [lastChunk?.id, filteredChunks],
+    () =>
+      selectedChunkId
+        ? filteredChunks.findIndex((chunk) => {
+            if (isNonPublishChunk(chunk)) {
+              return chunk.id === selectedChunkId
+            }
+            if (isPublishChunk(chunk)) {
+              const isParentSelected = chunk.id === selectedChunkId
+              if (isParentSelected) return true
+
+              const isChildrenSelected = chunk.squashedChunks?.find(
+                (squashed) => squashed.id === selectedChunkId,
+              )
+              return isChildrenSelected
+            }
+            return false
+          })
+        : -1,
+    [selectedChunkId, filteredChunks],
   )
 
-  const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(
+  const renderItem = useCallback<CommandListRenderItemCallback<(typeof filteredChunks)[number]>>(
     (chunk, {activeIndex}) => {
       const isFirst = activeIndex === 0
+
       return (
         <Box paddingBottom={1} paddingTop={isFirst ? 1 : 0} paddingX={1}>
-          <TimelineItem
-            chunk={chunk}
-            isSelected={activeIndex === selectedIndex}
-            onSelect={onSelect}
-            timestamp={chunk.endTimestamp}
-            type={chunk.type}
-          />
+          {isPublishChunk(chunk) ? (
+            <ExpandableTimelineItem
+              chunk={chunk}
+              squashedChunks={chunk.squashedChunks}
+              selectedChunkId={selectedChunkId}
+              onSelect={onSelect}
+            />
+          ) : (
+            <TimelineItem
+              chunk={chunk}
+              isSelected={selectedChunkId === chunk.id}
+              onSelect={onSelect}
+              timestamp={chunk.endTimestamp}
+              type={chunk.type}
+            />
+          )}
+
           {activeIndex === filteredChunks.length - 1 && hasMoreChunks && <LoadingBlock />}
         </Box>
       )
     },
-    [filteredChunks, hasMoreChunks, onSelect, selectedIndex],
+    [filteredChunks.length, hasMoreChunks, onSelect, selectedChunkId],
   )
 
   useEffect(() => setMounted(true), [])
