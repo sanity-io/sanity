@@ -1,41 +1,151 @@
 import {Box, Card, Container, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {
-  type Chunk,
-  type ChunkType,
-  getCalendarLabels,
-  useDateTimeFormat,
-  useTranslation,
-} from 'sanity'
+import {type Chunk, getCalendarLabels, useDateTimeFormat, useTranslation} from 'sanity'
 
 import {DateTimeInput} from '../../../../../ui-components/inputs/DateInputs/DateTimeInput'
-import {ExpandableTimelineItem} from '../expandableTimelineItem'
-import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../timelineI18n'
-import {TimelineItem} from '../timelineItem'
+import {Timeline} from '../timeline'
 
-const CHUNK_TYPES = Object.keys(TIMELINE_ITEM_I18N_KEY_MAPPING).reverse() as ChunkType[]
-
-function createChunk(type: ChunkType, index: number, date: Date): Chunk {
-  return {
-    index,
-    id: type,
-    type: type,
-    start: -13,
-    end: -13,
-    startTimestamp: date.toString(),
-    endTimestamp: date.toString(),
+const CHUNKS: Chunk[] = [
+  {
+    index: 10,
+    id: 'delete-10',
+    type: 'delete',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
+    authors: new Set(['p8xDvUMxC']),
+    draftState: 'present',
+    publishedState: 'unknown',
+  },
+  {
+    index: 9,
+    id: 'unpublish-9',
+    type: 'unpublish',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
     authors: new Set(['p8xDvUMxC']),
     draftState: 'unknown',
     publishedState: 'present',
-  }
-}
+  },
+  {
+    index: 8,
+    id: 'editLive-8',
+    type: 'editLive',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
+    authors: new Set(['p8xDvUMxC']),
+    draftState: 'unknown',
+    publishedState: 'present',
+  },
+  {
+    index: 7,
+    id: 'discardDraft-7',
+    type: 'discardDraft',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
+    authors: new Set(['p8xDvUMxC']),
+    draftState: 'present',
+    publishedState: 'present',
+  },
+  {
+    index: 6,
+    id: 'editDraft-6',
+    type: 'editDraft',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
+    authors: new Set(['pP5s3g90N']),
+    draftState: 'present',
+    publishedState: 'present',
+  },
+  {
+    index: 5,
+    id: 'publish-5',
+    type: 'publish',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
+    authors: new Set(['p8xDvUMxC']),
+    draftState: 'present',
+    publishedState: 'unknown',
+  },
+  {
+    index: 4,
+    id: 'editDraft-4',
+    type: 'editDraft',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
+    authors: new Set(['pP5s3g90N']),
+    draftState: 'present',
+    publishedState: 'unknown',
+  },
+  {
+    index: 3,
+    id: 'editDraft-3',
+    type: 'editDraft',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
+    authors: new Set(['pJ61yWhkD']),
+    draftState: 'present',
+    publishedState: 'unknown',
+  },
+  {
+    index: 2,
+    id: 'editDraft-2',
+    type: 'editDraft',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
+    authors: new Set(['pJ61yWhkD']),
+    draftState: 'present',
+    publishedState: 'unknown',
+  },
+  {
+    index: 1,
+    id: 'create-1',
+    type: 'create',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
+    authors: new Set(['p8xDvUMxC']),
+    draftState: 'present',
+    publishedState: 'unknown',
+  },
+  {
+    index: 0,
+    id: 'initial-0',
+    type: 'initial',
+    start: 0,
+    end: 10,
+    startTimestamp: '2024-09-02T09:28:49.734503Z',
+    endTimestamp: '2024-09-02T09:28:49.734503Z',
+    authors: new Set(['p8xDvUMxC']),
+    draftState: 'unknown',
+    publishedState: 'unknown',
+  },
+]
+
 export default function TimelineItemStory() {
   const {t: coreT} = useTranslation()
   const [date, setDate] = useState<Date>(() => new Date())
   const [selected, setSelected] = useState<string | null>(null)
   const dateFormatter = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
   const calendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
-
   const inputValue = date ? dateFormatter.format(new Date(date)) : ''
   const handleDatechange = (newDate: Date | null) => {
     if (newDate) {
@@ -76,43 +186,13 @@ export default function TimelineItemStory() {
         </Stack>
 
         <Card border padding={2} marginTop={3} radius={2}>
-          <Stack space={1}>
-            {CHUNK_TYPES.map((type, index) => {
-              if (type === 'publish') {
-                return (
-                  <ExpandableTimelineItem
-                    key={type}
-                    chunk={createChunk(type, index, date)}
-                    onSelect={handleSelect}
-                    squashedChunks={[
-                      {
-                        ...createChunk('editDraft', 0, date),
-                        authors: new Set(['pP5s3g90N']),
-                      },
-                      {
-                        ...createChunk('editDraft', 1, date),
-                        authors: new Set(['pJ61yWhkD']),
-                      },
-                      {
-                        ...createChunk('editDraft', 2, date),
-                        authors: new Set(['pJ61yWhkD']),
-                      },
-                    ]}
-                  />
-                )
-              }
-              return (
-                <TimelineItem
-                  key={type}
-                  onSelect={handleSelect}
-                  isSelected={selected === type}
-                  type={type}
-                  timestamp={date.toString()}
-                  chunk={createChunk(type, index, date)}
-                />
-              )
-            })}
-          </Stack>
+          <Timeline
+            chunks={CHUNKS.map((chunk) => ({...chunk, endTimestamp: date.toString()}))}
+            hasMoreChunks={false}
+            lastChunk={selected ? CHUNKS.find((chunk) => chunk.id === selected) : undefined}
+            onSelect={handleSelect}
+            onLoadMore={() => {}}
+          />
         </Card>
       </Container>
     </Box>

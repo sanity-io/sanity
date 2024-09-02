@@ -7,7 +7,7 @@ import {
   useGlobalKeyDown,
   useToast,
 } from '@sanity/ui'
-import {useCallback, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {type Chunk, useTimelineSelector, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -108,33 +108,44 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     }
   }, [loading, timelineStore])
 
-  const content = timelineError ? (
-    <TimelineError />
-  ) : (
-    <>
-      {mode === 'rev' && (
+  const content = useMemo(() => {
+    if (timelineError) return <TimelineError />
+
+    if (mode === 'rev') {
+      return (
         <Timeline
           chunks={chunks}
-          firstChunk={realRevChunk}
           hasMoreChunks={hasMoreChunks}
           lastChunk={realRevChunk}
           onLoadMore={handleLoadMore}
           onSelect={selectRev}
         />
-      )}
-      {mode === 'since' && (
-        <Timeline
-          chunks={chunks}
-          disabledBeforeFirstChunk
-          firstChunk={realRevChunk}
-          hasMoreChunks={hasMoreChunks}
-          lastChunk={sinceTime}
-          onLoadMore={handleLoadMore}
-          onSelect={selectSince}
-        />
-      )}
-    </>
-  )
+      )
+    }
+
+    const filteredChunks = realRevChunk
+      ? chunks.filter((c) => c.index < realRevChunk.index)
+      : chunks
+    return (
+      <Timeline
+        chunks={filteredChunks}
+        hasMoreChunks={hasMoreChunks}
+        lastChunk={sinceTime}
+        onLoadMore={handleLoadMore}
+        onSelect={selectSince}
+      />
+    )
+  }, [
+    chunks,
+    handleLoadMore,
+    hasMoreChunks,
+    mode,
+    realRevChunk,
+    selectRev,
+    selectSince,
+    sinceTime,
+    timelineError,
+  ])
 
   const formatParams = {
     timestamp: {dateStyle: 'medium', timeStyle: 'short'},

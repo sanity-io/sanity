@@ -50,9 +50,7 @@ export interface TimelineItemProps {
   chunk: Chunk
   isSelected: boolean
   onSelect: (chunk: Chunk) => void
-  timestamp: string
-  collaborators?: string[]
-  type: ChunkType
+  collaborators?: Set<string>
   optionsMenu?: React.ReactNode
 }
 
@@ -65,15 +63,14 @@ export function TimelineItem({
   chunk,
   isSelected,
   onSelect,
-  timestamp,
-  collaborators = [],
-  type,
+  collaborators,
   optionsMenu,
 }: TimelineItemProps) {
   const {t} = useTranslation('studio')
+  const {type, endTimestamp: timestamp} = chunk
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
-
+  const collaboratorsUsersIds = collaborators ? Array.from(collaborators) : []
   const isSelectable = type !== 'delete'
   const dateFormat = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
   const date = new Date(timestamp)
@@ -128,9 +125,9 @@ export function TimelineItem({
             </Text>
           </Stack>
 
-          {collaborators.length > 0 && (
+          {collaboratorsUsersIds.length > 0 && (
             <Flex flex={1} justify="flex-end" align="center">
-              <UserAvatarStack maxLength={3} userIds={collaborators} size={0} />
+              <UserAvatarStack maxLength={3} userIds={collaboratorsUsersIds} size={0} />
             </Flex>
           )}
         </Flex>

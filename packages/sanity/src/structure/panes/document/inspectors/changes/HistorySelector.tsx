@@ -74,7 +74,6 @@ export function HistorySelector({showList}: {showList: boolean}) {
               showList ? (
                 <Timeline
                   chunks={chunks}
-                  firstChunk={realRevChunk}
                   hasMoreChunks={hasMoreChunks}
                   lastChunk={realRevChunk}
                   onLoadMore={handleLoadMore}

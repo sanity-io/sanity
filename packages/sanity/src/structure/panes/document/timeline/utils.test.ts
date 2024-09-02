@@ -1,7 +1,7 @@
 import {describe, expect, it} from '@jest/globals'
 import {type Chunk} from 'sanity'
 
-import {collapseChunksOnPublish} from './utils'
+import {addChunksMetadata} from './utils'
 
 const chunks: Chunk[] = [
   {
@@ -103,45 +103,22 @@ const chunks: Chunk[] = [
   },
 ]
 
-describe('Tests collpaseChunksOnPublish', () => {
+describe('Tests addChunksMetadata', () => {
   it('should collapse the editDraft chunks into the single publish chunk', () => {
-    const collapsedChunks = collapseChunksOnPublish(chunks)
+    const collapsedChunks = addChunksMetadata(chunks)
     expect(collapsedChunks).toMatchInlineSnapshot(`
       Array [
         Object {
           "authors": Set {
             "author1",
           },
-          "collapsedChunks": Array [
-            Object {
-              "authors": Set {
-                "author1",
-              },
-              "draftState": "present",
-              "end": 5,
-              "endTimestamp": "2024-09-02T09:28:39.049Z",
-              "id": "319b9969-9134-43db-912b-cf3c0082c2bc",
-              "index": 5,
-              "publishedState": "present",
-              "start": 1,
-              "startTimestamp": "2024-09-02T09:28:34.522Z",
-              "type": "editDraft",
-            },
-            Object {
-              "authors": Set {
-                "author2",
-              },
-              "draftState": "present",
-              "end": 1,
-              "endTimestamp": "2024-08-29T12:28:03.508054Z",
-              "id": "0181e905-db87-4a71-9b8d-dc61c3281686",
-              "index": 4,
-              "publishedState": "present",
-              "start": -1,
-              "startTimestamp": "2024-08-29T12:28:01.286194Z",
-              "type": "editDraft",
-            },
+          "children": Array [
+            "319b9969-9134-43db-912b-cf3c0082c2bc",
+            "0181e905-db87-4a71-9b8d-dc61c3281686",
           ],
+          "collaborators": Set {
+            "author2",
+          },
           "draftState": "missing",
           "end": 6,
           "endTimestamp": "2024-09-02T09:28:49.734Z",
@@ -154,52 +131,47 @@ describe('Tests collpaseChunksOnPublish', () => {
         },
         Object {
           "authors": Set {
+            "author1",
+          },
+          "draftState": "present",
+          "end": 5,
+          "endTimestamp": "2024-09-02T09:28:39.049Z",
+          "id": "319b9969-9134-43db-912b-cf3c0082c2bc",
+          "index": 5,
+          "parentId": "z2633zRhBXUPVFxuhOgS3I",
+          "publishedState": "present",
+          "start": 1,
+          "startTimestamp": "2024-09-02T09:28:34.522Z",
+          "type": "editDraft",
+        },
+        Object {
+          "authors": Set {
+            "author2",
+          },
+          "draftState": "present",
+          "end": 1,
+          "endTimestamp": "2024-08-29T12:28:03.508054Z",
+          "id": "0181e905-db87-4a71-9b8d-dc61c3281686",
+          "index": 4,
+          "parentId": "z2633zRhBXUPVFxuhOgS3I",
+          "publishedState": "present",
+          "start": -1,
+          "startTimestamp": "2024-08-29T12:28:01.286194Z",
+          "type": "editDraft",
+        },
+        Object {
+          "authors": Set {
             "author3",
           },
-          "collapsedChunks": Array [
-            Object {
-              "authors": Set {
-                "author1",
-              },
-              "draftState": "present",
-              "end": -2,
-              "endTimestamp": "2024-08-21T18:50:50.921116Z",
-              "id": "058afb19-b9f2-416a-b6a0-e02600f22d5c",
-              "index": 2,
-              "publishedState": "unknown",
-              "start": -5,
-              "startTimestamp": "2024-08-21T18:50:46.872241Z",
-              "type": "editDraft",
-            },
-            Object {
-              "authors": Set {
-                "author2",
-              },
-              "draftState": "present",
-              "end": -5,
-              "endTimestamp": "2024-08-21T01:21:45.599240Z",
-              "id": "a319e276-8fcb-463c-ad88-cc40d9bed20e",
-              "index": 1,
-              "publishedState": "unknown",
-              "start": -7,
-              "startTimestamp": "2024-08-21T01:21:44.156523Z",
-              "type": "editDraft",
-            },
-            Object {
-              "authors": Set {
-                "author3",
-              },
-              "draftState": "present",
-              "end": -7,
-              "endTimestamp": "2024-08-20T16:15:47.960919Z",
-              "id": "1dc76dd9-c852-4e5d-b2a1-a4e0ea6bad9c",
-              "index": 0,
-              "publishedState": "unknown",
-              "start": -9,
-              "startTimestamp": "2024-08-20T16:15:45.198871Z",
-              "type": "editDraft",
-            },
+          "children": Array [
+            "058afb19-b9f2-416a-b6a0-e02600f22d5c",
+            "a319e276-8fcb-463c-ad88-cc40d9bed20e",
+            "1dc76dd9-c852-4e5d-b2a1-a4e0ea6bad9c",
           ],
+          "collaborators": Set {
+            "author1",
+            "author2",
+          },
           "draftState": "missing",
           "end": -1,
           "endTimestamp": "2024-08-28T07:42:56.954657Z",
@@ -209,6 +181,51 @@ describe('Tests collpaseChunksOnPublish', () => {
           "start": -2,
           "startTimestamp": "2024-08-28T07:42:56.954657Z",
           "type": "publish",
+        },
+        Object {
+          "authors": Set {
+            "author1",
+          },
+          "draftState": "present",
+          "end": -2,
+          "endTimestamp": "2024-08-21T18:50:50.921116Z",
+          "id": "058afb19-b9f2-416a-b6a0-e02600f22d5c",
+          "index": 2,
+          "parentId": "oizpdYkKQhBxlL6mF9cm6g",
+          "publishedState": "unknown",
+          "start": -5,
+          "startTimestamp": "2024-08-21T18:50:46.872241Z",
+          "type": "editDraft",
+        },
+        Object {
+          "authors": Set {
+            "author2",
+          },
+          "draftState": "present",
+          "end": -5,
+          "endTimestamp": "2024-08-21T01:21:45.599240Z",
+          "id": "a319e276-8fcb-463c-ad88-cc40d9bed20e",
+          "index": 1,
+          "parentId": "oizpdYkKQhBxlL6mF9cm6g",
+          "publishedState": "unknown",
+          "start": -7,
+          "startTimestamp": "2024-08-21T01:21:44.156523Z",
+          "type": "editDraft",
+        },
+        Object {
+          "authors": Set {
+            "author3",
+          },
+          "draftState": "present",
+          "end": -7,
+          "endTimestamp": "2024-08-20T16:15:47.960919Z",
+          "id": "1dc76dd9-c852-4e5d-b2a1-a4e0ea6bad9c",
+          "index": 0,
+          "parentId": "oizpdYkKQhBxlL6mF9cm6g",
+          "publishedState": "unknown",
+          "start": -9,
+          "startTimestamp": "2024-08-20T16:15:45.198871Z",
+          "type": "editDraft",
         },
         Object {
           "authors": Set {

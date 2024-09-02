@@ -8,15 +8,14 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ExpandableTimelineItem} from './expandableTimelineItem'
+import {ExpandableTimelineItemMenu} from './expandableTimelineItemMenu'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {TimelineItem} from './timelineItem'
-import {collapseChunksOnPublish, isNonPublishChunk, isPublishChunk} from './utils'
+import {addChunksMetadata, isNonPublishChunk, isPublishChunk} from './utils'
 
 interface TimelineProps {
   chunks: Chunk[]
-  disabledBeforeFirstChunk?: boolean
-  firstChunk?: Chunk | null
+
   hasMoreChunks: boolean | null
   lastChunk?: Chunk | null
   onLoadMore: () => void
@@ -29,52 +28,59 @@ interface TimelineProps {
 
 export const Timeline = ({
   chunks,
-  disabledBeforeFirstChunk,
   hasMoreChunks,
   lastChunk: selectedChunk,
   onLoadMore,
   onSelect,
-  firstChunk,
   listMaxHeight = 'calc(100vh - 198px)',
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
   const {t} = useTranslation('studio')
-
   const selectedChunkId = selectedChunk?.id
-  const filteredChunks = useMemo(() => {
-    return collapseChunksOnPublish(
-      chunks.filter((c) => {
-        if (disabledBeforeFirstChunk && firstChunk) {
-          return c.index < firstChunk.index
-        }
-        return true
-      }),
-    )
-  }, [chunks, disabledBeforeFirstChunk, firstChunk])
+  const chunksWithMetadata = useMemo(() => addChunksMetadata(chunks), [chunks])
 
-  /**
-   * The index of the selected chunk in the filtered list, or -1 if not found.
-   * It returns the parent index for publish chunks.
-   */
+  const [expandedParents, setExpandedParents] = useState<Set<string>>(() => {
+    if (selectedChunkId) {
+      const selectedChunkWithParentData = chunksWithMetadata.find(
+        (chunk) => chunk.id === selectedChunkId,
+      )
+      if (
+        selectedChunkWithParentData &&
+        isNonPublishChunk(selectedChunkWithParentData) &&
+        selectedChunkWithParentData.parentId
+      ) {
+        return new Set([selectedChunkWithParentData.parentId])
+      }
+    }
+    return new Set()
+  })
+
+  const filteredChunks = useMemo(() => {
+    return chunksWithMetadata.filter((chunk) => {
+      if (isPublishChunk(chunk) || !chunk.parentId) return true
+      return expandedParents.has(chunk.parentId)
+    })
+  }, [chunksWithMetadata, expandedParents])
+
+  const handleExpandParent = useCallback(
+    (parentId: string) => () =>
+      setExpandedParents((prev) => {
+        if (prev.has(parentId)) {
+          const next = new Set(prev)
+          next.delete(parentId)
+          return next
+        }
+
+        const next = new Set(prev)
+        next.add(parentId)
+        return next
+      }),
+    [],
+  )
+
   const selectedIndex = useMemo(
     () =>
-      selectedChunkId
-        ? filteredChunks.findIndex((chunk) => {
-            if (isNonPublishChunk(chunk)) {
-              return chunk.id === selectedChunkId
-            }
-            if (isPublishChunk(chunk)) {
-              const isParentSelected = chunk.id === selectedChunkId
-              if (isParentSelected) return true
-
-              const isChildrenSelected = chunk.squashedChunks?.find(
-                (squashed) => squashed.id === selectedChunkId,
-              )
-              return isChildrenSelected
-            }
-            return false
-          })
-        : -1,
+      selectedChunkId ? filteredChunks.findIndex((chunk) => chunk.id === selectedChunkId) : -1,
     [selectedChunkId, filteredChunks],
   )
 
@@ -83,29 +89,41 @@ export const Timeline = ({
       const isFirst = activeIndex === 0
 
       return (
-        <Box paddingBottom={1} paddingTop={isFirst ? 1 : 0} paddingX={1}>
-          {isPublishChunk(chunk) ? (
-            <ExpandableTimelineItem
-              chunk={chunk}
-              squashedChunks={chunk.squashedChunks}
-              selectedChunkId={selectedChunkId}
-              onSelect={onSelect}
-            />
-          ) : (
+        <>
+          <Box
+            paddingBottom={1}
+            paddingTop={isFirst ? 1 : 0}
+            paddingRight={1}
+            paddingLeft={isNonPublishChunk(chunk) && chunk.parentId ? 4 : 1}
+          >
             <TimelineItem
               chunk={chunk}
               isSelected={selectedChunkId === chunk.id}
               onSelect={onSelect}
-              timestamp={chunk.endTimestamp}
-              type={chunk.type}
+              collaborators={isPublishChunk(chunk) ? chunk.collaborators : undefined}
+              optionsMenu={
+                isPublishChunk(chunk) && chunk.children.length > 0 ? (
+                  <ExpandableTimelineItemMenu
+                    chunkId={chunk.id}
+                    isExpanded={expandedParents.has(chunk.id)}
+                    onExpand={handleExpandParent(chunk.id)}
+                  />
+                ) : null
+              }
             />
-          )}
-
+          </Box>
           {activeIndex === filteredChunks.length - 1 && hasMoreChunks && <LoadingBlock />}
-        </Box>
+        </>
       )
     },
-    [filteredChunks.length, hasMoreChunks, onSelect, selectedChunkId],
+    [
+      expandedParents,
+      filteredChunks.length,
+      handleExpandParent,
+      hasMoreChunks,
+      onSelect,
+      selectedChunkId,
+    ],
   )
 
   useEffect(() => setMounted(true), [])
@@ -142,7 +160,7 @@ export const Timeline = ({
             autoFocus="list"
             initialIndex={selectedIndex}
             initialScrollAlign="center"
-            itemHeight={40}
+            itemHeight={57}
             items={filteredChunks}
             onEndReached={onLoadMore}
             onEndReachedIndexOffset={20}
