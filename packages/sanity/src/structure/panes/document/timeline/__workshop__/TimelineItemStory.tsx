@@ -1,13 +1,13 @@
 import {Box, Card, Container, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
-import {type ChunkType, useDateTimeFormat, useTranslation} from 'sanity'
+import {type ChunkType, getCalendarLabels, useDateTimeFormat, useTranslation} from 'sanity'
 
-import {getCalendarLabels} from '../../../../../core/form/inputs/DateInputs/utils'
 import {DateTimeInput} from '../../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../timelineI18n'
 import {TimelineItem} from '../timelineItem'
 
 const CHUNK_TYPES = Object.keys(TIMELINE_ITEM_I18N_KEY_MAPPING).reverse() as ChunkType[]
+
 export default function TimelineItemStory() {
   const {t: coreT} = useTranslation()
   const [date, setDate] = useState<Date>(() => new Date())
