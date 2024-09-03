@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import {isActionEnabled} from '@sanity/schema/_internal'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {
   type ObjectSchemaType,
   type Path,
@@ -49,6 +50,7 @@ import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {CreatedDraft} from './__telemetry__/drafts.telemetry'
 import {
   DEFAULT_MENU_ITEM_GROUPS,
   EMPTY_PARAMS,
@@ -205,6 +207,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const timelineReady = useTimelineSelector(timelineStore, (state) => state.timelineReady)
   const isPristine = useTimelineSelector(timelineStore, (state) => state.isPristine)
 
+  const telemetry = useTelemetry()
+
   /**
    * Determine if the current document is deleted.
    *
@@ -326,6 +330,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
 
   patchRef.current = (event: PatchEvent) => {
+    // when creating a new draft
+    if (!editState.draft && !editState.version && !editState.published) {
+      telemetry.log(CreatedDraft)
+    }
     patch.execute(toMutationPatches(event.patches), initialValue.value)
   }
 
