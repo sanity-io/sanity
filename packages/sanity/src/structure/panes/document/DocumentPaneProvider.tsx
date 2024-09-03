@@ -329,7 +329,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   patchRef.current = (event: PatchEvent) => {
     // when creating a new draft
-    if (!editState.draft && !editState.published) {
+    if (!editState.draft && !editState.published && !editState.version) {
       telemetry.log(CreatedDraft)
     }
     patch.execute(toMutationPatches(event.patches), initialValue.value)
