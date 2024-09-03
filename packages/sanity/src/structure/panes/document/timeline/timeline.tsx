@@ -15,7 +15,6 @@ import {addChunksMetadata, isNonPublishChunk, isPublishChunk} from './utils'
 
 interface TimelineProps {
   chunks: Chunk[]
-
   hasMoreChunks: boolean | null
   lastChunk?: Chunk | null
   onLoadMore: () => void
@@ -43,15 +42,10 @@ export const Timeline = ({
 
   const [expandedParents, setExpandedParents] = useState<Set<string>>(() => {
     if (selectedChunkId) {
-      const selectedChunkWithParentData = chunksWithMetadata.find(
-        (chunk) => chunk.id === selectedChunkId,
-      )
-      if (
-        selectedChunkWithParentData &&
-        isNonPublishChunk(selectedChunkWithParentData) &&
-        selectedChunkWithParentData.parentId
-      ) {
-        return new Set([selectedChunkWithParentData.parentId])
+      // If the selected chunk is a draft, we need to expand its parent
+      const selected = chunksWithMetadata.find((chunk) => chunk.id === selectedChunkId)
+      if (selected && isNonPublishChunk(selected) && selected.parentId) {
+        return new Set([selected.parentId])
       }
     }
     return new Set()
@@ -60,6 +54,7 @@ export const Timeline = ({
   const filteredChunks = useMemo(() => {
     return chunksWithMetadata.filter((chunk) => {
       if (isPublishChunk(chunk) || !chunk.parentId) return true
+      // If the chunk has a parent id keep it hidden until the parent is expanded.
       return expandedParents.has(chunk.parentId)
     })
   }, [chunksWithMetadata, expandedParents])
@@ -67,14 +62,11 @@ export const Timeline = ({
   const handleExpandParent = useCallback(
     (parentId: string) => () =>
       setExpandedParents((prev) => {
-        if (prev.has(parentId)) {
-          const next = new Set(prev)
-          next.delete(parentId)
-          return next
-        }
-
         const next = new Set(prev)
-        next.add(parentId)
+
+        if (prev.has(parentId)) next.delete(parentId)
+        else next.add(parentId)
+
         return next
       }),
     [],
@@ -91,31 +83,29 @@ export const Timeline = ({
       const isFirst = activeIndex === 0
 
       return (
-        <>
-          <Box
-            paddingBottom={1}
-            paddingTop={isFirst ? 1 : 0}
-            paddingRight={1}
-            paddingLeft={isNonPublishChunk(chunk) && chunk.parentId ? 4 : 1}
-          >
-            <TimelineItem
-              chunk={chunk}
-              isSelected={selectedChunkId === chunk.id}
-              onSelect={onSelect}
-              collaborators={isPublishChunk(chunk) ? chunk.collaborators : undefined}
-              optionsMenu={
-                isPublishChunk(chunk) && chunk.children.length > 0 ? (
-                  <ExpandableTimelineItemMenu
-                    chunkId={chunk.id}
-                    isExpanded={expandedParents.has(chunk.id)}
-                    onExpand={handleExpandParent(chunk.id)}
-                  />
-                ) : null
-              }
-            />
-          </Box>
+        <Box
+          paddingBottom={1}
+          paddingTop={isFirst ? 1 : 0}
+          paddingRight={1}
+          paddingLeft={isNonPublishChunk(chunk) && chunk.parentId ? 4 : 1}
+        >
+          <TimelineItem
+            chunk={chunk}
+            isSelected={selectedChunkId === chunk.id}
+            onSelect={onSelect}
+            collaborators={isPublishChunk(chunk) ? chunk.collaborators : undefined}
+            optionsMenu={
+              isPublishChunk(chunk) && chunk.children.length > 0 ? (
+                <ExpandableTimelineItemMenu
+                  chunkId={chunk.id}
+                  isExpanded={expandedParents.has(chunk.id)}
+                  onExpand={handleExpandParent(chunk.id)}
+                />
+              ) : null
+            }
+          />
           {activeIndex === filteredChunks.length - 1 && hasMoreChunks && <LoadingBlock />}
-        </>
+        </Box>
       )
     },
     [
