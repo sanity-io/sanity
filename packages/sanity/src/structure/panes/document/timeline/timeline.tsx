@@ -26,13 +26,15 @@ interface TimelineProps {
   listMaxHeight?: string
 }
 
+export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
+
 export const Timeline = ({
   chunks,
   hasMoreChunks,
   lastChunk: selectedChunk,
   onLoadMore,
   onSelect,
-  listMaxHeight = 'calc(100vh - 198px)',
+  listMaxHeight = 'calc(100vh - 280px)',
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
   const {t} = useTranslation('studio')
@@ -153,7 +155,7 @@ export const Timeline = ({
       )}
 
       {filteredChunks.length > 0 && (
-        <ListWrapper direction="column" $maxHeight={listMaxHeight}>
+        <ListWrapper direction="column" $maxHeight={listMaxHeight} id={TIMELINE_LIST_WRAPPER_ID}>
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('timeline.list.aria-label')}
