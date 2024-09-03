@@ -34,6 +34,7 @@ import {
   isType,
 } from './manifestTypeHelpers'
 import {
+  type CreateWorkspaceManifest,
   type ManifestField,
   type ManifestFieldset,
   type ManifestSchemaType,
@@ -41,7 +42,6 @@ import {
   type ManifestTitledValue,
   type ManifestValidationGroup,
   type ManifestValidationRule,
-  type ManifestWorkspace,
 } from './manifestTypes'
 
 interface Context {
@@ -68,11 +68,14 @@ type ValidationRuleTransformer = (rule: RuleSpec) => ManifestValidationRule | un
 const MAX_CUSTOM_PROPERTY_DEPTH = 5
 const INLINE_TYPES = ['document', 'object', 'image', 'file']
 
-export function extractWorkspace(workspace: Workspace): ManifestWorkspace {
+export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWorkspaceManifest {
   const serializedSchema = extractManifestSchemaTypes(workspace.schema)
 
   return {
     name: workspace.name,
+    title: workspace.title,
+    subtitle: workspace.subtitle,
+    basePath: workspace.basePath,
     dataset: workspace.dataset,
     schema: serializedSchema,
   }

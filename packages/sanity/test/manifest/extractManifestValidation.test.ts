@@ -2,7 +2,7 @@
 import {describe, expect, test} from '@jest/globals'
 import {defineField, defineType} from '@sanity/types'
 
-import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractManifest'
+import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {createSchema} from '../../src/core'
 
 describe('Extract studio manifest', () => {

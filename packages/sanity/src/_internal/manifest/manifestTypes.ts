@@ -5,20 +5,23 @@ export type ManifestSerializable =
   | {[k: string]: ManifestSerializable}
   | ManifestSerializable[]
 
-export interface ManifestV1 {
+export interface CreateManifest {
   version: 1
   createdAt: string
-  workspaces: SerializedManifestWorkspace[]
+  workspaces: ManifestWorkspaceFile[]
 }
 
-export interface SerializedManifestWorkspace {
+export interface ManifestWorkspaceFile {
   name: string
   dataset: string
   schema: string // filename
 }
 
-export interface ManifestWorkspace {
+export interface CreateWorkspaceManifest {
   name: string
+  title?: string
+  subtitle?: string
+  basePath: string
   dataset: string
   schema: ManifestSchemaType[]
 }

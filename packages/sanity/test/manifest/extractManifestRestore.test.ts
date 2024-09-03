@@ -8,7 +8,7 @@ import {
 } from '@sanity/types'
 import pick from 'lodash/pick'
 
-import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractManifest'
+import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {createSchema} from '../../src/core'
 
 describe('Extract studio manifest', () => {

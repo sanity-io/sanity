@@ -1,4 +1,4 @@
 .next
 
-public/static/*.studioschema.json
-public/static/v1.studiomanifest.json
+public/static/*.create-schema.json
+public/static/create-manifest.json

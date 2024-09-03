@@ -6,31 +6,44 @@ import {Worker} from 'node:worker_threads'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import readPkgUp from 'read-pkg-up'
 
-import {type ManifestV1, type SerializedManifestWorkspace} from '../../../manifest/manifestTypes'
 import {
-  type ExtractSchemaWorkerData,
-  type ExtractSchemaWorkerResult,
-} from '../../threads/extractSchema'
+  type CreateManifest,
+  type CreateWorkspaceManifest,
+  type ManifestWorkspaceFile,
+} from '../../../manifest/manifestTypes'
+import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
+import {getTimer} from '../../util/timing'
 
-const MANIFEST_FILENAME = 'v1.studiomanifest.json'
-const SCHEMA_FILENAME_SUFFIX = '.studioschema.json'
+const MANIFEST_FILENAME = 'create-manifest.json'
+const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
+
+/** Escape-hatch env flags to change action behavior */
+const EXTRACT_MANIFEST_DISABLED = process.env.SANITY_CLI_EXTRACT_CREATE_MANIFEST_ENABLED === 'false'
+const EXTRACT_MANIFEST_LOG_ERRORS =
+  process.env.SANITY_CLI_EXTRACT_CREATE_MANIFEST_LOG_ERRORS === 'true'
+
+const CREATE_TIMER = 'create-manifest'
 
 interface ExtractFlags {
-  workspace?: string
   path?: string
-  silent?: boolean
 }
 
 export async function extractManifestSafe(
   args: CliCommandArguments<ExtractFlags>,
   context: CliCommandContext,
 ): Promise<void> {
+  if (EXTRACT_MANIFEST_DISABLED) {
+    return
+  }
+
   try {
     await extractManifest(args, context)
   } catch (err) {
     // best-effort extraction
-    context.output.print('Complicated schema detected.')
-    if (!args.extOptions.silent) {
+    context.output.print(
+      'Unable to extract manifest. Certain features like Sanity Create will not work with this studio.',
+    )
+    if (EXTRACT_MANIFEST_LOG_ERRORS) {
       context.output.error(err)
     }
   }
@@ -63,28 +76,25 @@ async function extractManifest(
     '_internal',
     'cli',
     'threads',
-    'extractSchema.js',
+    'extractManifest.js',
   )
 
-  const start = Date.now()
+  const timer = getTimer()
+  timer.start(CREATE_TIMER)
   const spinner = output.spinner({}).start('Extracting manifest')
 
   const worker = new Worker(workerPath, {
-    workerData: {
-      workDir,
-      enforceRequiredFields: false,
-      format: 'manifest',
-    } satisfies ExtractSchemaWorkerData,
+    workerData: {workDir} satisfies ExtractManifestWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,
   })
 
   try {
-    const schemas = await new Promise<ExtractSchemaWorkerResult<'manifest'>[]>(
-      (resolveSchemas, reject) => {
-        const schemaBuffer: ExtractSchemaWorkerResult<'manifest'>[] = []
-        worker.addListener('message', (message) => schemaBuffer.push(message))
-        worker.addListener('exit', () => resolveSchemas(schemaBuffer))
+    const workspaceManifests = await new Promise<CreateWorkspaceManifest[]>(
+      (resolveWorkspaces, reject) => {
+        const buffer: CreateWorkspaceManifest[] = []
+        worker.addListener('message', (message) => buffer.push(message))
+        worker.addListener('exit', () => resolveWorkspaces(buffer))
         worker.addListener('error', reject)
       },
     )
@@ -93,38 +103,41 @@ async function extractManifest(
 
     await mkdir(staticPath, {recursive: true})
 
-    const manifestWorkspaces = await externalizeSchemas(schemas, staticPath)
+    const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
 
-    const manifestV1: ManifestV1 = {
+    const manifestV1: CreateManifest = {
       version: 1,
       createdAt: new Date().toISOString(),
-      workspaces: manifestWorkspaces,
+      workspaces: workspaceFiles,
     }
 
     await writeFile(path, JSON.stringify(manifestV1, null, 2))
+    const manifestDuration = timer.end(CREATE_TIMER)
 
-    spinner.succeed(`Extracted manifest to ${chalk.cyan(path)}: (${Date.now() - start}ms)`)
+    spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
   } catch (err) {
-    spinner.fail(`Failed to extract manifest (${Date.now() - start}ms)`)
+    spinner.fail()
     throw err
   }
 }
 
-function externalizeSchemas(
-  schemas: ExtractSchemaWorkerResult<'manifest'>[],
+function writeWorkspaceFiles(
+  manifestWorkspaces: CreateWorkspaceManifest[],
   staticPath: string,
-): Promise<SerializedManifestWorkspace[]> {
-  const output = schemas.reduce<Promise<SerializedManifestWorkspace>[]>((workspaces, workspace) => {
-    return [...workspaces, externalizeSchema(workspace, staticPath)]
-  }, [])
-
+): Promise<ManifestWorkspaceFile[]> {
+  const output = manifestWorkspaces.reduce<Promise<ManifestWorkspaceFile>[]>(
+    (workspaces, workspace) => {
+      return [...workspaces, writeWorkspaceSchemaFile(workspace, staticPath)]
+    },
+    [],
+  )
   return Promise.all(output)
 }
 
-async function externalizeSchema(
-  workspace: ExtractSchemaWorkerResult<'manifest'>,
+async function writeWorkspaceSchemaFile(
+  workspace: CreateWorkspaceManifest,
   staticPath: string,
-): Promise<SerializedManifestWorkspace> {
+): Promise<ManifestWorkspaceFile> {
   const schemaString = JSON.stringify(workspace.schema, null, 2)
   const hash = createHash('sha1').update(schemaString).digest('hex')
   const filename = `${hash.slice(0, 8)}${SCHEMA_FILENAME_SUFFIX}`

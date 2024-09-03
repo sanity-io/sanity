@@ -16,8 +16,6 @@ import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
-import {extractManifestSafe} from '../manifest/extractManifestAction'
-import {pick} from 'lodash'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 
 const rimraf = promisify(rimrafCallback)
@@ -189,17 +187,6 @@ export default async function buildSanityStudio(
 
     spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
     spin.succeed()
-
-    await extractManifestSafe(
-      {
-        ...pick(args, ['argsWithoutOptions', 'argv', 'groupOrCommand']),
-        extOptions: {
-          silent: true,
-        },
-        extraArguments: [],
-      },
-      context,
-    )
 
     trace.complete()
     if (flags.stats) {
