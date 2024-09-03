@@ -24,10 +24,23 @@ import {typeString} from './util/typeString'
 import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
 // this is the number of requests allowed inflight at once. this is done to prevent
-// the validation library from overwhelming our backend
-const MAX_FETCH_CONCURRENCY = 10
+// the validation library from overwhelming our backend.
+// NOTE: this was upped from 10 to prevent issues where many concurrency
+// `client.fetch` requests would "clog" custom validators from finishing due to
+// not enough concurrent requests being fulfilled
+//
+// NOTE: ensure to update the TSDoc and CLI help test if this is changed
+const DEFAULT_MAX_FETCH_CONCURRENCY = 25
 
-const limitConcurrency = createClientConcurrencyLimiter(MAX_FETCH_CONCURRENCY)
+// NOTE: ensure to update the TSDoc and CLI help test if this is changed
+const DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY = 5
+
+let _limitConcurrency: ReturnType<typeof createClientConcurrencyLimiter> | undefined
+const getConcurrencyLimiter = (maxConcurrency: number) => {
+  if (_limitConcurrency) return _limitConcurrency
+  _limitConcurrency = createClientConcurrencyLimiter(maxConcurrency)
+  return _limitConcurrency
+}
 
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
@@ -104,8 +117,21 @@ export interface ValidateDocumentOptions {
    * concurrently at once. This helps prevent custom validators from
    * overwhelming backend services (e.g. called via fetch) used in async,
    * user-defined validation functions. (i.e. `rule.custom(async() => {})`)
+   *
+   * Note that lowering this number may also help in cases where a custom
+   * validator could potentially exhaust the fetch concurrency. This is 5 by
+   * default.
    */
   maxCustomValidationConcurrency?: number
+
+  /**
+   * The amount of allowed inflight fetch requests at once. You may need to up
+   * this value if you have complex custom validations that require many
+   * `client.fetch` requests at once. It's possible for custom validator to
+   * stall if there are not enough concurrent fetch requests available to
+   * fullfil the custom validation. This is 25 by default.
+   */
+  maxFetchConcurrency?: number
 }
 
 /**
@@ -118,9 +144,13 @@ export function validateDocument({
   document,
   workspace,
   environment = 'studio',
+  maxFetchConcurrency,
   ...options
 }: ValidateDocumentOptions): Promise<ValidationMarker[]> {
   const getClient = options.getClient || workspace.getClient
+  const limitConcurrency = getConcurrencyLimiter(
+    maxFetchConcurrency ?? DEFAULT_MAX_FETCH_CONCURRENCY,
+  )
   const getConcurrencyLimitedClient = (clientOptions: SourceClientOptions) =>
     limitConcurrency(getClient(clientOptions))
 
@@ -190,8 +220,10 @@ export function validateDocumentObservable({
   }
 
   let customValidationConcurrencyLimiter = customValidationConcurrencyLimiters.get(schema)
-  if (!customValidationConcurrencyLimiter && maxCustomValidationConcurrency) {
-    customValidationConcurrencyLimiter = new ConcurrencyLimiter(maxCustomValidationConcurrency)
+  if (!customValidationConcurrencyLimiter) {
+    customValidationConcurrencyLimiter = new ConcurrencyLimiter(
+      maxCustomValidationConcurrency ?? DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY,
+    )
     customValidationConcurrencyLimiters.set(schema, customValidationConcurrencyLimiter)
   }
 

@@ -18,6 +18,7 @@ interface ValidateFlags {
   'file'?: string
   'level'?: 'error' | 'warning' | 'info'
   'max-custom-validation-concurrency'?: number
+  'max-fetch-concurrency'?: number
   'yes'?: boolean
   'y'?: boolean
 }
@@ -103,6 +104,15 @@ export default async function validateAction(
     throw new Error(`'--max-custom-validation-concurrency' must be an integer.`)
   }
 
+  const maxFetchConcurrency = flags['max-fetch-concurrency']
+  if (
+    maxFetchConcurrency &&
+    typeof maxFetchConcurrency !== 'number' &&
+    !Number.isInteger(maxFetchConcurrency)
+  ) {
+    throw new Error(`'--max-fetch-concurrency' must be an integer.`)
+  }
+
   const clientConfig: Partial<ClientConfig> = {
     ...apiClient({
       requireUser: true,
@@ -140,6 +150,7 @@ export default async function validateAction(
     workDir,
     level,
     maxCustomValidationConcurrency,
+    maxFetchConcurrency,
     ndjsonFilePath,
     reporter: (worker) => {
       const reporter =
