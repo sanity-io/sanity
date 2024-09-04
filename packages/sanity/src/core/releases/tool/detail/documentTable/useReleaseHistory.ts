@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {getPublishedId, type TransactionLogEventWithEffects, useClient} from 'sanity'
+import {getVersionId, type TransactionLogEventWithEffects, useClient} from 'sanity'
 
 import {getJsonStream} from '../../../../store/_legacy/history/history/getJsonStream'
 import {API_VERSION} from '../../../../tasks/constants'
@@ -12,7 +12,10 @@ export type DocumentHistory = {
 }
 
 // TODO: Update this to contemplate the _revision change on any of the internal bundle documents, and fetch only the history of that document if changes.
-export function useReleaseHistory(bundleDocumentsIds: string[]): {
+export function useReleaseHistory(
+  bundleDocumentsIds: string[],
+  releaseId: string,
+): {
   documentsHistory: Record<string, DocumentHistory>
   collaborators: string[]
   loading: boolean
@@ -21,14 +24,14 @@ export function useReleaseHistory(bundleDocumentsIds: string[]): {
   const {dataset, token} = client.config()
   const [history, setHistory] = useState<TransactionLogEventWithEffects[]>([])
   const queryParams = `tag=sanity.studio.tasks.history&effectFormat=mendoza&excludeContent=true&includeIdentifiedDocumentsOnly=true`
-
-  const publishedIds = bundleDocumentsIds.map((id) => getPublishedId(id)).join(',')
+  const publishedIds = bundleDocumentsIds.map((id) => getVersionId(id, releaseId)).join(',')
   const transactionsUrl = client.getUrl(
     `/data/history/${dataset}/transactions/${publishedIds}?${queryParams}`,
   )
 
   const fetchAndParseAll = useCallback(async () => {
     if (!publishedIds) return
+    if (!releaseId) return
     const transactions: TransactionLogEventWithEffects[] = []
     const stream = await getJsonStream(transactionsUrl, token)
     const reader = stream.getReader()
@@ -44,7 +47,7 @@ export function useReleaseHistory(bundleDocumentsIds: string[]): {
       transactions.push(result.value)
     }
     setHistory(transactions)
-  }, [publishedIds, transactionsUrl, token])
+  }, [publishedIds, transactionsUrl, token, releaseId])
 
   useEffect(() => {
     fetchAndParseAll()
