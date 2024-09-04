@@ -26,6 +26,8 @@ export const DocumentActions = memo(
     const handleDiscardVersion = async () => {
       try {
         setDiscardStatus('discarding')
+
+        // TODO: should we use the document operations for this?
         await client.delete(document.document._id)
 
         toast.push({

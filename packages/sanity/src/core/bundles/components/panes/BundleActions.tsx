@@ -104,6 +104,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
   const handleDiscardVersion = useCallback(async () => {
     setIsDiscarding(true)
     try {
+      // TODO: should we use the document operations for this?
       await client.delete(documentId)
 
       toast.push({
