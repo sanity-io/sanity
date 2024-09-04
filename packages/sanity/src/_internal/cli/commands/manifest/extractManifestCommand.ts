@@ -1,9 +1,9 @@
 import {type CliCommandDefinition} from '@sanity/cli'
 
-const description = 'Extracts studio configuration as on more JSON manifest files.'
+const description = 'Extracts the studio configuration as one more JSON manifest files.'
 
 const helpText = `
-**Note**: This command is experimental and subject to change.
+**Note**: This command is experimental and subject to change. It is intended for use with Create only.
 
 Options
   --path Optional path to specify destination directory of the manifest files. Default: /dist/static

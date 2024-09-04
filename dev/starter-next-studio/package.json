@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
-    "build": "sanity schema extract --format manifest --path public/static && next build",
+    "build": "sanity manifest extract --path public/static && next build",
     "dev": "next dev",
     "start": "next start"
   },

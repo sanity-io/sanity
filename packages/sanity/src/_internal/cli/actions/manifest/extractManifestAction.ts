@@ -18,9 +18,8 @@ const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
 
 /** Escape-hatch env flags to change action behavior */
-const EXTRACT_MANIFEST_DISABLED = process.env.SANITY_CLI_EXTRACT_CREATE_MANIFEST_ENABLED === 'false'
-const EXTRACT_MANIFEST_LOG_ERRORS =
-  process.env.SANITY_CLI_EXTRACT_CREATE_MANIFEST_LOG_ERRORS === 'true'
+const EXTRACT_MANIFEST_DISABLED = process.env.SANITY_CLI_EXTRACT_MANIFEST_ENABLED === 'false'
+const EXTRACT_MANIFEST_LOG_ERRORS = process.env.SANITY_CLI_EXTRACT_MANIFEST_LOG_ERRORS === 'true'
 
 const CREATE_TIMER = 'create-manifest'
 
@@ -28,6 +27,9 @@ interface ExtractFlags {
   path?: string
 }
 
+/**
+ * This method will never throw
+ */
 export async function extractManifestSafe(
   args: CliCommandArguments<ExtractFlags>,
   context: CliCommandContext,
@@ -53,7 +55,7 @@ async function extractManifest(
   args: CliCommandArguments<ExtractFlags>,
   context: CliCommandContext,
 ): Promise<void> {
-  const {output, workDir, chalk} = context
+  const {output, workDir} = context
 
   const flags = args.extOptions
   const defaultOutputDir = resolve(join(workDir, 'dist'))
@@ -99,19 +101,17 @@ async function extractManifest(
       },
     )
 
-    spinner.text = `Writing manifest to ${chalk.cyan(path)}`
-
     await mkdir(staticPath, {recursive: true})
 
     const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
 
-    const manifestV1: CreateManifest = {
+    const manifest: CreateManifest = {
       version: 1,
       createdAt: new Date().toISOString(),
       workspaces: workspaceFiles,
     }
 
-    await writeFile(path, JSON.stringify(manifestV1, null, 2))
+    await writeFile(path, JSON.stringify(manifest, null, 2))
     const manifestDuration = timer.end(CREATE_TIMER)
 
     spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)

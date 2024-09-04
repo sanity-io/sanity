@@ -24,6 +24,7 @@ const extractSchemaCommand: CliCommandDefinition = {
   helpText,
   action: async (args, context) => {
     const mod = await import('../../actions/schema/extractAction')
+
     return mod.default(args, context)
   },
 } satisfies CliCommandDefinition
