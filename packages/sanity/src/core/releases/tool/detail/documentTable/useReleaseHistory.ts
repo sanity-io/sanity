@@ -24,13 +24,13 @@ export function useReleaseHistory(
   const {dataset, token} = client.config()
   const [history, setHistory] = useState<TransactionLogEventWithEffects[]>([])
   const queryParams = `tag=sanity.studio.tasks.history&effectFormat=mendoza&excludeContent=true&includeIdentifiedDocumentsOnly=true`
-  const publishedIds = bundleDocumentsIds.map((id) => getVersionId(id, releaseId)).join(',')
+  const versionIds = bundleDocumentsIds.map((id) => getVersionId(id, releaseId)).join(',')
   const transactionsUrl = client.getUrl(
-    `/data/history/${dataset}/transactions/${publishedIds}?${queryParams}`,
+    `/data/history/${dataset}/transactions/${versionIds}?${queryParams}`,
   )
 
   const fetchAndParseAll = useCallback(async () => {
-    if (!publishedIds) return
+    if (!versionIds) return
     if (!releaseId) return
     const transactions: TransactionLogEventWithEffects[] = []
     const stream = await getJsonStream(transactionsUrl, token)
@@ -47,7 +47,7 @@ export function useReleaseHistory(
       transactions.push(result.value)
     }
     setHistory(transactions)
-  }, [publishedIds, transactionsUrl, token, releaseId])
+  }, [versionIds, transactionsUrl, token, releaseId])
 
   useEffect(() => {
     fetchAndParseAll()
