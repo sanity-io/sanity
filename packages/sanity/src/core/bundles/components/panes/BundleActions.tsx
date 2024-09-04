@@ -43,7 +43,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
   )
 
   const toast = useToast()
-  const {newVersion} = useDocumentOperation(publishedId, documentType, bundleId)
+  const {createVersion} = useDocumentOperation(publishedId, documentType, bundleId)
   const {t} = useTranslation()
   const telemetry = useTelemetry()
 
@@ -72,10 +72,10 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
     const createVersionSuccess = firstValueFrom(
       documentStore.pair
         .operationEvents(getPublishedId(documentId), documentType)
-        .pipe(filter((e) => e.op === 'newVersion' && e.type === 'success')),
+        .pipe(filter((e) => e.op === 'createVersion' && e.type === 'success')),
     )
 
-    newVersion.execute(versionId)
+    createVersion.execute(versionId)
 
     // only change if the version was created successfully
     await createVersionSuccess
@@ -90,7 +90,7 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
     globalBundleId,
     documentStore.pair,
     documentType,
-    newVersion,
+    createVersion,
     telemetry,
     toast,
     title,

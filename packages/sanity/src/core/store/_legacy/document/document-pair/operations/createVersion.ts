@@ -4,7 +4,7 @@ import {type OperationImpl} from './types'
 
 const omitProps = ['_createdAt', '_updatedAt']
 
-export const newVersion: OperationImpl<[baseDocumentId: string], 'NO_NEW_VERSION'> = {
+export const createVersion: OperationImpl<[baseDocumentId: string], 'NO_NEW_VERSION'> = {
   disabled: ({snapshots}) => {
     return snapshots.published || snapshots.draft ? false : 'NO_NEW_VERSION'
   },
@@ -24,7 +24,7 @@ export const newVersion: OperationImpl<[baseDocumentId: string], 'NO_NEW_VERSION
         _type: source._type,
       },
       {
-        tag: 'document.newVersion',
+        tag: 'document.createVersion',
       },
     )
   },
