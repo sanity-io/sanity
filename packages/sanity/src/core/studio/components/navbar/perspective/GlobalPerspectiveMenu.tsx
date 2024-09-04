@@ -60,7 +60,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       />
 
       {createBundleDialogOpen && (
-        <BundleDetailsDialog onCancel={handleClose} onSubmit={handleClose} />
+        <BundleDetailsDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
       )}
     </>
   )
