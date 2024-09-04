@@ -12,6 +12,13 @@ interface VersionInfo {
   documentOrigin: 'draft' | 'version'
 }
 
+interface OriginInfo {
+  /**
+   * determines where the release was created, either from the structure view or the release plugin
+   */
+  origin: 'structure' | 'release-plugin'
+}
+
 /**
  * When a document (version) is successfully added to a release
  * @internal
@@ -25,7 +32,7 @@ export const AddedVersion = defineEvent<VersionInfo>({
 /** When a release is successfully created
  * @internal
  */
-export const CreatedRelease = defineEvent({
+export const CreatedRelease = defineEvent<OriginInfo>({
   name: 'Create release',
   version: 1,
   description: 'User created a release',

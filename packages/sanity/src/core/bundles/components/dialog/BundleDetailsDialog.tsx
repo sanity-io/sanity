@@ -16,10 +16,11 @@ interface BundleDetailsDialogProps {
   onCancel: () => void
   onSubmit: () => void
   bundle?: BundleDocument
+  origin?: 'structure' | 'release-plugin'
 }
 
 export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Element {
-  const {onCancel, onSubmit, bundle} = props
+  const {onCancel, onSubmit, bundle, origin} = props
   const toast = useToast()
   const {createBundle, updateBundle} = useBundleOperations()
   const formAction = bundle ? 'edit' : 'create'
@@ -59,7 +60,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         await submit(submitValue)
         if (formAction === 'create') {
           setPerspective(value._id)
-          telemetry.log(CreatedRelease)
+          telemetry.log(CreatedRelease, {origin})
         } else {
           telemetry.log(UpdatedRelease)
         }
@@ -75,7 +76,7 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
         onSubmit()
       }
     },
-    [value, submit, formAction, setPerspective, telemetry, toast, onSubmit],
+    [value, submit, formAction, setPerspective, telemetry, origin, toast, onSubmit],
   )
 
   const handleOnChange = useCallback((changedValue: FormBundleDocument) => {
