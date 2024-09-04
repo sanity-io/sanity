@@ -14,12 +14,6 @@ const releasesLocaleStrings = {
   'action.delete.failure': 'Failed to delete release',
   /** Description for toast when release is successfully deleted */
   'action.delete.success': '<strong>{{title}}</strong> release was successfully deleted',
-  /** Action text for discarding a document version */
-  'action.discard-version': 'Discard version',
-  /** Description for toast when version discarding failed */
-  'action.discard-version.failure': 'Failed to discard version',
-  /** Description for toast when version deletion is successfully discarded */
-  'action.discard-version.success': '<strong>{{title}}</strong> version was successfully discarded',
   /** Action text for editing a release */
   'action.edit': 'Edit',
   /** Action text for opening a release */
