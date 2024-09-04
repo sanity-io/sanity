@@ -12,7 +12,7 @@ interface VersionInfo {
   documentOrigin: 'draft' | 'version'
 }
 
-interface OriginInfo {
+export interface OriginInfo {
   /**
    * determines where the release was created, either from the structure view or the release plugin
    */

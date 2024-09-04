@@ -7,7 +7,11 @@ import {type FormBundleDocument, useTranslation} from 'sanity'
 import {Button, Dialog} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
-import {CreatedRelease, UpdatedRelease} from '../../__telemetry__/releases.telemetry'
+import {
+  CreatedRelease,
+  type OriginInfo,
+  UpdatedRelease,
+} from '../../__telemetry__/releases.telemetry'
 import {usePerspective} from '../../hooks/usePerspective'
 import {createReleaseId} from '../../util/createReleaseId'
 import {BundleForm} from './BundleForm'
@@ -16,7 +20,7 @@ interface BundleDetailsDialogProps {
   onCancel: () => void
   onSubmit: () => void
   bundle?: BundleDocument
-  origin?: 'structure' | 'release-plugin'
+  origin?: OriginInfo['origin']
 }
 
 export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Element {
