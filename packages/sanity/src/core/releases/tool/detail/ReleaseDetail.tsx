@@ -45,7 +45,7 @@ export const ReleaseDetail = () => {
   const {loading: documentsLoading, results} = useBundleDocuments(parsedBundleId)
 
   const documentIds = results.map((result) => result.document?._id)
-  const history = useReleaseHistory(documentIds)
+  const history = useReleaseHistory(documentIds, parsedBundleId)
 
   const bundle = data?.find((storeBundle) => storeBundle._id === parsedBundleId)
   const bundleHasDocuments = !!results.length
