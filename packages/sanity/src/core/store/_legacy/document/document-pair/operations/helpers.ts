@@ -8,10 +8,10 @@ import {publish as serverPublish} from '../serverOperations/publish'
 import {restore as serverRestore} from '../serverOperations/restore'
 import {unpublish as serverUnpublish} from '../serverOperations/unpublish'
 import {commit} from './commit'
+import {createVersion} from './createVersion'
 import {del} from './delete'
 import {discardChanges} from './discardChanges'
 import {duplicate} from './duplicate'
-import {newVersion} from './newVersion'
 import {patch} from './patch'
 import {restore} from './restore'
 import {type Operation, type OperationArgs, type OperationImpl, type OperationsAPI} from './types'
@@ -39,7 +39,7 @@ export const GUARDED: OperationsAPI = {
   unpublish: createOperationGuard('unpublish'),
   duplicate: createOperationGuard('duplicate'),
   restore: createOperationGuard('restore'),
-  newVersion: createOperationGuard('newVersion'),
+  createVersion: createOperationGuard('createVersion'),
 }
 const createEmitter =
   (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string) =>
@@ -69,7 +69,10 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     unpublish: wrap('unpublish', unpublish, args),
     duplicate: wrap('duplicate', duplicate, args),
     restore: wrap('restore', restore, args),
-    newVersion: wrap('newVersion', newVersion, args) as Operation<[string], 'NO_NEW_VERSION'>,
+    createVersion: wrap('createVersion', createVersion, args) as Operation<
+      [string],
+      'NO_NEW_VERSION'
+    >,
   }
 
   //as we add server operations one by one, we can add them here
