@@ -84,8 +84,10 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
     })
 
     if (isBundleArchived) {
+      // it's in the process of becoming false, so the event we want to track is unarchive
       telemetry.log(UnarchivedRelease)
     } else {
+      // it's in the process of becoming true, so the event we want to track is archive
       telemetry.log(ArchivedRelease)
     }
     setIsPerformingOperation(false)
