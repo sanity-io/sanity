@@ -123,6 +123,8 @@ export function useBundleOperations() {
           ifRevisionID: bundleDocument._rev,
         })
 
+        transaction.delete(bundleDocument._id)
+
         if (publishedDocumentRevisionId) {
           // if published document exists, verify that local document matches remote latest revision
           transaction.patch(publishedDocumentId, {
