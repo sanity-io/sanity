@@ -32,7 +32,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
       id: 'new-package-available',
       title: t('package-version.new-package-available.title'),
       description: (
-        <Stack space={2} paddingBottom={2}>
+        <Stack space={2} paddingTop={2}>
           <Box>
             <Button
               size="large"
