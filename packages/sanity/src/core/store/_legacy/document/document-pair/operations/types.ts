@@ -37,7 +37,7 @@ export interface OperationsAPI {
   unpublish: Operation<[], 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'> | GuardedOperation
   duplicate: Operation<[documentId: string], 'NOTHING_TO_DUPLICATE'> | GuardedOperation
   restore: Operation<[revision: string]> | GuardedOperation
-  newVersion: GuardedOperation | Operation<[documentId: string], 'NO_NEW_VERSION'>
+  createVersion: GuardedOperation | Operation<[documentId: string], 'NO_NEW_VERSION'>
 }
 
 /** @internal */
