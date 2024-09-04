@@ -147,6 +147,7 @@ export function ReleasesOverview() {
       <BundleDetailsDialog
         onCancel={() => setIsCreateBundleDialogOpen(false)}
         onSubmit={() => setIsCreateBundleDialogOpen(false)}
+        origin="release-plugin"
       />
     )
   }
