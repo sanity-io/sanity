@@ -361,6 +361,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-operation-results.operation-success': 'Successfully performed {{op}} on document',
   /** The text when copy URL operation succeeded  */
   'panes.document-operation-results.operation-success_copy-url': 'Document URL copied to clipboard',
+  /**  */
+  'panes.document-operation-results.operation-success_createVersion':
+    '<Strong>{{title}}</Strong> was added to the release',
   /** The text when a delete operation succeeded  */
   'panes.document-operation-results.operation-success_delete':
     'The document was successfully deleted',
@@ -370,9 +373,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text when a duplicate operation succeeded  */
   'panes.document-operation-results.operation-success_duplicate':
     'The document was successfully duplicated',
-  /**  */
-  'panes.document-operation-results.operation-success_newVersion':
-    '<Strong>{{title}}</Strong> was added to the release',
   /** The text when a publish operation succeeded  */
   'panes.document-operation-results.operation-success_publish':
     '<Strong>{{title}}</Strong> was published',
