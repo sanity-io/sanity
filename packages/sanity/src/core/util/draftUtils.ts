@@ -14,7 +14,11 @@ export type PublishedId = Opaque<string, 'publishedId'>
 
 /** @internal */
 export const DRAFTS_FOLDER = 'drafts'
-const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
+/** @internal */
+export const VERSION_FOLDER = 'versions'
+const PATH_SEPARATOR = '.'
+const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
+const VERSION_PREFIX = `${VERSION_FOLDER}${PATH_SEPARATOR}`
 
 /**
  *
@@ -53,6 +57,11 @@ export function isDraft(document: SanityDocumentLike): boolean {
 /** @internal */
 export function isDraftId(id: string): id is DraftId {
   return id.startsWith(DRAFTS_PREFIX)
+}
+
+/** @internal */
+export function isVersionId(id: string): boolean {
+  return id.startsWith(VERSION_PREFIX)
 }
 
 /** @internal */

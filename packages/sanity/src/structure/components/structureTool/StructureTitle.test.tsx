@@ -216,5 +216,33 @@ describe('StructureTitle', () => {
       render(<StructureTitle resolvedPanes={mockPanes} />, {wrapper})
       expect(document.title).toBe('Untitled | My Structure Tool')
     })
+
+    it('does not update the title when the document is a version document, opts out to avoid breaking the id rules', async () => {
+      const useEditStateMock = () => editState
+      const useValuePreviewMock = () => valuePreview
+      jest.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
+      jest.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
+      jest.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
+
+      const client = createMockSanityClient()
+      const wrapper = await createWrapperComponent(client as any)
+
+      document.title = 'Sanity Studio'
+      render(
+        <StructureTitle
+          resolvedPanes={mockPanes.splice(3, 1, {
+            id: 'documentEditor',
+            type: 'document',
+            title: '',
+            options: {
+              id: 'versions.foo.fake-document',
+              type: 'author',
+            },
+          })}
+        />,
+        {wrapper},
+      )
+      expect(document.title).toBe('Sanity Studio')
+    })
   })
 })

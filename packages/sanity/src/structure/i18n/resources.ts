@@ -381,6 +381,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The document type is not defined, and a document with the <Code>{{id}}</Code> identifier could not be found.',
   /** The title of the document not found pane if the schema is known */
   'panes.document-pane.document-not-found.title': 'The document was not found',
+  /** The title of the document not found pane if the schema is known */
+  'panes.document-pane.document-not-supported-version.text':
+    'This document was created using a more recent version of the studio which supports releases, please update your studio to edit this document.',
+  /** The title of the document not found pane if the schema is known */
+  'panes.document-pane.document-not-supported-version.title': 'Unsupported version document',
   /** The text of the document not found pane if the schema is not found */
   'panes.document-pane.document-unknown-type.text':
     'This document has the schema type <Code>{{documentType}}</Code>, which is not defined as a type in the local content studio schema.',

@@ -142,6 +142,7 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       searchOptions.includeDrafts === false && "!(_id in path('drafts.**'))",
       factoryOptions.filter ? `(${factoryOptions.filter})` : false,
       searchTerms.filter ? `(${searchTerms.filter})` : false,
+      '!(_id in path("versions.**"))',
     ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
     const textSearchParams: TextSearchParams = {

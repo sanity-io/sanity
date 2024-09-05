@@ -135,6 +135,7 @@ export function createSearchQuery(
     ...createConstraints(terms, specs),
     filter ? `(${filter})` : '',
     searchTerms.filter ? `(${searchTerms.filter})` : '',
+    '!(_id in path("versions.**"))',
   ].filter(Boolean)
 
   const selections = specs.map((spec) => {
