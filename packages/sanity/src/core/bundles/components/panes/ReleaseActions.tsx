@@ -20,7 +20,7 @@ import {Button} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 
-interface BundleActionsProps {
+interface ReleaseActionsProps {
   currentGlobalBundle: BundleDocument
   /**
    * The id of the document that is displayed in the form, might be a draft, a version, or the published one.
@@ -34,7 +34,7 @@ interface BundleActionsProps {
 /**
  * @internal
  */
-export function BundleActions(props: BundleActionsProps): ReactNode {
+export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
   const {currentGlobalBundle, documentType, documentId, bundleId} = props
   const publishedId = getPublishedId(documentId)
 

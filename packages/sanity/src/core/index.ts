@@ -1,7 +1,7 @@
 export {
-  BundleActions,
   getDocumentIsInPerspective,
   LATEST,
+  ReleaseActions,
   ReleaseBadge,
   ReleasesMenu,
   useDocumentVersions,

@@ -3,12 +3,12 @@
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
-  BundleActions,
   type DocumentActionComponent,
   type DocumentActionDescription,
   type DocumentActionProps,
   isBundleDocument,
   LATEST,
+  ReleaseActions,
   shouldArrayDialogOpen,
   usePerspective,
   useSource,
@@ -104,7 +104,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
               ) : (
                 <>
                   {isBundleDocument(currentGlobalBundle) && formState?.value?._id ? (
-                    <BundleActions
+                    <ReleaseActions
                       currentGlobalBundle={currentGlobalBundle}
                       documentId={formState.value._id as string}
                       documentType={documentType}
