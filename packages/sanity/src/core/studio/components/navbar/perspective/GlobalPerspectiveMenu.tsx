@@ -45,7 +45,11 @@ export function GlobalPerspectiveMenu(): JSX.Element {
 
   const bundleMenuActions = useMemo(
     () => (
-      <MenuItem icon={AddIcon} onClick={handleCreateBundleClick} text={t('bundle.action.create')} />
+      <MenuItem
+        icon={AddIcon}
+        onClick={handleCreateBundleClick}
+        text={t('release.action.create')}
+      />
     ),
     [handleCreateBundleClick, t],
   )

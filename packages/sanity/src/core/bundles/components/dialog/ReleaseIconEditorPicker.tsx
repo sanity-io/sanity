@@ -92,7 +92,7 @@ export function ReleaseIconEditorPicker(props: {
                 icon={SearchIcon}
                 onChange={handleIconSearchQueryChange}
                 padding={2}
-                placeholder={t('bundle.form.search-icon')}
+                placeholder={t('release.form.search-icon')}
                 space={2}
                 value={iconSearchQuery}
               />
@@ -125,7 +125,7 @@ export function ReleaseIconEditorPicker(props: {
     >
       <div>
         <Button
-          tooltipProps={{content: t('bundle.form.search-icon-tooltip')}}
+          tooltipProps={{content: t('release.form.search-icon-tooltip')}}
           mode="bleed"
           onClick={handleOnPickerOpen}
           ref={setButton}

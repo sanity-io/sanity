@@ -99,7 +99,7 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
                         >
                           <Tooltip
                             disabled={!isBundleDeleted(bundle._id)}
-                            content={t('bundle.deleted-tooltip')}
+                            content={t('release.deleted-tooltip')}
                             placement="bottom-start"
                           >
                             <Flex>

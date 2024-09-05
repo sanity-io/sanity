@@ -101,7 +101,7 @@ export function ReleaseForm(props: {
         <ReleaseIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
       </Flex>
       <Stack space={3}>
-        <FormFieldHeaderText title={t('bundle.form.title')} validation={titleErrors} />
+        <FormFieldHeaderText title={t('release.form.title')} validation={titleErrors} />
         <TextInput
           data-testid="release-form-title"
           onChange={handleBundleTitleChange}
@@ -112,7 +112,7 @@ export function ReleaseForm(props: {
 
       <Stack space={3}>
         <Text size={1} weight="medium">
-          {t('bundle.form.description')}
+          {t('release.form.description')}
         </Text>
         <TextArea
           onChange={handleBundleDescriptionChange}

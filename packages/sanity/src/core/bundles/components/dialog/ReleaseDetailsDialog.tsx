@@ -88,7 +88,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
   }, [])
 
   const dialogTitle =
-    formAction === 'edit' ? t('bundle.dialog.edit.title') : t('bundle.dialog.create.title')
+    formAction === 'edit' ? t('release.dialog.edit.title') : t('release.dialog.create.title')
 
   return (
     <Dialog header={dialogTitle} id="create-bundle-dialog" onClose={onCancel} width={1}>

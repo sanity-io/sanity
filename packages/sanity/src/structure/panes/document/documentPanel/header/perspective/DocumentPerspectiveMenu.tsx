@@ -66,7 +66,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   const releasesMenuButton = useMemo(
     () => (
       <StudioButton
-        tooltipProps={{content: t('bundle.version-list.tooltip')}}
+        tooltipProps={{content: t('release.version-list.tooltip')}}
         icon={ChevronDownIcon}
         mode="bleed"
       />
