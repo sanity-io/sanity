@@ -20,7 +20,7 @@ const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}
     : {
         as: 'a',
         // navigate to bundle detail
-        onClick: () => router.navigate({bundleId: bundle._id}),
+        onClick: () => router.navigate({releaseId: bundle._id}),
       }
 
   return (

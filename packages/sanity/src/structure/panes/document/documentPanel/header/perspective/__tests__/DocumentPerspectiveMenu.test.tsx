@@ -1,7 +1,8 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
+import {type HTMLProps} from 'react'
 import {type BundleDocument, usePerspective} from 'sanity'
-import {useRouter} from 'sanity/router'
+import {type IntentLinkProps} from 'sanity/router'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
@@ -22,24 +23,34 @@ jest.mock('sanity', () => {
   }
 })
 
-jest.mock('sanity/router', () => ({
-  useRouter: jest.fn().mockReturnValue({
-    navigateIntent: jest.fn(),
-    stickyParams: {},
-  }),
-  route: {
-    create: jest.fn(),
-  },
-  IntentLink: jest.fn(),
-}))
+const IntentLinkMock = (props: IntentLinkProps & HTMLProps<HTMLAnchorElement>) => {
+  const {params = {}, intent, ...rest} = props
+  const stringParams = params
+    ? Object.entries(params)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&')
+    : ''
+
+  return <a {...rest} href={`/intent/${intent}/${stringParams}`} />
+}
+
+jest.mock('sanity/router', () => {
+  return {
+    useRouter: jest.fn().mockReturnValue({
+      stickyParams: {},
+    }),
+    route: {
+      create: jest.fn(),
+    },
+    IntentLink: IntentLinkMock,
+  }
+})
 
 jest.mock('../../../../useDocumentPane')
 
 const mockUseDocumentPane = useDocumentPane as jest.MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const navigateIntent = mockUseRouter().navigateIntent as jest.Mock
 
 const mockUsePerspective = usePerspective as jest.Mock
 
@@ -90,45 +101,33 @@ describe('DocumentPerspectiveMenu', () => {
     const wrapper = await createTestProvider()
     render(<DocumentPerspectiveMenu />, {wrapper})
 
-    expect(screen.getByTestId('button-document-release')).toBeInTheDocument()
+    const linkButton = screen.getByRole('link', {name: 'Spring Drop'})
+    expect(linkButton).toBeInTheDocument()
+    expect(linkButton).toHaveAttribute('href', '/intent/release/id=spring-drop')
+    expect(linkButton).toHaveTextContent('Spring Drop')
   })
 
   it('should not render the bundle badge if the document does not exist in the bundle', async () => {
     mockUseDocumentPane.mockReturnValue({
+      documentVersions: [
+        {
+          _id: 'spring-drop',
+          title: 'Spring Drop',
+          hue: 'magenta',
+          icon: 'heart-filled',
+          _type: 'release',
+          authorId: '',
+          _createdAt: '',
+          _updatedAt: '',
+          _rev: '',
+        },
+      ],
       existsInBundle: false,
     })
 
     const wrapper = await createTestProvider()
     render(<DocumentPerspectiveMenu />, {wrapper})
 
-    expect(screen.queryByTestId('button-document-release')).toBeNull()
-  })
-
-  it('should navigate to the release intent when the bundle badge is clicked', async () => {
-    mockUseDocumentPane.mockReturnValue({
-      documentVersions: [
-        {
-          title: 'Spring Drop',
-          hue: 'magenta',
-          icon: 'heart-filled',
-          _type: 'release',
-          authorId: '',
-          _id: 'spring-drop',
-          _createdAt: '',
-          _updatedAt: '',
-          _rev: '',
-        },
-      ],
-      existsInBundle: true,
-    })
-
-    const wrapper = await createTestProvider()
-    render(<DocumentPerspectiveMenu />, {wrapper})
-
-    expect(screen.queryByTestId('button-document-release')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('button-document-release'))
-
-    expect(navigateIntent).toHaveBeenCalledTimes(1)
-    expect(navigateIntent).toHaveBeenCalledWith('release', {id: 'spring-drop'})
+    expect(screen.queryByRole('link', {name: 'Spring Drop'})).toBeNull()
   })
 })
