@@ -6,8 +6,8 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {memo, useMemo} from 'react'
 import {
   type BundleDocument,
-  BundlesMenu,
   ReleaseBadge,
+  ReleasesMenu,
   usePerspective,
   useTranslation,
 } from 'sanity'
@@ -63,7 +63,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
 
   const {documentVersions, existsInBundle} = useDocumentPane()
 
-  const bundlesMenuButton = useMemo(
+  const releasesMenuButton = useMemo(
     () => (
       <StudioButton
         tooltipProps={{content: t('bundle.version-list.tooltip')}}
@@ -81,8 +81,8 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
 
       <Box flex="none">
-        <BundlesMenu
-          button={bundlesMenuButton}
+        <ReleasesMenu
+          button={releasesMenuButton}
           bundles={documentVersions}
           loading={!documentVersions}
           perspective={paneRouter.perspective}

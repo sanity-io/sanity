@@ -8,7 +8,7 @@ import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {Button} from '../../../../ui-components'
 import {usePerspective} from '../../hooks/usePerspective'
 import {LATEST} from '../../util/const'
-import {BundlesMenu} from '../BundlesMenu'
+import {ReleasesMenu} from '../ReleasesMenu'
 
 jest.mock('../../hooks/usePerspective', () => ({
   usePerspective: jest.fn().mockReturnValue({
@@ -27,7 +27,7 @@ jest.mock('../../../store/bundles/useBundles', () => ({
 
 const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
 
-describe('BundlesMenu', () => {
+describe('ReleasesMenu', () => {
   const mockUsePerspective = usePerspective as jest.Mock
   const ButtonTest = <Button text="Button Test" />
   const mockBundles: BundleDocument[] = [
@@ -75,7 +75,7 @@ describe('BundlesMenu', () => {
 
   it('should render loading spinner when loading is true', async () => {
     const wrapper = await createTestProvider()
-    render(<BundlesMenu button={ButtonTest} bundles={[]} loading />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={[]} loading />, {
       wrapper,
     })
 
@@ -84,14 +84,14 @@ describe('BundlesMenu', () => {
     fireEvent.click(screen.getByRole('button', {name: 'Button Test'}))
 
     act(() => {
-      expect(screen.getByTestId('bundle-menu')).toBeInTheDocument()
+      expect(screen.getByTestId('release-menu')).toBeInTheDocument()
       expect(screen.getByTestId('spinner')).toBeInTheDocument()
     })
   })
 
   it('should render latest bundle menu item when bundles are null', async () => {
     const wrapper = await createTestProvider()
-    render(<BundlesMenu button={ButtonTest} bundles={null} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={null} loading={false} />, {
       wrapper,
     })
 
@@ -109,7 +109,7 @@ describe('BundlesMenu', () => {
       ...bundle,
       archivedAt: '2024-07-29T01:49:56.066Z',
     }))
-    render(<BundlesMenu button={ButtonTest} bundles={archivedBundles} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={archivedBundles} loading={false} />, {
       wrapper,
     })
 
@@ -128,7 +128,7 @@ describe('BundlesMenu', () => {
     })
 
     const wrapper = await createTestProvider()
-    render(<BundlesMenu button={ButtonTest} bundles={[]} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={[]} loading={false} />, {
       wrapper,
     })
 
@@ -147,7 +147,7 @@ describe('BundlesMenu', () => {
     })
 
     const wrapper = await createTestProvider()
-    render(<BundlesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
       wrapper,
     })
 
@@ -161,7 +161,7 @@ describe('BundlesMenu', () => {
 
   it('should render bundle menu items when bundles are provided', async () => {
     const wrapper = await createTestProvider()
-    render(<BundlesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
       wrapper,
     })
 
@@ -182,7 +182,7 @@ describe('BundlesMenu', () => {
     })
 
     const wrapper = await createTestProvider()
-    render(<BundlesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
       wrapper,
     })
 
@@ -199,7 +199,7 @@ describe('BundlesMenu', () => {
 
     const wrapper = await createTestProvider()
     render(
-      <BundlesMenu button={ButtonTest} bundles={mockBundles} loading={false} actions={actions} />,
+      <ReleasesMenu button={ButtonTest} bundles={mockBundles} loading={false} actions={actions} />,
       {
         wrapper,
       },
@@ -227,7 +227,7 @@ describe('BundlesMenu', () => {
       },
     })
     const wrapper = await createTestProvider()
-    render(<BundlesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
       wrapper,
     })
 
@@ -254,7 +254,7 @@ describe('BundlesMenu', () => {
     })
     const wrapper = await createTestProvider()
     render(
-      <BundlesMenu
+      <ReleasesMenu
         button={ButtonTest}
         bundles={[
           ...mockBundles,

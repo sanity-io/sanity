@@ -5,9 +5,9 @@ import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {MenuItem} from '../../../../../ui-components'
-import {BundlesMenu} from '../../../../bundles/components/BundlesMenu'
 import {BundleDetailsDialog} from '../../../../bundles/components/dialog/BundleDetailsDialog'
 import {ReleaseBadge} from '../../../../bundles/components/ReleaseBadge'
+import {ReleasesMenu} from '../../../../bundles/components/ReleasesMenu'
 import {usePerspective} from '../../../../bundles/hooks/usePerspective'
 import {useBundles} from '../../../../store/bundles'
 
@@ -52,7 +52,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
 
   return (
     <>
-      <BundlesMenu
+      <ReleasesMenu
         button={bundleMenuButton}
         bundles={menuBundles}
         loading={loading}

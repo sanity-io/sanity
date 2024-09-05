@@ -33,7 +33,7 @@ interface BundleListProps {
 /**
  * @internal
  */
-export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): ReactElement {
+export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): ReactElement {
   const {bundles, loading, actions, button, perspective} = props
   const {deletedBundles} = useBundles()
   const {currentGlobalBundle, setPerspective} = usePerspective(perspective)
@@ -64,9 +64,9 @@ export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): Re
     <>
       <MenuButton
         button={button}
-        id="bundle-menu"
+        id="release-menu"
         menu={
-          <StyledMenu data-testid="bundle-menu">
+          <StyledMenu data-testid="release-menu">
             {loading ? (
               <Flex padding={4} justify="center" data-testid="spinner">
                 <Spinner muted />

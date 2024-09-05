@@ -1,9 +1,9 @@
 export {
   BundleActions,
-  BundlesMenu,
   getDocumentIsInPerspective,
   LATEST,
   ReleaseBadge,
+  ReleasesMenu,
   useDocumentVersions,
   usePerspective,
 } from './bundles'

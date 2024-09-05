@@ -108,7 +108,7 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
             data-testid="release-menu-button"
           />
         }
-        id="bundle-menu"
+        id="release-menu"
         menu={
           <Menu>
             <MenuItem
