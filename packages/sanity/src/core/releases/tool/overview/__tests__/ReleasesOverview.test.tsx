@@ -284,7 +284,7 @@ describe('ReleasesOverview', () => {
       const bundleRow = screen.getAllByTestId('table-row')[1]
       fireEvent.click(within(bundleRow).getByText('Bundle 1'))
 
-      expect(useRouter().navigate).toHaveBeenCalledWith({bundleId: 'b1abcdefg'})
+      expect(useRouter().navigate).toHaveBeenCalledWith({releaseId: 'b1abcdefg'})
     })
   })
 })

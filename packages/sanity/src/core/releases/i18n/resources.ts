@@ -80,7 +80,7 @@ const releasesLocaleStrings = {
   /** Text for when no releases are found */
   'no-releases': 'No Releases',
   /** Text for when a release is not found */
-  'not-found': 'Release not found: {{bundleId}}',
+  'not-found': 'Release not found: {{releaseId}}',
 
   /** Description for the release tool */
   'overview.description':

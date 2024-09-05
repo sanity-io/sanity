@@ -6,8 +6,8 @@ import {ReleasesOverview} from './overview/ReleasesOverview'
 export function ReleasesTool() {
   const router = useRouter()
 
-  const {bundleId} = router.state
-  if (bundleId) return <ReleaseDetail />
+  const {releaseId} = router.state
+  if (releaseId) return <ReleaseDetail />
 
   return <ReleasesOverview />
 }
