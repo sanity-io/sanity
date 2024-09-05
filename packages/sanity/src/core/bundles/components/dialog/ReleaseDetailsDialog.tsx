@@ -14,7 +14,7 @@ import {
 } from '../../__telemetry__/releases.telemetry'
 import {usePerspective} from '../../hooks/usePerspective'
 import {createReleaseId} from '../../util/createReleaseId'
-import {BundleForm} from './ReleaseForm'
+import {ReleaseForm} from './ReleaseForm'
 
 interface ReleaseDetailsDialogProps {
   onCancel: () => void
@@ -94,7 +94,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
     <Dialog header={dialogTitle} id="create-bundle-dialog" onClose={onCancel} width={1}>
       <form onSubmit={handleOnSubmit}>
         <Box padding={4}>
-          <BundleForm onChange={handleOnChange} value={value} />
+          <ReleaseForm onChange={handleOnChange} value={value} />
         </Box>
         <Flex justify="flex-end" paddingTop={5}>
           <Button

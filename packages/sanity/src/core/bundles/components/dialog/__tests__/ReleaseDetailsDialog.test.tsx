@@ -77,7 +77,7 @@ describe('ReleaseDetailsDialog', () => {
         //publishAt: undefined,
       }
 
-      const titleInput = screen.getByTestId('bundle-form-title')
+      const titleInput = screen.getByTestId('release-form-title')
       fireEvent.change(titleInput, {target: {value: value.title}})
 
       const submitButton = screen.getByTestId('submit-release-button')
@@ -142,20 +142,20 @@ describe('ReleaseDetailsDialog', () => {
     })
 
     it('should disable edit CTA when no title entered', () => {
-      expect(screen.getByTestId('bundle-form-title')).toHaveValue(existingBundleValue.title)
-      fireEvent.change(screen.getByTestId('bundle-form-title'), {target: {value: ''}})
+      expect(screen.getByTestId('release-form-title')).toHaveValue(existingBundleValue.title)
+      fireEvent.change(screen.getByTestId('release-form-title'), {target: {value: ''}})
 
       expect(screen.getByTestId('submit-release-button')).toBeDisabled()
 
       // whitespace should be trimmed
-      fireEvent.change(screen.getByTestId('bundle-form-title'), {target: {value: '   '}})
+      fireEvent.change(screen.getByTestId('release-form-title'), {target: {value: '   '}})
 
       expect(screen.getByTestId('submit-release-button')).toBeDisabled()
     })
 
     it('should patch the bundle document when submitted', () => {
-      fireEvent.change(screen.getByTestId('bundle-form-title'), {target: {value: 'New title  '}})
-      fireEvent.change(screen.getByTestId('bundle-form-description'), {
+      fireEvent.change(screen.getByTestId('release-form-title'), {target: {value: 'New title  '}})
+      fireEvent.change(screen.getByTestId('release-form-description'), {
         target: {value: 'New description'},
       })
       fireEvent.click(screen.getByTestId('submit-release-button'))
