@@ -16,14 +16,14 @@ import {usePerspective} from '../../hooks/usePerspective'
 import {createReleaseId} from '../../util/createReleaseId'
 import {BundleForm} from './BundleForm'
 
-interface BundleDetailsDialogProps {
+interface ReleaseDetailsDialogProps {
   onCancel: () => void
   onSubmit: () => void
   bundle?: BundleDocument
   origin?: OriginInfo['origin']
 }
 
-export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Element {
+export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Element {
   const {onCancel, onSubmit, bundle, origin} = props
   const toast = useToast()
   const {createBundle, updateBundle} = useBundleOperations()

@@ -4,7 +4,7 @@ import {isBefore} from 'date-fns'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
-import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
+import {ReleaseDetailsDialog} from '../../../bundles/components/dialog/ReleaseDetailsDialog'
 import {useTranslation} from '../../../i18n'
 import {type BundleDocument, useBundles} from '../../../store'
 import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
@@ -144,7 +144,7 @@ export function ReleasesOverview() {
     if (!isCreateBundleDialogOpen) return null
 
     return (
-      <BundleDetailsDialog
+      <ReleaseDetailsDialog
         onCancel={() => setIsCreateBundleDialogOpen(false)}
         onSubmit={() => setIsCreateBundleDialogOpen(false)}
         origin="release-plugin"

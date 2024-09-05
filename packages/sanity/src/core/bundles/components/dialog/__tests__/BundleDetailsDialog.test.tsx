@@ -5,7 +5,7 @@ import {type BundleDocument, useBundles} from 'sanity'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../../hooks/usePerspective'
-import {BundleDetailsDialog} from '../BundleDetailsDialog'
+import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
 
 /*jest.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
   useDateTimeFormat: jest.fn(),
@@ -31,7 +31,7 @@ jest.mock('../../../hooks/usePerspective', () => ({
 const mockUseBundleStore = useBundles as jest.Mock<typeof useBundles>
 //const mockUseDateTimeFormat = useDateTimeFormat as jest.Mock
 
-describe('BundleDetailsDialog', () => {
+describe('ReleaseDetailsDialog', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -55,7 +55,7 @@ describe('BundleDetailsDialog', () => {
       //mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
       const wrapper = await createTestProvider()
-      render(<BundleDetailsDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
+      render(<ReleaseDetailsDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
     })
 
     it('should render the dialog', () => {
@@ -127,7 +127,7 @@ describe('BundleDetailsDialog', () => {
 
       const wrapper = await createTestProvider()
       render(
-        <BundleDetailsDialog
+        <ReleaseDetailsDialog
           onCancel={onCancelMock}
           onSubmit={onSubmitMock}
           bundle={existingBundleValue}

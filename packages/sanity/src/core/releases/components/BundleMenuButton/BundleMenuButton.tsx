@@ -16,7 +16,7 @@ import {
   DeletedRelease,
   UnarchivedRelease,
 } from '../../../bundles/__telemetry__/releases.telemetry'
-import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
+import {ReleaseDetailsDialog} from '../../../bundles/components/dialog/ReleaseDetailsDialog'
 import {Translate, useTranslation} from '../../../i18n'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
@@ -164,7 +164,7 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
         </Dialog>
       )}
       {selectedAction === 'edit' && (
-        <BundleDetailsDialog
+        <ReleaseDetailsDialog
           onCancel={resetSelectedAction}
           onSubmit={resetSelectedAction}
           bundle={bundle}

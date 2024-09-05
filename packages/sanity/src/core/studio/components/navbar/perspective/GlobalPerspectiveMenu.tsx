@@ -5,7 +5,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {MenuItem} from '../../../../../ui-components'
-import {BundleDetailsDialog} from '../../../../bundles/components/dialog/BundleDetailsDialog'
+import {ReleaseDetailsDialog} from '../../../../bundles/components/dialog/ReleaseDetailsDialog'
 import {ReleaseBadge} from '../../../../bundles/components/ReleaseBadge'
 import {ReleasesMenu} from '../../../../bundles/components/ReleasesMenu'
 import {usePerspective} from '../../../../bundles/hooks/usePerspective'
@@ -60,7 +60,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       />
 
       {createBundleDialogOpen && (
-        <BundleDetailsDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
+        <ReleaseDetailsDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
       )}
     </>
   )
