@@ -52,7 +52,7 @@ export function ReleaseBadge(
       {icon && (
         <Box flex="none">
           <Text size={1}>
-            <Icon data-testid={`bundle-badge-icon-${icon.toString()}`} symbol={icon} />
+            <Icon data-testid={`release-badge-icon-${icon.toString()}`} symbol={icon} />
           </Text>
         </Box>
       )}

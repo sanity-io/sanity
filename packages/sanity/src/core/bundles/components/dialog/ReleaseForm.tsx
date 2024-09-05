@@ -14,7 +14,7 @@ import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/c
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
+import {ReleaseIconEditorPicker, type ReleaseIconEditorPickerValue} from './ReleaseIconEditorPicker'
 
 interface BaseBundleDocument extends Partial<BundleDocument> {
   hue: ColorHueKey
@@ -50,7 +50,7 @@ export function ReleaseForm(props: {
     publishedAt ? dateFormatter.format(new Date(publishedAt)) : undefined,
   )
 
-  const iconValue: BundleIconEditorPickerValue = useMemo(
+  const iconValue: ReleaseIconEditorPickerValue = useMemo(
     () => ({
       icon: icon ?? DEFAULT_BUNDLE.icon,
       hue: hue ?? DEFAULT_BUNDLE.hue,
@@ -89,7 +89,7 @@ export function ReleaseForm(props: {
   )
 
   const handleIconValueChange = useCallback(
-    (pickedIcon: BundleIconEditorPickerValue) => {
+    (pickedIcon: ReleaseIconEditorPickerValue) => {
       onChange({...value, icon: pickedIcon.icon, hue: pickedIcon.hue})
     },
     [onChange, value],
@@ -98,7 +98,7 @@ export function ReleaseForm(props: {
   return (
     <Stack space={5}>
       <Flex>
-        <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
+        <ReleaseIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
       </Flex>
       <Stack space={3}>
         <FormFieldHeaderText title={t('bundle.form.title')} validation={titleErrors} />

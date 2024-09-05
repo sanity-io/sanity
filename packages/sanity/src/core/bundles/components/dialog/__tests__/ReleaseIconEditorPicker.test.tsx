@@ -2,7 +2,10 @@ import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from '../BundleIconEditorPicker'
+import {
+  ReleaseIconEditorPicker,
+  type ReleaseIconEditorPickerValue,
+} from '../ReleaseIconEditorPicker'
 
 jest.mock('sanity', () => ({
   useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
@@ -10,7 +13,7 @@ jest.mock('sanity', () => ({
 
 describe('BundleIconEditorPicker', () => {
   const onChangeMock = jest.fn()
-  const valueMock: BundleIconEditorPickerValue = {
+  const valueMock: ReleaseIconEditorPickerValue = {
     hue: 'gray',
     icon: 'cube',
   }
@@ -19,7 +22,7 @@ describe('BundleIconEditorPicker', () => {
     onChangeMock.mockClear()
 
     const wrapper = await createTestProvider()
-    render(<BundleIconEditorPicker onChange={onChangeMock} value={valueMock} />, {wrapper})
+    render(<ReleaseIconEditorPicker onChange={onChangeMock} value={valueMock} />, {wrapper})
   })
 
   it('should render the icon picker button', () => {
