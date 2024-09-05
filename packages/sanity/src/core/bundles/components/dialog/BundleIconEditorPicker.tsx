@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 
 import {Button, Popover, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {BundleBadge} from '../BundleBadge'
+import {ReleaseBadge} from '../ReleaseBadge'
 
 const StyledStack = styled(Stack)`
   border-top: 1px solid var(--card-border-color);
@@ -134,7 +134,7 @@ export function BundleIconEditorPicker(props: {
           data-testid="icon-picker-button"
         >
           <Box style={{margin: -8}}>
-            <BundleBadge hue={value.hue} icon={value.icon} />
+            <ReleaseBadge hue={value.hue} icon={value.icon} />
           </Box>
         </Button>
       </div>

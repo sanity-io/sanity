@@ -27,7 +27,7 @@ const BadgeRoot = styled(Flex)<{
 /**
  * @internal
  */
-export function BundleBadge(
+export function ReleaseBadge(
   props: Partial<
     BundleDocument & {
       icon: IconSymbol
@@ -45,7 +45,7 @@ export function BundleBadge(
     <BadgeRoot
       gap={padding}
       padding={padding}
-      data-testid={`bundle-badge-color-${hue}`}
+      data-testid={`release-badge-color-${hue}`}
       $hue={hue}
       $isDisabled={isDisabled}
     >

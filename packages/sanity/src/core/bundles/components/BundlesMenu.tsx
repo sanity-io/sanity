@@ -11,7 +11,7 @@ import {useBundles} from '../../store/bundles/useBundles'
 import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/util'
-import {BundleBadge} from './BundleBadge'
+import {ReleaseBadge} from './ReleaseBadge'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -103,7 +103,7 @@ export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): Re
                             placement="bottom-start"
                           >
                             <Flex>
-                              <BundleBadge
+                              <ReleaseBadge
                                 hue={bundle.hue}
                                 icon={bundle.icon}
                                 padding={2}

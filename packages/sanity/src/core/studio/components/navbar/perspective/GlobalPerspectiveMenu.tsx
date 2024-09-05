@@ -5,9 +5,9 @@ import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {MenuItem} from '../../../../../ui-components'
-import {BundleBadge} from '../../../../bundles/components/BundleBadge'
 import {BundlesMenu} from '../../../../bundles/components/BundlesMenu'
 import {BundleDetailsDialog} from '../../../../bundles/components/dialog/BundleDetailsDialog'
+import {ReleaseBadge} from '../../../../bundles/components/ReleaseBadge'
 import {usePerspective} from '../../../../bundles/hooks/usePerspective'
 import {useBundles} from '../../../../store/bundles'
 
@@ -37,7 +37,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
   const bundleMenuButton = useMemo(
     () => (
       <Button mode="bleed" padding={0} radius="full">
-        <BundleBadge hue={hue} icon={icon} openButton padding={2} title={title} />
+        <ReleaseBadge hue={hue} icon={icon} openButton padding={2} title={title} />
       </Button>
     ),
     [hue, icon, title],
