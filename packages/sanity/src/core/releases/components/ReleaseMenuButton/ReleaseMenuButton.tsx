@@ -22,13 +22,13 @@ import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 
-export type BundleMenuButtonProps = {
+export type ReleaseMenuButtonProps = {
   disabled?: boolean
   bundle?: BundleDocument
   documentCount?: number
 }
 
-export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuButtonProps) => {
+export const ReleaseMenuButton = ({disabled, bundle, documentCount}: ReleaseMenuButtonProps) => {
   const {deleteBundle, updateBundle} = useBundleOperations()
   const router = useRouter()
   const isBundleArchived = !!bundle?.archivedAt
