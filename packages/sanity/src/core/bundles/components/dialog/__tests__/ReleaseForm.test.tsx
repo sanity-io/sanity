@@ -4,7 +4,7 @@ import {type BundleDocument, type FormBundleDocument, useDateTimeFormat} from 's
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundles} from '../../../../store/bundles'
-import {BundleForm} from '../BundleForm'
+import {ReleaseForm} from '../ReleaseForm'
 
 jest.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
   useDateTimeFormat: jest.fn(),
@@ -17,7 +17,7 @@ jest.mock('../../../../store/bundles', () => ({
 const mockUseBundleStore = useBundles as jest.Mock<typeof useBundles>
 const mockUseDateTimeFormat = useDateTimeFormat as jest.Mock
 
-describe('BundleForm', () => {
+describe('ReleaseForm', () => {
   const onChangeMock = jest.fn()
   const onErrorMock = jest.fn()
   const valueMock: FormBundleDocument = {
@@ -62,7 +62,7 @@ describe('BundleForm', () => {
       mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
       const wrapper = await createTestProvider()
-      render(<BundleForm onChange={onChangeMock} value={valueMock} onError={onErrorMock} />, {
+      render(<ReleaseForm onChange={onChangeMock} value={valueMock} />, {
         wrapper,
       })
     })
@@ -136,22 +136,19 @@ describe('BundleForm', () => {
         },
         // Add more mock data if needed
       ]
-      mockUseBundleStore.mockReturnValue({data: mockData, loading: false, dispatch: jest.fn()})
+      mockUseBundleStore.mockReturnValue({
+        data: mockData,
+        loading: false,
+        dispatch: jest.fn(),
+        deletedBundles: {} as Record<string, BundleDocument>,
+      })
 
       mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
 
       const wrapper = await createTestProvider()
-      render(
-        <BundleForm
-          onChange={onChangeMock}
-          value={existingBundleValue}
-          onError={onErrorMock}
-          action="edit"
-        />,
-        {
-          wrapper,
-        },
-      )
+      render(<ReleaseForm onChange={onChangeMock} value={existingBundleValue} />, {
+        wrapper,
+      })
     })
 
     it('should allow for any title to be used', async () => {

@@ -2,7 +2,7 @@ import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ComponentType, type FormEvent, useCallback, useState} from 'react'
 
 import {Button, Dialog} from '../../../../ui-components'
-import {BundleForm} from '../../../bundles/components/dialog/BundleForm'
+import {BundleForm} from '../../../bundles/components/dialog/ReleaseForm'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {AddonDatasetProvider} from '../../../studio/addonDataset/AddonDatasetProvider'
 import {type BundleDocument} from '../types'

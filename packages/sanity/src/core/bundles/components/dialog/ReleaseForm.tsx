@@ -28,7 +28,7 @@ export const DEFAULT_BUNDLE: BaseBundleDocument = {
   icon: 'cube',
 }
 
-export function BundleForm(props: {
+export function ReleaseForm(props: {
   onChange: (params: FormBundleDocument) => void
   value: FormBundleDocument
 }): JSX.Element {
@@ -103,7 +103,7 @@ export function BundleForm(props: {
       <Stack space={3}>
         <FormFieldHeaderText title={t('bundle.form.title')} validation={titleErrors} />
         <TextInput
-          data-testid="bundle-form-title"
+          data-testid="release-form-title"
           onChange={handleBundleTitleChange}
           customValidity={titleErrors.length > 0 ? 'error' : undefined}
           value={title}
@@ -117,7 +117,7 @@ export function BundleForm(props: {
         <TextArea
           onChange={handleBundleDescriptionChange}
           value={description}
-          data-testid="bundle-form-description"
+          data-testid="release-form-description"
         />
       </Stack>
 

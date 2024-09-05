@@ -14,7 +14,7 @@ import {
 } from '../../__telemetry__/releases.telemetry'
 import {usePerspective} from '../../hooks/usePerspective'
 import {createReleaseId} from '../../util/createReleaseId'
-import {BundleForm} from './BundleForm'
+import {BundleForm} from './ReleaseForm'
 
 interface ReleaseDetailsDialogProps {
   onCancel: () => void
