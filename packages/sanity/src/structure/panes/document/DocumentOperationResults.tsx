@@ -1,5 +1,5 @@
 import {useToast} from '@sanity/ui'
-import {memo, useEffect, useRef} from 'react'
+import {memo, useEffect, useMemo, useRef} from 'react'
 import {Translate, useDocumentOperationEvent, useTranslation} from 'sanity'
 
 import {usePaneRouter} from '../../components'
@@ -13,23 +13,25 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
   const {push: pushToast} = useToast()
   const {documentId, documentType, value: documentPaneValue} = useDocumentPane()
   const documentTitleInfo = useDocumentTitle()
-  let title = documentTitleInfo.title
   const titleError = documentTitleInfo.error
   const event: any = useDocumentOperationEvent(documentId, documentType)
   const prevEvent = useRef(event)
   const paneRouter = usePaneRouter()
   const {t} = useTranslation(structureLocaleNamespace)
 
-  if (
-    !title &&
-    !titleError &&
-    !IGNORE_OPS.includes(event?.op) &&
-    typeof documentPaneValue.title === 'string' &&
-    event?.type === 'success'
-  ) {
-    // If title isn't be set from document preview, use the title from the document pane value
-    title = documentPaneValue.title
-  }
+  const title = useMemo(() => {
+    // If title isn't set from document preview, use the title from the document pane value
+    if (
+      !documentTitleInfo.title &&
+      !titleError &&
+      !IGNORE_OPS.includes(event?.op) &&
+      typeof documentPaneValue.title === 'string' &&
+      event?.type === 'success'
+    ) {
+      return documentPaneValue.title
+    }
+    return documentTitleInfo.title
+  }, [documentTitleInfo.title, titleError, event, documentPaneValue.title])
   //Truncate the document title and add "..." if it is over 25 characters
   const documentTitleBase = title || t('panes.document-operation-results.operation-undefined-title')
   const documentTitle =
