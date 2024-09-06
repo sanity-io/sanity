@@ -59,9 +59,7 @@ function _immutableReconcile<T>(
     const result: Record<string, unknown> = {}
     parents.set(next, result)
     for (const key of nextKeys) {
-      const nextValue = next.propertyIsEnumerable(key)
-        ? _immutableReconcile(previous[key], next[key]!, parents)
-        : next[key]
+      const nextValue = _immutableReconcile(previous[key], next[key]!, parents)
       if (nextValue !== previous[key]) {
         allEqual = false
       }
