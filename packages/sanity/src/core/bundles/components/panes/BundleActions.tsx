@@ -133,17 +133,24 @@ export function BundleActions(props: BundleActionsProps): ReactNode {
 
   if (archivedAt) return null
 
+  const bundleActionButtonProps = isInVersion
+    ? {
+        text: t('bundle.action.discard-version', {title}),
+        icon: TrashIcon,
+        tone: 'caution' as const,
+        onClick: handleDiscardVersion,
+      }
+    : {
+        text: t('bundle.action.add-to-release', {title}),
+        icon: AddIcon,
+        tone: 'primary' as const,
+        onClick: handleAddVersion,
+      }
+
   return (
     <Button
+      {...bundleActionButtonProps}
       data-testid={`action-add-to-${globalBundleId}`}
-      text={
-        isInVersion
-          ? t('bundle.action.discard-version', {title})
-          : t('bundle.action.add-to-release', {title})
-      }
-      icon={isInVersion ? TrashIcon : AddIcon}
-      tone={isInVersion ? 'caution' : 'primary'}
-      onClick={isInVersion ? handleDiscardVersion : handleAddVersion}
       loading={creatingVersion || isDiscarding}
     />
   )
