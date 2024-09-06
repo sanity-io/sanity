@@ -50,7 +50,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.21.2",
+    "@sanity/client": "^6.21.3",
     "@sanity/mutate": "^0.8.0",
     "@sanity/types": "3.57.1",
     "@sanity/util": "3.57.1",
