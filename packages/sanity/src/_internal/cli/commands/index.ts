@@ -42,6 +42,7 @@ import listHookLogsCommand from './hook/listHookLogsCommand'
 import listHooksCommand from './hook/listHooksCommand'
 import printHookAttemptCommand from './hook/printHookAttemptCommand'
 import extractManifestCommand from './manifest/extractManifestCommand'
+import manifestGroup from './manifest/manifestGroup'
 import createMigrationCommand from './migration/createMigrationCommand'
 import listMigrationsCommand from './migration/listMigrationsCommand'
 import migrationGroup from './migration/migrationGroup'
@@ -111,6 +112,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   previewCommand,
   uninstallCommand,
   execCommand,
+  manifestGroup,
   extractManifestCommand,
 ]
 
