@@ -9,7 +9,6 @@ import {
   type ExtractSchemaWorkerData,
   type ExtractSchemaWorkerResult,
 } from '../../threads/extractSchema'
-import {extractManifestSafe} from '../manifest/extractManifestAction'
 import {SchemaExtractedTrace} from './extractSchema.telemetry'
 
 interface ExtractFlags {
@@ -23,16 +22,10 @@ export type SchemaValidationFormatter = (result: ExtractSchemaWorkerResult) => s
 
 export default async function extractAction(
   args: CliCommandArguments<ExtractFlags>,
-  context: CliCommandContext,
+  {workDir, output, telemetry}: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
   const formatFlag = flags.format || 'groq-type-nodes'
-  const {workDir, output, telemetry} = context
-
-  if (formatFlag === 'manifest') {
-    return extractManifestSafe(args, context)
-  }
-
   const enforceRequiredFields = flags['enforce-required-fields'] || false
 
   const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
@@ -107,6 +100,4 @@ export default async function extractAction(
     )
     throw err
   }
-
-  return undefined
 }
