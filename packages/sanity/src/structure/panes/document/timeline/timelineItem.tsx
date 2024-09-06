@@ -1,11 +1,10 @@
-/* eslint-disable camelcase */
-import {Card, Flex, Menu, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+// eslint-disable-next-line camelcase
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {createElement, type MouseEvent, useCallback, useMemo} from 'react'
 import {
   type Chunk,
   type ChunkType,
-  ContextMenuButton,
   type RelativeTimeOptions,
   useDateTimeFormat,
   useRelativeTime,
@@ -13,8 +12,6 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {structureLocaleNamespace} from '../../../i18n'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'
@@ -49,37 +46,12 @@ const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ThemeColor
   withinSelection: 'magenta',
 }
 
-function TimelineItemMenu({chunk}: {chunk: Chunk}) {
-  const {t} = useTranslation(structureLocaleNamespace)
-  return (
-    <MenuButton
-      id={`timeline-item-menu-button-${chunk.id}`}
-      button={
-        <ContextMenuButton
-          aria-label={t('timeline-item.menu-button.aria-label')}
-          size="large"
-          tooltipProps={{content: t('timeline-item.menu-button.tooltip')}}
-        />
-      }
-      menu={
-        <Menu padding={1}>
-          <MenuItem text={t('timeline-item.menu.action-expand')} />
-        </Menu>
-      }
-    />
-  )
-}
 export interface TimelineItemProps {
   chunk: Chunk
   isSelected: boolean
   onSelect: (chunk: Chunk) => void
-  timestamp: string
-  type: ChunkType
-  /**
-   * Chunks that are squashed together on publish.
-   * e.g. all the draft mutations are squashed into a single `publish` chunk when the document is published.
-   */
-  squashedChunks?: Chunk[]
+  collaborators?: Set<string>
+  optionsMenu?: React.ReactNode
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
@@ -91,20 +63,14 @@ export function TimelineItem({
   chunk,
   isSelected,
   onSelect,
-  timestamp,
-  type,
-  squashedChunks,
+  collaborators,
+  optionsMenu,
 }: TimelineItemProps) {
   const {t} = useTranslation('studio')
-
+  const {type, endTimestamp: timestamp} = chunk
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
-
-  // TODO: This will be part of future changes where we will show the history squashed when published
-  const collaborators = Array.from(
-    new Set(squashedChunks?.flatMap((c) => Array.from(c.authors)) || []),
-  ).filter((id) => !authorUserIds.includes(id))
-
+  const collaboratorsUsersIds = collaborators ? Array.from(collaborators) : []
   const isSelectable = type !== 'delete'
   const dateFormat = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
   const date = new Date(timestamp)
@@ -159,14 +125,14 @@ export function TimelineItem({
             </Text>
           </Stack>
 
-          {collaborators.length > 0 && (
+          {collaboratorsUsersIds.length > 0 && (
             <Flex flex={1} justify="flex-end" align="center">
-              <UserAvatarStack maxLength={3} userIds={collaborators} size={0} />
+              <UserAvatarStack maxLength={3} userIds={collaboratorsUsersIds} size={0} />
             </Flex>
           )}
         </Flex>
       </Card>
-      {squashedChunks && squashedChunks?.length > 1 ? <TimelineItemMenu chunk={chunk} /> : null}
+      {optionsMenu}
     </Flex>
   )
 }

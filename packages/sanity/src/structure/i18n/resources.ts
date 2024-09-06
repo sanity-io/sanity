@@ -479,6 +479,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'timeline-item.menu-button.aria-label': 'Open action menu',
   /** The text for the tooltip in menu button the timeline item */
   'timeline-item.menu-button.tooltip': 'Actions',
+  /** The text for the collapse action in the timeline item menu */
+  'timeline-item.menu.action-collapse': 'Collapse',
   /** The text for the expand action in the timeline item menu */
   'timeline-item.menu.action-expand': 'Expand',
 })
