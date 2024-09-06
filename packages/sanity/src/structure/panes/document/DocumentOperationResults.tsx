@@ -11,13 +11,25 @@ const IGNORE_OPS = ['patch', 'commit']
 
 export const DocumentOperationResults = memo(function DocumentOperationResults() {
   const {push: pushToast} = useToast()
-  const {documentId, documentType} = useDocumentPane()
-  const {title} = useDocumentTitle()
+  const {documentId, documentType, value: documentPaneValue} = useDocumentPane()
+  const documentTitleInfo = useDocumentTitle()
+  let title = documentTitleInfo.title
+  const titleError = documentTitleInfo.error
   const event: any = useDocumentOperationEvent(documentId, documentType)
   const prevEvent = useRef(event)
   const paneRouter = usePaneRouter()
   const {t} = useTranslation(structureLocaleNamespace)
 
+  if (
+    !title &&
+    !titleError &&
+    !IGNORE_OPS.includes(event?.op) &&
+    typeof documentPaneValue.title === 'string' &&
+    event?.type === 'success'
+  ) {
+    // If title isn't be set from document preview, use the title from the document pane value
+    title = documentPaneValue.title
+  }
   //Truncate the document title and add "..." if it is over 25 characters
   const documentTitleBase = title || t('panes.document-operation-results.operation-undefined-title')
   const documentTitle =
