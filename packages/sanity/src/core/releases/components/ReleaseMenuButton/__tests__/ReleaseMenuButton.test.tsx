@@ -1,5 +1,6 @@
 import {beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
+import {act} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -49,7 +50,6 @@ describe('BundleMenuButton', () => {
       _type: 'release',
       archivedAt: undefined,
       title: 'activeBundle',
-      slug: 'activeBundle',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -78,7 +78,6 @@ describe('BundleMenuButton', () => {
       _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeBundle',
-      slug: 'activeBundle',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -106,7 +105,6 @@ describe('BundleMenuButton', () => {
       _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeBundle',
-      slug: 'activeBundle',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -138,7 +136,6 @@ describe('BundleMenuButton', () => {
       _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeEmptyBundle',
-      slug: 'activeEmptyBundle',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -171,7 +168,6 @@ describe('BundleMenuButton', () => {
       _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeEmptyBundle',
-      slug: 'activeEmptyBundle',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
