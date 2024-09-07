@@ -1,10 +1,22 @@
-import {useToast} from '@sanity/ui'
+/* eslint-disable i18next/no-literal-string */
+import {Card, Code, Container, Heading, Stack, useToast} from '@sanity/ui'
 import {useEffect, useRef, useState} from 'react'
 
+// eslint-disable-next-line no-console
 console.log('LOADED DEV SERVER STATUS')
 
-export const useDetectDevServerDisconnect = () => {
-  const [serverStopped, setServerStopped] = useState(false)
+class DevServerStopError extends Error {
+  isDevServerError: boolean
+
+  constructor() {
+    super('Dev server stopped')
+    this.name = 'DevServerStopError'
+    this.isDevServerError = true
+  }
+}
+
+const useDetectDevServerDisconnect = () => {
+  const [devServerStopped, setDevServerStopped] = useState(false)
   const serverIsReadyRef = useRef(false)
 
   useEffect(() => {
@@ -13,28 +25,28 @@ export const useDetectDevServerDisconnect = () => {
 
     ws.onclose = () => {
       if (!serverIsReadyRef.current) return
-      setServerStopped(true)
+      setDevServerStopped(true)
     }
     ws.onopen = () => {
       if (!serverIsReadyRef.current) {
         serverIsReadyRef.current = true
       }
 
-      setServerStopped(false)
+      setDevServerStopped(false)
     }
 
     return () => ws.close()
   }, [])
 
-  return serverStopped
+  return {devServerStopped}
 }
 
-const DevServerStatusToast = () => {
-  const serverStopped = useDetectDevServerDisconnect()
+export const DevServerStatusToast = () => {
+  const {devServerStopped} = useDetectDevServerDisconnect()
   const toast = useToast()
 
   useEffect(() => {
-    if (serverStopped) {
+    if (devServerStopped) {
       toast.push({
         id: 'dev-server-stopped',
         duration: 60000,
@@ -45,29 +57,40 @@ const DevServerStatusToast = () => {
           'The development server has stopped. You may need to restart it to continue working.',
       })
     }
-  }, [serverStopped, toast])
+  }, [devServerStopped, toast])
 
   return null
-}
-
-export class DevServerStopError extends Error {
-  isDevServerError: boolean
-
-  constructor() {
-    super('DevServerStopError')
-    this.name = 'DevServerStopError'
-    this.isDevServerError = true
-  }
 }
 
 export const DevServerStatusThrower = () => {
-  const serverStopped = useDetectDevServerDisconnect()
+  const {devServerStopped} = useDetectDevServerDisconnect()
 
-  if (serverStopped) {
-    throw new DevServerStopError()
-  }
-
-  return null
+  if (devServerStopped) throw new DevServerStopError()
 }
 
-export default DevServerStatusToast
+export const DevServerErrorScreen = () => (
+  <Card
+    height="fill"
+    overflow="auto"
+    paddingY={[4, 5, 6, 7]}
+    paddingX={4}
+    sizing="border"
+    tone="critical"
+  >
+    <Container width={3}>
+      <Stack space={4}>
+        <Heading>The Dev server was stopped</Heading>
+
+        <Card border radius={2} overflow="auto" padding={4} tone="inherit">
+          <Stack space={4}>
+            <Code size={1}>
+              <strong>
+                The development server has stopped. You may need to restart it to continue working.
+              </strong>
+            </Code>
+          </Stack>
+        </Card>
+      </Stack>
+    </Container>
+  </Card>
+)

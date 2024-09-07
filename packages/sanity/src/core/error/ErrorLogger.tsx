@@ -5,7 +5,9 @@ import {ConfigResolutionError, SchemaError} from '../config'
 import {CorsOriginError} from '../store'
 import {globalScope} from '../util'
 
-const DevServerStatusToast = lazy(() => import('../studio/DevServerStatus'))
+const DevServerStatusToast = lazy(() =>
+  import('../studio/DevServerStatus').then((module) => ({default: module.DevServerStatusToast})),
+)
 
 const errorChannel = globalScope.__sanityErrorChannel
 

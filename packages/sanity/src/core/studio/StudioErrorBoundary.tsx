@@ -9,7 +9,7 @@ import {
   Heading,
   Stack,
 } from '@sanity/ui'
-import {type ErrorInfo, type ReactNode, useCallback, useState} from 'react'
+import {type ErrorInfo, lazy, type ReactNode, useCallback, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {Button} from '../../ui-components'
@@ -18,6 +18,10 @@ import {errorReporter} from '../error/errorReporter'
 import {CorsOriginError} from '../store'
 import {isRecord} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
+
+const DevServerErrorScreen = lazy(() =>
+  import('./DevServerStatus').then((module) => ({default: module.DevServerErrorScreen})),
+)
 
 interface StudioErrorBoundaryProps {
   children: ReactNode
@@ -76,7 +80,7 @@ export function StudioErrorBoundary({
   }
 
   if (error && 'isDevServerError' in error && error.isDevServerError) {
-    return <div>DEV SERVER STOPPED MAN</div>
+    return <DevServerErrorScreen />
   }
 
   if (!error) {
