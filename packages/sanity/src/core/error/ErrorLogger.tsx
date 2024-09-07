@@ -5,8 +5,10 @@ import {ConfigResolutionError, SchemaError} from '../config'
 import {CorsOriginError} from '../store'
 import {globalScope} from '../util'
 
-const DevServerStatusToast = lazy(() =>
-  import('../studio/DevServerStatus').then((module) => ({default: module.DevServerStatusToast})),
+const DevServerStoppedToast = lazy(() =>
+  import('../studio/DevServerStopped').then((DevServerStopped) => ({
+    default: DevServerStopped.DevServerStoppedToast,
+  })),
 )
 
 const errorChannel = globalScope.__sanityErrorChannel
@@ -52,7 +54,7 @@ export function ErrorLogger() {
     })
   }, [pushToast])
 
-  return process.env.NODE_ENV === 'development' ? <DevServerStatusToast /> : null
+  return process.env.NODE_ENV === 'development' ? <DevServerStoppedToast /> : null
 }
 
 function isKnownError(err: Error): boolean {
@@ -68,7 +70,7 @@ function isKnownError(err: Error): boolean {
     return true
   }
 
-  if ('isDevServerError' in err) {
+  if ('isDevServerStoppedError' in err && err.isDevServerStoppedError) {
     return true
   }
 

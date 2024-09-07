@@ -19,8 +19,10 @@ import {CorsOriginError} from '../store'
 import {isRecord} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
 
-const DevServerErrorScreen = lazy(() =>
-  import('./DevServerStatus').then((module) => ({default: module.DevServerErrorScreen})),
+const DevServerStoppedErrorScreen = lazy(() =>
+  import('./DevServerStopped').then((DevServerStopped) => ({
+    default: DevServerStopped.DevServerStoppedErrorScreen,
+  })),
 )
 
 interface StudioErrorBoundaryProps {
@@ -79,8 +81,8 @@ export function StudioErrorBoundary({
     return <SchemaErrorsScreen schema={error.schema} />
   }
 
-  if (error && 'isDevServerError' in error && error.isDevServerError) {
-    return <DevServerErrorScreen />
+  if (error && 'isDevServerStoppedError' in error && error.isDevServerStoppedError) {
+    return <DevServerStoppedErrorScreen />
   }
 
   if (!error) {

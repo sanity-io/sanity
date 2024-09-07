@@ -1,21 +1,25 @@
-/* eslint-disable i18next/no-literal-string */
-import {Card, Code, Container, Heading, Stack, useToast} from '@sanity/ui'
-import {useEffect, useRef, useState} from 'react'
+/* eslint-disable i18next/no-literal-string -- will not support i18n in error boundaries */
+import {Card, Container, Heading, Stack, Text, useToast} from '@sanity/ui'
+import {type ReactNode, useEffect, useRef, useState} from 'react'
 
 // eslint-disable-next-line no-console
 console.log('LOADED DEV SERVER STATUS')
 
-class DevServerStopError extends Error {
-  isDevServerError: boolean
+const ERROR_TITLE = 'Dev server stopped'
+const ERROR_DESCRIPTION =
+  'The development server has stopped. You may need to restart it to continue working.'
+
+class DevServerStoppedError extends Error {
+  isDevServerStoppedError: boolean
 
   constructor() {
-    super('Dev server stopped')
-    this.name = 'DevServerStopError'
-    this.isDevServerError = true
+    super(ERROR_TITLE)
+    this.name = 'DevServerStoppedError'
+    this.isDevServerStoppedError = true
   }
 }
 
-const useDetectDevServerDisconnect = () => {
+const useDetectDevServerStopped = () => {
   const [devServerStopped, setDevServerStopped] = useState(false)
   const serverIsReadyRef = useRef(false)
 
@@ -41,8 +45,8 @@ const useDetectDevServerDisconnect = () => {
   return {devServerStopped}
 }
 
-export const DevServerStatusToast = () => {
-  const {devServerStopped} = useDetectDevServerDisconnect()
+export const DevServerStoppedToast = (): null => {
+  const {devServerStopped} = useDetectDevServerStopped()
   const toast = useToast()
 
   useEffect(() => {
@@ -52,9 +56,8 @@ export const DevServerStatusToast = () => {
         duration: 60000,
         closable: true,
         status: 'error',
-        title: 'Dev server stopped',
-        description:
-          'The development server has stopped. You may need to restart it to continue working.',
+        title: ERROR_TITLE,
+        description: ERROR_DESCRIPTION,
       })
     }
   }, [devServerStopped, toast])
@@ -62,13 +65,15 @@ export const DevServerStatusToast = () => {
   return null
 }
 
-export const DevServerStatusThrower = () => {
-  const {devServerStopped} = useDetectDevServerDisconnect()
+export const DetectDevServerStopped = (): null => {
+  const {devServerStopped} = useDetectDevServerStopped()
 
-  if (devServerStopped) throw new DevServerStopError()
+  if (devServerStopped) throw new DevServerStoppedError()
+
+  return null
 }
 
-export const DevServerErrorScreen = () => (
+export const DevServerStoppedErrorScreen = (): ReactNode => (
   <Card
     height="fill"
     overflow="auto"
@@ -79,15 +84,11 @@ export const DevServerErrorScreen = () => (
   >
     <Container width={3}>
       <Stack space={4}>
-        <Heading>The Dev server was stopped</Heading>
+        <Heading>{ERROR_TITLE}</Heading>
 
         <Card border radius={2} overflow="auto" padding={4} tone="inherit">
           <Stack space={4}>
-            <Code size={1}>
-              <strong>
-                The development server has stopped. You may need to restart it to continue working.
-              </strong>
-            </Code>
+            <Text size={2}>{ERROR_DESCRIPTION}</Text>
           </Stack>
         </Card>
       </Stack>
