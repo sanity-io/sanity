@@ -1,5 +1,5 @@
 import {ToastProvider} from '@sanity/ui'
-import {lazy, type PropsWithChildren, type ReactNode, useMemo} from 'react'
+import {lazy, type ReactNode, useMemo} from 'react'
 import Refractor from 'react-refractor'
 import bash from 'refractor/lang/bash.js'
 import javascript from 'refractor/lang/javascript.js'
@@ -32,23 +32,12 @@ import {StudioThemeProvider} from './StudioThemeProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
 
-const DevServerStatusError = lazy(() =>
-  import('./DevServerStatus').then((module) => ({default: module.DevServerStatusError})),
-)
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
 Refractor.registerLanguage(json)
 Refractor.registerLanguage(jsx)
 Refractor.registerLanguage(typescript)
-
-const ShouldIUseTheDev = ({children}: PropsWithChildren) => {
-  if (process.env.NODE_ENV === 'development') {
-    return <DevServerStatusError>{children}</DevServerStatusError>
-  }
-
-  return <>{children}</>
-}
 
 /**
  * @hidden
@@ -95,31 +84,29 @@ export function StudioProvider({
       <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
         <ErrorLogger />
         <StudioErrorBoundary>
-          <ShouldIUseTheDev>
-            <WorkspacesProvider config={config} basePath={basePath} LoadingComponent={LoadingBlock}>
-              <ActiveWorkspaceMatcher
-                unstable_history={history}
-                NotFoundComponent={NotFoundScreen}
-                LoadingComponent={LoadingBlock}
-              >
-                <StudioThemeProvider>
-                  <UserColorManagerProvider>
-                    {noAuthBoundary ? (
-                      _children
-                    ) : (
-                      <AuthBoundary
-                        LoadingComponent={LoadingBlock}
-                        AuthenticateComponent={AuthenticateScreen}
-                        NotAuthenticatedComponent={NotAuthenticatedScreen}
-                      >
-                        {_children}
-                      </AuthBoundary>
-                    )}
-                  </UserColorManagerProvider>
-                </StudioThemeProvider>
-              </ActiveWorkspaceMatcher>
-            </WorkspacesProvider>
-          </ShouldIUseTheDev>
+          <WorkspacesProvider config={config} basePath={basePath} LoadingComponent={LoadingBlock}>
+            <ActiveWorkspaceMatcher
+              unstable_history={history}
+              NotFoundComponent={NotFoundScreen}
+              LoadingComponent={LoadingBlock}
+            >
+              <StudioThemeProvider>
+                <UserColorManagerProvider>
+                  {noAuthBoundary ? (
+                    _children
+                  ) : (
+                    <AuthBoundary
+                      LoadingComponent={LoadingBlock}
+                      AuthenticateComponent={AuthenticateScreen}
+                      NotAuthenticatedComponent={NotAuthenticatedScreen}
+                    >
+                      {_children}
+                    </AuthBoundary>
+                  )}
+                </UserColorManagerProvider>
+              </StudioThemeProvider>
+            </ActiveWorkspaceMatcher>
+          </WorkspacesProvider>
         </StudioErrorBoundary>
       </ToastProvider>
     </ColorSchemeProvider>

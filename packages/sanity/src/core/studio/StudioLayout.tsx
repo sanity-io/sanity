@@ -18,11 +18,8 @@ import {
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
 
-// const DevServerStatus = lazy(() => import('./DevServerStatus'))
-// const devServerStatus = process.env.NODE_ENV === 'development' && <DevServerStatus />
-
-const DevServerStatusError = lazy(() =>
-  import('./DevServerStatus').then((module) => ({default: module.DevServerStatusError})),
+const DevServerStatusThrower = lazy(() =>
+  import('./DevServerStatus').then((module) => ({default: module.DevServerStatusThrower})),
 )
 
 const SearchFullscreenPortalCard = styled(Card)`
@@ -180,7 +177,7 @@ export function StudioLayoutComponent() {
       {/* By using the tool name as the key on the error boundary, we force it to re-render
           when switching tools, which ensures we don't show the wrong tool having crashed */}
       <StudioErrorBoundary key={activeTool?.name} heading={`The ${activeTool?.name} tool crashed`}>
-        {process.env.NODE_ENV === 'development' && <DevServerStatusError />}
+        {process.env.NODE_ENV === 'development' && <DevServerStatusThrower />}
         <Card flex={1} hidden={searchFullscreenOpen}>
           {activeTool && activeToolName && (
             <RouteScope

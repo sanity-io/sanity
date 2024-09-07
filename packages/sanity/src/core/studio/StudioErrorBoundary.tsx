@@ -75,6 +75,10 @@ export function StudioErrorBoundary({
     return <SchemaErrorsScreen schema={error.schema} />
   }
 
+  if (error && 'isDevServerError' in error && error.isDevServerError) {
+    return <div>DEV SERVER STOPPED MAN</div>
+  }
+
   if (!error) {
     return <ErrorBoundary onCatch={handleCatchError}>{children}</ErrorBoundary>
   }
