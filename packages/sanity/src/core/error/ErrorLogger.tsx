@@ -1,9 +1,12 @@
 import {useToast} from '@sanity/ui'
-import {useEffect} from 'react'
+import {lazy, useCallback, useEffect, useState} from 'react'
 
 import {ConfigResolutionError, SchemaError} from '../config'
 import {CorsOriginError} from '../store'
 import {globalScope} from '../util'
+
+const DevServerStatusToast = lazy(() => import('../studio/DevServerStatus'))
+// const devServerStatus = process.env.NODE_ENV === 'development' && <DevServerStatus />
 
 const errorChannel = globalScope.__sanityErrorChannel
 
@@ -13,8 +16,14 @@ const errorChannel = globalScope.__sanityErrorChannel
  *
  * @internal
  */
-export function ErrorLogger(): null {
+export function ErrorLogger() {
   const {push: pushToast} = useToast()
+  const [isDevServerRunning, setIsDevServerRunning] = useState(false)
+
+  const handleOnServerStateChange = useCallback<(isServerRunning: boolean) => void>(
+    (isServerRunning) => setIsDevServerRunning(isServerRunning),
+    [],
+  )
 
   useEffect(() => {
     if (!errorChannel) return undefined
@@ -33,6 +42,10 @@ export function ErrorLogger(): null {
         return
       }
 
+      if (!isDevServerRunning) {
+        return
+      }
+
       console.error(msg.error)
 
       pushToast({
@@ -46,9 +59,11 @@ export function ErrorLogger(): null {
         status: 'error',
       })
     })
-  }, [pushToast])
+  }, [isDevServerRunning, pushToast])
 
-  return null
+  return process.env.NODE_ENV === 'development' ? (
+    <DevServerStatusToast onServerStateChange={handleOnServerStateChange} />
+  ) : null
 }
 
 function isKnownError(err: Error): boolean {
