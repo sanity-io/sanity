@@ -93,7 +93,7 @@ export const FreeTrialButtonTopbar = forwardRef(function FreeTrialButtonTopbar(
 })
 
 export const FreeTrialButtonSidebar = forwardRef(function FreeTrialButtonSidebar(
-  {toggleShowContent, daysLeft}: Omit<FreeTrialButtonProps, 'totalDays'>,
+  {toggleShowContent, daysLeft}: Pick<FreeTrialButtonProps, 'toggleShowContent' | 'daysLeft'>,
   ref: Ref<HTMLButtonElement>,
 ) {
   const {t} = useTranslation()
