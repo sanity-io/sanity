@@ -68,5 +68,6 @@ jobs:
           branch: actions/dedupe-if-needed
           commit-message: "chore(deps): dedupe pnpm-lock.yaml"
           labels: 🤖 bot
+          sign-commits: true
           title: "chore(deps): dedupe pnpm-lock.yaml"
           token: ${{ steps.app-token.outputs.token }}
