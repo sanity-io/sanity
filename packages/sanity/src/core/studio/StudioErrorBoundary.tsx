@@ -19,8 +19,13 @@ import {CorsOriginError} from '../store'
 import {isRecord} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
 
+/**
+ * The DevServerStoppedErrorScreen will always have been lazy loaded to client
+ * in instances where it is used, since DevServerStoppedError is only thrown
+ * when this module is loaded, and this screen is also conditional on this error type
+ */
 const DevServerStoppedErrorScreen = lazy(() =>
-  import('./DevServerStopped').then((DevServerStopped) => ({
+  import('./ViteDevServerStopped').then((DevServerStopped) => ({
     default: DevServerStopped.DevServerStoppedErrorScreen,
   })),
 )

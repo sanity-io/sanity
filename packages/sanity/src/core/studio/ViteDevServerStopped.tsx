@@ -1,54 +1,49 @@
 /* eslint-disable i18next/no-literal-string -- will not support i18n in error boundaries */
 import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
-import {type ReactNode, useEffect, useRef, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {type ViteHotContext} from 'vite/types/hot.js'
 
 const ERROR_TITLE = 'Dev server stopped'
 const ERROR_DESCRIPTION =
   'The development server has stopped. You may need to restart it to continue working.'
 
-class DevServerStoppedError extends Error {
-  isDevServerStoppedError: boolean
+class ViteDevServerStoppedError extends Error {
+  ViteDevServerStoppedError: boolean
 
   constructor() {
     super(ERROR_TITLE)
-    this.name = 'DevServerStoppedError'
-    this.isDevServerStoppedError = true
+    this.name = 'ViteDevServerStoppedError'
+    this.ViteDevServerStoppedError = true
   }
 }
+const serverHot = import.meta.hot
+const isViteServer = (hot: unknown): hot is ViteHotContext => Boolean(hot)
 
-const useDetectDevServerStopped = () => {
+const useDetectViteDevServerStopped = () => {
   const [devServerStopped, setDevServerStopped] = useState(false)
-  const serverIsReadyRef = useRef(false)
+
+  const markDevServerStopped = useCallback(() => setDevServerStopped(true), [])
 
   useEffect(() => {
-    const url = `ws://${window.location.hostname}:${window.location.port}/`
-    const ws = new WebSocket(url, 'vite-hmr')
-
-    ws.onclose = () => {
-      if (!serverIsReadyRef.current) return
-      setDevServerStopped(true)
+    // no early return to optimize tree-shaking
+    if (isViteServer(serverHot)) {
+      serverHot.on('vite:ws:disconnect', markDevServerStopped)
     }
-    ws.onopen = () => {
-      if (!serverIsReadyRef.current) {
-        serverIsReadyRef.current = true
-      }
-
-      setDevServerStopped(false)
-    }
-
-    return () => ws.close()
-  }, [])
+  }, [markDevServerStopped])
 
   return {devServerStopped}
 }
 
-export const DetectDevServerStopped = (): null => {
-  const {devServerStopped} = useDetectDevServerStopped()
+const ThrowViteServerStopped = () => {
+  const {devServerStopped} = useDetectViteDevServerStopped()
 
-  if (devServerStopped) throw new DevServerStoppedError()
+  if (devServerStopped) throw new ViteDevServerStoppedError()
 
   return null
 }
+
+export const DetectViteDevServerStopped = (): ReactNode =>
+  isViteServer(serverHot) ? <ThrowViteServerStopped /> : null
 
 export const DevServerStoppedErrorScreen = (): ReactNode => (
   <Card
