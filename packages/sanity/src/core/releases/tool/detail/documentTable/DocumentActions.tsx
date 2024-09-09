@@ -7,6 +7,7 @@ import {Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useClient} from '../../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {releasesLocaleNamespace} from '../../../i18n'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 
 export const DocumentActions = memo(
@@ -21,7 +22,8 @@ export const DocumentActions = memo(
     const [discardStatus, setDiscardStatus] = useState<'idle' | 'discarding' | 'error'>('idle')
     const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
     const toast = useToast()
-    const {t} = useTranslation()
+    const {t: coreT} = useTranslation()
+    const {t} = useTranslation(releasesLocaleNamespace)
 
     const handleDiscardVersion = async () => {
       try {
@@ -35,7 +37,7 @@ export const DocumentActions = memo(
           status: 'success',
           description: (
             <Translate
-              t={t}
+              t={coreT}
               i18nKey={'bundle.action.discard-version.success'}
               values={{title: document.document.title as string}}
             />
@@ -47,7 +49,7 @@ export const DocumentActions = memo(
         toast.push({
           closable: true,
           status: 'error',
-          title: t('bundle.action.discard-version.failure'),
+          title: coreT('bundle.action.discard-version.failure'),
         })
       } finally {
         setShowDiscardDialog(false)
@@ -63,7 +65,7 @@ export const DocumentActions = memo(
             menu={
               <Menu>
                 <MenuItem
-                  text={t('bundle.action.discard-version')}
+                  text={coreT('bundle.action.discard-version')}
                   icon={CloseIcon}
                   onClick={() => setShowDiscardDialog(true)}
                 />
