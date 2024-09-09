@@ -1,8 +1,9 @@
 import {Flex} from '@sanity/ui'
 import {useEffect, useLayoutEffect, useState} from 'react'
-import {DocumentStatus, DocumentStatusIndicator, useSyncState} from 'sanity'
+import {DocumentStatus, DocumentStatusIndicator, usePerspective, useSyncState} from 'sanity'
 
 import {Tooltip} from '../../../../ui-components'
+import {usePaneRouter} from '../../../components/paneRouter'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusPulse} from './DocumentStatusPulse'
 
@@ -19,6 +20,8 @@ export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
 
   const syncState = useSyncState(documentId, documentType, {version: editState?.bundleId})
+  const paneRouter = usePaneRouter()
+  const {currentGlobalBundle} = usePerspective(paneRouter.perspective)
 
   const lastUpdated = value?._updatedAt
 
@@ -76,6 +79,7 @@ export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
           published={editState?.published}
           version={editState?.version}
           singleLine={singleLine}
+          currentGlobalBundle={currentGlobalBundle}
         />
       </Flex>
     </Tooltip>
