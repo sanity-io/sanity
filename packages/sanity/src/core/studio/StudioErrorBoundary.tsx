@@ -53,6 +53,7 @@ export function StudioErrorBoundary({
   heading = 'An error occured',
 }: StudioErrorBoundaryProps) {
   const [{error, eventId}, setError] = useState<ErrorBoundaryState>(INITIAL_STATE)
+  const [hasDevServerStopped, setHasDevServerStopped] = useState(false)
 
   const message = isRecord(error) && typeof error.message === 'string' && error.message
   const stack = isRecord(error) && typeof error.stack === 'string' && error.stack
@@ -64,6 +65,12 @@ export function StudioErrorBoundary({
       errorBoundary: 'StudioErrorBoundary',
     })
 
+    if ('isDevServerStoppedError' in params.error && params.error.isDevServerStoppedError) {
+      setHasDevServerStopped(true)
+
+      return
+    }
+
     setError({
       error: params.error,
       componentStack: params.info.componentStack,
@@ -73,6 +80,10 @@ export function StudioErrorBoundary({
 
   useHotModuleReload(handleResetError)
 
+  if (hasDevServerStopped && error) {
+    return <DevServerStoppedErrorScreen />
+  }
+
   if (error instanceof CorsOriginError) {
     return <CorsOriginErrorScreen projectId={error?.projectId} />
   }
@@ -81,12 +92,12 @@ export function StudioErrorBoundary({
     return <SchemaErrorsScreen schema={error.schema} />
   }
 
-  if (error && 'isDevServerStoppedError' in error && error.isDevServerStoppedError) {
-    return <DevServerStoppedErrorScreen />
-  }
-
   if (!error) {
-    return <ErrorBoundary onCatch={handleCatchError}>{children}</ErrorBoundary>
+    return (
+      <ErrorBoundary key={`hasServerStopped=${hasDevServerStopped}`} onCatch={handleCatchError}>
+        {children}
+      </ErrorBoundary>
+    )
   }
 
   return (

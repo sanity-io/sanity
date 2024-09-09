@@ -1,5 +1,5 @@
 import {useToast} from '@sanity/ui'
-import {lazy, useEffect} from 'react'
+import {lazy, useEffect, useState} from 'react'
 
 import {ConfigResolutionError, SchemaError} from '../config'
 import {CorsOriginError} from '../store'
@@ -21,6 +21,7 @@ const errorChannel = globalScope.__sanityErrorChannel
  */
 export function ErrorLogger() {
   const {push: pushToast} = useToast()
+  const [hasDevServerStopped, setHasDevServerStopped] = useState(false)
 
   useEffect(() => {
     if (!errorChannel) return undefined
@@ -34,8 +35,16 @@ export function ErrorLogger() {
         return
       }
 
+      if (hasDevServerStopped) {
+        return
+      }
+
       // For errors that we "expect", eg have specific error screens for, do not push a toast
       if (isKnownError(msg.error)) {
+        const err = msg.error
+        if ('isDevServerStoppedError' in err && err.isDevServerStoppedError) {
+          setHasDevServerStopped(true)
+        }
         return
       }
 
@@ -52,7 +61,7 @@ export function ErrorLogger() {
         status: 'error',
       })
     })
-  }, [pushToast])
+  }, [hasDevServerStopped, pushToast])
 
   return process.env.NODE_ENV === 'development' ? <DevServerStoppedToast /> : null
 }
