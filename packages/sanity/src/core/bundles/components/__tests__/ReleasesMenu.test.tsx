@@ -64,7 +64,6 @@ describe('ReleasesMenu', () => {
       _type: 'release',
       hue: 'red',
       _id: 'f6b2c2cc-1732-4465-bfb3-dd205b5d78e9',
-      _id: 'summer-drop',
       authorId: '',
     },
   ]
@@ -195,7 +194,7 @@ describe('ReleasesMenu', () => {
   })
 
   it('should render actions when actions prop is provided', async () => {
-    const actions = <Button>Actions</Button>
+    const actions = <Button text="Actions" />
 
     const wrapper = await createTestProvider()
     render(
@@ -221,7 +220,6 @@ describe('ReleasesMenu', () => {
         'mock-deleted-bundle': {
           _id: 'mock-deleted-bundle',
           _type: 'release',
-          _id: 'mock-deleted-bundle',
           title: 'Mock Deleted Bundle',
         } as BundleDocument,
       },
@@ -247,7 +245,6 @@ describe('ReleasesMenu', () => {
         'mock-deleted-bundle': {
           _id: 'mock-deleted-bundle',
           _type: 'release',
-          _id: 'mock-deleted-bundle',
           title: 'Mock Deleted Bundle',
         } as BundleDocument,
       },
@@ -261,7 +258,6 @@ describe('ReleasesMenu', () => {
           {
             _id: 'mock-deleted-bundle',
             _type: 'release',
-            _id: 'mock-deleted-bundle',
             title: 'Mock Deleted Bundle',
           } as BundleDocument,
         ]}
