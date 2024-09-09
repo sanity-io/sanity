@@ -22,11 +22,14 @@ export const DocumentActions = memo(
     const [discardStatus, setDiscardStatus] = useState<'idle' | 'discarding' | 'error'>('idle')
     const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
     const toast = useToast()
+    const {t: coreT} = useTranslation()
     const {t} = useTranslation(releasesLocaleNamespace)
 
     const handleDiscardVersion = async () => {
       try {
         setDiscardStatus('discarding')
+
+        // TODO: should we use the document operations for this?
         await client.delete(document.document._id)
 
         toast.push({
@@ -34,8 +37,8 @@ export const DocumentActions = memo(
           status: 'success',
           description: (
             <Translate
-              t={t}
-              i18nKey={'action.discard-version.success'}
+              t={coreT}
+              i18nKey={'bundle.action.discard-version.success'}
               values={{title: document.document.title as string}}
             />
           ),
@@ -46,7 +49,7 @@ export const DocumentActions = memo(
         toast.push({
           closable: true,
           status: 'error',
-          title: t('action.discard-version.failure'),
+          title: coreT('bundle.action.discard-version.failure'),
         })
       } finally {
         setShowDiscardDialog(false)
@@ -62,7 +65,7 @@ export const DocumentActions = memo(
             menu={
               <Menu>
                 <MenuItem
-                  text={t('action.discard-version')}
+                  text={coreT('bundle.action.discard-version')}
                   icon={CloseIcon}
                   onClick={() => setShowDiscardDialog(true)}
                 />

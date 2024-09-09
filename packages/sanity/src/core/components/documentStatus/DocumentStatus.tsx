@@ -1,9 +1,12 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
+import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {useDateTimeFormat, useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
+import {type BundleDocument} from '../../store/bundles'
+import {PerspectiveBadge} from '../perspective/PerspectiveBadge'
 
 interface DocumentStatusProps {
   absoluteDate?: boolean
@@ -11,6 +14,7 @@ interface DocumentStatusProps {
   published?: PreviewValue | Partial<SanityDocument> | null
   version?: PreviewValue | Partial<SanityDocument> | null
   singleLine?: boolean
+  currentGlobalBundle?: Partial<BundleDocument>
 }
 
 const StyledText = styled(Text)`
@@ -33,6 +37,7 @@ export function DocumentStatus({
   published,
   version,
   singleLine,
+  currentGlobalBundle,
 }: DocumentStatusProps) {
   const {t} = useTranslation()
   const draftUpdatedAt = draft && '_updatedAt' in draft ? draft._updatedAt : ''
@@ -67,6 +72,18 @@ export function DocumentStatus({
     ? versionDateAbsolute || draftDateAbsolute
     : versionUpdatedTimeAgo || draftUpdatedTimeAgo
 
+  const {title} = currentGlobalBundle || {}
+
+  const documentStatus = useMemo(() => {
+    if (published && '_id' in published) {
+      return 'published'
+    } else if (version && '_id' in version) {
+      return 'version'
+    }
+
+    return 'draft'
+  }, [published, version])
+
   return (
     <Flex
       align={singleLine ? 'center' : 'flex-start'}
@@ -75,6 +92,10 @@ export function DocumentStatus({
       gap={2}
       wrap="nowrap"
     >
+      {version && currentGlobalBundle && (
+        <PerspectiveBadge releaseTitle={title} documentStatus={documentStatus} />
+      )}
+
       {!version && !publishedDate && (
         <StyledText size={1} weight="medium">
           {t('document-status.not-published')}
