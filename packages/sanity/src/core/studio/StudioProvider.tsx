@@ -1,5 +1,5 @@
 import {ToastProvider} from '@sanity/ui'
-import {lazy, type ReactNode, useMemo} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import Refractor from 'react-refractor'
 import bash from 'refractor/lang/bash.js'
 import javascript from 'refractor/lang/javascript.js'
@@ -31,7 +31,6 @@ import {StudioTelemetryProvider} from './StudioTelemetryProvider'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
-
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)

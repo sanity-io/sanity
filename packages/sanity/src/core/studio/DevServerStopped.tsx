@@ -1,9 +1,6 @@
 /* eslint-disable i18next/no-literal-string -- will not support i18n in error boundaries */
-import {Card, Container, Heading, Stack, Text, useToast} from '@sanity/ui'
+import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useEffect, useRef, useState} from 'react'
-
-// eslint-disable-next-line no-console
-console.log('LOADED DEV SERVER STATUS')
 
 const ERROR_TITLE = 'Dev server stopped'
 const ERROR_DESCRIPTION =
@@ -43,26 +40,6 @@ const useDetectDevServerStopped = () => {
   }, [])
 
   return {devServerStopped}
-}
-
-export const DevServerStoppedToast = (): null => {
-  const {devServerStopped} = useDetectDevServerStopped()
-  const toast = useToast()
-
-  useEffect(() => {
-    if (devServerStopped) {
-      toast.push({
-        id: 'dev-server-stopped',
-        duration: 60000,
-        closable: true,
-        status: 'error',
-        title: ERROR_TITLE,
-        description: ERROR_DESCRIPTION,
-      })
-    }
-  }, [devServerStopped, toast])
-
-  return null
 }
 
 export const DetectDevServerStopped = (): null => {

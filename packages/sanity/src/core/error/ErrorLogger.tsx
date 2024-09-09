@@ -1,15 +1,9 @@
 import {useToast} from '@sanity/ui'
-import {lazy, useEffect} from 'react'
+import {useEffect} from 'react'
 
 import {ConfigResolutionError, SchemaError} from '../config'
 import {CorsOriginError} from '../store'
 import {globalScope} from '../util'
-
-const DevServerStoppedToast = lazy(() =>
-  import('../studio/DevServerStopped').then((DevServerStopped) => ({
-    default: DevServerStopped.DevServerStoppedToast,
-  })),
-)
 
 const errorChannel = globalScope.__sanityErrorChannel
 
@@ -19,7 +13,7 @@ const errorChannel = globalScope.__sanityErrorChannel
  *
  * @internal
  */
-export function ErrorLogger() {
+export function ErrorLogger(): null {
   const {push: pushToast} = useToast()
 
   useEffect(() => {
@@ -54,7 +48,7 @@ export function ErrorLogger() {
     })
   }, [pushToast])
 
-  return process.env.NODE_ENV === 'development' ? <DevServerStoppedToast /> : null
+  return null
 }
 
 function isKnownError(err: Error): boolean {
