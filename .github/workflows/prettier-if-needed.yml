@@ -72,5 +72,6 @@ jobs:
           branch: actions/prettier-if-needed
           commit-message: "chore(prettier): fix unformatted files 🤖 ✨"
           labels: 🤖 bot
+          sign-commits: true
           title: "chore(prettier): fix unformatted files 🤖 ✨"
           token: ${{ steps.app-token.outputs.token }}
