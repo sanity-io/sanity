@@ -74,5 +74,6 @@ jobs:
           branch: actions/lint-fix-if-needed
           commit-message: "chore(lint): fix linter issues 🤖 ✨"
           labels: 🤖 bot
+          sign-commits: true
           title: "chore(lint): fix linter issues 🤖 ✨"
           token: ${{ steps.app-token.outputs.token }}
