@@ -23,13 +23,7 @@ export const IntentButton = forwardRef(function IntentButton(
         linkRef: ForwardedRef<HTMLAnchorElement>,
       ) {
         return (
-          <IntentLink
-            {...linkProps}
-            intent={intent.type}
-            params={intent.params}
-            ref={linkRef}
-            searchParams={intent.searchParams}
-          />
+          <IntentLink {...linkProps} intent={intent.type} params={intent.params} ref={linkRef} />
         )
       }),
     [intent],

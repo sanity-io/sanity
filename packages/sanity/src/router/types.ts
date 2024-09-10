@@ -265,11 +265,6 @@ export interface RouterContextValue {
   navigateUrl: (opts: {path: string; replace?: boolean}) => void
 
   /**
-   * Navigates to the current URL with the sticky url search param set to the given value
-   */
-  navigateStickyParam: (param: string, value: string, options?: NavigateOptions) => void
-
-  /**
    * Navigates to the given router state.
    * See {@link RouterState} and {@link NavigateOptions}
    */
@@ -285,9 +280,4 @@ export interface RouterContextValue {
    * The current router state. See {@link RouterState}
    */
   state: RouterState
-
-  /**
-   * The current router state. See {@link RouterState}
-   */
-  stickyParams: Record<string, string | undefined>
 }
