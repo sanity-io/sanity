@@ -16,19 +16,19 @@ import {
   DeletedRelease,
   UnarchivedRelease,
 } from '../../../bundles/__telemetry__/releases.telemetry'
-import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
+import {ReleaseDetailsDialog} from '../../../bundles/components/dialog/ReleaseDetailsDialog'
 import {Translate, useTranslation} from '../../../i18n'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 
-export type BundleMenuButtonProps = {
+export type ReleaseMenuButtonProps = {
   disabled?: boolean
   bundle?: BundleDocument
   documentCount?: number
 }
 
-export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuButtonProps) => {
+export const ReleaseMenuButton = ({disabled, bundle, documentCount}: ReleaseMenuButtonProps) => {
   const {deleteBundle, updateBundle} = useBundleOperations()
   const router = useRouter()
   const isBundleArchived = !!bundle?.archivedAt
@@ -108,7 +108,7 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
             data-testid="release-menu-button"
           />
         }
-        id="bundle-menu"
+        id="release-menu"
         menu={
           <Menu>
             <MenuItem
@@ -164,7 +164,7 @@ export const BundleMenuButton = ({disabled, bundle, documentCount}: BundleMenuBu
         </Dialog>
       )}
       {selectedAction === 'edit' && (
-        <BundleDetailsDialog
+        <ReleaseDetailsDialog
           onCancel={resetSelectedAction}
           onSubmit={resetSelectedAction}
           bundle={bundle}

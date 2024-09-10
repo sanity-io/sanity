@@ -1,7 +1,7 @@
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {useBundlesStore} from 'sanity'
-import {BundlesMetadataContext} from 'sanity/_singletons'
+import {ReleasesMetadataContext} from 'sanity/_singletons'
 
 import {type MetadataWrapper} from '../../store/bundles/createBundlesMetadataAggregator'
 import {type BundlesMetadata} from '../tool/useBundlesMetadata'
@@ -9,7 +9,7 @@ import {type BundlesMetadata} from '../tool/useBundlesMetadata'
 /**
  * @internal
  */
-export interface BundlesMetadataContextValue {
+export interface ReleasesMetadataContextValue {
   state: MetadataWrapper
   addBundleIdsToListener: (slugs: string[]) => void
   removeBundleIdsFromListener: (slugs: string[]) => void
@@ -88,20 +88,20 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
   )
 
   return (
-    <BundlesMetadataContext.Provider value={context}>{children}</BundlesMetadataContext.Provider>
+    <ReleasesMetadataContext.Provider value={context}>{children}</ReleasesMetadataContext.Provider>
   )
 }
 
 export const BundlesMetadataProvider = ({children}: {children: React.ReactNode}) => {
-  const context = useContext(BundlesMetadataContext)
+  const context = useContext(ReleasesMetadataContext)
 
   // Avoid mounting the provider if it's already provided by a parent
   if (context) return children
   return <BundlesMetadataProviderInner>{children}</BundlesMetadataProviderInner>
 }
 
-export const useBundlesMetadataProvider = (): BundlesMetadataContextValue => {
-  const contextValue = useContext(BundlesMetadataContext)
+export const useBundlesMetadataProvider = (): ReleasesMetadataContextValue => {
+  const contextValue = useContext(ReleasesMetadataContext)
 
   return (
     contextValue || {
