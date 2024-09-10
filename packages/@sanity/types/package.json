@@ -49,8 +49,8 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.21.2",
-    "@types/react": "^18.3.3"
+    "@sanity/client": "^6.21.3",
+    "@types/react": "^18.3.5"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
