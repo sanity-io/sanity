@@ -25,15 +25,15 @@ export function getPreviewStateObservable(
   schemaType: SchemaType,
   documentId: string,
   title: ReactNode,
-  bundlePerspective?: string,
+  perspective?: string,
 ): Observable<PreviewState> {
   const draft$ = isLiveEditEnabled(schemaType)
     ? of({snapshot: null})
     : documentPreviewStore.observeForPreview({_id: getDraftId(documentId)}, schemaType)
 
-  const version$ = bundlePerspective
+  const version$ = perspective
     ? documentPreviewStore.observeForPreview(
-        {_id: getVersionId(documentId, bundlePerspective)},
+        {_id: getVersionId(documentId, perspective)},
         schemaType,
       )
     : of({snapshot: null})

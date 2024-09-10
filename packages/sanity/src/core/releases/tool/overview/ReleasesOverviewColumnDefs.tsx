@@ -3,7 +3,7 @@ import {type TFunction, Translate, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Tooltip} from '../../../../ui-components'
-import {BundleBadge} from '../../../bundles'
+import {ReleaseBadge} from '../../../bundles'
 import {RelativeTime, UserAvatar} from '../../../components'
 import {type TableRowProps} from '../../components/Table/Table'
 import {Headers} from '../../components/Table/TableHeader'
@@ -36,7 +36,7 @@ const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}
         <Card {...cardProps} padding={2} radius={2}>
           <Flex align="center" gap={2}>
             <Box flex="none">
-              <BundleBadge hue={bundle.hue} icon={bundle.icon} />
+              <ReleaseBadge hue={bundle.hue} icon={bundle.icon} />
             </Box>
             <Stack flex={1} space={2}>
               <Flex align="center" gap={2}>

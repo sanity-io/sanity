@@ -14,7 +14,7 @@ import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/c
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {BundleIconEditorPicker, type BundleIconEditorPickerValue} from './BundleIconEditorPicker'
+import {ReleaseIconEditorPicker, type ReleaseIconEditorPickerValue} from './ReleaseIconEditorPicker'
 
 interface BaseBundleDocument extends Partial<BundleDocument> {
   hue: ColorHueKey
@@ -28,7 +28,7 @@ export const DEFAULT_BUNDLE: BaseBundleDocument = {
   icon: 'cube',
 }
 
-export function BundleForm(props: {
+export function ReleaseForm(props: {
   onChange: (params: FormBundleDocument) => void
   value: FormBundleDocument
 }): JSX.Element {
@@ -50,7 +50,7 @@ export function BundleForm(props: {
     publishedAt ? dateFormatter.format(new Date(publishedAt)) : undefined,
   )
 
-  const iconValue: BundleIconEditorPickerValue = useMemo(
+  const iconValue: ReleaseIconEditorPickerValue = useMemo(
     () => ({
       icon: icon ?? DEFAULT_BUNDLE.icon,
       hue: hue ?? DEFAULT_BUNDLE.hue,
@@ -89,7 +89,7 @@ export function BundleForm(props: {
   )
 
   const handleIconValueChange = useCallback(
-    (pickedIcon: BundleIconEditorPickerValue) => {
+    (pickedIcon: ReleaseIconEditorPickerValue) => {
       onChange({...value, icon: pickedIcon.icon, hue: pickedIcon.hue})
     },
     [onChange, value],
@@ -98,12 +98,12 @@ export function BundleForm(props: {
   return (
     <Stack space={5}>
       <Flex>
-        <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
+        <ReleaseIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
       </Flex>
       <Stack space={3}>
-        <FormFieldHeaderText title={t('bundle.form.title')} validation={titleErrors} />
+        <FormFieldHeaderText title={t('release.form.title')} validation={titleErrors} />
         <TextInput
-          data-testid="bundle-form-title"
+          data-testid="release-form-title"
           onChange={handleBundleTitleChange}
           customValidity={titleErrors.length > 0 ? 'error' : undefined}
           value={title}
@@ -112,12 +112,12 @@ export function BundleForm(props: {
 
       <Stack space={3}>
         <Text size={1} weight="medium">
-          {t('bundle.form.description')}
+          {t('release.form.description')}
         </Text>
         <TextArea
           onChange={handleBundleDescriptionChange}
           value={description}
-          data-testid="bundle-form-description"
+          data-testid="release-form-description"
         />
       </Stack>
 

@@ -4,7 +4,13 @@ import {Box, Button} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {memo, useMemo} from 'react'
-import {BundleBadge, type BundleDocument, BundlesMenu, usePerspective, useTranslation} from 'sanity'
+import {
+  type BundleDocument,
+  ReleaseBadge,
+  ReleasesMenu,
+  usePerspective,
+  useTranslation,
+} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
 
@@ -45,7 +51,7 @@ const ReleaseLink = ({release}: {release: Partial<BundleDocument>}) => {
       rel="noopener noreferrer"
       as={IntentLink}
     >
-      <BundleBadge hue={hue} title={title} icon={icon} padding={2} />
+      <ReleaseBadge hue={hue} title={title} icon={icon} padding={2} />
     </BadgeButton>
   )
 }
@@ -57,10 +63,10 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
 
   const {documentVersions, existsInBundle} = useDocumentPane()
 
-  const bundlesMenuButton = useMemo(
+  const releasesMenuButton = useMemo(
     () => (
       <StudioButton
-        tooltipProps={{content: t('bundle.version-list.tooltip')}}
+        tooltipProps={{content: t('release.version-list.tooltip')}}
         icon={ChevronDownIcon}
         mode="bleed"
       />
@@ -75,8 +81,8 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
 
       <Box flex="none">
-        <BundlesMenu
-          button={bundlesMenuButton}
+        <ReleasesMenu
+          button={releasesMenuButton}
           bundles={documentVersions}
           loading={!documentVersions}
           perspective={paneRouter.perspective}

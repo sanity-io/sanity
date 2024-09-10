@@ -11,7 +11,7 @@ import {useBundles} from '../../store/bundles/useBundles'
 import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/util'
-import {BundleBadge} from './BundleBadge'
+import {ReleaseBadge} from './ReleaseBadge'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -33,7 +33,7 @@ interface BundleListProps {
 /**
  * @internal
  */
-export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): ReactElement {
+export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): ReactElement {
   const {bundles, loading, actions, button, perspective} = props
   const {deletedBundles} = useBundles()
   const {currentGlobalBundle, setPerspective} = usePerspective(perspective)
@@ -64,9 +64,9 @@ export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): Re
     <>
       <MenuButton
         button={button}
-        id="bundle-menu"
+        id="release-menu"
         menu={
-          <StyledMenu data-testid="bundle-menu">
+          <StyledMenu data-testid="release-menu">
             {loading ? (
               <Flex padding={4} justify="center" data-testid="spinner">
                 <Spinner muted />
@@ -99,11 +99,11 @@ export const BundlesMenu = memo(function BundlesMenu(props: BundleListProps): Re
                         >
                           <Tooltip
                             disabled={!isBundleDeleted(bundle._id)}
-                            content={t('bundle.deleted-tooltip')}
+                            content={t('release.deleted-tooltip')}
                             placement="bottom-start"
                           >
                             <Flex>
-                              <BundleBadge
+                              <ReleaseBadge
                                 hue={bundle.hue}
                                 icon={bundle.icon}
                                 padding={2}

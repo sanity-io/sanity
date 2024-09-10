@@ -7,7 +7,7 @@ import {type RouterContextValue, useRouter} from 'sanity/router'
 import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
 import {useBundles} from '../../../store/bundles'
-import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
+import {ReleaseMenuButton} from '../../components/ReleaseMenuButton/ReleaseMenuButton'
 import {ReleasePublishAllButton} from '../../components/ReleasePublishAllButton/ReleasePublishAllButton'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleasesRouterState} from '../../types/router'
@@ -138,7 +138,7 @@ export const ReleaseDetail = () => {
                 disabled={isPublishButtonDisabled}
               />
             )}
-            <BundleMenuButton
+            <ReleaseMenuButton
               disabled={isBundleDeleted}
               bundle={headerBundle}
               documentCount={results.length}

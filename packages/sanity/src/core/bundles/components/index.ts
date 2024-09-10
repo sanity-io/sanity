@@ -1,3 +1,3 @@
-export * from './BundleBadge'
-export * from './BundlesMenu'
-export * from './panes/BundleActions'
+export * from './panes/ReleaseActions'
+export * from './ReleaseBadge'
+export * from './ReleasesMenu'

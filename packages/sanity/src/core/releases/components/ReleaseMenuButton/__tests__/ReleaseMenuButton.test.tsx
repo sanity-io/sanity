@@ -7,7 +7,7 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
-import {BundleMenuButton, type BundleMenuButtonProps} from '../BundleMenuButton'
+import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
 jest.mock('sanity', () => ({
   useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
@@ -25,12 +25,16 @@ jest.mock('sanity/router', () => ({
   useRouter: jest.fn().mockReturnValue({state: {}, navigate: jest.fn()}),
 }))
 
-const renderTest = async ({bundle, documentCount = 2, disabled = false}: BundleMenuButtonProps) => {
+const renderTest = async ({
+  bundle,
+  documentCount = 2,
+  disabled = false,
+}: ReleaseMenuButtonProps) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
   return render(
-    <BundleMenuButton disabled={disabled} bundle={bundle} documentCount={documentCount} />,
+    <ReleaseMenuButton disabled={disabled} bundle={bundle} documentCount={documentCount} />,
     {wrapper},
   )
 }
@@ -46,7 +50,6 @@ describe('BundleMenuButton', () => {
       _type: 'release',
       archivedAt: undefined,
       title: 'activeBundle',
-      slug: 'activeBundle',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -75,7 +78,6 @@ describe('BundleMenuButton', () => {
       _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeBundle',
-      slug: 'activeBundle',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -103,7 +105,6 @@ describe('BundleMenuButton', () => {
       _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeBundle',
-      slug: 'activeBundle',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -135,7 +136,6 @@ describe('BundleMenuButton', () => {
       _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeEmptyBundle',
-      slug: 'activeEmptyBundle',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -168,7 +168,6 @@ describe('BundleMenuButton', () => {
       _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeEmptyBundle',
-      slug: 'activeEmptyBundle',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
