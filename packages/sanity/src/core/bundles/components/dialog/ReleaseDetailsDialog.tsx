@@ -14,16 +14,16 @@ import {
 } from '../../__telemetry__/releases.telemetry'
 import {usePerspective} from '../../hooks/usePerspective'
 import {createReleaseId} from '../../util/createReleaseId'
-import {BundleForm} from './BundleForm'
+import {ReleaseForm} from './ReleaseForm'
 
-interface BundleDetailsDialogProps {
+interface ReleaseDetailsDialogProps {
   onCancel: () => void
   onSubmit: () => void
   bundle?: BundleDocument
   origin?: OriginInfo['origin']
 }
 
-export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Element {
+export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Element {
   const {onCancel, onSubmit, bundle, origin} = props
   const toast = useToast()
   const {createBundle, updateBundle} = useBundleOperations()
@@ -88,13 +88,13 @@ export function BundleDetailsDialog(props: BundleDetailsDialogProps): JSX.Elemen
   }, [])
 
   const dialogTitle =
-    formAction === 'edit' ? t('bundle.dialog.edit.title') : t('bundle.dialog.create.title')
+    formAction === 'edit' ? t('release.dialog.edit.title') : t('release.dialog.create.title')
 
   return (
     <Dialog header={dialogTitle} id="create-bundle-dialog" onClose={onCancel} width={1}>
       <form onSubmit={handleOnSubmit}>
         <Box padding={4}>
-          <BundleForm onChange={handleOnChange} value={value} />
+          <ReleaseForm onChange={handleOnChange} value={value} />
         </Box>
         <Flex justify="flex-end" paddingTop={5}>
           <Button

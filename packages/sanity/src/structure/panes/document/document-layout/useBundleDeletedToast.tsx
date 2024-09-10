@@ -25,7 +25,7 @@ export const useBundleDeletedToast = () => {
           <Text muted size={1}>
             <Translate
               t={t}
-              i18nKey="bundle.deleted-toast-title"
+              i18nKey="release.deleted-toast-title"
               values={{title: deletedBundleTitle}}
             />
           </Text>

@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 
-import {useBundlesMetadataProvider} from '../contexts/BundlesMetadataProvider'
+import {useBundlesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 
 export interface BundlesMetadata {
   /**

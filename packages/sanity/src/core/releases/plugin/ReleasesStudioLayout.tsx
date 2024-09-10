@@ -1,6 +1,6 @@
 import {type LayoutProps} from '../../config'
 import {AddonDatasetProvider} from '../../studio'
-import {BundlesMetadataProvider} from '../contexts/BundlesMetadataProvider'
+import {BundlesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 
 export function ReleasesStudioLayout(props: LayoutProps) {
   // TODO: Replace for useReleasesEnabled

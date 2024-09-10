@@ -3,9 +3,9 @@ import {AvatarStack, Box, Flex, Heading, Stack, Text, useToast} from '@sanity/ui
 import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {
-  BundleIconEditorPicker,
-  type BundleIconEditorPickerValue,
-} from '../../../bundles/components/dialog/BundleIconEditorPicker'
+  ReleaseIconEditorPicker,
+  type ReleaseIconEditorPickerValue,
+} from '../../../bundles/components/dialog/ReleaseIconEditorPicker'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {Translate, useTranslation} from '../../../i18n'
@@ -47,7 +47,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {updateBundle} = useBundleOperations()
 
-  const [iconValue, setIconValue] = useState<BundleIconEditorPickerValue>(setIconHue({hue, icon}))
+  const [iconValue, setIconValue] = useState<ReleaseIconEditorPickerValue>(setIconHue({hue, icon}))
   const toast = useToast()
   const handleIconValueChange = useCallback(
     async (value: {hue: BundleDocument['hue']; icon: BundleDocument['icon']}) => {
@@ -105,7 +105,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     <>
       <Stack space={4} data-testid="summary" paddingTop={6} paddingBottom={5}>
         <Flex>
-          <BundleIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
+          <ReleaseIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
         </Flex>
 
         <Heading size={2} style={{margin: '1px 0'}} as="h1">

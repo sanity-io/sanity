@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 
 import {Button, Popover, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
-import {BundleBadge} from '../BundleBadge'
+import {ReleaseBadge} from '../ReleaseBadge'
 
 const StyledStack = styled(Stack)`
   border-top: 1px solid var(--card-border-color);
@@ -17,14 +17,14 @@ const IconPickerFlex = styled(Flex)`
   max-width: 269px;
 `
 
-export interface BundleIconEditorPickerValue {
+export interface ReleaseIconEditorPickerValue {
   hue: BundleDocument['hue']
   icon: BundleDocument['icon']
 }
 
-export function BundleIconEditorPicker(props: {
-  onChange: (value: BundleIconEditorPickerValue) => void
-  value: BundleIconEditorPickerValue
+export function ReleaseIconEditorPicker(props: {
+  onChange: (value: ReleaseIconEditorPickerValue) => void
+  value: ReleaseIconEditorPickerValue
 }): JSX.Element {
   const {onChange, value} = props
 
@@ -92,7 +92,7 @@ export function BundleIconEditorPicker(props: {
                 icon={SearchIcon}
                 onChange={handleIconSearchQueryChange}
                 padding={2}
-                placeholder={t('bundle.form.search-icon')}
+                placeholder={t('release.form.search-icon')}
                 space={2}
                 value={iconSearchQuery}
               />
@@ -125,7 +125,7 @@ export function BundleIconEditorPicker(props: {
     >
       <div>
         <Button
-          tooltipProps={{content: t('bundle.form.search-icon-tooltip')}}
+          tooltipProps={{content: t('release.form.search-icon-tooltip')}}
           mode="bleed"
           onClick={handleOnPickerOpen}
           ref={setButton}
@@ -134,7 +134,7 @@ export function BundleIconEditorPicker(props: {
           data-testid="icon-picker-button"
         >
           <Box style={{margin: -8}}>
-            <BundleBadge hue={value.hue} icon={value.icon} />
+            <ReleaseBadge hue={value.hue} icon={value.icon} />
           </Box>
         </Button>
       </div>

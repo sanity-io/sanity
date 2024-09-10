@@ -38,7 +38,7 @@ export const DocumentActions = memo(
           description: (
             <Translate
               t={coreT}
-              i18nKey={'bundle.action.discard-version.success'}
+              i18nKey={'release.action.discard-version.success'}
               values={{title: document.document.title as string}}
             />
           ),
@@ -49,7 +49,7 @@ export const DocumentActions = memo(
         toast.push({
           closable: true,
           status: 'error',
-          title: coreT('bundle.action.discard-version.failure'),
+          title: coreT('release.action.discard-version.failure'),
         })
       } finally {
         setShowDiscardDialog(false)
@@ -65,7 +65,7 @@ export const DocumentActions = memo(
             menu={
               <Menu>
                 <MenuItem
-                  text={coreT('bundle.action.discard-version')}
+                  text={coreT('release.action.discard-version')}
                   icon={CloseIcon}
                   onClick={() => setShowDiscardDialog(true)}
                 />
