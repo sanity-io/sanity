@@ -1,7 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {useEffect} from 'react'
 import {
-  isVersionId,
   unstable_useValuePreview as useValuePreview,
   useEditState,
   useSchema,
@@ -66,6 +65,7 @@ export const StructureTitle = (props: StructureTitleProps) => {
   if (!resolvedPanes?.length) return null
 
   const lastPane = resolvedPanes[resolvedPanes.length - 1]
+
   // If the last pane is loading, display the structure tool title only
   if (isLoadingPane(lastPane)) {
     return <PassthroughTitle />
@@ -77,11 +77,9 @@ export const StructureTitle = (props: StructureTitleProps) => {
     if (lastPane?.title) {
       return <PassthroughTitle title={lastPane.title} />
     }
-    const documentId = lastPane.options.id
-    // noop if the documentId is a versionId - it's an error if we reach this point
-    if (isVersionId(documentId)) return null
+
     // Otherwise, display a `document.title` containing the resolved Sanity document title
-    return <DocumentTitle documentId={documentId} documentType={lastPane.options.type} />
+    return <DocumentTitle documentId={lastPane.options.id} documentType={lastPane.options.type} />
   }
 
   // Otherwise, display the last pane's title (if present)

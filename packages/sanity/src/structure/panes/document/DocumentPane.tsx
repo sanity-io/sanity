@@ -4,7 +4,6 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, useMemo} from 'react'
 import {
   CopyPasteProvider,
-  isVersionId,
   ReferenceInputOptionsProvider,
   SourceProvider,
   Translate,
@@ -126,20 +125,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       </ErrorPane>
     )
   }
-  if (isVersionId(options.id)) {
-    return (
-      <ErrorPane
-        flex={2.5}
-        minWidth={320}
-        paneKey={paneKey}
-        title={t('panes.document-pane.document-not-supported-version.title')}
-      >
-        <Stack space={4}>
-          <Text as="p">{t('panes.document-pane.document-not-supported-version.text')}</Text>
-        </Stack>
-      </ErrorPane>
-    )
-  }
+
   return (
     <DocumentPaneProvider
       // this needs to be here to avoid formState from being re-used across (incompatible) document types
