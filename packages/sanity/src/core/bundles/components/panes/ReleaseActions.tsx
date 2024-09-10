@@ -113,7 +113,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
         description: (
           <Translate
             t={t}
-            i18nKey={'bundle.action.discard-version.success'}
+            i18nKey={'release.action.discard-version.success'}
             values={{title: document.title as string}}
           />
         ),
@@ -124,7 +124,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
       toast.push({
         closable: true,
         status: 'error',
-        title: t('bundle.action.discard-version.failure'),
+        title: t('release.action.discard-version.failure'),
       })
     }
 
@@ -135,13 +135,13 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
 
   const bundleActionButtonProps = isInVersion
     ? {
-        text: t('bundle.action.discard-version', {title}),
+        text: t('release.action.discard-version', {title}),
         icon: TrashIcon,
         tone: 'caution' as const,
         onClick: handleDiscardVersion,
       }
     : {
-        text: t('bundle.action.add-to-release', {title}),
+        text: t('release.action.add-to-release', {title}),
         icon: AddIcon,
         tone: 'primary' as const,
         onClick: handleAddVersion,
