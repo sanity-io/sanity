@@ -128,34 +128,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':
     "The '<strong>{{title}}</strong>' release has been deleted.",
-  /** Action message to add document to release */
-  'bundle.action.add-to-release': 'Add to {{title}}',
-  /** Action message for creating releases */
-  'bundle.action.create': 'Create release',
-  /** Action message for when document is already in release  */
-  'bundle.action.discard-version': 'Discard version',
-  /** Description for toast when version discarding failed */
-  'bundle.action.discard-version.failure': 'Failed to discard version',
-  /** Description for toast when version deletion is successfully discarded */
-  'bundle.action.discard-version.success':
-    '<strong>{{title}}</strong> version was successfully discarded',
-
-  /** Label for tooltip on deleted release */
-  'bundle.deleted-tooltip': 'This release has been deleted',
-  /** Title for creating releases dialog */
-  'bundle.dialog.create.title': 'Create release',
-  /** Title for editing releases dialog */
-  'bundle.dialog.edit.title': 'Edit release',
-  /** Label for the description form field when creating releases */
-  'bundle.form.description': 'Description',
-  /** Placeholder for the icon and colour picker */
-  'bundle.form.search-icon': 'Search icons',
-  /** Tooltip label for the icon display */
-  'bundle.form.search-icon-tooltip': 'Select release icon',
-  /** Label for the title form field when creating releases */
-  'bundle.form.title': 'Title',
-  /** Tooltip for the dropdown to show all versions of document */
-  'bundle.version-list.tooltip': 'See all document versions',
 
   /** Action message for navigating to next month */
   'calendar.action.go-to-next-month': 'Go to next month',
@@ -1165,6 +1137,36 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /* Relative time, just now */
   'relative-time.just-now': 'just now',
+
+  /** Action message to add document to release */
+  'release.action.add-to-release': 'Add to {{title}}',
+  /** Action message for when document is already in release  */
+  'release.action.already-in-release': 'Already in release {{title}}',
+  /** Action message for creating releases */
+  'release.action.create': 'Create release',
+  /** Action message for when document is already in release  */
+  'release.action.discard-version': 'Discard version',
+  /** Description for toast when version discarding failed */
+  'release.action.discard-version.failure': 'Failed to discard version',
+  /** Description for toast when version deletion is successfully discarded */
+  'release.action.discard-version.success':
+    '<strong>{{title}}</strong> version was successfully discarded',
+  /** Label for tooltip on deleted release */
+  'release.deleted-tooltip': 'This release has been deleted',
+  /** Title for creating releases dialog */
+  'release.dialog.create.title': 'Create release',
+  /** Title for editing releases dialog */
+  'release.dialog.edit.title': 'Edit release',
+  /** Label for the description form field when creating releases */
+  'release.form.description': 'Description',
+  /** Placeholder for the icon and colour picker */
+  'release.form.search-icon': 'Search icons',
+  /** Tooltip label for the icon display */
+  'release.form.search-icon-tooltip': 'Select release icon',
+  /** Label for the title form field when creating releases */
+  'release.form.title': 'Title',
+  /** Tooltip for the dropdown to show all versions of document */
+  'release.version-list.tooltip': 'See all document versions',
 
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',

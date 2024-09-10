@@ -5,9 +5,9 @@ import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {MenuItem} from '../../../../../ui-components'
-import {BundleBadge} from '../../../../bundles/components/BundleBadge'
-import {BundlesMenu} from '../../../../bundles/components/BundlesMenu'
-import {BundleDetailsDialog} from '../../../../bundles/components/dialog/BundleDetailsDialog'
+import {ReleaseDetailsDialog} from '../../../../bundles/components/dialog/ReleaseDetailsDialog'
+import {ReleaseBadge} from '../../../../bundles/components/ReleaseBadge'
+import {ReleasesMenu} from '../../../../bundles/components/ReleasesMenu'
 import {usePerspective} from '../../../../bundles/hooks/usePerspective'
 import {useBundles} from '../../../../store/bundles'
 
@@ -37,7 +37,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
   const bundleMenuButton = useMemo(
     () => (
       <Button mode="bleed" padding={0} radius="full">
-        <BundleBadge hue={hue} icon={icon} openButton padding={2} title={title} />
+        <ReleaseBadge hue={hue} icon={icon} openButton padding={2} title={title} />
       </Button>
     ),
     [hue, icon, title],
@@ -45,14 +45,18 @@ export function GlobalPerspectiveMenu(): JSX.Element {
 
   const bundleMenuActions = useMemo(
     () => (
-      <MenuItem icon={AddIcon} onClick={handleCreateBundleClick} text={t('bundle.action.create')} />
+      <MenuItem
+        icon={AddIcon}
+        onClick={handleCreateBundleClick}
+        text={t('release.action.create')}
+      />
     ),
     [handleCreateBundleClick, t],
   )
 
   return (
     <>
-      <BundlesMenu
+      <ReleasesMenu
         button={bundleMenuButton}
         bundles={menuBundles}
         loading={loading}
@@ -60,7 +64,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       />
 
       {createBundleDialogOpen && (
-        <BundleDetailsDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
+        <ReleaseDetailsDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
       )}
     </>
   )

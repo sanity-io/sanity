@@ -4,10 +4,10 @@ import {isBefore} from 'date-fns'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
-import {BundleDetailsDialog} from '../../../bundles/components/dialog/BundleDetailsDialog'
+import {ReleaseDetailsDialog} from '../../../bundles/components/dialog/ReleaseDetailsDialog'
 import {useTranslation} from '../../../i18n'
 import {type BundleDocument, useBundles} from '../../../store'
-import {BundleMenuButton} from '../../components/BundleMenuButton/BundleMenuButton'
+import {ReleaseMenuButton} from '../../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableProps} from '../../components/Table/Table'
 import {type TableSort} from '../../components/Table/TableProvider'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -134,7 +134,7 @@ export function ReleasesOverview() {
         icon={AddIcon}
         disabled={isCreateBundleDialogOpen}
         onClick={() => setIsCreateBundleDialogOpen(true)}
-        text={tCore('bundle.action.create')}
+        text={tCore('release.action.create')}
       />
     ),
     [isCreateBundleDialogOpen, tCore],
@@ -144,7 +144,7 @@ export function ReleasesOverview() {
     if (!isCreateBundleDialogOpen) return null
 
     return (
-      <BundleDetailsDialog
+      <ReleaseDetailsDialog
         onCancel={() => setIsCreateBundleDialogOpen(false)}
         onSubmit={() => setIsCreateBundleDialogOpen(false)}
         origin="release-plugin"
@@ -167,7 +167,7 @@ export function ReleasesOverview() {
     if (bundle.isDeleted) return null
 
     return (
-      <BundleMenuButton bundle={bundle} documentCount={bundle.documentsMetadata?.documentCount} />
+      <ReleaseMenuButton bundle={bundle} documentCount={bundle.documentsMetadata?.documentCount} />
     )
   }, [])
 
