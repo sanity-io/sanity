@@ -27,7 +27,7 @@ Options
   --coupon <name> Optionally select a coupon for a new project (cannot be used with --project-plan)
   --no-typescript Do not use TypeScript for template files
   --package-manager <name> Specify which package manager to use [allowed: ${allowedPackageManagersString}]
-  --no-auto-updates Disable import maps that keep your studio up-to-date with the latest Sanity versions
+  --no-auto-updates Disable auto updates of studio versions
 
 Examples
   # Initialize a new project, prompt for required information along the way
