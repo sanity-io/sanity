@@ -59,7 +59,7 @@ importers:
         version: 0.10.0(debug@4.3.6)
       '@sanity/pkg-utils':
         specifier: 6.11.0
-        version: 6.11.0(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.5.4)
+        version: 6.11.0(@types/babel__core@7.20.5)(@types/node@18.19.44)(typescript@5.5.4)
       '@sanity/prettier-config':
         specifier: ^1.0.2
         version: 1.0.2(prettier@3.3.3)
@@ -67,8 +67,8 @@ importers:
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
-        specifier: 1.0.101
-        version: 1.0.101(@types/babel__core@7.20.5)(@types/node@18.19.44)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))(terser@5.31.6)
+        specifier: 1.0.103
+        version: 1.0.103(@types/babel__core@7.20.5)(@types/node@18.19.44)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))(terser@5.31.6)
       '@sanity/ui':
         specifier: ^2.8.9
         version: 2.8.9(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
@@ -1719,10 +1719,10 @@ importers:
         version: 3.0.0
       '@sanity/pkg-utils':
         specifier: 6.11.0
-        version: 6.11.0(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.5.4)
+        version: 6.11.0(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.6.2)
       '@sanity/tsdoc':
-        specifier: 1.0.101
-        version: 1.0.101(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.31.6)
+        specifier: 1.0.103
+        version: 1.0.103(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.31.6)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
         version: 1.2.11(@sanity/icons@3.4.0(react@18.3.1))(@sanity/ui@2.8.9(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@18.19.44)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.31.6)
@@ -4448,16 +4448,6 @@ packages:
   '@sanity/test@0.0.1-alpha.1':
     resolution: {integrity: sha512-o2X2Veh9YWyVK/Iou/cToSS6ufcTLREoCVMcvBQbSqCFUIGaN1Ko3zxChJMWdf39dyaJ/ixMKtc8pciF/tL6Sw==}
     hasBin: true
-
-  '@sanity/tsdoc@1.0.101':
-    resolution: {integrity: sha512-UrwO6+820D0n8O3zhj/f94cvYfhGm6W4oGlndbTSFE1jFSkF3UN9/vsAUT8UrnUzeI3Rnvf15jy0rXvz2p8YIw==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    peerDependencies:
-      react: ^18
-      react-dom: ^18
-      sanity: ^3
-      styled-components: ^5.2 || ^6
 
   '@sanity/tsdoc@1.0.103':
     resolution: {integrity: sha512-waN+skICcbzUdWTO6FAGlEUAUsvaVGhQKYt3MM+vnTzzMBEWdl8SolpR3aYRUOkuzrhfzqdnip744uwShkJevQ==}
@@ -14338,7 +14328,58 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sanity/pkg-utils@6.11.0(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.5.4)':
+  '@sanity/pkg-utils@6.11.0(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.6.2)':
+    dependencies:
+      '@babel/core': 7.25.2
+      '@babel/preset-typescript': 7.24.7(@babel/core@7.25.2)
+      '@babel/types': 7.25.6
+      '@microsoft/api-extractor': 7.47.7(@types/node@18.19.44)
+      '@microsoft/tsdoc-config': 0.17.0
+      '@optimize-lodash/rollup-plugin': 5.0.0(rollup@4.21.2)
+      '@rollup/plugin-alias': 5.1.0(rollup@4.21.2)
+      '@rollup/plugin-babel': 6.0.4(@babel/core@7.25.2)(@types/babel__core@7.20.5)(rollup@4.21.2)
+      '@rollup/plugin-commonjs': 26.0.1(rollup@4.21.2)
+      '@rollup/plugin-json': 6.1.0(rollup@4.21.2)
+      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.21.2)
+      '@rollup/plugin-replace': 5.0.7(rollup@4.21.2)
+      '@rollup/plugin-terser': 0.4.4(rollup@4.21.2)
+      '@sanity/browserslist-config': 1.0.3
+      babel-plugin-react-compiler: 0.0.0-experimental-e68eda9-20240829
+      browserslist: 4.23.3
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      esbuild: 0.23.1
+      esbuild-register: 3.6.0(esbuild@0.23.1)
+      find-config: 1.0.0
+      get-latest-version: 5.1.0(debug@4.3.6)
+      git-url-parse: 15.0.0
+      globby: 11.1.0
+      jsonc-parser: 3.3.1
+      mkdirp: 3.0.1
+      outdent: 0.8.0
+      parse-git-config: 3.0.0
+      pkg-up: 3.1.0
+      prettier: 3.3.3
+      pretty-bytes: 5.6.0
+      prompts: 2.4.2
+      recast: 0.23.9
+      rimraf: 4.4.1
+      rollup: 4.21.2
+      rollup-plugin-esbuild: 6.1.1(esbuild@0.23.1)(rollup@4.21.2)
+      rxjs: 7.8.1
+      treeify: 1.1.0
+      typescript: 5.6.2
+      uuid: 10.0.0
+      zod: 3.23.8
+      zod-validation-error: 3.3.1(zod@3.23.8)
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - supports-color
+
+  '@sanity/pkg-utils@6.11.0(@types/babel__core@7.20.5)(@types/node@18.19.44)(typescript@5.5.4)':
     dependencies:
       '@babel/core': 7.25.2
       '@babel/preset-typescript': 7.24.7(@babel/core@7.25.2)
@@ -14389,7 +14430,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/pkg-utils@6.11.1(@types/babel__core@7.20.5)(@types/node@18.19.44)(typescript@5.6.2)':
+  '@sanity/pkg-utils@6.11.1(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.6.2)':
     dependencies:
       '@babel/core': 7.25.2
       '@babel/preset-typescript': 7.24.7(@babel/core@7.25.2)
@@ -14502,7 +14543,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/tsdoc@1.0.101(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.31.6)':
+  '@sanity/tsdoc@1.0.103(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.31.6)':
     dependencies:
       '@microsoft/api-extractor': 7.47.7(@types/node@18.19.44)
       '@microsoft/api-extractor-model': 7.29.6(@types/node@18.19.44)
@@ -14513,7 +14554,7 @@ snapshots:
       '@sanity/client': 6.21.3(debug@4.3.6)
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.4.0(react@18.3.1)
-      '@sanity/pkg-utils': 6.11.0(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.5.4)
+      '@sanity/pkg-utils': 6.11.1(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.6.2)
       '@sanity/ui': 2.8.9(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.1(vite@5.4.3(@types/node@18.19.44)(terser@5.31.6))
@@ -14539,60 +14580,7 @@ snapshots:
       slugify: 1.6.6
       styled-components: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tmp: 0.2.3
-      typescript: 5.5.4
-      vite: 5.4.3(@types/node@18.19.44)(terser@5.31.6)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - less
-      - lightningcss
-      - react-is
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
-  '@sanity/tsdoc@1.0.101(@types/babel__core@7.20.5)(@types/node@18.19.44)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))(terser@5.31.6)':
-    dependencies:
-      '@microsoft/api-extractor': 7.47.7(@types/node@18.19.44)
-      '@microsoft/api-extractor-model': 7.29.6(@types/node@18.19.44)
-      '@microsoft/tsdoc': 0.15.0
-      '@microsoft/tsdoc-config': 0.17.0
-      '@portabletext/react': 3.1.0(react@19.0.0-rc-f994737d14-20240522)
-      '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.21.3(debug@4.3.6)
-      '@sanity/color': 3.0.6
-      '@sanity/icons': 3.4.0(react@19.0.0-rc-f994737d14-20240522)
-      '@sanity/pkg-utils': 6.11.0(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.5.4)
-      '@sanity/ui': 2.8.9(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
-      '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.1(vite@5.4.3(@types/node@18.19.44)(terser@5.31.6))
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      cors: 2.8.5
-      dotenv-flow: 3.3.0
-      esbuild: 0.23.1
-      esbuild-register: 3.6.0(esbuild@0.23.1)
-      express: 4.19.2
-      globby: 11.1.0
-      groq: link:packages/groq
-      groq-js: 1.13.0
-      history: 5.3.0
-      jsonc-parser: 3.3.1
-      mkdirp: 1.0.4
-      pkg-up: 3.1.0
-      react: 19.0.0-rc-f994737d14-20240522
-      react-dom: 19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522)
-      react-refractor: 2.2.0(react@19.0.0-rc-f994737d14-20240522)
-      sanity: link:packages/sanity
-      slugify: 1.6.6
-      styled-components: 6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
-      tmp: 0.2.3
-      typescript: 5.5.4
+      typescript: 5.6.2
       vite: 5.4.3(@types/node@18.19.44)(terser@5.31.6)
     transitivePeerDependencies:
       - '@types/babel__core'
@@ -14619,7 +14607,7 @@ snapshots:
       '@sanity/client': 6.21.3(debug@4.3.6)
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.4.0(react@18.3.1)
-      '@sanity/pkg-utils': 6.11.1(@types/babel__core@7.20.5)(@types/node@18.19.44)(typescript@5.6.2)
+      '@sanity/pkg-utils': 6.11.1(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.6.2)
       '@sanity/ui': 2.8.9(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.1(vite@5.4.3(@types/node@18.19.44)(terser@5.31.6))
@@ -14644,6 +14632,59 @@ snapshots:
       sanity: link:packages/sanity
       slugify: 1.6.6
       styled-components: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tmp: 0.2.3
+      typescript: 5.6.2
+      vite: 5.4.3(@types/node@18.19.44)(terser@5.31.6)
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - less
+      - lightningcss
+      - react-is
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
+  '@sanity/tsdoc@1.0.103(@types/babel__core@7.20.5)(@types/node@18.19.44)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))(terser@5.31.6)':
+    dependencies:
+      '@microsoft/api-extractor': 7.47.7(@types/node@18.19.44)
+      '@microsoft/api-extractor-model': 7.29.6(@types/node@18.19.44)
+      '@microsoft/tsdoc': 0.15.0
+      '@microsoft/tsdoc-config': 0.17.0
+      '@portabletext/react': 3.1.0(react@19.0.0-rc-f994737d14-20240522)
+      '@portabletext/toolkit': 2.0.15
+      '@sanity/client': 6.21.3(debug@4.3.6)
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 3.4.0(react@19.0.0-rc-f994737d14-20240522)
+      '@sanity/pkg-utils': 6.11.1(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.6)(typescript@5.6.2)
+      '@sanity/ui': 2.8.9(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
+      '@types/cpx': 1.5.5
+      '@vitejs/plugin-react': 4.3.1(vite@5.4.3(@types/node@18.19.44)(terser@5.31.6))
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      cors: 2.8.5
+      dotenv-flow: 3.3.0
+      esbuild: 0.23.1
+      esbuild-register: 3.6.0(esbuild@0.23.1)
+      express: 4.19.2
+      globby: 11.1.0
+      groq: link:packages/groq
+      groq-js: 1.13.0
+      history: 5.3.0
+      jsonc-parser: 3.3.1
+      mkdirp: 1.0.4
+      pkg-up: 3.1.0
+      react: 19.0.0-rc-f994737d14-20240522
+      react-dom: 19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522)
+      react-refractor: 2.2.0(react@19.0.0-rc-f994737d14-20240522)
+      sanity: link:packages/sanity
+      slugify: 1.6.6
+      styled-components: 6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
       tmp: 0.2.3
       typescript: 5.6.2
       vite: 5.4.3(@types/node@18.19.44)(terser@5.31.6)

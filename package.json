@@ -113,7 +113,7 @@
     "@sanity/pkg-utils": "6.11.0",
     "@sanity/prettier-config": "^1.0.2",
     "@sanity/test": "0.0.1-alpha.1",
-    "@sanity/tsdoc": "1.0.101",
+    "@sanity/tsdoc": "1.0.103",
     "@sanity/ui": "^2.8.9",
     "@sanity/uuid": "^3.0.2",
     "@types/glob": "^7.2.0",
