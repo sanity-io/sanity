@@ -17,6 +17,7 @@ const MemoReleaseDocumentPreview = memo(
     item: DocumentInBundleResult
     releaseSlug: string
   }) {
+    console.log('BANANAS', ReleaseDocumentPreview)
     return (
       <ReleaseDocumentPreview
         documentId={item.document._id}

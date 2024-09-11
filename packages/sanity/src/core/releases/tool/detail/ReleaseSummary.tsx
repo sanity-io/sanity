@@ -101,6 +101,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [],
   )
 
+  console.log({documentTableColumnDefs})
+
   return (
     <>
       <Stack space={4} data-testid="summary" paddingTop={6} paddingBottom={5}>

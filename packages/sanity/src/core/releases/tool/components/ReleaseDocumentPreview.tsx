@@ -31,6 +31,8 @@ export function ReleaseDocumentPreview({
   const documentPresence = useDocumentPresence(documentId)
   const {t} = useTranslation(releasesLocaleNamespace)
 
+  console.log('JOJAMES', SanityDefaultPreview)
+
   const LinkComponent = useMemo(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-shadow

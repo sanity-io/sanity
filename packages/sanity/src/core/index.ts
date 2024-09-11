@@ -1,12 +1,4 @@
-export {
-  getDocumentIsInPerspective,
-  LATEST,
-  ReleaseActions,
-  ReleaseBadge,
-  ReleasesMenu,
-  useDocumentVersions,
-  usePerspective,
-} from './bundles'
+export {getDocumentIsInPerspective, LATEST} from './bundles'
 export * from './changeIndicators'
 export {
   CommentInput,
@@ -30,6 +22,8 @@ export * from './hooks'
 export * from './i18n'
 export * from './presence'
 export * from './preview'
+export {ReleaseActions, ReleaseBadge, ReleasesMenu} from './releases/components'
+export {useDocumentVersions, usePerspective} from './releases/hooks'
 export * from './scheduledPublishing'
 export * from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'

@@ -5,10 +5,10 @@ import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {MenuItem} from '../../../../../ui-components'
-import {usePerspective} from '../../../../bundles/hooks/usePerspective'
 import {ReleaseDetailsDialog} from '../../../../releases/components/dialog/ReleaseDetailsDialog'
 import {ReleaseBadge} from '../../../../releases/components/ReleaseBadge'
 import {ReleasesMenu} from '../../../../releases/components/ReleasesMenu'
+import {usePerspective} from '../../../../releases/hooks/usePerspective'
 import {useBundles} from '../../../../store/bundles'
 
 export function GlobalPerspectiveMenu(): JSX.Element {

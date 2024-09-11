@@ -10,10 +10,10 @@ import {
   type OriginInfo,
   UpdatedRelease,
 } from '../../../bundles/__telemetry__/releases.telemetry'
-import {usePerspective} from '../../../bundles/hooks/usePerspective'
 import {createReleaseId} from '../../../bundles/util/createReleaseId'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
+import {usePerspective} from '../../hooks'
 import {ReleaseForm} from './ReleaseForm'
 
 interface ReleaseDetailsDialogProps {

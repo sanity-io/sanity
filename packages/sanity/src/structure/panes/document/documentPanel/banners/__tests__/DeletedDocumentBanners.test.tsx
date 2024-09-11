@@ -11,7 +11,7 @@ jest.mock('../../../useDocumentPane', () => ({
   useDocumentPane: jest.fn(),
 }))
 
-jest.mock('../../../../../../core/bundles/hooks/usePerspective', () => ({
+jest.mock('../../../../../../core/releases/hooks/usePerspective', () => ({
   usePerspective: jest.fn(),
 }))
 

@@ -1,8 +1,8 @@
 import {useRouter} from 'sanity/router'
 
+import {LATEST} from '../../bundles'
 import {useBundles} from '../../store/bundles'
 import {type BundleDocument} from '../../store/bundles/types'
-import {LATEST} from '../util/const'
 
 /**
  * @internal

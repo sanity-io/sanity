@@ -122,6 +122,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
 
   const layoutComponent = _previewComponents[layout || 'default']
 
+  console.log('MICHAEL', _previewComponents, layout)
   const children = createElement(
     layoutComponent as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
     previewProps,

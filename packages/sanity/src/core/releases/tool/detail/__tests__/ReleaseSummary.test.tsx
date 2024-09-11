@@ -56,7 +56,7 @@ const releaseDocuments: DocumentInBundleResult[] = [
     },
   },
   {
-    memoKey: 'key123',
+    memoKey: 'key456',
     document: {
       _id: '456',
       _type: 'document',
