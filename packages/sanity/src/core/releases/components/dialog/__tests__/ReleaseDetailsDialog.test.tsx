@@ -3,8 +3,8 @@ import {fireEvent, render, screen, waitFor, within} from '@testing-library/react
 import {type BundleDocument, useBundles} from 'sanity'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {usePerspective} from '../../../../bundles/hooks/usePerspective'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
-import {usePerspective} from '../../../hooks/usePerspective'
 import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
 
 /*jest.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
@@ -22,7 +22,7 @@ jest.mock('../../../../store/bundles/useBundleOperations', () => ({
   }),
 }))
 
-jest.mock('../../../hooks/usePerspective', () => ({
+jest.mock('../../../../bundles/hooks/usePerspective', () => ({
   usePerspective: jest.fn().mockReturnValue({
     setPerspective: jest.fn(),
   }),

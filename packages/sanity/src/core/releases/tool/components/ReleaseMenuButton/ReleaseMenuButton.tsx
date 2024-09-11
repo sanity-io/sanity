@@ -16,10 +16,10 @@ import {
   DeletedRelease,
   UnarchivedRelease,
 } from '../../../../bundles/__telemetry__/releases.telemetry'
-import {ReleaseDetailsDialog} from '../../../../bundles/components/dialog/ReleaseDetailsDialog'
 import {Translate, useTranslation} from '../../../../i18n'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
+import {ReleaseDetailsDialog} from '../../../components/dialog/ReleaseDetailsDialog'
 import {releasesLocaleNamespace} from '../../../i18n'
 
 export type ReleaseMenuButtonProps = {

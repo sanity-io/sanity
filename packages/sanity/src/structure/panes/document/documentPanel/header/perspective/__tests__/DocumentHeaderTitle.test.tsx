@@ -9,12 +9,12 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
-import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {structureUsEnglishLocaleBundle} from '../../../../i18n'
-import {type DocumentPaneContextValue} from '../../DocumentPaneContext'
-import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentHeaderTitle} from './DocumentHeaderTitle'
+import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
+import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
+import {useDocumentPane} from '../../../../useDocumentPane'
+import {DocumentHeaderTitle} from '../../DocumentHeaderTitle'
 
 function createWrapperComponent(client: SanityClient) {
   const config = defineConfig({
@@ -29,7 +29,7 @@ function createWrapperComponent(client: SanityClient) {
   })
 }
 
-jest.mock('../../useDocumentPane')
+jest.mock('../../../../useDocumentPane')
 
 jest.mock('sanity', () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -43,7 +43,7 @@ jest.mock('sanity', () => {
 
 jest.mock('sanity/router')
 
-jest.mock('../../../../../core/store/bundles/useBundles', () => ({
+jest.mock('../../../../../../../core/store/bundles/useBundles', () => ({
   useBundles: jest.fn(),
 }))
 

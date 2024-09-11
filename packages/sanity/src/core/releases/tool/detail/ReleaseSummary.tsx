@@ -2,15 +2,15 @@ import {DocumentsIcon} from '@sanity/icons'
 import {AvatarStack, Box, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
 import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 
-import {
-  ReleaseIconEditorPicker,
-  type ReleaseIconEditorPickerValue,
-} from '../../../bundles/components/dialog/ReleaseIconEditorPicker'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {Translate, useTranslation} from '../../../i18n'
 import {type BundleDocument} from '../../../store/bundles/types'
 import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
+import {
+  ReleaseIconEditorPicker,
+  type ReleaseIconEditorPickerValue,
+} from '../../components/dialog/ReleaseIconEditorPicker'
 import {releasesLocaleNamespace} from '../../i18n'
 import {Chip} from '../components/Chip'
 import {Table, type TableProps} from '../components/Table/Table'

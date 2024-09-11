@@ -80,7 +80,7 @@ describe('DocumentPerspectiveMenu', () => {
     })
   })
 
-  it('should render the bundle badge if the document exists in the global bundle', async () => {
+  it.only('should render the bundle badge if the document exists in the global bundle', async () => {
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [
         {

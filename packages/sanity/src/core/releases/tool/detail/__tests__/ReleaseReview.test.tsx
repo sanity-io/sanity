@@ -131,7 +131,7 @@ jest.mock('sanity/router', () => ({
   }),
 }))
 
-jest.mock('../../../../bundles/components/ReleasesMenu', () => ({
+jest.mock('../../../components/ReleasesMenu', () => ({
   ReleasesMenu: () => <div>ReleasesMenu</div>,
 }))
 

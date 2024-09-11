@@ -23,7 +23,7 @@ jest.mock('../../../../user-color', () => ({
   useUserColor: jest.fn().mockReturnValue('red'),
 }))
 
-jest.mock('../../../../bundles/components/ReleasesMenu', () => ({
+jest.mock('../../../components/ReleasesMenu', () => ({
   ReleasesMenu: () => <div>ReleasesMenu</div>,
 }))
 
