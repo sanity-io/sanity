@@ -3,17 +3,17 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {act} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {type BundleDocument} from '../../../../store/bundles/types'
-import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
-import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {type BundleDocument} from '../../../../../store/bundles/types'
+import {useBundleOperations} from '../../../../../store/bundles/useBundleOperations'
+import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
 jest.mock('sanity', () => ({
   useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
 }))
 
-jest.mock('../../../../store/bundles/useBundleOperations', () => ({
+jest.mock('../../../../../store/bundles/useBundleOperations', () => ({
   useBundleOperations: jest.fn().mockReturnValue({
     deleteBundle: jest.fn(),
     updateBundle: jest.fn(),

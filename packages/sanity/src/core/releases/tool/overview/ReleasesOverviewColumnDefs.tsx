@@ -5,10 +5,10 @@ import {useRouter} from 'sanity/router'
 import {Tooltip} from '../../../../ui-components'
 import {ReleaseBadge} from '../../../bundles'
 import {RelativeTime, UserAvatar} from '../../../components'
-import {type TableRowProps} from '../../components/Table/Table'
-import {Headers} from '../../components/Table/TableHeader'
-import {type Column} from '../../components/Table/types'
 import {releasesLocaleNamespace} from '../../i18n'
+import {type TableRowProps} from '../components/Table/Table'
+import {Headers} from '../components/Table/TableHeader'
+import {type Column} from '../components/Table/types'
 import {type TableBundle} from './ReleasesOverview'
 
 const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}) => {

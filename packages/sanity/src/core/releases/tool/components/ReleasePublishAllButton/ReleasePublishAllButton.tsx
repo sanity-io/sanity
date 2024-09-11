@@ -4,12 +4,12 @@ import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {type BundleDocument} from 'sanity'
 
-import {Button, Dialog} from '../../../../ui-components'
-import {PublishedRelease} from '../../../bundles/__telemetry__/releases.telemetry'
-import {Translate, useTranslation} from '../../../i18n'
-import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
-import {releasesLocaleNamespace} from '../../i18n'
-import {type DocumentInBundleResult} from '../../tool/detail/useBundleDocuments'
+import {Button, Dialog} from '../../../../../ui-components'
+import {PublishedRelease} from '../../../../bundles/__telemetry__/releases.telemetry'
+import {Translate, useTranslation} from '../../../../i18n'
+import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
+import {releasesLocaleNamespace} from '../../../i18n'
+import {type DocumentInBundleResult} from '../../../tool/detail/useBundleDocuments'
 import {useObserveDocumentRevisions} from './useObserveDocumentRevisions'
 
 interface ReleasePublishAllButtonProps {

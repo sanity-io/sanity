@@ -17,8 +17,8 @@ import {
 } from 'react'
 import {styled} from 'styled-components'
 
-import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {LoadingBlock} from '../../../components'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {LoadingBlock} from '../../../../components'
 import {TableHeader} from './TableHeader'
 import {TableProvider, type TableSort, useTableContext} from './TableProvider'
 import {type Column} from './types'

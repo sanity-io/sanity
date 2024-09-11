@@ -5,11 +5,11 @@ import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {DocumentPreviewPresence, useDocumentPresence} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
-import {Tooltip} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
-import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
-import {getPublishedId} from '../../util/draftUtils'
-import {releasesLocaleNamespace} from '../i18n'
+import {Tooltip} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
+import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
+import {getPublishedId} from '../../../util/draftUtils'
+import {releasesLocaleNamespace} from '../../i18n'
 
 interface ReleaseDocumentPreviewProps {
   documentId: string

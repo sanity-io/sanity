@@ -1,7 +1,7 @@
 import {ArrowDownIcon, ArrowUpIcon, SearchIcon} from '@sanity/icons'
 import {Card, Flex, Stack, TextInput} from '@sanity/ui'
 
-import {Button, type ButtonProps} from '../../../../ui-components'
+import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTableContext} from './TableProvider'
 import {type HeaderProps, type TableHeaderProps} from './types'
 

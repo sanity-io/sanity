@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {TableContextValue} from '../../core/releases/components/Table/TableProvider'
+import type {TableContextValue} from '../../core/releases/tool/components/Table/TableProvider'
 
 /**
  * @internal
