@@ -58,41 +58,39 @@ export function sanityFaviconsPlugin({
       const webManifest = JSON.stringify(generateWebManifest(staticUrlPath), null, 2)
       const webManifestPath = `${staticUrlPath}/manifest.webmanifest`
 
-      return () => {
-        viteDevServer.middlewares.use(async (req, res, next) => {
-          if (req.url?.endsWith(webManifestPath)) {
-            res.writeHead(200, 'OK', {'content-type': 'application/manifest+json'})
-            res.write(webManifest)
-            res.end()
-            return
-          }
-
-          const parsedUrl =
-            ((req as any)._parsedUrl as URL) || new URL(req.url || '/', 'http://localhost:3333')
-
-          const pathName = parsedUrl.pathname || ''
-          const fileName = path.basename(pathName || '')
-          const icons = await getFavicons()
-          const isIconRequest =
-            pathName.startsWith('/favicon.ico') ||
-            (icons.includes(fileName) && pathName.includes(staticUrlPath))
-
-          if (!isIconRequest) {
-            next()
-            return
-          }
-
-          const faviconPath =
-            fileName === 'favicon.ico' && (await hasCustomFavicon())
-              ? path.join(customFaviconsPath, 'favicon.ico')
-              : path.join(defaultFaviconsPath, fileName)
-
-          const mimeType = mimeTypes[path.extname(fileName)] || 'application/octet-stream'
-          res.writeHead(200, 'OK', {'content-type': mimeType})
-          res.write(await fs.readFile(faviconPath))
+      viteDevServer.middlewares.use(async (req, res, next) => {
+        if (req.url?.endsWith(webManifestPath)) {
+          res.writeHead(200, 'OK', {'content-type': 'application/manifest+json'})
+          res.write(webManifest)
           res.end()
-        })
-      }
+          return
+        }
+
+        const parsedUrl =
+          ((req as any)._parsedUrl as URL) || new URL(req.url || '/', 'http://localhost:3333')
+
+        const pathName = parsedUrl.pathname || ''
+        const fileName = path.basename(pathName || '')
+        const icons = await getFavicons()
+        const isIconRequest =
+          pathName.startsWith('/favicon.ico') ||
+          (icons.includes(fileName) && pathName.includes(staticUrlPath))
+
+        if (!isIconRequest) {
+          next()
+          return
+        }
+
+        const faviconPath =
+          fileName === 'favicon.ico' && (await hasCustomFavicon())
+            ? path.join(customFaviconsPath, 'favicon.ico')
+            : path.join(defaultFaviconsPath, fileName)
+
+        const mimeType = mimeTypes[path.extname(fileName)] || 'application/octet-stream'
+        res.writeHead(200, 'OK', {'content-type': mimeType})
+        res.write(await fs.readFile(faviconPath))
+        res.end()
+      })
     },
   }
 }
