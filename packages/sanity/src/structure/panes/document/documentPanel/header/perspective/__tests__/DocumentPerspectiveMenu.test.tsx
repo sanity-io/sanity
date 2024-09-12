@@ -101,8 +101,6 @@ describe('DocumentPerspectiveMenu', () => {
     const wrapper = await createTestProvider()
     render(<DocumentPerspectiveMenu />, {wrapper})
 
-    screen.debug()
-
     const linkButton = screen.getByRole('link', {name: 'Spring Drop'})
     expect(linkButton).toBeInTheDocument()
     expect(linkButton).toHaveAttribute('href', '/intent/release/id=spring-drop')

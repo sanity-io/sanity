@@ -145,7 +145,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
   )
 }
 
-describe.skip('ReleaseSummary', () => {
+describe('ReleaseSummary', () => {
   beforeEach(async () => {
     jest.clearAllMocks()
 

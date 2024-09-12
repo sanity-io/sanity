@@ -6,11 +6,11 @@ import {type BundleDocument, useBundles} from 'sanity'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {Button} from '../../../../ui-components'
-import {usePerspective} from '../../hooks'
+import {usePerspective} from '../../hooks/usePerspective'
 import {LATEST} from '../../util/const'
 import {ReleasesMenu} from '../ReleasesMenu'
 
-jest.mock('../../hooks', () => ({
+jest.mock('../../hooks/usePerspective', () => ({
   usePerspective: jest.fn().mockReturnValue({
     currentGlobalBundle: {},
     setPerspective: jest.fn(),

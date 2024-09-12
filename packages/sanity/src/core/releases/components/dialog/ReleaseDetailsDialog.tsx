@@ -12,7 +12,7 @@ import {
   type OriginInfo,
   UpdatedRelease,
 } from '../../__telemetry__/releases.telemetry'
-import {usePerspective} from '../../hooks'
+import {usePerspective} from '../../hooks/usePerspective'
 import {createReleaseId} from '../../util/createReleaseId'
 import {ReleaseForm} from './ReleaseForm'
 

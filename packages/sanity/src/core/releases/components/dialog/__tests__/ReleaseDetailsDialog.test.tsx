@@ -4,7 +4,7 @@ import {type BundleDocument, useBundles} from 'sanity'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
-import {usePerspective} from '../../../hooks'
+import {usePerspective} from '../../../hooks/usePerspective'
 import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
 
 /*jest.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
@@ -22,7 +22,7 @@ jest.mock('../../../../store/bundles/useBundleOperations', () => ({
   }),
 }))
 
-jest.mock('../../../hooks', () => ({
+jest.mock('../../../hooks/usePerspective', () => ({
   usePerspective: jest.fn().mockReturnValue({
     setPerspective: jest.fn(),
   }),
