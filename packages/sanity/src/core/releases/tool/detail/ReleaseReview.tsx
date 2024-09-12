@@ -1,4 +1,3 @@
-/* eslint-disable unused-imports/no-unused-imports */
 import {SearchIcon} from '@sanity/icons'
 import {Box, Container, Flex, Text, TextInput} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
@@ -7,7 +6,6 @@ import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BundleDocument} from '../../../store/bundles/types'
-import {SearchButtonValueReference} from '../../components/SearchButtonValueReference'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
 import {DocumentDiffContainer} from './review/DocumentDiffContainer'

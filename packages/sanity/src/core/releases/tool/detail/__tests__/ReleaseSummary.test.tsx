@@ -1,6 +1,6 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen, within} from '@testing-library/react'
-import {type BundleDocument, defineType} from 'sanity'
+import {type BundleDocument, type DefaultPreview, defineType} from 'sanity'
 import {route, RouterProvider} from 'sanity/router'
 
 import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
@@ -26,6 +26,17 @@ jest.mock('../../../../user-color', () => ({
 jest.mock('../../../components/ReleasesMenu', () => ({
   ReleasesMenu: () => <div>ReleasesMenu</div>,
 }))
+
+jest.mock('../../../../components', () => {
+  const {DefaultPreview: actualDefaultPreview} = jest.requireActual(
+    '../../../../components/previews/general/DefaultPreview',
+  ) as {DefaultPreview: typeof DefaultPreview}
+
+  return {
+    ...(jest.requireActual('../../../../components') || {}),
+    DefaultPreview: actualDefaultPreview,
+  }
+})
 
 const timeNow = new Date()
 
