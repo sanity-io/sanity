@@ -17,7 +17,7 @@ jest.mock('../../hooks', () => ({
   }),
 }))
 
-jest.mock('../..//util/util', () => ({
+jest.mock('../../util/util', () => ({
   isDraftOrPublished: jest.fn(),
 }))
 

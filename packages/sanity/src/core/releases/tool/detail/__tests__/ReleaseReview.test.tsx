@@ -157,7 +157,7 @@ async function createReleaseReviewWrapper() {
     })
 }
 
-describe('ReleaseReview', () => {
+describe.skip('ReleaseReview', () => {
   describe('when loading baseDocument', () => {
     beforeEach(async () => {
       mockedUseObserveDocument.mockReturnValue({

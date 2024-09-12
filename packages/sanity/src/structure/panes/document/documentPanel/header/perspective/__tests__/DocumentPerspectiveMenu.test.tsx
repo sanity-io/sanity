@@ -80,7 +80,7 @@ describe('DocumentPerspectiveMenu', () => {
     })
   })
 
-  it.only('should render the bundle badge if the document exists in the global bundle', async () => {
+  it('should render the bundle badge if the document exists in the global bundle', async () => {
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [
         {
@@ -100,6 +100,8 @@ describe('DocumentPerspectiveMenu', () => {
 
     const wrapper = await createTestProvider()
     render(<DocumentPerspectiveMenu />, {wrapper})
+
+    screen.debug()
 
     const linkButton = screen.getByRole('link', {name: 'Spring Drop'})
     expect(linkButton).toBeInTheDocument()

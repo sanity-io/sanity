@@ -21,9 +21,15 @@ export * from './hooks'
 export * from './i18n'
 export * from './presence'
 export * from './preview'
-export {getDocumentIsInPerspective, LATEST} from './releases'
-export {ReleaseActions, ReleaseBadge, ReleasesMenu} from './releases/components'
-export {useDocumentVersions, usePerspective} from './releases/hooks'
+export {
+  getDocumentIsInPerspective,
+  LATEST,
+  ReleaseActions,
+  ReleaseBadge,
+  ReleasesMenu,
+  useDocumentVersions,
+  usePerspective,
+} from './releases'
 export * from './scheduledPublishing'
 export * from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'

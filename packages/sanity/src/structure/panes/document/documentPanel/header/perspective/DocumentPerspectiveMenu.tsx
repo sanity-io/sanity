@@ -4,11 +4,16 @@ import {Box, Button} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {memo, useMemo} from 'react'
-import {type BundleDocument, usePerspective, useTranslation} from 'sanity'
+import {
+  type BundleDocument,
+  ReleaseBadge,
+  ReleasesMenu,
+  usePerspective,
+  useTranslation,
+} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
 
-import {ReleaseBadge, ReleasesMenu} from '../../../../../../core/releases/components'
 import {Button as StudioButton} from '../../../../../../ui-components'
 import {usePaneRouter} from '../../../../../components'
 import {useDocumentPane} from '../../../useDocumentPane'
