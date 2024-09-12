@@ -1,12 +1,14 @@
 import {CloseIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Grid, Text} from '@sanity/ui'
-import {useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../ui-components'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../hooks'
 import {UpsellDescriptionSerializer} from '../upsell'
+import {StudioAnnouncementModalLinkClicked} from './__telemetry__/studioAnnouncements.telemetry'
 import {Divider} from './Divider'
 import {type StudioAnnouncementDocument} from './types'
 
@@ -37,12 +39,17 @@ const FloatingButton = styled(Button)`
 
 function DialogBody(props: {body: PortableTextBlock[]; header: string; publishedDate?: string}) {
   const {body = [], header, publishedDate} = props
+  const telemetry = useTelemetry()
   const dateFormatter = useDateTimeFormat(DATE_FORMAT_OPTIONS)
 
   const formattedDate = useMemo(() => {
     if (!publishedDate) return ''
     return dateFormatter.format(new Date(publishedDate))
   }, [publishedDate, dateFormatter])
+
+  const handleLinkClick = useCallback(() => {
+    telemetry.log(StudioAnnouncementModalLinkClicked)
+  }, [telemetry])
 
   return (
     <Box>
@@ -61,7 +68,7 @@ function DialogBody(props: {body: PortableTextBlock[]; header: string; published
         </Flex>
       </DialogHeader>
       <Box padding={4}>
-        <UpsellDescriptionSerializer blocks={body} />
+        <UpsellDescriptionSerializer blocks={body} onLinkClick={handleLinkClick} />
       </Box>
     </Box>
   )

@@ -176,7 +176,7 @@ function ImageBlock(
   )
 }
 
-const components: PortableTextComponents = {
+const createComponents = ({onLinkClick}: {onLinkClick?: () => void}): PortableTextComponents => ({
   block: {
     normal: ({children}) => <NormalBlock>{children}</NormalBlock>,
     h2: ({children}) => <H2Block>{children}</H2Block>,
@@ -222,6 +222,7 @@ const components: PortableTextComponents = {
         rel="noopener noreferrer"
         target="_blank"
         useTextColor={props.value.useTextColor}
+        onClick={onLinkClick}
       >
         {props.children}
         {props.value.showIcon && <LinkIcon style={{marginLeft: '2px'}} />}
@@ -274,10 +275,11 @@ const components: PortableTextComponents = {
     ),
     imageBlock: (props) => <ImageBlock {...props} />,
   },
-}
+})
 
 interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
+  onLinkClick?: () => void
 }
 
 /**
@@ -286,7 +288,11 @@ interface DescriptionSerializerProps {
  * @internal
  */
 export function UpsellDescriptionSerializer(props: DescriptionSerializerProps) {
-  const value = useMemo(() => transformBlocks(props.blocks), [props.blocks])
+  const {blocks, onLinkClick} = props
+
+  const value = useMemo(() => transformBlocks(blocks), [blocks])
+  const components = useMemo(() => createComponents({onLinkClick: onLinkClick}), [onLinkClick])
+
   return (
     <Card tone="default">
       <SerializerContainer>

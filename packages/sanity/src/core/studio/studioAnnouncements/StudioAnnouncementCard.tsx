@@ -91,9 +91,9 @@ export function StudioAnnouncementCard(props: {
   isOpen: boolean
   announcementType: StudioAnnouncementDocument['announcementType']
   onCardClick: () => void
-  onCardClose: () => void
+  onCardDismiss: () => void
 }) {
-  const {title, announcementType, onCardClick, isOpen, onCardClose} = props
+  const {title, announcementType, onCardClick, isOpen, onCardDismiss} = props
 
   return (
     <Popover
@@ -125,7 +125,7 @@ export function StudioAnnouncementCard(props: {
             <Button
               id="close-floating-button"
               mode="bleed"
-              onClick={onCardClose}
+              onClick={onCardDismiss}
               icon={RemoveIcon}
               tone="default"
               tooltipProps={{
