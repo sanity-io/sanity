@@ -49,11 +49,11 @@ export function createCliConfig(options: GenerateCliConfigOptions): string {
       },
     },
     Identifier: {
-      enter({node}) {
-        if (!node.name.startsWith('__BOOL__')) {
+      enter(path) {
+        if (!path.node.name.startsWith('__BOOL__')) {
           return
         }
-        const variableName = node.name.replace(
+        const variableName = path.node.name.replace(
           /^__BOOL__(.+?)__$/,
           '$1',
         ) as keyof GenerateCliConfigOptions
@@ -64,7 +64,7 @@ export function createCliConfig(options: GenerateCliConfigOptions): string {
         if (typeof value !== 'boolean') {
           throw new Error(`Expected boolean value for '${variableName}'`)
         }
-        node.name = value.toString()
+        path.replaceWith({type: 'BooleanLiteral', value})
       },
     },
   })
