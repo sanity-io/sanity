@@ -4,6 +4,7 @@ import {BuildSanityStudioCommandFlags} from '../../actions/build/buildAction'
 const helpText = `
 Options
   --source-maps Enable source maps for built bundles (increases size of bundle)
+  --auto-updates Enable auto updates of studio versions
   --no-minify Skip minifying built JavaScript (speeds up build, increases size of bundle)
   -y, --yes Unattended mode, answers "yes" to any "yes/no" prompt and otherwise uses defaults
 
