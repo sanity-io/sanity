@@ -1,4 +1,5 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
+import {type ReferenceValue} from '@sanity/types'
 import {act, fireEvent, render, screen, within} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
@@ -6,10 +7,22 @@ import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
+import {assetOperators} from '../../../../studio/components/navbar/search/definitions/operators/assetOperators'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseReview} from '../ReleaseReview'
 import {type DocumentInBundleResult} from '../useBundleDocuments'
 
+assetOperators.assetFileEqual.groqFilter({fieldPath: '', value: {} as any})
+
+const fieldPath = 'asset'
+const valueFile: ReferenceValue = {
+  _ref: 'refFile',
+  _type: 'sanity.fileAsset',
+}
+const valueImage: ReferenceValue = {
+  _ref: 'refImage',
+  _type: 'sanity.imageAsset',
+}
 const BASE_DOCUMENTS_MOCKS = {
   doc1: {
     name: 'William Faulkner',
@@ -169,7 +182,7 @@ describe('ReleaseReview', () => {
         wrapper,
       })
     })
-    it("should show the loader when the base document hasn't loaded", () => {
+    it.only("should show the loader when the base document hasn't loaded", () => {
       queryByDataUi(document.body, 'Spinner')
     })
   })

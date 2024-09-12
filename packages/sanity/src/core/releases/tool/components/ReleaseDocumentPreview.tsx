@@ -1,14 +1,17 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {type PreviewValue} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
-import {DocumentPreviewPresence, useDocumentPresence} from 'sanity'
+import {useTranslation} from 'react-i18next'
+import {
+  DocumentPreviewPresence,
+  getPublishedId,
+  type PreviewValue,
+  SanityDefaultPreview,
+  useDocumentPresence,
+} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
 import {Tooltip} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {getPublishedId} from '../../../util/draftUtils'
 import {releasesLocaleNamespace} from '../../i18n'
 
 interface ReleaseDocumentPreviewProps {
@@ -30,8 +33,6 @@ export function ReleaseDocumentPreview({
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
   const {t} = useTranslation(releasesLocaleNamespace)
-
-  console.log('JOJAMES', SanityDefaultPreview)
 
   const LinkComponent = useMemo(
     () =>

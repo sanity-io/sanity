@@ -8,7 +8,11 @@ import {
   MediaPreview,
 } from '../../components'
 
-console.log('_PREVCOMP', DefaultPreview)
+if (DefaultPreview) {
+  console.log('_PREVCOMP', DefaultPreview)
+} else {
+  console.log('_PREVCOMP', 'DefaultPreview not found')
+}
 
 export const _previewComponents = {
   block: BlockPreview,
