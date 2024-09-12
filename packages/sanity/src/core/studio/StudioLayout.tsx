@@ -15,6 +15,7 @@ import {
   useLayoutComponent,
   useNavbarComponent,
 } from './studio-components-hooks'
+import {StudioAnnouncements} from './studioAnnouncements/StudioAnnouncements'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
 
@@ -188,6 +189,7 @@ export function StudioLayoutComponent() {
           )}
         </Card>
       </StudioErrorBoundary>
+      <StudioAnnouncements />
     </Flex>
   )
 }
