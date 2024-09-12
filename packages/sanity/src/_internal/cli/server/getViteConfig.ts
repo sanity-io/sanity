@@ -11,7 +11,6 @@ import {getStudioEnvironmentVariables} from './getStudioEnvironmentVariables'
 import {normalizeBasePath} from './helpers'
 import {getMonorepoAliases, loadSanityMonorepo} from './sanityMonorepo'
 import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
-import {sanityDotWorkaroundPlugin} from './vite/plugin-sanity-dot-workaround'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
 
@@ -110,7 +109,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
         reactCompiler ? {babel: {plugins: [['babel-plugin-react-compiler', reactCompiler]]}} : {},
       ),
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
-      sanityDotWorkaroundPlugin(),
       sanityRuntimeRewritePlugin(),
       sanityBuildEntries({basePath, cwd, monorepo, importMap}),
     ],
