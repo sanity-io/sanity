@@ -11,14 +11,14 @@ import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
+import {Translate, useTranslation} from '../../../../i18n'
+import {type BundleDocument} from '../../../../store/bundles/types'
+import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {
   ArchivedRelease,
   DeletedRelease,
   UnarchivedRelease,
-} from '../../../../bundles/__telemetry__/releases.telemetry'
-import {Translate, useTranslation} from '../../../../i18n'
-import {type BundleDocument} from '../../../../store/bundles/types'
-import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
+} from '../../../__telemetry__/releases.telemetry'
 import {ReleaseDetailsDialog} from '../../../components/dialog/ReleaseDetailsDialog'
 import {releasesLocaleNamespace} from '../../../i18n'
 

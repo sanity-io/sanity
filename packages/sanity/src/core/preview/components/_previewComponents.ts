@@ -8,6 +8,8 @@ import {
   MediaPreview,
 } from '../../components'
 
+console.log('_PREVCOMP', DefaultPreview)
+
 export const _previewComponents = {
   block: BlockPreview,
   blockImage: BlockImagePreview,

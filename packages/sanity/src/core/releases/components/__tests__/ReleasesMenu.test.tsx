@@ -6,8 +6,8 @@ import {type BundleDocument, useBundles} from 'sanity'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {Button} from '../../../../ui-components'
-import {LATEST} from '../../../bundles/util/const'
 import {usePerspective} from '../../hooks'
+import {LATEST} from '../../util/const'
 import {ReleasesMenu} from '../ReleasesMenu'
 
 jest.mock('../../hooks', () => ({
@@ -17,7 +17,7 @@ jest.mock('../../hooks', () => ({
   }),
 }))
 
-jest.mock('../../../bundles/util/util', () => ({
+jest.mock('../..//util/util', () => ({
   isDraftOrPublished: jest.fn(),
 }))
 

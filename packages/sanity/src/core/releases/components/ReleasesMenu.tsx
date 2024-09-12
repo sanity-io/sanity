@@ -5,12 +5,12 @@ import {memo, type ReactElement, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {MenuButton, Tooltip} from '../../../ui-components'
-import {LATEST} from '../../bundles/util/const'
-import {isDraftOrPublished} from '../../bundles/util/util'
 import {useTranslation} from '../../i18n'
 import {type BundleDocument} from '../../store/bundles/types'
 import {useBundles} from '../../store/bundles/useBundles'
 import {usePerspective} from '../hooks'
+import {LATEST} from '../util/const'
+import {isDraftOrPublished} from '../util/util'
 import {ReleaseBadge} from './ReleaseBadge'
 
 const StyledMenu = styled(Menu)`

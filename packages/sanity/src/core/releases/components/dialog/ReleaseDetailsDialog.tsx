@@ -5,15 +5,15 @@ import {type FormEvent, useCallback, useState} from 'react'
 import {type FormBundleDocument, useTranslation} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
+import {type BundleDocument} from '../../../store/bundles/types'
+import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
 import {
   CreatedRelease,
   type OriginInfo,
   UpdatedRelease,
-} from '../../../bundles/__telemetry__/releases.telemetry'
-import {createReleaseId} from '../../../bundles/util/createReleaseId'
-import {type BundleDocument} from '../../../store/bundles/types'
-import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
+} from '../../__telemetry__/releases.telemetry'
 import {usePerspective} from '../../hooks'
+import {createReleaseId} from '../../util/createReleaseId'
 import {ReleaseForm} from './ReleaseForm'
 
 interface ReleaseDetailsDialogProps {
