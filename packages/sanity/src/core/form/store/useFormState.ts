@@ -2,13 +2,13 @@
 
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
-import {useLayoutEffect, useMemo, useRef} from 'react'
+import {useMemo} from 'react'
 
 import {type FormNodePresence} from '../../presence'
 import {useCurrentUser} from '../../store'
-import {type FIXME_SanityDocument, prepareFormState} from './formState'
+import {createCallbackResolver} from './conditional-property/createCallbackResolver'
+import {createPrepareFormState} from './formState'
 import {type ObjectFormNode, type StateTree} from './types'
-import {type DocumentFormNode} from './types/nodes'
 import {immutableReconcile} from './utils/immutableReconcile'
 
 /** @internal */
@@ -33,14 +33,14 @@ export function useFormState<
     openPath,
     presence,
     validation,
-    readOnly,
+    readOnly: inputReadOnly,
     changesOpen,
   }: {
     fieldGroupState?: StateTree<string> | undefined
     collapsedFieldSets?: StateTree<boolean> | undefined
     collapsedPaths?: StateTree<boolean> | undefined
-    value: Partial<FIXME_SanityDocument>
-    comparisonValue: Partial<FIXME_SanityDocument> | null
+    value: unknown
+    comparisonValue: unknown
     openPath: Path
     focusPath: Path
     presence: FormNodePresence[]
@@ -52,47 +52,96 @@ export function useFormState<
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
 
-  const prev = useRef<DocumentFormNode | null>(null)
+  const prepareHiddenState = useMemo(() => createCallbackResolver({property: 'hidden'}), [])
+  const prepareReadOnlyState = useMemo(() => createCallbackResolver({property: 'readOnly'}), [])
+  const prepareFormState = useMemo(() => createPrepareFormState(), [])
 
-  useLayoutEffect(() => {
-    prev.current = null
-  }, [schemaType])
+  const reconcileFieldGroupState = useMemo(() => {
+    let last: StateTree<string> | undefined
+    return (state: StateTree<string> | undefined) => {
+      const result = immutableReconcile(last ?? null, state)
+      last = result
+      return result
+    }
+  }, [])
+
+  const reconciledFieldGroupState = useMemo(() => {
+    return reconcileFieldGroupState(fieldGroupState)
+  }, [fieldGroupState, reconcileFieldGroupState])
+
+  const reconcileCollapsedPaths = useMemo(() => {
+    let last: StateTree<boolean> | undefined
+    return (state: StateTree<boolean> | undefined) => {
+      const result = immutableReconcile(last ?? null, state)
+      last = result
+      return result
+    }
+  }, [])
+  const reconciledCollapsedPaths = useMemo(
+    () => reconcileCollapsedPaths(collapsedPaths),
+    [collapsedPaths, reconcileCollapsedPaths],
+  )
+
+  const reconcileCollapsedFieldsets = useMemo(() => {
+    let last: StateTree<boolean> | undefined
+    return (state: StateTree<boolean> | undefined) => {
+      const result = immutableReconcile(last ?? null, state)
+      last = result
+      return result
+    }
+  }, [])
+  const reconciledCollapsedFieldsets = useMemo(
+    () => reconcileCollapsedFieldsets(collapsedFieldSets),
+    [collapsedFieldSets, reconcileCollapsedFieldsets],
+  )
+
+  const {hidden, readOnly} = useMemo(() => {
+    return {
+      hidden: prepareHiddenState({
+        currentUser,
+        document: value,
+        schemaType,
+      }),
+      readOnly: prepareReadOnlyState({
+        currentUser,
+        document: value,
+        schemaType,
+        readOnly: inputReadOnly,
+      }),
+    }
+  }, [prepareHiddenState, currentUser, value, schemaType, prepareReadOnlyState, inputReadOnly])
 
   return useMemo(() => {
-    // console.time('derive form state')
-    const next = prepareFormState({
+    return prepareFormState({
       schemaType,
-      document: value,
-      fieldGroupState,
-      collapsedFieldSets,
-      collapsedPaths,
+      fieldGroupState: reconciledFieldGroupState,
+      collapsedFieldSets: reconciledCollapsedFieldsets,
+      collapsedPaths: reconciledCollapsedPaths,
       value,
       comparisonValue,
       focusPath,
       openPath,
       readOnly,
+      hidden,
       path: pathFor([]),
       level: 0,
       currentUser,
       presence,
       validation,
       changesOpen,
-    }) as ObjectFormNode<T, S> // TODO: remove type cast
-
-    const reconciled = immutableReconcile(prev.current, next)
-    prev.current = reconciled
-    // console.timeEnd('derive form state')
-    return reconciled
+    }) as ObjectFormNode<T, S>
   }, [
+    prepareFormState,
     schemaType,
+    reconciledFieldGroupState,
+    reconciledCollapsedFieldsets,
+    reconciledCollapsedPaths,
     value,
-    fieldGroupState,
-    collapsedFieldSets,
-    collapsedPaths,
     comparisonValue,
     focusPath,
     openPath,
     readOnly,
+    hidden,
     currentUser,
     presence,
     validation,

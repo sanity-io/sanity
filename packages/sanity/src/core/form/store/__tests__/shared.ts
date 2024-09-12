@@ -7,8 +7,6 @@ export const DEFAULT_PROPS = {
   presence: [],
   focusPath: [],
   path: [],
-  hidden: false,
-  readOnly: false,
   currentUser: MOCK_USER,
   openPath: [],
   onSetCollapsedField: noop,
