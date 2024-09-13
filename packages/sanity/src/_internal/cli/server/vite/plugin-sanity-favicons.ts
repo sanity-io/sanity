@@ -42,9 +42,9 @@ export function sanityFaviconsPlugin({
     return cache.favicons
   }
 
-  async function hasCustomFavicon(): Promise<boolean> {
+  async function hasCustomFavicon(fileName: string): Promise<boolean> {
     try {
-      await fs.access(path.join(customFaviconsPath, 'favicon.ico'))
+      await fs.access(path.join(customFaviconsPath, fileName))
       return true
     } catch (err) {
       return false
@@ -81,10 +81,9 @@ export function sanityFaviconsPlugin({
           return
         }
 
-        const faviconPath =
-          fileName === 'favicon.ico' && (await hasCustomFavicon())
-            ? path.join(customFaviconsPath, 'favicon.ico')
-            : path.join(defaultFaviconsPath, fileName)
+        const faviconPath = (await hasCustomFavicon(fileName))
+          ? path.join(customFaviconsPath, fileName)
+          : path.join(defaultFaviconsPath, fileName)
 
         const mimeType = mimeTypes[path.extname(fileName)] || 'application/octet-stream'
         res.writeHead(200, 'OK', {'content-type': mimeType})
