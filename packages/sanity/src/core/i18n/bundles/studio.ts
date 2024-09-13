@@ -10,6 +10,14 @@ import {type LocaleResourceBundle} from '../types'
  * @hidden
  */
 export const studioLocaleStrings = defineLocalesResources('studio', {
+  /** The text used in the tooltip shown in the dialog close button */
+  'announcement.dialog.close': 'Close',
+  /** Aria label to be used in the dialog close button */
+  'announcement.dialog.close-label': 'Close dialog',
+  /**Text to be used in the tooltip in the button in the studio announcement card */
+  'announcement.floating-button.dismiss': 'Close',
+  /**Aria label to be used in the floating button in the studio announcement card */
+  'announcement.floating-button.dismiss-label': 'Dismiss announcement',
   /** Menu item for deleting the asset */
   'asset-source.asset-list.menu.delete': 'Delete',
   /** Menu item for showing where a particular asset is used */

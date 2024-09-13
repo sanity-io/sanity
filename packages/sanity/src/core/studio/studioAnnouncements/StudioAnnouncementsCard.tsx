@@ -2,6 +2,7 @@ import {RemoveIcon} from '@sanity/icons'
 import {Box, Card, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {useTranslation} from 'sanity'
 import {css, keyframes, styled} from 'styled-components'
 
 import {Button, Popover} from '../../../ui-components'
@@ -82,19 +83,26 @@ const ButtonRoot = styled.div`
   right: 6px;
 `
 
-/**
- * @internal
- * @hidden
- */
-export function StudioAnnouncementCard(props: {
+interface StudioAnnouncementCardProps {
   title: string
   isOpen: boolean
   announcementType: StudioAnnouncementDocument['announcementType']
   onCardClick: () => void
   onCardDismiss: () => void
-}) {
-  const {title, announcementType, onCardClick, isOpen, onCardDismiss} = props
+}
 
+/**
+ * @internal
+ * @hidden
+ */
+export function StudioAnnouncementsCard({
+  title,
+  isOpen,
+  announcementType,
+  onCardClick,
+  onCardDismiss,
+}: StudioAnnouncementCardProps) {
+  const {t} = useTranslation()
   return (
     <Popover
       open={isOpen}
@@ -109,7 +117,13 @@ export function StudioAnnouncementCard(props: {
       placement="bottom-start"
       content={
         <Root data-ui="whats-new-root">
-          <FloatingCard data-ui="whats-new-card" padding={3} radius={3} onClick={onCardClick}>
+          <FloatingCard
+            data-ui="whats-new-card"
+            padding={3}
+            radius={3}
+            onClick={onCardClick}
+            role="button"
+          >
             <Stack space={3}>
               <Box marginRight={6}>
                 <Text as={'h3'} size={1} muted>
@@ -128,8 +142,9 @@ export function StudioAnnouncementCard(props: {
               onClick={onCardDismiss}
               icon={RemoveIcon}
               tone="default"
+              aria-label={t('announcement.floating-button.dismiss-label')}
               tooltipProps={{
-                content: 'Close',
+                content: t('announcement.floating-button.dismiss'),
               }}
             />
           </ButtonRoot>

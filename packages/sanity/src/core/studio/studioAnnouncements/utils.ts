@@ -2,6 +2,10 @@ import {satisfies} from 'semver'
 
 import {type StudioAnnouncementDocument} from './types'
 
+/**
+ * @internal
+ * @hidden
+ */
 export function isValidAudience(
   document: StudioAnnouncementDocument,
   studioVersion: string,

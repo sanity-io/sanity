@@ -2,7 +2,8 @@ import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Grid, Text} from '@sanity/ui'
-import {useCallback, useMemo, useRef} from 'react'
+import {Fragment, useCallback, useMemo, useRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../ui-components'
@@ -18,7 +19,8 @@ const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
 }
 
 const Root = styled(Box)`
-  overflow: scroll;
+  overflow: auto;
+  max-height: calc(100vh - 200px);
 `
 
 const DialogHeader = styled(Grid)`
@@ -37,8 +39,17 @@ const FloatingButton = styled(Button)`
   z-index: 2;
 `
 
-function DialogBody(props: {body: PortableTextBlock[]; header: string; publishedDate?: string}) {
-  const {body = [], header, publishedDate} = props
+interface UnseenDocumentProps {
+  body: PortableTextBlock[]
+  header: string
+  publishedDate?: string
+}
+
+/**
+ * Renders the unseen document in the dialog.
+ * Has a sticky header with the date and title, and a body with the content.
+ */
+function UnseenDocument({body = [], header, publishedDate}: UnseenDocumentProps) {
   const telemetry = useTelemetry()
   const dateFormatter = useDateTimeFormat(DATE_FORMAT_OPTIONS)
 
@@ -74,54 +85,52 @@ function DialogBody(props: {body: PortableTextBlock[]; header: string; published
   )
 }
 
+interface StudioAnnouncementDialogProps {
+  unseenDocuments: StudioAnnouncementDocument[]
+  onClose: () => void
+}
+
 /**
+ * Renders the studio announcement dialog displaying unseen announcements.
  * @internal
  * @hidden
  */
-export function StudioAnnouncementDialog(props: {
-  unseenDocuments: StudioAnnouncementDocument[]
-  onClose: () => void
-}) {
-  const {unseenDocuments = [], onClose} = props
+export function StudioAnnouncementsDialog({
+  unseenDocuments = [],
+  onClose,
+}: StudioAnnouncementDialogProps) {
   const dialogRef = useRef(null)
+  const {t} = useTranslation()
 
   return (
     <Dialog
       id="in-app-communication-dialog"
-      onClose={props.onClose}
+      onClose={onClose}
       width={1}
       bodyHeight="fill"
       padding={false}
       __unstable_hideCloseButton
       __unstable_autoFocus={false}
     >
-      <Root
-        ref={dialogRef}
-        height={'fill'}
-        data-ui="box-fill-height"
-        style={{
-          maxHeight: 'calc(100vh - 200px)',
-        }}
-      >
+      <Root ref={dialogRef} height="fill">
         {unseenDocuments.map((unseenDocument, index) => (
-          <>
-            <DialogBody
-              key={unseenDocument._id}
+          <Fragment key={unseenDocument._id}>
+            <UnseenDocument
               body={unseenDocument.body}
               header={unseenDocument.title}
               publishedDate={unseenDocument.publishedDate}
             />
             {/* Add a divider between each dialog if it's not the last one */}
             {index < unseenDocuments.length - 1 && <Divider parentRef={dialogRef} />}
-          </>
+          </Fragment>
         ))}
         <FloatingButton
-          aria-label="Close dialog"
+          aria-label={t('announcement.dialog.close-label')}
           icon={CloseIcon}
           mode="bleed"
           onClick={onClose}
           tooltipProps={{
-            content: 'Close',
+            content: t('announcement.dialog.close'),
           }}
         />
       </Root>
