@@ -1,13 +1,5 @@
-import {
-  AddDocumentIcon,
-  CloseIcon,
-  CopyIcon,
-  LaunchIcon as OpenInNewTabIcon,
-  SyncIcon as ReplaceIcon,
-  TrashIcon,
-} from '@sanity/icons'
 import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
+import {Box, type CardTone} from '@sanity/ui'
 import {
   type ComponentProps,
   type ForwardedRef,
@@ -19,9 +11,7 @@ import {
 } from 'react'
 import {IntentLink} from 'sanity/router'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
 import {ChangeIndicator} from '../../../changeIndicators'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {LoadingBlock} from '../../../components/loadingBlock'
 import {useTranslation} from '../../../i18n'
 import {FieldPresence} from '../../../presence'
@@ -210,89 +200,10 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     referenceElement: contextMenuButtonElement,
   })
 
-  const menu = useMemo(
-    () =>
-      readOnly ? null : (
-        <>
-          <MenuButton
-            ref={setMenuButtonRef}
-            onOpen={() => {
-              insertBefore.send({type: 'close'})
-              insertAfter.send({type: 'close'})
-            }}
-            button={
-              <ContextMenuButton
-                selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
-              />
-            }
-            id={`${inputId}-menuButton`}
-            menu={
-              <Menu ref={menuRef}>
-                {!readOnly && (
-                  <>
-                    <MenuItem
-                      text={t('inputs.reference.action.remove')}
-                      tone="critical"
-                      icon={TrashIcon}
-                      onClick={onRemove}
-                    />
-                    <MenuItem
-                      text={t(
-                        hasRef && isEditing
-                          ? 'inputs.reference.action.replace-cancel'
-                          : 'inputs.reference.action.replace',
-                      )}
-                      icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
-                      onClick={handleReplace}
-                    />
-                    <MenuItem
-                      text={t('inputs.reference.action.copy')}
-                      icon={CopyIcon}
-                      onClick={handleCopy}
-                    />
-                    <MenuItem
-                      text={t('inputs.reference.action.duplicate')}
-                      icon={AddDocumentIcon}
-                      onClick={handleDuplicate}
-                    />
-                    {insertBefore.menuItem}
-                    {insertAfter.menuItem}
-                  </>
-                )}
-
-                {!readOnly && !isEditing && hasRef && <MenuDivider />}
-                {!isEditing && hasRef && (
-                  <MenuItem
-                    as={OpenLink}
-                    data-as="a"
-                    text={t('inputs.reference.action.open-in-new-tab')}
-                    icon={OpenInNewTabIcon}
-                  />
-                )}
-              </Menu>
-            }
-            popover={MENU_POPOVER_PROPS}
-          />
-          {insertBefore.popover}
-          {insertAfter.popover}
-        </>
-      ),
-    [
-      OpenLink,
-      handleCopy,
-      handleDuplicate,
-      handleReplace,
-      hasRef,
-      inputId,
-      insertAfter,
-      insertBefore,
-      isEditing,
-      onRemove,
-      readOnly,
-      setMenuButtonRef,
-      t,
-    ],
-  )
+  const menu = useMemo(() => {
+    // eslint-disable-next-line react/button-has-type, i18next/no-literal-string
+    return <button onClick={handleReplace}>replace</button>
+  }, [handleReplace])
 
   const handleFixStrengthMismatch = useCallback(() => {
     onChange(schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']))
