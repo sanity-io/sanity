@@ -8,6 +8,7 @@ import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
 import {type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
+import {resolvePerspectiveOptions} from '../../../../../../util/resolvePerspective'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
 import {type RecentSearch} from '../../datastores/recentSearches'
@@ -142,10 +143,9 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
-          perspective: omitBundlePerspective(perspective),
-          bundlePerspective: perspective?.startsWith('bundle.')
-            ? [perspective.split('bundle.').at(1), DRAFTS_FOLDER].join(',')
-            : undefined,
+          ...resolvePerspectiveOptions(perspective, (perspectives, isSystemPerspective) =>
+            isSystemPerspective ? perspectives : perspectives.concat(DRAFTS_FOLDER),
+          ),
         },
         terms: {
           ...terms,
@@ -203,12 +203,4 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   )
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
-}
-
-function omitBundlePerspective(perspective: string | undefined): string | undefined {
-  if (perspective?.startsWith('bundle.')) {
-    return undefined
-  }
-
-  return perspective
 }

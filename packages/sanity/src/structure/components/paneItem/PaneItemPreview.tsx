@@ -13,6 +13,7 @@ import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   isRecord,
+  resolveBundlePerspective,
   SanityDefaultPreview,
 } from 'sanity'
 import {styled} from 'styled-components'
@@ -56,7 +57,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
         schemaType,
         value._id,
         title,
-        perspective?.startsWith('bundle.') ? perspective.split('bundle.').at(1) : undefined,
+        resolveBundlePerspective(perspective),
       ),
     [props.documentPreviewStore, schemaType, title, value._id, perspective],
   )
