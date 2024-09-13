@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable max-statements */
 /* eslint-disable camelcase, no-else-return */
@@ -8,6 +9,7 @@ import {
   type CurrentUser,
   isArrayOfObjectsSchemaType,
   isArraySchemaType,
+  isKeyedObject,
   isObjectSchemaType,
   type NumberSchemaType,
   type ObjectField,
@@ -59,8 +61,8 @@ interface FormStateOptions<TSchemaType, T> {
   comparisonValue?: T | null
   changed?: boolean
   currentUser: Omit<CurrentUser, 'role'> | null
-  hidden?: StateTree<boolean> | undefined
-  readOnly?: StateTree<boolean> | undefined
+  hidden?: true | StateTree<boolean> | undefined
+  readOnly?: true | StateTree<boolean> | undefined
   openPath: Path
   focusPath: Path
   presence: FormNodePresence[]
@@ -110,27 +112,6 @@ type PrepareArrayOfPrimitivesMember = (props: {
 type PreparePrimitiveInputState = <TSchemaType extends PrimitiveSchemaType>(
   props: FormStateOptions<TSchemaType, unknown>,
 ) => PrimitiveFormNode
-
-function serializeState({path, state}: {path: Path; state: FormStateOptions<unknown, unknown>}) {
-  return {
-    path,
-    level: state.level,
-    changesOpen: state.changesOpen,
-    presence: state.presence.filter((p) => startsWith(path, p.path)),
-    validation: state.validation.filter((v) => startsWith(path, v.path)),
-    focusPath: startsWith(path, state.focusPath) ? state.focusPath.slice(path.length) : EMPTY_ARRAY,
-    openPath: startsWith(path, state.openPath) ? state.openPath.slice(path.length) : EMPTY_ARRAY,
-    value: getId(state.value),
-    comparisonValue: getId(state.comparisonValue),
-    collapsedFieldSets: getId(state.collapsedFieldSets),
-    collapsedPaths: state.collapsedPaths,
-    currentUser: getId(state.currentUser),
-    fieldGroupState: getId(state.fieldGroupState),
-    hidden: getId(state.hidden),
-    readOnly: getId(state.readOnly),
-    schemaType: getId(state.schemaType),
-  }
-}
 
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
@@ -256,14 +237,29 @@ export function createPrepareFormState({
   const memoizePrepareFieldMember = createMemoizer<PrepareFieldMember>({
     decorator: decorators.prepareFieldMember,
     getPath: ({parent, field}) => [...parent.path, field.name],
-    hashInput: ({parent, field, index}) => {
+    hashInput: ({parent, field}) => {
+      const path = [...parent.path, field.name]
       return {
-        ...serializeState({
-          path: [...parent.path, field.name],
-          state: parent,
-        }),
-        index,
+        changesOpen: parent.changesOpen,
+        presence: parent.presence.filter((p) => startsWith(path, p.path)),
+        validation: parent.validation.filter((v) => startsWith(path, v.path)),
+        focusPath: startsWith(path, parent.focusPath) ? parent.focusPath : [],
+        openPath: startsWith(path, parent.openPath) ? parent.openPath : [],
         value: getId((parent.value as any)?.[field.name]),
+        comparisonValue: getId((parent.comparisonValue as any)?.[field.name]),
+        collapsedFieldSets: getId(parent.collapsedFieldSets?.children?.[field.name]),
+        collapsedPaths: getId(parent.collapsedPaths?.children?.[field.name]),
+        currentUser: getId(parent.currentUser),
+        fieldGroupState: getId(parent.fieldGroupState?.children?.[field.name]),
+        hidden:
+          parent.hidden === true ||
+          parent.hidden?.value ||
+          getId(parent.hidden?.children?.[field.name]),
+        readOnly:
+          parent.readOnly === true ||
+          parent.readOnly?.value ||
+          getId(parent.readOnly?.children?.[field.name]),
+        schemaType: getId(parent.schemaType),
       }
     },
   })
@@ -271,51 +267,153 @@ export function createPrepareFormState({
   const memoizePrepareObjectInputState = createMemoizer<PrepareObjectInputState>({
     decorator: decorators.prepareObjectInputState,
     getPath: ({path}) => path,
-    hashInput: (state) => serializeState({path: state.path, state}),
+    hashInput: (state) => ({
+      changesOpen: state.changesOpen,
+      presence: state.presence.filter((p) => startsWith(state.path, p.path)),
+      validation: state.validation.filter((v) => startsWith(state.path, v.path)),
+      focusPath: startsWith(state.path, state.focusPath) ? state.focusPath : [],
+      openPath: startsWith(state.path, state.openPath) ? state.openPath : [],
+      value: getId(state.value),
+      comparisonValue: getId(state.comparisonValue),
+      collapsedFieldSets: getId(state.collapsedFieldSets),
+      collapsedPaths: state.collapsedPaths,
+      currentUser: getId(state.currentUser),
+      fieldGroupState: getId(state.fieldGroupState),
+      hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
+      readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
+      schemaType: getId(state.schemaType),
+    }),
   })
 
   const memoizePrepareArrayOfPrimitivesInputState =
     createMemoizer<PrepareArrayOfPrimitivesInputState>({
       decorator: decorators.prepareArrayOfPrimitivesInputState,
       getPath: ({path}) => path,
-      hashInput: (state) => serializeState({path: state.path, state}),
+      hashInput: (state) => ({
+        changesOpen: state.changesOpen,
+        presence: state.presence.filter((p) => startsWith(state.path, p.path)),
+        validation: state.validation.filter((v) => startsWith(state.path, v.path)),
+        focusPath: startsWith(state.path, state.focusPath) ? state.focusPath : [],
+        openPath: startsWith(state.path, state.openPath) ? state.openPath : [],
+        value: getId(state.value),
+        comparisonValue: getId(state.comparisonValue),
+        collapsedFieldSets: getId(state.collapsedFieldSets),
+        collapsedPaths: state.collapsedPaths,
+        currentUser: getId(state.currentUser),
+        fieldGroupState: getId(state.fieldGroupState),
+        hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
+        readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
+        schemaType: getId(state.schemaType),
+      }),
     })
 
   const memoizePrepareArrayOfObjectsInputState = createMemoizer<PrepareArrayOfObjectsInputState>({
     decorator: decorators.prepareArrayOfObjectsInputState,
     getPath: ({path}) => path,
-    hashInput: (state) => serializeState({path: state.path, state}),
+    hashInput: (state) => ({
+      changesOpen: state.changesOpen,
+      presence: state.presence.filter((p) => startsWith(state.path, p.path)),
+      validation: state.validation.filter((v) => startsWith(state.path, v.path)),
+      focusPath: startsWith(state.path, state.focusPath) ? state.focusPath : [],
+      openPath: startsWith(state.path, state.openPath) ? state.openPath : [],
+      value: getId(state.value),
+      comparisonValue: getId(state.comparisonValue),
+      collapsedFieldSets: getId(state.collapsedFieldSets),
+      collapsedPaths: state.collapsedPaths,
+      currentUser: getId(state.currentUser),
+      fieldGroupState: getId(state.fieldGroupState),
+      hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
+      readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
+      schemaType: getId(state.schemaType),
+    }),
   })
 
   const memoizePrepareArrayOfObjectsMember = createMemoizer<PrepareArrayOfObjectsMember>({
     decorator: decorators.prepareArrayOfObjectsMember,
     getPath: ({parent, arrayItem}) => [...parent.path, {_key: arrayItem._key}],
-    hashInput: ({parent, arrayItem, index}) => ({
-      ...serializeState({path: [...parent.path, {_key: arrayItem._key}], state: parent}),
-      // note that this overrides the `parent.value` on purpose. we don't want
-      // to bust the cache for the parent if the item is the same
-      value: getId(arrayItem),
-      hidden: getId(parent.hidden?.children?.[arrayItem._key]),
-      index,
-    }),
+    hashInput: ({parent, arrayItem}) => {
+      const comparisonValue = Array.isArray(parent.comparisonValue)
+        ? parent.comparisonValue.find((item) => isKeyedObject(item) && item._key === arrayItem._key)
+        : undefined
+
+      const key = arrayItem._key
+      const path: Path = [...parent.path, {_key: key}]
+
+      return {
+        changesOpen: parent.changesOpen,
+        presence: parent.presence.filter((p) => startsWith(path, p.path)),
+        validation: parent.validation.filter((v) => startsWith(path, v.path)),
+        focusPath: startsWith(path, parent.focusPath) ? parent.focusPath : [],
+        openPath: startsWith(path, parent.openPath) ? parent.openPath : [],
+        value: getId(arrayItem),
+        comparisonValue: getId(comparisonValue),
+        collapsedFieldSets: getId(parent.collapsedFieldSets?.children?.[key]),
+        collapsedPaths: getId(parent.collapsedPaths?.children?.[key]),
+        currentUser: getId(parent.currentUser),
+        fieldGroupState: getId(parent.fieldGroupState?.children?.[key]),
+        hidden:
+          parent.hidden === true || parent.hidden?.value || getId(parent.hidden?.children?.[key]),
+        readOnly:
+          parent.readOnly === true ||
+          parent.readOnly?.value ||
+          getId(parent.readOnly?.children?.[key]),
+        schemaType: getId(parent.schemaType),
+      }
+    },
   })
 
   const memoizePrepareArrayOfPrimitivesMember = createMemoizer<PrepareArrayOfPrimitivesMember>({
     decorator: decorators.prepareArrayOfPrimitivesMember,
     getPath: ({parent, index}) => [...parent.path, index],
-    hashInput: ({parent, index, arrayItem}) => ({
-      ...serializeState({path: [...parent.path, index], state: parent}),
-      // overrides `parent.value` on purpose. we don't want
-      // to bust the cache for the parent if the item is the same
-      value: `${arrayItem}`,
-      index,
-    }),
+    hashInput: ({parent, index, arrayItem}) => {
+      const comparisonValue = Array.isArray(parent.comparisonValue)
+        ? parent.comparisonValue[index]
+        : undefined
+
+      const path: Path = [...parent.path, index]
+
+      return {
+        changesOpen: parent.changesOpen,
+        presence: parent.presence.filter((p) => startsWith(path, p.path)),
+        validation: parent.validation.filter((v) => startsWith(path, v.path)),
+        focusPath: startsWith(path, parent.focusPath) ? parent.focusPath : [],
+        openPath: startsWith(path, parent.openPath) ? parent.openPath : [],
+        collapsedFieldSets: getId(parent.collapsedFieldSets?.children?.[index]),
+        collapsedPaths: getId(parent.collapsedPaths?.children?.[index]),
+        currentUser: getId(parent.currentUser),
+        fieldGroupState: getId(parent.fieldGroupState?.children?.[index]),
+        hidden:
+          parent.hidden === true || parent.hidden?.value || getId(parent.hidden?.children?.[index]),
+        readOnly:
+          parent.readOnly === true ||
+          parent.readOnly?.value ||
+          getId(parent.readOnly?.children?.[index]),
+        schemaType: getId(parent.schemaType),
+        value: `${arrayItem}`,
+        comparisonValue: `${comparisonValue}`,
+      }
+    },
   })
 
   const memoizePreparePrimitiveInputState = createMemoizer<PreparePrimitiveInputState>({
     decorator: decorators.preparePrimitiveInputState,
     getPath: ({path}) => path,
-    hashInput: (state) => serializeState({path: state.path, state}),
+    hashInput: (state) => ({
+      changesOpen: state.changesOpen,
+      presence: state.presence.filter((p) => startsWith(state.path, p.path)),
+      validation: state.validation.filter((v) => startsWith(state.path, v.path)),
+      focusPath: startsWith(state.path, state.focusPath) ? state.focusPath : [],
+      openPath: startsWith(state.path, state.openPath) ? state.openPath : [],
+      value: getId(state.value),
+      comparisonValue: getId(state.comparisonValue),
+      collapsedFieldSets: getId(state.collapsedFieldSets),
+      collapsedPaths: state.collapsedPaths,
+      currentUser: getId(state.currentUser),
+      fieldGroupState: getId(state.fieldGroupState),
+      hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
+      readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
+      schemaType: getId(state.schemaType),
+    }),
   })
 
   /*
@@ -361,7 +459,10 @@ export function createPrepareFormState({
         }
       }
 
-      const hidden = parent?.hidden?.value || parent.hidden?.children?.[field.name]?.value
+      const hidden =
+        parent.hidden === true ||
+        parent?.hidden?.value ||
+        parent.hidden?.children?.[field.name]?.value
 
       if (hidden) {
         return {
@@ -388,8 +489,12 @@ export function createPrepareFormState({
       const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
       const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
       const scopedCollapsedFieldsets = parent.collapsedFieldSets?.children?.[field.name]
-      const scopedHidden = parent.hidden?.children?.[field.name]
-      const scopedReadOnly = parent.readOnly?.children?.[field.name]
+      const scopedHidden =
+        parent.hidden === true || parent.hidden?.value || parent.hidden?.children?.[field.name]
+      const scopedReadOnly =
+        parent.readOnly === true ||
+        parent.readOnly?.value ||
+        parent.readOnly?.children?.[field.name]
 
       const inputState = prepareObjectInputState({
         schemaType: field.type,
@@ -501,8 +606,12 @@ export function createPrepareFormState({
         const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
         const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
         const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
-        const scopedReadOnly = parent.readOnly?.children?.[field.name]
-        const scopedHidden = parent.hidden?.children?.[field.name]
+        const scopedHidden =
+          parent.hidden === true || parent.hidden?.value || parent.hidden?.children?.[field.name]
+        const scopedReadOnly =
+          parent.readOnly === true ||
+          parent.readOnly?.value ||
+          parent.readOnly?.children?.[field.name]
 
         const fieldState = prepareArrayOfObjectsInputState({
           schemaType: field.type,
@@ -565,8 +674,12 @@ export function createPrepareFormState({
         const fieldGroupState = parent.fieldGroupState?.children?.[field.name]
         const scopedCollapsedPaths = parent.collapsedPaths?.children?.[field.name]
         const scopedCollapsedFieldSets = parent.collapsedFieldSets?.children?.[field.name]
-        const scopedReadOnly = parent.readOnly?.children?.[field.name]
-        const scopedHidden = parent.hidden?.children?.[field.name]
+        const scopedHidden =
+          parent.hidden === true || parent.hidden?.value || parent.hidden?.children?.[field.name]
+        const scopedReadOnly =
+          parent.readOnly === true ||
+          parent.readOnly?.value ||
+          parent.readOnly?.children?.[field.name]
 
         const fieldState = prepareArrayOfPrimitivesInputState({
           changed: isChangedValue(fieldValue, fieldComparisonValue),
@@ -619,14 +732,21 @@ export function createPrepareFormState({
         : undefined
 
       // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
-      const hidden = parent.hidden?.value || parent.hidden?.children?.[field.name]?.value
+      const hidden =
+        parent.hidden === true ||
+        parent.hidden?.value ||
+        parent.hidden?.children?.[field.name]?.value
 
       if (hidden) {
         return null
       }
 
-      const scopedReadOnly = parent.readOnly?.children?.[field.name]
-      const scopedHidden = parent.hidden?.children?.[field.name]
+      const scopedHidden =
+        parent.hidden === true || parent.hidden?.value || parent.hidden?.children?.[field.name]
+      const scopedReadOnly =
+        parent.readOnly === true ||
+        parent.readOnly?.value ||
+        parent.readOnly?.children?.[field.name]
 
       const fieldState = preparePrimitiveInputState({
         ...parent,
@@ -664,7 +784,7 @@ export function createPrepareFormState({
       return null
     }
 
-    const readOnly = props.readOnly?.value
+    const readOnly = props.readOnly === true || props.readOnly?.value
 
     const schemaTypeGroupConfig = props.schemaType.groups || []
     const defaultGroupName = (schemaTypeGroupConfig.find((g) => g.default) || ALL_FIELDS_GROUP)
@@ -672,7 +792,10 @@ export function createPrepareFormState({
 
     const groups = [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig].flatMap(
       (group): FormFieldGroup[] => {
-        const groupHidden = props.hidden?.children?.[`group:${group.name}`]?.value
+        const groupHidden =
+          props.hidden === true ||
+          props.hidden?.value ||
+          props.hidden?.children?.[`group:${group.name}`]?.value
         const isSelected = group.name === (props.fieldGroupState?.value || defaultGroupName)
 
         // Set the "all-fields" group as selected when review changes is open to enable review of all
@@ -721,7 +844,10 @@ export function createPrepareFormState({
         }
 
         // it's an actual fieldset
-        const fieldsetHidden = props.hidden?.children?.[`fieldset:${fieldSet.name}`]?.value
+        const fieldsetHidden =
+          props.hidden === true ||
+          props.hidden?.value ||
+          props.hidden?.children?.[`fieldset:${fieldSet.name}`]?.value
 
         const fieldsetMembers = fieldSet.fields.flatMap(
           (field): (FieldMember | FieldError | HiddenField)[] => {
@@ -875,7 +1001,7 @@ export function createPrepareFormState({
         return null
       }
 
-      if (props.hidden?.value) {
+      if (props.hidden === true || props.hidden?.value) {
         return null
       }
 
@@ -894,7 +1020,7 @@ export function createPrepareFormState({
         // checks for changes not only on the array itself, but also on any of its items
         changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
         value: props.value,
-        readOnly: props.readOnly?.value,
+        readOnly: props.readOnly === true || props.readOnly?.value,
         schemaType: props.schemaType,
         focused: isEqual(props.path, props.focusPath),
         focusPath: trimChildPath(props.path, props.focusPath),
@@ -914,7 +1040,7 @@ export function createPrepareFormState({
         return null
       }
 
-      if (props.hidden?.value) {
+      if (props.hidden === true || props.hidden?.value) {
         return null
       }
 
@@ -939,7 +1065,7 @@ export function createPrepareFormState({
         // checks for changes not only on the array itself, but also on any of its items
         changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
         value: props.value,
-        readOnly: props.readOnly?.value,
+        readOnly: props.readOnly === true || props.readOnly?.value,
         schemaType: props.schemaType,
         focused: isEqual(props.path, props.focusPath),
         focusPath: trimChildPath(props.path, props.focusPath),
@@ -985,8 +1111,12 @@ export function createPrepareFormState({
       const fieldGroupState = parent.fieldGroupState?.children?.[key]
       const scopedCollapsedPaths = parent.collapsedPaths?.children?.[key]
       const scopedCollapsedFieldsets = parent.collapsedFieldSets?.children?.[key]
-      const scopedReadOnly = parent?.readOnly?.children?.[key]
-      const scopedHidden = parent?.hidden?.children?.[key]
+
+      const scopedHidden =
+        parent.hidden === true || parent.hidden?.value || parent.hidden?.children?.[key]
+      const scopedReadOnly =
+        parent.readOnly === true || parent.readOnly?.value || parent.readOnly?.children?.[key]
+
       const comparisonValue =
         (Array.isArray(parent.comparisonValue) &&
           parent.comparisonValue.find((i) => i._key === arrayItem._key)) ||
@@ -1068,6 +1198,11 @@ export function createPrepareFormState({
         }
       }
 
+      // const scopedHidden =
+      //   parent.hidden === true || parent.hidden?.value || parent.hidden?.children?.[field.name]
+      const scopedReadOnly =
+        parent.readOnly === true || parent.readOnly?.value || parent.readOnly?.children?.[index]
+
       const item = preparePrimitiveInputState({
         ...parent,
         path: itemPath,
@@ -1075,6 +1210,7 @@ export function createPrepareFormState({
         level: itemLevel,
         value: itemValue,
         comparisonValue: itemComparisonValue,
+        readOnly: scopedReadOnly,
       })
 
       return {
@@ -1102,7 +1238,7 @@ export function createPrepareFormState({
         value: props.value,
         level: props.level,
         id: toString(props.path),
-        readOnly: props.readOnly?.value,
+        readOnly: props.readOnly === true || props.readOnly?.value,
         focused: isEqual(props.path, props.focusPath),
         path: props.path,
         presence,

@@ -1,12 +1,38 @@
-import {beforeEach, expect, it, jest} from '@jest/globals'
-import {type CurrentUser, defineField, defineType, type ObjectSchemaType} from '@sanity/types'
+import {beforeEach, describe, expect, jest, test} from '@jest/globals'
+import {
+  type CurrentUser,
+  defineField,
+  defineType,
+  isIndexTuple,
+  isKeySegment,
+  type ObjectSchemaType,
+  type Path,
+} from '@sanity/types'
+import {startsWith} from '@sanity/util/paths'
 
 import {createSchema} from '../../../schema/createSchema'
 import {
   createCallbackResolver,
   type RootCallbackResolver,
 } from '../conditional-property/createCallbackResolver'
-import {createPrepareFormState, type PrepareFormState} from '../formState'
+import {
+  createPrepareFormState,
+  type PrepareFormState,
+  type RootFormStateOptions,
+} from '../formState'
+import {type FieldsetState} from '../types/fieldsetState'
+import {
+  type ArrayOfObjectsItemMember,
+  type ArrayOfPrimitivesItemMember,
+  type FieldMember,
+} from '../types/members'
+import {
+  type ArrayOfObjectsFormNode,
+  type ArrayOfPrimitivesFormNode,
+  type ObjectFormNode,
+  type PrimitiveFormNode,
+} from '../types/nodes'
+import {type StateTree} from '../types/state'
 
 let prepareFormState!: PrepareFormState
 let prepareHiddenState!: RootCallbackResolver<'hidden'>
@@ -34,40 +60,31 @@ const schema = createSchema({
     defineType({
       name: 'testDocument',
       type: 'document',
-      title: 'Test Document',
       fields: [
-        defineField({
-          name: 'title',
-          type: 'string',
-          title: 'Title',
-          validation: (Rule) => Rule.required(),
-        }),
+        defineField({name: 'title', type: 'string', validation: (Rule) => Rule.required()}),
         defineField({
           name: 'simpleObject',
           type: 'object',
-          title: 'Simple ',
           fields: [
-            {name: 'field1', type: 'string', title: 'Field 1'},
-            {name: 'field2', type: 'number', title: 'Field 2'},
+            {name: 'field1', type: 'string'},
+            {name: 'field2', type: 'number'},
           ],
         }),
         defineField({
           name: 'arrayOfPrimitives',
           type: 'array',
-          title: ' of Primitives',
           of: [{type: 'string'}],
         }),
         defineField({
           name: 'arrayOfObjects',
           type: 'array',
-          title: ' of Objects',
           of: [
             {
               type: 'object',
               name: 'arrayObject',
               fields: [
-                defineField({name: 'objectTitle', type: 'string', title: ' Title'}),
-                defineField({name: 'objectValue', type: 'number', title: ' Value'}),
+                defineField({name: 'objectTitle', type: 'string'}),
+                defineField({name: 'objectValue', type: 'number'}),
               ],
             },
           ],
@@ -75,58 +92,32 @@ const schema = createSchema({
         defineField({
           name: 'nestedObject',
           type: 'object',
-          title: 'Nested ',
           fields: [
-            defineField({name: 'nestedField1', type: 'string', title: 'Nested Field 1'}),
+            defineField({name: 'nestedField1', type: 'string'}),
             defineField({
               name: 'nestedObject',
               type: 'object',
-              title: 'Nested ',
               fields: [
                 defineField({
                   name: 'deeplyNestedField',
                   type: 'string',
-                  title: 'Deeply Nested Field',
                 }),
               ],
             }),
-            defineField({
-              name: 'nestedArray',
-              type: 'array',
-              title: 'Nested ',
-              of: [{type: 'string'}],
-            }),
+            defineField({name: 'nestedArray', type: 'array', of: [{type: 'string'}]}),
           ],
         }),
         defineField({
           name: 'conditionalField',
           type: 'string',
-          title: 'Conditional Field',
           hidden: ({document}) => !document?.title,
         }),
-        defineField({
-          name: 'fieldWithValidation',
-          type: 'string',
-          title: 'Field with Validation',
-          validation: (Rule) => Rule.min(5).max(10),
-        }),
-        defineField({
-          name: 'fieldsetField1',
-          type: 'string',
-          title: 'Fieldset Field 1',
-          fieldset: 'testFieldset',
-        }),
-        defineField({
-          name: 'fieldsetField2',
-          type: 'number',
-          title: 'Fieldset Field 2',
-          fieldset: 'testFieldset',
-        }),
+        defineField({name: 'fieldsetField1', type: 'string', fieldset: 'testFieldset'}),
+        defineField({name: 'fieldsetField2', type: 'number', fieldset: 'testFieldset'}),
       ],
       fieldsets: [
         {
           name: 'testFieldset',
-          title: 'Test Fieldset',
           options: {collapsible: true, collapsed: false},
         },
       ],
@@ -143,11 +134,11 @@ const currentUser: Omit<CurrentUser, 'role'> = {
   roles: [],
 }
 
-const value = {
+const documentValue = {
   _type: 'testDocument',
   title: 'Example Test Document',
   simpleObject: {
-    field1: 'Simple  String',
+    field1: 'Simple Object String',
     field2: 42,
   },
   arrayOfPrimitives: ['First string', 'Second string', 'Third string'],
@@ -155,13 +146,13 @@ const value = {
     {
       _type: 'arrayObject',
       _key: 'object0',
-      objectTitle: 'First ',
+      objectTitle: 'First Object',
       objectValue: 10,
     },
     {
       _type: 'arrayObject',
       _key: 'object1',
-      objectTitle: 'Second ',
+      objectTitle: 'Second Object',
       objectValue: 20,
     },
   ],
@@ -170,99 +161,310 @@ const value = {
     nestedObject: {
       deeplyNestedField: 'Deeply Nested Value',
     },
-    nestedArray: ['Nested  Item 1', 'Nested  Item 2'],
+    nestedArray: ['Nested Array Item 1', 'Nested Array Item 2'],
   },
   conditionalField: 'This field is visible',
-  fieldWithValidation: 'Valid',
   fieldsetField1: 'Fieldset String Value',
   fieldsetField2: 99,
 }
 
-it('creates the root form node', () => {
-  const result = prepareFormState({
-    currentUser,
-    focusPath: [],
-    level: 0,
-    openPath: [],
-    path: [],
-    presence: [],
-    schemaType,
-    validation: [],
-    changed: false,
-    changesOpen: false,
-    collapsedFieldSets: {},
-    collapsedPaths: {},
-    value,
-    comparisonValue: null,
-    fieldGroupState: {},
-    hidden: prepareHiddenState({
-      currentUser,
-      document: value,
-      schemaType,
-    }),
-    readOnly: prepareReadOnlyState({
-      currentUser,
-      document: value,
-      schemaType,
-    }),
-  })
+function setAtPath(path: Path): StateTree<boolean> {
+  const [first, ...rest] = path
+  if (typeof first === 'undefined') {
+    return {value: true}
+  }
 
-  expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(1)
-  expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(2)
-  expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(2)
-  expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(5)
-  expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(19)
-  expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(6)
-  expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(18)
+  if (isIndexTuple(first)) return {}
 
-  expect(result).toMatchObject({
-    changed: true,
-    focusPath: [],
-    focused: true,
-    groups: [],
-    id: '',
-    level: 0,
-    members: [
+  const key = typeof first === 'object' && '_key' in first ? first._key : first
+
+  return {
+    children: {
+      [key]: setAtPath(rest),
+    },
+  }
+}
+
+function updateDocumentAtPath(path: Path, value: any): unknown {
+  const [first, ...rest] = path
+  if (isIndexTuple(first)) throw new Error('Unexpected index tuple')
+
+  if (typeof first === 'undefined') return 'CHANGED'
+  if (typeof first === 'string') {
+    return {...value, [first]: updateDocumentAtPath(rest, value?.[first])}
+  }
+
+  if (Array.isArray(value)) {
+    const index = isKeySegment(first) ? value.findIndex((item) => item?._key === first._key) : first
+
+    return [
+      ...value.slice(0, index),
+      updateDocumentAtPath(rest, value[index]),
+      ...value.slice(index + 1),
+    ]
+  }
+
+  return updateDocumentAtPath(rest, [])
+}
+
+type FormNode =
+  | ObjectFormNode
+  | ArrayOfObjectsFormNode
+  | ArrayOfPrimitivesFormNode
+  | PrimitiveFormNode
+
+type FormTraversalResult = [
+  FormNode,
+  {
+    member?: FieldMember | ArrayOfObjectsItemMember | ArrayOfPrimitivesItemMember
+    fieldset?: FieldsetState
+  },
+]
+
+function* traverseForm(
+  formNode: FormNode | null,
+  parent?: FormTraversalResult[1],
+): Generator<FormTraversalResult> {
+  if (!formNode) return
+
+  yield [formNode, parent ?? {}]
+
+  if (!('members' in formNode)) return
+
+  for (const member of formNode.members) {
+    switch (member.kind) {
+      case 'field': {
+        yield* traverseForm(member.field as FormNode, {member})
+        continue
+      }
+      case 'fieldSet': {
+        for (const fieldsetMember of member.fieldSet.members) {
+          if (fieldsetMember.kind === 'error') continue
+          yield* traverseForm(fieldsetMember.field as FormNode, {
+            member: fieldsetMember,
+            fieldset: member.fieldSet,
+          })
+        }
+        continue
+      }
+      case 'item': {
+        yield* traverseForm(member.item as FormNode, {member})
+        continue
+      }
+      default: {
+        continue
+      }
+    }
+  }
+}
+
+const rootFormNodeOptions: Partial<{
+  [K in keyof RootFormStateOptions]: {
+    deriveInput: (path: Path) => RootFormStateOptions[K]
+    assertOutput: (node: FormTraversalResult) => void
+  }
+}> = {
+  focusPath: {
+    deriveInput: (path) => path,
+    assertOutput: ([node]) => expect(node.focused).toBe(true),
+  },
+  openPath: {
+    deriveInput: (path) => path,
+    assertOutput: ([_node, {member}]) => expect(member?.open).toBe(true),
+  },
+  validation: {
+    deriveInput: (path) => [{path, level: 'error', message: 'example marker'}],
+    assertOutput: ([node]) =>
+      expect(node.validation).toEqual([
+        {path: node.path, level: 'error', message: 'example marker'},
+      ]),
+  },
+  presence: {
+    deriveInput: (path) => [
       {
-        key: 'field-title',
-        kind: 'field',
-      },
-      {
-        key: 'field-simpleObject',
-        kind: 'field',
-      },
-      {
-        key: 'field-arrayOfPrimitives',
-        kind: 'field',
-      },
-      {
-        key: 'field-arrayOfObjects',
-        kind: 'field',
-      },
-      {
-        key: 'field-nestedObject',
-        kind: 'field',
-      },
-      {
-        key: 'field-conditionalField',
-        kind: 'field',
-      },
-      {
-        key: 'field-fieldWithValidation',
-        kind: 'field',
-      },
-      {
-        key: 'fieldset-testFieldset',
-        kind: 'fieldSet',
+        path,
+        lastActiveAt: '2024-09-12T21:59:08.362Z',
+        sessionId: 'exampleSession',
+        user: {id: 'exampleUser'},
       },
     ],
-    path: [],
-    presence: [],
-    readOnly: undefined,
-    validation: [],
-    schemaType,
-    value,
+    assertOutput: ([node]) =>
+      expect(node.presence).toEqual([
+        {
+          path: node.path,
+          lastActiveAt: '2024-09-12T21:59:08.362Z',
+          sessionId: 'exampleSession',
+          user: {id: 'exampleUser'},
+        },
+      ]),
+  },
+  documentValue: {
+    deriveInput: (path) => updateDocumentAtPath(path, documentValue),
+    assertOutput: ([node]) => expect(node.value).toBe('CHANGED'),
+  },
+  comparisonValue: {
+    deriveInput: (path) => updateDocumentAtPath(path, documentValue),
+    assertOutput: ([node]) => expect(node.changed).toBe(true),
+  },
+  readOnly: {
+    deriveInput: (path) => setAtPath(path),
+    assertOutput: ([node]) => expect(node.readOnly).toBe(true),
+  },
+}
+
+const paths: {path: Path; expectedCalls: {[K in keyof PrepareFormState]: number}}[] = [
+  {
+    path: ['title'],
+    expectedCalls: {
+      prepareArrayOfObjectsInputState: 0,
+      prepareArrayOfObjectsMember: 0,
+      prepareArrayOfPrimitivesInputState: 0,
+      prepareArrayOfPrimitivesMember: 0,
+      prepareFieldMember: 8,
+      prepareObjectInputState: 1,
+      preparePrimitiveInputState: 1,
+    },
+  },
+  {
+    path: ['simpleObject', 'field1'],
+    expectedCalls: {
+      prepareArrayOfObjectsInputState: 0,
+      prepareArrayOfObjectsMember: 0,
+      prepareArrayOfPrimitivesInputState: 0,
+      prepareArrayOfPrimitivesMember: 0,
+      prepareFieldMember: 10,
+      prepareObjectInputState: 2,
+      preparePrimitiveInputState: 1,
+    },
+  },
+  {
+    path: ['arrayOfPrimitives', 1],
+    expectedCalls: {
+      prepareArrayOfObjectsInputState: 0,
+      prepareArrayOfObjectsMember: 0,
+      prepareArrayOfPrimitivesInputState: 1,
+      prepareArrayOfPrimitivesMember: 3,
+      prepareFieldMember: 8,
+      prepareObjectInputState: 1,
+      preparePrimitiveInputState: 1,
+    },
+  },
+  {
+    path: ['arrayOfObjects', {_key: 'object1'}, 'objectTitle'],
+    expectedCalls: {
+      prepareArrayOfObjectsInputState: 1,
+      prepareArrayOfObjectsMember: 2,
+      prepareArrayOfPrimitivesInputState: 0,
+      prepareArrayOfPrimitivesMember: 0,
+      prepareFieldMember: 10,
+      prepareObjectInputState: 2,
+      preparePrimitiveInputState: 1,
+    },
+  },
+  {
+    path: ['nestedObject', 'nestedField1'],
+    expectedCalls: {
+      prepareArrayOfObjectsInputState: 0,
+      prepareArrayOfObjectsMember: 0,
+      prepareArrayOfPrimitivesInputState: 0,
+      prepareArrayOfPrimitivesMember: 0,
+      prepareFieldMember: 11,
+      prepareObjectInputState: 2,
+      preparePrimitiveInputState: 1,
+    },
+  },
+  {
+    path: ['nestedObject', 'nestedObject', 'deeplyNestedField'],
+    expectedCalls: {
+      prepareArrayOfObjectsInputState: 0,
+      prepareArrayOfObjectsMember: 0,
+      prepareArrayOfPrimitivesInputState: 0,
+      prepareArrayOfPrimitivesMember: 0,
+      prepareFieldMember: 12,
+      prepareObjectInputState: 3,
+      preparePrimitiveInputState: 1,
+    },
+  },
+  {
+    path: ['nestedObject', 'nestedArray', 0],
+    expectedCalls: {
+      prepareArrayOfObjectsInputState: 0,
+      prepareArrayOfObjectsMember: 0,
+      prepareArrayOfPrimitivesInputState: 1,
+      prepareArrayOfPrimitivesMember: 2,
+      prepareFieldMember: 11,
+      prepareObjectInputState: 2,
+      preparePrimitiveInputState: 1,
+    },
+  },
+]
+
+const defaultOptions: RootFormStateOptions = {
+  currentUser,
+  focusPath: [],
+  openPath: [],
+  presence: [],
+  schemaType,
+  validation: [],
+  changesOpen: false,
+  collapsedFieldSets: {},
+  collapsedPaths: {},
+  documentValue,
+  comparisonValue: documentValue,
+  fieldGroupState: {},
+  hidden: undefined,
+  readOnly: undefined,
+}
+
+describe.each(
+  Object.entries(rootFormNodeOptions).map(([property, {deriveInput, assertOutput}]) => ({
+    property,
+    deriveInput,
+    assertOutput,
+  })),
+)('$property', ({property, deriveInput, assertOutput}) => {
+  test.each(paths)('$path', ({path, expectedCalls}) => {
+    const initialFormState = prepareFormState(defaultOptions)
+    const initialNodes = new Set(Array.from(traverseForm(initialFormState)).map(([node]) => node))
+
+    // reset toHaveBeenCalledTimes amount
+    jest.clearAllMocks()
+
+    const updatedFormState = prepareFormState({
+      ...defaultOptions,
+      ...{[property]: deriveInput(path)},
+    })
+    const updatedNodes = Array.from(traverseForm(updatedFormState)).reverse()
+
+    const differentNodes = updatedNodes.filter(([node]) => !initialNodes.has(node))
+    expect(differentNodes).not.toHaveLength(0)
+
+    assertOutput(differentNodes[0])
+
+    for (const [differentNode] of differentNodes) {
+      expect(startsWith(differentNode.path, path)).toBe(true)
+    }
+
+    expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfObjectsInputState,
+    )
+    expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfObjectsMember,
+    )
+    expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfPrimitivesInputState,
+    )
+    expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfPrimitivesMember,
+    )
+    expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(
+      expectedCalls.prepareFieldMember,
+    )
+    expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(
+      expectedCalls.prepareObjectInputState,
+    )
+    expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(
+      expectedCalls.preparePrimitiveInputState,
+    )
   })
 })
-
-it.todo('does not recompute nodes that have not changed')
