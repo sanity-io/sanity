@@ -1,5 +1,5 @@
 import {type BundleDocument} from '../../store/bundles/types'
-import {getVersionFromId, isVersionId} from '../../util'
+import {getVersionFromId, isVersionId, resolveBundlePerspective} from '../../util'
 
 /**
  * @beta
@@ -22,11 +22,13 @@ export function getDocumentIsInPerspective(
 
   if (!perspective) return !isVersionId(documentId)
 
-  if (!perspective.startsWith('bundle.')) return false
+  const bundlePerspective = resolveBundlePerspective(perspective)
+
+  if (typeof bundlePerspective === 'undefined') return false
   // perspective is `bundle.${bundleId}`
 
   if (bundleId === 'Published') return false
-  return bundleId === perspective.replace('bundle.', '')
+  return bundleId === bundlePerspective
 }
 
 export function versionDocumentExists(

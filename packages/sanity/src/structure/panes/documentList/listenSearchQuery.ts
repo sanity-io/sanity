@@ -20,8 +20,10 @@ import {
   createSWR,
   DRAFTS_FOLDER,
   getSearchableTypes,
+  resolvePerspectiveOptions,
   type SanityDocumentLike,
   type Schema,
+  type SearchOptions,
 } from 'sanity'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
@@ -136,16 +138,15 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               types,
             }
 
-            const searchOptions = {
+            const searchOptions: SearchOptions = {
               __unstable_extendedProjection: extendedProjection,
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
-              perspective: omitBundlePerspective(perspective),
-              bundlePerspective: perspective?.startsWith('bundle.')
-                ? [perspective.split('bundle.').at(1), DRAFTS_FOLDER].join(',')
-                : undefined,
               skipSortByScore: true,
               sort: sortBy,
+              ...resolvePerspectiveOptions(perspective, (perspectives, isSystemPerspective) =>
+                isSystemPerspective ? perspectives : perspectives.concat(DRAFTS_FOLDER),
+              ),
             }
 
             return search(searchTerms, searchOptions).pipe(
@@ -169,12 +170,4 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     swr(swrKey),
     map(({fromCache, value}) => ({fromCache, documents: value})),
   )
-}
-
-function omitBundlePerspective(perspective: string | undefined): string | undefined {
-  if (perspective?.startsWith('bundle.')) {
-    return undefined
-  }
-
-  return perspective
 }

@@ -2,6 +2,8 @@ import {WarningOutlineIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {assignWith} from 'lodash'
 
+import {resolveBundlePerspective} from '../../util'
+
 const getMissingDocumentFallback = (item: SanityDocument) => ({
   title: <em>{item.title ? String(item.title) : 'Missing document'}</em>,
   subtitle: <em>{item.title ? `Missing document ID: ${item._id}` : `Document ID: ${item._id}`}</em>,
@@ -30,7 +32,7 @@ export const getPreviewValueWithFallback = ({
   let snapshot: Partial<SanityDocument> | PreviewValue | null | undefined
 
   switch (true) {
-    case perspective?.startsWith('bundle.'):
+    case typeof resolveBundlePerspective(perspective) !== 'undefined':
       snapshot = version || draft || published
       break
     case perspective === 'published':

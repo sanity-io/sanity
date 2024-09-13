@@ -1,6 +1,7 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {useEffect} from 'react'
 import {
+  resolveBundlePerspective,
   unstable_useValuePreview as useValuePreview,
   useEditState,
   useSchema,
@@ -26,11 +27,12 @@ const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const paneRouter = usePaneRouter()
   const perspective = paneRouter.perspective ?? router.stickyParams.perspective
 
-  const bundlePerspective = perspective?.startsWith('bundle.')
-    ? perspective.split('bundle.').at(1)
-    : undefined
-
-  const editState = useEditState(documentId, documentType, 'default', bundlePerspective)
+  const editState = useEditState(
+    documentId,
+    documentType,
+    'default',
+    resolveBundlePerspective(perspective),
+  )
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)
   const isNewDocument = !editState?.published && !editState?.draft
