@@ -7,6 +7,7 @@ import {
   type FormNodeValidation,
   isValidationError,
   isValidationWarning,
+  resolveBundlePerspective,
   useTranslation,
   useValidationStatus,
 } from 'sanity'
@@ -20,14 +21,10 @@ function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspecto
   const {t} = useTranslation('validation')
   const paneRouter = usePaneRouter()
 
-  const bundlePerspective = paneRouter.perspective?.startsWith('bundle.')
-    ? paneRouter.perspective.split('bundle.').at(1)
-    : undefined
-
   const {validation: validationMarkers} = useValidationStatus(
     documentId,
     documentType,
-    bundlePerspective,
+    resolveBundlePerspective(paneRouter.perspective),
   )
 
   const validation: FormNodeValidation[] = useMemo(

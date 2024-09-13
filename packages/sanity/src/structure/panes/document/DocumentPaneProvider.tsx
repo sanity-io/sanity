@@ -23,6 +23,7 @@ import {
   isVersionId,
   type OnPathFocusPayload,
   type PatchEvent,
+  resolveBundlePerspective,
   setAtPath,
   type StateTree,
   toMutationPatches,
@@ -99,9 +100,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
   const {perspective} = paneRouter
 
-  const bundlePerspective = perspective?.startsWith('bundle.')
-    ? perspective.split('bundle.').at(1)
-    : undefined
+  const bundlePerspective = resolveBundlePerspective(perspective)
 
   /* Version and the global perspective should match.
    * If user clicks on add document, and then switches to another version, he should click again on create document.

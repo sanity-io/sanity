@@ -3,7 +3,7 @@ import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {getPublishedId} from 'sanity'
+import {getPublishedId, resolveBundlePerspective} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
@@ -59,7 +59,7 @@ export function SearchResultItemPreview({
         schemaType,
         getPublishedId(documentId),
         '',
-        perspective?.startsWith('bundle.') ? perspective.split('bundle.').at(1) : undefined,
+        resolveBundlePerspective(perspective),
       ),
     [documentId, documentPreviewStore, perspective, schemaType],
   )
