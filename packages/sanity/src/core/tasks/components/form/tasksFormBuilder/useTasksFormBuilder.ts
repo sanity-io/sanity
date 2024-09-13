@@ -93,11 +93,12 @@ export function useTasksFormBuilder(options: TasksFormBuilderOptions): TasksForm
   const connectionState = useConnectionState(documentId, documentType)
   const editState = useEditState(documentId, documentType)
 
-  const value = editState?.draft || editState?.published || initialValue
+  const documentValue = editState?.draft || editState?.published || initialValue
 
-  const formState = useFormState(tasksSchemaType, {
-    value: value,
-    comparisonValue: value,
+  const formState = useFormState({
+    schemaType: tasksSchemaType,
+    documentValue,
+    comparisonValue: documentValue,
     readOnly: false,
     changesOpen: false,
     presence,

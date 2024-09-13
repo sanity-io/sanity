@@ -99,7 +99,7 @@ test("doesn't make primitive fields collapsed even if they are configured to be"
   const result = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
-    value: {_id: 'foo', _type: 'book'},
+    documentValue: {_id: 'foo', _type: 'book'},
   })
 
   expect(result).not.toBe(null)
@@ -127,7 +127,7 @@ describe('collapsible object fields', () => {
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
-      value: {_id: 'foo', _type: 'book'},
+      documentValue: {_id: 'foo', _type: 'book'},
     })
 
     expect(result).not.toBe(null)
@@ -147,7 +147,7 @@ describe('collapsible object fields', () => {
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
-      value: {_id: 'foo', _type: 'book'},
+      documentValue: {_id: 'foo', _type: 'book'},
     })
 
     expect(result).not.toBe(null)
@@ -190,7 +190,7 @@ describe('collapsible object fields', () => {
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
-      value: {_id: 'foo', _type: 'book'},
+      documentValue: {_id: 'foo', _type: 'book'},
     })
 
     expect(result).not.toBe(null)

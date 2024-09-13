@@ -90,12 +90,13 @@ test('it omits the hidden member field from the members array', () => {
     subtitle: {hidden: () => true},
   })
 
-  const document = {_id: 'foo', _type: 'book'}
+  const documentValue = {_id: 'foo', _type: 'book'}
   const result = prepareFormState({
     ...DEFAULT_PROPS,
-    hidden: prepareHiddenState({currentUser: MOCK_USER, document, schemaType}),
+    hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue, schemaType}),
     schemaType,
-    value: document,
+    documentValue,
+    comparisonValue: documentValue,
   })
 
   expect(result).not.toBe(null)
@@ -110,12 +111,12 @@ test('it omits nested hidden members from the members array', () => {
   const schemaType = getBookType({
     author: {hidden: () => true},
   })
-  const document = {_id: 'foo', _type: 'book'}
+  const documentValue = {_id: 'foo', _type: 'book'}
   const result = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: schemaType,
-    hidden: prepareHiddenState({currentUser: MOCK_USER, document, schemaType}),
-    value: document,
+    hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue: documentValue, schemaType}),
+    documentValue,
   })
 
   expect(result).not.toBe(null)
@@ -137,7 +138,7 @@ test('it "upward propagates" hidden fields', () => {
     ...DEFAULT_PROPS,
     schemaType,
     value: document,
-    hidden: prepareHiddenState({currentUser: MOCK_USER, document, schemaType}),
+    hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue: document, schemaType}),
   })
   expect(result).not.toBe(null)
   if (result === null) {

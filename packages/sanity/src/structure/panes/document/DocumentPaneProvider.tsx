@@ -542,8 +542,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     schemaType,
   ])
 
-  const formState = useFormState(schemaType!, {
-    value: displayed,
+  const formState = useFormState({
+    schemaType: schemaType!,
+    documentValue: displayed,
     readOnly,
     comparisonValue: compareValue,
     focusPath,

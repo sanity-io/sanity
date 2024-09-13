@@ -22,7 +22,7 @@ import {castArray, isEqual as _isEqual} from 'lodash'
 
 import {type FIXME} from '../../FIXME'
 import {type FormNodePresence} from '../../presence'
-import {EMPTY_ARRAY, isRecord} from '../../util'
+import {EMPTY_ARRAY, EMPTY_OBJECT, isRecord} from '../../util'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
 import {ALL_FIELDS_GROUP, MAX_FIELD_DEPTH} from './constants'
 import {
@@ -222,8 +222,25 @@ export interface CreatePrepareFormStateOptions {
   }
 }
 
+export interface RootFormStateOptions {
+  schemaType: ObjectSchemaType
+  documentValue: unknown
+  comparisonValue: unknown
+  currentUser: Omit<CurrentUser, 'role'> | null
+  hidden: boolean | StateTree<boolean> | undefined
+  readOnly: boolean | StateTree<boolean> | undefined
+  openPath: Path
+  focusPath: Path
+  presence: FormNodePresence[]
+  validation: ValidationMarker[]
+  fieldGroupState: StateTree<string> | undefined
+  collapsedPaths: StateTree<boolean> | undefined
+  collapsedFieldSets: StateTree<boolean> | undefined
+  changesOpen?: boolean
+}
+
 export interface PrepareFormState {
-  (props: FormStateOptions<ObjectSchemaType, unknown>): ObjectFormNode | null
+  (options: RootFormStateOptions): ObjectFormNode | null
   prepareFieldMember: PrepareFieldMember
   prepareObjectInputState: PrepareObjectInputState
   prepareArrayOfPrimitivesInputState: PrepareArrayOfPrimitivesInputState
@@ -1095,10 +1112,40 @@ export function createPrepareFormState({
   )
 
   return Object.assign(
-    function prepareFormState(
-      props: FormStateOptions<ObjectSchemaType, unknown>,
-    ): ObjectFormNode | null {
-      return prepareObjectInputState(props)
+    function prepareFormState({
+      collapsedFieldSets,
+      collapsedPaths,
+      comparisonValue,
+      currentUser,
+      documentValue,
+      fieldGroupState,
+      focusPath,
+      hidden,
+      openPath,
+      presence,
+      readOnly,
+      schemaType,
+      validation,
+      changesOpen,
+    }: RootFormStateOptions): ObjectFormNode | null {
+      return prepareObjectInputState({
+        collapsedFieldSets,
+        collapsedPaths,
+        comparisonValue,
+        currentUser,
+        value: documentValue,
+        fieldGroupState,
+        focusPath,
+        hidden: hidden === false ? EMPTY_OBJECT : hidden,
+        openPath,
+        presence,
+        readOnly: readOnly === false ? EMPTY_OBJECT : readOnly,
+        schemaType,
+        validation,
+        changesOpen,
+        level: 0,
+        path: [],
+      })
     },
     {
       prepareFieldMember,

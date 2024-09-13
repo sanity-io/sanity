@@ -80,19 +80,19 @@ beforeEach(() => {
 })
 
 test('it doesnt return new object equalities given the same input', () => {
-  const value = {_id: 'test', _type: 'foo'}
+  const documentValue = {_id: 'test', _type: 'foo'}
   const bookType = getBookType({})
 
   const state1 = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
-    value,
+    documentValue,
   })
 
   const state2 = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
-    value,
+    documentValue,
   })
   expect(state1).not.toBe(null)
   expect(state2).not.toBe(null)

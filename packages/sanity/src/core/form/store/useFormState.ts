@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
-import {pathFor} from '@sanity/util/paths'
 import {useMemo} from 'react'
 
 import {type FormNodePresence} from '../../presence'
@@ -18,37 +17,39 @@ export type FormState<
 > = ObjectFormNode<T, S>
 
 /** @internal */
+export interface UseFormStateOptions {
+  schemaType: ObjectSchemaType
+  documentValue: unknown
+  comparisonValue: unknown
+  openPath: Path
+  focusPath: Path
+  presence: FormNodePresence[]
+  validation: ValidationMarker[]
+  fieldGroupState?: StateTree<string> | undefined
+  collapsedFieldSets?: StateTree<boolean> | undefined
+  collapsedPaths?: StateTree<boolean> | undefined
+  readOnly?: boolean
+  changesOpen?: boolean
+}
+
+/** @internal */
 export function useFormState<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType,
->(
-  schemaType: ObjectSchemaType,
-  {
-    comparisonValue,
-    value,
-    fieldGroupState,
-    collapsedFieldSets,
-    collapsedPaths,
-    focusPath,
-    openPath,
-    presence,
-    validation,
-    readOnly: inputReadOnly,
-    changesOpen,
-  }: {
-    fieldGroupState?: StateTree<string> | undefined
-    collapsedFieldSets?: StateTree<boolean> | undefined
-    collapsedPaths?: StateTree<boolean> | undefined
-    value: unknown
-    comparisonValue: unknown
-    openPath: Path
-    focusPath: Path
-    presence: FormNodePresence[]
-    validation: ValidationMarker[]
-    changesOpen?: boolean
-    readOnly?: boolean
-  },
-): FormState<T, S> | null {
+>({
+  comparisonValue,
+  documentValue,
+  fieldGroupState,
+  collapsedFieldSets,
+  collapsedPaths,
+  focusPath,
+  openPath,
+  presence,
+  validation,
+  readOnly: inputReadOnly,
+  changesOpen,
+  schemaType,
+}: UseFormStateOptions): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
 
@@ -99,17 +100,24 @@ export function useFormState<
     return {
       hidden: prepareHiddenState({
         currentUser,
-        document: value,
+        documentValue: documentValue,
         schemaType,
       }),
       readOnly: prepareReadOnlyState({
         currentUser,
-        document: value,
+        documentValue: documentValue,
         schemaType,
         readOnly: inputReadOnly,
       }),
     }
-  }, [prepareHiddenState, currentUser, value, schemaType, prepareReadOnlyState, inputReadOnly])
+  }, [
+    prepareHiddenState,
+    currentUser,
+    documentValue,
+    schemaType,
+    prepareReadOnlyState,
+    inputReadOnly,
+  ])
 
   return useMemo(() => {
     return prepareFormState({
@@ -117,14 +125,12 @@ export function useFormState<
       fieldGroupState: reconciledFieldGroupState,
       collapsedFieldSets: reconciledCollapsedFieldsets,
       collapsedPaths: reconciledCollapsedPaths,
-      value,
+      documentValue,
       comparisonValue,
       focusPath,
       openPath,
       readOnly,
       hidden,
-      path: pathFor([]),
-      level: 0,
       currentUser,
       presence,
       validation,
@@ -136,7 +142,7 @@ export function useFormState<
     reconciledFieldGroupState,
     reconciledCollapsedFieldsets,
     reconciledCollapsedPaths,
-    value,
+    documentValue,
     comparisonValue,
     focusPath,
     openPath,

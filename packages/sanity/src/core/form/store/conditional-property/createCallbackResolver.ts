@@ -136,7 +136,7 @@ export interface CreateCallbackResolverOptions<TProperty extends 'hidden' | 'rea
 }
 
 export type ResolveRootCallbackStateOptions<TProperty extends 'hidden' | 'readOnly'> = {
-  document: unknown
+  documentValue: unknown
   currentUser: Omit<CurrentUser, 'role'> | null
   schemaType: SchemaType
 } & {[K in TProperty]?: boolean}
@@ -151,23 +151,17 @@ export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>(
   const stableTrue = {value: true}
   let last: {serializedHash: string; result: StateTree<boolean> | undefined} | null = null
 
-  const getHash = ({
-    currentUser,
-    document,
-    schemaType,
-  }: ResolveRootCallbackStateOptions<TProperty>) => ({
-    currentUser: getId(currentUser),
-    schemaType: getId(schemaType),
-    document: getId(document),
-  })
-
   return ({
     currentUser,
-    document,
+    documentValue,
     schemaType,
     ...options
   }: ResolveRootCallbackStateOptions<TProperty>) => {
-    const hash = getHash({currentUser, schemaType, document, ...options})
+    const hash = {
+      currentUser: getId(currentUser),
+      schemaType: getId(schemaType),
+      document: getId(documentValue),
+    }
     const serializedHash = JSON.stringify(hash)
 
     if (property in options) {
@@ -182,11 +176,11 @@ export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>(
       last?.result ?? null,
       resolveCallbackState({
         currentUser,
-        document,
+        document: documentValue,
         level: 0,
         parent: null,
         schemaType,
-        value: document,
+        value: documentValue,
         property,
       }),
     )
