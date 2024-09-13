@@ -108,27 +108,27 @@ export class Mutation {
   compile(): void {
     const operations: ((doc: Doc | null) => Doc | null)[] = []
 
+    // creation requires a _createdAt
+    const getGuaranteedCreatedAt = (doc: Doc): string =>
+      doc && isString(doc._createdAt)
+        ? doc._createdAt
+        : this.params.timestamp || new Date().toISOString()
+
     this.mutations.forEach((mutation) => {
       if (mutation.create) {
         // TODO: Fail entire patch if document did exist
-        const create = mutation.create || {}
+        const create = (mutation.create || {}) as Doc
         operations.push((doc): Doc => {
           if (doc) {
             return doc
           }
 
-          return Object.assign(create as Doc, {
-            _createdAt: create._createdAt || this.params.timestamp,
+          return Object.assign(create, {
+            _createdAt: getGuaranteedCreatedAt(create),
           })
         })
         return
       }
-
-      // creation requires a _createdAt
-      const getGuaranteedCreatedAt = (doc: Doc): string =>
-        doc && isString(doc._createdAt)
-          ? doc._createdAt
-          : this.params.timestamp || new Date().toISOString()
 
       if (mutation.createIfNotExists) {
         const createIfNotExists = mutation.createIfNotExists || {}

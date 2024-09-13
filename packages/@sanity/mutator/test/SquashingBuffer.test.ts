@@ -1,4 +1,4 @@
-import {expect, test} from '@jest/globals'
+import {expect, jest, test} from '@jest/globals'
 import {type PatchMutationOperation} from '@sanity/types'
 
 import {Mutation} from '../src/document/Mutation'
@@ -110,6 +110,9 @@ test('de-duplicate createIfNotExists', () => {
 })
 
 test('de-duplicate create respects deletes', () => {
+  const globalMockDate = new Date('2020-01-01T12:34:55.000Z')
+  const globalDateSpy = jest.spyOn(global, 'Date').mockReturnValue(globalMockDate)
+
   const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
   const sb = new SquashingBuffer(initial)
   add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}})
@@ -124,7 +127,7 @@ test('de-duplicate create respects deletes', () => {
   if (!tx) {
     throw new Error('buffer purge did not result in a mutation')
   }
-  tx.params.timestamp = '2021-01-01T12:34:55Z'
+  tx.params.timestamp = '2021-01-01T12:34:55.000Z'
 
   const creates = tx.mutations.filter((mut) => !!mut.createIfNotExists)
   expect(creates.length).toBe(2) // Only a single create mutation expected (note: bn - is this correct?)
@@ -134,14 +137,16 @@ test('de-duplicate create respects deletes', () => {
   expect(final).toEqual({
     _id: '1',
     _type: 'test',
-    _createdAt: '2021-01-01T12:34:55Z',
-    _updatedAt: '2021-01-01T12:34:55Z',
+    _createdAt: '2020-01-01T12:34:55.000Z',
+    _updatedAt: '2021-01-01T12:34:55.000Z',
     _rev: 'txn_id',
     a: {
       b: 'A wrapped value',
     },
     c: 'Changed',
   })
+
+  globalDateSpy.mockRestore()
 })
 
 test('de-duplicate create respects rebasing', () => {
