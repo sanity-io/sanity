@@ -5,6 +5,7 @@ import {LoadingBlock} from '../../../../components/loadingBlock'
 import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../../../i18n'
 import {SANITY_VERSION} from '../../../../version'
+import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementMenuItem'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {
@@ -97,6 +98,8 @@ function SubSection({subSection}: {subSection: Section}) {
             )
           case 'internalAction': // TODO: Add support for internal actions (MVI-2)
             if (!item.type) return null
+            if (item.type === 'studio-announcements-modal')
+              return <StudioAnnouncementsMenuItem text={item.title} />
             return (
               item.type === 'show-welcome-modal' && <MenuItem key={item._key} text={item.title} />
             )

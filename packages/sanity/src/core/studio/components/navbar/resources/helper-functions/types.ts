@@ -51,7 +51,7 @@ interface InternalAction extends Item {
   type?: InternalActionType
 }
 
-type InternalActionType = 'show-welcome-modal'
+type InternalActionType = 'show-welcome-modal' | 'studio-announcements-modal'
 
 /**
  * @hidden
