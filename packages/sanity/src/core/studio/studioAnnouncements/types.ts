@@ -2,7 +2,7 @@ import {type PortableTextBlock} from 'sanity'
 
 export interface StudioAnnouncementDocument {
   _id: string
-  _type: 'inAppCommunication'
+  _type: 'productAnnouncement'
   _rev: string
   _createdAt: string
   _updatedAt: string
@@ -17,7 +17,7 @@ export interface StudioAnnouncementDocument {
 
 export interface StudioAnnouncementsContextValue {
   studioAnnouncements: StudioAnnouncementDocument[]
-  unseenDocuments: StudioAnnouncementDocument[]
+  unseenAnnouncements: StudioAnnouncementDocument[]
   onDialogOpen: (mode: DialogMode) => void
 }
 

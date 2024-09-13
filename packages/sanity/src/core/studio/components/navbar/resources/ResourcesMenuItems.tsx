@@ -5,7 +5,7 @@ import {LoadingBlock} from '../../../../components/loadingBlock'
 import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../../../i18n'
 import {SANITY_VERSION} from '../../../../version'
-import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementMenuItem'
+import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {

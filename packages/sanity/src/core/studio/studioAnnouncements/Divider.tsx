@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 const Hr = styled.hr<{$show: boolean}>`
@@ -11,33 +11,37 @@ const Hr = styled.hr<{$show: boolean}>`
   margin: 0;
   border: none;
 `
+
+interface DividerProps {
+  parentRef: React.RefObject<HTMLDivElement>
+}
+
 /**
  * A divider that fades when reaching the top of the parent.
  */
-export function Divider(props: {parentRef: React.RefObject<HTMLDivElement>}): JSX.Element {
-  const {parentRef} = props
+export function Divider({parentRef}: DividerProps): JSX.Element {
   const itemRef = useRef<HTMLHRElement | null>(null)
   const [show, setShow] = useState(true)
 
-  const handleScrollChange = useCallback(() => {
-    const itemTop = itemRef.current?.getBoundingClientRect().top
-    const parentTop = parentRef.current?.getBoundingClientRect().top
-    // If the item is between -6px and 80px from the top of the parent, show it
-    if (typeof itemTop !== 'number' || typeof parentTop !== 'number') return
-    setShow(itemTop >= parentTop + 60)
-  }, [parentRef])
-
   useEffect(() => {
+    const item = itemRef.current
     const parent = parentRef.current
-    if (parent) {
-      parent.addEventListener('scroll', handleScrollChange)
-    }
+
+    if (!item || !parent) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShow(entry.isIntersecting)
+      },
+      {root: parent, threshold: 0, rootMargin: '-60px 0px 0px 0px'},
+    )
+
+    observer.observe(item)
+
+    // eslint-disable-next-line consistent-return
     return () => {
-      if (parent) {
-        parent.removeEventListener('scroll', handleScrollChange)
-      }
+      observer.disconnect()
     }
-  }, [itemRef, handleScrollChange, parentRef])
+  }, [parentRef])
 
   return (
     <Box paddingBottom={4}>

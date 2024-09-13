@@ -1,9 +1,7 @@
 import {createClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {type Observable} from 'rxjs'
-import {SANITY_VERSION, useKeyValueStore} from 'sanity'
+import {SANITY_VERSION} from 'sanity'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
 
 import {
@@ -13,35 +11,15 @@ import {
   StudioAnnouncementModalDismissed,
 } from './__telemetry__/studioAnnouncements.telemetry'
 import {studioAnnouncementQuery} from './query'
-import {StudioAnnouncementCard} from './StudioAnnouncementCard'
-import {StudioAnnouncementDialog} from './StudioAnnouncementDialog'
+import {StudioAnnouncementsCard} from './StudioAnnouncementsCard'
+import {StudioAnnouncementsDialog} from './StudioAnnouncementsDialog'
 import {
   type DialogMode,
   type StudioAnnouncementDocument,
   type StudioAnnouncementsContextValue,
 } from './types'
+import {useSeenAnnouncements} from './useSeenAnnouncements'
 import {isValidAudience} from './utils'
-
-const KEY = 'studio-announcements-seen'
-
-/**
- * TODO: This is not functional yet, the API is not accepting the key
- */
-function useSeenAnnouncements(): [string[] | null | 'loading', (seen: string[]) => void] {
-  // Handles the communication with the key value store
-  const keyValueStore = useKeyValueStore()
-  const seenAnnouncements$ = useMemo(
-    () => keyValueStore.getKey(KEY) as Observable<string[] | null>,
-    [keyValueStore],
-  )
-  const seenAnnouncements = useObservable(seenAnnouncements$, 'loading')
-
-  const setSeenAnnouncements = useCallback((seen: string[]) => {
-    // keyValueStore.setKey(KEY, seen)
-  }, [])
-
-  return [seenAnnouncements, setSeenAnnouncements]
-}
 
 interface StudioAnnouncementsProviderProps {
   children: React.ReactNode
@@ -57,12 +35,11 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
   const [studioAnnouncements, setStudioAnnouncements] = useState<StudioAnnouncementDocument[]>([])
   const [seenAnnouncements, setSeenAnnouncements] = useSeenAnnouncements()
 
-  const unseenDocuments: StudioAnnouncementDocument[] = useMemo(() => {
+  const unseenAnnouncements: StudioAnnouncementDocument[] = useMemo(() => {
     // If it's loading return an empty array to avoid showing the card
     if (seenAnnouncements === 'loading') return []
-    if (studioAnnouncements.length === 0) return []
     // If none is seen, return all the announcements
-    if (!seenAnnouncements) return [studioAnnouncements[0]]
+    if (!seenAnnouncements) return studioAnnouncements
 
     // Filter out the seen announcements
     const unseen = studioAnnouncements.filter((doc) => !seenAnnouncements.includes(doc._id))
@@ -72,38 +49,23 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
     return unseen
   }, [seenAnnouncements, studioAnnouncements, telemetry])
 
-  // TODO: Replace for internal api
-  const client = useMemo(
-    () =>
-      createClient({
-        projectId: '3do82whm',
-        dataset: 'next',
-      }),
-    [],
-  )
-
   useEffect(() => {
-    client.observable
+    // TODO: Replace for internal api
+    const client = createClient({projectId: '3do82whm', dataset: 'next'})
+
+    const subscription = client.observable
       .fetch<StudioAnnouncementDocument[]>(studioAnnouncementQuery)
-      .subscribe((docs) => {
-        docs.map((doc) => {
-          const isValid = isValidAudience(doc, SANITY_VERSION)
-          if (!isValid) return null
-          return doc
-        })
-        // TODO: Validate unseen documents with the keyValueStore
-        setStudioAnnouncements(docs)
+      .subscribe({
+        next: (docs) => {
+          const validDocs = docs.filter((doc) => isValidAudience(doc, SANITY_VERSION))
+          setStudioAnnouncements(validDocs)
+        },
+        error: (error) => {
+          console.error('Error fetching studio announcements:', error)
+        },
       })
-  }, [client, telemetry])
-
-  /**
-   * TODO: Remove this before merging
-   */
-  useEffect(() => {
-    if (isCardDismissed) {
-      setTimeout(() => setIsCardDismissed(false), 1000)
-    }
-  }, [isCardDismissed])
+    return () => subscription.unsubscribe()
+  }, [])
 
   const handleOpenDialog = useCallback((mode: DialogMode) => {
     setDialogMode(mode)
@@ -131,27 +93,29 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
   const contextValue: StudioAnnouncementsContextValue = useMemo(
     () => ({
       studioAnnouncements,
-      unseenDocuments,
+      unseenAnnouncements,
       onDialogOpen: handleOpenDialog,
     }),
-    [handleOpenDialog, unseenDocuments, studioAnnouncements],
+    [handleOpenDialog, unseenAnnouncements, studioAnnouncements],
   )
 
   return (
     <StudioAnnouncementContext.Provider value={contextValue}>
       {children}
-      {unseenDocuments.length > 0 && (
+      {unseenAnnouncements.length > 0 && (
         <>
-          <StudioAnnouncementCard
-            title={unseenDocuments[0].title}
-            announcementType={unseenDocuments[0].announcementType}
-            onCardClick={handleCardClick}
-            isOpen={!isCardDismissed}
-            onCardDismiss={handleCardDismiss}
-          />
+          {!isCardDismissed && (
+            <StudioAnnouncementsCard
+              title={unseenAnnouncements[0].title}
+              announcementType={unseenAnnouncements[0].announcementType}
+              onCardClick={handleCardClick}
+              isOpen={!isCardDismissed}
+              onCardDismiss={handleCardDismiss}
+            />
+          )}
           {dialogMode && (
-            <StudioAnnouncementDialog
-              unseenDocuments={dialogMode === 'all' ? studioAnnouncements : unseenDocuments}
+            <StudioAnnouncementsDialog
+              unseenDocuments={dialogMode === 'all' ? studioAnnouncements : unseenAnnouncements}
               onClose={handleDialogClose}
             />
           )}
