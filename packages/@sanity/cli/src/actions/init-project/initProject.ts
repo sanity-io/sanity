@@ -567,6 +567,12 @@ export default async function initSanity(
     trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
   }
 
+  // we enable auto-updates by default, but allow users to specify otherwise
+  let autoUpdates = true
+  if (typeof cliFlags['auto-updates'] === 'boolean') {
+    autoUpdates = cliFlags['auto-updates']
+  }
+
   // Build a full set of resolved options
   const templateOptions: BootstrapOptions = {
     outputPath,
@@ -575,6 +581,7 @@ export default async function initSanity(
     schemaUrl,
     useTypeScript,
     variables: {
+      autoUpdates,
       dataset: datasetName,
       projectId,
       projectName: displayName || answers.projectName,

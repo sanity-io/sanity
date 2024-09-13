@@ -26,7 +26,6 @@ const MIMETYPE_PLAINTEXT = 'text/plain'
 const SUPPORTS_SANITY_CLIPBOARD_MIMETYPE =
   typeof ClipboardItem !== 'undefined' &&
   'supports' in ClipboardItem &&
-  // @ts-expect-error `ClipboardItem.supports` does not have types yet
   ClipboardItem.supports(MIMETYPE_SANITY_CLIPBOARD)
 
 /**
