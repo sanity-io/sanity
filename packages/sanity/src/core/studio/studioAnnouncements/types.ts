@@ -14,3 +14,12 @@ export interface StudioAnnouncementDocument {
   audience: 'everyone' | 'specific-version' | 'above-version' | 'below-version'
   studioVersion?: string
 }
+
+export interface StudioAnnouncementsContextValue {
+  studioAnnouncements: StudioAnnouncementDocument[]
+  unseenDocuments: StudioAnnouncementDocument[]
+  onDialogOpen: (mode: DialogMode) => void
+}
+
+// Decides weather to show all the announcements or only the unseen ones
+export type DialogMode = 'unseen' | 'all'

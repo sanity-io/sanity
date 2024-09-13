@@ -26,6 +26,7 @@ import {
   NotFoundScreen,
 } from './screens'
 import {type StudioProps} from './Studio'
+import {StudioAnnouncementsProvider} from './studioAnnouncements'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {StudioTelemetryProvider} from './StudioTelemetryProvider'
 import {StudioThemeProvider} from './StudioThemeProvider'
@@ -69,7 +70,9 @@ export function StudioProvider({
           <LocaleProvider>
             <PackageVersionStatusProvider>
               <MaybeEnableErrorReporting errorReporter={errorReporter} />
-              <ResourceCacheProvider>{children}</ResourceCacheProvider>
+              <ResourceCacheProvider>
+                <StudioAnnouncementsProvider>{children}</StudioAnnouncementsProvider>
+              </ResourceCacheProvider>
             </PackageVersionStatusProvider>
           </LocaleProvider>
         </StudioTelemetryProvider>
