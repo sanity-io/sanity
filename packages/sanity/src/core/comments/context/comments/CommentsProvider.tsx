@@ -6,7 +6,7 @@ import {CommentsContext} from 'sanity/_singletons'
 import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
 import {useCurrentUser} from '../../../store'
 import {useAddonDataset, useWorkspace} from '../../../studio'
-import {getPublishedId} from '../../../util'
+import {getPublishedId, resolveBundlePerspective} from '../../../util'
 import {
   type CommentOperationsHookOptions,
   useCommentOperations,
@@ -85,15 +85,11 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
 
-  const bundlePerspective = perspective?.startsWith('bundle.')
-    ? perspective.split('bundle.').at(1)
-    : undefined
-
   const editState = useEditState(
     getPublishedId(versionOrPublishedId),
     documentType,
     'default',
-    bundlePerspective,
+    resolveBundlePerspective(perspective),
   )
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
