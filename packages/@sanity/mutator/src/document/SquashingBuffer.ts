@@ -239,7 +239,9 @@ export class SquashingBuffer {
 
     nextOps.push(...this.staged)
     if (nextOps.length > 0) {
-      this.PRESTAGE = new Mutation({mutations: nextOps}).apply(this.PRESTAGE) as Doc
+      this.PRESTAGE = new Mutation({mutations: nextOps, timestamp: new Date().toISOString()}).apply(
+        this.PRESTAGE,
+      ) as Doc
       this.staged = []
       this.setOperations = {}
     }

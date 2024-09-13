@@ -1,3 +1,5 @@
+import {isString} from 'lodash'
+
 import {Patcher} from '../patch'
 import {debug} from './debug'
 import {luid} from './luid'
@@ -122,12 +124,18 @@ export class Mutation {
         return
       }
 
+      // creation requires a _createdAt
+      const getGuaranteedCreatedAt = (doc: Doc): string =>
+        doc && isString(doc._createdAt)
+          ? doc._createdAt
+          : this.params.timestamp || new Date().toISOString()
+
       if (mutation.createIfNotExists) {
         const createIfNotExists = mutation.createIfNotExists || {}
         operations.push((doc) =>
           doc === null
             ? Object.assign(createIfNotExists, {
-                _createdAt: createIfNotExists._createdAt || this.params.timestamp,
+                _createdAt: getGuaranteedCreatedAt(createIfNotExists),
               })
             : doc,
         )
@@ -138,7 +146,7 @@ export class Mutation {
         const createOrReplace = mutation.createOrReplace || {}
         operations.push(() =>
           Object.assign(createOrReplace, {
-            _createdAt: createOrReplace._createdAt || this.params.timestamp,
+            _createdAt: getGuaranteedCreatedAt(createOrReplace),
           }),
         )
         return
