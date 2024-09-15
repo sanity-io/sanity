@@ -9,6 +9,7 @@ import {debounceTime, map} from 'rxjs/operators'
 import {
   type DocumentAvailability,
   getPublishedId,
+  resolveBundlePerspective,
   useDocumentPreviewStore,
   useTranslation,
 } from 'sanity'
@@ -44,9 +45,7 @@ export const ReferenceChangedBanner = memo(() => {
   }, [params?.parentRefPath])
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const bundlePerspective = perspective?.startsWith('bundle.')
-    ? perspective.split('bundle.').at(1)
-    : undefined
+  const bundlePerspective = resolveBundlePerspective(perspective)
 
   /**
    * Loads information regarding the reference field of the parent pane. This

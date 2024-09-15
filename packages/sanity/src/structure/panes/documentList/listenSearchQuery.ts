@@ -15,7 +15,15 @@ import {
   timer,
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {createSearch, getSearchableTypes, type SanityDocumentLike, type Schema} from 'sanity'
+import {
+  createSearch,
+  DRAFTS_FOLDER,
+  getSearchableTypes,
+  resolvePerspectiveOptions,
+  type SanityDocumentLike,
+  type Schema,
+  type SearchOptions,
+} from 'sanity'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
 // FIXME
@@ -122,13 +130,15 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
               types,
             }
 
-            const searchOptions = {
+            const searchOptions: SearchOptions = {
               __unstable_extendedProjection: extendedProjection,
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
-              perspective: omitBundlePerspective(perspective),
               skipSortByScore: true,
               sort: sortBy,
+              ...resolvePerspectiveOptions(perspective, (perspectives, isSystemPerspective) =>
+                isSystemPerspective ? perspectives : perspectives.concat(DRAFTS_FOLDER),
+              ),
             }
 
             return search(searchTerms, searchOptions).pipe(
@@ -150,12 +160,4 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
       )
     }),
   )
-}
-
-function omitBundlePerspective(perspective: string | undefined): string | undefined {
-  if (perspective?.startsWith('bundle.')) {
-    return undefined
-  }
-
-  return perspective
 }
