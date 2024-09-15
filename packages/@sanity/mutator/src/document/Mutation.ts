@@ -1,5 +1,3 @@
-import {isString} from 'lodash'
-
 import {Patcher} from '../patch'
 import {debug} from './debug'
 import {luid} from './luid'
@@ -110,9 +108,7 @@ export class Mutation {
 
     // creation requires a _createdAt
     const getGuaranteedCreatedAt = (doc: Doc): string =>
-      doc && isString(doc._createdAt)
-        ? doc._createdAt
-        : this.params.timestamp || new Date().toISOString()
+      doc?._createdAt || this.params.timestamp || new Date().toISOString()
 
     this.mutations.forEach((mutation) => {
       if (mutation.create) {

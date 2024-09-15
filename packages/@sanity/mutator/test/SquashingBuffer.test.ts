@@ -109,6 +109,35 @@ test('de-duplicate createIfNotExists', () => {
   expect(tx2 && tx2.mutations.length).toBe(1)
 })
 
+test.each(['create', 'createIfNotExists', 'createOrReplace'])(
+  '%s defaults to current created at time',
+  (createFnc) => {
+    const globalMockDate = new Date('2020-01-01T12:34:55.000Z')
+    const globalDateSpy = jest.spyOn(global, 'Date').mockReturnValue(globalMockDate)
+
+    const sb = new SquashingBuffer(null)
+
+    add(sb, {[createFnc]: {_id: '1', _type: 'test', a: 'A string value'}})
+
+    const tx = sb.purge('txn_id')
+    if (!tx) {
+      throw new Error('buffer purge did not result in a mutation')
+    }
+
+    const final = tx.apply(null)
+
+    expect(final).toEqual({
+      _id: '1',
+      _rev: 'txn_id',
+      _createdAt: '2020-01-01T12:34:55.000Z',
+      _type: 'test',
+      a: 'A string value',
+    })
+
+    globalDateSpy.mockRestore()
+  },
+)
+
 test('de-duplicate create respects deletes', () => {
   const globalMockDate = new Date('2020-01-01T12:34:55.000Z')
   const globalDateSpy = jest.spyOn(global, 'Date').mockReturnValue(globalMockDate)
