@@ -71,6 +71,7 @@ const mockAnnouncements = [
     audience: 'everyone',
   },
 ]
+
 describe('StudioAnnouncementsProvider', () => {
   let wrapper = ({children}: {children: ReactNode}) => children
   beforeAll(async () => {
@@ -541,6 +542,107 @@ describe('StudioAnnouncementsProvider', () => {
 
       expect(result.current.unseenAnnouncements).toEqual(announcements)
       expect(result.current.studioAnnouncements).toEqual(announcements)
+    })
+  })
+  describe('storing seen announcements', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+    test('when the card is dismissed, and only 1 announcement received', () => {
+      const {createClient} = require('@sanity/client')
+      const saveSeenAnnouncementsMock = jest.fn()
+      seenAnnouncementsMock.mockReturnValue([[], saveSeenAnnouncementsMock])
+
+      const mockFetch = createClient().observable.fetch as jest.Mock
+      mockFetch.mockReturnValue({
+        subscribe: ({next}: any) => {
+          next([mockAnnouncements[0]])
+          return {unsubscribe: jest.fn()}
+        },
+      })
+      const {getByLabelText} = render(null, {wrapper})
+
+      const closeButton = getByLabelText('Dismiss announcements')
+      fireEvent.click(closeButton)
+      expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith([mockAnnouncements[0]._id])
+    })
+    test('when the card is dismissed, and 2 announcements are received', () => {
+      const {createClient} = require('@sanity/client')
+      const saveSeenAnnouncementsMock = jest.fn()
+      seenAnnouncementsMock.mockReturnValue([[], saveSeenAnnouncementsMock])
+
+      const mockFetch = createClient().observable.fetch as jest.Mock
+      mockFetch.mockReturnValue({
+        subscribe: ({next}: any) => {
+          next(mockAnnouncements)
+          return {unsubscribe: jest.fn()}
+        },
+      })
+      const {getByLabelText} = render(null, {wrapper})
+
+      const closeButton = getByLabelText('Dismiss announcements')
+      fireEvent.click(closeButton)
+      expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
+    })
+    test("when the card is dismissed, doesn't persist previous stored values", () => {
+      const {createClient} = require('@sanity/client')
+      const saveSeenAnnouncementsMock = jest.fn()
+      // The id received here is not present anymore in the mock announcements, this id won't be stored in next save.
+      seenAnnouncementsMock.mockReturnValue([['not-to-be-persisted'], saveSeenAnnouncementsMock])
+
+      const mockFetch = createClient().observable.fetch as jest.Mock
+      mockFetch.mockReturnValue({
+        subscribe: ({next}: any) => {
+          next(mockAnnouncements)
+          return {unsubscribe: jest.fn()}
+        },
+      })
+      const {getByLabelText} = render(null, {wrapper})
+
+      const closeButton = getByLabelText('Dismiss announcements')
+      fireEvent.click(closeButton)
+      expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
+    })
+    test('when the card is dismissed, persist previous stored values', () => {
+      const {createClient} = require('@sanity/client')
+      const saveSeenAnnouncementsMock = jest.fn()
+      // The id received here is present in the mock announcements, this id will be persisted in next save.
+      seenAnnouncementsMock.mockReturnValue([[mockAnnouncements[0]._id], saveSeenAnnouncementsMock])
+
+      const mockFetch = createClient().observable.fetch as jest.Mock
+      mockFetch.mockReturnValue({
+        subscribe: ({next}: any) => {
+          next(mockAnnouncements)
+          return {unsubscribe: jest.fn()}
+        },
+      })
+      const {getByLabelText} = render(null, {wrapper})
+
+      const closeButton = getByLabelText('Dismiss announcements')
+      fireEvent.click(closeButton)
+      expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
+    })
+    test('when the dialog is closed', () => {
+      const {createClient} = require('@sanity/client')
+      const saveSeenAnnouncementsMock = jest.fn()
+      // The id received here is present in the mock announcements, this id will be persisted in next save.
+      seenAnnouncementsMock.mockReturnValue([[], saveSeenAnnouncementsMock])
+
+      const mockFetch = createClient().observable.fetch as jest.Mock
+      mockFetch.mockReturnValue({
+        subscribe: ({next}: any) => {
+          next(mockAnnouncements)
+          return {unsubscribe: jest.fn()}
+        },
+      })
+      const {getByLabelText} = render(null, {wrapper})
+
+      const openButton = getByLabelText('Open announcements')
+      fireEvent.click(openButton)
+      // Dialog renders and we close it
+      const closeButton = getByLabelText('Close dialog')
+      fireEvent.click(closeButton)
+      expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
   })
 })

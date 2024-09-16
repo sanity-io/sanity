@@ -66,17 +66,21 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
     return () => subscription.unsubscribe()
   }, [])
 
+  const saveSeenAnnouncements = useCallback(() => {
+    // Mark all the announcements as seen
+    setSeenAnnouncements(studioAnnouncements.map((doc) => doc._id))
+  }, [setSeenAnnouncements, studioAnnouncements])
+
   const handleOpenDialog = useCallback((mode: DialogMode) => {
     setDialogMode(mode)
     setIsCardDismissed(true)
   }, [])
 
   const handleCardDismiss = useCallback(() => {
-    // Mark all the announcements as seen
-    setSeenAnnouncements(studioAnnouncements.map((doc) => doc._id))
+    saveSeenAnnouncements()
     setIsCardDismissed(true)
     telemetry.log(StudioAnnouncementCardDismissed)
-  }, [setSeenAnnouncements, studioAnnouncements, telemetry])
+  }, [saveSeenAnnouncements, telemetry])
 
   const handleCardClick = useCallback(() => {
     handleOpenDialog('unseen')
@@ -85,9 +89,9 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
 
   const handleDialogClose = useCallback(() => {
     setDialogMode(null)
-    setSeenAnnouncements(studioAnnouncements.map((doc) => doc._id))
+    saveSeenAnnouncements()
     telemetry.log(StudioAnnouncementModalDismissed)
-  }, [telemetry, setSeenAnnouncements, studioAnnouncements])
+  }, [telemetry, saveSeenAnnouncements])
 
   const contextValue: StudioAnnouncementsContextValue = useMemo(
     () => ({
