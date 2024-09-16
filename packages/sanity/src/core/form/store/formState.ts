@@ -250,7 +250,7 @@ export function createPrepareFormState({
         collapsedFieldSets: getId(parent.collapsedFieldSets?.children?.[field.name]),
         collapsedPaths: getId(parent.collapsedPaths?.children?.[field.name]),
         currentUser: getId(parent.currentUser),
-        fieldGroupState: getId(parent.fieldGroupState?.children?.[field.name]),
+        fieldGroupState: getId(parent.fieldGroupState),
         hidden:
           parent.hidden === true ||
           parent.hidden?.value ||
