@@ -22,4 +22,4 @@ export interface StudioAnnouncementsContextValue {
 }
 
 // Decides weather to show all the announcements or only the unseen ones
-export type DialogMode = 'unseen' | 'all'
+export type DialogMode = 'card' | 'help_menu'

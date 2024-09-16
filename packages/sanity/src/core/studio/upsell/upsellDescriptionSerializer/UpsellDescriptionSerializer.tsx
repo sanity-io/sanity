@@ -176,7 +176,11 @@ function ImageBlock(
   )
 }
 
-const createComponents = ({onLinkClick}: {onLinkClick?: () => void}): PortableTextComponents => ({
+const createComponents = ({
+  onLinkClick,
+}: {
+  onLinkClick?: ({url, linkTitle}: {url: string; linkTitle: string}) => void
+}): PortableTextComponents => ({
   block: {
     normal: ({children}) => <NormalBlock>{children}</NormalBlock>,
     h2: ({children}) => <H2Block>{children}</H2Block>,
@@ -222,7 +226,16 @@ const createComponents = ({onLinkClick}: {onLinkClick?: () => void}): PortableTe
         rel="noopener noreferrer"
         target="_blank"
         useTextColor={props.value.useTextColor}
-        onClick={onLinkClick}
+        // eslint-disable-next-line react/jsx-no-bind
+        onClick={
+          onLinkClick
+            ? () =>
+                onLinkClick({
+                  url: props.value.href,
+                  linkTitle: props.text,
+                })
+            : undefined
+        }
       >
         {props.children}
         {props.value.showIcon && <LinkIcon style={{marginLeft: '2px'}} />}
@@ -279,7 +292,7 @@ const createComponents = ({onLinkClick}: {onLinkClick?: () => void}): PortableTe
 
 interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
-  onLinkClick?: () => void
+  onLinkClick?: ({url, linkTitle}: {url: string; linkTitle: string}) => void
 }
 
 /**

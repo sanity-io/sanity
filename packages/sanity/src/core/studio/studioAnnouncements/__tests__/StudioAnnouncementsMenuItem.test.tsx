@@ -94,6 +94,6 @@ describe('StudioAnnouncementsMenuItem', () => {
 
     fireEvent.click(screen.getByText('Announcements'))
 
-    expect(onDialogOpenMock).toHaveBeenCalledWith('all')
+    expect(onDialogOpenMock).toHaveBeenCalledWith('help_menu')
   })
 })

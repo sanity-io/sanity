@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {createClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
@@ -5,10 +6,10 @@ import {StudioAnnouncementContext} from 'sanity/_singletons'
 
 import {SANITY_VERSION} from '../../version'
 import {
-  StudioAnnouncementCardClicked,
-  StudioAnnouncementCardDismissed,
-  StudioAnnouncementCardSeen,
-  StudioAnnouncementModalDismissed,
+  ProductAnnouncementCardClicked,
+  ProductAnnouncementCardDismissed,
+  ProductAnnouncementCardSeen,
+  ProductAnnouncementModalDismissed,
 } from './__telemetry__/studioAnnouncements.telemetry'
 import {studioAnnouncementQuery} from './query'
 import {StudioAnnouncementsCard} from './StudioAnnouncementsCard'
@@ -30,7 +31,7 @@ interface StudioAnnouncementsProviderProps {
  */
 export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProviderProps) {
   const telemetry = useTelemetry()
-  const [dialogMode, setDialogMode] = useState<DialogMode | null>()
+  const [dialogMode, setDialogMode] = useState<DialogMode | null>(null)
   const [isCardDismissed, setIsCardDismissed] = useState(false)
   const [studioAnnouncements, setStudioAnnouncements] = useState<StudioAnnouncementDocument[]>([])
   const [seenAnnouncements, setSeenAnnouncements] = useSeenAnnouncements()
@@ -44,7 +45,12 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
     // Filter out the seen announcements
     const unseen = studioAnnouncements.filter((doc) => !seenAnnouncements.includes(doc._id))
     if (unseen.length > 0) {
-      telemetry.log(StudioAnnouncementCardSeen)
+      telemetry.log(ProductAnnouncementCardSeen, {
+        announcement_id: unseen[0]._id,
+        announcement_title: unseen[0].title,
+        source: 'studio',
+        studio_version: SANITY_VERSION,
+      })
     }
     return unseen
   }, [seenAnnouncements, studioAnnouncements, telemetry])
@@ -79,19 +85,36 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
   const handleCardDismiss = useCallback(() => {
     saveSeenAnnouncements()
     setIsCardDismissed(true)
-    telemetry.log(StudioAnnouncementCardDismissed)
-  }, [saveSeenAnnouncements, telemetry])
+    telemetry.log(ProductAnnouncementCardDismissed, {
+      announcement_id: unseenAnnouncements[0]._id,
+      announcement_title: unseenAnnouncements[0].title,
+      source: 'studio',
+      studio_version: SANITY_VERSION,
+    })
+  }, [saveSeenAnnouncements, telemetry, unseenAnnouncements])
 
   const handleCardClick = useCallback(() => {
-    handleOpenDialog('unseen')
-    telemetry.log(StudioAnnouncementCardClicked)
-  }, [handleOpenDialog, telemetry])
+    handleOpenDialog('card')
+    telemetry.log(ProductAnnouncementCardClicked, {
+      announcement_id: unseenAnnouncements[0]._id,
+      announcement_title: unseenAnnouncements[0].title,
+      source: 'studio',
+      studio_version: SANITY_VERSION,
+    })
+  }, [handleOpenDialog, telemetry, unseenAnnouncements])
 
   const handleDialogClose = useCallback(() => {
+    telemetry.log(ProductAnnouncementModalDismissed, {
+      announcement_id: unseenAnnouncements[0]._id,
+      announcement_title: unseenAnnouncements[0].title,
+      source: 'studio',
+      studio_version: SANITY_VERSION,
+      origin: dialogMode ?? 'card',
+    })
+
     setDialogMode(null)
     saveSeenAnnouncements()
-    telemetry.log(StudioAnnouncementModalDismissed)
-  }, [telemetry, saveSeenAnnouncements])
+  }, [saveSeenAnnouncements, telemetry, unseenAnnouncements, dialogMode])
 
   const contextValue: StudioAnnouncementsContextValue = useMemo(
     () => ({
@@ -118,7 +141,10 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
           )}
           {dialogMode && (
             <StudioAnnouncementsDialog
-              unseenDocuments={dialogMode === 'all' ? studioAnnouncements : unseenAnnouncements}
+              mode={dialogMode}
+              unseenDocuments={
+                dialogMode === 'help_menu' ? studioAnnouncements : unseenAnnouncements
+              }
               onClose={handleDialogClose}
             />
           )}

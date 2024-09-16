@@ -7,7 +7,7 @@ export function StudioAnnouncementsMenuItem({text}: {text: string}) {
   const {onDialogOpen, studioAnnouncements} = useStudioAnnouncements()
 
   const handleOpenDialog = useCallback(() => {
-    onDialogOpen('all')
+    onDialogOpen('help_menu')
   }, [onDialogOpen])
 
   if (studioAnnouncements.length === 0) return null

@@ -1,6 +1,6 @@
+/* eslint-disable camelcase */
 import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Grid, Text} from '@sanity/ui'
 import {Fragment, useCallback, useMemo, useRef} from 'react'
 import {useTranslation} from 'react-i18next'
@@ -8,10 +8,11 @@ import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../ui-components'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../hooks'
+import {SANITY_VERSION} from '../../version'
 import {UpsellDescriptionSerializer} from '../upsell'
-import {StudioAnnouncementModalLinkClicked} from './__telemetry__/studioAnnouncements.telemetry'
+import {ProductAnnouncementLinkClicked} from './__telemetry__/studioAnnouncements.telemetry'
 import {Divider} from './Divider'
-import {type StudioAnnouncementDocument} from './types'
+import {type DialogMode, type StudioAnnouncementDocument} from './types'
 
 const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
   month: 'short',
@@ -40,27 +41,38 @@ const FloatingButton = styled(Button)`
 `
 
 interface UnseenDocumentProps {
-  body: PortableTextBlock[]
-  header: string
-  publishedDate?: string
+  announcement: StudioAnnouncementDocument
+  mode: DialogMode
 }
 
 /**
  * Renders the unseen document in the dialog.
  * Has a sticky header with the date and title, and a body with the content.
  */
-function UnseenDocument({body = [], header, publishedDate}: UnseenDocumentProps) {
+function UnseenDocument({announcement, mode}: UnseenDocumentProps) {
   const telemetry = useTelemetry()
   const dateFormatter = useDateTimeFormat(DATE_FORMAT_OPTIONS)
+  const {publishedDate, title, body} = announcement
 
   const formattedDate = useMemo(() => {
     if (!publishedDate) return ''
     return dateFormatter.format(new Date(publishedDate))
   }, [publishedDate, dateFormatter])
 
-  const handleLinkClick = useCallback(() => {
-    telemetry.log(StudioAnnouncementModalLinkClicked)
-  }, [telemetry])
+  const handleLinkClick = useCallback(
+    ({url, linkTitle}: {url: string; linkTitle: string}) => {
+      telemetry.log(ProductAnnouncementLinkClicked, {
+        announcement_id: announcement._id,
+        announcement_title: announcement.title,
+        source: 'studio',
+        studio_version: SANITY_VERSION,
+        origin: mode,
+        link_url: url,
+        link_title: linkTitle,
+      })
+    },
+    [telemetry, announcement, mode],
+  )
 
   return (
     <Box>
@@ -74,7 +86,7 @@ function UnseenDocument({body = [], header, publishedDate}: UnseenDocumentProps)
         </Box>
         <Flex flex={1} padding={2} justify="center">
           <Text size={1} weight="semibold">
-            {header}
+            {title}
           </Text>
         </Flex>
       </DialogHeader>
@@ -88,6 +100,7 @@ function UnseenDocument({body = [], header, publishedDate}: UnseenDocumentProps)
 interface StudioAnnouncementDialogProps {
   unseenDocuments: StudioAnnouncementDocument[]
   onClose: () => void
+  mode: DialogMode
 }
 
 /**
@@ -98,6 +111,7 @@ interface StudioAnnouncementDialogProps {
 export function StudioAnnouncementsDialog({
   unseenDocuments = [],
   onClose,
+  mode,
 }: StudioAnnouncementDialogProps) {
   const dialogRef = useRef(null)
   const {t} = useTranslation()
@@ -115,11 +129,7 @@ export function StudioAnnouncementsDialog({
       <Root ref={dialogRef} height="fill">
         {unseenDocuments.map((unseenDocument, index) => (
           <Fragment key={unseenDocument._id}>
-            <UnseenDocument
-              body={unseenDocument.body}
-              header={unseenDocument.title}
-              publishedDate={unseenDocument.publishedDate}
-            />
+            <UnseenDocument announcement={unseenDocument} mode={mode} />
             {/* Add a divider between each dialog if it's not the last one */}
             {index < unseenDocuments.length - 1 && <Divider parentRef={dialogRef} />}
           </Fragment>

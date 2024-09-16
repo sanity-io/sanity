@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {beforeAll, beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {fireEvent, render, renderHook} from '@testing-library/react'
 import {type ReactNode} from 'react'
@@ -197,20 +198,36 @@ describe('StudioAnnouncementsProvider', () => {
 
       // Opening the dialog calls the telemetry only once, with the seen card
       expect(mockLog).toBeCalledTimes(2)
-      expect(mockLog).toBeCalledWith({
-        description: 'User viewed the studio announcement card',
-        name: 'Studio Announcement Card Seen',
-        schema: undefined,
-        type: 'log',
-        version: 1,
-      })
-      expect(mockLog).toBeCalledWith({
-        description: 'User clicked the studio announcement card',
-        name: 'Studio Announcement Card Clicked',
-        schema: undefined,
-        type: 'log',
-        version: 1,
-      })
+      expect(mockLog).toBeCalledWith(
+        {
+          description: 'User viewed the product announcement card',
+          name: 'Product Announcement Card Seen',
+          schema: undefined,
+          type: 'log',
+          version: 1,
+        },
+        {
+          announcement_id: 'studioAnnouncement-2',
+          announcement_title: 'Announcement 2',
+          source: 'studio',
+          studio_version: '3.57.0',
+        },
+      )
+      expect(mockLog).toBeCalledWith(
+        {
+          description: 'User clicked the product announcement card',
+          name: 'Product Announcement Card Clicked',
+          schema: undefined,
+          type: 'log',
+          version: 1,
+        },
+        {
+          announcement_id: 'studioAnnouncement-2',
+          announcement_title: 'Announcement 2',
+          source: 'studio',
+          studio_version: '3.57.0',
+        },
+      )
     })
 
     test("dismisses card, then it's hidden, dialog doesn't render", () => {
@@ -229,20 +246,36 @@ describe('StudioAnnouncementsProvider', () => {
 
       // Dismissing the card calls telemetry with the seen and dismiss logs
       expect(mockLog).toBeCalledTimes(2)
-      expect(mockLog).toBeCalledWith({
-        description: 'User viewed the studio announcement card',
-        name: 'Studio Announcement Card Seen',
-        schema: undefined,
-        type: 'log',
-        version: 1,
-      })
-      expect(mockLog).toBeCalledWith({
-        description: 'User dismissed the studio announcement card',
-        name: 'Studio Announcement Card Dismissed',
-        schema: undefined,
-        type: 'log',
-        version: 1,
-      })
+      expect(mockLog).toBeCalledWith(
+        {
+          description: 'User viewed the product announcement card',
+          name: 'Product Announcement Card Seen',
+          schema: undefined,
+          type: 'log',
+          version: 1,
+        },
+        {
+          announcement_id: 'studioAnnouncement-2',
+          announcement_title: 'Announcement 2',
+          source: 'studio',
+          studio_version: '3.57.0',
+        },
+      )
+      expect(mockLog).toBeCalledWith(
+        {
+          description: 'User dismissed the product announcement card',
+          name: 'Product Announcement Card Dismissed',
+          schema: undefined,
+          type: 'log',
+          version: 1,
+        },
+        {
+          announcement_id: 'studioAnnouncement-2',
+          announcement_title: 'Announcement 2',
+          source: 'studio',
+          studio_version: '3.57.0',
+        },
+      )
     })
 
     test('dismisses dialog, card and dialog are hidden', () => {
@@ -265,34 +298,59 @@ describe('StudioAnnouncementsProvider', () => {
       expect(queryByText(mockAnnouncements[1].title)).toBeNull()
 
       expect(mockLog).toBeCalledTimes(3)
-      expect(mockLog).toBeCalledWith({
-        description: 'User viewed the studio announcement card',
-        name: 'Studio Announcement Card Seen',
-        schema: undefined,
-        type: 'log',
-        version: 1,
-      })
-      expect(mockLog).toBeCalledWith({
-        description: 'User clicked the studio announcement card',
-        name: 'Studio Announcement Card Clicked',
-        schema: undefined,
-        type: 'log',
-        version: 1,
-      })
-      expect(mockLog).toBeCalledWith({
-        description: 'User dismissed the studio announcement modal',
-        name: 'Studio Announcement Modal Dismissed',
-        schema: undefined,
-        type: 'log',
-        version: 1,
-      })
+      expect(mockLog).toBeCalledWith(
+        {
+          description: 'User viewed the product announcement card',
+          name: 'Product Announcement Card Seen',
+          schema: undefined,
+          type: 'log',
+          version: 1,
+        },
+        {
+          announcement_id: 'studioAnnouncement-2',
+          announcement_title: 'Announcement 2',
+          source: 'studio',
+          studio_version: '3.57.0',
+        },
+      )
+      expect(mockLog).toBeCalledWith(
+        {
+          description: 'User clicked the product announcement card',
+          name: 'Product Announcement Card Clicked',
+          schema: undefined,
+          type: 'log',
+          version: 1,
+        },
+        {
+          announcement_id: 'studioAnnouncement-2',
+          announcement_title: 'Announcement 2',
+          source: 'studio',
+          studio_version: '3.57.0',
+        },
+      )
+      expect(mockLog).toBeCalledWith(
+        {
+          description: 'User dismissed the product announcement modal ',
+          name: 'Product Announcement Dismissed',
+          schema: undefined,
+          type: 'log',
+          version: 1,
+        },
+        {
+          announcement_id: 'studioAnnouncement-2',
+          announcement_title: 'Announcement 2',
+          origin: 'card',
+          source: 'studio',
+          studio_version: '3.57.0',
+        },
+      )
     })
     test('opens the dialog from outside the card, so it shows all unseen', () => {
       const Component = () => {
         const {onDialogOpen} = useStudioAnnouncements()
         return (
           // eslint-disable-next-line react/jsx-no-bind
-          <button onClick={() => onDialogOpen('all')} type="button">
+          <button onClick={() => onDialogOpen('help_menu')} type="button">
             Open dialog
           </button>
         )

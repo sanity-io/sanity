@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {afterEach, describe, expect, jest, test} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
@@ -10,6 +11,10 @@ import {type StudioAnnouncementDocument} from '../types'
 
 jest.mock('@sanity/telemetry/react', () => ({
   useTelemetry: jest.fn(),
+}))
+
+jest.mock('../../../version', () => ({
+  SANITY_VERSION: '3.57.0',
 }))
 
 const MOCKED_ANNOUNCEMENTS: StudioAnnouncementDocument[] = [
@@ -96,7 +101,11 @@ describe('StudioAnnouncementsCard', () => {
 
     const wrapper = await createAnnouncementWrapper()
     await render(
-      <StudioAnnouncementsDialog unseenDocuments={MOCKED_ANNOUNCEMENTS} onClose={onCloseMock} />,
+      <StudioAnnouncementsDialog
+        unseenDocuments={MOCKED_ANNOUNCEMENTS}
+        onClose={onCloseMock}
+        mode="card"
+      />,
       {wrapper},
     )
 
@@ -125,7 +134,11 @@ describe('StudioAnnouncementsCard', () => {
 
     const wrapper = await createAnnouncementWrapper()
     await render(
-      <StudioAnnouncementsDialog unseenDocuments={MOCKED_ANNOUNCEMENTS} onClose={onCloseMock} />,
+      <StudioAnnouncementsDialog
+        unseenDocuments={MOCKED_ANNOUNCEMENTS}
+        onClose={onCloseMock}
+        mode="card"
+      />,
       {wrapper},
     )
     // Check that the close button is rendered
@@ -145,7 +158,11 @@ describe('StudioAnnouncementsCard', () => {
     })
     const wrapper = await createAnnouncementWrapper()
     await render(
-      <StudioAnnouncementsDialog unseenDocuments={MOCKED_ANNOUNCEMENTS} onClose={onCloseMock} />,
+      <StudioAnnouncementsDialog
+        unseenDocuments={MOCKED_ANNOUNCEMENTS}
+        onClose={onCloseMock}
+        mode="card"
+      />,
       {wrapper},
     )
 
@@ -153,12 +170,23 @@ describe('StudioAnnouncementsCard', () => {
     const link = screen.getByText('Content with a link')
     fireEvent.click(link)
 
-    expect(mockLog).toHaveBeenCalledWith({
-      description: 'User clicked the link in the studio announcement modal',
-      name: 'Studio Announcement Modal Link Clicked',
-      schema: undefined,
-      type: 'log',
-      version: 1,
-    })
+    expect(mockLog).toHaveBeenCalledWith(
+      {
+        description: 'User clicked the link in the product announcement ',
+        name: 'Product Announcement Link Clicked',
+        schema: undefined,
+        type: 'log',
+        version: 1,
+      },
+      {
+        announcement_id: 'studioAnnouncement-1',
+        announcement_title: 'Announcement 1',
+        link_title: 'Content with a link',
+        link_url: 'https://github.com/sanity-io/sanity/releases/tag/v3.56.0',
+        origin: 'card',
+        source: 'studio',
+        studio_version: '3.57.0',
+      },
+    )
   })
 })
