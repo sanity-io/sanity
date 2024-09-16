@@ -16,6 +16,7 @@ export interface Doc {
   _type: string
   _rev?: string
   _updatedAt?: string
+  _createdAt?: string
   [attribute: string]: unknown
 }
 
