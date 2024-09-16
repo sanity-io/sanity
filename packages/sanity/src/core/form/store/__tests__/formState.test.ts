@@ -8,7 +8,7 @@ import {
   type ObjectSchemaType,
   type Path,
 } from '@sanity/types'
-import {startsWith} from '@sanity/util/paths'
+import {startsWith, toString} from '@sanity/util/paths'
 
 import {createSchema} from '../../../schema/createSchema'
 import {
@@ -53,18 +53,27 @@ beforeEach(() => {
   prepareHiddenState = createCallbackResolver({property: 'hidden'})
   prepareReadOnlyState = createCallbackResolver({property: 'readOnly'})
 })
-
 const schema = createSchema({
   name: 'default',
   types: [
     defineType({
       name: 'testDocument',
       type: 'document',
+      groups: [
+        {name: 'groupA', title: 'Group A'},
+        {name: 'groupB', title: 'Group B'},
+      ],
       fields: [
-        defineField({name: 'title', type: 'string', validation: (Rule) => Rule.required()}),
+        defineField({
+          name: 'title',
+          type: 'string',
+          validation: (Rule) => Rule.required(),
+          group: 'groupA',
+        }),
         defineField({
           name: 'simpleObject',
           type: 'object',
+          group: 'groupA',
           fields: [
             {name: 'field1', type: 'string'},
             {name: 'field2', type: 'number'},
@@ -74,6 +83,7 @@ const schema = createSchema({
           name: 'arrayOfPrimitives',
           type: 'array',
           of: [{type: 'string'}],
+          group: 'groupB',
         }),
         defineField({
           name: 'arrayOfObjects',
@@ -88,10 +98,12 @@ const schema = createSchema({
               ],
             },
           ],
+          group: 'groupB',
         }),
         defineField({
           name: 'nestedObject',
           type: 'object',
+          group: 'groupA',
           fields: [
             defineField({name: 'nestedField1', type: 'string'}),
             defineField({
@@ -112,8 +124,18 @@ const schema = createSchema({
           type: 'string',
           hidden: ({document}) => !document?.title,
         }),
-        defineField({name: 'fieldsetField1', type: 'string', fieldset: 'testFieldset'}),
-        defineField({name: 'fieldsetField2', type: 'number', fieldset: 'testFieldset'}),
+        defineField({
+          name: 'fieldsetField1',
+          type: 'string',
+          fieldset: 'testFieldset',
+          group: 'groupB',
+        }),
+        defineField({
+          name: 'fieldsetField2',
+          type: 'number',
+          fieldset: 'testFieldset',
+          group: 'groupB',
+        }),
       ],
       fieldsets: [
         {
@@ -466,5 +488,271 @@ describe.each(
     expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(
       expectedCalls.preparePrimitiveInputState,
     )
+  })
+})
+
+describe('hidden', () => {
+  const pathsToTest: {path: Path; expectedCalls: {[K in keyof PrepareFormState]: number}}[] = [
+    {
+      path: ['title'],
+      expectedCalls: {
+        prepareArrayOfObjectsInputState: 0,
+        prepareArrayOfObjectsMember: 0,
+        prepareArrayOfPrimitivesInputState: 0,
+        prepareArrayOfPrimitivesMember: 0,
+        prepareFieldMember: 8,
+        prepareObjectInputState: 1,
+        preparePrimitiveInputState: 0,
+      },
+    },
+    {
+      path: ['simpleObject', 'field1'],
+      expectedCalls: {
+        prepareArrayOfObjectsInputState: 0,
+        prepareArrayOfObjectsMember: 0,
+        prepareArrayOfPrimitivesInputState: 0,
+        prepareArrayOfPrimitivesMember: 0,
+        prepareFieldMember: 10,
+        prepareObjectInputState: 2,
+        preparePrimitiveInputState: 0,
+      },
+    },
+    {
+      path: ['arrayOfPrimitives'],
+      expectedCalls: {
+        prepareArrayOfObjectsInputState: 0,
+        prepareArrayOfObjectsMember: 0,
+        prepareArrayOfPrimitivesInputState: 1,
+        prepareArrayOfPrimitivesMember: 0,
+        prepareFieldMember: 8,
+        prepareObjectInputState: 1,
+        preparePrimitiveInputState: 0,
+      },
+    },
+    {
+      path: ['arrayOfObjects', {_key: 'object1'}, 'objectTitle'],
+      expectedCalls: {
+        prepareArrayOfObjectsInputState: 1,
+        prepareArrayOfObjectsMember: 2,
+        prepareArrayOfPrimitivesInputState: 0,
+        prepareArrayOfPrimitivesMember: 0,
+        prepareFieldMember: 10,
+        prepareObjectInputState: 2,
+        preparePrimitiveInputState: 0,
+      },
+    },
+  ]
+
+  test.each(pathsToTest)('$path', ({path, expectedCalls}) => {
+    const hidden = setAtPath(path)
+
+    const initialFormState = prepareFormState(defaultOptions)
+    const initialNodes = new Set(Array.from(traverseForm(initialFormState)).map(([node]) => node))
+
+    // reset toHaveBeenCalledTimes amount
+    jest.clearAllMocks()
+
+    const updatedFormState = prepareFormState({
+      ...defaultOptions,
+      hidden,
+    })
+    const updatedNodes = Array.from(traverseForm(updatedFormState)).reverse()
+    const differentNodes = updatedNodes.filter(([node]) => !initialNodes.has(node))
+
+    expect(differentNodes).not.toHaveLength(0)
+    for (const [differentNode] of differentNodes) {
+      expect(startsWith(differentNode.path, path)).toBe(true)
+    }
+
+    // Verify memoization: functions should be called only for affected nodes
+    expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfObjectsInputState,
+    )
+    expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfObjectsMember,
+    )
+    expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfPrimitivesInputState,
+    )
+    expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfPrimitivesMember,
+    )
+    expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(
+      expectedCalls.prepareFieldMember,
+    )
+    expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(
+      expectedCalls.prepareObjectInputState,
+    )
+    expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(
+      expectedCalls.preparePrimitiveInputState,
+    )
+  })
+})
+
+describe('collapsedPaths', () => {
+  const pathsToTest: {path: Path; expectedCalls: {[K in keyof PrepareFormState]: number}}[] = [
+    {
+      path: ['simpleObject'],
+      expectedCalls: {
+        prepareArrayOfObjectsInputState: 0,
+        prepareArrayOfObjectsMember: 0,
+        prepareArrayOfPrimitivesInputState: 0,
+        prepareArrayOfPrimitivesMember: 0,
+        prepareFieldMember: 10,
+        prepareObjectInputState: 2,
+        preparePrimitiveInputState: 0,
+      },
+    },
+    {
+      path: ['arrayOfObjects', {_key: 'object1'}],
+      expectedCalls: {
+        prepareArrayOfObjectsInputState: 1,
+        prepareArrayOfObjectsMember: 2,
+        prepareArrayOfPrimitivesInputState: 0,
+        prepareArrayOfPrimitivesMember: 0,
+        prepareFieldMember: 10,
+        prepareObjectInputState: 2,
+        preparePrimitiveInputState: 0,
+      },
+    },
+    {
+      path: ['nestedObject', 'nestedObject'],
+      expectedCalls: {
+        prepareArrayOfObjectsInputState: 0,
+        prepareArrayOfObjectsMember: 0,
+        prepareArrayOfPrimitivesInputState: 0,
+        prepareArrayOfPrimitivesMember: 0,
+        prepareFieldMember: 12,
+        prepareObjectInputState: 3,
+        preparePrimitiveInputState: 0,
+      },
+    },
+  ]
+
+  test.each(pathsToTest)('$path', ({path, expectedCalls}) => {
+    const collapsedPaths = setAtPath(path)
+
+    // Prepare initial form state
+    prepareFormState(defaultOptions)
+
+    // reset toHaveBeenCalledTimes amount
+    jest.clearAllMocks()
+
+    // Prepare updated form state with collapsedPaths set
+    const updatedFormState = prepareFormState({
+      ...defaultOptions,
+      collapsedPaths,
+    })
+
+    // Traverse updated form state
+    const updatedNodes = Array.from(traverseForm(updatedFormState))
+
+    // Find the member at the path
+    const memberAtPath = updatedNodes.find(
+      ([node, {member}]) => toString(node.path) === toString(path) && member !== undefined,
+    )
+
+    expect(memberAtPath).toBeDefined()
+    const member = memberAtPath![1].member
+    expect(member && 'collapsed' in member && member.collapsed).toBe(true)
+
+    // Verify memoization: functions should be called only for affected nodes
+    expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfObjectsInputState,
+    )
+    expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfObjectsMember,
+    )
+    expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfPrimitivesInputState,
+    )
+    expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(
+      expectedCalls.prepareArrayOfPrimitivesMember,
+    )
+    expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(
+      expectedCalls.prepareFieldMember,
+    )
+    expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(
+      expectedCalls.prepareObjectInputState,
+    )
+    expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(
+      expectedCalls.preparePrimitiveInputState,
+    )
+  })
+})
+
+describe('collapsedFieldSets', () => {
+  test('collapsedFieldSets', () => {
+    const fieldsetName = 'testFieldset'
+    const path = [fieldsetName] // Use the fieldset name directly
+    const collapsedFieldSets = setAtPath(path)
+
+    // Prepare initial form state
+    prepareFormState(defaultOptions)
+
+    jest.clearAllMocks()
+
+    // Prepare updated form state with collapsedFieldSets set
+    const updatedFormState = prepareFormState({
+      ...defaultOptions,
+      collapsedFieldSets,
+    })
+
+    // Traverse updated form state
+    const updatedNodes = Array.from(traverseForm(updatedFormState))
+
+    // Find the fieldset member
+    const fieldsetNode = updatedNodes.find(
+      ([_node, {fieldset}]) => fieldset?.name === fieldsetName,
+    )!
+
+    const [, {fieldset}] = fieldsetNode
+
+    expect(fieldset?.collapsed).toBe(true)
+
+    // Verify memoization: functions should be called only for affected nodes
+    expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(0)
+    expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(0)
+    expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(0)
+    expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(0)
+    expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(8)
+    expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(1)
+    expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(0)
+  })
+})
+
+describe('fieldGroupState', () => {
+  test('fieldGroupState', () => {
+    const initialFormState = prepareFormState(defaultOptions)
+    const initialNodes = new Set(Array.from(traverseForm(initialFormState)).map(([node]) => node))
+
+    // Reset call counts
+    jest.clearAllMocks()
+
+    const updatedFormState = prepareFormState({
+      ...defaultOptions,
+      fieldGroupState: {value: 'groupA'},
+    })
+
+    const updatedNodes = Array.from(traverseForm(updatedFormState)).reverse()
+    expect(updatedNodes.length).toBeGreaterThan(1)
+    const differentNodes = updatedNodes.filter(([node]) => !initialNodes.has(node))
+    expect(differentNodes.length).toBeGreaterThan(0)
+    expect(differentNodes.length).toBeLessThan(updatedNodes.length)
+
+    expect(updatedFormState?.members.map((i) => i.key)).toEqual([
+      'field-title',
+      'field-simpleObject',
+      'field-nestedObject',
+    ])
+
+    // Verify memoization: functions should be called only for affected nodes
+    expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(1)
+    expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(0)
+    expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(1)
+    expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(0)
+    expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(8)
+    expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(3)
+    expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(4)
   })
 })
