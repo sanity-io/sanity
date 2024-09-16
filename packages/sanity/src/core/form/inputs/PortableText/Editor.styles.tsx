@@ -101,15 +101,16 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       margin-top: ${({theme}) => theme.sanity.space[2]}px;
     }
 
+    /* Reset the list count if the element is not a numbered list item */
+    & > :not(.pt-list-item-number) {
+      counter-set: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
+    }
+
     /* Reset the list count all the sub-list items */
     & > .pt-list-item-number.pt-list-item-level-${TEXT_LEVELS[0]} {
       counter-set: ${TEXT_LEVELS.slice(1)
         .map((l) => createListName(l))
         .join(' ')};
-    }
-
-    & > :not(.pt-list-item-number) {
-      counter-set: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
     }
 
     & > .pt-list-item + :not(.pt-list-item) {
