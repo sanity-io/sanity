@@ -123,6 +123,7 @@ export function StudioAnnouncementsCard({
             radius={3}
             onClick={onCardClick}
             role="button"
+            aria-label={t('announcement.floating-button.open-label')}
           >
             <Stack space={3}>
               <Box marginRight={6}>

@@ -1,7 +1,8 @@
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
-import {useKeyValueStore} from 'sanity'
+
+import {useKeyValueStore} from '../../store/_legacy/datastores'
 
 const KEY = 'studio.announcement.seen'
 
@@ -17,11 +18,13 @@ export function useSeenAnnouncements(): [string[] | null | 'loading', (seen: str
   )
   const seenAnnouncements = useObservable(seenAnnouncements$, 'loading')
 
-  const setSeenAnnouncements = useCallback((seen: string[]) => {
-    // eslint-disable-next-line no-console
-    console.log('Seen announcements', seen)
-    // keyValueStore.setKey(KEY, seen)
-  }, [])
+  const setSeenAnnouncements = useCallback(
+    (seen: string[]) => {
+      // eslint-disable-next-line no-console
+      keyValueStore.setKey(KEY, seen)
+    },
+    [keyValueStore],
+  )
 
   return [seenAnnouncements, setSeenAnnouncements]
 }
