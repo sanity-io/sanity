@@ -12,10 +12,6 @@ import {startsWith, toString} from '@sanity/util/paths'
 
 import {createSchema} from '../../../schema/createSchema'
 import {
-  createCallbackResolver,
-  type RootCallbackResolver,
-} from '../conditional-property/createCallbackResolver'
-import {
   createPrepareFormState,
   type PrepareFormState,
   type RootFormStateOptions,
@@ -35,8 +31,8 @@ import {
 import {type StateTree} from '../types/state'
 
 let prepareFormState!: PrepareFormState
-let prepareHiddenState!: RootCallbackResolver<'hidden'>
-let prepareReadOnlyState!: RootCallbackResolver<'readOnly'>
+
+type RemoveFirstChar<S extends string> = S extends `${infer _}${infer R}` ? R : S
 
 beforeEach(() => {
   prepareFormState = createPrepareFormState({
@@ -50,8 +46,6 @@ beforeEach(() => {
       preparePrimitiveInputState: jest.fn,
     },
   })
-  prepareHiddenState = createCallbackResolver({property: 'hidden'})
-  prepareReadOnlyState = createCallbackResolver({property: 'readOnly'})
 })
 const schema = createSchema({
   name: 'default',
@@ -334,7 +328,10 @@ const rootFormNodeOptions: Partial<{
   },
 }
 
-const paths: {path: Path; expectedCalls: {[K in keyof PrepareFormState]: number}}[] = [
+const paths: {
+  path: Path
+  expectedCalls: {[K in RemoveFirstChar<keyof PrepareFormState>]: number}
+}[] = [
   {
     path: ['title'],
     expectedCalls: {
@@ -467,32 +464,35 @@ describe.each(
       expect(startsWith(differentNode.path, path)).toBe(true)
     }
 
-    expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfObjectsInputState,
     )
-    expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfObjectsMember).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfObjectsMember,
     )
-    expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfPrimitivesInputState,
     )
-    expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfPrimitivesMember,
     )
-    expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareFieldMember).toHaveBeenCalledTimes(
       expectedCalls.prepareFieldMember,
     )
-    expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareObjectInputState).toHaveBeenCalledTimes(
       expectedCalls.prepareObjectInputState,
     )
-    expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._preparePrimitiveInputState).toHaveBeenCalledTimes(
       expectedCalls.preparePrimitiveInputState,
     )
   })
 })
 
 describe('hidden', () => {
-  const pathsToTest: {path: Path; expectedCalls: {[K in keyof PrepareFormState]: number}}[] = [
+  const pathsToTest: {
+    path: Path
+    expectedCalls: {[K in RemoveFirstChar<keyof PrepareFormState>]: number}
+  }[] = [
     {
       path: ['title'],
       expectedCalls: {
@@ -565,32 +565,35 @@ describe('hidden', () => {
     }
 
     // Verify memoization: functions should be called only for affected nodes
-    expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfObjectsInputState,
     )
-    expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfObjectsMember).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfObjectsMember,
     )
-    expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfPrimitivesInputState,
     )
-    expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfPrimitivesMember,
     )
-    expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareFieldMember).toHaveBeenCalledTimes(
       expectedCalls.prepareFieldMember,
     )
-    expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareObjectInputState).toHaveBeenCalledTimes(
       expectedCalls.prepareObjectInputState,
     )
-    expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._preparePrimitiveInputState).toHaveBeenCalledTimes(
       expectedCalls.preparePrimitiveInputState,
     )
   })
 })
 
 describe('collapsedPaths', () => {
-  const pathsToTest: {path: Path; expectedCalls: {[K in keyof PrepareFormState]: number}}[] = [
+  const pathsToTest: {
+    path: Path
+    expectedCalls: {[K in RemoveFirstChar<keyof PrepareFormState>]: number}
+  }[] = [
     {
       path: ['simpleObject'],
       expectedCalls: {
@@ -657,25 +660,25 @@ describe('collapsedPaths', () => {
     expect(member && 'collapsed' in member && member.collapsed).toBe(true)
 
     // Verify memoization: functions should be called only for affected nodes
-    expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfObjectsInputState,
     )
-    expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfObjectsMember).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfObjectsMember,
     )
-    expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfPrimitivesInputState,
     )
-    expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(
       expectedCalls.prepareArrayOfPrimitivesMember,
     )
-    expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareFieldMember).toHaveBeenCalledTimes(
       expectedCalls.prepareFieldMember,
     )
-    expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._prepareObjectInputState).toHaveBeenCalledTimes(
       expectedCalls.prepareObjectInputState,
     )
-    expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(
+    expect(prepareFormState._preparePrimitiveInputState).toHaveBeenCalledTimes(
       expectedCalls.preparePrimitiveInputState,
     )
   })
@@ -711,13 +714,13 @@ describe('collapsedFieldSets', () => {
     expect(fieldset?.collapsed).toBe(true)
 
     // Verify memoization: functions should be called only for affected nodes
-    expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(0)
-    expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(0)
-    expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(0)
-    expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(0)
-    expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(8)
-    expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(1)
-    expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(0)
+    expect(prepareFormState._prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(0)
+    expect(prepareFormState._prepareArrayOfObjectsMember).toHaveBeenCalledTimes(0)
+    expect(prepareFormState._prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(0)
+    expect(prepareFormState._prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(0)
+    expect(prepareFormState._prepareFieldMember).toHaveBeenCalledTimes(8)
+    expect(prepareFormState._prepareObjectInputState).toHaveBeenCalledTimes(1)
+    expect(prepareFormState._preparePrimitiveInputState).toHaveBeenCalledTimes(0)
   })
 })
 
@@ -747,12 +750,12 @@ describe('fieldGroupState', () => {
     ])
 
     // Verify memoization: functions should be called only for affected nodes
-    expect(prepareFormState.prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(1)
-    expect(prepareFormState.prepareArrayOfObjectsMember).toHaveBeenCalledTimes(0)
-    expect(prepareFormState.prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(1)
-    expect(prepareFormState.prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(0)
-    expect(prepareFormState.prepareFieldMember).toHaveBeenCalledTimes(8)
-    expect(prepareFormState.prepareObjectInputState).toHaveBeenCalledTimes(3)
-    expect(prepareFormState.preparePrimitiveInputState).toHaveBeenCalledTimes(4)
+    expect(prepareFormState._prepareArrayOfObjectsInputState).toHaveBeenCalledTimes(1)
+    expect(prepareFormState._prepareArrayOfObjectsMember).toHaveBeenCalledTimes(0)
+    expect(prepareFormState._prepareArrayOfPrimitivesInputState).toHaveBeenCalledTimes(1)
+    expect(prepareFormState._prepareArrayOfPrimitivesMember).toHaveBeenCalledTimes(0)
+    expect(prepareFormState._prepareFieldMember).toHaveBeenCalledTimes(8)
+    expect(prepareFormState._prepareObjectInputState).toHaveBeenCalledTimes(3)
+    expect(prepareFormState._preparePrimitiveInputState).toHaveBeenCalledTimes(4)
   })
 })

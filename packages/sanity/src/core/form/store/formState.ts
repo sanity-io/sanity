@@ -222,13 +222,21 @@ export interface RootFormStateOptions {
 
 export interface PrepareFormState {
   (options: RootFormStateOptions): ObjectFormNode | null
-  prepareFieldMember: PrepareFieldMember
-  prepareObjectInputState: PrepareObjectInputState
-  prepareArrayOfPrimitivesInputState: PrepareArrayOfPrimitivesInputState
-  prepareArrayOfObjectsInputState: PrepareArrayOfObjectsInputState
-  prepareArrayOfObjectsMember: PrepareArrayOfObjectsMember
-  prepareArrayOfPrimitivesMember: PrepareArrayOfPrimitivesMember
-  preparePrimitiveInputState: PreparePrimitiveInputState
+
+  /** @internal */
+  _prepareFieldMember: PrepareFieldMember
+  /** @internal */
+  _prepareObjectInputState: PrepareObjectInputState
+  /** @internal */
+  _prepareArrayOfPrimitivesInputState: PrepareArrayOfPrimitivesInputState
+  /** @internal */
+  _prepareArrayOfObjectsInputState: PrepareArrayOfObjectsInputState
+  /** @internal */
+  _prepareArrayOfObjectsMember: PrepareArrayOfObjectsMember
+  /** @internal */
+  _prepareArrayOfPrimitivesMember: PrepareArrayOfPrimitivesMember
+  /** @internal */
+  _preparePrimitiveInputState: PreparePrimitiveInputState
 }
 
 export function createPrepareFormState({
@@ -1247,50 +1255,50 @@ export function createPrepareFormState({
     },
   )
 
-  return Object.assign(
-    function prepareFormState({
+  function prepareFormState({
+    collapsedFieldSets,
+    collapsedPaths,
+    comparisonValue,
+    currentUser,
+    documentValue,
+    fieldGroupState,
+    focusPath,
+    hidden,
+    openPath,
+    presence,
+    readOnly,
+    schemaType,
+    validation,
+    changesOpen,
+  }: RootFormStateOptions): ObjectFormNode | null {
+    return prepareObjectInputState({
       collapsedFieldSets,
       collapsedPaths,
       comparisonValue,
       currentUser,
-      documentValue,
+      value: documentValue,
       fieldGroupState,
       focusPath,
-      hidden,
+      hidden: hidden === false ? EMPTY_OBJECT : hidden,
       openPath,
       presence,
-      readOnly,
+      readOnly: readOnly === false ? EMPTY_OBJECT : readOnly,
       schemaType,
       validation,
       changesOpen,
-    }: RootFormStateOptions): ObjectFormNode | null {
-      return prepareObjectInputState({
-        collapsedFieldSets,
-        collapsedPaths,
-        comparisonValue,
-        currentUser,
-        value: documentValue,
-        fieldGroupState,
-        focusPath,
-        hidden: hidden === false ? EMPTY_OBJECT : hidden,
-        openPath,
-        presence,
-        readOnly: readOnly === false ? EMPTY_OBJECT : readOnly,
-        schemaType,
-        validation,
-        changesOpen,
-        level: 0,
-        path: [],
-      })
-    },
-    {
-      prepareFieldMember,
-      prepareObjectInputState,
-      prepareArrayOfPrimitivesInputState,
-      prepareArrayOfObjectsInputState,
-      prepareArrayOfObjectsMember,
-      prepareArrayOfPrimitivesMember,
-      preparePrimitiveInputState,
-    },
-  )
+      level: 0,
+      path: [],
+    })
+  }
+
+  prepareFormState._prepareFieldMember = prepareFieldMember
+  prepareFormState._prepareFieldMember = prepareFieldMember
+  prepareFormState._prepareObjectInputState = prepareObjectInputState
+  prepareFormState._prepareArrayOfPrimitivesInputState = prepareArrayOfPrimitivesInputState
+  prepareFormState._prepareArrayOfObjectsInputState = prepareArrayOfObjectsInputState
+  prepareFormState._prepareArrayOfObjectsMember = prepareArrayOfObjectsMember
+  prepareFormState._prepareArrayOfPrimitivesMember = prepareArrayOfPrimitivesMember
+  prepareFormState._preparePrimitiveInputState = preparePrimitiveInputState
+
+  return prepareFormState
 }
