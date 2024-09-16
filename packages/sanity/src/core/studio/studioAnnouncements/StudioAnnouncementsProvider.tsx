@@ -1,9 +1,9 @@
 import {createClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {SANITY_VERSION} from 'sanity'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
 
+import {SANITY_VERSION} from '../../version'
 import {
   StudioAnnouncementCardClicked,
   StudioAnnouncementCardDismissed,
@@ -48,7 +48,6 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
     }
     return unseen
   }, [seenAnnouncements, studioAnnouncements, telemetry])
-
   useEffect(() => {
     // TODO: Replace for internal api
     const client = createClient({projectId: '3do82whm', dataset: 'next'})
