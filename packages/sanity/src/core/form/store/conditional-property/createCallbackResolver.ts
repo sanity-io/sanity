@@ -151,12 +151,12 @@ export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>(
   const stableTrue = {value: true}
   let last: {serializedHash: string; result: StateTree<boolean> | undefined} | null = null
 
-  return ({
+  function callbackResult({
     currentUser,
     documentValue,
     schemaType,
     ...options
-  }: ResolveRootCallbackStateOptions<TProperty>) => {
+  }: ResolveRootCallbackStateOptions<TProperty>) {
     const hash = {
       currentUser: getId(currentUser),
       schemaType: getId(schemaType),
@@ -192,4 +192,6 @@ export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>(
 
     return result
   }
+
+  return callbackResult
 }

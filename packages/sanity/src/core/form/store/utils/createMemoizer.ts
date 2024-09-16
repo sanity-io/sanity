@@ -22,30 +22,21 @@ export function createMemoizer<TFunction extends (...args: never[]) => unknown>(
 }: MemoizerOptions<TFunction>): FunctionDecorator<TFunction> {
   const cache = new Map<string, {serializedHash: string; result: ReturnType<TFunction>}>()
 
-  return (fn) => {
-    const memoizedFn = ((...args: Parameters<TFunction>) => {
+  function memoizer(fn: TFunction): TFunction {
+    function memoizedFn(...args: Parameters<TFunction>) {
       const path = toString(getPath(...args))
       const hashed = hashInput(...args)
       const serializedHash = JSON.stringify(hashed)
       const cached = cache.get(path)
       if (serializedHash === cached?.serializedHash) return cached.result
 
-      // if (cached) {
-      //   console.log({
-      //     name: fn.name,
-      //     path,
-      //     // reason: objectDiff(JSON.parse(cached.serializedHash), hashed).join(', '),
-      //     prev: JSON.parse(cached.serializedHash),
-      //     next: hashed,
-      //   })
-      // }
-
       const result = fn(...args) as ReturnType<TFunction>
       cache.set(path, {serializedHash, result})
-
       return result
-    }) as TFunction
+    }
 
-    return decorator(memoizedFn)
+    return decorator(memoizedFn as TFunction)
   }
+
+  return memoizer
 }
