@@ -127,6 +127,7 @@ export async function bootstrapTemplate(
   const cliConfig = await createCliConfig({
     projectId: variables.projectId,
     dataset: variables.dataset,
+    autoUpdates: variables.autoUpdates,
   })
 
   // Write non-template files to disc

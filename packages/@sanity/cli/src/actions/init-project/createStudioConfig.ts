@@ -34,6 +34,7 @@ export interface GenerateConfigOptions {
   variables: {
     projectId: string
     dataset: string
+    autoUpdates: boolean
     projectName?: string
     sourceName?: string
     sourceTitle?: string
@@ -60,8 +61,12 @@ export function createStudioConfig(options: GenerateConfigOptions): string {
         if (!(variableName in variables)) {
           throw new Error(`Template variable '${value}' not defined`)
         }
-
-        node.value = variables[variableName] || ''
+        const newValue = variables[variableName]
+        /*
+         * although there are valid non-strings in our config,
+         * they're not in this template, so assume undefined
+         */
+        node.value = typeof newValue === 'string' ? newValue : ''
       },
     },
   })
