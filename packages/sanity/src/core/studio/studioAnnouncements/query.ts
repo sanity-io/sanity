@@ -1,7 +1,12 @@
 /**
  * TODO: Remove once the API call is implemented
  */
-export const studioAnnouncementQuery = `*[_type == "productAnnouncement"] | order(publishedDate desc) {
+export const studioAnnouncementQuery = `*[_type == "productAnnouncement" && 
+  (
+    !defined(expiryDate) || 
+    defined(expiryDate) && dateTime(expiryDate) > dateTime(now())
+  )] 
+  | order(publishedDate desc) {
     ...,
     body[]{
        ...,
