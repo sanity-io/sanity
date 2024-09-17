@@ -24,7 +24,8 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     elementProps,
     members,
     onChange,
-    onInsert,
+    onItemPrepend,
+    onItemAppend,
     onItemMove,
     onUpload,
     readOnly,
@@ -39,20 +40,6 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     value = EMPTY,
   } = props
   const {t} = useTranslation()
-
-  const handlePrepend = useCallback(
-    (item: Item) => {
-      onInsert({items: [item], position: 'before', referenceItem: 0})
-    },
-    [onInsert],
-  )
-
-  const handleAppend = useCallback(
-    (item: Item) => {
-      onInsert({items: [item], position: 'after', referenceItem: -1})
-    },
-    [onInsert],
-  )
 
   const sortable = schemaType.options?.sortable !== false
 
@@ -118,8 +105,8 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
       <ArrayFunctions
         onChange={onChange}
-        onItemAppend={handleAppend}
-        onItemPrepend={handlePrepend}
+        onItemAppend={onItemAppend}
+        onItemPrepend={onItemPrepend}
         onValueCreate={createProtoArrayValue}
         readOnly={readOnly}
         schemaType={schemaType}
