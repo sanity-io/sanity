@@ -6,7 +6,6 @@ import {type ReactNode} from 'react'
 import {defineConfig} from 'sanity'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {structureUsEnglishLocaleBundle} from '../../../../structure/i18n'
 import {StudioAnnouncementsMenuItem} from '../StudioAnnouncementsMenuItem'
 import {type StudioAnnouncementDocument} from '../types'
 import {useStudioAnnouncements} from '../useStudioAnnouncements'
@@ -45,7 +44,7 @@ const config = defineConfig({
 async function createAnnouncementWrapper() {
   const wrapper = await createTestProvider({
     config,
-    resources: [structureUsEnglishLocaleBundle],
+    resources: [],
   })
 
   return ({children}: {children: ReactNode}) => wrapper({children: <Menu>{children}</Menu>})

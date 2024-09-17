@@ -5,7 +5,6 @@ import {type ReactNode} from 'react'
 import {defineConfig} from 'sanity'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {structureUsEnglishLocaleBundle} from '../../../../structure/i18n'
 import {StudioAnnouncementsCard} from '../StudioAnnouncementsCard'
 
 const config = defineConfig({
@@ -16,7 +15,7 @@ const config = defineConfig({
 async function createAnnouncementWrapper() {
   const wrapper = await createTestProvider({
     config,
-    resources: [structureUsEnglishLocaleBundle],
+    resources: [],
   })
 
   return ({children}: {children: ReactNode}) => wrapper({children: <Menu>{children}</Menu>})
