@@ -1,12 +1,13 @@
-import {expect, test} from '@jest/globals'
+import {beforeEach, expect, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type ConditionalProperty, type ObjectSchemaType} from '@sanity/types'
 
-import {prepareFormState} from '../formState'
-import {DEFAULT_PROPS} from './shared'
-
-// eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
-const noop = () => {}
+import {
+  createCallbackResolver,
+  type RootCallbackResolver,
+} from '../conditional-property/createCallbackResolver'
+import {createPrepareFormState, type PrepareFormState} from '../formState'
+import {DEFAULT_PROPS, MOCK_USER} from './shared'
 
 function getBookType(properties: {
   root?: {hidden?: ConditionalProperty; readOnly?: ConditionalProperty}
@@ -76,14 +77,26 @@ function getBookType(properties: {
   }).get('book')
 }
 
+let prepareFormState!: PrepareFormState
+let prepareHiddenState!: RootCallbackResolver<'hidden'>
+
+beforeEach(() => {
+  prepareFormState = createPrepareFormState()
+  prepareHiddenState = createCallbackResolver({property: 'hidden'})
+})
+
 test('it omits the hidden member field from the members array', () => {
-  const bookType: ObjectSchemaType = getBookType({
+  const schemaType: ObjectSchemaType = getBookType({
     subtitle: {hidden: () => true},
   })
+
+  const documentValue = {_id: 'foo', _type: 'book'}
   const result = prepareFormState({
     ...DEFAULT_PROPS,
-    schemaType: bookType,
-    document: {_id: 'foo', _type: 'book'},
+    hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue, schemaType}),
+    schemaType,
+    documentValue,
+    comparisonValue: documentValue,
   })
 
   expect(result).not.toBe(null)
@@ -95,13 +108,15 @@ test('it omits the hidden member field from the members array', () => {
 })
 
 test('it omits nested hidden members from the members array', () => {
-  const bookType = getBookType({
+  const schemaType = getBookType({
     author: {hidden: () => true},
   })
+  const documentValue = {_id: 'foo', _type: 'book'}
   const result = prepareFormState({
     ...DEFAULT_PROPS,
-    schemaType: bookType,
-    document: {_id: 'foo', _type: 'book'},
+    schemaType: schemaType,
+    hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue: documentValue, schemaType}),
+    documentValue,
   })
 
   expect(result).not.toBe(null)
@@ -114,14 +129,16 @@ test('it omits nested hidden members from the members array', () => {
 
 test('it "upward propagates" hidden fields', () => {
   // If the hidden callback for every field of an object type returns true, the whole object should be hidden
-  const bookType = getBookType({
+  const schemaType = getBookType({
     authorFirstName: {hidden: () => true},
     authorLastName: {hidden: () => true},
   })
+  const document = {_id: 'foo', _type: 'book'}
   const result = prepareFormState({
-    schemaType: bookType,
-    document: {_id: 'foo', _type: 'book'},
     ...DEFAULT_PROPS,
+    schemaType,
+    value: document,
+    hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue: document, schemaType}),
   })
   expect(result).not.toBe(null)
   if (result === null) {

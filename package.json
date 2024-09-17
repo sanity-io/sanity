@@ -135,12 +135,12 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-sanity": "^7.1.2",
-    "eslint-config-turbo": "^2.1.1",
+    "eslint-config-turbo": "^2.1.2",
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-boundaries": "^4.2.2",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-react": "^7.35.2",
+    "eslint-plugin-react": "^7.36.1",
     "eslint-plugin-react-compiler": "0.0.0-experimental-9ed098e-20240725",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-simple-import-sort": "^12.1.1",
@@ -165,7 +165,7 @@
     "rxjs": "^7.8.1",
     "sanity": "workspace:*",
     "semver": "^7.3.5",
-    "turbo": "^2.1.1",
+    "turbo": "^2.1.2",
     "typescript": "5.6.2",
     "vite": "^4.5.3",
     "vite-tsconfig-paths": "^4.3.2",
@@ -174,7 +174,7 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "pnpm@9.9.0",
+  "packageManager": "pnpm@9.10.0",
   "pnpm": {
     "peerDependencyRules": {
       "allowAny": [

@@ -2,7 +2,7 @@
  * @hidden
  * @beta */
 export interface StateTree<T> {
-  value: T | undefined
+  value?: T | undefined
   children?: {
     [key: string]: StateTree<T>
   }

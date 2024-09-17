@@ -125,9 +125,10 @@ export async function renderInput<ElementProps>(props: {
 
     if (!docType) throw new Error(`no document type: test`)
 
-    const formState = useFormState(docType, {
-      comparisonValue: documentValue as any,
-      value: documentValue as any,
+    const formState = useFormState({
+      schemaType: docType,
+      comparisonValue: documentValue,
+      documentValue,
       focusPath,
       collapsedPaths: undefined,
       collapsedFieldSets: undefined,
