@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {afterEach, describe, expect, jest, test} from '@jest/globals'
 import {Menu} from '@sanity/ui'
 import {fireEvent, render, screen} from '@testing-library/react'
@@ -11,6 +12,16 @@ import {type StudioAnnouncementDocument} from '../types'
 import {useStudioAnnouncements} from '../useStudioAnnouncements'
 
 jest.mock('../useStudioAnnouncements')
+jest.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: jest.fn().mockReturnValue({
+    log: jest.fn(),
+  }),
+}))
+
+jest.mock('../../../version', () => ({
+  SANITY_VERSION: '3.57.0',
+}))
+
 const MOCKED_ANNOUNCEMENT: StudioAnnouncementDocument = {
   _id: 'studioAnnouncement-1',
   _type: 'productAnnouncement',
@@ -79,6 +90,10 @@ describe('StudioAnnouncementsMenuItem', () => {
 
   test('clicking on MenuItem calls onDialogOpen with "all"', async () => {
     const onDialogOpenMock = jest.fn()
+    const mockLog = jest.fn()
+    const {useTelemetry} = require('@sanity/telemetry/react')
+    // Set up the mock return value
+    useTelemetry.mockReturnValue({log: mockLog})
 
     useStudioAnnouncementsMock.mockReturnValue({
       studioAnnouncements: [MOCKED_ANNOUNCEMENT],
@@ -95,5 +110,21 @@ describe('StudioAnnouncementsMenuItem', () => {
     fireEvent.click(screen.getByText('Announcements'))
 
     expect(onDialogOpenMock).toHaveBeenCalledWith('help_menu')
+    expect(mockLog).toHaveBeenCalledTimes(1)
+    expect(mockLog).toHaveBeenCalledWith(
+      {
+        description: 'User clicked the "Whats new" help menu item',
+        name: 'Whats New Help Menu Item Clicked',
+        schema: undefined,
+        type: 'log',
+        version: 1,
+      },
+      {
+        announcement_id: 'studioAnnouncement-1',
+        announcement_title: 'Announcement 1',
+        source: 'studio',
+        studio_version: '3.57.0',
+      },
+    )
   })
 })

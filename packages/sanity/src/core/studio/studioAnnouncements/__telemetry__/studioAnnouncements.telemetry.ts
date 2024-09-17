@@ -5,9 +5,6 @@ interface ProductAnnouncementSharedProperties {
   announcement_title: string
   source: 'studio'
   studio_version?: string
-  // TODO: Aren't this added automatically?
-  project_id?: string
-  organization_id?: string
 }
 
 type origin = 'card' | 'help_menu'

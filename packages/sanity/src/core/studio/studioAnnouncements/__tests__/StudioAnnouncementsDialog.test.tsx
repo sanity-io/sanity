@@ -10,7 +10,9 @@ import {StudioAnnouncementsDialog} from '../StudioAnnouncementsDialog'
 import {type StudioAnnouncementDocument} from '../types'
 
 jest.mock('@sanity/telemetry/react', () => ({
-  useTelemetry: jest.fn(),
+  useTelemetry: jest.fn().mockReturnValue({
+    log: jest.fn(),
+  }),
 }))
 
 jest.mock('../../../version', () => ({
@@ -102,7 +104,7 @@ describe('StudioAnnouncementsCard', () => {
     const wrapper = await createAnnouncementWrapper()
     await render(
       <StudioAnnouncementsDialog
-        unseenDocuments={MOCKED_ANNOUNCEMENTS}
+        announcements={MOCKED_ANNOUNCEMENTS}
         onClose={onCloseMock}
         mode="card"
       />,
@@ -135,7 +137,7 @@ describe('StudioAnnouncementsCard', () => {
     const wrapper = await createAnnouncementWrapper()
     await render(
       <StudioAnnouncementsDialog
-        unseenDocuments={MOCKED_ANNOUNCEMENTS}
+        announcements={MOCKED_ANNOUNCEMENTS}
         onClose={onCloseMock}
         mode="card"
       />,
@@ -148,18 +150,16 @@ describe('StudioAnnouncementsCard', () => {
     expect(onCloseMock).toHaveBeenCalled()
   })
 
-  test('logs telemetry when link is clicked', async () => {
+  test('logs telemetry when link is clicked and announcement viewed', async () => {
     const onCloseMock = jest.fn()
     const mockLog = jest.fn()
     const {useTelemetry} = require('@sanity/telemetry/react')
     // Set up the mock return value
-    useTelemetry.mockReturnValue({
-      log: mockLog,
-    })
+    useTelemetry.mockReturnValue({log: mockLog})
     const wrapper = await createAnnouncementWrapper()
     await render(
       <StudioAnnouncementsDialog
-        unseenDocuments={MOCKED_ANNOUNCEMENTS}
+        announcements={MOCKED_ANNOUNCEMENTS}
         onClose={onCloseMock}
         mode="card"
       />,
@@ -169,7 +169,24 @@ describe('StudioAnnouncementsCard', () => {
     // Simulate clicking on a link
     const link = screen.getByText('Content with a link')
     fireEvent.click(link)
-
+    expect(mockLog).toHaveBeenCalledTimes(2)
+    expect(mockLog).toHaveBeenCalledWith(
+      {
+        description: 'User viewed the product announcement',
+        name: 'Product Announcement Viewed',
+        schema: undefined,
+        type: 'log',
+        version: 1,
+      },
+      {
+        announcement_id: 'studioAnnouncement-1',
+        announcement_title: 'Announcement 1',
+        origin: 'card',
+        scrolled_into_view: false,
+        source: 'studio',
+        studio_version: '3.57.0',
+      },
+    )
     expect(mockLog).toHaveBeenCalledWith(
       {
         description: 'User clicked the link in the product announcement ',

@@ -2,7 +2,7 @@
 import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Grid, Text} from '@sanity/ui'
-import {Fragment, useCallback, useMemo, useRef} from 'react'
+import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
 import {useTranslation} from 'react-i18next'
 import {styled} from 'styled-components'
 
@@ -10,7 +10,10 @@ import {Button, Dialog} from '../../../ui-components'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../hooks'
 import {SANITY_VERSION} from '../../version'
 import {UpsellDescriptionSerializer} from '../upsell'
-import {ProductAnnouncementLinkClicked} from './__telemetry__/studioAnnouncements.telemetry'
+import {
+  ProductAnnouncementLinkClicked,
+  ProductAnnouncementViewed,
+} from './__telemetry__/studioAnnouncements.telemetry'
 import {Divider} from './Divider'
 import {type DialogMode, type StudioAnnouncementDocument} from './types'
 
@@ -40,24 +43,26 @@ const FloatingButton = styled(Button)`
   z-index: 2;
 `
 
-interface UnseenDocumentProps {
+interface AnnouncementProps {
   announcement: StudioAnnouncementDocument
   mode: DialogMode
+  isFirst: boolean
+  parentRef: React.RefObject<HTMLDivElement>
 }
 
 /**
  * Renders the unseen document in the dialog.
  * Has a sticky header with the date and title, and a body with the content.
  */
-function UnseenDocument({announcement, mode}: UnseenDocumentProps) {
+function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProps) {
   const telemetry = useTelemetry()
   const dateFormatter = useDateTimeFormat(DATE_FORMAT_OPTIONS)
-  const {publishedDate, title, body} = announcement
+  const logViewedItemRef = useRef<HTMLDivElement | null>(null)
 
   const formattedDate = useMemo(() => {
-    if (!publishedDate) return ''
-    return dateFormatter.format(new Date(publishedDate))
-  }, [publishedDate, dateFormatter])
+    if (!announcement.publishedDate) return ''
+    return dateFormatter.format(new Date(announcement.publishedDate))
+  }, [announcement.publishedDate, dateFormatter])
 
   const handleLinkClick = useCallback(
     ({url, linkTitle}: {url: string; linkTitle: string}) => {
@@ -73,6 +78,49 @@ function UnseenDocument({announcement, mode}: UnseenDocumentProps) {
     },
     [telemetry, announcement, mode],
   )
+  const logViewed = useCallback(
+    (scrolledIntoView: boolean) => {
+      telemetry.log(ProductAnnouncementViewed, {
+        announcement_id: announcement._id,
+        announcement_title: announcement.title,
+        source: 'studio',
+        studio_version: SANITY_VERSION,
+        scrolled_into_view: scrolledIntoView,
+        origin: mode,
+      })
+    },
+    [announcement._id, announcement.title, mode, telemetry],
+  )
+
+  useEffect(() => {
+    if (isFirst) {
+      // If it's the first announcement we want to log that the user has seen it.
+      // The rest will be logged when they scroll into view.
+      logViewed(false)
+      return
+    }
+    const item = logViewedItemRef.current
+    const parent = parentRef.current
+
+    if (!item || !parent) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          logViewed(true)
+          // Disconnect the observer after it's been viewed
+          observer.disconnect()
+        }
+      },
+      {root: parent, threshold: 1, rootMargin: '0px 0px -100px 0px'},
+    )
+
+    observer.observe(item)
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      observer.disconnect()
+    }
+  }, [logViewed, parentRef, isFirst])
 
   return (
     <Box>
@@ -84,21 +132,21 @@ function UnseenDocument({announcement, mode}: UnseenDocumentProps) {
             </Text>
           </Box>
         </Box>
-        <Flex flex={1} padding={2} justify="center">
+        <Flex flex={1} padding={2} justify="center" ref={logViewedItemRef}>
           <Text size={1} weight="semibold">
-            {title}
+            {announcement.title}
           </Text>
         </Flex>
       </DialogHeader>
       <Box padding={4}>
-        <UpsellDescriptionSerializer blocks={body} onLinkClick={handleLinkClick} />
+        <UpsellDescriptionSerializer blocks={announcement.body} onLinkClick={handleLinkClick} />
       </Box>
     </Box>
   )
 }
 
 interface StudioAnnouncementDialogProps {
-  unseenDocuments: StudioAnnouncementDocument[]
+  announcements: StudioAnnouncementDocument[]
   onClose: () => void
   mode: DialogMode
 }
@@ -109,7 +157,7 @@ interface StudioAnnouncementDialogProps {
  * @hidden
  */
 export function StudioAnnouncementsDialog({
-  unseenDocuments = [],
+  announcements = [],
   onClose,
   mode,
 }: StudioAnnouncementDialogProps) {
@@ -127,11 +175,16 @@ export function StudioAnnouncementsDialog({
       __unstable_autoFocus={false}
     >
       <Root ref={dialogRef} height="fill">
-        {unseenDocuments.map((unseenDocument, index) => (
-          <Fragment key={unseenDocument._id}>
-            <UnseenDocument announcement={unseenDocument} mode={mode} />
+        {announcements.map((announcement, index) => (
+          <Fragment key={announcement._id}>
+            <Announcement
+              announcement={announcement}
+              mode={mode}
+              isFirst={index === 0}
+              parentRef={dialogRef}
+            />
             {/* Add a divider between each dialog if it's not the last one */}
-            {index < unseenDocuments.length - 1 && <Divider parentRef={dialogRef} />}
+            {index < announcements.length - 1 && <Divider parentRef={dialogRef} />}
           </Fragment>
         ))}
         <FloatingButton

@@ -199,7 +199,7 @@ describe('StudioAnnouncementsProvider', () => {
       expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
 
       // Opening the dialog calls the telemetry only once, with the seen card
-      expect(mockLog).toBeCalledTimes(2)
+      expect(mockLog).toBeCalledTimes(3)
       expect(mockLog).toBeCalledWith(
         {
           description: 'User viewed the product announcement card',
@@ -226,6 +226,23 @@ describe('StudioAnnouncementsProvider', () => {
         {
           announcement_id: 'studioAnnouncement-2',
           announcement_title: 'Announcement 2',
+          source: 'studio',
+          studio_version: '3.57.0',
+        },
+      )
+      expect(mockLog).toBeCalledWith(
+        {
+          description: 'User viewed the product announcement',
+          name: 'Product Announcement Viewed',
+          schema: undefined,
+          type: 'log',
+          version: 1,
+        },
+        {
+          announcement_id: 'studioAnnouncement-2',
+          announcement_title: 'Announcement 2',
+          origin: 'card',
+          scrolled_into_view: false,
           source: 'studio',
           studio_version: '3.57.0',
         },
@@ -303,7 +320,7 @@ describe('StudioAnnouncementsProvider', () => {
       expect(queryByText("What's new")).toBeNull()
       expect(queryByText(mockAnnouncements[1].title)).toBeNull()
 
-      expect(mockLog).toBeCalledTimes(3)
+      expect(mockLog).toBeCalledTimes(4)
       expect(mockLog).toBeCalledWith(
         {
           description: 'User viewed the product announcement card',
@@ -346,6 +363,23 @@ describe('StudioAnnouncementsProvider', () => {
           announcement_id: 'studioAnnouncement-2',
           announcement_title: 'Announcement 2',
           origin: 'card',
+          source: 'studio',
+          studio_version: '3.57.0',
+        },
+      )
+      expect(mockLog).toBeCalledWith(
+        {
+          description: 'User viewed the product announcement',
+          name: 'Product Announcement Viewed',
+          schema: undefined,
+          type: 'log',
+          version: 1,
+        },
+        {
+          announcement_id: 'studioAnnouncement-2',
+          announcement_title: 'Announcement 2',
+          origin: 'card',
+          scrolled_into_view: false,
           source: 'studio',
           studio_version: '3.57.0',
         },

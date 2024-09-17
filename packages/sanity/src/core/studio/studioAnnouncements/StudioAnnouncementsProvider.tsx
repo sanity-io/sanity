@@ -144,7 +144,7 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
       {dialogMode && (
         <StudioAnnouncementsDialog
           mode={dialogMode}
-          unseenDocuments={dialogMode === 'help_menu' ? studioAnnouncements : unseenAnnouncements}
+          announcements={dialogMode === 'help_menu' ? studioAnnouncements : unseenAnnouncements}
           onClose={handleDialogClose}
         />
       )}
