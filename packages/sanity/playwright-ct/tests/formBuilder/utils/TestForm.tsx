@@ -157,7 +157,8 @@ export function TestForm(props: TestFormProps) {
     validateStaticDocument(document, workspace, (result) => setValidation(result))
   }, [document, workspace])
 
-  const formState = useFormState(schemaType, {
+  const formState = useFormState({
+    schemaType,
     focusPath,
     collapsedPaths,
     collapsedFieldSets,
@@ -166,7 +167,7 @@ export function TestForm(props: TestFormProps) {
     openPath,
     presence: presenceFromProps,
     validation,
-    value: document,
+    documentValue: document,
   })
 
   const formStateRef = useRef(formState)

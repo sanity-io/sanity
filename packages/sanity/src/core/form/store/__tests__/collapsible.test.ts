@@ -1,9 +1,9 @@
-import {describe, expect, it, test} from '@jest/globals'
+import {beforeEach, describe, expect, it, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type ObjectSchemaType, type Path} from '@sanity/types'
 
 import {pathToString} from '../../../field'
-import {prepareFormState} from '../formState'
+import {createPrepareFormState, type PrepareFormState} from '../formState'
 import {type FieldMember, type ObjectFormNode} from '../types'
 import {isObjectFormNode} from '../types/asserters'
 import {DEFAULT_PROPS} from './shared'
@@ -81,6 +81,12 @@ function getBookType(fieldOptions: {
   }).get('book')
 }
 
+let prepareFormState!: PrepareFormState
+
+beforeEach(() => {
+  prepareFormState = createPrepareFormState()
+})
+
 test("doesn't make primitive fields collapsed even if they are configured to be", () => {
   // Note: the schema validation should possibly enforce this
   // Note2: We might want to support making all kinds of fields collapsible, even primitive fields
@@ -93,7 +99,7 @@ test("doesn't make primitive fields collapsed even if they are configured to be"
   const result = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
-    document: {_id: 'foo', _type: 'book'},
+    documentValue: {_id: 'foo', _type: 'book'},
   })
 
   expect(result).not.toBe(null)
@@ -121,7 +127,7 @@ describe('collapsible object fields', () => {
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
-      document: {_id: 'foo', _type: 'book'},
+      documentValue: {_id: 'foo', _type: 'book'},
     })
 
     expect(result).not.toBe(null)
@@ -141,7 +147,7 @@ describe('collapsible object fields', () => {
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
-      document: {_id: 'foo', _type: 'book'},
+      documentValue: {_id: 'foo', _type: 'book'},
     })
 
     expect(result).not.toBe(null)
@@ -160,7 +166,7 @@ describe('collapsible object fields', () => {
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
-      document: {_id: 'foo', _type: 'book'},
+      value: {_id: 'foo', _type: 'book'},
     })
 
     expect(result).not.toBe(null)
@@ -184,7 +190,7 @@ describe('collapsible object fields', () => {
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
-      document: {_id: 'foo', _type: 'book'},
+      documentValue: {_id: 'foo', _type: 'book'},
     })
 
     expect(result).not.toBe(null)
