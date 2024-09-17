@@ -1,8 +1,8 @@
 import {nanoid} from 'nanoid'
 
 const idCache = new WeakMap<object, string>()
-const undefinedKey = Symbol('GetIdUndefined')
-const nullKey = Symbol('GetIdNull')
+const undefinedKey = {key: 'GetIdUndefined'}
+const nullKey = {key: 'GetIdNull'}
 
 /**
  * Generates a stable ID for various types of values, including `undefined`, `null`, objects, functions, and symbols.
