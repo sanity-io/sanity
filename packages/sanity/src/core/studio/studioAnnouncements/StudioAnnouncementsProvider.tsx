@@ -54,6 +54,7 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
     }
     return unseen
   }, [seenAnnouncements, studioAnnouncements, telemetry])
+
   useEffect(() => {
     // TODO: Replace for internal api
     const client = createClient({projectId: '3do82whm', dataset: 'next'})
@@ -86,8 +87,8 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
     saveSeenAnnouncements()
     setIsCardDismissed(true)
     telemetry.log(ProductAnnouncementCardDismissed, {
-      announcement_id: unseenAnnouncements[0]._id,
-      announcement_title: unseenAnnouncements[0].title,
+      announcement_id: unseenAnnouncements[0]?._id,
+      announcement_title: unseenAnnouncements[0]?.title,
       source: 'studio',
       studio_version: SANITY_VERSION,
     })
@@ -96,17 +97,20 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
   const handleCardClick = useCallback(() => {
     handleOpenDialog('card')
     telemetry.log(ProductAnnouncementCardClicked, {
-      announcement_id: unseenAnnouncements[0]._id,
-      announcement_title: unseenAnnouncements[0].title,
+      announcement_id: unseenAnnouncements[0]?._id,
+      announcement_title: unseenAnnouncements[0]?.title,
       source: 'studio',
       studio_version: SANITY_VERSION,
     })
   }, [handleOpenDialog, telemetry, unseenAnnouncements])
 
   const handleDialogClose = useCallback(() => {
+    const firstAnnouncement =
+      dialogMode === 'help_menu' ? studioAnnouncements[0] : unseenAnnouncements[0]
+
     telemetry.log(ProductAnnouncementModalDismissed, {
-      announcement_id: unseenAnnouncements[0]._id,
-      announcement_title: unseenAnnouncements[0].title,
+      announcement_id: firstAnnouncement?._id,
+      announcement_title: firstAnnouncement?.title,
       source: 'studio',
       studio_version: SANITY_VERSION,
       origin: dialogMode ?? 'card',
@@ -114,7 +118,7 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
 
     setDialogMode(null)
     saveSeenAnnouncements()
-  }, [saveSeenAnnouncements, telemetry, unseenAnnouncements, dialogMode])
+  }, [dialogMode, studioAnnouncements, unseenAnnouncements, telemetry, saveSeenAnnouncements])
 
   const contextValue: StudioAnnouncementsContextValue = useMemo(
     () => ({
@@ -129,26 +133,20 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
     <StudioAnnouncementContext.Provider value={contextValue}>
       {children}
       {unseenAnnouncements.length > 0 && (
-        <>
-          {!isCardDismissed && (
-            <StudioAnnouncementsCard
-              title={unseenAnnouncements[0].title}
-              announcementType={unseenAnnouncements[0].announcementType}
-              onCardClick={handleCardClick}
-              isOpen={!isCardDismissed}
-              onCardDismiss={handleCardDismiss}
-            />
-          )}
-          {dialogMode && (
-            <StudioAnnouncementsDialog
-              mode={dialogMode}
-              unseenDocuments={
-                dialogMode === 'help_menu' ? studioAnnouncements : unseenAnnouncements
-              }
-              onClose={handleDialogClose}
-            />
-          )}
-        </>
+        <StudioAnnouncementsCard
+          title={unseenAnnouncements[0].title}
+          announcementType={unseenAnnouncements[0].announcementType}
+          onCardClick={handleCardClick}
+          isOpen={!isCardDismissed}
+          onCardDismiss={handleCardDismiss}
+        />
+      )}
+      {dialogMode && (
+        <StudioAnnouncementsDialog
+          mode={dialogMode}
+          unseenDocuments={dialogMode === 'help_menu' ? studioAnnouncements : unseenAnnouncements}
+          onClose={handleDialogClose}
+        />
       )}
     </StudioAnnouncementContext.Provider>
   )

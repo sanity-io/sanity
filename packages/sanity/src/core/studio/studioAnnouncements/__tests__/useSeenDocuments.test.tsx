@@ -1,6 +1,7 @@
 import {beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {act, renderHook, waitFor} from '@testing-library/react'
 import {of, Subject} from 'rxjs'
+import {useRouter} from 'sanity/router'
 
 import {useKeyValueStore} from '../../../store/_legacy/datastores'
 import {useSeenAnnouncements} from '../useSeenAnnouncements'
@@ -10,6 +11,10 @@ jest.mock('../../../store/_legacy/datastores', () => ({
 }))
 
 const useKeyValueStoreMock = useKeyValueStore as jest.Mock
+jest.mock('sanity/router', () => ({
+  useRouter: jest.fn().mockReturnValue({state: {}}),
+}))
+const useRouterMock = useRouter as jest.Mock
 
 describe('useSeenAnnouncements', () => {
   beforeEach(() => {
@@ -63,5 +68,53 @@ describe('useSeenAnnouncements', () => {
     })
 
     expect(setKeyMock).toHaveBeenCalledWith('studio.announcement.seen', newSeenAnnouncements)
+  })
+  describe('should reset states when the param is provided', () => {
+    test('when a reset value is provided', async () => {
+      useRouterMock.mockReturnValue({
+        state: {_searchParams: [['reset-announcements', 'foo,bar']]},
+      })
+      const getKeyMock = jest.fn().mockImplementation(() => of([]))
+      const setKeyMock = jest.fn().mockReturnValue(of([]))
+
+      useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
+      renderHook(() => useSeenAnnouncements())
+
+      // Call the setSeenAnnouncements function
+      await waitFor(() => {
+        expect(setKeyMock).toHaveBeenCalledWith('studio.announcement.seen', ['foo', 'bar'])
+      })
+    })
+    test('when no reset value is provided', async () => {
+      useRouterMock.mockReturnValue({
+        state: {_searchParams: [['reset-announcements', '']]},
+      })
+      const getKeyMock = jest.fn().mockImplementation(() => of([]))
+      const setKeyMock = jest.fn().mockReturnValue(of([]))
+
+      useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
+      renderHook(() => useSeenAnnouncements())
+
+      // Call the setSeenAnnouncements function
+      await waitFor(() => {
+        expect(setKeyMock).toHaveBeenCalledWith('studio.announcement.seen', [])
+      })
+    })
+
+    test('when the key is not provided', async () => {
+      useRouterMock.mockReturnValue({
+        state: {_searchParams: []},
+      })
+      const getKeyMock = jest.fn().mockImplementation(() => of([]))
+      const setKeyMock = jest.fn().mockReturnValue(of([]))
+
+      useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
+      renderHook(() => useSeenAnnouncements())
+
+      // Call the setSeenAnnouncements function
+      await waitFor(() => {
+        expect(setKeyMock).not.toHaveBeenCalled()
+      })
+    })
   })
 })

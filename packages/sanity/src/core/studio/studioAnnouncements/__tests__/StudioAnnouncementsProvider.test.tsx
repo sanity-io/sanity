@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {beforeAll, beforeEach, describe, expect, jest, test} from '@jest/globals'
-import {fireEvent, render, renderHook} from '@testing-library/react'
+import {fireEvent, render, renderHook, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {defineConfig} from 'sanity'
 
@@ -178,7 +178,7 @@ describe('StudioAnnouncementsProvider', () => {
         },
       })
     })
-    test('clicks on card, it opens dialog and card is hidden, shows only the unseen announcements', () => {
+    test('clicks on card, it opens dialog and card is hidden, shows only the unseen announcements', async () => {
       const mockLog = jest.fn()
       const {useTelemetry} = require('@sanity/telemetry/react')
       useTelemetry.mockReturnValue({log: mockLog})
@@ -190,7 +190,9 @@ describe('StudioAnnouncementsProvider', () => {
       const cardButton = getByLabelText('Open announcements')
       fireEvent.click(cardButton)
 
-      expect(queryByText("What's new")).toBeNull()
+      await waitFor(() => {
+        expect(queryByText("What's new")).toBeNull()
+      })
       // The first announcement is seen, so it's not rendered
       expect(queryByText(mockAnnouncements[0].title)).toBeNull()
       // The second announcement is unseen, so it's rendered
@@ -230,7 +232,7 @@ describe('StudioAnnouncementsProvider', () => {
       )
     })
 
-    test("dismisses card, then it's hidden, dialog doesn't render", () => {
+    test("dismisses card, then it's hidden, dialog doesn't render", async () => {
       const mockLog = jest.fn()
       const {useTelemetry} = require('@sanity/telemetry/react')
       useTelemetry.mockReturnValue({log: mockLog})
@@ -241,7 +243,9 @@ describe('StudioAnnouncementsProvider', () => {
       expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const closeButton = getByLabelText('Dismiss announcements')
       fireEvent.click(closeButton)
-      expect(queryByText("What's new")).toBeNull()
+      await waitFor(() => {
+        expect(queryByText("What's new")).toBeNull()
+      })
       expect(queryByText(mockAnnouncements[1].title)).toBeNull()
 
       // Dismissing the card calls telemetry with the seen and dismiss logs
@@ -278,7 +282,7 @@ describe('StudioAnnouncementsProvider', () => {
       )
     })
 
-    test('dismisses dialog, card and dialog are hidden', () => {
+    test('dismisses dialog, card and dialog are hidden', async () => {
       const mockLog = jest.fn()
       const {useTelemetry} = require('@sanity/telemetry/react')
       useTelemetry.mockReturnValue({log: mockLog})
@@ -289,7 +293,9 @@ describe('StudioAnnouncementsProvider', () => {
       expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const cardButton = getByLabelText('Open announcements')
       fireEvent.click(cardButton)
-      expect(queryByText("What's new")).toBeNull()
+      await waitFor(() => {
+        expect(queryByText("What's new")).toBeNull()
+      })
       expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
 
       const closeButton = getByLabelText('Close dialog')
@@ -345,7 +351,7 @@ describe('StudioAnnouncementsProvider', () => {
         },
       )
     })
-    test('opens the dialog from outside the card, so it shows all unseen', () => {
+    test('opens the dialog from outside the card, so it shows all unseen', async () => {
       const Component = () => {
         const {onDialogOpen} = useStudioAnnouncements()
         return (
@@ -365,7 +371,9 @@ describe('StudioAnnouncementsProvider', () => {
       fireEvent.click(openDialogButton)
 
       // The card closes even if we open it from somewhere else
-      expect(queryByText("What's new")).toBeNull()
+      await waitFor(() => {
+        expect(queryByText("What's new")).toBeNull()
+      })
       // The first announcement is seen, it's rendered because it's showing all
       expect(queryByText(mockAnnouncements[0].title)).toBeInTheDocument()
       // The second announcement is unseen, so it's rendered

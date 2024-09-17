@@ -1,15 +1,15 @@
-import {useCallback, useMemo} from 'react'
+import {useCallback, useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
+import {useRouter} from 'sanity/router'
 
 import {useKeyValueStore} from '../../store/_legacy/datastores'
 
 const KEY = 'studio.announcement.seen'
+const RESET_PARAM = 'reset-announcements'
 
-/**
- * TODO: This is not functional yet, the API is not accepting the new key
- */
 export function useSeenAnnouncements(): [string[] | null | 'loading', (seen: string[]) => void] {
+  const router = useRouter()
   // Handles the communication with the key value store
   const keyValueStore = useKeyValueStore()
   const seenAnnouncements$ = useMemo(
@@ -20,11 +20,22 @@ export function useSeenAnnouncements(): [string[] | null | 'loading', (seen: str
 
   const setSeenAnnouncements = useCallback(
     (seen: string[]) => {
-      // eslint-disable-next-line no-console
       keyValueStore.setKey(KEY, seen)
     },
     [keyValueStore],
   )
+  const params = new URLSearchParams(router.state._searchParams)
+  const resetAnnouncementsParams = params?.get(RESET_PARAM)
+
+  useEffect(() => {
+    // For testing purposes, reset the seen params.
+    // e.g. /structure?reset-announcements=foo,bar
+    // Will reset the values of the seen announcement to: ['foo', 'bar']
+    if (resetAnnouncementsParams !== null) {
+      const resetValue = resetAnnouncementsParams ? resetAnnouncementsParams.split(',') : []
+      setSeenAnnouncements(resetValue)
+    }
+  }, [resetAnnouncementsParams, setSeenAnnouncements])
 
   return [seenAnnouncements, setSeenAnnouncements]
 }
