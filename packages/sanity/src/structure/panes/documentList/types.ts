@@ -13,7 +13,7 @@ export type SortOrder = {
 
 export interface QueryResult {
   error: {message: string} | null
-  onRetry?: (event: unknown) => void
+  onRetry?: () => void
   result: {documents: SanityDocumentLike[]} | null
 }
 
