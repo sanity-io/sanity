@@ -46,7 +46,7 @@ interface DocumentListPaneContentProps {
   layout?: GeneralPreviewLayoutKey
   loadingVariant?: LoadingVariant
   onListChange: () => void
-  onRetry?: (event: unknown) => void
+  onRetry?: () => void
   paneTitle: string
   searchInputElement: HTMLInputElement | null
   showIcons: boolean
