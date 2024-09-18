@@ -166,7 +166,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     >
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
-          {connectionState === 'connecting' ? (
+          {connectionState === 'connecting' || !ready ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
               <Flex align="center" direction="column" height="fill" justify="center">
