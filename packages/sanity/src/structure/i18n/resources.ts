@@ -327,8 +327,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-header-title.new.text': 'New {{schemaType}}',
   /** The text used in the document header title if no other title can be determined */
   'panes.document-header-title.untitled.text': 'Untitled',
-  /** The text for the retry button on the document list pane */
-  'panes.document-list-pane.error.retry-button.text': 'Retry',
   /** The error text on the document list pane */
   'panes.document-list-pane.error.text': 'Error: <Code>{{error}}</Code>',
   /** The error title on the document list pane */
