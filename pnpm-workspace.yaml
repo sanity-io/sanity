@@ -1,7 +1,6 @@
 packages:
   - 'dev/*'
-  - 'perf/studio'
-  - 'perf/tests'
+  - 'perf/*'
   - 'examples/*'
   - 'packages/@repo/*'
   - 'packages/@sanity/*'
