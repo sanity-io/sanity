@@ -95,6 +95,12 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.deleted-document-banner.text': 'This document has been deleted.',
   /** The text content for the deprecated document type banner */
   'banners.deprecated-document-type-banner.text': 'This document type has been deprecated.',
+  /** The text content for the live edit document when it's a draft on how to solve it */
+  'banners.live-edit-draft-banner.explanation':
+    'Disable "live edit" in the schema to publish the draft. Once published, "live edit" can be reactivated.',
+  /** The text content for the live edit document when it's a draft */
+  'banners.live-edit-draft-banner.text':
+    'This "live" document cannot be edited while a draft version of it exists.',
   /** The text for the permission check banner if the user only has one role, and it does not allow updating this document */
   'banners.permission-check-banner.missing-permission_create_one':
     'Your role <Roles/> does not have permissions to create this document.',

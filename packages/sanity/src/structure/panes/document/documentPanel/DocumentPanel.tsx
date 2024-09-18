@@ -4,6 +4,7 @@ import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider}
 import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
+import {isLiveEditEnabled} from '../../../components/paneItem/helpers'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
@@ -14,6 +15,7 @@ import {
   PermissionCheckBanner,
   ReferenceChangedBanner,
 } from './banners'
+import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {FormView} from './documentViews'
 
 interface DocumentPanelProps {
@@ -117,6 +119,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     (state) => state.lastNonDeletedRevId,
   )
 
+  const isLiveEdit = isLiveEditEnabled(schemaType)
+
   // Scroll to top as `documentId` changes
   useEffect(() => {
     if (!documentScrollElement?.scrollTo) return
@@ -150,6 +154,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   scrollElement={documentScrollElement}
                   containerElement={formContainerElement}
                 >
+                  {activeView.type === 'form' && isLiveEdit && ready && <DraftLiveEditBanner />}
+
                   {activeView.type === 'form' && !isPermissionsLoading && ready && (
                     <>
                       <PermissionCheckBanner
