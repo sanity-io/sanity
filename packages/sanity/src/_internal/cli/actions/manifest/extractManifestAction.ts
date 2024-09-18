@@ -4,6 +4,7 @@ import {dirname, join, resolve} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {minutesToMilliseconds} from 'date-fns'
 import readPkgUp from 'read-pkg-up'
 
 import {
@@ -18,10 +19,13 @@ const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
 
 /** Escape-hatch env flags to change action behavior */
-const EXTRACT_MANIFEST_DISABLED = process.env.SANITY_CLI_EXTRACT_MANIFEST_ENABLED === 'false'
+const FEATURE_ENABLED_ENV_NAME = 'SANITY_CLI_EXTRACT_MANIFEST_ENABLED'
+const EXTRACT_MANIFEST_DISABLED = process.env[FEATURE_ENABLED_ENV_NAME] === 'false'
 const EXTRACT_MANIFEST_LOG_ERRORS = process.env.SANITY_CLI_EXTRACT_MANIFEST_LOG_ERRORS === 'true'
 
 const CREATE_TIMER = 'create-manifest'
+
+const EXTRACT_TASK_TIMEOUT_MS = minutesToMilliseconds(2)
 
 interface ExtractFlags {
   path?: string
@@ -43,7 +47,8 @@ export async function extractManifestSafe(
   } catch (err) {
     // best-effort extraction
     context.output.print(
-      'Unable to extract manifest. Certain features like Sanity Create will not work with this studio.',
+      'Unable to extract manifest. Certain features like Sanity Create will not work with this studio.\n' +
+        `To disable manifest extraction set ${FEATURE_ENABLED_ENV_NAME}=false`,
     )
     if (EXTRACT_MANIFEST_LOG_ERRORS) {
       context.output.error(err)
@@ -72,35 +77,12 @@ async function extractManifest(
     throw new Error('Could not find root directory for `sanity` package')
   }
 
-  const workerPath = join(
-    dirname(rootPkgPath),
-    'lib',
-    '_internal',
-    'cli',
-    'threads',
-    'extractManifest.js',
-  )
-
   const timer = getTimer()
   timer.start(CREATE_TIMER)
   const spinner = output.spinner({}).start('Extracting manifest')
 
-  const worker = new Worker(workerPath, {
-    workerData: {workDir} satisfies ExtractManifestWorkerData,
-    // eslint-disable-next-line no-process-env
-    env: process.env,
-  })
-
   try {
-    const workspaceManifests = await new Promise<CreateWorkspaceManifest[]>(
-      (resolveWorkspaces, reject) => {
-        const buffer: CreateWorkspaceManifest[] = []
-        worker.addListener('message', (message) => buffer.push(message))
-        worker.addListener('exit', () => resolveWorkspaces(buffer))
-        worker.addListener('error', reject)
-      },
-    )
-
+    const workspaceManifests = await getWorkspaceManifests({rootPkgPath, workDir})
     await mkdir(staticPath, {recursive: true})
 
     const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
@@ -118,6 +100,52 @@ async function extractManifest(
   } catch (err) {
     spinner.fail()
     throw err
+  }
+}
+
+async function getWorkspaceManifests({
+  rootPkgPath,
+  workDir,
+}: {
+  rootPkgPath: string
+  workDir: string
+}): Promise<CreateWorkspaceManifest[]> {
+  const workerPath = join(
+    dirname(rootPkgPath),
+    'lib',
+    '_internal',
+    'cli',
+    'threads',
+    'extractManifest.js',
+  )
+
+  const worker = new Worker(workerPath, {
+    workerData: {workDir} satisfies ExtractManifestWorkerData,
+    // eslint-disable-next-line no-process-env
+    env: process.env,
+  })
+
+  let timeout = false
+  const timeoutId = setTimeout(() => {
+    timeout = true
+    worker.terminate()
+  }, EXTRACT_TASK_TIMEOUT_MS)
+
+  try {
+    return await new Promise<CreateWorkspaceManifest[]>((resolveWorkspaces, reject) => {
+      const buffer: CreateWorkspaceManifest[] = []
+      worker.addListener('message', (message) => buffer.push(message))
+      worker.addListener('exit', (exitCode) => {
+        if (exitCode === 0) {
+          resolveWorkspaces(buffer)
+        } else if (timeout) {
+          reject(new Error(`Extract manifest was aborted after ${EXTRACT_TASK_TIMEOUT_MS}ms`))
+        }
+      })
+      worker.addListener('error', reject)
+    })
+  } finally {
+    clearTimeout(timeoutId)
   }
 }
 
