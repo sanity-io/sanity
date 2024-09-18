@@ -2,6 +2,7 @@
 import {createClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useWorkspace} from 'sanity'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
 
 import {SANITY_VERSION} from '../../version'
@@ -20,7 +21,7 @@ import {
   type StudioAnnouncementsContextValue,
 } from './types'
 import {useSeenAnnouncements} from './useSeenAnnouncements'
-import {isValidAudience} from './utils'
+import {isValidAnnouncementAudience, isValidAnnouncementRole} from './utils'
 
 interface StudioAnnouncementsProviderProps {
   children: React.ReactNode
@@ -35,6 +36,7 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
   const [isCardDismissed, setIsCardDismissed] = useState(false)
   const [studioAnnouncements, setStudioAnnouncements] = useState<StudioAnnouncementDocument[]>([])
   const [seenAnnouncements, setSeenAnnouncements] = useSeenAnnouncements()
+  const {currentUser} = useWorkspace()
 
   const unseenAnnouncements: StudioAnnouncementDocument[] = useMemo(() => {
     // If it's loading return an empty array to avoid showing the card
@@ -57,21 +59,33 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
 
   useEffect(() => {
     // TODO: Replace for internal api
-    const client = createClient({projectId: '3do82whm', dataset: 'next'})
+    const client = createClient({
+      projectId: 'm5jza465',
+      dataset: 'dev',
+      useCdn: false,
+      apiVersion: 'vX',
+    })
 
     const subscription = client.observable
       .fetch<StudioAnnouncementDocument[]>(studioAnnouncementQuery)
       .subscribe({
         next: (docs) => {
-          const validDocs = docs.filter((doc) => isValidAudience(doc, SANITY_VERSION))
+          const validDocs = docs.filter(
+            (doc) =>
+              isValidAnnouncementAudience(
+                {audience: doc.audience, studioVersion: doc.studioVersion},
+                SANITY_VERSION,
+              ) && isValidAnnouncementRole(doc.audienceRole, currentUser?.roles),
+          )
           setStudioAnnouncements(validDocs)
         },
         error: (error) => {
           console.error('Error fetching studio announcements:', error)
         },
       })
+    // eslint-disable-next-line consistent-return
     return () => subscription.unsubscribe()
-  }, [])
+  }, [currentUser?.roles])
 
   const saveSeenAnnouncements = useCallback(() => {
     // Mark all the announcements as seen

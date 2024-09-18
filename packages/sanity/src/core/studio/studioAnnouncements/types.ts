@@ -1,5 +1,16 @@
 import {type PortableTextBlock} from 'sanity'
 
+export const audienceRoles = [
+  'administrator',
+  'editor',
+  'viewer',
+  'contributor',
+  'developer',
+  'custom',
+] as const
+
+export type AudienceRole = (typeof audienceRoles)[number]
+
 export interface StudioAnnouncementDocument {
   _id: string
   _type: 'productAnnouncement'
@@ -12,6 +23,7 @@ export interface StudioAnnouncementDocument {
   publishedDate: string
   expiryDate?: string
   audience: 'everyone' | 'specific-version' | 'above-version' | 'below-version'
+  audienceRole?: AudienceRole[] | undefined
   studioVersion?: string
 }
 

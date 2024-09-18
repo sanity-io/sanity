@@ -68,9 +68,9 @@ const InlineIcon = styled(Icon)<InlineIconProps>`
   }
 `
 
-const Link = styled.a<{useTextColor: boolean}>`
+const Link = styled.a<{$useTextColor: boolean}>`
   font-weight: 600;
-  color: ${(props) => (props.useTextColor ? 'var(--card-muted-fg-color) !important' : '')};
+  color: ${(props) => (props.$useTextColor ? 'var(--card-muted-fg-color) !important' : '')};
 `
 
 const DynamicIconContainer = styled.span<{$inline: boolean}>`
@@ -225,7 +225,7 @@ const createComponents = ({
         href={props.value.href}
         rel="noopener noreferrer"
         target="_blank"
-        useTextColor={props.value.useTextColor}
+        $useTextColor={props.value.useTextColor}
         // eslint-disable-next-line react/jsx-no-bind
         onClick={
           onLinkClick

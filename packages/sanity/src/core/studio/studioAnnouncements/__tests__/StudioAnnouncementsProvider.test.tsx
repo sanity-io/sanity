@@ -514,7 +514,7 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.unseenAnnouncements).toEqual(announcements)
       expect(result.current.studioAnnouncements).toEqual(announcements)
     })
-    test('if the audience is specific-version and studio matches ', () => {
+    test('if the audience is specific-version and studio matches', () => {
       const {createClient} = require('@sanity/client')
       const announcements: StudioAnnouncementDocument[] = [
         {
@@ -546,7 +546,7 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.unseenAnnouncements).toEqual(announcements)
       expect(result.current.studioAnnouncements).toEqual(announcements)
     })
-    test('if the audience is specific-version and studio doesnt match ', () => {
+    test("if the audience is specific-version and studio doesn't match ", () => {
       const {createClient} = require('@sanity/client')
       const announcements: StudioAnnouncementDocument[] = [
         {
@@ -625,6 +625,72 @@ describe('StudioAnnouncementsProvider', () => {
           publishedDate: '2024-09-10T14:44:00.000Z',
           audience: 'below-version',
           studioVersion: '3.58.0',
+        },
+      ]
+      const mockFetch = createClient().observable.fetch as jest.Mock
+      mockFetch.mockReturnValue({
+        subscribe: ({next}: any) => {
+          next(announcements)
+          return {unsubscribe: jest.fn()}
+        },
+      })
+
+      const {result} = renderHook(() => useStudioAnnouncements(), {
+        wrapper,
+      })
+
+      expect(result.current.unseenAnnouncements).toEqual(announcements)
+      expect(result.current.studioAnnouncements).toEqual(announcements)
+    })
+    test("if the audienceRole is fixed and user doesn't have the role", () => {
+      // mocked workspace roles is  [ { name: 'administrator', title: 'Administrator' } ]
+      const {createClient} = require('@sanity/client')
+      const announcements: StudioAnnouncementDocument[] = [
+        {
+          _id: 'studioAnnouncement-1',
+          _type: 'productAnnouncement',
+          _rev: '1',
+          _createdAt: '2024-09-10T14:44:00.000Z',
+          _updatedAt: "2024-09-10T14:44:00.000Z'",
+          title: 'Announcement 1',
+          body: [],
+          announcementType: 'whats-new',
+          publishedDate: '2024-09-10T14:44:00.000Z',
+          audienceRole: ['developer'],
+          audience: 'everyone',
+        },
+      ]
+      const mockFetch = createClient().observable.fetch as jest.Mock
+      mockFetch.mockReturnValue({
+        subscribe: ({next}: any) => {
+          next(announcements)
+          return {unsubscribe: jest.fn()}
+        },
+      })
+
+      const {result} = renderHook(() => useStudioAnnouncements(), {
+        wrapper,
+      })
+
+      expect(result.current.unseenAnnouncements).toEqual([])
+      expect(result.current.studioAnnouncements).toEqual([])
+    })
+    test('if the audienceRole is fixed and user has the role', () => {
+      // mocked workspace roles is  [ { name: 'administrator', title: 'Administrator' } ]
+      const {createClient} = require('@sanity/client')
+      const announcements: StudioAnnouncementDocument[] = [
+        {
+          _id: 'studioAnnouncement-1',
+          _type: 'productAnnouncement',
+          _rev: '1',
+          _createdAt: '2024-09-10T14:44:00.000Z',
+          _updatedAt: "2024-09-10T14:44:00.000Z'",
+          title: 'Announcement 1',
+          body: [],
+          announcementType: 'whats-new',
+          publishedDate: '2024-09-10T14:44:00.000Z',
+          audienceRole: ['administrator'],
+          audience: 'everyone',
         },
       ]
       const mockFetch = createClient().observable.fetch as jest.Mock
