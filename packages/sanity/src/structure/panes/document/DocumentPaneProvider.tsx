@@ -517,6 +517,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
+    // in cases where the document has drafts but the schema is live edit,
+    // there is a risk of data loss, so we disable editing in this case
+    const isLiveEditAndDraft = Boolean(liveEdit && editState.draft)
 
     return (
       !ready ||
@@ -527,19 +530,22 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       reconnecting ||
       isLocked ||
       isDeleting ||
-      isDeleted
+      isDeleted ||
+      isLiveEditAndDraft
     )
   }, [
-    connectionState,
-    editState.transactionSyncLock,
-    isNonExistent,
-    isDeleted,
-    isDeleting,
     isPermissionsLoading,
     permissions?.granted,
+    schemaType,
+    isNonExistent,
+    connectionState,
+    editState.transactionSyncLock?.enabled,
+    editState.draft,
+    liveEdit,
     ready,
     revTime,
-    schemaType,
+    isDeleting,
+    isDeleted,
   ])
 
   const formState = useFormState({
