@@ -9,7 +9,7 @@ import {
   Heading,
   Stack,
 } from '@sanity/ui'
-import {type ErrorInfo, type ReactNode, useCallback, useState} from 'react'
+import {type ComponentType, type ErrorInfo, type ReactNode, useCallback, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {Button} from '../../ui-components'
@@ -42,10 +42,10 @@ const INITIAL_STATE = {
   eventId: null,
 } satisfies ErrorBoundaryState
 
-export function StudioErrorBoundary({
+export const StudioErrorBoundary: ComponentType<StudioErrorBoundaryProps> = ({
   children,
   heading = 'An error occured',
-}: StudioErrorBoundaryProps) {
+}) => {
   const [{error, eventId}, setError] = useState<ErrorBoundaryState>(INITIAL_STATE)
 
   const message = isRecord(error) && typeof error.message === 'string' && error.message
