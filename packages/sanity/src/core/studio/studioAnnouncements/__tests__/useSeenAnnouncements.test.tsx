@@ -18,7 +18,6 @@ const useRouterMock = useRouter as jest.Mock
 
 describe('useSeenAnnouncements', () => {
   beforeEach(() => {
-    // Reset mocks before each test
     jest.clearAllMocks()
   })
   test('should return "loading" initially and update when observable emits', async () => {
@@ -29,7 +28,7 @@ describe('useSeenAnnouncements', () => {
     useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
 
     const {result} = renderHook(() => useSeenAnnouncements())
-    expect(result.current[0]).toBe('loading')
+    expect(result.current[0]).toEqual({value: null, error: null, loading: true})
 
     const seenAnnouncements = ['announcement1', 'announcement2']
     act(() => {
@@ -37,7 +36,30 @@ describe('useSeenAnnouncements', () => {
     })
 
     await waitFor(() => {
-      expect(result.current[0]).toEqual(seenAnnouncements)
+      expect(result.current[0]).toEqual({value: seenAnnouncements, error: null, loading: false})
+    })
+  })
+  test('should handle errors on the keyValueStore', async () => {
+    const observable = new Subject<string[]>()
+    const getKeyMock = jest.fn().mockReturnValue(observable)
+    const setKeyMock = jest.fn()
+
+    useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
+
+    const {result} = renderHook(() => useSeenAnnouncements())
+    expect(result.current[0]).toEqual({value: null, error: null, loading: true})
+
+    const error = new Error('An error occurred')
+    act(() => {
+      observable.error(error)
+    })
+
+    await waitFor(() => {
+      expect(result.current[0]).toEqual({
+        value: null,
+        error: error,
+        loading: false,
+      })
     })
   })
 
@@ -62,7 +84,7 @@ describe('useSeenAnnouncements', () => {
     useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
     const {result} = renderHook(() => useSeenAnnouncements())
     const [_, setSeenAnnouncements] = result.current
-    // Call the setSeenAnnouncements function
+
     act(() => {
       setSeenAnnouncements(newSeenAnnouncements)
     })
@@ -80,7 +102,6 @@ describe('useSeenAnnouncements', () => {
       useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
       renderHook(() => useSeenAnnouncements())
 
-      // Call the setSeenAnnouncements function
       await waitFor(() => {
         expect(setKeyMock).toHaveBeenCalledWith('studio.announcement.seen', ['foo', 'bar'])
       })
@@ -95,13 +116,12 @@ describe('useSeenAnnouncements', () => {
       useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
       renderHook(() => useSeenAnnouncements())
 
-      // Call the setSeenAnnouncements function
       await waitFor(() => {
         expect(setKeyMock).toHaveBeenCalledWith('studio.announcement.seen', [])
       })
     })
 
-    test('when the key is not provided', async () => {
+    test('when the reset key is not provided', async () => {
       useRouterMock.mockReturnValue({
         state: {_searchParams: []},
       })
@@ -111,7 +131,6 @@ describe('useSeenAnnouncements', () => {
       useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
       renderHook(() => useSeenAnnouncements())
 
-      // Call the setSeenAnnouncements function
       await waitFor(() => {
         expect(setKeyMock).not.toHaveBeenCalled()
       })

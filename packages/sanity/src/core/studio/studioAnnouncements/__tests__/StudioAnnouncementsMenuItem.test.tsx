@@ -91,7 +91,6 @@ describe('StudioAnnouncementsMenuItem', () => {
     const onDialogOpenMock = jest.fn()
     const mockLog = jest.fn()
     const {useTelemetry} = require('@sanity/telemetry/react')
-    // Set up the mock return value
     useTelemetry.mockReturnValue({log: mockLog})
 
     useStudioAnnouncementsMock.mockReturnValue({

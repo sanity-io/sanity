@@ -26,7 +26,7 @@ import {
   NotFoundScreen,
 } from './screens'
 import {type StudioProps} from './Studio'
-import {StudioAnnouncementsProvider} from './studioAnnouncements'
+import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncementsProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {StudioTelemetryProvider} from './StudioTelemetryProvider'
 import {StudioThemeProvider} from './StudioThemeProvider'

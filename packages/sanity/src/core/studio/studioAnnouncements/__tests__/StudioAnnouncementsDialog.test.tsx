@@ -153,7 +153,6 @@ describe('StudioAnnouncementsCard', () => {
     const onCloseMock = jest.fn()
     const mockLog = jest.fn()
     const {useTelemetry} = require('@sanity/telemetry/react')
-    // Set up the mock return value
     useTelemetry.mockReturnValue({log: mockLog})
     const wrapper = await createAnnouncementWrapper()
     await render(

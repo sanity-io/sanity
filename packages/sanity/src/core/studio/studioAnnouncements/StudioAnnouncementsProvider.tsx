@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
-import {createClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useWorkspace} from 'sanity'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
 
+import {useClient} from '../../hooks/useClient'
+import {useWorkspace} from '../../studio/workspace'
 import {SANITY_VERSION} from '../../version'
 import {
   ProductAnnouncementCardClicked,
@@ -12,7 +12,6 @@ import {
   ProductAnnouncementCardSeen,
   ProductAnnouncementModalDismissed,
 } from './__telemetry__/studioAnnouncements.telemetry'
-import {studioAnnouncementQuery} from './query'
 import {StudioAnnouncementsCard} from './StudioAnnouncementsCard'
 import {StudioAnnouncementsDialog} from './StudioAnnouncementsDialog'
 import {
@@ -26,6 +25,8 @@ import {isValidAnnouncementAudience, isValidAnnouncementRole} from './utils'
 interface StudioAnnouncementsProviderProps {
   children: React.ReactNode
 }
+const CLIENT_OPTIONS = {apiVersion: 'v2024-09-19'}
+
 /**
  * @internal
  * @hidden
@@ -37,15 +38,16 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
   const [studioAnnouncements, setStudioAnnouncements] = useState<StudioAnnouncementDocument[]>([])
   const [seenAnnouncements, setSeenAnnouncements] = useSeenAnnouncements()
   const {currentUser} = useWorkspace()
+  const client = useClient(CLIENT_OPTIONS)
 
   const unseenAnnouncements: StudioAnnouncementDocument[] = useMemo(() => {
-    // If it's loading return an empty array to avoid showing the card
-    if (seenAnnouncements === 'loading') return []
+    // If it's loading or it has errored return an empty array to avoid showing the card
+    if (seenAnnouncements.loading || seenAnnouncements.error) return []
     // If none is seen, return all the announcements
-    if (!seenAnnouncements) return studioAnnouncements
+    if (!seenAnnouncements.value) return studioAnnouncements
 
     // Filter out the seen announcements
-    const unseen = studioAnnouncements.filter((doc) => !seenAnnouncements.includes(doc._id))
+    const unseen = studioAnnouncements.filter((doc) => !seenAnnouncements.value?.includes(doc._id))
     if (unseen.length > 0) {
       telemetry.log(ProductAnnouncementCardSeen, {
         announcement_id: unseen[0]._id,
@@ -58,18 +60,11 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
   }, [seenAnnouncements, studioAnnouncements, telemetry])
 
   useEffect(() => {
-    // TODO: Replace for internal api
-    const client = createClient({
-      projectId: 'm5jza465',
-      dataset: 'dev',
-      useCdn: false,
-      apiVersion: 'vX',
-    })
-
-    const subscription = client.observable
-      .fetch<StudioAnnouncementDocument[]>(studioAnnouncementQuery)
+    const request = client.observable
+      .request<StudioAnnouncementDocument[] | null>({url: '/journey/announcements'})
       .subscribe({
         next: (docs) => {
+          if (!docs) return
           const validDocs = docs.filter(
             (doc) =>
               isValidAnnouncementAudience(
@@ -79,13 +74,13 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
           )
           setStudioAnnouncements(validDocs)
         },
-        error: (error) => {
-          console.error('Error fetching studio announcements:', error)
+        error: () => {
+          /* silently ignore any error */
         },
       })
     // eslint-disable-next-line consistent-return
-    return () => subscription.unsubscribe()
-  }, [currentUser?.roles])
+    return () => request.unsubscribe()
+  }, [currentUser?.roles, client])
 
   const saveSeenAnnouncements = useCallback(() => {
     // Mark all the announcements as seen

@@ -5,6 +5,7 @@ import {type ReactNode} from 'react'
 import {defineConfig} from 'sanity'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {useClient} from '../../../hooks/useClient'
 import {StudioAnnouncementsProvider} from '../StudioAnnouncementsProvider'
 import {type StudioAnnouncementDocument} from '../types'
 import {useSeenAnnouncements} from '../useSeenAnnouncements'
@@ -24,12 +25,29 @@ jest.mock('@sanity/client', () => ({
   }),
 }))
 
+jest.mock('../../../hooks/useClient')
+const useClientMock = useClient as jest.Mock<typeof useClient>
+
+const mockClient = (announcements: StudioAnnouncementDocument[]) => {
+  useClientMock.mockReturnValue({
+    observable: {
+      request: () => ({
+        // @ts-expect-error this intents to mock only the observable, not all the client.
+        subscribe: ({next}) => {
+          next(announcements)
+          return {unsubscribe: jest.fn()}
+        },
+      }),
+    },
+  })
+}
+
 jest.mock('../useSeenAnnouncements')
+const seenAnnouncementsMock = useSeenAnnouncements as jest.Mock
+
 jest.mock('../../../version', () => ({
   SANITY_VERSION: '3.57.0',
 }))
-
-const seenAnnouncementsMock = useSeenAnnouncements as jest.Mock<typeof useSeenAnnouncements>
 
 const config = defineConfig({
   projectId: 'test',
@@ -45,7 +63,7 @@ async function createAnnouncementWrapper() {
     wrapper({children: <StudioAnnouncementsProvider>{children}</StudioAnnouncementsProvider>})
 }
 
-const mockAnnouncements = [
+const mockAnnouncements: StudioAnnouncementDocument[] = [
   {
     _id: 'studioAnnouncement-1',
     _type: 'productAnnouncement',
@@ -80,16 +98,8 @@ describe('StudioAnnouncementsProvider', () => {
   describe('if seen announcements is loading', () => {
     beforeEach(() => {
       jest.clearAllMocks()
-      seenAnnouncementsMock.mockReturnValue(['loading', jest.fn()])
-      const {createClient} = require('@sanity/client')
-
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(mockAnnouncements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      seenAnnouncementsMock.mockReturnValue([{loading: true, value: null, error: null}, jest.fn()])
+      mockClient(mockAnnouncements)
     })
     test('returns empty unseen announcements ', () => {
       const {result} = renderHook(() => useStudioAnnouncements(), {
@@ -101,23 +111,36 @@ describe('StudioAnnouncementsProvider', () => {
     })
     test("if unseen is empty, card doesn't show ", () => {
       const {queryByText} = render(null, {wrapper})
+      expect(queryByText("What's new")).toBeNull()
+    })
+  })
+  describe('if seen announcements failed', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+      seenAnnouncementsMock.mockReturnValue([
+        {loading: false, value: null, error: new Error('something went wrong')},
+        jest.fn(),
+      ])
+      mockClient(mockAnnouncements)
+    })
+    test('returns empty unseen announcements ', () => {
+      const {result} = renderHook(() => useStudioAnnouncements(), {
+        wrapper,
+      })
 
+      expect(result.current.unseenAnnouncements).toEqual([])
+      expect(result.current.studioAnnouncements).toEqual(mockAnnouncements)
+    })
+    test("if unseen is empty, card doesn't show ", () => {
+      const {queryByText} = render(null, {wrapper})
       expect(queryByText("What's new")).toBeNull()
     })
   })
   describe('if seen announcements is not loading and has no values', () => {
     beforeEach(() => {
       jest.clearAllMocks()
-      seenAnnouncementsMock.mockReturnValue([[], jest.fn()])
-
-      const {createClient} = require('@sanity/client')
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(mockAnnouncements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      seenAnnouncementsMock.mockReturnValue([{value: [], error: null, loading: false}, jest.fn()])
+      mockClient(mockAnnouncements)
     })
     test('returns unseen announcements', () => {
       const {result} = renderHook(() => useStudioAnnouncements(), {
@@ -137,16 +160,12 @@ describe('StudioAnnouncementsProvider', () => {
     beforeEach(() => {
       jest.clearAllMocks()
       // It doesn't show the first element
-      seenAnnouncementsMock.mockReturnValue([['studioAnnouncement-1'], jest.fn()])
+      seenAnnouncementsMock.mockReturnValue([
+        {value: ['studioAnnouncement-1'], error: null, loading: false},
+        jest.fn(),
+      ])
 
-      const {createClient} = require('@sanity/client')
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(mockAnnouncements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(mockAnnouncements)
     })
     test('returns unseen announcements', () => {
       const {result} = renderHook(() => useStudioAnnouncements(), {
@@ -166,16 +185,12 @@ describe('StudioAnnouncementsProvider', () => {
     beforeEach(() => {
       jest.clearAllMocks()
       // It doesn't show the first element
-      seenAnnouncementsMock.mockReturnValue([['studioAnnouncement-1'], jest.fn()])
+      seenAnnouncementsMock.mockReturnValue([
+        {value: ['studioAnnouncement-1'], error: null, loading: false},
+        jest.fn(),
+      ])
 
-      const {createClient} = require('@sanity/client')
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(mockAnnouncements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(mockAnnouncements)
     })
     test('clicks on card, it opens dialog and card is hidden, shows only the unseen announcements', async () => {
       const mockLog = jest.fn()
@@ -417,11 +432,10 @@ describe('StudioAnnouncementsProvider', () => {
     beforeEach(() => {
       jest.clearAllMocks()
       // It doesn't show the first element
-      seenAnnouncementsMock.mockReturnValue([[], jest.fn()])
+      seenAnnouncementsMock.mockReturnValue([{value: [], error: null, loading: false}, jest.fn()])
     })
     test('if the audience is everyone, it shows the announcement regardless the version', () => {
-      const {createClient} = require('@sanity/client')
-      const announcements = [
+      const announcements: StudioAnnouncementDocument[] = [
         {
           _id: 'studioAnnouncement-1',
           _type: 'productAnnouncement',
@@ -435,13 +449,7 @@ describe('StudioAnnouncementsProvider', () => {
           audience: 'everyone',
         },
       ]
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(announcements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(announcements)
 
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
@@ -451,7 +459,6 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.studioAnnouncements).toEqual(announcements)
     })
     test('if the audience is above-version and studio version is not above', () => {
-      const {createClient} = require('@sanity/client')
       const announcements: StudioAnnouncementDocument[] = [
         {
           _id: 'studioAnnouncement-1',
@@ -467,13 +474,7 @@ describe('StudioAnnouncementsProvider', () => {
           studioVersion: '3.57.0',
         },
       ]
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(announcements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(announcements)
 
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
@@ -483,7 +484,6 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.studioAnnouncements).toEqual([])
     })
     test('if the audience is above-version and studio version is above', () => {
-      const {createClient} = require('@sanity/client')
       const announcements: StudioAnnouncementDocument[] = [
         {
           _id: 'studioAnnouncement-1',
@@ -499,13 +499,7 @@ describe('StudioAnnouncementsProvider', () => {
           studioVersion: '3.56.0',
         },
       ]
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(announcements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(announcements)
 
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
@@ -515,7 +509,6 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.studioAnnouncements).toEqual(announcements)
     })
     test('if the audience is specific-version and studio matches', () => {
-      const {createClient} = require('@sanity/client')
       const announcements: StudioAnnouncementDocument[] = [
         {
           _id: 'studioAnnouncement-1',
@@ -531,13 +524,7 @@ describe('StudioAnnouncementsProvider', () => {
           studioVersion: '3.57.0',
         },
       ]
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(announcements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(announcements)
 
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
@@ -547,7 +534,6 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.studioAnnouncements).toEqual(announcements)
     })
     test("if the audience is specific-version and studio doesn't match ", () => {
-      const {createClient} = require('@sanity/client')
       const announcements: StudioAnnouncementDocument[] = [
         {
           _id: 'studioAnnouncement-1',
@@ -563,13 +549,7 @@ describe('StudioAnnouncementsProvider', () => {
           studioVersion: '3.56.0',
         },
       ]
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(announcements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(announcements)
 
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
@@ -579,7 +559,6 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.studioAnnouncements).toEqual([])
     })
     test('if the audience is below-version and studio is above', () => {
-      const {createClient} = require('@sanity/client')
       const announcements: StudioAnnouncementDocument[] = [
         {
           _id: 'studioAnnouncement-1',
@@ -595,13 +574,7 @@ describe('StudioAnnouncementsProvider', () => {
           studioVersion: '3.57.0',
         },
       ]
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(announcements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(announcements)
 
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
@@ -611,7 +584,6 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.studioAnnouncements).toEqual([])
     })
     test('if the audience is below-version and studio is below', () => {
-      const {createClient} = require('@sanity/client')
       const announcements: StudioAnnouncementDocument[] = [
         {
           _id: 'studioAnnouncement-1',
@@ -627,13 +599,7 @@ describe('StudioAnnouncementsProvider', () => {
           studioVersion: '3.58.0',
         },
       ]
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(announcements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(announcements)
 
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
@@ -644,7 +610,6 @@ describe('StudioAnnouncementsProvider', () => {
     })
     test("if the audienceRole is fixed and user doesn't have the role", () => {
       // mocked workspace roles is  [ { name: 'administrator', title: 'Administrator' } ]
-      const {createClient} = require('@sanity/client')
       const announcements: StudioAnnouncementDocument[] = [
         {
           _id: 'studioAnnouncement-1',
@@ -660,13 +625,7 @@ describe('StudioAnnouncementsProvider', () => {
           audience: 'everyone',
         },
       ]
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(announcements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(announcements)
 
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
@@ -677,7 +636,6 @@ describe('StudioAnnouncementsProvider', () => {
     })
     test('if the audienceRole is fixed and user has the role', () => {
       // mocked workspace roles is  [ { name: 'administrator', title: 'Administrator' } ]
-      const {createClient} = require('@sanity/client')
       const announcements: StudioAnnouncementDocument[] = [
         {
           _id: 'studioAnnouncement-1',
@@ -693,13 +651,7 @@ describe('StudioAnnouncementsProvider', () => {
           audience: 'everyone',
         },
       ]
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(announcements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      mockClient(announcements)
 
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
@@ -714,17 +666,13 @@ describe('StudioAnnouncementsProvider', () => {
       jest.clearAllMocks()
     })
     test('when the card is dismissed, and only 1 announcement received', () => {
-      const {createClient} = require('@sanity/client')
       const saveSeenAnnouncementsMock = jest.fn()
-      seenAnnouncementsMock.mockReturnValue([[], saveSeenAnnouncementsMock])
+      seenAnnouncementsMock.mockReturnValue([
+        {value: [], error: null, loading: false},
+        saveSeenAnnouncementsMock,
+      ])
+      mockClient([mockAnnouncements[0]])
 
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next([mockAnnouncements[0]])
-          return {unsubscribe: jest.fn()}
-        },
-      })
       const {getByLabelText} = render(null, {wrapper})
 
       const closeButton = getByLabelText('Dismiss announcements')
@@ -732,17 +680,13 @@ describe('StudioAnnouncementsProvider', () => {
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith([mockAnnouncements[0]._id])
     })
     test('when the card is dismissed, and 2 announcements are received', () => {
-      const {createClient} = require('@sanity/client')
       const saveSeenAnnouncementsMock = jest.fn()
-      seenAnnouncementsMock.mockReturnValue([[], saveSeenAnnouncementsMock])
+      seenAnnouncementsMock.mockReturnValue([
+        {value: [], error: null, loading: false},
+        saveSeenAnnouncementsMock,
+      ])
+      mockClient(mockAnnouncements)
 
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(mockAnnouncements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
       const {getByLabelText} = render(null, {wrapper})
 
       const closeButton = getByLabelText('Dismiss announcements')
@@ -750,18 +694,13 @@ describe('StudioAnnouncementsProvider', () => {
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
     test("when the card is dismissed, doesn't persist previous stored values", () => {
-      const {createClient} = require('@sanity/client')
       const saveSeenAnnouncementsMock = jest.fn()
       // The id received here is not present anymore in the mock announcements, this id won't be stored in next save.
-      seenAnnouncementsMock.mockReturnValue([['not-to-be-persisted'], saveSeenAnnouncementsMock])
-
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(mockAnnouncements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
+      seenAnnouncementsMock.mockReturnValue([
+        {value: ['not-to-be-persisted'], error: null, loading: false},
+        saveSeenAnnouncementsMock,
+      ])
+      mockClient(mockAnnouncements)
       const {getByLabelText} = render(null, {wrapper})
 
       const closeButton = getByLabelText('Dismiss announcements')
@@ -769,18 +708,14 @@ describe('StudioAnnouncementsProvider', () => {
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
     test('when the card is dismissed, persist previous stored values', () => {
-      const {createClient} = require('@sanity/client')
       const saveSeenAnnouncementsMock = jest.fn()
       // The id received here is present in the mock announcements, this id will be persisted in next save.
-      seenAnnouncementsMock.mockReturnValue([[mockAnnouncements[0]._id], saveSeenAnnouncementsMock])
+      seenAnnouncementsMock.mockReturnValue([
+        {value: [mockAnnouncements[0]._id], error: null, loading: false},
+        saveSeenAnnouncementsMock,
+      ])
+      mockClient(mockAnnouncements)
 
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(mockAnnouncements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
       const {getByLabelText} = render(null, {wrapper})
 
       const closeButton = getByLabelText('Dismiss announcements')
@@ -788,18 +723,13 @@ describe('StudioAnnouncementsProvider', () => {
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
     test('when the dialog is closed', () => {
-      const {createClient} = require('@sanity/client')
       const saveSeenAnnouncementsMock = jest.fn()
-      // The id received here is present in the mock announcements, this id will be persisted in next save.
-      seenAnnouncementsMock.mockReturnValue([[], saveSeenAnnouncementsMock])
+      seenAnnouncementsMock.mockReturnValue([
+        {value: [], error: null, loading: false},
+        saveSeenAnnouncementsMock,
+      ])
+      mockClient(mockAnnouncements)
 
-      const mockFetch = createClient().observable.fetch as jest.Mock
-      mockFetch.mockReturnValue({
-        subscribe: ({next}: any) => {
-          next(mockAnnouncements)
-          return {unsubscribe: jest.fn()}
-        },
-      })
       const {getByLabelText} = render(null, {wrapper})
 
       const openButton = getByLabelText('Open announcements')
