@@ -54,6 +54,7 @@
     "e2e:setup": "node -r dotenv-flow/config -r esbuild-register scripts/e2e/setup",
     "e2e:start": "pnpm --filter studio-e2e-testing preview",
     "etl": "node -r dotenv-flow/config -r esbuild-register scripts/etl",
+    "efps:test": "cd perf/efps && pnpm test",
     "example:blog-studio": "cd examples/blog-studio && pnpm start",
     "example:clean-studio": "cd examples/blog-studio && pnpm start",
     "example:ecommerce-studio": "cd examples/blog-studio && pnpm start",
