@@ -24,6 +24,7 @@ interface RunTestOptions {
   projectId: string
   headless: boolean
   client: SanityClient
+  sanityPackagePath?: string // Add this line
 }
 
 export async function runTest({
@@ -34,6 +35,7 @@ export async function runTest({
   projectId,
   headless,
   client,
+  sanityPackagePath,
 }: RunTestOptions): Promise<EfpsResult[]> {
   const log = (text: string) => {
     spinner.text = `${prefix}\n  └ ${text}`
@@ -41,19 +43,23 @@ export async function runTest({
 
   spinner.start(prefix)
 
-  const outDir = path.join(workspaceDir, 'builds', test.name)
-  const testResultsDir = path.join(resultsDir, test.name)
+  const versionLabel = sanityPackagePath ? 'latest' : 'local'
+  const outDir = path.join(workspaceDir, 'builds', test.name, versionLabel)
+  const testResultsDir = path.join(resultsDir, test.name, versionLabel)
 
   await fs.promises.mkdir(outDir, {recursive: true})
   log('Building…')
+
+  const alias: Record<string, string> = {'#config': fileURLToPath(test.configPath!)}
+  if (sanityPackagePath) {
+    alias.sanity = sanityPackagePath
+  }
 
   await vite.build({
     appType: 'spa',
     build: {outDir, sourcemap: true},
     plugins: [{...sourcemaps(), enforce: 'pre'}, react()],
-    resolve: {
-      alias: {'#config': fileURLToPath(test.configPath!)},
-    },
+    resolve: {alias},
     logLevel: 'silent',
   })
 
@@ -107,9 +113,9 @@ export async function runTest({
 
     log('Loading editor…')
     await page.goto(
-      `http://localhost:3300/intent/edit/id=${encodeURIComponent(document._id)};type=${encodeURIComponent(
-        documentToCreate._type,
-      )}`,
+      `http://localhost:3300/intent/edit/id=${encodeURIComponent(
+        document._id,
+      )};type=${encodeURIComponent(documentToCreate._type)}`,
     )
 
     await cdp.send('Profiler.enable')
@@ -138,7 +144,7 @@ export async function runTest({
       JSON.stringify(remappedProfile),
     )
 
-    spinner.succeed(`Ran benchmark '${test.name}'`)
+    spinner.succeed(`Ran benchmark '${test.name}' (${versionLabel})`)
 
     return results
   } finally {
