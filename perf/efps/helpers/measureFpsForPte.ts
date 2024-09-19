@@ -1,9 +1,22 @@
-import {type Locator} from 'playwright'
+import {type Page} from 'playwright'
 
 import {type EfpsResult} from '../types'
-import {calculatePercentile} from './calculatePercentile'
+import {aggregateLatencies} from './aggregateLatencies'
+import {measureBlockingTime} from './measureBlockingTime'
 
-export async function measureFpsForPte(pteField: Locator): Promise<EfpsResult> {
+interface MeasureFpsForPteOptions {
+  fieldName: string
+  label?: string
+  page: Page
+}
+
+export async function measureFpsForPte({
+  fieldName,
+  page,
+  label,
+}: MeasureFpsForPteOptions): Promise<EfpsResult> {
+  const start = Date.now()
+  const pteField = page.locator(`[data-testid="field-${fieldName}"]`)
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   await pteField.waitFor({state: 'visible'})
@@ -24,14 +37,14 @@ export async function measureFpsForPte(pteField: Locator): Promise<EfpsResult> {
     }[] = []
 
     const mutationObserver = new MutationObserver(() => {
-      const start = performance.now()
+      const textStart = performance.now()
       const textContent = el.textContent || ''
-      const end = performance.now()
+      const textEnd = performance.now()
 
       updates.push({
         value: textContent,
         timestamp: Date.now(),
-        textContentProcessingTime: end - start,
+        textContentProcessingTime: textEnd - textStart,
       })
     })
 
@@ -63,6 +76,7 @@ export async function measureFpsForPte(pteField: Locator): Promise<EfpsResult> {
   await contentEditable.pressSequentially(startingMarker)
   await new Promise((resolve) => setTimeout(resolve, 500))
 
+  const getBlockingTime = measureBlockingTime(page)
   for (const character of characters) {
     inputEvents.push({character, timestamp: Date.now()})
     await contentEditable.press(character)
@@ -71,6 +85,7 @@ export async function measureFpsForPte(pteField: Locator): Promise<EfpsResult> {
 
   await contentEditable.blur()
 
+  const blockingTime = await getBlockingTime()
   const renderEvents = await rendersPromise
 
   const latencies = inputEvents.map((inputEvent) => {
@@ -86,9 +101,10 @@ export async function measureFpsForPte(pteField: Locator): Promise<EfpsResult> {
     return matchingEvent.timestamp - inputEvent.timestamp - matchingEvent.textContentProcessingTime
   })
 
-  const p50 = 1000 / calculatePercentile(latencies, 0.5)
-  const p75 = 1000 / calculatePercentile(latencies, 0.75)
-  const p90 = 1000 / calculatePercentile(latencies, 0.9)
-
-  return {p50, p75, p90, latencies}
+  return {
+    latency: aggregateLatencies(latencies),
+    blockingTime,
+    label: label || fieldName,
+    runDuration: Date.now() - start,
+  }
 }
