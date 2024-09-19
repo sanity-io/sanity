@@ -63,5 +63,5 @@ jobs:
         env:
           VITE_PERF_EFPS_PROJECT_ID: ${{ secrets.PERF_EFPS_PROJECT_ID }}
           VITE_PERF_EFPS_DATASET: ${{ secrets.PERF_EFPS_DATASET }}
-          PERF_EFPS_SANITY_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          PERF_EFPS_SANITY_TOKEN: ${{ secrets.PERF_EFPS_SANITY_TOKEN }}
         run: pnpm efps:test
