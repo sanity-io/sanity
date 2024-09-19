@@ -95,6 +95,8 @@ const table = new Table({
   ].map((cell) => chalk.cyan(cell)),
 })
 
+const markdownLines: string[] = []
+
 const formatFps = (fps: number) => {
   const rounded = fps.toFixed(1)
   if (fps >= 60) return chalk.green(rounded)
@@ -107,6 +109,18 @@ const formatPercentage = (value: number): string => {
   const sign = value >= 0 ? '+' : ''
   if (value >= 0) return chalk.green(`${sign}${rounded}%`)
   return chalk.red(`${rounded}%`)
+}
+
+// For markdown formatting without colors
+const formatFpsPlain = (fps: number) => {
+  const rounded = fps.toFixed(1)
+  return rounded
+}
+
+const formatPercentagePlain = (value: number): string => {
+  const rounded = value.toFixed(1)
+  const sign = value >= 0 ? '+' : ''
+  return `${sign}${rounded}%`
 }
 
 // Initialize the regression flag
@@ -159,6 +173,15 @@ for (let i = 0; i < tests.length; i++) {
   })
 }
 
+// Prepare markdown header
+markdownLines.push('# Benchmark Results\n')
+markdownLines.push(
+  '| Benchmark | Latest p50 | Local p50 (Δ%) | Latest p75 | Local p75 (Δ%) | Latest p90 | Local p90 (Δ%) |',
+)
+markdownLines.push(
+  '|-----------|------------|----------------|------------|----------------|------------|----------------|',
+)
+
 for (const test of tests) {
   const localResult = allResults.find((r) => r.testName === test.name && r.version === 'local')
   const latestResult = allResults.find((r) => r.testName === test.name && r.version === 'latest')
@@ -198,6 +221,18 @@ for (const test of tests) {
           formatFps(latest.p90),
           `${formatFps(local.p90)} (${formatPercentage(p90Diff)})`,
         ])
+
+        // Add to markdown table
+        const markdownRow = [
+          [test.name, label ? `(${label})` : ''].join(' '),
+          formatFpsPlain(latest.p50),
+          `${formatFpsPlain(local.p50)} (${formatPercentagePlain(p50Diff)})`,
+          formatFpsPlain(latest.p75),
+          `${formatFpsPlain(local.p75)} (${formatPercentagePlain(p75Diff)})`,
+          formatFpsPlain(latest.p90),
+          `${formatFpsPlain(local.p90)} (${formatPercentagePlain(p90Diff)})`,
+        ]
+        markdownLines.push(`| ${markdownRow.join(' | ')} |`)
       } else {
         spinner.fail(`Missing local result for test '${test.name}', label '${label}'`)
       }
@@ -215,6 +250,19 @@ console.log(`
 │ The number of renders ("frames") that is assumed to be possible
 │ within a second. Derived from input latency. ${chalk.green('Higher')} is better.
 `)
+
+// Add explanation to markdown
+markdownLines.push('\n')
+markdownLines.push('**eFPS — editor "Frames Per Second"**')
+markdownLines.push('\n')
+markdownLines.push(
+  'The number of renders ("frames") that is assumed to be possible within a second. Derived from input latency. **Higher** is better.',
+)
+markdownLines.push('\n')
+
+// Write markdown file
+const markdownOutputPath = path.join(resultsDir, 'benchmark-results.md')
+await fs.promises.writeFile(markdownOutputPath, markdownLines.join('\n'))
 
 // Exit with code 1 if regression detected
 if (hasSignificantRegression) {
