@@ -1,4 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {isDraftId, useDocumentOperation, useTranslation} from 'sanity'
@@ -6,6 +7,10 @@ import {isDraftId, useDocumentOperation, useTranslation} from 'sanity'
 import {Button} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
+import {
+  DiscardedLiveEditDraft,
+  PublishedLiveEditDraft,
+} from './__telemetry__/DraftLiveEditBanner.telemetry'
 import {Banner} from './Banner'
 
 export function DraftLiveEditBanner(): JSX.Element | null {
@@ -13,18 +18,21 @@ export function DraftLiveEditBanner(): JSX.Element | null {
   const {t} = useTranslation(structureLocaleNamespace)
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)
+  const telemetry = useTelemetry()
 
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '')
 
   const handlePublish = useCallback(() => {
     publish.execute()
     setPublishing(true)
-  }, [publish])
+    telemetry.log(PublishedLiveEditDraft)
+  }, [publish, telemetry])
 
   const handleDiscard = useCallback(() => {
     discardChanges.execute()
     setDiscarding(true)
-  }, [discardChanges])
+    telemetry.log(DiscardedLiveEditDraft)
+  }, [discardChanges, telemetry])
 
   useEffect(() => {
     return () => {
