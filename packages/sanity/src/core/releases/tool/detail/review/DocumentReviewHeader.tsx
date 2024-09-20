@@ -6,9 +6,9 @@ import {Translate, useTranslation} from 'sanity'
 import {Button} from '../../../../../ui-components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
-import {Chip} from '../../../components/Chip'
-import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {Chip} from '../../components/Chip'
+import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {type DocumentValidationStatus} from '../useBundleDocuments'
 
 export function DocumentReviewHeader({
