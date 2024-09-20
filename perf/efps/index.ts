@@ -78,6 +78,12 @@ await exec({
 })
 const sanityPackagePath = path.join(tmpDir, 'node_modules', 'sanity')
 
+await exec({
+  text: ['Ensuring playwright is installed…', 'Playwright is installed'],
+  command: 'npx playwright install',
+  spinner,
+})
+
 const table = new Table({
   head: [chalk.bold('benchmark'), 'Passed?', 'p50 eFPS (Δ%)', 'p75 eFPS (Δ%)', 'p90 eFPS (Δ%)'].map(
     (cell) => chalk.cyan(cell),
