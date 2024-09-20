@@ -1,4 +1,4 @@
-import {expect, test} from '@jest/globals'
+import {expect, test} from 'vitest'
 
 import {assert2xx} from '../fetchStream'
 
@@ -25,10 +25,12 @@ test('server responds with 4xx and error response', () => {
         message: 'More details',
       }),
   }
-  expect(assert2xx(mockResponse as unknown as Response)).rejects.toThrowError({
-    statusCode: 400,
-    message: 'Error message: More details',
-  })
+  expect(assert2xx(mockResponse as unknown as Response)).rejects.toThrowError(
+    expect.objectContaining({
+      statusCode: 400,
+      message: 'Error message: More details',
+    }),
+  )
 })
 
 test('server responds with 5xx and no json response', () => {
@@ -37,10 +39,12 @@ test('server responds with 5xx and no json response', () => {
     statusText: 'Internal Server Error',
     json: () => Promise.reject(new Error('Failed to parse JSON')),
   }
-  expect(assert2xx(mockResponse as unknown as Response)).rejects.toThrowError({
-    statusCode: 500,
-    message: 'HTTP Error 500: Internal Server Error',
-  })
+  expect(assert2xx(mockResponse as unknown as Response)).rejects.toThrowError(
+    expect.objectContaining({
+      statusCode: 500,
+      message: 'HTTP Error 500: Internal Server Error',
+    }),
+  )
 })
 
 test('server responds with 5xx and json response', () => {
@@ -56,8 +60,10 @@ test('server responds with 5xx and json response', () => {
         status: 500,
       }),
   }
-  expect(assert2xx(mockResponse as unknown as Response)).rejects.toThrowError({
-    statusCode: 500,
-    message: 'validationError: Document is not of valid type',
-  })
+  expect(assert2xx(mockResponse as unknown as Response)).rejects.toThrowError(
+    expect.objectContaining({
+      statusCode: 500,
+      message: 'validationError: Document is not of valid type',
+    }),
+  )
 })
