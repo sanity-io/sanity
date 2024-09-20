@@ -280,8 +280,8 @@ const markdownContent = [
   '',
 ].join('\n')
 
-// Write markdown file
-const markdownOutputPath = path.join(resultsDir, 'benchmark-results.md')
+// Write markdown file to root of results
+const markdownOutputPath = path.join(workspaceDir, 'results', 'benchmark-results.md')
 await fs.promises.writeFile(markdownOutputPath, markdownContent)
 
 // Exit with code 1 if regression detected
