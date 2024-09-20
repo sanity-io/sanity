@@ -118,27 +118,20 @@ const formatPercentagePlain = (value: number): string => {
   return `${sign}${rounded}%`
 }
 
-function getStatus(
-  p50Diff: number,
-  p75Diff: number,
-  p90Diff: number,
-): 'error' | 'warning' | 'passed' {
+function getStatus(p50Diff: number, p75Diff: number, p90Diff: number): 'error' | 'passed' {
   if (p50Diff < -50 || p75Diff < -50 || p90Diff < -50) {
     return 'error'
-  } else if (p50Diff < -20 || p75Diff < -20 || p90Diff < -20) {
-    return 'warning'
   }
   return 'passed'
 }
 
-function getStatusEmoji(status: 'error' | 'warning' | 'passed'): string {
+function getStatusEmoji(status: 'error' | 'passed'): string {
   if (status === 'error') return '🔴'
-  if (status === 'warning') return '⚠️'
   return '✅'
 }
 
 // Initialize the overall status
-let overallStatus: 'error' | 'warning' | 'passed' = 'passed'
+let overallStatus: 'error' | 'passed' = 'passed'
 
 interface TestResult {
   testName: string
@@ -215,8 +208,6 @@ for (const test of tests) {
         // Update overall status
         if (testStatus === 'error') {
           overallStatus = 'error'
-        } else if (testStatus === 'warning' && overallStatus === 'passed') {
-          overallStatus = 'warning'
         }
 
         const rowLabel = [chalk.bold(test.name), label ? `(${label})` : ''].join(' ')
@@ -257,9 +248,7 @@ console.log(`
 `)
 
 // Map overallStatus to status text
-const statusText =
-  // eslint-disable-next-line no-nested-ternary
-  overallStatus === 'error' ? 'Error' : overallStatus === 'warning' ? 'Warning' : 'Passed'
+const statusText = overallStatus === 'error' ? 'Error' : 'Passed'
 const statusEmoji = getStatusEmoji(overallStatus)
 
 // Build the markdown content
@@ -280,8 +269,8 @@ const markdownContent = [
   '',
 ].join('\n')
 
-// Write markdown file
-const markdownOutputPath = path.join(resultsDir, 'benchmark-results.md')
+// Write markdown file to root of results
+const markdownOutputPath = path.join(workspaceDir, 'results', 'benchmark-results.md')
 await fs.promises.writeFile(markdownOutputPath, markdownContent)
 
 // Exit with code 1 if regression detected
