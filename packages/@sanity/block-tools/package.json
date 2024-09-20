@@ -42,10 +42,10 @@
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
-    "coverage": "NODE_ENV=test jest --coverage",
+    "coverage": "NODE_ENV=test vitest --coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
-    "test": "NODE_ENV=test jest",
+    "test": "vitest run",
     "watch": "pkg-utils watch"
   },
   "dependencies": {
@@ -55,14 +55,15 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/schema": "3.58.0",
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.17.7",
     "@vercel/stega": "0.1.2",
-    "jsdom": "^23.0.1"
+    "@vitest/coverage-v8": "^2.1.1",
+    "jsdom": "^23.0.1",
+    "vitest": "^2.1.1"
   },
   "publishConfig": {
     "access": "public"
