@@ -28,7 +28,7 @@ export function createMemoizer<TFunction extends (...args: never[]) => unknown>(
       const hashed = hashInput(...args)
       const serializedHash = JSON.stringify(hashed)
       const cached = cache.get(path)
-      if (serializedHash === cached?.serializedHash) return cached.result
+      // if (serializedHash === cached?.serializedHash) return cached.result
 
       const result = fn(...args) as ReturnType<TFunction>
       cache.set(path, {serializedHash, result})
