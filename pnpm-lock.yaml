@@ -644,6 +644,8 @@ importers:
         specifier: ^6.1.0
         version: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
+  packages/@repo/dev-aliases: {}
+
   packages/@repo/package.bundle: {}
 
   packages/@repo/package.config: {}
