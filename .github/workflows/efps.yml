@@ -65,3 +65,17 @@ jobs:
           VITE_PERF_EFPS_DATASET: ${{ secrets.PERF_EFPS_DATASET }}
           PERF_EFPS_SANITY_TOKEN: ${{ secrets.PERF_EFPS_SANITY_TOKEN }}
         run: pnpm efps:test
+
+      - name: PR comment with report
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          comment_tag: "efps-report"
+          filePath: ${{ github.workspace }}/perf/efps/results/benchmark-results.md
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: efps-report
+          path: perf/efps/results
+          retention-days: 30
