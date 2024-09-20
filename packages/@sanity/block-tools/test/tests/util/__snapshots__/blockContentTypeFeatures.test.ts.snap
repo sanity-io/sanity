@@ -1,26 +1,26 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`blockContentTypeFeatures will give a sane feature set for the default schema 1`] = `
-Object {
-  "annotations": Array [
-    Object {
+exports[`blockContentTypeFeatures > will give a sane feature set for the default schema 1`] = `
+{
+  "annotations": [
+    {
       "icon": undefined,
       "title": "Link",
-      "type": Object {
-        "fields": Array [
-          Object {
+      "type": {
+        "fields": [
+          {
             "fieldset": undefined,
             "group": undefined,
             "name": "href",
-            "type": Object {
+            "type": {
               "description": "A valid web, email, phone, or relative link.",
               "jsonType": "string",
               "name": "url",
-              "preview": Object {
+              "preview": {
                 "prepare": [Function],
               },
               "title": "Link",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "url",
                 "title": "Url",
@@ -30,21 +30,21 @@ Object {
             },
           },
         ],
-        "fieldsets": Array [
-          Object {
-            "field": Object {
+        "fieldsets": [
+          {
+            "field": {
               "fieldset": undefined,
               "group": undefined,
               "name": "href",
-              "type": Object {
+              "type": {
                 "description": "A valid web, email, phone, or relative link.",
                 "jsonType": "string",
                 "name": "url",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Link",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "url",
                   "title": "Url",
@@ -56,24 +56,24 @@ Object {
             "single": true,
           },
         ],
-        "groups": Array [],
+        "groups": [],
         "i18nTitleKey": "inputs.portable-text.annotation.link",
         "jsonType": "object",
         "name": "link",
-        "options": Object {
-          "modal": Object {
+        "options": {
+          "modal": {
             "type": "popover",
           },
         },
-        "orderings": Array [],
-        "preview": Object {
+        "orderings": [],
+        "preview": {
           "prepare": [Function],
-          "select": Object {
+          "select": {
             "href": "href",
           },
         },
         "title": "Link",
-        "type": Object {
+        "type": {
           "jsonType": "object",
           "name": "object",
           "title": "Object",
@@ -83,117 +83,117 @@ Object {
       "value": "link",
     },
   ],
-  "decorators": Array [
-    Object {
+  "decorators": [
+    {
       "i18nTitleKey": "inputs.portable-text.decorator.strong",
       "title": "Strong",
       "value": "strong",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.decorator.emphasis",
       "title": "Italic",
       "value": "em",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.decorator.code",
       "title": "Code",
       "value": "code",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.decorator.underline",
       "title": "Underline",
       "value": "underline",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.decorator.strike-through",
       "title": "Strike",
       "value": "strike-through",
     },
   ],
-  "lists": Array [
-    Object {
+  "lists": [
+    {
       "i18nTitleKey": "inputs.portable-text.list-type.bullet",
       "title": "Bulleted list",
       "value": "bullet",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.list-type.number",
       "title": "Numbered list",
       "value": "number",
     },
   ],
-  "styles": Array [
-    Object {
+  "styles": [
+    {
       "i18nTitleKey": "inputs.portable-text.style.normal",
       "title": "Normal",
       "value": "normal",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.style.h1",
       "title": "Heading 1",
       "value": "h1",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.style.h2",
       "title": "Heading 2",
       "value": "h2",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.style.h3",
       "title": "Heading 3",
       "value": "h3",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.style.h4",
       "title": "Heading 4",
       "value": "h4",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.style.h5",
       "title": "Heading 5",
       "value": "h5",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.style.h6",
       "title": "Heading 6",
       "value": "h6",
     },
-    Object {
+    {
       "i18nTitleKey": "inputs.portable-text.style.quote",
       "title": "Quote",
       "value": "blockquote",
     },
   ],
-  "types": Object {
-    "block": Object {
+  "types": {
+    "block": {
       "jsonType": "array",
       "name": "array",
-      "of": Array [
-        Object {
-          "fields": Array [
-            Object {
+      "of": [
+        {
+          "fields": [
+            {
               "name": "children",
-              "type": Object {
+              "type": {
                 "jsonType": "array",
                 "name": "array",
-                "of": Array [
-                  Object {
-                    "annotations": Array [
-                      Object {
-                        "fields": Array [
-                          Object {
+                "of": [
+                  {
+                    "annotations": [
+                      {
+                        "fields": [
+                          {
                             "fieldset": undefined,
                             "group": undefined,
                             "name": "href",
-                            "type": Object {
+                            "type": {
                               "description": "A valid web, email, phone, or relative link.",
                               "jsonType": "string",
                               "name": "url",
-                              "preview": Object {
+                              "preview": {
                                 "prepare": [Function],
                               },
                               "title": "Link",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "url",
                                 "title": "Url",
@@ -203,21 +203,21 @@ Object {
                             },
                           },
                         ],
-                        "fieldsets": Array [
-                          Object {
-                            "field": Object {
+                        "fieldsets": [
+                          {
+                            "field": {
                               "fieldset": undefined,
                               "group": undefined,
                               "name": "href",
-                              "type": Object {
+                              "type": {
                                 "description": "A valid web, email, phone, or relative link.",
                                 "jsonType": "string",
                                 "name": "url",
-                                "preview": Object {
+                                "preview": {
                                   "prepare": [Function],
                                 },
                                 "title": "Link",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "url",
                                   "title": "Url",
@@ -229,24 +229,24 @@ Object {
                             "single": true,
                           },
                         ],
-                        "groups": Array [],
+                        "groups": [],
                         "i18nTitleKey": "inputs.portable-text.annotation.link",
                         "jsonType": "object",
                         "name": "link",
-                        "options": Object {
-                          "modal": Object {
+                        "options": {
+                          "modal": {
                             "type": "popover",
                           },
                         },
-                        "orderings": Array [],
-                        "preview": Object {
+                        "orderings": [],
+                        "preview": {
                           "prepare": [Function],
-                          "select": Object {
+                          "select": {
                             "href": "href",
                           },
                         },
                         "title": "Link",
-                        "type": Object {
+                        "type": {
                           "jsonType": "object",
                           "name": "object",
                           "title": "Object",
@@ -254,48 +254,48 @@ Object {
                         },
                       },
                     ],
-                    "decorators": Array [
-                      Object {
+                    "decorators": [
+                      {
                         "i18nTitleKey": "inputs.portable-text.decorator.strong",
                         "title": "Strong",
                         "value": "strong",
                       },
-                      Object {
+                      {
                         "i18nTitleKey": "inputs.portable-text.decorator.emphasis",
                         "title": "Italic",
                         "value": "em",
                       },
-                      Object {
+                      {
                         "i18nTitleKey": "inputs.portable-text.decorator.code",
                         "title": "Code",
                         "value": "code",
                       },
-                      Object {
+                      {
                         "i18nTitleKey": "inputs.portable-text.decorator.underline",
                         "title": "Underline",
                         "value": "underline",
                       },
-                      Object {
+                      {
                         "i18nTitleKey": "inputs.portable-text.decorator.strike-through",
                         "title": "Strike",
                         "value": "strike-through",
                       },
                     ],
-                    "fields": Array [
-                      Object {
+                    "fields": [
+                      {
                         "name": "marks",
-                        "type": Object {
+                        "type": {
                           "jsonType": "array",
                           "name": "array",
-                          "of": Array [
-                            Object {
+                          "of": [
+                            {
                               "jsonType": "string",
                               "name": "string",
-                              "preview": Object {
+                              "preview": {
                                 "prepare": [Function],
                               },
                               "title": "String",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "string",
                                 "title": "String",
@@ -304,24 +304,24 @@ Object {
                             },
                           ],
                           "title": "Marks",
-                          "type": Object {
+                          "type": {
                             "jsonType": "array",
                             "name": "array",
-                            "of": Array [],
+                            "of": [],
                             "type": null,
                           },
                         },
                       },
-                      Object {
+                      {
                         "name": "text",
-                        "type": Object {
+                        "type": {
                           "jsonType": "string",
                           "name": "string",
-                          "preview": Object {
+                          "preview": {
                             "prepare": [Function],
                           },
                           "title": "Text",
-                          "type": Object {
+                          "type": {
                             "jsonType": "string",
                             "name": "string",
                             "title": "String",
@@ -331,18 +331,18 @@ Object {
                       },
                     ],
                     "jsonType": "object",
-                    "marks": Array [],
+                    "marks": [],
                     "name": "span",
-                    "options": Object {},
-                    "preview": Object {
+                    "options": {},
+                    "preview": {
                       "prepare": [Function],
-                      "select": Object {
+                      "select": {
                         "marks": "marks",
                         "text": "text",
                       },
                     },
                     "title": "Span",
-                    "type": Object {
+                    "type": {
                       "jsonType": "object",
                       "name": "span",
                       "title": "Span",
@@ -351,68 +351,68 @@ Object {
                   },
                 ],
                 "title": "Content",
-                "type": Object {
+                "type": {
                   "jsonType": "array",
                   "name": "array",
-                  "of": Array [],
+                  "of": [],
                   "type": null,
                 },
               },
             },
-            Object {
+            {
               "name": "style",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "string",
-                "options": Object {
-                  "list": Array [
-                    Object {
+                "options": {
+                  "list": [
+                    {
                       "i18nTitleKey": "inputs.portable-text.style.normal",
                       "title": "Normal",
                       "value": "normal",
                     },
-                    Object {
+                    {
                       "i18nTitleKey": "inputs.portable-text.style.h1",
                       "title": "Heading 1",
                       "value": "h1",
                     },
-                    Object {
+                    {
                       "i18nTitleKey": "inputs.portable-text.style.h2",
                       "title": "Heading 2",
                       "value": "h2",
                     },
-                    Object {
+                    {
                       "i18nTitleKey": "inputs.portable-text.style.h3",
                       "title": "Heading 3",
                       "value": "h3",
                     },
-                    Object {
+                    {
                       "i18nTitleKey": "inputs.portable-text.style.h4",
                       "title": "Heading 4",
                       "value": "h4",
                     },
-                    Object {
+                    {
                       "i18nTitleKey": "inputs.portable-text.style.h5",
                       "title": "Heading 5",
                       "value": "h5",
                     },
-                    Object {
+                    {
                       "i18nTitleKey": "inputs.portable-text.style.h6",
                       "title": "Heading 6",
                       "value": "h6",
                     },
-                    Object {
+                    {
                       "i18nTitleKey": "inputs.portable-text.style.quote",
                       "title": "Quote",
                       "value": "blockquote",
                     },
                   ],
                 },
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Style",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
                   "title": "String",
@@ -420,30 +420,30 @@ Object {
                 },
               },
             },
-            Object {
+            {
               "name": "listItem",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "string",
-                "options": Object {
-                  "list": Array [
-                    Object {
+                "options": {
+                  "list": [
+                    {
                       "i18nTitleKey": "inputs.portable-text.list-type.bullet",
                       "title": "Bulleted list",
                       "value": "bullet",
                     },
-                    Object {
+                    {
                       "i18nTitleKey": "inputs.portable-text.list-type.number",
                       "title": "Numbered list",
                       "value": "number",
                     },
                   ],
                 },
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "List type",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
                   "title": "String",
@@ -451,27 +451,27 @@ Object {
                 },
               },
             },
-            Object {
+            {
               "name": "markDefs",
-              "type": Object {
+              "type": {
                 "jsonType": "array",
                 "name": "array",
-                "of": Array [
-                  Object {
-                    "fields": Array [
-                      Object {
+                "of": [
+                  {
+                    "fields": [
+                      {
                         "fieldset": undefined,
                         "group": undefined,
                         "name": "href",
-                        "type": Object {
+                        "type": {
                           "description": "A valid web, email, phone, or relative link.",
                           "jsonType": "string",
                           "name": "url",
-                          "preview": Object {
+                          "preview": {
                             "prepare": [Function],
                           },
                           "title": "Link",
-                          "type": Object {
+                          "type": {
                             "jsonType": "string",
                             "name": "url",
                             "title": "Url",
@@ -481,21 +481,21 @@ Object {
                         },
                       },
                     ],
-                    "fieldsets": Array [
-                      Object {
-                        "field": Object {
+                    "fieldsets": [
+                      {
+                        "field": {
                           "fieldset": undefined,
                           "group": undefined,
                           "name": "href",
-                          "type": Object {
+                          "type": {
                             "description": "A valid web, email, phone, or relative link.",
                             "jsonType": "string",
                             "name": "url",
-                            "preview": Object {
+                            "preview": {
                               "prepare": [Function],
                             },
                             "title": "Link",
-                            "type": Object {
+                            "type": {
                               "jsonType": "string",
                               "name": "url",
                               "title": "Url",
@@ -507,24 +507,24 @@ Object {
                         "single": true,
                       },
                     ],
-                    "groups": Array [],
+                    "groups": [],
                     "i18nTitleKey": "inputs.portable-text.annotation.link",
                     "jsonType": "object",
                     "name": "link",
-                    "options": Object {
-                      "modal": Object {
+                    "options": {
+                      "modal": {
                         "type": "popover",
                       },
                     },
-                    "orderings": Array [],
-                    "preview": Object {
+                    "orderings": [],
+                    "preview": {
                       "prepare": [Function],
-                      "select": Object {
+                      "select": {
                         "href": "href",
                       },
                     },
                     "title": "Link",
-                    "type": Object {
+                    "type": {
                       "jsonType": "object",
                       "name": "object",
                       "title": "Object",
@@ -533,24 +533,24 @@ Object {
                   },
                 ],
                 "title": "Mark definitions",
-                "type": Object {
+                "type": {
                   "jsonType": "array",
                   "name": "array",
-                  "of": Array [],
+                  "of": [],
                   "type": null,
                 },
               },
             },
-            Object {
+            {
               "name": "level",
-              "type": Object {
+              "type": {
                 "jsonType": "number",
                 "name": "number",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Indentation",
-                "type": Object {
+                "type": {
                   "jsonType": "number",
                   "name": "number",
                   "title": "Number",
@@ -561,33 +561,33 @@ Object {
           ],
           "jsonType": "object",
           "name": "block",
-          "options": Object {},
-          "preview": Object {
+          "options": {},
+          "preview": {
             "prepare": [Function],
-            "select": Object {},
+            "select": {},
           },
           "title": "Block",
-          "type": Object {
+          "type": {
             "jsonType": "object",
             "name": "block",
             "title": "Block",
             "type": null,
           },
         },
-        Object {
-          "fields": Array [
-            Object {
+        {
+          "fields": [
+            {
               "fieldset": undefined,
               "group": undefined,
               "name": "code",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "text",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Code",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "text",
                   "title": "Text",
@@ -595,18 +595,18 @@ Object {
                 },
               },
             },
-            Object {
+            {
               "fieldset": undefined,
               "group": undefined,
               "name": "language",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "string",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Language",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
                   "title": "String",
@@ -614,22 +614,22 @@ Object {
                 },
               },
             },
-            Object {
+            {
               "fieldset": undefined,
               "group": undefined,
               "name": "highlightedLines",
-              "type": Object {
+              "type": {
                 "jsonType": "array",
                 "name": "array",
-                "of": Array [
-                  Object {
+                "of": [
+                  {
                     "jsonType": "number",
                     "name": "number",
-                    "preview": Object {
+                    "preview": {
                       "prepare": [Function],
                     },
                     "title": "Highlighted line",
-                    "type": Object {
+                    "type": {
                       "jsonType": "number",
                       "name": "number",
                       "title": "Number",
@@ -638,29 +638,29 @@ Object {
                   },
                 ],
                 "title": "Highlighted lines",
-                "type": Object {
+                "type": {
                   "jsonType": "array",
                   "name": "array",
-                  "of": Array [],
+                  "of": [],
                   "type": null,
                 },
               },
             },
           ],
-          "fieldsets": Array [
-            Object {
-              "field": Object {
+          "fieldsets": [
+            {
+              "field": {
                 "fieldset": undefined,
                 "group": undefined,
                 "name": "code",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "text",
-                  "preview": Object {
+                  "preview": {
                     "prepare": [Function],
                   },
                   "title": "Code",
-                  "type": Object {
+                  "type": {
                     "jsonType": "string",
                     "name": "text",
                     "title": "Text",
@@ -670,19 +670,19 @@ Object {
               },
               "single": true,
             },
-            Object {
-              "field": Object {
+            {
+              "field": {
                 "fieldset": undefined,
                 "group": undefined,
                 "name": "language",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
-                  "preview": Object {
+                  "preview": {
                     "prepare": [Function],
                   },
                   "title": "Language",
-                  "type": Object {
+                  "type": {
                     "jsonType": "string",
                     "name": "string",
                     "title": "String",
@@ -692,23 +692,23 @@ Object {
               },
               "single": true,
             },
-            Object {
-              "field": Object {
+            {
+              "field": {
                 "fieldset": undefined,
                 "group": undefined,
                 "name": "highlightedLines",
-                "type": Object {
+                "type": {
                   "jsonType": "array",
                   "name": "array",
-                  "of": Array [
-                    Object {
+                  "of": [
+                    {
                       "jsonType": "number",
                       "name": "number",
-                      "preview": Object {
+                      "preview": {
                         "prepare": [Function],
                       },
                       "title": "Highlighted line",
-                      "type": Object {
+                      "type": {
                         "jsonType": "number",
                         "name": "number",
                         "title": "Number",
@@ -717,10 +717,10 @@ Object {
                     },
                   ],
                   "title": "Highlighted lines",
-                  "type": Object {
+                  "type": {
                     "jsonType": "array",
                     "name": "array",
-                    "of": Array [],
+                    "of": [],
                     "type": null,
                   },
                 },
@@ -728,20 +728,20 @@ Object {
               "single": true,
             },
           ],
-          "groups": Array [],
+          "groups": [],
           "jsonType": "object",
           "name": "code",
-          "options": Object {},
-          "orderings": Array [
-            Object {
-              "by": Array [
-                Object {
+          "options": {},
+          "orderings": [
+            {
+              "by": [
+                {
                   "direction": "asc",
                   "field": "language",
                 },
               ],
-              "i18n": Object {
-                "title": Object {
+              "i18n": {
+                "title": {
                   "key": "default-orderings.language",
                   "ns": "studio",
                 },
@@ -750,13 +750,13 @@ Object {
               "title": "Language",
             },
           ],
-          "preview": Object {
-            "select": Object {
+          "preview": {
+            "select": {
               "title": "language",
             },
           },
           "title": "Code",
-          "type": Object {
+          "type": {
             "jsonType": "object",
             "name": "object",
             "title": "Object",
@@ -765,28 +765,28 @@ Object {
         },
       ],
       "title": "Body",
-      "type": Object {
+      "type": {
         "jsonType": "array",
         "name": "array",
-        "of": Array [],
+        "of": [],
         "type": null,
       },
     },
-    "blockObjects": Array [
-      Object {
-        "fields": Array [
-          Object {
+    "blockObjects": [
+      {
+        "fields": [
+          {
             "fieldset": undefined,
             "group": undefined,
             "name": "code",
-            "type": Object {
+            "type": {
               "jsonType": "string",
               "name": "text",
-              "preview": Object {
+              "preview": {
                 "prepare": [Function],
               },
               "title": "Code",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "text",
                 "title": "Text",
@@ -794,18 +794,18 @@ Object {
               },
             },
           },
-          Object {
+          {
             "fieldset": undefined,
             "group": undefined,
             "name": "language",
-            "type": Object {
+            "type": {
               "jsonType": "string",
               "name": "string",
-              "preview": Object {
+              "preview": {
                 "prepare": [Function],
               },
               "title": "Language",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "string",
                 "title": "String",
@@ -813,22 +813,22 @@ Object {
               },
             },
           },
-          Object {
+          {
             "fieldset": undefined,
             "group": undefined,
             "name": "highlightedLines",
-            "type": Object {
+            "type": {
               "jsonType": "array",
               "name": "array",
-              "of": Array [
-                Object {
+              "of": [
+                {
                   "jsonType": "number",
                   "name": "number",
-                  "preview": Object {
+                  "preview": {
                     "prepare": [Function],
                   },
                   "title": "Highlighted line",
-                  "type": Object {
+                  "type": {
                     "jsonType": "number",
                     "name": "number",
                     "title": "Number",
@@ -837,29 +837,29 @@ Object {
                 },
               ],
               "title": "Highlighted lines",
-              "type": Object {
+              "type": {
                 "jsonType": "array",
                 "name": "array",
-                "of": Array [],
+                "of": [],
                 "type": null,
               },
             },
           },
         ],
-        "fieldsets": Array [
-          Object {
-            "field": Object {
+        "fieldsets": [
+          {
+            "field": {
               "fieldset": undefined,
               "group": undefined,
               "name": "code",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "text",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Code",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "text",
                   "title": "Text",
@@ -869,19 +869,19 @@ Object {
             },
             "single": true,
           },
-          Object {
-            "field": Object {
+          {
+            "field": {
               "fieldset": undefined,
               "group": undefined,
               "name": "language",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "string",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Language",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
                   "title": "String",
@@ -891,23 +891,23 @@ Object {
             },
             "single": true,
           },
-          Object {
-            "field": Object {
+          {
+            "field": {
               "fieldset": undefined,
               "group": undefined,
               "name": "highlightedLines",
-              "type": Object {
+              "type": {
                 "jsonType": "array",
                 "name": "array",
-                "of": Array [
-                  Object {
+                "of": [
+                  {
                     "jsonType": "number",
                     "name": "number",
-                    "preview": Object {
+                    "preview": {
                       "prepare": [Function],
                     },
                     "title": "Highlighted line",
-                    "type": Object {
+                    "type": {
                       "jsonType": "number",
                       "name": "number",
                       "title": "Number",
@@ -916,10 +916,10 @@ Object {
                   },
                 ],
                 "title": "Highlighted lines",
-                "type": Object {
+                "type": {
                   "jsonType": "array",
                   "name": "array",
-                  "of": Array [],
+                  "of": [],
                   "type": null,
                 },
               },
@@ -927,20 +927,20 @@ Object {
             "single": true,
           },
         ],
-        "groups": Array [],
+        "groups": [],
         "jsonType": "object",
         "name": "code",
-        "options": Object {},
-        "orderings": Array [
-          Object {
-            "by": Array [
-              Object {
+        "options": {},
+        "orderings": [
+          {
+            "by": [
+              {
                 "direction": "asc",
                 "field": "language",
               },
             ],
-            "i18n": Object {
-              "title": Object {
+            "i18n": {
+              "title": {
                 "key": "default-orderings.language",
                 "ns": "studio",
               },
@@ -949,13 +949,13 @@ Object {
             "title": "Language",
           },
         ],
-        "preview": Object {
-          "select": Object {
+        "preview": {
+          "select": {
             "title": "language",
           },
         },
         "title": "Code",
-        "type": Object {
+        "type": {
           "jsonType": "object",
           "name": "object",
           "title": "Object",
@@ -963,24 +963,24 @@ Object {
         },
       },
     ],
-    "inlineObjects": Array [],
-    "span": Object {
-      "annotations": Array [
-        Object {
-          "fields": Array [
-            Object {
+    "inlineObjects": [],
+    "span": {
+      "annotations": [
+        {
+          "fields": [
+            {
               "fieldset": undefined,
               "group": undefined,
               "name": "href",
-              "type": Object {
+              "type": {
                 "description": "A valid web, email, phone, or relative link.",
                 "jsonType": "string",
                 "name": "url",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Link",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "url",
                   "title": "Url",
@@ -990,21 +990,21 @@ Object {
               },
             },
           ],
-          "fieldsets": Array [
-            Object {
-              "field": Object {
+          "fieldsets": [
+            {
+              "field": {
                 "fieldset": undefined,
                 "group": undefined,
                 "name": "href",
-                "type": Object {
+                "type": {
                   "description": "A valid web, email, phone, or relative link.",
                   "jsonType": "string",
                   "name": "url",
-                  "preview": Object {
+                  "preview": {
                     "prepare": [Function],
                   },
                   "title": "Link",
-                  "type": Object {
+                  "type": {
                     "jsonType": "string",
                     "name": "url",
                     "title": "Url",
@@ -1016,24 +1016,24 @@ Object {
               "single": true,
             },
           ],
-          "groups": Array [],
+          "groups": [],
           "i18nTitleKey": "inputs.portable-text.annotation.link",
           "jsonType": "object",
           "name": "link",
-          "options": Object {
-            "modal": Object {
+          "options": {
+            "modal": {
               "type": "popover",
             },
           },
-          "orderings": Array [],
-          "preview": Object {
+          "orderings": [],
+          "preview": {
             "prepare": [Function],
-            "select": Object {
+            "select": {
               "href": "href",
             },
           },
           "title": "Link",
-          "type": Object {
+          "type": {
             "jsonType": "object",
             "name": "object",
             "title": "Object",
@@ -1041,48 +1041,48 @@ Object {
           },
         },
       ],
-      "decorators": Array [
-        Object {
+      "decorators": [
+        {
           "i18nTitleKey": "inputs.portable-text.decorator.strong",
           "title": "Strong",
           "value": "strong",
         },
-        Object {
+        {
           "i18nTitleKey": "inputs.portable-text.decorator.emphasis",
           "title": "Italic",
           "value": "em",
         },
-        Object {
+        {
           "i18nTitleKey": "inputs.portable-text.decorator.code",
           "title": "Code",
           "value": "code",
         },
-        Object {
+        {
           "i18nTitleKey": "inputs.portable-text.decorator.underline",
           "title": "Underline",
           "value": "underline",
         },
-        Object {
+        {
           "i18nTitleKey": "inputs.portable-text.decorator.strike-through",
           "title": "Strike",
           "value": "strike-through",
         },
       ],
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "name": "marks",
-          "type": Object {
+          "type": {
             "jsonType": "array",
             "name": "array",
-            "of": Array [
-              Object {
+            "of": [
+              {
                 "jsonType": "string",
                 "name": "string",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "String",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
                   "title": "String",
@@ -1091,24 +1091,24 @@ Object {
               },
             ],
             "title": "Marks",
-            "type": Object {
+            "type": {
               "jsonType": "array",
               "name": "array",
-              "of": Array [],
+              "of": [],
               "type": null,
             },
           },
         },
-        Object {
+        {
           "name": "text",
-          "type": Object {
+          "type": {
             "jsonType": "string",
             "name": "string",
-            "preview": Object {
+            "preview": {
               "prepare": [Function],
             },
             "title": "Text",
-            "type": Object {
+            "type": {
               "jsonType": "string",
               "name": "string",
               "title": "String",
@@ -1118,18 +1118,18 @@ Object {
         },
       ],
       "jsonType": "object",
-      "marks": Array [],
+      "marks": [],
       "name": "span",
-      "options": Object {},
-      "preview": Object {
+      "options": {},
+      "preview": {
         "prepare": [Function],
-        "select": Object {
+        "select": {
           "marks": "marks",
           "text": "text",
         },
       },
       "title": "Span",
-      "type": Object {
+      "type": {
         "jsonType": "object",
         "name": "span",
         "title": "Span",
@@ -1140,24 +1140,24 @@ Object {
 }
 `;
 
-exports[`blockContentTypeFeatures will give spesific features for a custom schema 1`] = `
-Object {
-  "annotations": Array [
-    Object {
+exports[`blockContentTypeFeatures > will give spesific features for a custom schema 1`] = `
+{
+  "annotations": [
+    {
       "icon": undefined,
       "title": "Author",
-      "type": Object {
-        "fields": Array [
-          Object {
+      "type": {
+        "fields": [
+          {
             "name": "_ref",
-            "type": Object {
+            "type": {
               "jsonType": "string",
               "name": "string",
-              "preview": Object {
+              "preview": {
                 "prepare": [Function],
               },
               "title": "Referenced document ID",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "string",
                 "title": "String",
@@ -1165,16 +1165,16 @@ Object {
               },
             },
           },
-          Object {
+          {
             "name": "_weak",
-            "type": Object {
+            "type": {
               "jsonType": "boolean",
               "name": "boolean",
-              "preview": Object {
+              "preview": {
                 "prepare": [Function],
               },
               "title": "Weak reference",
-              "type": Object {
+              "type": {
                 "jsonType": "boolean",
                 "name": "boolean",
                 "title": "Boolean",
@@ -1183,18 +1183,18 @@ Object {
             },
           },
         ],
-        "fieldsets": Array [
-          Object {
-            "field": Object {
+        "fieldsets": [
+          {
+            "field": {
               "name": "_ref",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "string",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Referenced document ID",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
                   "title": "String",
@@ -1204,17 +1204,17 @@ Object {
             },
             "single": true,
           },
-          Object {
-            "field": Object {
+          {
+            "field": {
               "name": "_weak",
-              "type": Object {
+              "type": {
                 "jsonType": "boolean",
                 "name": "boolean",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Weak reference",
-                "type": Object {
+                "type": {
                   "jsonType": "boolean",
                   "name": "boolean",
                   "title": "Boolean",
@@ -1228,41 +1228,41 @@ Object {
         "jsonType": "object",
         "name": "author",
         "title": "Author",
-        "to": Array [
-          Object {
-            "__experimental_search": Array [
-              Object {
-                "path": Array [
+        "to": [
+          {
+            "__experimental_search": [
+              {
+                "path": [
                   "_id",
                 ],
                 "weight": 1,
               },
-              Object {
-                "path": Array [
+              {
+                "path": [
                   "_type",
                 ],
                 "weight": 1,
               },
-              Object {
-                "path": Array [
+              {
+                "path": [
                   "name",
                 ],
                 "weight": 10,
               },
             ],
-            "fields": Array [
-              Object {
+            "fields": [
+              {
                 "fieldset": undefined,
                 "group": undefined,
                 "name": "name",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
-                  "preview": Object {
+                  "preview": {
                     "prepare": [Function],
                   },
                   "title": "Name",
-                  "type": Object {
+                  "type": {
                     "jsonType": "string",
                     "name": "string",
                     "title": "String",
@@ -1271,20 +1271,20 @@ Object {
                 },
               },
             ],
-            "fieldsets": Array [
-              Object {
-                "field": Object {
+            "fieldsets": [
+              {
+                "field": {
                   "fieldset": undefined,
                   "group": undefined,
                   "name": "name",
-                  "type": Object {
+                  "type": {
                     "jsonType": "string",
                     "name": "string",
-                    "preview": Object {
+                    "preview": {
                       "prepare": [Function],
                     },
                     "title": "Name",
-                    "type": Object {
+                    "type": {
                       "jsonType": "string",
                       "name": "string",
                       "title": "String",
@@ -1295,20 +1295,20 @@ Object {
                 "single": true,
               },
             ],
-            "groups": Array [],
+            "groups": [],
             "jsonType": "object",
             "name": "author",
-            "options": Object {},
-            "orderings": Array [
-              Object {
-                "by": Array [
-                  Object {
+            "options": {},
+            "orderings": [
+              {
+                "by": [
+                  {
                     "direction": "asc",
                     "field": "name",
                   },
                 ],
-                "i18n": Object {
-                  "title": Object {
+                "i18n": {
+                  "title": {
                     "key": "default-orderings.name",
                     "ns": "studio",
                   },
@@ -1317,26 +1317,26 @@ Object {
                 "title": "Name",
               },
             ],
-            "preview": Object {
-              "select": Object {
+            "preview": {
+              "select": {
                 "title": "name",
               },
             },
             "title": "Author",
-            "type": Object {
-              "fields": Array [
-                Object {
+            "type": {
+              "fields": [
+                {
                   "fieldset": undefined,
                   "group": undefined,
                   "name": "name",
-                  "type": Object {
+                  "type": {
                     "jsonType": "string",
                     "name": "string",
-                    "preview": Object {
+                    "preview": {
                       "prepare": [Function],
                     },
                     "title": "Name",
-                    "type": Object {
+                    "type": {
                       "jsonType": "string",
                       "name": "string",
                       "title": "String",
@@ -1345,20 +1345,20 @@ Object {
                   },
                 },
               ],
-              "fieldsets": Array [
-                Object {
-                  "field": Object {
+              "fieldsets": [
+                {
+                  "field": {
                     "fieldset": undefined,
                     "group": undefined,
                     "name": "name",
-                    "type": Object {
+                    "type": {
                       "jsonType": "string",
                       "name": "string",
-                      "preview": Object {
+                      "preview": {
                         "prepare": [Function],
                       },
                       "title": "Name",
-                      "type": Object {
+                      "type": {
                         "jsonType": "string",
                         "name": "string",
                         "title": "String",
@@ -1369,20 +1369,20 @@ Object {
                   "single": true,
                 },
               ],
-              "groups": Array [],
+              "groups": [],
               "jsonType": "object",
               "name": "author",
-              "options": Object {},
-              "orderings": Array [
-                Object {
-                  "by": Array [
-                    Object {
+              "options": {},
+              "orderings": [
+                {
+                  "by": [
+                    {
                       "direction": "asc",
                       "field": "name",
                     },
                   ],
-                  "i18n": Object {
-                    "title": Object {
+                  "i18n": {
+                    "title": {
                       "key": "default-orderings.name",
                       "ns": "studio",
                     },
@@ -1391,33 +1391,33 @@ Object {
                   "title": "Name",
                 },
               ],
-              "preview": Object {
-                "select": Object {
+              "preview": {
+                "select": {
                   "title": "name",
                 },
               },
               "title": "Author",
-              "type": Object {
+              "type": {
                 "jsonType": "object",
                 "name": "document",
                 "title": "Document",
                 "type": null,
               },
-              Symbol(__cachedStringFields_4): Array [
-                Object {
-                  "path": Array [
+              Symbol(__cachedStringFields_4): [
+                {
+                  "path": [
                     "_id",
                   ],
                   "weight": 1,
                 },
-                Object {
-                  "path": Array [
+                {
+                  "path": [
                     "_type",
                   ],
                   "weight": 1,
                 },
-                Object {
-                  "path": Array [
+                {
+                  "path": [
                     "name",
                   ],
                   "weight": 10,
@@ -1426,7 +1426,7 @@ Object {
             },
           },
         ],
-        "type": Object {
+        "type": {
           "jsonType": "object",
           "name": "reference",
           "title": "Reference",
@@ -1436,95 +1436,95 @@ Object {
       "value": "author",
     },
   ],
-  "decorators": Array [
-    Object {
+  "decorators": [
+    {
       "title": "Strong",
       "value": "strong",
     },
-    Object {
+    {
       "title": "Emphasis",
       "value": "em",
     },
-    Object {
+    {
       "title": "Code",
       "value": "code",
     },
-    Object {
+    {
       "title": "Strike through",
       "value": "strike-through",
     },
-    Object {
+    {
       "title": "Highlight",
       "value": "highlight",
     },
-    Object {
+    {
       "title": "Subscript",
       "value": "sub",
     },
-    Object {
+    {
       "title": "Superscript",
       "value": "sup",
     },
-    Object {
+    {
       "title": "Mark",
       "value": "mark",
     },
-    Object {
+    {
       "title": "Inserted",
       "value": "ins",
     },
-    Object {
+    {
       "title": "Small",
       "value": "small",
     },
   ],
-  "lists": Array [
-    Object {
+  "lists": [
+    {
       "title": "Numbered",
       "value": "number",
     },
   ],
-  "styles": Array [
-    Object {
+  "styles": [
+    {
       "title": "Normal",
       "value": "normal",
     },
-    Object {
+    {
       "title": "H1",
       "value": "h1",
     },
-    Object {
+    {
       "title": "H2",
       "value": "h2",
     },
   ],
-  "types": Object {
-    "block": Object {
+  "types": {
+    "block": {
       "jsonType": "array",
       "name": "array",
-      "of": Array [
-        Object {
-          "fields": Array [
-            Object {
+      "of": [
+        {
+          "fields": [
+            {
               "name": "children",
-              "type": Object {
+              "type": {
                 "jsonType": "array",
                 "name": "array",
-                "of": Array [
-                  Object {
-                    "annotations": Array [
-                      Object {
-                        "fields": Array [
-                          Object {
+                "of": [
+                  {
+                    "annotations": [
+                      {
+                        "fields": [
+                          {
                             "name": "_ref",
-                            "type": Object {
+                            "type": {
                               "jsonType": "string",
                               "name": "string",
-                              "preview": Object {
+                              "preview": {
                                 "prepare": [Function],
                               },
                               "title": "Referenced document ID",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "string",
                                 "title": "String",
@@ -1532,16 +1532,16 @@ Object {
                               },
                             },
                           },
-                          Object {
+                          {
                             "name": "_weak",
-                            "type": Object {
+                            "type": {
                               "jsonType": "boolean",
                               "name": "boolean",
-                              "preview": Object {
+                              "preview": {
                                 "prepare": [Function],
                               },
                               "title": "Weak reference",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "boolean",
                                 "name": "boolean",
                                 "title": "Boolean",
@@ -1550,18 +1550,18 @@ Object {
                             },
                           },
                         ],
-                        "fieldsets": Array [
-                          Object {
-                            "field": Object {
+                        "fieldsets": [
+                          {
+                            "field": {
                               "name": "_ref",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "string",
-                                "preview": Object {
+                                "preview": {
                                   "prepare": [Function],
                                 },
                                 "title": "Referenced document ID",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
                                   "title": "String",
@@ -1571,17 +1571,17 @@ Object {
                             },
                             "single": true,
                           },
-                          Object {
-                            "field": Object {
+                          {
+                            "field": {
                               "name": "_weak",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "boolean",
                                 "name": "boolean",
-                                "preview": Object {
+                                "preview": {
                                   "prepare": [Function],
                                 },
                                 "title": "Weak reference",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "boolean",
                                   "name": "boolean",
                                   "title": "Boolean",
@@ -1595,41 +1595,41 @@ Object {
                         "jsonType": "object",
                         "name": "author",
                         "title": "Author",
-                        "to": Array [
-                          Object {
-                            "__experimental_search": Array [
-                              Object {
-                                "path": Array [
+                        "to": [
+                          {
+                            "__experimental_search": [
+                              {
+                                "path": [
                                   "_id",
                                 ],
                                 "weight": 1,
                               },
-                              Object {
-                                "path": Array [
+                              {
+                                "path": [
                                   "_type",
                                 ],
                                 "weight": 1,
                               },
-                              Object {
-                                "path": Array [
+                              {
+                                "path": [
                                   "name",
                                 ],
                                 "weight": 10,
                               },
                             ],
-                            "fields": Array [
-                              Object {
+                            "fields": [
+                              {
                                 "fieldset": undefined,
                                 "group": undefined,
                                 "name": "name",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
-                                  "preview": Object {
+                                  "preview": {
                                     "prepare": [Function],
                                   },
                                   "title": "Name",
-                                  "type": Object {
+                                  "type": {
                                     "jsonType": "string",
                                     "name": "string",
                                     "title": "String",
@@ -1638,20 +1638,20 @@ Object {
                                 },
                               },
                             ],
-                            "fieldsets": Array [
-                              Object {
-                                "field": Object {
+                            "fieldsets": [
+                              {
+                                "field": {
                                   "fieldset": undefined,
                                   "group": undefined,
                                   "name": "name",
-                                  "type": Object {
+                                  "type": {
                                     "jsonType": "string",
                                     "name": "string",
-                                    "preview": Object {
+                                    "preview": {
                                       "prepare": [Function],
                                     },
                                     "title": "Name",
-                                    "type": Object {
+                                    "type": {
                                       "jsonType": "string",
                                       "name": "string",
                                       "title": "String",
@@ -1662,20 +1662,20 @@ Object {
                                 "single": true,
                               },
                             ],
-                            "groups": Array [],
+                            "groups": [],
                             "jsonType": "object",
                             "name": "author",
-                            "options": Object {},
-                            "orderings": Array [
-                              Object {
-                                "by": Array [
-                                  Object {
+                            "options": {},
+                            "orderings": [
+                              {
+                                "by": [
+                                  {
                                     "direction": "asc",
                                     "field": "name",
                                   },
                                 ],
-                                "i18n": Object {
-                                  "title": Object {
+                                "i18n": {
+                                  "title": {
                                     "key": "default-orderings.name",
                                     "ns": "studio",
                                   },
@@ -1684,26 +1684,26 @@ Object {
                                 "title": "Name",
                               },
                             ],
-                            "preview": Object {
-                              "select": Object {
+                            "preview": {
+                              "select": {
                                 "title": "name",
                               },
                             },
                             "title": "Author",
-                            "type": Object {
-                              "fields": Array [
-                                Object {
+                            "type": {
+                              "fields": [
+                                {
                                   "fieldset": undefined,
                                   "group": undefined,
                                   "name": "name",
-                                  "type": Object {
+                                  "type": {
                                     "jsonType": "string",
                                     "name": "string",
-                                    "preview": Object {
+                                    "preview": {
                                       "prepare": [Function],
                                     },
                                     "title": "Name",
-                                    "type": Object {
+                                    "type": {
                                       "jsonType": "string",
                                       "name": "string",
                                       "title": "String",
@@ -1712,20 +1712,20 @@ Object {
                                   },
                                 },
                               ],
-                              "fieldsets": Array [
-                                Object {
-                                  "field": Object {
+                              "fieldsets": [
+                                {
+                                  "field": {
                                     "fieldset": undefined,
                                     "group": undefined,
                                     "name": "name",
-                                    "type": Object {
+                                    "type": {
                                       "jsonType": "string",
                                       "name": "string",
-                                      "preview": Object {
+                                      "preview": {
                                         "prepare": [Function],
                                       },
                                       "title": "Name",
-                                      "type": Object {
+                                      "type": {
                                         "jsonType": "string",
                                         "name": "string",
                                         "title": "String",
@@ -1736,20 +1736,20 @@ Object {
                                   "single": true,
                                 },
                               ],
-                              "groups": Array [],
+                              "groups": [],
                               "jsonType": "object",
                               "name": "author",
-                              "options": Object {},
-                              "orderings": Array [
-                                Object {
-                                  "by": Array [
-                                    Object {
+                              "options": {},
+                              "orderings": [
+                                {
+                                  "by": [
+                                    {
                                       "direction": "asc",
                                       "field": "name",
                                     },
                                   ],
-                                  "i18n": Object {
-                                    "title": Object {
+                                  "i18n": {
+                                    "title": {
                                       "key": "default-orderings.name",
                                       "ns": "studio",
                                     },
@@ -1758,33 +1758,33 @@ Object {
                                   "title": "Name",
                                 },
                               ],
-                              "preview": Object {
-                                "select": Object {
+                              "preview": {
+                                "select": {
                                   "title": "name",
                                 },
                               },
                               "title": "Author",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "object",
                                 "name": "document",
                                 "title": "Document",
                                 "type": null,
                               },
-                              Symbol(__cachedStringFields_4): Array [
-                                Object {
-                                  "path": Array [
+                              Symbol(__cachedStringFields_4): [
+                                {
+                                  "path": [
                                     "_id",
                                   ],
                                   "weight": 1,
                                 },
-                                Object {
-                                  "path": Array [
+                                {
+                                  "path": [
                                     "_type",
                                   ],
                                   "weight": 1,
                                 },
-                                Object {
-                                  "path": Array [
+                                {
+                                  "path": [
                                     "name",
                                   ],
                                   "weight": 10,
@@ -1793,7 +1793,7 @@ Object {
                             },
                           },
                         ],
-                        "type": Object {
+                        "type": {
                           "jsonType": "object",
                           "name": "reference",
                           "title": "Reference",
@@ -1801,63 +1801,63 @@ Object {
                         },
                       },
                     ],
-                    "decorators": Array [
-                      Object {
+                    "decorators": [
+                      {
                         "title": "Strong",
                         "value": "strong",
                       },
-                      Object {
+                      {
                         "title": "Emphasis",
                         "value": "em",
                       },
-                      Object {
+                      {
                         "title": "Code",
                         "value": "code",
                       },
-                      Object {
+                      {
                         "title": "Strike through",
                         "value": "strike-through",
                       },
-                      Object {
+                      {
                         "title": "Highlight",
                         "value": "highlight",
                       },
-                      Object {
+                      {
                         "title": "Subscript",
                         "value": "sub",
                       },
-                      Object {
+                      {
                         "title": "Superscript",
                         "value": "sup",
                       },
-                      Object {
+                      {
                         "title": "Mark",
                         "value": "mark",
                       },
-                      Object {
+                      {
                         "title": "Inserted",
                         "value": "ins",
                       },
-                      Object {
+                      {
                         "title": "Small",
                         "value": "small",
                       },
                     ],
-                    "fields": Array [
-                      Object {
+                    "fields": [
+                      {
                         "name": "marks",
-                        "type": Object {
+                        "type": {
                           "jsonType": "array",
                           "name": "array",
-                          "of": Array [
-                            Object {
+                          "of": [
+                            {
                               "jsonType": "string",
                               "name": "string",
-                              "preview": Object {
+                              "preview": {
                                 "prepare": [Function],
                               },
                               "title": "String",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "string",
                                 "title": "String",
@@ -1866,24 +1866,24 @@ Object {
                             },
                           ],
                           "title": "Marks",
-                          "type": Object {
+                          "type": {
                             "jsonType": "array",
                             "name": "array",
-                            "of": Array [],
+                            "of": [],
                             "type": null,
                           },
                         },
                       },
-                      Object {
+                      {
                         "name": "text",
-                        "type": Object {
+                        "type": {
                           "jsonType": "string",
                           "name": "string",
-                          "preview": Object {
+                          "preview": {
                             "prepare": [Function],
                           },
                           "title": "Text",
-                          "type": Object {
+                          "type": {
                             "jsonType": "string",
                             "name": "string",
                             "title": "String",
@@ -1893,18 +1893,18 @@ Object {
                       },
                     ],
                     "jsonType": "object",
-                    "marks": Array [],
+                    "marks": [],
                     "name": "span",
-                    "options": Object {},
-                    "preview": Object {
+                    "options": {},
+                    "preview": {
                       "prepare": [Function],
-                      "select": Object {
+                      "select": {
                         "marks": "marks",
                         "text": "text",
                       },
                     },
                     "title": "Span",
-                    "type": Object {
+                    "type": {
                       "jsonType": "object",
                       "name": "span",
                       "title": "Span",
@@ -1913,40 +1913,40 @@ Object {
                   },
                 ],
                 "title": "Content",
-                "type": Object {
+                "type": {
                   "jsonType": "array",
                   "name": "array",
-                  "of": Array [],
+                  "of": [],
                   "type": null,
                 },
               },
             },
-            Object {
+            {
               "name": "style",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "string",
-                "options": Object {
-                  "list": Array [
-                    Object {
+                "options": {
+                  "list": [
+                    {
                       "title": "Normal",
                       "value": "normal",
                     },
-                    Object {
+                    {
                       "title": "H1",
                       "value": "h1",
                     },
-                    Object {
+                    {
                       "title": "H2",
                       "value": "h2",
                     },
                   ],
                 },
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Style",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
                   "title": "String",
@@ -1954,24 +1954,24 @@ Object {
                 },
               },
             },
-            Object {
+            {
               "name": "listItem",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "string",
-                "options": Object {
-                  "list": Array [
-                    Object {
+                "options": {
+                  "list": [
+                    {
                       "title": "Numbered",
                       "value": "number",
                     },
                   ],
                 },
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "List type",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
                   "title": "String",
@@ -1979,24 +1979,24 @@ Object {
                 },
               },
             },
-            Object {
+            {
               "name": "markDefs",
-              "type": Object {
+              "type": {
                 "jsonType": "array",
                 "name": "array",
-                "of": Array [
-                  Object {
-                    "fields": Array [
-                      Object {
+                "of": [
+                  {
+                    "fields": [
+                      {
                         "name": "_ref",
-                        "type": Object {
+                        "type": {
                           "jsonType": "string",
                           "name": "string",
-                          "preview": Object {
+                          "preview": {
                             "prepare": [Function],
                           },
                           "title": "Referenced document ID",
-                          "type": Object {
+                          "type": {
                             "jsonType": "string",
                             "name": "string",
                             "title": "String",
@@ -2004,16 +2004,16 @@ Object {
                           },
                         },
                       },
-                      Object {
+                      {
                         "name": "_weak",
-                        "type": Object {
+                        "type": {
                           "jsonType": "boolean",
                           "name": "boolean",
-                          "preview": Object {
+                          "preview": {
                             "prepare": [Function],
                           },
                           "title": "Weak reference",
-                          "type": Object {
+                          "type": {
                             "jsonType": "boolean",
                             "name": "boolean",
                             "title": "Boolean",
@@ -2022,18 +2022,18 @@ Object {
                         },
                       },
                     ],
-                    "fieldsets": Array [
-                      Object {
-                        "field": Object {
+                    "fieldsets": [
+                      {
+                        "field": {
                           "name": "_ref",
-                          "type": Object {
+                          "type": {
                             "jsonType": "string",
                             "name": "string",
-                            "preview": Object {
+                            "preview": {
                               "prepare": [Function],
                             },
                             "title": "Referenced document ID",
-                            "type": Object {
+                            "type": {
                               "jsonType": "string",
                               "name": "string",
                               "title": "String",
@@ -2043,17 +2043,17 @@ Object {
                         },
                         "single": true,
                       },
-                      Object {
-                        "field": Object {
+                      {
+                        "field": {
                           "name": "_weak",
-                          "type": Object {
+                          "type": {
                             "jsonType": "boolean",
                             "name": "boolean",
-                            "preview": Object {
+                            "preview": {
                               "prepare": [Function],
                             },
                             "title": "Weak reference",
-                            "type": Object {
+                            "type": {
                               "jsonType": "boolean",
                               "name": "boolean",
                               "title": "Boolean",
@@ -2067,41 +2067,41 @@ Object {
                     "jsonType": "object",
                     "name": "author",
                     "title": "Author",
-                    "to": Array [
-                      Object {
-                        "__experimental_search": Array [
-                          Object {
-                            "path": Array [
+                    "to": [
+                      {
+                        "__experimental_search": [
+                          {
+                            "path": [
                               "_id",
                             ],
                             "weight": 1,
                           },
-                          Object {
-                            "path": Array [
+                          {
+                            "path": [
                               "_type",
                             ],
                             "weight": 1,
                           },
-                          Object {
-                            "path": Array [
+                          {
+                            "path": [
                               "name",
                             ],
                             "weight": 10,
                           },
                         ],
-                        "fields": Array [
-                          Object {
+                        "fields": [
+                          {
                             "fieldset": undefined,
                             "group": undefined,
                             "name": "name",
-                            "type": Object {
+                            "type": {
                               "jsonType": "string",
                               "name": "string",
-                              "preview": Object {
+                              "preview": {
                                 "prepare": [Function],
                               },
                               "title": "Name",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "string",
                                 "title": "String",
@@ -2110,20 +2110,20 @@ Object {
                             },
                           },
                         ],
-                        "fieldsets": Array [
-                          Object {
-                            "field": Object {
+                        "fieldsets": [
+                          {
+                            "field": {
                               "fieldset": undefined,
                               "group": undefined,
                               "name": "name",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "string",
-                                "preview": Object {
+                                "preview": {
                                   "prepare": [Function],
                                 },
                                 "title": "Name",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
                                   "title": "String",
@@ -2134,20 +2134,20 @@ Object {
                             "single": true,
                           },
                         ],
-                        "groups": Array [],
+                        "groups": [],
                         "jsonType": "object",
                         "name": "author",
-                        "options": Object {},
-                        "orderings": Array [
-                          Object {
-                            "by": Array [
-                              Object {
+                        "options": {},
+                        "orderings": [
+                          {
+                            "by": [
+                              {
                                 "direction": "asc",
                                 "field": "name",
                               },
                             ],
-                            "i18n": Object {
-                              "title": Object {
+                            "i18n": {
+                              "title": {
                                 "key": "default-orderings.name",
                                 "ns": "studio",
                               },
@@ -2156,26 +2156,26 @@ Object {
                             "title": "Name",
                           },
                         ],
-                        "preview": Object {
-                          "select": Object {
+                        "preview": {
+                          "select": {
                             "title": "name",
                           },
                         },
                         "title": "Author",
-                        "type": Object {
-                          "fields": Array [
-                            Object {
+                        "type": {
+                          "fields": [
+                            {
                               "fieldset": undefined,
                               "group": undefined,
                               "name": "name",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "string",
-                                "preview": Object {
+                                "preview": {
                                   "prepare": [Function],
                                 },
                                 "title": "Name",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
                                   "title": "String",
@@ -2184,20 +2184,20 @@ Object {
                               },
                             },
                           ],
-                          "fieldsets": Array [
-                            Object {
-                              "field": Object {
+                          "fieldsets": [
+                            {
+                              "field": {
                                 "fieldset": undefined,
                                 "group": undefined,
                                 "name": "name",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
-                                  "preview": Object {
+                                  "preview": {
                                     "prepare": [Function],
                                   },
                                   "title": "Name",
-                                  "type": Object {
+                                  "type": {
                                     "jsonType": "string",
                                     "name": "string",
                                     "title": "String",
@@ -2208,20 +2208,20 @@ Object {
                               "single": true,
                             },
                           ],
-                          "groups": Array [],
+                          "groups": [],
                           "jsonType": "object",
                           "name": "author",
-                          "options": Object {},
-                          "orderings": Array [
-                            Object {
-                              "by": Array [
-                                Object {
+                          "options": {},
+                          "orderings": [
+                            {
+                              "by": [
+                                {
                                   "direction": "asc",
                                   "field": "name",
                                 },
                               ],
-                              "i18n": Object {
-                                "title": Object {
+                              "i18n": {
+                                "title": {
                                   "key": "default-orderings.name",
                                   "ns": "studio",
                                 },
@@ -2230,54 +2230,54 @@ Object {
                               "title": "Name",
                             },
                           ],
-                          "preview": Object {
-                            "select": Object {
+                          "preview": {
+                            "select": {
                               "title": "name",
                             },
                           },
                           "title": "Author",
-                          "type": Object {
+                          "type": {
                             "jsonType": "object",
                             "name": "document",
                             "title": "Document",
                             "type": null,
                           },
-                          Symbol(__cachedStringFields_4): Array [
-                            Object {
-                              "path": Array [
+                          Symbol(__cachedStringFields_4): [
+                            {
+                              "path": [
                                 "_id",
                               ],
                               "weight": 1,
                             },
-                            Object {
-                              "path": Array [
+                            {
+                              "path": [
                                 "_type",
                               ],
                               "weight": 1,
                             },
-                            Object {
-                              "path": Array [
+                            {
+                              "path": [
                                 "name",
                               ],
                               "weight": 10,
                             },
                           ],
                         },
-                        Symbol(__cachedStringFields_4): Array [
-                          Object {
-                            "path": Array [
+                        Symbol(__cachedStringFields_4): [
+                          {
+                            "path": [
                               "_id",
                             ],
                             "weight": 1,
                           },
-                          Object {
-                            "path": Array [
+                          {
+                            "path": [
                               "_type",
                             ],
                             "weight": 1,
                           },
-                          Object {
-                            "path": Array [
+                          {
+                            "path": [
                               "name",
                             ],
                             "weight": 10,
@@ -2285,7 +2285,7 @@ Object {
                         ],
                       },
                     ],
-                    "type": Object {
+                    "type": {
                       "jsonType": "object",
                       "name": "reference",
                       "title": "Reference",
@@ -2294,24 +2294,24 @@ Object {
                   },
                 ],
                 "title": "Mark definitions",
-                "type": Object {
+                "type": {
                   "jsonType": "array",
                   "name": "array",
-                  "of": Array [],
+                  "of": [],
                   "type": null,
                 },
               },
             },
-            Object {
+            {
               "name": "level",
-              "type": Object {
+              "type": {
                 "jsonType": "number",
                 "name": "number",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Indentation",
-                "type": Object {
+                "type": {
                   "jsonType": "number",
                   "name": "number",
                   "title": "Number",
@@ -2322,34 +2322,34 @@ Object {
           ],
           "jsonType": "object",
           "name": "customBlock",
-          "options": Object {},
-          "preview": Object {
+          "options": {},
+          "preview": {
             "prepare": [Function],
-            "select": Object {},
+            "select": {},
           },
           "title": "Block",
-          "type": Object {
-            "fields": Array [
-              Object {
+          "type": {
+            "fields": [
+              {
                 "name": "children",
-                "type": Object {
+                "type": {
                   "jsonType": "array",
                   "name": "array",
-                  "of": Array [
-                    Object {
-                      "annotations": Array [
-                        Object {
-                          "fields": Array [
-                            Object {
+                  "of": [
+                    {
+                      "annotations": [
+                        {
+                          "fields": [
+                            {
                               "name": "_ref",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "string",
-                                "preview": Object {
+                                "preview": {
                                   "prepare": [Function],
                                 },
                                 "title": "Referenced document ID",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
                                   "title": "String",
@@ -2357,16 +2357,16 @@ Object {
                                 },
                               },
                             },
-                            Object {
+                            {
                               "name": "_weak",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "boolean",
                                 "name": "boolean",
-                                "preview": Object {
+                                "preview": {
                                   "prepare": [Function],
                                 },
                                 "title": "Weak reference",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "boolean",
                                   "name": "boolean",
                                   "title": "Boolean",
@@ -2375,18 +2375,18 @@ Object {
                               },
                             },
                           ],
-                          "fieldsets": Array [
-                            Object {
-                              "field": Object {
+                          "fieldsets": [
+                            {
+                              "field": {
                                 "name": "_ref",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
-                                  "preview": Object {
+                                  "preview": {
                                     "prepare": [Function],
                                   },
                                   "title": "Referenced document ID",
-                                  "type": Object {
+                                  "type": {
                                     "jsonType": "string",
                                     "name": "string",
                                     "title": "String",
@@ -2396,17 +2396,17 @@ Object {
                               },
                               "single": true,
                             },
-                            Object {
-                              "field": Object {
+                            {
+                              "field": {
                                 "name": "_weak",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "boolean",
                                   "name": "boolean",
-                                  "preview": Object {
+                                  "preview": {
                                     "prepare": [Function],
                                   },
                                   "title": "Weak reference",
-                                  "type": Object {
+                                  "type": {
                                     "jsonType": "boolean",
                                     "name": "boolean",
                                     "title": "Boolean",
@@ -2420,41 +2420,41 @@ Object {
                           "jsonType": "object",
                           "name": "author",
                           "title": "Author",
-                          "to": Array [
-                            Object {
-                              "__experimental_search": Array [
-                                Object {
-                                  "path": Array [
+                          "to": [
+                            {
+                              "__experimental_search": [
+                                {
+                                  "path": [
                                     "_id",
                                   ],
                                   "weight": 1,
                                 },
-                                Object {
-                                  "path": Array [
+                                {
+                                  "path": [
                                     "_type",
                                   ],
                                   "weight": 1,
                                 },
-                                Object {
-                                  "path": Array [
+                                {
+                                  "path": [
                                     "name",
                                   ],
                                   "weight": 10,
                                 },
                               ],
-                              "fields": Array [
-                                Object {
+                              "fields": [
+                                {
                                   "fieldset": undefined,
                                   "group": undefined,
                                   "name": "name",
-                                  "type": Object {
+                                  "type": {
                                     "jsonType": "string",
                                     "name": "string",
-                                    "preview": Object {
+                                    "preview": {
                                       "prepare": [Function],
                                     },
                                     "title": "Name",
-                                    "type": Object {
+                                    "type": {
                                       "jsonType": "string",
                                       "name": "string",
                                       "title": "String",
@@ -2463,20 +2463,20 @@ Object {
                                   },
                                 },
                               ],
-                              "fieldsets": Array [
-                                Object {
-                                  "field": Object {
+                              "fieldsets": [
+                                {
+                                  "field": {
                                     "fieldset": undefined,
                                     "group": undefined,
                                     "name": "name",
-                                    "type": Object {
+                                    "type": {
                                       "jsonType": "string",
                                       "name": "string",
-                                      "preview": Object {
+                                      "preview": {
                                         "prepare": [Function],
                                       },
                                       "title": "Name",
-                                      "type": Object {
+                                      "type": {
                                         "jsonType": "string",
                                         "name": "string",
                                         "title": "String",
@@ -2487,20 +2487,20 @@ Object {
                                   "single": true,
                                 },
                               ],
-                              "groups": Array [],
+                              "groups": [],
                               "jsonType": "object",
                               "name": "author",
-                              "options": Object {},
-                              "orderings": Array [
-                                Object {
-                                  "by": Array [
-                                    Object {
+                              "options": {},
+                              "orderings": [
+                                {
+                                  "by": [
+                                    {
                                       "direction": "asc",
                                       "field": "name",
                                     },
                                   ],
-                                  "i18n": Object {
-                                    "title": Object {
+                                  "i18n": {
+                                    "title": {
                                       "key": "default-orderings.name",
                                       "ns": "studio",
                                     },
@@ -2509,26 +2509,26 @@ Object {
                                   "title": "Name",
                                 },
                               ],
-                              "preview": Object {
-                                "select": Object {
+                              "preview": {
+                                "select": {
                                   "title": "name",
                                 },
                               },
                               "title": "Author",
-                              "type": Object {
-                                "fields": Array [
-                                  Object {
+                              "type": {
+                                "fields": [
+                                  {
                                     "fieldset": undefined,
                                     "group": undefined,
                                     "name": "name",
-                                    "type": Object {
+                                    "type": {
                                       "jsonType": "string",
                                       "name": "string",
-                                      "preview": Object {
+                                      "preview": {
                                         "prepare": [Function],
                                       },
                                       "title": "Name",
-                                      "type": Object {
+                                      "type": {
                                         "jsonType": "string",
                                         "name": "string",
                                         "title": "String",
@@ -2537,20 +2537,20 @@ Object {
                                     },
                                   },
                                 ],
-                                "fieldsets": Array [
-                                  Object {
-                                    "field": Object {
+                                "fieldsets": [
+                                  {
+                                    "field": {
                                       "fieldset": undefined,
                                       "group": undefined,
                                       "name": "name",
-                                      "type": Object {
+                                      "type": {
                                         "jsonType": "string",
                                         "name": "string",
-                                        "preview": Object {
+                                        "preview": {
                                           "prepare": [Function],
                                         },
                                         "title": "Name",
-                                        "type": Object {
+                                        "type": {
                                           "jsonType": "string",
                                           "name": "string",
                                           "title": "String",
@@ -2561,20 +2561,20 @@ Object {
                                     "single": true,
                                   },
                                 ],
-                                "groups": Array [],
+                                "groups": [],
                                 "jsonType": "object",
                                 "name": "author",
-                                "options": Object {},
-                                "orderings": Array [
-                                  Object {
-                                    "by": Array [
-                                      Object {
+                                "options": {},
+                                "orderings": [
+                                  {
+                                    "by": [
+                                      {
                                         "direction": "asc",
                                         "field": "name",
                                       },
                                     ],
-                                    "i18n": Object {
-                                      "title": Object {
+                                    "i18n": {
+                                      "title": {
                                         "key": "default-orderings.name",
                                         "ns": "studio",
                                       },
@@ -2583,33 +2583,33 @@ Object {
                                     "title": "Name",
                                   },
                                 ],
-                                "preview": Object {
-                                  "select": Object {
+                                "preview": {
+                                  "select": {
                                     "title": "name",
                                   },
                                 },
                                 "title": "Author",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "object",
                                   "name": "document",
                                   "title": "Document",
                                   "type": null,
                                 },
-                                Symbol(__cachedStringFields_4): Array [
-                                  Object {
-                                    "path": Array [
+                                Symbol(__cachedStringFields_4): [
+                                  {
+                                    "path": [
                                       "_id",
                                     ],
                                     "weight": 1,
                                   },
-                                  Object {
-                                    "path": Array [
+                                  {
+                                    "path": [
                                       "_type",
                                     ],
                                     "weight": 1,
                                   },
-                                  Object {
-                                    "path": Array [
+                                  {
+                                    "path": [
                                       "name",
                                     ],
                                     "weight": 10,
@@ -2618,7 +2618,7 @@ Object {
                               },
                             },
                           ],
-                          "type": Object {
+                          "type": {
                             "jsonType": "object",
                             "name": "reference",
                             "title": "Reference",
@@ -2626,63 +2626,63 @@ Object {
                           },
                         },
                       ],
-                      "decorators": Array [
-                        Object {
+                      "decorators": [
+                        {
                           "title": "Strong",
                           "value": "strong",
                         },
-                        Object {
+                        {
                           "title": "Emphasis",
                           "value": "em",
                         },
-                        Object {
+                        {
                           "title": "Code",
                           "value": "code",
                         },
-                        Object {
+                        {
                           "title": "Strike through",
                           "value": "strike-through",
                         },
-                        Object {
+                        {
                           "title": "Highlight",
                           "value": "highlight",
                         },
-                        Object {
+                        {
                           "title": "Subscript",
                           "value": "sub",
                         },
-                        Object {
+                        {
                           "title": "Superscript",
                           "value": "sup",
                         },
-                        Object {
+                        {
                           "title": "Mark",
                           "value": "mark",
                         },
-                        Object {
+                        {
                           "title": "Inserted",
                           "value": "ins",
                         },
-                        Object {
+                        {
                           "title": "Small",
                           "value": "small",
                         },
                       ],
-                      "fields": Array [
-                        Object {
+                      "fields": [
+                        {
                           "name": "marks",
-                          "type": Object {
+                          "type": {
                             "jsonType": "array",
                             "name": "array",
-                            "of": Array [
-                              Object {
+                            "of": [
+                              {
                                 "jsonType": "string",
                                 "name": "string",
-                                "preview": Object {
+                                "preview": {
                                   "prepare": [Function],
                                 },
                                 "title": "String",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
                                   "title": "String",
@@ -2691,24 +2691,24 @@ Object {
                               },
                             ],
                             "title": "Marks",
-                            "type": Object {
+                            "type": {
                               "jsonType": "array",
                               "name": "array",
-                              "of": Array [],
+                              "of": [],
                               "type": null,
                             },
                           },
                         },
-                        Object {
+                        {
                           "name": "text",
-                          "type": Object {
+                          "type": {
                             "jsonType": "string",
                             "name": "string",
-                            "preview": Object {
+                            "preview": {
                               "prepare": [Function],
                             },
                             "title": "Text",
-                            "type": Object {
+                            "type": {
                               "jsonType": "string",
                               "name": "string",
                               "title": "String",
@@ -2718,18 +2718,18 @@ Object {
                         },
                       ],
                       "jsonType": "object",
-                      "marks": Array [],
+                      "marks": [],
                       "name": "span",
-                      "options": Object {},
-                      "preview": Object {
+                      "options": {},
+                      "preview": {
                         "prepare": [Function],
-                        "select": Object {
+                        "select": {
                           "marks": "marks",
                           "text": "text",
                         },
                       },
                       "title": "Span",
-                      "type": Object {
+                      "type": {
                         "jsonType": "object",
                         "name": "span",
                         "title": "Span",
@@ -2738,40 +2738,40 @@ Object {
                     },
                   ],
                   "title": "Content",
-                  "type": Object {
+                  "type": {
                     "jsonType": "array",
                     "name": "array",
-                    "of": Array [],
+                    "of": [],
                     "type": null,
                   },
                 },
               },
-              Object {
+              {
                 "name": "style",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
-                  "options": Object {
-                    "list": Array [
-                      Object {
+                  "options": {
+                    "list": [
+                      {
                         "title": "Normal",
                         "value": "normal",
                       },
-                      Object {
+                      {
                         "title": "H1",
                         "value": "h1",
                       },
-                      Object {
+                      {
                         "title": "H2",
                         "value": "h2",
                       },
                     ],
                   },
-                  "preview": Object {
+                  "preview": {
                     "prepare": [Function],
                   },
                   "title": "Style",
-                  "type": Object {
+                  "type": {
                     "jsonType": "string",
                     "name": "string",
                     "title": "String",
@@ -2779,24 +2779,24 @@ Object {
                   },
                 },
               },
-              Object {
+              {
                 "name": "listItem",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
-                  "options": Object {
-                    "list": Array [
-                      Object {
+                  "options": {
+                    "list": [
+                      {
                         "title": "Numbered",
                         "value": "number",
                       },
                     ],
                   },
-                  "preview": Object {
+                  "preview": {
                     "prepare": [Function],
                   },
                   "title": "List type",
-                  "type": Object {
+                  "type": {
                     "jsonType": "string",
                     "name": "string",
                     "title": "String",
@@ -2804,24 +2804,24 @@ Object {
                   },
                 },
               },
-              Object {
+              {
                 "name": "markDefs",
-                "type": Object {
+                "type": {
                   "jsonType": "array",
                   "name": "array",
-                  "of": Array [
-                    Object {
-                      "fields": Array [
-                        Object {
+                  "of": [
+                    {
+                      "fields": [
+                        {
                           "name": "_ref",
-                          "type": Object {
+                          "type": {
                             "jsonType": "string",
                             "name": "string",
-                            "preview": Object {
+                            "preview": {
                               "prepare": [Function],
                             },
                             "title": "Referenced document ID",
-                            "type": Object {
+                            "type": {
                               "jsonType": "string",
                               "name": "string",
                               "title": "String",
@@ -2829,16 +2829,16 @@ Object {
                             },
                           },
                         },
-                        Object {
+                        {
                           "name": "_weak",
-                          "type": Object {
+                          "type": {
                             "jsonType": "boolean",
                             "name": "boolean",
-                            "preview": Object {
+                            "preview": {
                               "prepare": [Function],
                             },
                             "title": "Weak reference",
-                            "type": Object {
+                            "type": {
                               "jsonType": "boolean",
                               "name": "boolean",
                               "title": "Boolean",
@@ -2847,18 +2847,18 @@ Object {
                           },
                         },
                       ],
-                      "fieldsets": Array [
-                        Object {
-                          "field": Object {
+                      "fieldsets": [
+                        {
+                          "field": {
                             "name": "_ref",
-                            "type": Object {
+                            "type": {
                               "jsonType": "string",
                               "name": "string",
-                              "preview": Object {
+                              "preview": {
                                 "prepare": [Function],
                               },
                               "title": "Referenced document ID",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "string",
                                 "title": "String",
@@ -2868,17 +2868,17 @@ Object {
                           },
                           "single": true,
                         },
-                        Object {
-                          "field": Object {
+                        {
+                          "field": {
                             "name": "_weak",
-                            "type": Object {
+                            "type": {
                               "jsonType": "boolean",
                               "name": "boolean",
-                              "preview": Object {
+                              "preview": {
                                 "prepare": [Function],
                               },
                               "title": "Weak reference",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "boolean",
                                 "name": "boolean",
                                 "title": "Boolean",
@@ -2892,41 +2892,41 @@ Object {
                       "jsonType": "object",
                       "name": "author",
                       "title": "Author",
-                      "to": Array [
-                        Object {
-                          "__experimental_search": Array [
-                            Object {
-                              "path": Array [
+                      "to": [
+                        {
+                          "__experimental_search": [
+                            {
+                              "path": [
                                 "_id",
                               ],
                               "weight": 1,
                             },
-                            Object {
-                              "path": Array [
+                            {
+                              "path": [
                                 "_type",
                               ],
                               "weight": 1,
                             },
-                            Object {
-                              "path": Array [
+                            {
+                              "path": [
                                 "name",
                               ],
                               "weight": 10,
                             },
                           ],
-                          "fields": Array [
-                            Object {
+                          "fields": [
+                            {
                               "fieldset": undefined,
                               "group": undefined,
                               "name": "name",
-                              "type": Object {
+                              "type": {
                                 "jsonType": "string",
                                 "name": "string",
-                                "preview": Object {
+                                "preview": {
                                   "prepare": [Function],
                                 },
                                 "title": "Name",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
                                   "title": "String",
@@ -2935,20 +2935,20 @@ Object {
                               },
                             },
                           ],
-                          "fieldsets": Array [
-                            Object {
-                              "field": Object {
+                          "fieldsets": [
+                            {
+                              "field": {
                                 "fieldset": undefined,
                                 "group": undefined,
                                 "name": "name",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
-                                  "preview": Object {
+                                  "preview": {
                                     "prepare": [Function],
                                   },
                                   "title": "Name",
-                                  "type": Object {
+                                  "type": {
                                     "jsonType": "string",
                                     "name": "string",
                                     "title": "String",
@@ -2959,20 +2959,20 @@ Object {
                               "single": true,
                             },
                           ],
-                          "groups": Array [],
+                          "groups": [],
                           "jsonType": "object",
                           "name": "author",
-                          "options": Object {},
-                          "orderings": Array [
-                            Object {
-                              "by": Array [
-                                Object {
+                          "options": {},
+                          "orderings": [
+                            {
+                              "by": [
+                                {
                                   "direction": "asc",
                                   "field": "name",
                                 },
                               ],
-                              "i18n": Object {
-                                "title": Object {
+                              "i18n": {
+                                "title": {
                                   "key": "default-orderings.name",
                                   "ns": "studio",
                                 },
@@ -2981,26 +2981,26 @@ Object {
                               "title": "Name",
                             },
                           ],
-                          "preview": Object {
-                            "select": Object {
+                          "preview": {
+                            "select": {
                               "title": "name",
                             },
                           },
                           "title": "Author",
-                          "type": Object {
-                            "fields": Array [
-                              Object {
+                          "type": {
+                            "fields": [
+                              {
                                 "fieldset": undefined,
                                 "group": undefined,
                                 "name": "name",
-                                "type": Object {
+                                "type": {
                                   "jsonType": "string",
                                   "name": "string",
-                                  "preview": Object {
+                                  "preview": {
                                     "prepare": [Function],
                                   },
                                   "title": "Name",
-                                  "type": Object {
+                                  "type": {
                                     "jsonType": "string",
                                     "name": "string",
                                     "title": "String",
@@ -3009,20 +3009,20 @@ Object {
                                 },
                               },
                             ],
-                            "fieldsets": Array [
-                              Object {
-                                "field": Object {
+                            "fieldsets": [
+                              {
+                                "field": {
                                   "fieldset": undefined,
                                   "group": undefined,
                                   "name": "name",
-                                  "type": Object {
+                                  "type": {
                                     "jsonType": "string",
                                     "name": "string",
-                                    "preview": Object {
+                                    "preview": {
                                       "prepare": [Function],
                                     },
                                     "title": "Name",
-                                    "type": Object {
+                                    "type": {
                                       "jsonType": "string",
                                       "name": "string",
                                       "title": "String",
@@ -3033,20 +3033,20 @@ Object {
                                 "single": true,
                               },
                             ],
-                            "groups": Array [],
+                            "groups": [],
                             "jsonType": "object",
                             "name": "author",
-                            "options": Object {},
-                            "orderings": Array [
-                              Object {
-                                "by": Array [
-                                  Object {
+                            "options": {},
+                            "orderings": [
+                              {
+                                "by": [
+                                  {
                                     "direction": "asc",
                                     "field": "name",
                                   },
                                 ],
-                                "i18n": Object {
-                                  "title": Object {
+                                "i18n": {
+                                  "title": {
                                     "key": "default-orderings.name",
                                     "ns": "studio",
                                   },
@@ -3055,54 +3055,54 @@ Object {
                                 "title": "Name",
                               },
                             ],
-                            "preview": Object {
-                              "select": Object {
+                            "preview": {
+                              "select": {
                                 "title": "name",
                               },
                             },
                             "title": "Author",
-                            "type": Object {
+                            "type": {
                               "jsonType": "object",
                               "name": "document",
                               "title": "Document",
                               "type": null,
                             },
-                            Symbol(__cachedStringFields_4): Array [
-                              Object {
-                                "path": Array [
+                            Symbol(__cachedStringFields_4): [
+                              {
+                                "path": [
                                   "_id",
                                 ],
                                 "weight": 1,
                               },
-                              Object {
-                                "path": Array [
+                              {
+                                "path": [
                                   "_type",
                                 ],
                                 "weight": 1,
                               },
-                              Object {
-                                "path": Array [
+                              {
+                                "path": [
                                   "name",
                                 ],
                                 "weight": 10,
                               },
                             ],
                           },
-                          Symbol(__cachedStringFields_4): Array [
-                            Object {
-                              "path": Array [
+                          Symbol(__cachedStringFields_4): [
+                            {
+                              "path": [
                                 "_id",
                               ],
                               "weight": 1,
                             },
-                            Object {
-                              "path": Array [
+                            {
+                              "path": [
                                 "_type",
                               ],
                               "weight": 1,
                             },
-                            Object {
-                              "path": Array [
+                            {
+                              "path": [
                                 "name",
                               ],
                               "weight": 10,
@@ -3110,7 +3110,7 @@ Object {
                           ],
                         },
                       ],
-                      "type": Object {
+                      "type": {
                         "jsonType": "object",
                         "name": "reference",
                         "title": "Reference",
@@ -3119,24 +3119,24 @@ Object {
                     },
                   ],
                   "title": "Mark definitions",
-                  "type": Object {
+                  "type": {
                     "jsonType": "array",
                     "name": "array",
-                    "of": Array [],
+                    "of": [],
                     "type": null,
                   },
                 },
               },
-              Object {
+              {
                 "name": "level",
-                "type": Object {
+                "type": {
                   "jsonType": "number",
                   "name": "number",
-                  "preview": Object {
+                  "preview": {
                     "prepare": [Function],
                   },
                   "title": "Indentation",
-                  "type": Object {
+                  "type": {
                     "jsonType": "number",
                     "name": "number",
                     "title": "Number",
@@ -3147,13 +3147,13 @@ Object {
             ],
             "jsonType": "object",
             "name": "customBlock",
-            "options": Object {},
-            "preview": Object {
+            "options": {},
+            "preview": {
               "prepare": [Function],
-              "select": Object {},
+              "select": {},
             },
             "title": "Block",
-            "type": Object {
+            "type": {
               "jsonType": "object",
               "name": "block",
               "title": "Block",
@@ -3163,29 +3163,29 @@ Object {
         },
       ],
       "title": "Body",
-      "type": Object {
+      "type": {
         "jsonType": "array",
         "name": "array",
-        "of": Array [],
+        "of": [],
         "type": null,
       },
     },
-    "blockObjects": Array [],
-    "inlineObjects": Array [],
-    "span": Object {
-      "annotations": Array [
-        Object {
-          "fields": Array [
-            Object {
+    "blockObjects": [],
+    "inlineObjects": [],
+    "span": {
+      "annotations": [
+        {
+          "fields": [
+            {
               "name": "_ref",
-              "type": Object {
+              "type": {
                 "jsonType": "string",
                 "name": "string",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Referenced document ID",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
                   "title": "String",
@@ -3193,16 +3193,16 @@ Object {
                 },
               },
             },
-            Object {
+            {
               "name": "_weak",
-              "type": Object {
+              "type": {
                 "jsonType": "boolean",
                 "name": "boolean",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "Weak reference",
-                "type": Object {
+                "type": {
                   "jsonType": "boolean",
                   "name": "boolean",
                   "title": "Boolean",
@@ -3211,18 +3211,18 @@ Object {
               },
             },
           ],
-          "fieldsets": Array [
-            Object {
-              "field": Object {
+          "fieldsets": [
+            {
+              "field": {
                 "name": "_ref",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
-                  "preview": Object {
+                  "preview": {
                     "prepare": [Function],
                   },
                   "title": "Referenced document ID",
-                  "type": Object {
+                  "type": {
                     "jsonType": "string",
                     "name": "string",
                     "title": "String",
@@ -3232,17 +3232,17 @@ Object {
               },
               "single": true,
             },
-            Object {
-              "field": Object {
+            {
+              "field": {
                 "name": "_weak",
-                "type": Object {
+                "type": {
                   "jsonType": "boolean",
                   "name": "boolean",
-                  "preview": Object {
+                  "preview": {
                     "prepare": [Function],
                   },
                   "title": "Weak reference",
-                  "type": Object {
+                  "type": {
                     "jsonType": "boolean",
                     "name": "boolean",
                     "title": "Boolean",
@@ -3256,41 +3256,41 @@ Object {
           "jsonType": "object",
           "name": "author",
           "title": "Author",
-          "to": Array [
-            Object {
-              "__experimental_search": Array [
-                Object {
-                  "path": Array [
+          "to": [
+            {
+              "__experimental_search": [
+                {
+                  "path": [
                     "_id",
                   ],
                   "weight": 1,
                 },
-                Object {
-                  "path": Array [
+                {
+                  "path": [
                     "_type",
                   ],
                   "weight": 1,
                 },
-                Object {
-                  "path": Array [
+                {
+                  "path": [
                     "name",
                   ],
                   "weight": 10,
                 },
               ],
-              "fields": Array [
-                Object {
+              "fields": [
+                {
                   "fieldset": undefined,
                   "group": undefined,
                   "name": "name",
-                  "type": Object {
+                  "type": {
                     "jsonType": "string",
                     "name": "string",
-                    "preview": Object {
+                    "preview": {
                       "prepare": [Function],
                     },
                     "title": "Name",
-                    "type": Object {
+                    "type": {
                       "jsonType": "string",
                       "name": "string",
                       "title": "String",
@@ -3299,20 +3299,20 @@ Object {
                   },
                 },
               ],
-              "fieldsets": Array [
-                Object {
-                  "field": Object {
+              "fieldsets": [
+                {
+                  "field": {
                     "fieldset": undefined,
                     "group": undefined,
                     "name": "name",
-                    "type": Object {
+                    "type": {
                       "jsonType": "string",
                       "name": "string",
-                      "preview": Object {
+                      "preview": {
                         "prepare": [Function],
                       },
                       "title": "Name",
-                      "type": Object {
+                      "type": {
                         "jsonType": "string",
                         "name": "string",
                         "title": "String",
@@ -3323,20 +3323,20 @@ Object {
                   "single": true,
                 },
               ],
-              "groups": Array [],
+              "groups": [],
               "jsonType": "object",
               "name": "author",
-              "options": Object {},
-              "orderings": Array [
-                Object {
-                  "by": Array [
-                    Object {
+              "options": {},
+              "orderings": [
+                {
+                  "by": [
+                    {
                       "direction": "asc",
                       "field": "name",
                     },
                   ],
-                  "i18n": Object {
-                    "title": Object {
+                  "i18n": {
+                    "title": {
                       "key": "default-orderings.name",
                       "ns": "studio",
                     },
@@ -3345,26 +3345,26 @@ Object {
                   "title": "Name",
                 },
               ],
-              "preview": Object {
-                "select": Object {
+              "preview": {
+                "select": {
                   "title": "name",
                 },
               },
               "title": "Author",
-              "type": Object {
-                "fields": Array [
-                  Object {
+              "type": {
+                "fields": [
+                  {
                     "fieldset": undefined,
                     "group": undefined,
                     "name": "name",
-                    "type": Object {
+                    "type": {
                       "jsonType": "string",
                       "name": "string",
-                      "preview": Object {
+                      "preview": {
                         "prepare": [Function],
                       },
                       "title": "Name",
-                      "type": Object {
+                      "type": {
                         "jsonType": "string",
                         "name": "string",
                         "title": "String",
@@ -3373,20 +3373,20 @@ Object {
                     },
                   },
                 ],
-                "fieldsets": Array [
-                  Object {
-                    "field": Object {
+                "fieldsets": [
+                  {
+                    "field": {
                       "fieldset": undefined,
                       "group": undefined,
                       "name": "name",
-                      "type": Object {
+                      "type": {
                         "jsonType": "string",
                         "name": "string",
-                        "preview": Object {
+                        "preview": {
                           "prepare": [Function],
                         },
                         "title": "Name",
-                        "type": Object {
+                        "type": {
                           "jsonType": "string",
                           "name": "string",
                           "title": "String",
@@ -3397,20 +3397,20 @@ Object {
                     "single": true,
                   },
                 ],
-                "groups": Array [],
+                "groups": [],
                 "jsonType": "object",
                 "name": "author",
-                "options": Object {},
-                "orderings": Array [
-                  Object {
-                    "by": Array [
-                      Object {
+                "options": {},
+                "orderings": [
+                  {
+                    "by": [
+                      {
                         "direction": "asc",
                         "field": "name",
                       },
                     ],
-                    "i18n": Object {
-                      "title": Object {
+                    "i18n": {
+                      "title": {
                         "key": "default-orderings.name",
                         "ns": "studio",
                       },
@@ -3419,33 +3419,33 @@ Object {
                     "title": "Name",
                   },
                 ],
-                "preview": Object {
-                  "select": Object {
+                "preview": {
+                  "select": {
                     "title": "name",
                   },
                 },
                 "title": "Author",
-                "type": Object {
+                "type": {
                   "jsonType": "object",
                   "name": "document",
                   "title": "Document",
                   "type": null,
                 },
-                Symbol(__cachedStringFields_4): Array [
-                  Object {
-                    "path": Array [
+                Symbol(__cachedStringFields_4): [
+                  {
+                    "path": [
                       "_id",
                     ],
                     "weight": 1,
                   },
-                  Object {
-                    "path": Array [
+                  {
+                    "path": [
                       "_type",
                     ],
                     "weight": 1,
                   },
-                  Object {
-                    "path": Array [
+                  {
+                    "path": [
                       "name",
                     ],
                     "weight": 10,
@@ -3454,7 +3454,7 @@ Object {
               },
             },
           ],
-          "type": Object {
+          "type": {
             "jsonType": "object",
             "name": "reference",
             "title": "Reference",
@@ -3462,63 +3462,63 @@ Object {
           },
         },
       ],
-      "decorators": Array [
-        Object {
+      "decorators": [
+        {
           "title": "Strong",
           "value": "strong",
         },
-        Object {
+        {
           "title": "Emphasis",
           "value": "em",
         },
-        Object {
+        {
           "title": "Code",
           "value": "code",
         },
-        Object {
+        {
           "title": "Strike through",
           "value": "strike-through",
         },
-        Object {
+        {
           "title": "Highlight",
           "value": "highlight",
         },
-        Object {
+        {
           "title": "Subscript",
           "value": "sub",
         },
-        Object {
+        {
           "title": "Superscript",
           "value": "sup",
         },
-        Object {
+        {
           "title": "Mark",
           "value": "mark",
         },
-        Object {
+        {
           "title": "Inserted",
           "value": "ins",
         },
-        Object {
+        {
           "title": "Small",
           "value": "small",
         },
       ],
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "name": "marks",
-          "type": Object {
+          "type": {
             "jsonType": "array",
             "name": "array",
-            "of": Array [
-              Object {
+            "of": [
+              {
                 "jsonType": "string",
                 "name": "string",
-                "preview": Object {
+                "preview": {
                   "prepare": [Function],
                 },
                 "title": "String",
-                "type": Object {
+                "type": {
                   "jsonType": "string",
                   "name": "string",
                   "title": "String",
@@ -3527,24 +3527,24 @@ Object {
               },
             ],
             "title": "Marks",
-            "type": Object {
+            "type": {
               "jsonType": "array",
               "name": "array",
-              "of": Array [],
+              "of": [],
               "type": null,
             },
           },
         },
-        Object {
+        {
           "name": "text",
-          "type": Object {
+          "type": {
             "jsonType": "string",
             "name": "string",
-            "preview": Object {
+            "preview": {
               "prepare": [Function],
             },
             "title": "Text",
-            "type": Object {
+            "type": {
               "jsonType": "string",
               "name": "string",
               "title": "String",
@@ -3554,18 +3554,18 @@ Object {
         },
       ],
       "jsonType": "object",
-      "marks": Array [],
+      "marks": [],
       "name": "span",
-      "options": Object {},
-      "preview": Object {
+      "options": {},
+      "preview": {
         "prepare": [Function],
-        "select": Object {
+        "select": {
           "marks": "marks",
           "text": "text",
         },
       },
       "title": "Span",
-      "type": Object {
+      "type": {
         "jsonType": "object",
         "name": "span",
         "title": "Span",
