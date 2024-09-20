@@ -1,4 +1,4 @@
-import {expect, test} from '@jest/globals'
+import {expect, test} from 'vitest'
 
 import {createSafeJsonParser} from '../src/createSafeJsonParser'
 
@@ -14,9 +14,9 @@ test('parse JSON', () => {
 test('parse JSON with interrupting error', () => {
   expect(() => parse('{"someString": "str{"error":{"description":"Some error"}}'))
     .toThrowErrorMatchingInlineSnapshot(`
-"Error parsing JSON: Some error
+      [Error: Error parsing JSON: Some error
 
-{\\"error\\":{\\"description\\":\\"Some error\\"}}
-"
-`)
+      {"error":{"description":"Some error"}}
+      ]
+    `)
 })
