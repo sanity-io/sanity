@@ -1,8 +1,6 @@
-import {fromPairs, partition, toPairs} from 'lodash'
 import {type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
-import {STICKY_PARAMS} from './stickyParams'
 import {
   type IntentParameters,
   type NavigateOptions,
@@ -89,49 +87,17 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
         intent: intentName,
         params,
         payload,
-        _searchParams: toPairs({
-          ...fromPairs((state._searchParams ?? []).filter(([key]) => STICKY_PARAMS.includes(key))),
-          ...fromPairs(_searchParams ?? []),
-        }),
+        _searchParams,
       })
     },
-    [routerProp, state._searchParams],
+    [routerProp],
   )
 
   const resolvePathFromState = useCallback(
-    (nextState: RouterState): string => {
-      const currentStateParams = state._searchParams || []
-      const nextStateParams = nextState._searchParams || []
-      const nextParams = STICKY_PARAMS.reduce((acc, param) => {
-        return replaceStickyParam(
-          acc,
-          param,
-          findParam(nextStateParams, param) ?? findParam(currentStateParams, param),
-        )
-      }, nextStateParams || [])
-
-      return routerProp.encode({
-        ...nextState,
-        _searchParams: nextParams,
-      })
+    (nextState: Record<string, unknown>): string => {
+      return routerProp.encode(nextState)
     },
-    [routerProp, state],
-  )
-
-  const handleNavigateStickyParam = useCallback(
-    (param: string, value: string | undefined, options: NavigateOptions = {}) => {
-      if (!STICKY_PARAMS.includes(param)) {
-        throw new Error('Parameter is not sticky')
-      }
-      onNavigate({
-        path: resolvePathFromState({
-          ...state,
-          _searchParams: [[param, value || '']],
-        }),
-        replace: options.replace,
-      })
-    },
-    [onNavigate, resolvePathFromState, state],
+    [routerProp],
   )
 
   const navigate = useCallback(
@@ -148,54 +114,17 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
     [onNavigate, resolveIntentLink],
   )
 
-  const [routerState, stickyParams] = useMemo(() => {
-    if (!state._searchParams) {
-      return [state, null]
-    }
-    const {_searchParams, ...rest} = state
-    const [sticky, restParams] = partition(_searchParams, ([key]) => STICKY_PARAMS.includes(key))
-    if (sticky.length === 0) {
-      return [state, null]
-    }
-    return [{...rest, _searchParams: restParams}, sticky]
-  }, [state])
-
   const router: RouterContextValue = useMemo(
     () => ({
       navigate,
       navigateIntent,
-      navigateStickyParam: handleNavigateStickyParam,
       navigateUrl: onNavigate,
       resolveIntentLink,
       resolvePathFromState,
-      state: routerState,
-      stickyParams: Object.fromEntries(stickyParams || []),
+      state,
     }),
-    [
-      handleNavigateStickyParam,
-      navigate,
-      navigateIntent,
-      onNavigate,
-      resolveIntentLink,
-      resolvePathFromState,
-      routerState,
-      stickyParams,
-    ],
+    [navigate, navigateIntent, onNavigate, resolveIntentLink, resolvePathFromState, state],
   )
 
   return <RouterContext.Provider value={router}>{props.children}</RouterContext.Provider>
-}
-
-function replaceStickyParam(
-  current: SearchParam[],
-  param: string,
-  value: string | undefined,
-): SearchParam[] {
-  const filtered = current.filter(([key]) => key !== param)
-  return value === undefined || value == '' ? filtered : [...filtered, [param, value]]
-}
-
-function findParam(searchParams: SearchParam[], key: string): string | undefined {
-  const entry = searchParams.find(([k]) => k === key)
-  return entry ? entry[1] : undefined
 }

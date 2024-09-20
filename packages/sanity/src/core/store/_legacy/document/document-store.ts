@@ -8,7 +8,8 @@ import {type LocaleSource} from '../../../i18n'
 import {type DocumentPreviewStore} from '../../../preview'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type Template} from '../../../templates'
-import {getDraftId, isDraftId} from '../../../util'
+import {getDraftId, isDraftId, isVersionId} from '../../../util'
+import {type ValidationStatus} from '../../../validation'
 import {type HistoryStore} from '../history'
 import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pair/checkoutPair'
 import {consistencyStatus} from './document-pair/consistencyStatus'
@@ -21,7 +22,7 @@ import {
   type OperationSuccess,
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
-import {validation, type ValidationStatus} from './document-pair/validation'
+import {validation} from './document-pair/validation'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
@@ -33,6 +34,9 @@ import {type IdPair} from './types'
 export type QueryParams = Record<string, string | number | boolean | string[]>
 
 function getIdPairFromPublished(publishedId: string): IdPair {
+  if (isVersionId(publishedId)) {
+    throw new Error('editOpsOf does not expect a version id.')
+  }
   if (isDraftId(publishedId)) {
     throw new Error('editOpsOf does not expect a draft id.')
   }

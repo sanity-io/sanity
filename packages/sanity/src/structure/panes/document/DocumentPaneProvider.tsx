@@ -48,7 +48,7 @@ import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
-import {DocumentURLCopied} from './__telemetry__'
+import {CreatedDraft, DocumentURLCopied} from './__telemetry__'
 import {
   DEFAULT_MENU_ITEM_GROUPS,
   EMPTY_PARAMS,
@@ -294,6 +294,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
 
   patchRef.current = (event: PatchEvent) => {
+    // when creating a new draft
+    if (!editState.draft && !editState.published) {
+      telemetry.log(CreatedDraft)
+    }
     patch.execute(toMutationPatches(event.patches), initialValue.value)
   }
 
@@ -538,8 +542,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     schemaType,
   ])
 
-  const formState = useFormState(schemaType!, {
-    value: displayed,
+  const formState = useFormState({
+    schemaType: schemaType!,
+    documentValue: displayed,
     readOnly,
     comparisonValue: compareValue,
     focusPath,

@@ -262,17 +262,26 @@ export function ArrayOfObjectsField(props: {
     [handleChange, member.field.value],
   )
 
-  const handlePrependItem = useCallback(
-    (item: any) => {
-      handleChange([setIfMissing([]), insert([ensureKey(item)], 'before', [0])])
+  const handleItemPrepend = useCallback(
+    (item: ObjectItem) => {
+      handleInsert({
+        items: [item],
+        position: 'before',
+        referenceItem: 0,
+      })
     },
-    [handleChange],
+    [handleInsert],
   )
-  const handleAppendItem = useCallback(
-    (item: any) => {
-      handleChange([setIfMissing([]), insert([ensureKey(item)], 'after', [-1])])
+
+  const handleItemAppend = useCallback(
+    (item: ObjectItem) => {
+      handleInsert({
+        items: [item],
+        position: 'after',
+        referenceItem: -1,
+      })
     },
-    [handleChange],
+    [handleInsert],
   )
 
   const handleRemoveItem = useCallback(
@@ -379,8 +388,8 @@ export function ArrayOfObjectsField(props: {
       onInsert: handleInsert,
       onItemMove: handleMoveItem,
       onItemRemove: handleRemoveItem,
-      onItemAppend: handleAppendItem,
-      onItemPrepend: handlePrependItem,
+      onItemAppend: handleItemAppend,
+      onItemPrepend: handleItemPrepend,
       onPathFocus: handleFocusChildPath,
       resolveInitialValue,
       onUpload: handleUpload,
@@ -417,8 +426,8 @@ export function ArrayOfObjectsField(props: {
     handleInsert,
     handleMoveItem,
     handleRemoveItem,
-    handleAppendItem,
-    handlePrependItem,
+    handleItemAppend,
+    handleItemPrepend,
     handleFocusChildPath,
     resolveInitialValue,
     handleUpload,
