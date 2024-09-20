@@ -5,4 +5,5 @@ export default defineWorkspace([
   'packages/@sanity/block-tools',
   'packages/@sanity/mutator',
   'packages/@sanity/schema',
+  'packages/@sanity/types',
 ])

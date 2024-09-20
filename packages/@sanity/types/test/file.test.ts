@@ -1,10 +1,10 @@
-import {describe, it} from '@jest/globals'
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
 import {type FileDefinition, type StringDefinition} from '@sanity/types'
+import {describe, it} from 'vitest'
 
 import {defineField, defineType} from '../src/schema/types'
 

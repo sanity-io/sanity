@@ -44,8 +44,8 @@
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
-    "test": "jest",
-    "test:watch": "jest --watchAll",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "watch": "pkg-utils watch"
   },
   "dependencies": {
@@ -53,10 +53,12 @@
     "@types/react": "^18.3.5"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/insert-menu": "1.0.9",
-    "rimraf": "^3.0.2"
+    "@vitejs/plugin-react": "^4.3.1",
+    "react": "^18.3.1",
+    "rimraf": "^3.0.2",
+    "vitest": "^2.1.1"
   }
 }
