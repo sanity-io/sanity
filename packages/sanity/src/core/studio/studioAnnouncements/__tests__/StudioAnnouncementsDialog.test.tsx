@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
-import {afterEach, describe, expect, jest, test} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {defineConfig} from 'sanity'
+import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {
@@ -12,13 +12,13 @@ import {
 import {StudioAnnouncementsDialog} from '../StudioAnnouncementsDialog'
 import {type StudioAnnouncementDocument} from '../types'
 
-jest.mock('@sanity/telemetry/react', () => ({
-  useTelemetry: jest.fn().mockReturnValue({
-    log: jest.fn(),
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn().mockReturnValue({
+    log: vi.fn(),
   }),
 }))
 
-jest.mock('../../../version', () => ({
+vi.mock('../../../version', () => ({
   SANITY_VERSION: '3.57.0',
 }))
 
@@ -103,10 +103,10 @@ async function createAnnouncementWrapper() {
 
 describe('StudioAnnouncementsCard', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
   test('renders correctly with unseen documents', async () => {
-    const onCloseMock = jest.fn()
+    const onCloseMock = vi.fn()
 
     const wrapper = await createAnnouncementWrapper()
     await render(
@@ -139,7 +139,7 @@ describe('StudioAnnouncementsCard', () => {
     expect(closeButton).toBeInTheDocument()
   })
   test('calls onClose when the close button is clicked', async () => {
-    const onCloseMock = jest.fn()
+    const onCloseMock = vi.fn()
 
     const wrapper = await createAnnouncementWrapper()
     await render(
@@ -158,10 +158,10 @@ describe('StudioAnnouncementsCard', () => {
   })
 
   test('logs telemetry when link is clicked and announcement viewed', async () => {
-    const onCloseMock = jest.fn()
-    const mockLog = jest.fn()
-    const {useTelemetry} = require('@sanity/telemetry/react')
-    useTelemetry.mockReturnValue({log: mockLog})
+    const onCloseMock = vi.fn()
+    const mockLog = vi.fn()
+    const {useTelemetry} = await import('@sanity/telemetry/react')
+    ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
     const wrapper = await createAnnouncementWrapper()
     await render(
       <StudioAnnouncementsDialog

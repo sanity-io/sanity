@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import assert from 'node:assert'
 
-import {describe, expect, it} from '@jest/globals'
+import {describe, expect, it} from 'vitest'
 
 import {type WorkspaceLike} from '../../workspaces'
 import {createCommonBasePathRegex} from '../createCommonBasePathRegex'

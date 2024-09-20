@@ -1,13 +1,13 @@
-import {beforeEach, expect, jest, test} from '@jest/globals'
 import {defineField, defineType} from '@sanity/types'
+import {beforeEach, expect, test, vi} from 'vitest'
 
 import {createSchema} from '../../../../schema/createSchema'
 import {createImmutableReconcile} from '../immutableReconcile'
 
-const immutableReconcile = createImmutableReconcile({decorator: jest.fn})
+const immutableReconcile = createImmutableReconcile({decorator: vi.fn})
 
 beforeEach(() => {
-  ;(immutableReconcile as jest.Mock).mockClear()
+  ;(immutableReconcile as vi.Mock).mockClear()
 })
 
 test('it preserves previous value if shallow equal', () => {

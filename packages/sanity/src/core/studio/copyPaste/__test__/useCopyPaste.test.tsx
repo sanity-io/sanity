@@ -1,24 +1,23 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {type ObjectSchemaType} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {act, renderHook} from '@testing-library/react'
 import {type FIXME, PatchEvent, type SanityClient} from 'sanity'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {useCopyPaste} from '../CopyPasteProvider'
 import {type SanityClipboardItem} from '../types'
 import {getClipboardItem} from '../utils'
-import {setupClipboard, writeItemsToClipboard} from './jestClipboard'
 import {createMockClient} from './mockClient'
 import {mockTypes, schema} from './schema'
+import {setupClipboard, writeItemsToClipboard} from './viClipboard'
 
-jest.mock('@sanity/ui', () => {
+vi.mock('@sanity/ui', async () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = jest.requireActual<typeof import('@sanity/ui')>('@sanity/ui')
-
+  const actual = await vi.importActual<typeof import('@sanity/ui')>('@sanity/ui')
   return {
     ...actual,
-    useToast: jest.fn(),
+    useToast: vi.fn(),
   }
 })
 
@@ -41,11 +40,11 @@ const setupMockClipboardRead = async (mockClipboardItem: SanityClipboardItem) =>
 let mockClient: SanityClient
 
 describe('useCopyPaste', () => {
-  const mockToast = {push: jest.fn(), version: 0 as const}
-  const mockOnChange = jest.fn()
+  const mockToast = {push: vi.fn(), version: 0 as const}
+  const mockOnChange = vi.fn()
 
   beforeEach(() => {
-    ;(useToast as jest.Mock).mockReturnValue(mockToast)
+    ;(useToast as ReturnType<typeof vi.fn>).mockReturnValue(mockToast)
 
     mockClient = createMockClient([
       {_id: 'doc1', _type: 'author', name: 'John Doe'},
@@ -54,7 +53,7 @@ describe('useCopyPaste', () => {
       {_id: 'file1', _type: 'sanity.fileAsset', mimeType: 'application/pdf'},
     ]) as FIXME as SanityClient
 
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const setupUseCopyPaste = async () => {

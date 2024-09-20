@@ -1,36 +1,36 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`GraphQL - Schema extraction Should be able to extract schema 1`] = `
-Object {
-  "interfaces": Array [
-    Object {
+exports[`GraphQL - Schema extraction > Should be able to extract schema 1`] = `
+{
+  "interfaces": [
+    {
       "description": "A Sanity document",
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": "Date the document was created",
           "fieldName": "_createdAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
+        {
           "description": "Document ID",
           "fieldName": "_id",
           "isNullable": true,
           "type": "ID",
         },
-        Object {
+        {
           "description": "Current document revision",
           "fieldName": "_rev",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Document type",
           "fieldName": "_type",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Date the document was last modified",
           "fieldName": "_updatedAt",
           "isNullable": true,
@@ -41,65 +41,65 @@ Object {
       "name": "Document",
     },
   ],
-  "types": Array [
-    Object {
+  "types": [
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": "Date the document was created",
           "fieldName": "_createdAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
+        {
           "description": "Document ID",
           "fieldName": "_id",
           "isNullable": true,
           "type": "ID",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": "Current document revision",
           "fieldName": "_rev",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Document type",
           "fieldName": "_type",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Date the document was last modified",
           "fieldName": "_updatedAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "String",
           },
           "description": undefined,
           "fieldName": "awards",
           "kind": "List",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "bestFriend",
           "isReference": true,
           "type": "Author",
         },
-        Object {
+        {
           "fieldName": "image",
           "type": "Image",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "Block",
           },
           "description": undefined,
@@ -109,58 +109,58 @@ Object {
           "originalName": "minimalBlock",
           "type": "JSON",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "name",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "role",
           "type": "String",
         },
       ],
-      "interfaces": Array [
+      "interfaces": [
         "Document",
       ],
       "kind": "Type",
       "name": "Author",
       "originalName": "author",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "Span",
           },
           "description": undefined,
           "fieldName": "children",
           "kind": "List",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "level",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "listItem",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "style",
           "type": "String",
@@ -170,43 +170,43 @@ Object {
       "name": "Block",
       "originalName": "block",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
-      "crossDatasetReferenceMetadata": Object {
+    {
+      "crossDatasetReferenceMetadata": {
         "dataset": "production",
-        "typeNames": Array [
+        "typeNames": [
           "person",
         ],
       },
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_dataset",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_projectId",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_ref",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_weak",
           "type": "Boolean",
@@ -216,40 +216,40 @@ Object {
       "name": "CdrPersonReference",
       "originalName": "cdrPersonReference",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "code",
           "type": "Text",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "filename",
           "type": "String",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "Float",
           },
           "description": undefined,
           "fieldName": "highlightedLines",
           "kind": "List",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "language",
           "type": "String",
@@ -259,40 +259,40 @@ Object {
       "name": "Code",
       "originalName": "code",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "alpha",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "hex",
           "type": "String",
         },
-        Object {
+        {
           "fieldName": "hsl",
           "type": "HslaColor",
         },
-        Object {
+        {
           "fieldName": "hsv",
           "type": "HsvaColor",
         },
-        Object {
+        {
           "fieldName": "rgb",
           "type": "RgbaColor",
         },
@@ -301,37 +301,37 @@ Object {
       "name": "Color",
       "originalName": "color",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_dataset",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_projectId",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_ref",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_weak",
           "type": "Boolean",
@@ -341,36 +341,36 @@ Object {
       "name": "CrossDatasetReference",
       "originalName": "crossDatasetReference",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "deprecationReason": "This object type has been deprecated",
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "deprecationReason": "This object type has been deprecated",
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "deprecationReason": "This object type has been deprecated",
           "description": undefined,
           "fieldName": "description",
           "type": "String",
         },
-        Object {
+        {
           "deprecationReason": "This object type has been deprecated",
           "description": undefined,
           "fieldName": "excerpt",
           "type": "String",
         },
-        Object {
+        {
           "deprecationReason": "This object type has been deprecated",
           "description": undefined,
           "fieldName": "name",
@@ -381,114 +381,114 @@ Object {
       "name": "DeprecatedObject",
       "originalName": "deprecatedObject",
       "type": "Object",
-      Symbol(internal): Object {
+      Symbol(internal): {
         "deprecationReason": "This object type has been deprecated",
       },
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": "Date the document was created",
           "fieldName": "_createdAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
+        {
           "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": "Document ID",
           "fieldName": "_id",
           "isNullable": true,
           "type": "ID",
         },
-        Object {
+        {
           "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": "Current document revision",
           "fieldName": "_rev",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": "Document type",
           "fieldName": "_type",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": "Date the document was last modified",
           "fieldName": "_updatedAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
+        {
           "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": undefined,
           "fieldName": "title",
           "type": "String",
         },
       ],
-      "interfaces": Array [
+      "interfaces": [
         "Document",
       ],
       "kind": "Type",
       "name": "DocumentActionsTest",
       "originalName": "documentActionsTest",
       "type": "Object",
-      Symbol(internal): Object {
+      Symbol(internal): {
         "deprecationReason": "Entire \`Document actions\` document type deprecated",
       },
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": "Date the document was created",
           "fieldName": "_createdAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
+        {
           "description": "Document ID",
           "fieldName": "_id",
           "isNullable": true,
           "type": "ID",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": "Current document revision",
           "fieldName": "_rev",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Document type",
           "fieldName": "_type",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Date the document was last modified",
           "fieldName": "_updatedAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
-          "crossDatasetReferenceMetadata": Object {
+        {
+          "crossDatasetReferenceMetadata": {
             "dataset": "production",
-            "typeNames": Array [
+            "typeNames": [
               "person",
               "place",
             ],
@@ -496,10 +496,10 @@ Object {
           "fieldName": "cdrFieldInline",
           "type": "CrossDatasetReference",
         },
-        Object {
-          "crossDatasetReferenceMetadata": Object {
+        {
+          "crossDatasetReferenceMetadata": {
             "dataset": "production",
-            "typeNames": Array [
+            "typeNames": [
               "person",
             ],
           },
@@ -507,29 +507,29 @@ Object {
           "type": "CdrPersonReference",
         },
       ],
-      "interfaces": Array [
+      "interfaces": [
         "Document",
       ],
       "kind": "Type",
       "name": "DocumentWithCdrField",
       "originalName": "documentWithCdrField",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "asset",
           "isReference": true,
@@ -540,32 +540,32 @@ Object {
       "name": "File",
       "originalName": "file",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "alt",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "lat",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "lng",
           "type": "Float",
@@ -575,37 +575,37 @@ Object {
       "name": "Geopoint",
       "originalName": "geopoint",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "a",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "h",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "l",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "s",
           "type": "Float",
@@ -615,37 +615,37 @@ Object {
       "name": "HslaColor",
       "originalName": "hslaColor",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "a",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "h",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "s",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "v",
           "type": "Float",
@@ -655,32 +655,32 @@ Object {
       "name": "HsvaColor",
       "originalName": "hsvaColor",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "asset",
           "isReference": true,
           "type": "SanityImageAsset",
         },
-        Object {
+        {
           "fieldName": "crop",
           "type": "SanityImageCrop",
         },
-        Object {
+        {
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
@@ -689,22 +689,22 @@ Object {
       "name": "Image",
       "originalName": "image",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "asset",
           "isReference": true,
@@ -715,42 +715,42 @@ Object {
       "name": "MuxVideo",
       "originalName": "mux.video",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "assetId",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "filename",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "playbackId",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "status",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "thumbTime",
           "type": "Float",
@@ -760,147 +760,147 @@ Object {
       "name": "MuxVideoAsset",
       "originalName": "mux.videoAsset",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "ObjectWithNestedArray",
           },
           "description": undefined,
           "fieldName": "arrayNo1",
           "kind": "List",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "ObjectWithNestedArray",
           },
           "description": undefined,
           "fieldName": "arrayNo11",
           "kind": "List",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "ObjectWithNestedArray",
           },
           "description": undefined,
           "fieldName": "arrayNo13",
           "kind": "List",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "ObjectWithNestedArray",
           },
           "description": undefined,
           "fieldName": "arrayNo15",
           "kind": "List",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "ObjectWithNestedArray",
           },
           "description": undefined,
           "fieldName": "arrayNo17",
           "kind": "List",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "ObjectWithNestedArray",
           },
           "description": undefined,
           "fieldName": "arrayNo19",
           "kind": "List",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "ObjectWithNestedArray",
           },
           "description": undefined,
           "fieldName": "arrayNo3",
           "kind": "List",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "ObjectWithNestedArray",
           },
           "description": undefined,
           "fieldName": "arrayNo5",
           "kind": "List",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "ObjectWithNestedArray",
           },
           "description": undefined,
           "fieldName": "arrayNo7",
           "kind": "List",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "ObjectWithNestedArray",
           },
           "description": undefined,
           "fieldName": "arrayNo9",
           "kind": "List",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "fieldNo0",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "fieldNo10",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "fieldNo12",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "fieldNo14",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "fieldNo16",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "fieldNo18",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "fieldNo2",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "fieldNo4",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "fieldNo6",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "fieldNo8",
           "type": "String",
@@ -910,37 +910,37 @@ Object {
       "name": "ObjectWithNestedArray",
       "originalName": "objectWithNestedArray",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "calculated",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "nominal",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "optimistic",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "pessimistic",
           "type": "Float",
@@ -950,109 +950,109 @@ Object {
       "name": "PertEstimate",
       "originalName": "pertEstimate",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": "Date the document was created",
           "fieldName": "_createdAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
+        {
           "description": "Document ID",
           "fieldName": "_id",
           "isNullable": true,
           "type": "ID",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": "Current document revision",
           "fieldName": "_rev",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Document type",
           "fieldName": "_type",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Date the document was last modified",
           "fieldName": "_updatedAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "String",
           },
           "description": undefined,
           "fieldName": "primitives",
           "kind": "List",
         },
-        Object {
+        {
           "deprecationReason": "This object type has been deprecated",
           "fieldName": "someObject",
           "type": "DeprecatedObject",
         },
-        Object {
+        {
           "deprecationReason": "This string type has been deprecated",
           "description": undefined,
           "fieldName": "someString",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "title",
           "type": "String",
         },
       ],
-      "interfaces": Array [
+      "interfaces": [
         "Document",
       ],
       "kind": "Type",
       "name": "Poppers",
       "originalName": "poppers",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "a",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "b",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "g",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "r",
           "type": "Float",
@@ -1062,33 +1062,33 @@ Object {
       "name": "RgbaColor",
       "originalName": "rgbaColor",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": "The unique ID for the asset within the originating source so you can programatically find back to it",
           "fieldName": "id",
           "type": "String",
         },
-        Object {
+        {
           "deprecationReason": "This field is no longer used",
           "description": "A canonical name for the source this asset is originating from",
           "fieldName": "name",
           "type": "String",
         },
-        Object {
+        {
           "description": "A URL to find more information about this asset in the originating source",
           "fieldName": "url",
           "type": "String",
@@ -1098,270 +1098,270 @@ Object {
       "name": "SanityAssetSourceData",
       "originalName": "sanity.assetSourceData",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": "Date the document was created",
           "fieldName": "_createdAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
+        {
           "description": "Document ID",
           "fieldName": "_id",
           "isNullable": true,
           "type": "ID",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": "Current document revision",
           "fieldName": "_rev",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Document type",
           "fieldName": "_type",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Date the document was last modified",
           "fieldName": "_updatedAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "altText",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "assetId",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "description",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "extension",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "label",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "mimeType",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "originalFilename",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "path",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "sha1hash",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "size",
           "type": "Float",
         },
-        Object {
+        {
           "fieldName": "source",
           "type": "SanityAssetSourceData",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "title",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "url",
           "type": "String",
         },
       ],
-      "interfaces": Array [
+      "interfaces": [
         "Document",
       ],
       "kind": "Type",
       "name": "SanityFileAsset",
       "originalName": "sanity.fileAsset",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": "Date the document was created",
           "fieldName": "_createdAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
+        {
           "description": "Document ID",
           "fieldName": "_id",
           "isNullable": true,
           "type": "ID",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": "Current document revision",
           "fieldName": "_rev",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Document type",
           "fieldName": "_type",
           "isNullable": true,
           "type": "String",
         },
-        Object {
+        {
           "description": "Date the document was last modified",
           "fieldName": "_updatedAt",
           "isNullable": true,
           "type": "Datetime",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "altText",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "assetId",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "description",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "extension",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "label",
           "type": "String",
         },
-        Object {
+        {
           "fieldName": "metadata",
           "type": "SanityImageMetadata",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "mimeType",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "originalFilename",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "path",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "sha1hash",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "size",
           "type": "Float",
         },
-        Object {
+        {
           "fieldName": "source",
           "type": "SanityAssetSourceData",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "title",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "uploadId",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "url",
           "type": "String",
         },
       ],
-      "interfaces": Array [
+      "interfaces": [
         "Document",
       ],
       "kind": "Type",
       "name": "SanityImageAsset",
       "originalName": "sanity.imageAsset",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "bottom",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "left",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "right",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "top",
           "type": "Float",
@@ -1371,32 +1371,32 @@ Object {
       "name": "SanityImageCrop",
       "originalName": "sanity.imageCrop",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "aspectRatio",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "height",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "width",
           "type": "Float",
@@ -1406,37 +1406,37 @@ Object {
       "name": "SanityImageDimensions",
       "originalName": "sanity.imageDimensions",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "height",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "width",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "x",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "y",
           "type": "Float",
@@ -1446,50 +1446,50 @@ Object {
       "name": "SanityImageHotspot",
       "originalName": "sanity.imageHotspot",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "blurHash",
           "type": "String",
         },
-        Object {
+        {
           "fieldName": "dimensions",
           "type": "SanityImageDimensions",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "hasAlpha",
           "type": "Boolean",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "isOpaque",
           "type": "Boolean",
         },
-        Object {
+        {
           "fieldName": "location",
           "type": "Geopoint",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "lqip",
           "type": "String",
         },
-        Object {
+        {
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
@@ -1498,46 +1498,46 @@ Object {
       "name": "SanityImageMetadata",
       "originalName": "sanity.imageMetadata",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "fieldName": "darkMuted",
           "type": "SanityImagePaletteSwatch",
         },
-        Object {
+        {
           "fieldName": "darkVibrant",
           "type": "SanityImagePaletteSwatch",
         },
-        Object {
+        {
           "fieldName": "dominant",
           "type": "SanityImagePaletteSwatch",
         },
-        Object {
+        {
           "fieldName": "lightMuted",
           "type": "SanityImagePaletteSwatch",
         },
-        Object {
+        {
           "fieldName": "lightVibrant",
           "type": "SanityImagePaletteSwatch",
         },
-        Object {
+        {
           "fieldName": "muted",
           "type": "SanityImagePaletteSwatch",
         },
-        Object {
+        {
           "fieldName": "vibrant",
           "type": "SanityImagePaletteSwatch",
         },
@@ -1546,37 +1546,37 @@ Object {
       "name": "SanityImagePalette",
       "originalName": "sanity.imagePalette",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "background",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "foreground",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "population",
           "type": "Float",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "title",
           "type": "String",
@@ -1586,22 +1586,22 @@ Object {
       "name": "SanityImagePaletteSwatch",
       "originalName": "sanity.imagePaletteSwatch",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "current",
           "type": "String",
@@ -1611,30 +1611,30 @@ Object {
       "name": "Slug",
       "originalName": "slug",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
-    Object {
+    {
       "description": undefined,
-      "fields": Array [
-        Object {
+      "fields": [
+        {
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
-        Object {
-          "children": Object {
+        {
+          "children": {
             "type": "String",
           },
           "description": undefined,
           "fieldName": "marks",
           "kind": "List",
         },
-        Object {
+        {
           "description": undefined,
           "fieldName": "text",
           "type": "String",
@@ -1644,7 +1644,7 @@ Object {
       "name": "Span",
       "originalName": "span",
       "type": "Object",
-      Symbol(internal): Object {},
+      Symbol(internal): {},
     },
   ],
 }

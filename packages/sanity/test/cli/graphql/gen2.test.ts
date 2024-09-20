@@ -1,5 +1,5 @@
-import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {orderBy} from 'lodash'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphql/extractFromSanitySchema'
 import generateSchema from '../../../src/_internal/cli/actions/graphql/gen2'
@@ -7,12 +7,12 @@ import testStudioSchema from './fixtures/test-studio'
 
 describe('GraphQL - Generation 2', () => {
   beforeEach(() => {
-    jest.useFakeTimers()
-    jest.resetModules()
+    vi.useFakeTimers()
+    vi.resetModules()
   })
 
   afterEach(() => {
-    jest.runAllTimers()
+    vi.runAllTimers()
   })
 
   /**

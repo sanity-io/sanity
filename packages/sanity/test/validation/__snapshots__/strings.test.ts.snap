@@ -1,354 +1,354 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`string custom async rule with string: not a palindrome 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > custom async rule with string > not a palindrome 1`] = `
+[
+  {
+    "item": {
       "message": "Must be a palindrome!",
     },
     "level": "error",
     "message": "Must be a palindrome!",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string custom rule with string: not a palindrome 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > custom rule with string > not a palindrome 1`] = `
+[
+  {
+    "item": {
       "message": "Must be a palindrome!",
     },
     "level": "error",
     "message": "Must be a palindrome!",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string exact length constraint: exact length: too long 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > exact length constraint > exact length: too long 1`] = `
+[
+  {
+    "item": {
       "message": "Must be exactly 5 characters long",
     },
     "level": "error",
     "message": "Must be exactly 5 characters long",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string exact length constraint: exact length: too short 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > exact length constraint > exact length: too short 1`] = `
+[
+  {
+    "item": {
       "message": "Must be exactly 5 characters long",
     },
     "level": "error",
     "message": "Must be exactly 5 characters long",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string exact length constraint: exact length: valid 1`] = `Array []`;
+exports[`string > exact length constraint > exact length: valid 1`] = `[]`;
 
-exports[`string lowercase constraint: lowercase: all uppercase 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > lowercase constraint > lowercase: all uppercase 1`] = `
+[
+  {
+    "item": {
       "message": "Must be all lowercase characters",
     },
     "level": "error",
     "message": "Must be all lowercase characters",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string lowercase constraint: lowercase: locale characters 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > lowercase constraint > lowercase: locale characters 1`] = `
+[
+  {
+    "item": {
       "message": "Must be all lowercase characters",
     },
     "level": "error",
     "message": "Must be all lowercase characters",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string lowercase constraint: lowercase: some uppercase 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > lowercase constraint > lowercase: some uppercase 1`] = `
+[
+  {
+    "item": {
       "message": "Must be all lowercase characters",
     },
     "level": "error",
     "message": "Must be all lowercase characters",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string lowercase constraint: lowercase: valid 1`] = `Array []`;
+exports[`string > lowercase constraint > lowercase: valid 1`] = `[]`;
 
-exports[`string max length constraint: max length: too long 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > max length constraint > max length: too long 1`] = `
+[
+  {
+    "item": {
       "message": "Must be at most 5 characters long",
     },
     "level": "error",
     "message": "Must be at most 5 characters long",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string max length constraint: max length: valid 1`] = `Array []`;
+exports[`string > max length constraint > max length: valid 1`] = `[]`;
 
-exports[`string min length constraint: min length: too short 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > min length constraint > min length: too short 1`] = `
+[
+  {
+    "item": {
       "message": "Must be at least 2 characters long",
     },
     "level": "error",
     "message": "Must be at least 2 characters long",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string min length constraint: min length: valid 1`] = `Array []`;
+exports[`string > min length constraint > min length: valid 1`] = `[]`;
 
-exports[`string regex constraint (custom pattern name): regex: match w/ custom pattern name 1`] = `Array []`;
+exports[`string > regex constraint (custom pattern name) > regex: match w/ custom pattern name 1`] = `[]`;
 
-exports[`string regex constraint (custom pattern name): regex: non-match w/ custom pattern name 1`] = `
-Array [
-  Object {
-    "item": Object {
-      "message": "Does not match \\"PascalCase\\"-pattern",
+exports[`string > regex constraint (custom pattern name) > regex: non-match w/ custom pattern name 1`] = `
+[
+  {
+    "item": {
+      "message": "Does not match "PascalCase"-pattern",
     },
     "level": "error",
-    "message": "Does not match \\"PascalCase\\"-pattern",
-    "path": Array [],
+    "message": "Does not match "PascalCase"-pattern",
+    "path": [],
   },
 ]
 `;
 
-exports[`string regex constraint (custom pattern name, as options): regex: match w/ custom pattern name (opt) 1`] = `Array []`;
+exports[`string > regex constraint (custom pattern name, as options) > regex: match w/ custom pattern name (opt) 1`] = `[]`;
 
-exports[`string regex constraint (custom pattern name, as options): regex: non-match w/ custom pattern name (opt) 1`] = `
-Array [
-  Object {
-    "item": Object {
-      "message": "Does not match \\"PascalCase\\"-pattern",
+exports[`string > regex constraint (custom pattern name, as options) > regex: non-match w/ custom pattern name (opt) 1`] = `
+[
+  {
+    "item": {
+      "message": "Does not match "PascalCase"-pattern",
     },
     "level": "error",
-    "message": "Does not match \\"PascalCase\\"-pattern",
-    "path": Array [],
+    "message": "Does not match "PascalCase"-pattern",
+    "path": [],
   },
 ]
 `;
 
-exports[`string regex constraint (inverted): regex: inverted match 1`] = `
-Array [
-  Object {
-    "item": Object {
-      "message": "Should not match \\"/^[A-Z][a-z]+$/\\"-pattern",
+exports[`string > regex constraint (inverted) > regex: inverted match 1`] = `
+[
+  {
+    "item": {
+      "message": "Should not match "/^[A-Z][a-z]+$/"-pattern",
     },
     "level": "error",
-    "message": "Should not match \\"/^[A-Z][a-z]+$/\\"-pattern",
-    "path": Array [],
+    "message": "Should not match "/^[A-Z][a-z]+$/"-pattern",
+    "path": [],
   },
 ]
 `;
 
-exports[`string regex constraint (inverted): regex: inverted non-match 1`] = `Array []`;
+exports[`string > regex constraint (inverted) > regex: inverted non-match 1`] = `[]`;
 
-exports[`string regex constraint: regex: match 1`] = `Array []`;
+exports[`string > regex constraint > regex: match 1`] = `[]`;
 
-exports[`string regex constraint: regex: non-match 1`] = `
-Array [
-  Object {
-    "item": Object {
-      "message": "Does not match \\"/^[A-Z][a-z]+$/\\"-pattern",
+exports[`string > regex constraint > regex: non-match 1`] = `
+[
+  {
+    "item": {
+      "message": "Does not match "/^[A-Z][a-z]+$/"-pattern",
     },
     "level": "error",
-    "message": "Does not match \\"/^[A-Z][a-z]+$/\\"-pattern",
-    "path": Array [],
+    "message": "Does not match "/^[A-Z][a-z]+$/"-pattern",
+    "path": [],
   },
 ]
 `;
 
-exports[`string required constraint: required: empty string 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > required constraint > required: empty string 1`] = `
+[
+  {
+    "item": {
       "message": "Required",
     },
     "level": "error",
     "message": "Required",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string required constraint: required: null 1`] = `
-Array [
-  Object {
-    "item": Object {
-      "message": "Expected type \\"String\\", got \\"null\\"",
+exports[`string > required constraint > required: null 1`] = `
+[
+  {
+    "item": {
+      "message": "Expected type "String", got "null"",
     },
     "level": "error",
-    "message": "Expected type \\"String\\", got \\"null\\"",
-    "path": Array [],
+    "message": "Expected type "String", got "null"",
+    "path": [],
   },
-  Object {
-    "item": Object {
+  {
+    "item": {
       "message": "Required",
     },
     "level": "error",
     "message": "Required",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string required constraint: required: undefined 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > required constraint > required: undefined 1`] = `
+[
+  {
+    "item": {
       "message": "Required",
     },
     "level": "error",
     "message": "Required",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string required constraint: required: valid 1`] = `Array []`;
+exports[`string > required constraint > required: valid 1`] = `[]`;
 
-exports[`string uppercase constraint: uppercase: all lowercase 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > uppercase constraint > uppercase: all lowercase 1`] = `
+[
+  {
+    "item": {
       "message": "Must be all uppercase characters",
     },
     "level": "error",
     "message": "Must be all uppercase characters",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string uppercase constraint: uppercase: locale characters 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > uppercase constraint > uppercase: locale characters 1`] = `
+[
+  {
+    "item": {
       "message": "Must be all uppercase characters",
     },
     "level": "error",
     "message": "Must be all uppercase characters",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string uppercase constraint: uppercase: some lowercase 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > uppercase constraint > uppercase: some lowercase 1`] = `
+[
+  {
+    "item": {
       "message": "Must be all uppercase characters",
     },
     "level": "error",
     "message": "Must be all uppercase characters",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string uppercase constraint: uppercase: some lowercase 2`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > uppercase constraint > uppercase: some lowercase 2`] = `
+[
+  {
+    "item": {
       "message": "Must be all uppercase characters",
     },
     "level": "error",
     "message": "Must be all uppercase characters",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string uppercase constraint: uppercase: valid 1`] = `Array []`;
+exports[`string > uppercase constraint > uppercase: valid 1`] = `[]`;
 
-exports[`string uri constraint (credentials): uri: credentials specified but not allowed 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > uri constraint (credentials) > uri: credentials specified but not allowed 1`] = `
+[
+  {
+    "item": {
       "message": "Username/password not allowed",
     },
     "level": "error",
     "message": "Username/password not allowed",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string uri constraint (credentials): uri: username specified but not allowed 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > uri constraint (credentials) > uri: username specified but not allowed 1`] = `
+[
+  {
+    "item": {
       "message": "Username/password not allowed",
     },
     "level": "error",
     "message": "Username/password not allowed",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string uri constraint (invalid protocol): uri: protocol non-match 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > uri constraint (invalid protocol) > uri: protocol non-match 1`] = `
+[
+  {
+    "item": {
       "message": "Does not match allowed protocols/schemes",
     },
     "level": "error",
     "message": "Does not match allowed protocols/schemes",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string uri constraint (with unicode chars): uri: non-match 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > uri constraint (with unicode chars) > uri: non-match 1`] = `
+[
+  {
+    "item": {
       "message": "Not a valid URL",
     },
     "level": "error",
     "message": "Not a valid URL",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`string uri constraint: uri: non-match 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`string > uri constraint > uri: non-match 1`] = `
+[
+  {
+    "item": {
       "message": "Not a valid URL",
     },
     "level": "error",
     "message": "Not a valid URL",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;

@@ -1,6 +1,6 @@
-import {describe, expect, it} from '@jest/globals'
 import {defineField} from '@sanity/types'
 import userEvent from '@testing-library/user-event'
+import {describe, expect, it} from 'vitest'
 
 import {renderObjectInput} from '../../../../../../test/form'
 import {type FieldProps} from '../../../types'

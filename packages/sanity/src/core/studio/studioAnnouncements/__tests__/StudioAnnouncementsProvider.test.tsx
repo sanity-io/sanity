@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
-import {beforeAll, beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {fireEvent, render, renderHook, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {of} from 'rxjs'
 import {defineConfig} from 'sanity'
+import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {useClient} from '../../../hooks/useClient'
@@ -19,36 +19,35 @@ import {type StudioAnnouncementDocument} from '../types'
 import {useSeenAnnouncements} from '../useSeenAnnouncements'
 import {useStudioAnnouncements} from '../useStudioAnnouncements'
 
-jest.mock('@sanity/telemetry/react', () => ({
-  useTelemetry: jest.fn().mockReturnValue({
-    log: jest.fn(),
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn().mockReturnValue({
+    log: vi.fn(),
   }),
 }))
 
-jest.mock('@sanity/client', () => ({
-  createClient: jest.fn().mockReturnValue({
+vi.mock('@sanity/client', () => ({
+  createClient: vi.fn().mockReturnValue({
     observable: {
-      fetch: jest.fn(),
+      fetch: vi.fn(),
     },
   }),
 }))
 
-jest.mock('../../../hooks/useClient')
-const useClientMock = useClient as jest.Mock<typeof useClient>
+vi.mock('../../../hooks/useClient')
+const useClientMock = useClient as ReturnType<typeof vi.fn>
 
 const mockClient = (announcements: StudioAnnouncementDocument[]) => {
   useClientMock.mockReturnValue({
     observable: {
-      // @ts-expect-error this intents to mock only the observable.
       request: () => of(announcements),
     },
   })
 }
 
-jest.mock('../useSeenAnnouncements')
-const seenAnnouncementsMock = useSeenAnnouncements as jest.Mock
+vi.mock('../useSeenAnnouncements')
+const seenAnnouncementsMock = useSeenAnnouncements as ReturnType<typeof vi.fn>
 
-jest.mock('../../../version', () => ({
+vi.mock('../../../version', () => ({
   SANITY_VERSION: '3.57.0',
 }))
 
@@ -104,10 +103,10 @@ describe('StudioAnnouncementsProvider', () => {
   })
   describe('if seen announcements is loading', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       seenAnnouncementsMock.mockReturnValue([
         of({loading: true, value: null, error: null}),
-        jest.fn(),
+        vi.fn(),
       ])
       mockClient(mockAnnouncements)
     })
@@ -126,10 +125,10 @@ describe('StudioAnnouncementsProvider', () => {
   })
   describe('if seen announcements failed', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       seenAnnouncementsMock.mockReturnValue([
         of({loading: false, value: null, error: new Error('something went wrong')}),
-        jest.fn(),
+        vi.fn(),
       ])
       mockClient(mockAnnouncements)
     })
@@ -148,11 +147,8 @@ describe('StudioAnnouncementsProvider', () => {
   })
   describe('if seen announcements is not loading and has no values', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
-      seenAnnouncementsMock.mockReturnValue([
-        of({value: [], error: null, loading: false}),
-        jest.fn(),
-      ])
+      vi.clearAllMocks()
+      seenAnnouncementsMock.mockReturnValue([of({value: [], error: null, loading: false}), vi.fn()])
       mockClient(mockAnnouncements)
     })
     test('returns unseen announcements', () => {
@@ -171,11 +167,11 @@ describe('StudioAnnouncementsProvider', () => {
   })
   describe('if seen announcements has values', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       // It doesn't show the first element
       seenAnnouncementsMock.mockReturnValue([
         of({value: ['studioAnnouncement-1'], error: null, loading: false}),
-        jest.fn(),
+        vi.fn(),
       ])
 
       mockClient(mockAnnouncements)
@@ -196,19 +192,19 @@ describe('StudioAnnouncementsProvider', () => {
   })
   describe('test components interactions', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       // It doesn't show the first element
       seenAnnouncementsMock.mockReturnValue([
         of({value: ['studioAnnouncement-1'], error: null, loading: false}),
-        jest.fn(),
+        vi.fn(),
       ])
 
       mockClient(mockAnnouncements)
     })
     test('clicks on card, it opens dialog and card is hidden, shows only the unseen announcements', async () => {
-      const mockLog = jest.fn()
-      const {useTelemetry} = require('@sanity/telemetry/react')
-      useTelemetry.mockReturnValue({log: mockLog})
+      const mockLog = vi.fn()
+      const {useTelemetry} = await import('@sanity/telemetry/react')
+      ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
       const {queryByText, getByLabelText} = render(null, {wrapper})
 
@@ -253,9 +249,9 @@ describe('StudioAnnouncementsProvider', () => {
     })
 
     test("dismisses card, then it's hidden, dialog doesn't render", async () => {
-      const mockLog = jest.fn()
-      const {useTelemetry} = require('@sanity/telemetry/react')
-      useTelemetry.mockReturnValue({log: mockLog})
+      const mockLog = vi.fn()
+      const {useTelemetry} = await import('@sanity/telemetry/react')
+      ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
       const {queryByText, getByLabelText} = render(null, {wrapper})
 
@@ -287,9 +283,9 @@ describe('StudioAnnouncementsProvider', () => {
     })
 
     test('dismisses dialog, card and dialog are hidden', async () => {
-      const mockLog = jest.fn()
-      const {useTelemetry} = require('@sanity/telemetry/react')
-      useTelemetry.mockReturnValue({log: mockLog})
+      const mockLog = vi.fn()
+      const {useTelemetry} = await import('@sanity/telemetry/react')
+      ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
       const {queryByText, getByLabelText} = render(null, {wrapper})
 
@@ -371,12 +367,9 @@ describe('StudioAnnouncementsProvider', () => {
   })
   describe('tests audiences - studio version is 3.57.0', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       // It doesn't show the first element
-      seenAnnouncementsMock.mockReturnValue([
-        of({value: [], error: null, loading: false}),
-        jest.fn(),
-      ])
+      seenAnnouncementsMock.mockReturnValue([of({value: [], error: null, loading: false}), vi.fn()])
     })
 
     test('if the audience is everyone, it shows the announcement regardless the version', () => {
@@ -570,10 +563,10 @@ describe('StudioAnnouncementsProvider', () => {
   })
   describe('storing seen announcements', () => {
     beforeEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
     })
     test('when the card is dismissed, and only 1 announcement received', () => {
-      const saveSeenAnnouncementsMock = jest.fn()
+      const saveSeenAnnouncementsMock = vi.fn()
       seenAnnouncementsMock.mockReturnValue([
         of({value: [], error: null, loading: false}),
         saveSeenAnnouncementsMock,
@@ -587,7 +580,7 @@ describe('StudioAnnouncementsProvider', () => {
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith([mockAnnouncements[0]._id])
     })
     test('when the card is dismissed, and 2 announcements are received', () => {
-      const saveSeenAnnouncementsMock = jest.fn()
+      const saveSeenAnnouncementsMock = vi.fn()
       seenAnnouncementsMock.mockReturnValue([
         of({value: [], error: null, loading: false}),
         saveSeenAnnouncementsMock,
@@ -601,7 +594,7 @@ describe('StudioAnnouncementsProvider', () => {
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
     test("when the card is dismissed, doesn't persist previous stored values", () => {
-      const saveSeenAnnouncementsMock = jest.fn()
+      const saveSeenAnnouncementsMock = vi.fn()
       // The id received here is not present anymore in the mock announcements, this id won't be stored in next save.
       seenAnnouncementsMock.mockReturnValue([
         of({value: ['not-to-be-persisted'], error: null, loading: false}),
@@ -615,7 +608,7 @@ describe('StudioAnnouncementsProvider', () => {
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
     test('when the card is dismissed, persist previous stored values', () => {
-      const saveSeenAnnouncementsMock = jest.fn()
+      const saveSeenAnnouncementsMock = vi.fn()
       // The id received here is present in the mock announcements, this id will be persisted in next save.
       seenAnnouncementsMock.mockReturnValue([
         of({value: [mockAnnouncements[0]._id], error: null, loading: false}),
@@ -630,7 +623,7 @@ describe('StudioAnnouncementsProvider', () => {
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
     test('when the dialog is closed', () => {
-      const saveSeenAnnouncementsMock = jest.fn()
+      const saveSeenAnnouncementsMock = vi.fn()
       seenAnnouncementsMock.mockReturnValue([
         of({value: [], error: null, loading: false}),
         saveSeenAnnouncementsMock,

@@ -1,12 +1,12 @@
-import {beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {merge, of} from 'rxjs'
 import {delay} from 'rxjs/operators'
+import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {checkoutPair} from './checkoutPair'
 
-const mockedDataRequest = jest.fn(() => of({}))
-const mockedActionRequest = jest.fn(() => of({}))
+const mockedDataRequest = vi.fn(() => of({}))
+const mockedActionRequest = vi.fn(() => of({}))
 
 const client = {
   observable: {
@@ -19,13 +19,13 @@ const client = {
     action: mockedActionRequest,
   },
   dataRequest: mockedDataRequest,
-  withConfig: jest.fn(() => client),
+  withConfig: vi.fn(() => client),
 }
 
 const idPair = {publishedId: 'publishedId', draftId: 'draftId'}
 
 beforeEach(() => {
-  jest.clearAllMocks()
+  vi.clearAllMocks()
 })
 
 describe('checkoutPair -- local actions', () => {

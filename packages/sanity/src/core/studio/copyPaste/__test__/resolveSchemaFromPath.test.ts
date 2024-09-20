@@ -1,12 +1,12 @@
-import {beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {type ObjectSchemaType, type ReferenceSchemaType, type StringSchemaType} from '@sanity/types'
+import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {resolveSchemaTypeForPath} from '../resolveSchemaTypeForPath'
 import {schema} from './schema'
 
 beforeEach(() => {
-  jest.resetModules()
-  jest.clearAllMocks()
+  vi.resetModules()
+  vi.clearAllMocks()
 })
 
 describe('resolveSchemaTypeForPath', () => {
@@ -160,7 +160,7 @@ describe('resolveSchemaTypeForPath', () => {
     expect(schemaTypeObject?.name).toEqual('color')
     expect(schemaTypeObject?.jsonType).toEqual('object')
   })
-  test.failing(
+  test.fails(
     'fail to get schema type from nested path in array with multiple types without providing value',
     () => {
       const authorSchema = schema.get('editor')!

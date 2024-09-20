@@ -1,10 +1,10 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {type ObjectSchemaType} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {type PropsWithChildren} from 'react'
 import {FormBuilderContext} from 'sanity/_singletons'
+import {describe, expect, it, vi} from 'vitest'
 
 import {type FIXME} from '../../../../FIXME'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
@@ -231,13 +231,13 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
   }
 
   const formCallbacks: FormCallbacksValue = {
-    onChange: jest.fn(),
-    onPathFocus: jest.fn(),
-    onPathBlur: jest.fn(),
-    onPathOpen: jest.fn(),
-    onSetPathCollapsed: jest.fn(),
-    onSetFieldSetCollapsed: jest.fn(),
-    onFieldGroupSelect: jest.fn(),
+    onChange: vi.fn(),
+    onPathFocus: vi.fn(),
+    onPathBlur: vi.fn(),
+    onPathOpen: vi.fn(),
+    onSetPathCollapsed: vi.fn(),
+    onSetFieldSetCollapsed: vi.fn(),
+    onFieldGroupSelect: vi.fn(),
   }
 
   const formBuilder: FormBuilderContextValue = {

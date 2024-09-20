@@ -1,23 +1,23 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`removeMissingReferences removes references to missing docs, deeply 1`] = `
-Object {
+exports[`removeMissingReferences > removes references to missing docs, deeply 1`] = `
+{
   "_createdAt": "",
   "_id": "foo",
   "_rev": "foo",
   "_type": "test",
   "_updatedAt": "",
-  "arrayOfObjects": Array [
-    Object {
+  "arrayOfObjects": [
+    {
       "_type": "foo",
       "prop": "yes",
     },
-    Object {
+    {
       "_type": "foo",
       "prop": "no",
     },
   ],
-  "arrayOfStrings": Array [
+  "arrayOfStrings": [
     "a",
     "b",
     "c",
@@ -25,16 +25,16 @@ Object {
   "bool": true,
   "number": 123,
   "string": "value",
-  "subObject": Object {
+  "subObject": {
     "_type": "sub",
-    "nested": Object {
-      "array": Array [
+    "nested": {
+      "array": [
         "contents",
-        Object {
+        {
           "_ref": "abc123",
           "_type": "reference",
         },
-        Object {
+        {
           "_type": "nonref",
           "someProp": "yes-it-exists",
         },

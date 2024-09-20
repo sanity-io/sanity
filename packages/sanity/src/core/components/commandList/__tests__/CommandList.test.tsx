@@ -1,8 +1,8 @@
-import {describe, expect, it} from '@jest/globals'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useCallback} from 'react'
+import {describe, expect, it} from 'vitest'
 
 import {CommandList} from '../CommandList'
 

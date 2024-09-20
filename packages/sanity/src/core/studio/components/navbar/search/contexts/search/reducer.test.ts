@@ -1,7 +1,7 @@
-import {describe, expect, it} from '@jest/globals'
 import {type CurrentUser, type SchemaType} from '@sanity/types'
 import {act, renderHook} from '@testing-library/react'
 import {useReducer} from 'react'
+import {describe, expect, it} from 'vitest'
 
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchOrdering} from '../../types'
@@ -137,11 +137,11 @@ describe('searchReducer', () => {
     const [state] = result.current
 
     expect(state.ordering).toMatchInlineSnapshot(`
-Object {
-  "customMeasurementLabel": "relevance",
-  "titleKey": "search.ordering.best-match-label",
-}
-`)
+      {
+        "customMeasurementLabel": "relevance",
+        "titleKey": "search.ordering.best-match-label",
+      }
+    `)
   })
 
   it('should order by `_updatedAt` when using GROQ Query API strategy and ordering by relevance', () => {
@@ -158,15 +158,15 @@ Object {
     const [state] = result.current
 
     expect(state.ordering).toMatchInlineSnapshot(`
-Object {
-  "customMeasurementLabel": "relevance",
-  "sort": Object {
-    "direction": "desc",
-    "field": "_updatedAt",
-  },
-  "titleKey": "search.ordering.best-match-label",
-}
-`)
+      {
+        "customMeasurementLabel": "relevance",
+        "sort": {
+          "direction": "desc",
+          "field": "_updatedAt",
+        },
+        "titleKey": "search.ordering.best-match-label",
+      }
+    `)
   })
 
   it('should merge results after fetching an additional page', () => {
@@ -218,27 +218,27 @@ Object {
     const [state] = result.current
 
     expect(state.result.hits).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "hit": Object {
-      "_id": "personA",
-      "_type": "person",
-    },
-  },
-  Object {
-    "hit": Object {
-      "_id": "personB",
-      "_type": "person",
-    },
-  },
-  Object {
-    "hit": Object {
-      "_id": "personC",
-      "_type": "person",
-    },
-  },
-]
-`)
+      [
+        {
+          "hit": {
+            "_id": "personA",
+            "_type": "person",
+          },
+        },
+        {
+          "hit": {
+            "_id": "personB",
+            "_type": "person",
+          },
+        },
+        {
+          "hit": {
+            "_id": "personC",
+            "_type": "person",
+          },
+        },
+      ]
+    `)
   })
 })
 
@@ -327,23 +327,20 @@ it.each<SearchAction>([
 
   const [stateA] = result.current
 
-  expect(stateA.result.hits).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "hit": Object {
-      "_id": "personA",
-      "_type": "person",
+  expect(stateA.result.hits).toEqual([
+    {
+      hit: {
+        _id: 'personA',
+        _type: 'person',
+      },
     },
-  },
-  Object {
-    "hit": Object {
-      "_id": "personB",
-      "_type": "person",
+    {
+      hit: {
+        _id: 'personB',
+        _type: 'person',
+      },
     },
-  },
-]
-`)
-
+  ])
   act(() => dispatch(action))
 
   act(() =>
@@ -369,20 +366,18 @@ Array [
 
   const [stateB] = result.current
 
-  expect(stateB.result.hits).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "hit": Object {
-      "_id": "personB",
-      "_type": "person",
+  expect(stateB.result.hits).toEqual([
+    {
+      hit: {
+        _id: 'personB',
+        _type: 'person',
+      },
     },
-  },
-  Object {
-    "hit": Object {
-      "_id": "personC",
-      "_type": "person",
+    {
+      hit: {
+        _id: 'personC',
+        _type: 'person',
+      },
     },
-  },
-]
-`)
+  ])
 })

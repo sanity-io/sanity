@@ -1,7 +1,7 @@
-import {describe, expect, it} from '@jest/globals'
 import {defineField} from '@sanity/types'
 import {fireEvent, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import {describe, expect, it} from 'vitest'
 
 import {renderBooleanInput} from '../../../../test/form/renderBooleanInput'
 import {BooleanInput} from './BooleanInput'
