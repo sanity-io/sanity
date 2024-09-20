@@ -5,7 +5,7 @@ import {defineEvent} from '@sanity/telemetry'
  * @internal
  */
 export const PublishedLiveEditDraft = defineEvent({
-  name: 'Publish a draft (live edit)',
+  name: 'Resolve liveEdit by publishing draft',
   version: 1,
   description: 'User published a draft when a draft of a live edit document to continue editing',
 })
@@ -15,7 +15,7 @@ export const PublishedLiveEditDraft = defineEvent({
  * @internal
  */
 export const DiscardedLiveEditDraft = defineEvent({
-  name: 'Create a new draft',
+  name: 'Resolve liveEdit by discarding draftt',
   version: 1,
   description: 'User discarded a draft when a draft of a live edit document to continue editing',
 })
