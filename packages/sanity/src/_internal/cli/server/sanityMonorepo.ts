@@ -9,6 +9,15 @@ export interface SanityMonorepo {
   path: string
 }
 
+export async function getMonorepoAliases(monorepoPath: string) {
+  const {default: aliases} = await import('@repo/dev-aliases')
+  return Object.fromEntries(
+    Object.entries(aliases).map(([pkgName, pkgPath]) => {
+      return [pkgName, path.resolve(monorepoPath, path.join('packages', pkgPath))]
+    }),
+  )
+}
+
 /**
  * Load information about the `sanity-io/sanity` monorepo (if applicable)
  *
