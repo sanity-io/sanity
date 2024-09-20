@@ -10,17 +10,17 @@ import {Menu, Spinner, Text, useToast} from '@sanity/ui'
 import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Button, Dialog, MenuButton, MenuItem} from '../../../../ui-components'
+import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
+import {Translate, useTranslation} from '../../../../i18n'
+import {type BundleDocument} from '../../../../store/bundles/types'
+import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {
   ArchivedRelease,
   DeletedRelease,
   UnarchivedRelease,
-} from '../../../bundles/__telemetry__/releases.telemetry'
-import {ReleaseDetailsDialog} from '../../../bundles/components/dialog/ReleaseDetailsDialog'
-import {Translate, useTranslation} from '../../../i18n'
-import {type BundleDocument} from '../../../store/bundles/types'
-import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
-import {releasesLocaleNamespace} from '../../i18n'
+} from '../../../__telemetry__/releases.telemetry'
+import {ReleaseDetailsDialog} from '../../../components/dialog/ReleaseDetailsDialog'
+import {releasesLocaleNamespace} from '../../../i18n'
 
 export type ReleaseMenuButtonProps = {
   disabled?: boolean

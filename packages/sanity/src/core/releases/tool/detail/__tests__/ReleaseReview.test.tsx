@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {act, fireEvent, render, screen, within} from '@testing-library/react'
 import {type ReactNode} from 'react'
-import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
+import {ColorSchemeProvider, type DefaultPreview, UserColorManagerProvider} from 'sanity'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -131,13 +131,24 @@ jest.mock('sanity/router', () => ({
   }),
 }))
 
-jest.mock('../../../../bundles/components/ReleasesMenu', () => ({
+jest.mock('../../../components/ReleasesMenu', () => ({
   ReleasesMenu: () => <div>ReleasesMenu</div>,
 }))
 
 jest.mock('../../../../preview/useObserveDocument', () => {
   return {
     useObserveDocument: jest.fn(),
+  }
+})
+
+jest.mock('../../../../components', () => {
+  const {DefaultPreview: actualDefaultPreview} = jest.requireActual(
+    '../../../../components/previews/general/DefaultPreview',
+  ) as {DefaultPreview: typeof DefaultPreview}
+
+  return {
+    ...(jest.requireActual('../../../../components') || {}),
+    DefaultPreview: actualDefaultPreview,
   }
 })
 

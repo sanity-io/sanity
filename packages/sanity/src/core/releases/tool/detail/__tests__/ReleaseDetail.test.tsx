@@ -32,7 +32,7 @@ jest.mock('sanity', () => ({
   useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
 }))
 
-jest.mock('../../../components/ReleasePublishAllButton/useObserveDocumentRevisions', () => ({
+jest.mock('../../components/ReleasePublishAllButton/useObserveDocumentRevisions', () => ({
   useObserveDocumentRevisions: jest.fn().mockReturnValue({
     '123': 'mock revision id',
   }),
