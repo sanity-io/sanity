@@ -1224,9 +1224,6 @@ importers:
         specifier: ^18.3.5
         version: 18.3.5
     devDependencies:
-      '@jest/globals':
-        specifier: ^29.7.0
-        version: 29.7.0
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
@@ -1235,10 +1232,19 @@ importers:
         version: link:../../@repo/test-config
       '@sanity/insert-menu':
         specifier: 1.0.9
-        version: 1.0.9(@sanity/types@packages+@sanity+types)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
+        version: 1.0.9(@sanity/types@packages+@sanity+types)(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))
+      '@vitejs/plugin-react':
+        specifier: ^4.3.1
+        version: 4.3.1(vite@5.4.5(@types/node@22.5.4)(terser@5.32.0))
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.4)(jsdom@23.2.0)(terser@5.32.0)
 
   packages/@sanity/util:
     dependencies:
@@ -14988,14 +14994,14 @@ snapshots:
     transitivePeerDependencies:
       - styled-components
 
-  '@sanity/insert-menu@1.0.9(@sanity/types@packages+@sanity+types)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))':
+  '@sanity/insert-menu@1.0.9(@sanity/types@packages+@sanity+types)(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@sanity/icons': 3.4.0(react@19.0.0-rc-f994737d14-20240522)
+      '@sanity/icons': 3.4.0(react@18.3.1)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/ui': 2.8.9(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
+      '@sanity/ui': 2.8.9(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))
       lodash.startcase: 4.4.0
-      react: 19.0.0-rc-f994737d14-20240522
-      react-dom: 19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522)
+      react: 18.3.1
+      react-dom: 19.0.0-rc-f994737d14-20240522(react@18.3.1)
       react-is: 19.0.0-rc-a7d1240c-20240731
     transitivePeerDependencies:
       - styled-components
