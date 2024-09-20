@@ -55,6 +55,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
+    "@repo/test-config": "workspace:*",
     "@sanity/insert-menu": "1.0.9",
     "rimraf": "^3.0.2"
   }

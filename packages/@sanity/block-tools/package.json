@@ -57,6 +57,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
+    "@repo/test-config": "workspace:*",
     "@sanity/schema": "3.58.0",
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.17.7",

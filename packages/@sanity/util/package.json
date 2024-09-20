@@ -130,6 +130,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
+    "@repo/test-config": "workspace:*",
     "@types/moment": "^2.13.0",
     "rimraf": "^3.0.2"
   },

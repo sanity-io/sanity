@@ -1,0 +1,18 @@
+{
+  "name": "@repo/test-config",
+  "version": "3.57.4",
+  "private": true,
+  "description": "Test (as in unit test) config shared across packages in the sanity monorepo",
+  "type": "module",
+  "exports": {
+    "./jest": "./jest/index.mjs",
+    "./vitest": "./vitest/index.mjs"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@repo/dev-aliases": "workspace:*",
+    "dotenv": "^16.4.5",
+    "jest-environment-jsdom": "^29.7.0",
+    "lodash-es": "^4.17.21"
+  }
+}
