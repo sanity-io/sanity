@@ -45,7 +45,7 @@
     "lint": "eslint .",
     "perf": "node ./perf/run.js",
     "prepublishOnly": "turbo run build",
-    "test": "jest",
+    "test": "vitest run",
     "watch": "pkg-utils watch"
   },
   "dependencies": {
@@ -56,11 +56,11 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@types/debug": "^4.1.5",
     "@types/lodash": "^4.17.7",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "vitest": "^2.1.1"
   }
 }
