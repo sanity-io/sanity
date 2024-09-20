@@ -749,11 +749,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   useEffect(() => {
     if (connectionState === 'reconnecting') {
-      pushToast({
-        id: 'sanity/structure/reconnecting',
-        status: 'warning',
-        title: t('panes.document-pane-provider.reconnecting.title'),
-      })
+      setTimeout(() => {
+        pushToast({
+          id: 'sanity/structure/reconnecting',
+          status: 'warning',
+          title: t('panes.document-pane-provider.reconnecting.title'),
+        })
+      }, 2000)
     }
   }, [connectionState, pushToast, t])
 
