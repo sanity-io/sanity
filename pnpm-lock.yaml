@@ -18,9 +18,6 @@ importers:
         specifier: ^10.0.0
         version: 10.0.1
     devDependencies:
-      '@babel/plugin-proposal-class-properties':
-        specifier: ^7.18.6
-        version: 7.18.6(@babel/core@7.25.2)
       '@babel/preset-env':
         specifier: ^7.24.7
         version: 7.25.3(@babel/core@7.25.2)
@@ -33,15 +30,18 @@ importers:
       '@google-cloud/storage':
         specifier: ^7.11.0
         version: 7.12.1(encoding@0.1.13)
-      '@jest/globals':
-        specifier: ^29.7.0
-        version: 29.7.0
       '@playwright/test':
         specifier: 1.44.1
         version: 1.44.1
+      '@repo/dev-aliases':
+        specifier: workspace:*
+        version: link:packages/@repo/dev-aliases
       '@repo/package.config':
         specifier: workspace:*
         version: link:packages/@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:packages/@repo/test-config
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:packages/@repo/tsconfig
@@ -183,9 +183,6 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.11))(@types/node@18.19.44)(typescript@5.6.2))
-      jest-environment-jsdom:
-        specifier: ^29.7.0
-        version: 29.7.0
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
@@ -650,6 +647,24 @@ importers:
 
   packages/@repo/package.config: {}
 
+  packages/@repo/test-config:
+    devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
+      '@repo/dev-aliases':
+        specifier: workspace:*
+        version: link:../dev-aliases
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
+      jest-environment-jsdom:
+        specifier: ^29.7.0
+        version: 29.7.0
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
+
   packages/@repo/test-exports:
     dependencies:
       '@sanity/block-tools':
@@ -719,6 +734,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../@repo/test-config
       '@sanity/schema':
         specifier: 3.58.0
         version: link:../schema
@@ -798,6 +816,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../@repo/test-config
       '@rexxars/gitconfiglocal':
         specifier: ^3.0.1
         version: 3.0.1
@@ -1009,6 +1030,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../@repo/test-config
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
@@ -1111,6 +1135,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../@repo/test-config
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12
@@ -1154,12 +1181,18 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../@repo/test-config
       '@sanity/icons':
         specifier: ^3.4.0
         version: 3.4.0(react@19.0.0-rc-f994737d14-20240522)
       '@types/arrify':
         specifier: ^1.0.4
         version: 1.0.4
+      '@types/lodash':
+        specifier: ^4.17.7
+        version: 4.17.7
       '@types/object-inspect':
         specifier: ^1.13.0
         version: 1.13.0
@@ -1185,6 +1218,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../@repo/test-config
       '@sanity/insert-menu':
         specifier: 1.0.9
         version: 1.0.9(@sanity/types@packages+@sanity+types)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
@@ -1216,6 +1252,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../@repo/test-config
       '@types/moment':
         specifier: ^2.13.0
         version: 2.13.0
@@ -1716,6 +1755,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:../@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../@repo/test-config
       '@sanity/codegen':
         specifier: 3.58.0
         version: link:../@sanity/codegen
@@ -1963,6 +2005,9 @@ importers:
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../packages/@repo/test-config
       '@types/lodash':
         specifier: ^4.17.7
         version: 4.17.7
@@ -2152,13 +2197,6 @@ packages:
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0
-
-  '@babel/plugin-proposal-class-properties@7.18.6':
-    resolution: {integrity: sha512-cumfXOF0+nzZrrN8Rf0t7M+tF6sZc7vhQwYQck9q1/5w2OExlD+b4v4RpMJFaV1Z7WcDRgO6FqvxqxGlwo+RHQ==}
-    engines: {node: '>=6.9.0'}
-    deprecated: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
 
   '@babel/plugin-proposal-private-methods@7.18.6':
     resolution: {integrity: sha512-nutsvktDItsNn4rpGItSNV2sz1XwS+nfU0Rg8aCx3W3NOKVzdMjJRu0O5OkgDp3ZGICSTbgRpxZoWsxoKRvbeA==}
@@ -12094,14 +12132,6 @@ snapshots:
       '@babel/core': 7.25.2
       '@babel/helper-plugin-utils': 7.24.8
       '@babel/traverse': 7.25.3
-    transitivePeerDependencies:
-      - supports-color
-
-  '@babel/plugin-proposal-class-properties@7.18.6(@babel/core@7.25.2)':
-    dependencies:
-      '@babel/core': 7.25.2
-      '@babel/helper-create-class-features-plugin': 7.25.0(@babel/core@7.25.2)
-      '@babel/helper-plugin-utils': 7.24.8
     transitivePeerDependencies:
       - supports-color
 
