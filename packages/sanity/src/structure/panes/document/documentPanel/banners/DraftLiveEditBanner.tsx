@@ -1,20 +1,35 @@
+import {type SanityDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
-import {isDraftId, Translate, useDocumentOperation, useTranslation} from 'sanity'
+import {
+  isDraftId,
+  type ObjectSchemaType,
+  Translate,
+  useDocumentOperation,
+  useTranslation,
+} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useDocumentPane} from '../../useDocumentPane'
 import {
   DiscardedLiveEditDraft,
   PublishedLiveEditDraft,
 } from './__telemetry__/DraftLiveEditBanner.telemetry'
 import {Banner} from './Banner'
 
-export function DraftLiveEditBanner(): JSX.Element | null {
-  const {displayed, documentId, schemaType} = useDocumentPane()
+interface DraftLiveEditBannerProps {
+  displayed: Partial<SanityDocument> | null
+  documentId: string
+  schemaType: ObjectSchemaType
+}
+
+export function DraftLiveEditBanner({
+  displayed,
+  documentId,
+  schemaType,
+}: DraftLiveEditBannerProps): JSX.Element | null {
   const {t} = useTranslation(structureLocaleNamespace)
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)

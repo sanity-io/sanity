@@ -154,7 +154,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   scrollElement={documentScrollElement}
                   containerElement={formContainerElement}
                 >
-                  {activeView.type === 'form' && isLiveEdit && ready && <DraftLiveEditBanner />}
+                  {activeView.type === 'form' && isLiveEdit && ready && (
+                    <DraftLiveEditBanner
+                      displayed={displayed}
+                      documentId={documentId}
+                      schemaType={schemaType}
+                    />
+                  )}
 
                   {activeView.type === 'form' && !isPermissionsLoading && ready && (
                     <>
