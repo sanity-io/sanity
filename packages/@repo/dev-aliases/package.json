@@ -1,0 +1,11 @@
+{
+  "name": "@repo/dev-aliases",
+  "version": "3.57.4",
+  "private": true,
+  "description": "Dev aliases for the sanity monorepo",
+  "type": "module",
+  "exports": {
+    ".": "./dev-aliases.cjs"
+  },
+  "main": "./dev-aliases.cjs"
+}
