@@ -755,7 +755,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
           status: 'warning',
           title: t('panes.document-pane-provider.reconnecting.title'),
         })
-      }, 2000)
+      }, 2000) // 2 seconds, we can iterate on the value
     }
   }, [connectionState, pushToast, t])
 
