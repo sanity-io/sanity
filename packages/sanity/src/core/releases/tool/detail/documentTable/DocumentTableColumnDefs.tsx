@@ -3,9 +3,9 @@ import {memo} from 'react'
 import {type TFunction, UserAvatar} from 'sanity'
 
 import {RelativeTime} from '../../../../components/RelativeTime'
-import {ReleaseDocumentPreview} from '../../../components/ReleaseDocumentPreview'
-import {Headers} from '../../../components/Table/TableHeader'
-import {type Column} from '../../../components/Table/types'
+import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
+import {Headers} from '../../components/Table/TableHeader'
+import {type Column} from '../../components/Table/types'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInBundleResult} from '../useBundleDocuments'
 
