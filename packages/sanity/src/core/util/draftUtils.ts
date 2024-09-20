@@ -85,7 +85,7 @@ export function getDraftId(id: string): DraftId {
 /**  @internal */
 export function getVersionId(id: string, bundle: string): string {
   if (isVersionId(id)) {
-    const [_versionPrefix, versionId, ...publishedId] = id.split('.')
+    const [_versionPrefix, versionId, ...publishedId] = id.split(PATH_SEPARATOR)
     if (versionId === bundle) return id
     return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
   }
