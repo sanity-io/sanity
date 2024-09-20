@@ -1,42 +1,39 @@
-import {describe, expect, it, jest} from '@jest/globals'
-import {act, render, screen} from '@testing-library/react'
-import type * as SANITY from 'sanity'
+import {act, render, screen, waitFor} from '@testing-library/react'
 import {defineConfig, useSearchState} from 'sanity'
 import {type DocumentListPaneNode, type StructureToolContextValue} from 'sanity/structure'
+import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {PaneContainer} from '../PaneContainer'
 
-jest.mock('../../../useStructureToolSetting', () => ({
-  useStructureToolSetting: jest.fn(),
+vi.mock('../../../useStructureToolSetting', () => ({
+  useStructureToolSetting: vi.fn(),
 }))
 
-jest.mock('../../../useStructureTool', () => ({
-  useStructureTool: jest.fn().mockReturnValue({features: {}} as StructureToolContextValue),
+vi.mock('../../../useStructureTool', () => ({
+  useStructureTool: vi.fn().mockReturnValue({features: {}} as StructureToolContextValue),
 }))
-jest.mock('../../../components/pane/usePaneLayout', () => ({
-  usePaneLayout: jest.fn().mockReturnValue({panes: [], mount: jest.fn()}),
-}))
-
-jest.mock('../sheetList/useDocumentSheetList', () => ({
-  useDocumentSheetList: jest.fn().mockReturnValue({data: [], isLoading: false}),
+vi.mock('../../../components/pane/usePaneLayout', () => ({
+  usePaneLayout: vi.fn().mockReturnValue({panes: [], mount: vi.fn()}),
 }))
 
-jest.mock('sanity', () => {
-  const actual: typeof SANITY = jest.requireActual('sanity')
+vi.mock('../sheetList/useDocumentSheetList', () => ({
+  useDocumentSheetList: vi.fn().mockReturnValue({data: [], isLoading: false}),
+}))
+
+vi.mock('sanity', async () => {
+  const actual = await vi.importActual('sanity')
   return {
     ...actual,
-    useSearchState: jest.fn(),
+    useSearchState: vi.fn(),
   }
 })
 
-const mockUseSearchState = useSearchState as jest.Mock
+const mockUseSearchState = useSearchState as Mock
 
-const mockUseStructureToolSetting = useStructureToolSetting as jest.Mock<
-  typeof useStructureToolSetting
->
+const mockUseStructureToolSetting = useStructureToolSetting as Mock<typeof useStructureToolSetting>
 
 describe('PaneContainer', () => {
   it('should show the document list pane when a list layout is selected', async () => {
@@ -49,7 +46,7 @@ describe('PaneContainer', () => {
       config,
       resources: [structureUsEnglishLocaleBundle],
     })
-    mockUseStructureToolSetting.mockReturnValue(['compact', jest.fn()])
+    mockUseStructureToolSetting.mockReturnValue(['compact', vi.fn()])
     render(
       <PaneContainer
         paneKey="paneKey"
@@ -60,12 +57,12 @@ describe('PaneContainer', () => {
       {wrapper},
     )
 
-    screen.getByTestId('document-list-pane')
+    await waitFor(() => expect(screen.getByTestId('document-list-pane')).toBeInTheDocument())
     expect(screen.queryByTestId('document-sheet-list-pane')).toBeNull()
   })
 
   it('should show the document sheet list pane when the sheet layout is selected', async () => {
-    const mockDispatch = jest.fn()
+    const mockDispatch = vi.fn()
     const config = defineConfig({
       projectId: 'test',
       dataset: 'test',
@@ -84,7 +81,7 @@ describe('PaneContainer', () => {
       config,
       resources: [structureUsEnglishLocaleBundle],
     })
-    mockUseStructureToolSetting.mockReturnValue(['sheetList', jest.fn()])
+    mockUseStructureToolSetting.mockReturnValue(['sheetList', vi.fn()])
     // Mock return value for useSearchState
     mockUseSearchState.mockReturnValue({
       state: {

@@ -1,232 +1,232 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`array exact length constraint: exact length: too long 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`array > exact length constraint > exact length: too long 1`] = `
+[
+  {
+    "item": {
       "message": "Must have exactly 2 items",
     },
     "level": "error",
     "message": "Must have exactly 2 items",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`array exact length constraint: exact length: too short 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`array > exact length constraint > exact length: too short 1`] = `
+[
+  {
+    "item": {
       "message": "Must have exactly 2 items",
     },
     "level": "error",
     "message": "Must have exactly 2 items",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`array exact length constraint: exact length: valid 1`] = `Array []`;
+exports[`array > exact length constraint > exact length: valid 1`] = `[]`;
 
-exports[`array max length constraint: max length: too long 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`array > max length constraint > max length: too long 1`] = `
+[
+  {
+    "item": {
       "message": "Must have at most 2 items",
     },
     "level": "error",
     "message": "Must have at most 2 items",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`array max length constraint: max length: valid 1`] = `Array []`;
+exports[`array > max length constraint > max length: valid 1`] = `[]`;
 
-exports[`array min length constraint: min length: too short 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`array > min length constraint > min length: too short 1`] = `
+[
+  {
+    "item": {
       "message": "Must have at least 2 items",
     },
     "level": "error",
     "message": "Must have at least 2 items",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`array min length constraint: min length: valid 1`] = `Array []`;
+exports[`array > min length constraint > min length: valid 1`] = `[]`;
 
-exports[`array required constraint: required: empty array 1`] = `Array []`;
+exports[`array > required constraint > required: empty array 1`] = `[]`;
 
-exports[`array required constraint: required: null 1`] = `
-Array [
-  Object {
-    "item": Object {
-      "message": "Expected type \\"Array\\", got \\"null\\"",
+exports[`array > required constraint > required: null 1`] = `
+[
+  {
+    "item": {
+      "message": "Expected type "Array", got "null"",
     },
     "level": "error",
-    "message": "Expected type \\"Array\\", got \\"null\\"",
-    "path": Array [],
+    "message": "Expected type "Array", got "null"",
+    "path": [],
   },
-  Object {
-    "item": Object {
+  {
+    "item": {
       "message": "Required",
     },
     "level": "error",
     "message": "Required",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`array required constraint: required: undefined 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`array > required constraint > required: undefined 1`] = `
+[
+  {
+    "item": {
       "message": "Required",
     },
     "level": "error",
     "message": "Required",
-    "path": Array [],
+    "path": [],
   },
 ]
 `;
 
-exports[`array required constraint: required: valid 1`] = `Array []`;
+exports[`array > required constraint > required: valid 1`] = `[]`;
 
-exports[`array unique constraint (default, array values): array unique: duplicates 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`array > unique constraint (default, array values) > array unique: duplicates 1`] = `
+[
+  {
+    "item": {
       "message": "Can't be a duplicate",
     },
     "level": "error",
     "message": "Can't be a duplicate",
-    "path": Array [
+    "path": [
       0,
     ],
   },
-  Object {
-    "item": Object {
+  {
+    "item": {
       "message": "Can't be a duplicate",
     },
     "level": "error",
     "message": "Can't be a duplicate",
-    "path": Array [
+    "path": [
       1,
     ],
   },
 ]
 `;
 
-exports[`array unique constraint (default, array values): array unique: valid 1`] = `Array []`;
+exports[`array > unique constraint (default, array values) > array unique: valid 1`] = `[]`;
 
-exports[`array unique constraint (default, bool values): boolean unique: duplicates 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`array > unique constraint (default, bool values) > boolean unique: duplicates 1`] = `
+[
+  {
+    "item": {
       "message": "Can't be a duplicate",
     },
     "level": "error",
     "message": "Can't be a duplicate",
-    "path": Array [
+    "path": [
       0,
     ],
   },
-  Object {
-    "item": Object {
+  {
+    "item": {
       "message": "Can't be a duplicate",
     },
     "level": "error",
     "message": "Can't be a duplicate",
-    "path": Array [
+    "path": [
       2,
     ],
   },
 ]
 `;
 
-exports[`array unique constraint (default, bool values): boolean unique: valid 1`] = `Array []`;
+exports[`array > unique constraint (default, bool values) > boolean unique: valid 1`] = `[]`;
 
-exports[`array unique constraint (default, numeric values): numeric unique: duplicates 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`array > unique constraint (default, numeric values) > numeric unique: duplicates 1`] = `
+[
+  {
+    "item": {
       "message": "Can't be a duplicate",
     },
     "level": "error",
     "message": "Can't be a duplicate",
-    "path": Array [
+    "path": [
       0,
     ],
   },
-  Object {
-    "item": Object {
+  {
+    "item": {
       "message": "Can't be a duplicate",
     },
     "level": "error",
     "message": "Can't be a duplicate",
-    "path": Array [
+    "path": [
       2,
     ],
   },
 ]
 `;
 
-exports[`array unique constraint (default, numeric values): numeric unique: valid 1`] = `Array []`;
+exports[`array > unique constraint (default, numeric values) > numeric unique: valid 1`] = `[]`;
 
-exports[`array unique constraint (default, object values): object unique: duplicates 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`array > unique constraint (default, object values) > object unique: duplicates 1`] = `
+[
+  {
+    "item": {
       "message": "Can't be a duplicate",
     },
     "level": "error",
     "message": "Can't be a duplicate",
-    "path": Array [
+    "path": [
       0,
     ],
   },
-  Object {
-    "item": Object {
+  {
+    "item": {
       "message": "Can't be a duplicate",
     },
     "level": "error",
     "message": "Can't be a duplicate",
-    "path": Array [
+    "path": [
       3,
     ],
   },
 ]
 `;
 
-exports[`array unique constraint (default, object values): object unique: valid 1`] = `Array []`;
+exports[`array > unique constraint (default, object values) > object unique: valid 1`] = `[]`;
 
-exports[`array unique constraint (default, simple values): simple unique: duplicates 1`] = `
-Array [
-  Object {
-    "item": Object {
+exports[`array > unique constraint (default, simple values) > simple unique: duplicates 1`] = `
+[
+  {
+    "item": {
       "message": "Can't be a duplicate",
     },
     "level": "error",
     "message": "Can't be a duplicate",
-    "path": Array [
+    "path": [
       0,
     ],
   },
-  Object {
-    "item": Object {
+  {
+    "item": {
       "message": "Can't be a duplicate",
     },
     "level": "error",
     "message": "Can't be a duplicate",
-    "path": Array [
+    "path": [
       3,
     ],
   },
 ]
 `;
 
-exports[`array unique constraint (default, simple values): simple unique: valid 1`] = `Array []`;
+exports[`array > unique constraint (default, simple values) > simple unique: valid 1`] = `[]`;

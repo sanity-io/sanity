@@ -1,6 +1,6 @@
-import {expect, test} from '@jest/globals'
 import {concat, from, lastValueFrom, of, share, timer} from 'rxjs'
 import {concatMap, delay, mergeMap, take, toArray} from 'rxjs/operators'
+import {expect, test} from 'vitest'
 
 import {shareReplayLatest} from './shareReplayLatest'
 

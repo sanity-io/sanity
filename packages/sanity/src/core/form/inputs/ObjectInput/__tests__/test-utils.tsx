@@ -1,7 +1,4 @@
 /* eslint-disable import/export */
-// eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom/jest-globals'
-
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, type RenderOptions} from '@testing-library/react'
 import {type ReactElement} from 'react'

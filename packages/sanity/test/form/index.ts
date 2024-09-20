@@ -1,4 +1,3 @@
-export * from './renderArrayOfObjectsInput'
 export * from './renderBooleanInput'
 export * from './renderCrossDatasetReferenceInput'
 export * from './renderFileInput'

@@ -1,8 +1,8 @@
 import {useContext, useMemo} from 'react'
 import {ScheduledPublishingEnabledContext} from 'sanity/_singletons'
 
-import {useFeatureEnabled} from '../../../hooks'
-import {useWorkspace} from '../../../studio'
+import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
+import {useWorkspace} from '../../../studio/workspace'
 
 /**
  * @internal

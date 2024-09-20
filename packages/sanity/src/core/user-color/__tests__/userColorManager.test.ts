@@ -1,7 +1,7 @@
-import {describe, expect, test} from '@jest/globals'
 /* eslint-disable max-nested-callbacks */
 import {omit} from 'lodash'
 import {BehaviorSubject, type Observable} from 'rxjs'
+import {describe, expect, test} from 'vitest'
 
 import {createUserColorManager, type UserColorManagerOptions} from '../manager'
 import {type UserColor} from '../types'
@@ -172,7 +172,9 @@ describe('user color manager', () => {
 
     expect(() => {
       createUserColorManager({...options, colors: incompleteColors})
-    }).toThrowErrorMatchingInlineSnapshot(`"'colors' must contain 'currentUserColor' (blue)"`)
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: 'colors' must contain 'currentUserColor' (blue)]`,
+    )
   })
 
   test('can return sync value', () => {

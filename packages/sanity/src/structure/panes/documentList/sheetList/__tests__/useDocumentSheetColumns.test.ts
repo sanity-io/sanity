@@ -1,12 +1,12 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {type ObjectSchemaType} from '@sanity/types'
 import {renderHook} from '@testing-library/react'
+import {describe, expect, it, vi} from 'vitest'
 
 import {useDocumentSheetColumns} from '../useDocumentSheetColumns'
 
-jest.mock('sanity', () => ({
-  ...(jest.requireActual('sanity') || {}),
-  useDocumentPreviewStore: jest.fn().mockReturnValue({}),
+vi.mock('sanity', () => ({
+  ...(vi.importActual('sanity') || {}),
+  useDocumentPreviewStore: vi.fn().mockReturnValue({}),
 }))
 
 describe('useDocumentSheetColumns', () => {

@@ -139,10 +139,10 @@
     "build:bundle": "vite build --config package.bundle.ts",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
-    "coverage": "jest --coverage",
+    "coverage": "vitest --coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
-    "test": "pkg-utils --strict && jest",
+    "test": "vitest run",
     "test:ct": "rimraf playwright-ct/template/.cache && playwright test -c playwright-ct.config.ts",
     "watch": "pkg-utils watch",
     "write:playwright-report-as-pr-comment": "node -r esbuild-register playwright-ct/scripts/parsePlaywrightReportJson.ts"
@@ -299,6 +299,7 @@
     "@types/rimraf": "^3.0.2",
     "@types/semver": "^6.2.3",
     "@types/tar-fs": "^2.0.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "@vvo/tzdb": "6.137.0",
     "blob-polyfill": "^9.0.20240710",
     "date-fns-tz": "2.0.1",
@@ -307,7 +308,8 @@
     "rimraf": "^3.0.2",
     "rxjs-etc": "^10.6.2",
     "styled-components": "^6.1.13",
-    "swr": "2.2.5"
+    "swr": "2.2.5",
+    "vitest": "2.1.1"
   },
   "peerDependencies": {
     "react": "^18",

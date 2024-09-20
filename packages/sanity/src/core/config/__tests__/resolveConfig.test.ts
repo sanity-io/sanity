@@ -1,7 +1,7 @@
-import {describe, expect, it} from '@jest/globals'
 import {createClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime} from 'rxjs/operators'
+import {describe, expect, it} from 'vitest'
 
 import {createMockAuthStore} from '../../store'
 import {definePlugin} from '../definePlugin'

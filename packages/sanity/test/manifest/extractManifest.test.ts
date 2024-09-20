@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import {describe, expect, test} from '@jest/globals'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {describe, expect, test} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {createSchema} from '../../src/core'

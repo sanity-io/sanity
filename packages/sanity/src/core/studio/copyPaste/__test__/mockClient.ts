@@ -1,6 +1,6 @@
-import {jest} from '@jest/globals'
 import {evaluate, parse, type ParseOptions} from 'groq-js'
 import {type FIXME} from 'sanity'
+import {vi} from 'vitest'
 
 export interface ClientWithFetch {
   withConfig: FIXME
@@ -9,8 +9,8 @@ export interface ClientWithFetch {
 }
 export function createMockClient(mockData: FIXME[]): ClientWithFetch {
   return {
-    withConfig: jest.fn(() => createMockClient(mockData)),
-    config: jest.fn(() => {
+    withConfig: vi.fn(() => createMockClient(mockData)),
+    config: vi.fn(() => {
       return {
         url: 'https://mock.sanity.studio',
         apiVersion: '2021-03-25',
@@ -18,7 +18,7 @@ export function createMockClient(mockData: FIXME[]): ClientWithFetch {
         projectId: 'mock',
       }
     }),
-    fetch: jest.fn(
+    fetch: vi.fn(
       async <R = FIXME, Q = Record<string, unknown>>(query: string, params?: Q): Promise<R> => {
         try {
           const parseOptions: ParseOptions = {

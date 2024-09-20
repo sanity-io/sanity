@@ -1,6 +1,6 @@
-import {afterEach, describe, expect, it, jest} from '@jest/globals'
 import {type ConditionalPropertyCallback} from '@sanity/types'
 import {renderHook} from '@testing-library/react'
+import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {
@@ -38,14 +38,14 @@ const DEFAULT_PROPS: Omit<ConditionalPropertyProps, 'checkProperty'> = {
 }
 
 afterEach(() => {
-  jest.resetAllMocks()
+  vi.resetAllMocks()
 })
 
 describe('Conditional property resolver', () => {
   /* eslint-disable max-nested-callbacks */
   it('calls callback function', async () => {
     const TestWrapper = await createTestProvider()
-    const callbackFn = jest.fn(() => true)
+    const callbackFn = vi.fn(() => true)
 
     renderHook(
       () =>
@@ -66,7 +66,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn(() => true),
+          checkProperty: vi.fn(() => true),
           ...DEFAULT_PROPS,
         }),
       {wrapper: TestWrapper},
@@ -79,7 +79,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn(() => false),
+          checkProperty: vi.fn(() => false),
           ...DEFAULT_PROPS,
         }),
       {wrapper: TestWrapper},
@@ -92,7 +92,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn<ConditionalPropertyCallback>(
+          checkProperty: vi.fn<ConditionalPropertyCallback>(
             ({document}) => document?.title !== 'Hello world',
           ),
           ...DEFAULT_PROPS,
@@ -107,7 +107,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn<ConditionalPropertyCallback>(({document}) =>
+          checkProperty: vi.fn<ConditionalPropertyCallback>(({document}) =>
             Boolean(document?.isPublished),
           ),
           ...DEFAULT_PROPS,
@@ -118,12 +118,12 @@ describe('Conditional property resolver', () => {
   })
 
   it('returns undefined because callback returns undefined', async () => {
-    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     const TestWrapper = await createTestProvider()
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn(() => undefined) as any,
+          checkProperty: vi.fn(() => undefined) as any,
           ...DEFAULT_PROPS,
         }),
       {wrapper: TestWrapper},
@@ -139,7 +139,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn<ConditionalPropertyCallback>(({value}) => value === 'test value'),
+          checkProperty: vi.fn<ConditionalPropertyCallback>(({value}) => value === 'test value'),
           ...DEFAULT_PROPS,
           value: 'test value',
         }),
@@ -153,7 +153,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn<ConditionalPropertyCallback>(({value}) => value === 'test'),
+          checkProperty: vi.fn<ConditionalPropertyCallback>(({value}) => value === 'test'),
           ...DEFAULT_PROPS,
           value: 'test value',
         }),
@@ -167,7 +167,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn<ConditionalPropertyCallback>(
+          checkProperty: vi.fn<ConditionalPropertyCallback>(
             ({currentUser}) => !currentUser?.roles.some((role) => role.name === 'developer'),
           ),
           ...DEFAULT_PROPS,
@@ -183,7 +183,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn<ConditionalPropertyCallback>(({currentUser}) =>
+          checkProperty: vi.fn<ConditionalPropertyCallback>(({currentUser}) =>
             Boolean(currentUser?.roles.some((role) => role.name === 'administrator')),
           ),
           ...DEFAULT_PROPS,
@@ -203,9 +203,7 @@ describe('Conditional property resolver', () => {
           document: dummyDocument,
           value: dummyDocument.venue.address,
           parent: dummyDocument.venue,
-          checkProperty: jest.fn<ConditionalPropertyCallback>(({parent}) =>
-            Boolean(parent.location),
-          ),
+          checkProperty: vi.fn<ConditionalPropertyCallback>(({parent}) => Boolean(parent.location)),
         }),
       {wrapper: TestWrapper},
     )

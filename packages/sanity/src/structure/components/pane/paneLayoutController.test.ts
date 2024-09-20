@@ -1,4 +1,4 @@
-import {describe, expect, it, jest} from '@jest/globals'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createPaneLayoutController} from './paneLayoutController'
 
@@ -7,7 +7,7 @@ describe('paneLayoutController', () => {
     const ctrl = createPaneLayoutController()
 
     // Subscribe to state changes
-    const setStateFn = jest.fn()
+    const setStateFn = vi.fn()
     ctrl.subscribe(setStateFn)
 
     // Set root element (layout containing panes)

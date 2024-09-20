@@ -1,5 +1,5 @@
-import {describe, expect, it} from '@jest/globals'
 import {firstValueFrom, map, of} from 'rxjs'
+import {describe, expect, it} from 'vitest'
 
 import {type ErrorWithId} from './types'
 import {serializeError} from './useCopyErrorDetails'

@@ -1,7 +1,7 @@
-import {describe, expect, it, jest} from '@jest/globals'
 /* eslint-disable max-nested-callbacks */
 import {renderHook} from '@testing-library/react'
 import {StrictMode} from 'react'
+import {describe, expect, it, vi} from 'vitest'
 
 import {useDidUpdate} from '../useDidUpdate'
 
@@ -10,7 +10,7 @@ describe('useDidUpdate', () => {
     it('calls the didUpdate callback when the value changes', () => {
       const previousValue = {foo: 'bar'}
       const currentValue = {foo: 'baz'}
-      const didUpdate = jest.fn()
+      const didUpdate = vi.fn()
 
       const {rerender} = renderHook(({value}) => useDidUpdate(value, didUpdate), {
         initialProps: {value: previousValue},
@@ -27,8 +27,8 @@ describe('useDidUpdate', () => {
     it('calls the compare function when it is passed', () => {
       const previousValue = {foo: 'bar'}
       const currentValue = {foo: 'baz'}
-      const compare = jest.fn(() => false)
-      const didUpdate = jest.fn()
+      const compare = vi.fn(() => false)
+      const didUpdate = vi.fn()
 
       const {rerender} = renderHook(({value}) => useDidUpdate(value, didUpdate, compare), {
         initialProps: {value: previousValue},
@@ -47,7 +47,7 @@ describe('useDidUpdate', () => {
     it('does not call the didUpdate callback when the value does not change', () => {
       const previousValue = {foo: 'bar'}
       const currentValue = {foo: 'bar'}
-      const didUpdate = jest.fn()
+      const didUpdate = vi.fn()
 
       const {rerender} = renderHook(({value}) => useDidUpdate(value, didUpdate), {
         initialProps: {value: previousValue},
@@ -68,7 +68,7 @@ describe('useDidUpdate', () => {
     it('calls the didUpdate callback when the value changes', () => {
       const previousValue = {foo: 'bar'}
       const currentValue = {foo: 'baz'}
-      const didUpdate = jest.fn()
+      const didUpdate = vi.fn()
 
       const {rerender} = renderHook(({value}) => useDidUpdate(value, didUpdate), {
         initialProps: {value: previousValue},
@@ -86,8 +86,8 @@ describe('useDidUpdate', () => {
     it('calls the compare function when it is passed', () => {
       const previousValue = {foo: 'bar'}
       const currentValue = {foo: 'baz'}
-      const compare = jest.fn(() => false)
-      const didUpdate = jest.fn()
+      const compare = vi.fn(() => false)
+      const didUpdate = vi.fn()
 
       const {rerender} = renderHook(({value}) => useDidUpdate(value, didUpdate, compare), {
         initialProps: {value: previousValue},
@@ -107,7 +107,7 @@ describe('useDidUpdate', () => {
     it('does not call the didUpdate callback when the value does not change', () => {
       const previousValue = {foo: 'bar'}
       const currentValue = {foo: 'bar'}
-      const didUpdate = jest.fn()
+      const didUpdate = vi.fn()
 
       const {rerender} = renderHook(({value}) => useDidUpdate(value, didUpdate), {
         initialProps: {value: previousValue},

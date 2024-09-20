@@ -1,6 +1,6 @@
-import {describe, expect, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type SanityDocumentLike} from '@sanity/types'
+import {describe, expect, test} from 'vitest'
 
 import {buildTreeEditingState} from '../utils'
 
