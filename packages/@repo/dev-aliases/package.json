@@ -5,7 +5,8 @@
   "description": "Dev aliases for the sanity monorepo",
   "type": "module",
   "exports": {
-    ".": "./dev-aliases.cjs"
+    ".": "./dev-aliases.cjs",
+    "./vite": "./vite.mjs"
   },
   "main": "./dev-aliases.cjs"
 }
