@@ -1,4 +1,4 @@
-name: CLI Unit tests
+name: Unit tests
 
 on:
   # Build on pushes branches that have a PR (including drafts)
@@ -8,9 +8,9 @@ on:
     branches: [next]
 
 jobs:
-  cli-test:
+  test:
     timeout-minutes: 60
-    name: CLI Tests (${{ matrix.os }} / node ${{ matrix.node }})
+    name: Jest tests (${{ matrix.os }} / node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -18,11 +18,14 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
 
     strategy:
+      # we want to know if a test fails on a specific node version
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
         node: [18, 20]
         experimental: [false]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
         # include:
         #   - os: windows-latest
         #     node: 16
@@ -65,15 +68,10 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
-      - name: Build CLI
-        run: pnpm build --output-logs=full --log-order=grouped # Needed for CLI tests
-
       - name: Test
         id: test
         run: |
           node -v
-          npm -v
-          pnpm test:jest --silent --selectProjects=@sanity/cli
+          pnpm test:jest --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --ignoreProjects=@sanity/cli
         env:
-          # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to next
-          SANITY_CI_CLI_AUTH_TOKEN_STAGING: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN_STAGING }}
+          GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
