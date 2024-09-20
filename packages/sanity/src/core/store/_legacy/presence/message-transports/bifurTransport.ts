@@ -26,7 +26,17 @@ type RollCallEvent = {
   session: string
 }
 
-type IncomingBifurEvent<T> = RollCallEvent | BifurStateMessage | BifurDisconnectMessage
+type ExpireEvent = {
+  type: 'expires'
+  event: 'expires'
+  at: string
+}
+
+type IncomingBifurEvent<T> =
+  | RollCallEvent
+  | BifurStateMessage
+  | BifurDisconnectMessage
+  | ExpireEvent
 
 const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): TransportEvent => {
   // console.log('ws incoming  event', event)
@@ -57,14 +67,13 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
     }
   }
 
-  // if (event.type === 'subscription') {
-  //   return {
-  //     type: 'subscription',
-  //     userId: event.i,
-  //     sessionId: event.m.session,
-  //     timestamp: new Date().toISOString(),
-  //   }
-  // }
+  if (event.event === 'expires') {
+    return {
+      type: 'authorizationExpire',
+      expiresAt: event.at,
+      timestamp: new Date().toISOString(),
+    }
+  }
 
   throw new Error(`Got unknown presence event: ${JSON.stringify(event)}`)
 }
@@ -78,12 +87,13 @@ export const createBifurTransport = (bifur: BifurClient, sessionId: string): Tra
     .listen<IncomingBifurEvent<Location[]>>('authorization')
     .pipe(map(handleIncomingMessage))
 
-  const testIncomingAuthorizationEvents$: Observable<TransportEvent> = bifur
-    .listen<IncomingBifurEvent<Location[]>>('authorization')
-    .subscribe((event) => {
-      // eslint-disable-next-line no-console
-      console.log('[++++++]Authorization event', event)
-    })
+  // const testIncomingAuthorizationEvents$: Observable<TransportEvent> = bifur
+  //   .listen<IncomingBifurEvent<Location[]>>('authorization')
+  //   .pipe(map(handleIncomingMessage))
+  //   .subscribe((event) => {
+  //     // eslint-disable-next-line no-console
+  //     console.log('[++++++]Authorization event', event)
+  //   })
 
   const dispatchMessage = (message: TransportMessage): Observable<undefined> => {
     if (message.type === 'rollCall') {

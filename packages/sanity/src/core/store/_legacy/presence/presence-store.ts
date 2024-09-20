@@ -126,6 +126,10 @@ export function __tmp_wrap_presenceStore(context: {
     SESSION_ID,
   )
 
+  authorizationEvents$.subscribe((event) => {
+    // console.log('[++++++]Authorization event', event)
+  })
+
   const currentLocation$ = new BehaviorSubject<PresenceLocation[]>([])
   const locationChange$ = currentLocation$.pipe(distinctUntilChanged())
 

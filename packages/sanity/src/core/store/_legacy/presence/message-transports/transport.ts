@@ -42,8 +42,21 @@ export interface RollCallEvent extends RollCallMessage {
   userId: string
 }
 
-export type TransportMessage = DisconnectMessage | StateMessage | RollCallMessage
-export type TransportEvent = StateEvent | RollCallEvent | DisconnectEvent
+export interface AuthorizationExpireMessage {
+  type: 'authorizationExpire'
+}
+
+export interface AuthorizationExpireEvent extends AuthorizationExpireMessage {
+  expiresAt: string
+  timestamp: string
+}
+
+export type TransportMessage =
+  | DisconnectMessage
+  | StateMessage
+  | RollCallMessage
+  | AuthorizationExpireMessage
+export type TransportEvent = StateEvent | RollCallEvent | DisconnectEvent | AuthorizationExpireEvent
 
 // This is the interface a transport must implement
 export type Transport = [
