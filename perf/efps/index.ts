@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-unassigned-import
 import 'dotenv/config'
@@ -84,18 +85,12 @@ await exec({
 })
 
 const table = new Table({
-  head: [
-    chalk.bold('benchmark'),
-    'latest p50',
-    'local p50 (Δ%)',
-    'latest p75',
-    'local p75 (Δ%)',
-    'latest p90',
-    'local p90 (Δ%)',
-  ].map((cell) => chalk.cyan(cell)),
+  head: [chalk.bold('benchmark'), 'Passed?', 'p50 eFPS (Δ%)', 'p75 eFPS (Δ%)', 'p90 eFPS (Δ%)'].map(
+    (cell) => chalk.cyan(cell),
+  ),
 })
 
-const markdownLines: string[] = []
+const markdownRows: string[] = []
 
 const formatFps = (fps: number) => {
   const rounded = fps.toFixed(1)
@@ -107,8 +102,8 @@ const formatFps = (fps: number) => {
 const formatPercentage = (value: number): string => {
   const rounded = value.toFixed(1)
   const sign = value >= 0 ? '+' : ''
-  if (value >= 0) return chalk.green(`${sign}${rounded}%`)
-  return chalk.red(`${rounded}%`)
+  if (value > -50) return `${sign}${rounded}%`
+  return chalk.red(`${sign}${rounded}%`)
 }
 
 // For markdown formatting without colors
@@ -123,8 +118,27 @@ const formatPercentagePlain = (value: number): string => {
   return `${sign}${rounded}%`
 }
 
-// Initialize the regression flag
-let hasSignificantRegression = false
+function getStatus(
+  p50Diff: number,
+  p75Diff: number,
+  p90Diff: number,
+): 'error' | 'warning' | 'passed' {
+  if (p50Diff < -50 || p75Diff < -50 || p90Diff < -50) {
+    return 'error'
+  } else if (p50Diff < -20 || p75Diff < -20 || p90Diff < -20) {
+    return 'warning'
+  }
+  return 'passed'
+}
+
+function getStatusEmoji(status: 'error' | 'warning' | 'passed'): string {
+  if (status === 'error') return '🔴'
+  if (status === 'warning') return '⚠️'
+  return '✅'
+}
+
+// Initialize the overall status
+let overallStatus: 'error' | 'warning' | 'passed' = 'passed'
 
 interface TestResult {
   testName: string
@@ -173,15 +187,6 @@ for (let i = 0; i < tests.length; i++) {
   })
 }
 
-// Prepare markdown header
-markdownLines.push('# Benchmark Results\n')
-markdownLines.push(
-  '| Benchmark | Latest p50 | Local p50 (Δ%) | Latest p75 | Local p75 (Δ%) | Latest p90 | Local p90 (Δ%) |',
-)
-markdownLines.push(
-  '|-----------|------------|----------------|------------|----------------|------------|----------------|',
-)
-
 for (const test of tests) {
   const localResult = allResults.find((r) => r.testName === test.name && r.version === 'local')
   const latestResult = allResults.find((r) => r.testName === test.name && r.version === 'latest')
@@ -204,35 +209,35 @@ for (const test of tests) {
         const p75Diff = ((local.p75 - latest.p75) / latest.p75) * 100
         const p90Diff = ((local.p90 - latest.p90) / latest.p90) * 100
 
-        // Check for significant regression
-        // eslint-disable-next-line max-depth
-        if (p50Diff < -50 || p75Diff < -50 || p90Diff < -50) {
-          hasSignificantRegression = true
+        // Determine test status
+        const testStatus = getStatus(p50Diff, p75Diff, p90Diff)
+
+        // Update overall status
+        if (testStatus === 'error') {
+          overallStatus = 'error'
+        } else if (testStatus === 'warning' && overallStatus === 'passed') {
+          overallStatus = 'warning'
         }
 
         const rowLabel = [chalk.bold(test.name), label ? `(${label})` : ''].join(' ')
 
         table.push([
           rowLabel,
-          formatFps(latest.p50),
+          getStatusEmoji(testStatus),
           `${formatFps(local.p50)} (${formatPercentage(p50Diff)})`,
-          formatFps(latest.p75),
           `${formatFps(local.p75)} (${formatPercentage(p75Diff)})`,
-          formatFps(latest.p90),
           `${formatFps(local.p90)} (${formatPercentage(p90Diff)})`,
         ])
 
-        // Add to markdown table
+        // Add to markdown rows
         const markdownRow = [
           [test.name, label ? `(${label})` : ''].join(' '),
-          formatFpsPlain(latest.p50),
+          getStatusEmoji(testStatus),
           `${formatFpsPlain(local.p50)} (${formatPercentagePlain(p50Diff)})`,
-          formatFpsPlain(latest.p75),
           `${formatFpsPlain(local.p75)} (${formatPercentagePlain(p75Diff)})`,
-          formatFpsPlain(latest.p90),
           `${formatFpsPlain(local.p90)} (${formatPercentagePlain(p90Diff)})`,
         ]
-        markdownLines.push(`| ${markdownRow.join(' | ')} |`)
+        markdownRows.push(`| ${markdownRow.join(' | ')} |`)
       } else {
         spinner.fail(`Missing local result for test '${test.name}', label '${label}'`)
       }
@@ -251,21 +256,36 @@ console.log(`
 │ within a second. Derived from input latency. ${chalk.green('Higher')} is better.
 `)
 
-// Add explanation to markdown
-markdownLines.push('\n')
-markdownLines.push('**eFPS — editor "Frames Per Second"**')
-markdownLines.push('\n')
-markdownLines.push(
-  'The number of renders ("frames") that is assumed to be possible within a second. Derived from input latency. **Higher** is better.',
-)
-markdownLines.push('\n')
+// Map overallStatus to status text
+const statusText =
+  // eslint-disable-next-line no-nested-ternary
+  overallStatus === 'error' ? 'Error' : overallStatus === 'warning' ? 'Warning' : 'Passed'
+const statusEmoji = getStatusEmoji(overallStatus)
+
+// Build the markdown content
+const markdownContent = [
+  '# Benchmark Results',
+  '',
+  `<details>`,
+  `<summary>${statusEmoji} Performance Benchmark Results — Status: **${statusText}** </summary>`,
+  '',
+  '| Benchmark | Passed? | p50 eFPS (Δ%) | p75 eFPS (Δ%) | p90 eFPS (Δ%) |',
+  '|-----------|---------|---------------|---------------|---------------|',
+  ...markdownRows,
+  '</details>',
+  '',
+  '> **eFPS — editor "Frames Per Second"**',
+  '> ',
+  '> The number of renders ("frames") that is assumed to be possible within a second. Derived from input latency. **Higher** is better.',
+  '',
+].join('\n')
 
 // Write markdown file
 const markdownOutputPath = path.join(resultsDir, 'benchmark-results.md')
-await fs.promises.writeFile(markdownOutputPath, markdownLines.join('\n'))
+await fs.promises.writeFile(markdownOutputPath, markdownContent)
 
 // Exit with code 1 if regression detected
-if (hasSignificantRegression) {
+if (overallStatus === 'error') {
   console.error(chalk.red('Performance regression detected exceeding 50% threshold.'))
   process.exit(1)
 }
