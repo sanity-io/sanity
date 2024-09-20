@@ -78,12 +78,6 @@ await exec({
 })
 const sanityPackagePath = path.join(tmpDir, 'node_modules', 'sanity')
 
-await exec({
-  text: ['Ensuring playwright is installed…', 'Playwright is installed'],
-  command: 'npx playwright install --with-deps',
-  spinner,
-})
-
 const table = new Table({
   head: [chalk.bold('benchmark'), 'Passed?', 'p50 eFPS (Δ%)', 'p75 eFPS (Δ%)', 'p90 eFPS (Δ%)'].map(
     (cell) => chalk.cyan(cell),
@@ -115,7 +109,8 @@ const formatFpsPlain = (fps: number) => {
 const formatPercentagePlain = (value: number): string => {
   const rounded = value.toFixed(1)
   const sign = value >= 0 ? '+' : ''
-  return `${sign}${rounded}%`
+  const emoji = value >= 0 ? '🟢' : '🔴'
+  return `${sign}${rounded}% ${emoji}`
 }
 
 function getStatus(
