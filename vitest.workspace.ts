@@ -6,4 +6,5 @@ export default defineWorkspace([
   'packages/@sanity/mutator',
   'packages/@sanity/schema',
   'packages/@sanity/types',
+  'packages/@sanity/util',
 ])
