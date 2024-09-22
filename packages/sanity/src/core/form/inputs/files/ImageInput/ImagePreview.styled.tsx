@@ -1,4 +1,5 @@
 import {Card, type CardTone, Flex, rgba, studioTheme} from '@sanity/ui'
+import {useColorSchemeValue} from 'sanity'
 import {css, styled} from 'styled-components'
 
 export const RatioBox = styled(Card)`
@@ -20,8 +21,9 @@ export const RatioBox = styled(Card)`
 export const Overlay = styled(Flex)<{
   $tone: Exclude<CardTone, 'inherit'>
 }>(({$tone}) => {
-  const textColor = studioTheme.color.light[$tone].card.enabled.fg
-  const backgroundColor = rgba(studioTheme.color.light[$tone].card.enabled.bg, 0.8)
+  const colorScheme = useColorSchemeValue()
+  const textColor = studioTheme.color[colorScheme][$tone].card.enabled.fg
+  const backgroundColor = rgba(studioTheme.color[colorScheme][$tone].card.enabled.bg, 0.8)
 
   return css`
     position: absolute;
