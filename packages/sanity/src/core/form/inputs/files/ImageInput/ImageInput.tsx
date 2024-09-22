@@ -67,28 +67,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
-  /**
-   * The upload progress state wants to use the same height as any previous image
-   * to avoid layout shifts and jumps
-   */
-  const previewElementRef = useRef<{el: HTMLDivElement | null; height: number}>({
-    el: null,
-    height: 0,
-  })
-  const setPreviewElementHeight = useCallback((node: HTMLDivElement | null) => {
-    if (node) {
-      previewElementRef.current.el = node
-      previewElementRef.current.height = node.offsetHeight
-    } else {
-      /**
-       * If `node` is `null` then it means the `FileTarget` in `ImageInputAsset` is being unmounted and we want to
-       * capture its height before it's removed from the DOM.
-       */
-
-      previewElementRef.current.height = previewElementRef.current.el?.offsetHeight || 0
-      previewElementRef.current.el = null
-    }
-  }, [])
   const getFileTone = useCallback(() => {
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
@@ -201,9 +179,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
 
   const handleClearField = useCallback(() => {
     onChange([unset(['asset']), unset(['crop']), unset(['hotspot'])])
-
-    previewElementRef.current.el = null
-    previewElementRef.current.height = 0
   }, [onChange])
   const handleRemoveButtonClick = useCallback(() => {
     // When removing the image, we should also remove any crop and hotspot
@@ -224,9 +199,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
       .map((key) => unset([key]))
 
     onChange(isEmpty && !valueIsArrayElement() ? unset() : removeKeys)
-
-    previewElementRef.current.el = null
-    previewElementRef.current.height = 0
   }, [onChange, value, valueIsArrayElement])
   const handleOpenDialog = useCallback(() => {
     onPathFocus(['hotspot'])
@@ -303,15 +275,16 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     menuButtonElement?.focus()
   }, [menuButtonElement])
 
-  const renderPreview = useCallback(() => {
+  const renderPreview = useCallback<() => JSX.Element>(() => {
+    if (!value) {
+      return <></>
+    }
     return (
       <ImageInputPreview
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
         hoveringFiles={hoveringFiles}
         imageUrlBuilder={imageUrlBuilder}
-        // if there previously was a preview image, preserve the height to avoid jumps
-        initialHeight={previewElementRef.current.height}
         readOnly={readOnly}
         resolveUploader={resolveUploader}
         schemaType={schemaType}
@@ -404,8 +377,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
           uploadState={uploadState}
           onCancel={isUploading ? handleCancelUpload : undefined}
           onStale={handleStaleUpload}
-          // if there previously was a preview image, preserve the height to avoid jumps
-          height={previewElementRef.current.height}
         />
       )
     },
@@ -420,7 +391,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     // eslint-disable-next-line react/display-name
     return (inputProps: Omit<InputProps, 'renderDefault'>) => (
       <ImageInputAsset
-        ref={setPreviewElementHeight}
         elementProps={elementProps}
         handleClearUploadState={handleClearUploadState}
         handleFilesOut={handleFilesOut}
@@ -437,6 +407,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
         renderUploadState={renderUploadState}
         tone={getFileTone()}
         value={value}
+        imageUrlBuilder={imageUrlBuilder}
       />
     )
   }, [
@@ -449,13 +420,13 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     handleFilesOver,
     handleSelectFiles,
     hoveringFiles,
+    imageUrlBuilder,
     isStale,
     readOnly,
     renderAssetMenu,
     renderPreview,
     renderUploadPlaceholder,
     renderUploadState,
-    setPreviewElementHeight,
     value,
   ])
   const renderHotspotInput = useCallback(
