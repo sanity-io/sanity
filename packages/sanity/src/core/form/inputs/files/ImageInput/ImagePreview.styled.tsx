@@ -18,9 +18,8 @@ export const RatioBox = styled(Card)`
 `
 
 export const Overlay = styled(Flex)<{
-  $drag: boolean
   $tone: Exclude<CardTone, 'inherit'>
-}>(({$drag, $tone}) => {
+}>(({$tone}) => {
   const textColor = studioTheme.color.light[$tone].card.enabled.fg
   const backgroundColor = rgba(studioTheme.color.light[$tone].card.enabled.bg, 0.8)
 
@@ -30,9 +29,9 @@ export const Overlay = styled(Flex)<{
     left: 0;
     right: 0;
     bottom: 0;
-    backdrop-filter: ${$drag ? 'blur(10px)' : ''};
+    backdrop-filter: blur(10px);
     color: ${$tone ? textColor : ''};
-    background-color: ${$drag ? backgroundColor : 'transparent'};
+    background-color: ${backgroundColor};
   `
 })
 
