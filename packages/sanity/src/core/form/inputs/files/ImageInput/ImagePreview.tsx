@@ -34,9 +34,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
 
   return (
     <RatioBox {...rest} tone="transparent">
-      {!isLoaded && (
-        <OverlayComponent cardTone="transparent" drag content={<LoadingBlock showText />} />
-      )}
+      {!isLoaded && <OverlayComponent cardTone="transparent" content={<LoadingBlock showText />} />}
       <img
         src={src}
         data-testid="hotspot-image-input"
@@ -47,7 +45,6 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
       {drag && (
         <OverlayComponent
           cardTone={tone}
-          drag={drag}
           content={
             <>
               <Box marginBottom={3}>
@@ -91,15 +88,13 @@ function getHoverTextTranslationKey({
 
 function OverlayComponent({
   cardTone,
-  drag,
   content,
 }: {
   cardTone: Exclude<CardTone, 'inherit'>
-  drag: boolean
   content: ReactNode
 }) {
   return (
-    <Overlay justify="flex-end" padding={3} $drag={drag} $tone={cardTone}>
+    <Overlay justify="flex-end" padding={3} $tone={cardTone}>
       <FlexOverlay direction="column" align="center" justify="center">
         {content}
       </FlexOverlay>
