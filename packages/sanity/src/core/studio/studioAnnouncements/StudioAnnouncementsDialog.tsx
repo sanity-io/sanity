@@ -133,7 +133,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
           </Box>
         </Box>
         <Flex flex={1} padding={2} justify="center" ref={logViewedItemRef}>
-          <Text size={1} weight="semibold">
+          <Text as="h2" size={1} weight="semibold">
             {announcement.title}
           </Text>
         </Flex>
