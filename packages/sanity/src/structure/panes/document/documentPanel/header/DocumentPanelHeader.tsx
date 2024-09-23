@@ -137,7 +137,7 @@ export const DocumentPanelHeader = memo(
         <PaneHeader
           border
           ref={ref}
-          loading={connectionState === 'connecting'}
+          loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
           title={<DocumentHeaderTitle />}
           tabs={showTabs && <DocumentHeaderTabs />}
           tabIndex={tabIndex}
