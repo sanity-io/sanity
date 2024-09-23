@@ -11,13 +11,6 @@ import {css, keyframes, styled} from 'styled-components'
 import {Button, Popover} from '../../../ui-components'
 import {SANITY_VERSION} from '../../version'
 import {ProductAnnouncementCardSeen} from './__telemetry__/studioAnnouncements.telemetry'
-import {type StudioAnnouncementDocument} from './types'
-
-const TYPE_DICTIONARY: {
-  [key in StudioAnnouncementDocument['announcementType']]: string
-} = {
-  'whats-new': "What's new",
-}
 
 const keyframe = keyframes`
   0% {
@@ -87,7 +80,7 @@ interface StudioAnnouncementCardProps {
   title: string
   id: string
   isOpen: boolean
-  announcementType: StudioAnnouncementDocument['announcementType']
+  preHeader: string
   onCardClick: () => void
   onCardDismiss: () => void
 }
@@ -100,7 +93,7 @@ export function StudioAnnouncementsCard({
   title,
   id,
   isOpen,
-  announcementType,
+  preHeader,
   onCardClick,
   onCardDismiss,
 }: StudioAnnouncementCardProps) {
@@ -143,7 +136,7 @@ export function StudioAnnouncementsCard({
             <Stack space={3}>
               <Box marginRight={6}>
                 <Text as={'h3'} size={1} muted>
-                  {TYPE_DICTIONARY[announcementType]}
+                  {preHeader}
                 </Text>
               </Box>
               <Text size={1} weight="medium">

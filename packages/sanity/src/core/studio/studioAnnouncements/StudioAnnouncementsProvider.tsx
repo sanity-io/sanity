@@ -137,9 +137,9 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
       {children}
       {unseenAnnouncements.length > 0 && (
         <StudioAnnouncementsCard
+          preHeader={unseenAnnouncements[0].preHeader}
           title={unseenAnnouncements[0].title}
           id={unseenAnnouncements[0]._id}
-          announcementType={unseenAnnouncements[0].announcementType}
           onCardClick={handleCardClick}
           isOpen={!isCardDismissed}
           onCardDismiss={handleCardDismiss}

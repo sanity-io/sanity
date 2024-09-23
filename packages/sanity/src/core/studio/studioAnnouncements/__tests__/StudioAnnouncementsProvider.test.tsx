@@ -69,6 +69,7 @@ const mockAnnouncements: StudioAnnouncementDocument[] = [
     title: 'Announcement 1',
     body: [],
     announcementType: 'whats-new',
+    preHeader: "What's new",
     publishedDate: '2024-09-10T14:44:00.000Z',
     audience: 'everyone',
   },
@@ -81,6 +82,7 @@ const mockAnnouncements: StudioAnnouncementDocument[] = [
     title: 'Announcement 2',
     body: [],
     announcementType: 'whats-new',
+    preHeader: "What's new",
     publishedDate: '2024-09-10T14:44:00.000Z',
     audience: 'everyone',
   },
@@ -439,6 +441,7 @@ describe('StudioAnnouncementsProvider', () => {
         jest.fn(),
       ])
     })
+
     test('if the audience is everyone, it shows the announcement regardless the version', () => {
       const announcements: StudioAnnouncementDocument[] = [
         {

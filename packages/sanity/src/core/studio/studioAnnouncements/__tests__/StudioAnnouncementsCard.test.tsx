@@ -36,7 +36,7 @@ jest.mock('../../../version', () => ({
 const announcementCardProps = {
   title: 'New Features Available',
   id: 'foo',
-  announcementType: 'whats-new',
+  preHeader: "What's new",
 } as const
 
 describe('StudioAnnouncementsCard', () => {
@@ -69,6 +69,26 @@ describe('StudioAnnouncementsCard', () => {
       studio_version: '3.57.0',
     })
     expect(screen.getByText("What's new")).toBeInTheDocument()
+    expect(screen.getByText(announcementCardProps.title)).toBeInTheDocument()
+  })
+  test('renders a different preHeader', async () => {
+    const onCardClickMock = jest.fn()
+    const onCardDismissMock = jest.fn()
+
+    const preHeader = 'Check out the new features'
+    const wrapper = await createAnnouncementWrapper()
+    render(
+      <StudioAnnouncementsCard
+        {...announcementCardProps}
+        preHeader={preHeader}
+        isOpen
+        onCardClick={onCardClickMock}
+        onCardDismiss={onCardDismissMock}
+      />,
+      {wrapper},
+    )
+
+    expect(screen.getByText(preHeader)).toBeInTheDocument()
     expect(screen.getByText(announcementCardProps.title)).toBeInTheDocument()
   })
   test('does not render when isOpen is false', async () => {

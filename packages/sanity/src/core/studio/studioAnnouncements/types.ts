@@ -29,6 +29,7 @@ export interface StudioAnnouncementDocument {
     | 'less-than-or-equal-version'
   audienceRole?: AudienceRole[] | undefined
   studioVersion?: string
+  preHeader: string
 }
 
 export interface StudioAnnouncementsContextValue {

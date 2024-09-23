@@ -26,6 +26,7 @@ const MOCKED_ANNOUNCEMENTS: StudioAnnouncementDocument[] = [
     _createdAt: '',
     _updatedAt: '',
     title: 'Announcement 1',
+    preHeader: "What's new",
     body: [
       {
         _type: 'block',
@@ -65,6 +66,7 @@ const MOCKED_ANNOUNCEMENTS: StudioAnnouncementDocument[] = [
     _createdAt: '',
     _updatedAt: '',
     title: 'Announcement 2',
+    preHeader: "What's new",
     body: [
       {
         _type: 'block',

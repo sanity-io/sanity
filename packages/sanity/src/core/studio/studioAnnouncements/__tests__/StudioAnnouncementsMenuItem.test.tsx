@@ -32,6 +32,7 @@ const MOCKED_ANNOUNCEMENT: StudioAnnouncementDocument = {
   announcementType: 'whats-new',
   publishedDate: '2024-09-10T14:44:00.000Z',
   audience: 'everyone',
+  preHeader: "What's new",
 }
 const useStudioAnnouncementsMock = useStudioAnnouncements as jest.Mock<
   typeof useStudioAnnouncements
