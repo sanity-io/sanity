@@ -41,6 +41,15 @@ function installProcessExitHack(finalTask: () => Promise<unknown>) {
   }
 }
 
+async function getDeviceId() {
+  try {
+    return await machineId()
+  } catch(error) {
+    console.error('Failed to get device ID:', error)
+    return 'unknown device id'
+  }
+}
+
 export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}): Promise<void> {
   installUnhandledRejectionsHandler()
 
@@ -85,7 +94,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   )
 
   telemetry.updateUserProperties({
-    deviceId: await machineId(),
+    deviceId: await getDeviceId(),
     runtimeVersion: process.version,
     runtime: detectRuntime(),
     cliVersion: pkg.version,
