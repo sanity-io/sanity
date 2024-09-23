@@ -2,6 +2,7 @@
 import {beforeAll, beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {fireEvent, render, renderHook, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
+import {of} from 'rxjs'
 import {defineConfig} from 'sanity'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -31,13 +32,8 @@ const useClientMock = useClient as jest.Mock<typeof useClient>
 const mockClient = (announcements: StudioAnnouncementDocument[]) => {
   useClientMock.mockReturnValue({
     observable: {
-      request: () => ({
-        // @ts-expect-error this intents to mock only the observable, not all the client.
-        subscribe: ({next}) => {
-          next(announcements)
-          return {unsubscribe: jest.fn()}
-        },
-      }),
+      // @ts-expect-error this intents to mock only the observable.
+      request: () => of(announcements),
     },
   })
 }

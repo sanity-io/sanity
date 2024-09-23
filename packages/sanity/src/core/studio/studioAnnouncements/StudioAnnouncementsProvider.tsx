@@ -1,6 +1,8 @@
 /* eslint-disable camelcase */
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, map, type Observable, startWith} from 'rxjs'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
@@ -34,10 +36,30 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
   const telemetry = useTelemetry()
   const [dialogMode, setDialogMode] = useState<DialogMode | null>(null)
   const [isCardDismissed, setIsCardDismissed] = useState(false)
-  const [studioAnnouncements, setStudioAnnouncements] = useState<StudioAnnouncementDocument[]>([])
   const [seenAnnouncements, setSeenAnnouncements] = useSeenAnnouncements()
   const {currentUser} = useWorkspace()
   const client = useClient(CLIENT_OPTIONS)
+
+  const fetchAnnouncements: Observable<StudioAnnouncementDocument[]> = useMemo(() => {
+    return client.observable
+      .request<StudioAnnouncementDocument[] | null>({url: '/journey/announcements'})
+      .pipe(
+        map((docs) => {
+          if (!docs) return []
+          const validDocs = docs.filter(
+            (doc) =>
+              isValidAnnouncementAudience(
+                {audience: doc.audience, studioVersion: doc.studioVersion},
+                SANITY_VERSION,
+              ) && isValidAnnouncementRole(doc.audienceRole, currentUser?.roles),
+          )
+          return validDocs
+        }),
+        catchError(() => []),
+        startWith([]),
+      )
+  }, [client, currentUser?.roles])
+  const studioAnnouncements = useObservable(fetchAnnouncements, [])
 
   const unseenAnnouncements: StudioAnnouncementDocument[] = useMemo(() => {
     // If it's loading or it has errored return an empty array to avoid showing the card
@@ -50,29 +72,6 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
 
     return unseen
   }, [seenAnnouncements, studioAnnouncements])
-
-  useEffect(() => {
-    const request = client.observable
-      .request<StudioAnnouncementDocument[] | null>({url: '/journey/announcements'})
-      .subscribe({
-        next: (docs) => {
-          if (!docs) return
-          const validDocs = docs.filter(
-            (doc) =>
-              isValidAnnouncementAudience(
-                {audience: doc.audience, studioVersion: doc.studioVersion},
-                SANITY_VERSION,
-              ) && isValidAnnouncementRole(doc.audienceRole, currentUser?.roles),
-          )
-          setStudioAnnouncements(validDocs)
-        },
-        error: () => {
-          /* silently ignore any error */
-        },
-      })
-    // eslint-disable-next-line consistent-return
-    return () => request.unsubscribe()
-  }, [currentUser?.roles, client])
 
   const saveSeenAnnouncements = useCallback(() => {
     // Mark all the announcements as seen
