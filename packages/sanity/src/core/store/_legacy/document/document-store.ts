@@ -23,6 +23,7 @@ import {
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
 import {validation} from './document-pair/validation'
+import {getVisitedDocuments} from './getVisitedDocuments'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
@@ -100,6 +101,10 @@ export function createDocumentStore({
   const observeDocumentPairAvailability =
     documentPreviewStore.unstable_observeDocumentPairAvailability
 
+  const visitedDocuments = getVisitedDocuments({
+    observeDocuments: documentPreviewStore.unstable_observeDocuments,
+  })
+
   // Note that we're both passing a shared `client` here which is used by the
   // internal operations, and a `getClient` method that we expose to user-land
   // for things like validations
@@ -156,7 +161,14 @@ export function createDocumentStore({
         return editOperations(ctx, getIdPairFromPublished(publishedId), type)
       },
       editState(publishedId, type) {
-        return editState(ctx, getIdPairFromPublished(publishedId), type)
+        const edit = editState(
+          ctx,
+          getIdPairFromPublished(publishedId),
+          type,
+          visitedDocuments.visited$,
+        )
+        visitedDocuments.add(publishedId)
+        return edit
       },
       operationEvents(publishedId, type) {
         return operationEvents({
@@ -178,7 +190,7 @@ export function createDocumentStore({
         )
       },
       validation(publishedId, type) {
-        return validation(ctx, getIdPairFromPublished(publishedId), type)
+        return validation(ctx, getIdPairFromPublished(publishedId), type, visitedDocuments.visited$)
       },
     },
   }
