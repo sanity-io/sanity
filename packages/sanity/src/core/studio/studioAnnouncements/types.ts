@@ -18,6 +18,7 @@ export interface StudioAnnouncementDocument {
   _createdAt: string
   _updatedAt: string
   title: string
+  name: string
   body: PortableTextBlock[]
   announcementType: 'whats-new'
   publishedDate: string

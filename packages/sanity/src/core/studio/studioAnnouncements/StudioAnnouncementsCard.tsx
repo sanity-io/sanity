@@ -79,6 +79,7 @@ const ButtonRoot = styled.div`
 interface StudioAnnouncementCardProps {
   title: string
   id: string
+  name: string
   isOpen: boolean
   preHeader: string
   onCardClick: () => void
@@ -93,6 +94,7 @@ export function StudioAnnouncementsCard({
   title,
   id,
   isOpen,
+  name,
   preHeader,
   onCardClick,
   onCardDismiss,
@@ -105,11 +107,12 @@ export function StudioAnnouncementsCard({
       telemetry.log(ProductAnnouncementCardSeen, {
         announcement_id: id,
         announcement_title: title,
+        announcement_internal_name: name,
         source: 'studio',
         studio_version: SANITY_VERSION,
       })
     }
-  }, [telemetry, id, title, isOpen])
+  }, [telemetry, id, title, isOpen, name])
 
   return (
     <Popover

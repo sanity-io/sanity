@@ -69,6 +69,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
       telemetry.log(ProductAnnouncementLinkClicked, {
         announcement_id: announcement._id,
         announcement_title: announcement.title,
+        announcement_internal_name: announcement.name,
         source: 'studio',
         studio_version: SANITY_VERSION,
         origin: mode,
@@ -83,13 +84,14 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
       telemetry.log(ProductAnnouncementViewed, {
         announcement_id: announcement._id,
         announcement_title: announcement.title,
+        announcement_internal_name: announcement.name,
         source: 'studio',
         studio_version: SANITY_VERSION,
         scrolled_into_view: scrolledIntoView,
         origin: mode,
       })
     },
-    [announcement._id, announcement.title, mode, telemetry],
+    [announcement._id, announcement.title, mode, telemetry, announcement.name],
   )
 
   useEffect(() => {
@@ -139,7 +141,10 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
         </Flex>
       </DialogHeader>
       <Box padding={4}>
-        <UpsellDescriptionSerializer blocks={announcement.body} onLinkClick={handleLinkClick} />
+        <UpsellDescriptionSerializer
+          blocks={announcement.body || []}
+          onLinkClick={handleLinkClick}
+        />
       </Box>
     </Box>
   )

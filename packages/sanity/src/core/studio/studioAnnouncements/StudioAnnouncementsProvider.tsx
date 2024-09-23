@@ -92,6 +92,7 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
     telemetry.log(ProductAnnouncementCardDismissed, {
       announcement_id: unseenAnnouncements[0]?._id,
       announcement_title: unseenAnnouncements[0]?.title,
+      announcement_internal_name: unseenAnnouncements[0]?.name,
       source: 'studio',
       studio_version: SANITY_VERSION,
     })
@@ -102,6 +103,7 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
     telemetry.log(ProductAnnouncementCardClicked, {
       announcement_id: unseenAnnouncements[0]?._id,
       announcement_title: unseenAnnouncements[0]?.title,
+      announcement_internal_name: unseenAnnouncements[0]?.name,
       source: 'studio',
       studio_version: SANITY_VERSION,
     })
@@ -114,6 +116,7 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
     telemetry.log(ProductAnnouncementModalDismissed, {
       announcement_id: firstAnnouncement?._id,
       announcement_title: firstAnnouncement?.title,
+      announcement_internal_name: firstAnnouncement?.name,
       source: 'studio',
       studio_version: SANITY_VERSION,
       origin: dialogMode ?? 'card',
@@ -139,6 +142,7 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
         <StudioAnnouncementsCard
           preHeader={unseenAnnouncements[0].preHeader}
           title={unseenAnnouncements[0].title}
+          name={unseenAnnouncements[0].name}
           id={unseenAnnouncements[0]._id}
           onCardClick={handleCardClick}
           isOpen={!isCardDismissed}

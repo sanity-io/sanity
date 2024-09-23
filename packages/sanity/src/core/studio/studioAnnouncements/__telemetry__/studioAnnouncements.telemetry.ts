@@ -3,6 +3,7 @@ import {defineEvent} from '@sanity/telemetry'
 interface ProductAnnouncementSharedProperties {
   announcement_id: string
   announcement_title: string
+  announcement_internal_name: string
   source: 'studio'
   studio_version?: string
 }

@@ -17,6 +17,7 @@ export function StudioAnnouncementsMenuItem({text}: {text: string}) {
       source: 'studio',
       announcement_id: studioAnnouncements[0]?._id,
       announcement_title: studioAnnouncements[0]?.title,
+      announcement_internal_name: studioAnnouncements[0]?.name,
       studio_version: SANITY_VERSION,
     })
   }, [onDialogOpen, studioAnnouncements, telemetry])

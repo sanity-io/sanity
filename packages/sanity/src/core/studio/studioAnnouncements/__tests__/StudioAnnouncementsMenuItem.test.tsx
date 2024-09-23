@@ -6,6 +6,7 @@ import {type ReactNode} from 'react'
 import {defineConfig} from 'sanity'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {WhatsNewHelpMenuItemClicked} from '../__telemetry__/studioAnnouncements.telemetry'
 import {StudioAnnouncementsMenuItem} from '../StudioAnnouncementsMenuItem'
 import {type StudioAnnouncementDocument} from '../types'
 import {useStudioAnnouncements} from '../useStudioAnnouncements'
@@ -33,6 +34,7 @@ const MOCKED_ANNOUNCEMENT: StudioAnnouncementDocument = {
   publishedDate: '2024-09-10T14:44:00.000Z',
   audience: 'everyone',
   preHeader: "What's new",
+  name: 'announcement-1',
 }
 const useStudioAnnouncementsMock = useStudioAnnouncements as jest.Mock<
   typeof useStudioAnnouncements
@@ -110,20 +112,12 @@ describe('StudioAnnouncementsMenuItem', () => {
 
     expect(onDialogOpenMock).toHaveBeenCalledWith('help_menu')
     expect(mockLog).toHaveBeenCalledTimes(1)
-    expect(mockLog).toHaveBeenCalledWith(
-      {
-        description: 'User clicked the "Whats new" help menu item',
-        name: 'Whats New Help Menu Item Clicked',
-        schema: undefined,
-        type: 'log',
-        version: 1,
-      },
-      {
-        announcement_id: 'studioAnnouncement-1',
-        announcement_title: 'Announcement 1',
-        source: 'studio',
-        studio_version: '3.57.0',
-      },
-    )
+    expect(mockLog).toHaveBeenCalledWith(WhatsNewHelpMenuItemClicked, {
+      announcement_id: 'studioAnnouncement-1',
+      announcement_title: 'Announcement 1',
+      announcement_internal_name: 'announcement-1',
+      source: 'studio',
+      studio_version: '3.57.0',
+    })
   })
 })

@@ -37,6 +37,7 @@ const announcementCardProps = {
   title: 'New Features Available',
   id: 'foo',
   preHeader: "What's new",
+  name: 'new-features',
 } as const
 
 describe('StudioAnnouncementsCard', () => {
@@ -65,6 +66,7 @@ describe('StudioAnnouncementsCard', () => {
     expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardSeen, {
       announcement_id: 'foo',
       announcement_title: 'New Features Available',
+      announcement_internal_name: 'new-features',
       source: 'studio',
       studio_version: '3.57.0',
     })

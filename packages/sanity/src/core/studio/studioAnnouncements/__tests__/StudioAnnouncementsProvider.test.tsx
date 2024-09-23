@@ -7,6 +7,13 @@ import {defineConfig} from 'sanity'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {useClient} from '../../../hooks/useClient'
+import {
+  ProductAnnouncementCardClicked,
+  ProductAnnouncementCardDismissed,
+  ProductAnnouncementCardSeen,
+  ProductAnnouncementModalDismissed,
+  ProductAnnouncementViewed,
+} from '../__telemetry__/studioAnnouncements.telemetry'
 import {StudioAnnouncementsProvider} from '../StudioAnnouncementsProvider'
 import {type StudioAnnouncementDocument} from '../types'
 import {useSeenAnnouncements} from '../useSeenAnnouncements'
@@ -72,6 +79,7 @@ const mockAnnouncements: StudioAnnouncementDocument[] = [
     preHeader: "What's new",
     publishedDate: '2024-09-10T14:44:00.000Z',
     audience: 'everyone',
+    name: 'announcement-1',
   },
   {
     _id: 'studioAnnouncement-2',
@@ -85,6 +93,7 @@ const mockAnnouncements: StudioAnnouncementDocument[] = [
     preHeader: "What's new",
     publishedDate: '2024-09-10T14:44:00.000Z',
     audience: 'everyone',
+    name: 'announcement-2',
   },
 ]
 
@@ -218,53 +227,29 @@ describe('StudioAnnouncementsProvider', () => {
 
       // Opening the dialog calls the telemetry only once, with the seen card
       expect(mockLog).toBeCalledTimes(3)
-      expect(mockLog).toBeCalledWith(
-        {
-          description: 'User viewed the product announcement card',
-          name: 'Product Announcement Card Seen',
-          schema: undefined,
-          type: 'log',
-          version: 1,
-        },
-        {
-          announcement_id: 'studioAnnouncement-2',
-          announcement_title: 'Announcement 2',
-          source: 'studio',
-          studio_version: '3.57.0',
-        },
-      )
-      expect(mockLog).toBeCalledWith(
-        {
-          description: 'User clicked the product announcement card',
-          name: 'Product Announcement Card Clicked',
-          schema: undefined,
-          type: 'log',
-          version: 1,
-        },
-        {
-          announcement_id: 'studioAnnouncement-2',
-          announcement_title: 'Announcement 2',
-          source: 'studio',
-          studio_version: '3.57.0',
-        },
-      )
-      expect(mockLog).toBeCalledWith(
-        {
-          description: 'User viewed the product announcement',
-          name: 'Product Announcement Viewed',
-          schema: undefined,
-          type: 'log',
-          version: 1,
-        },
-        {
-          announcement_id: 'studioAnnouncement-2',
-          announcement_title: 'Announcement 2',
-          origin: 'card',
-          scrolled_into_view: false,
-          source: 'studio',
-          studio_version: '3.57.0',
-        },
-      )
+      expect(mockLog).toBeCalledWith(ProductAnnouncementCardSeen, {
+        announcement_id: 'studioAnnouncement-2',
+        announcement_title: 'Announcement 2',
+        announcement_internal_name: 'announcement-2',
+        source: 'studio',
+        studio_version: '3.57.0',
+      })
+      expect(mockLog).toBeCalledWith(ProductAnnouncementCardClicked, {
+        announcement_id: 'studioAnnouncement-2',
+        announcement_title: 'Announcement 2',
+        announcement_internal_name: 'announcement-2',
+        source: 'studio',
+        studio_version: '3.57.0',
+      })
+      expect(mockLog).toBeCalledWith(ProductAnnouncementViewed, {
+        announcement_id: 'studioAnnouncement-2',
+        announcement_title: 'Announcement 2',
+        announcement_internal_name: 'announcement-2',
+        origin: 'card',
+        scrolled_into_view: false,
+        source: 'studio',
+        studio_version: '3.57.0',
+      })
     })
 
     test("dismisses card, then it's hidden, dialog doesn't render", async () => {
@@ -285,36 +270,20 @@ describe('StudioAnnouncementsProvider', () => {
 
       // Dismissing the card calls telemetry with the seen and dismiss logs
       expect(mockLog).toBeCalledTimes(2)
-      expect(mockLog).toBeCalledWith(
-        {
-          description: 'User viewed the product announcement card',
-          name: 'Product Announcement Card Seen',
-          schema: undefined,
-          type: 'log',
-          version: 1,
-        },
-        {
-          announcement_id: 'studioAnnouncement-2',
-          announcement_title: 'Announcement 2',
-          source: 'studio',
-          studio_version: '3.57.0',
-        },
-      )
-      expect(mockLog).toBeCalledWith(
-        {
-          description: 'User dismissed the product announcement card',
-          name: 'Product Announcement Card Dismissed',
-          schema: undefined,
-          type: 'log',
-          version: 1,
-        },
-        {
-          announcement_id: 'studioAnnouncement-2',
-          announcement_title: 'Announcement 2',
-          source: 'studio',
-          studio_version: '3.57.0',
-        },
-      )
+      expect(mockLog).toBeCalledWith(ProductAnnouncementCardSeen, {
+        announcement_id: 'studioAnnouncement-2',
+        announcement_title: 'Announcement 2',
+        announcement_internal_name: 'announcement-2',
+        source: 'studio',
+        studio_version: '3.57.0',
+      })
+      expect(mockLog).toBeCalledWith(ProductAnnouncementCardDismissed, {
+        announcement_id: 'studioAnnouncement-2',
+        announcement_title: 'Announcement 2',
+        announcement_internal_name: 'announcement-2',
+        source: 'studio',
+        studio_version: '3.57.0',
+      })
     })
 
     test('dismisses dialog, card and dialog are hidden', async () => {
@@ -339,69 +308,37 @@ describe('StudioAnnouncementsProvider', () => {
       expect(queryByText(mockAnnouncements[1].title)).toBeNull()
 
       expect(mockLog).toBeCalledTimes(4)
-      expect(mockLog).toBeCalledWith(
-        {
-          description: 'User viewed the product announcement card',
-          name: 'Product Announcement Card Seen',
-          schema: undefined,
-          type: 'log',
-          version: 1,
-        },
-        {
-          announcement_id: 'studioAnnouncement-2',
-          announcement_title: 'Announcement 2',
-          source: 'studio',
-          studio_version: '3.57.0',
-        },
-      )
-      expect(mockLog).toBeCalledWith(
-        {
-          description: 'User clicked the product announcement card',
-          name: 'Product Announcement Card Clicked',
-          schema: undefined,
-          type: 'log',
-          version: 1,
-        },
-        {
-          announcement_id: 'studioAnnouncement-2',
-          announcement_title: 'Announcement 2',
-          source: 'studio',
-          studio_version: '3.57.0',
-        },
-      )
-      expect(mockLog).toBeCalledWith(
-        {
-          description: 'User dismissed the product announcement modal ',
-          name: 'Product Announcement Dismissed',
-          schema: undefined,
-          type: 'log',
-          version: 1,
-        },
-        {
-          announcement_id: 'studioAnnouncement-2',
-          announcement_title: 'Announcement 2',
-          origin: 'card',
-          source: 'studio',
-          studio_version: '3.57.0',
-        },
-      )
-      expect(mockLog).toBeCalledWith(
-        {
-          description: 'User viewed the product announcement',
-          name: 'Product Announcement Viewed',
-          schema: undefined,
-          type: 'log',
-          version: 1,
-        },
-        {
-          announcement_id: 'studioAnnouncement-2',
-          announcement_title: 'Announcement 2',
-          origin: 'card',
-          scrolled_into_view: false,
-          source: 'studio',
-          studio_version: '3.57.0',
-        },
-      )
+      expect(mockLog).toBeCalledWith(ProductAnnouncementCardSeen, {
+        announcement_id: 'studioAnnouncement-2',
+        announcement_title: 'Announcement 2',
+        announcement_internal_name: 'announcement-2',
+        source: 'studio',
+        studio_version: '3.57.0',
+      })
+      expect(mockLog).toBeCalledWith(ProductAnnouncementCardClicked, {
+        announcement_id: 'studioAnnouncement-2',
+        announcement_title: 'Announcement 2',
+        announcement_internal_name: 'announcement-2',
+        source: 'studio',
+        studio_version: '3.57.0',
+      })
+      expect(mockLog).toBeCalledWith(ProductAnnouncementModalDismissed, {
+        announcement_id: 'studioAnnouncement-2',
+        announcement_title: 'Announcement 2',
+        announcement_internal_name: 'announcement-2',
+        origin: 'card',
+        source: 'studio',
+        studio_version: '3.57.0',
+      })
+      expect(mockLog).toBeCalledWith(ProductAnnouncementViewed, {
+        announcement_id: 'studioAnnouncement-2',
+        announcement_title: 'Announcement 2',
+        announcement_internal_name: 'announcement-2',
+        origin: 'card',
+        scrolled_into_view: false,
+        source: 'studio',
+        studio_version: '3.57.0',
+      })
     })
     test('opens the dialog from outside the card, so it shows all unseen', async () => {
       const Component = () => {
