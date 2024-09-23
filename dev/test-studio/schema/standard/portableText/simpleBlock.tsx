@@ -31,6 +31,7 @@ const myStringType = defineArrayMember({
 })
 
 export default defineType({
+  liveEdit: true,
   name: 'simpleBlock',
   title: 'Simple block',
   type: 'document',
