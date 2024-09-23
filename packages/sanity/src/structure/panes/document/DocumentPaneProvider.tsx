@@ -8,7 +8,7 @@ import {
   type SanityDocumentLike,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
+import {fromString as pathFromString, pathFor, resolveKeyedPath} from '@sanity/util/paths'
 import {omit, throttle} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
@@ -615,10 +615,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const handleFocus = useCallback(
-    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-      setFocusPath(nextFocusPath)
-      if (!deepEquals(focusPathRef.current, nextFocusPath)) {
-        setOpenPath(nextFocusPath.slice(0, -1))
+    (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+      const nextFocusPath = pathFor(_nextFocusPath)
+      if (nextFocusPath !== focusPathRef.current) {
+        setFocusPath(pathFor(nextFocusPath))
+        setOpenPath(pathFor(nextFocusPath.slice(0, -1)))
         focusPathRef.current = nextFocusPath
         onFocusPath?.(nextFocusPath)
       }
