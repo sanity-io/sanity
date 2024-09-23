@@ -9,6 +9,7 @@ import {
   MenuItem,
   Text,
   TextInput,
+  VirtualList,
 } from '@sanity/ui'
 import {deburr} from 'lodash'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
@@ -172,7 +173,7 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
             </Text>
           </Box>
         ) : (
-          filteredOptions.map(renderItem)
+          <VirtualList items={filteredOptions} renderItem={renderItem} />
         )}
       </div>
     </div>
