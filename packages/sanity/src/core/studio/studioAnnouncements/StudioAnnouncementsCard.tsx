@@ -1,11 +1,16 @@
+/* eslint-disable camelcase */
 import {RemoveIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {useEffect} from 'react'
 import {useTranslation} from 'sanity'
 import {css, keyframes, styled} from 'styled-components'
 
 import {Button, Popover} from '../../../ui-components'
+import {SANITY_VERSION} from '../../version'
+import {ProductAnnouncementCardSeen} from './__telemetry__/studioAnnouncements.telemetry'
 import {type StudioAnnouncementDocument} from './types'
 
 const TYPE_DICTIONARY: {
@@ -57,8 +62,6 @@ const Root = styled.div((props) => {
         animation-timing-function: ease-in;
         animation-iteration-count: infinite;
         animation-duration: 2000ms;
-
-        /* --card-bg-color: var(--card-badge-default-bg-color); */
       }
       #close-floating-button {
         opacity: 1;
@@ -73,9 +76,6 @@ const Root = styled.div((props) => {
   `
 })
 
-const FloatingCard = styled(Card)`
-  max-width: 320px;
-`
 const ButtonRoot = styled.div`
   z-index: 1;
   position: absolute;
@@ -85,6 +85,7 @@ const ButtonRoot = styled.div`
 
 interface StudioAnnouncementCardProps {
   title: string
+  id: string
   isOpen: boolean
   announcementType: StudioAnnouncementDocument['announcementType']
   onCardClick: () => void
@@ -97,12 +98,26 @@ interface StudioAnnouncementCardProps {
  */
 export function StudioAnnouncementsCard({
   title,
+  id,
   isOpen,
   announcementType,
   onCardClick,
   onCardDismiss,
 }: StudioAnnouncementCardProps) {
   const {t} = useTranslation()
+  const telemetry = useTelemetry()
+
+  useEffect(() => {
+    if (isOpen) {
+      telemetry.log(ProductAnnouncementCardSeen, {
+        announcement_id: id,
+        announcement_title: title,
+        source: 'studio',
+        studio_version: SANITY_VERSION,
+      })
+    }
+  }, [telemetry, id, title, isOpen])
+
   return (
     <Popover
       open={isOpen}
@@ -117,7 +132,7 @@ export function StudioAnnouncementsCard({
       placement="bottom-start"
       content={
         <Root data-ui="whats-new-root">
-          <FloatingCard
+          <Card
             data-ui="whats-new-card"
             padding={3}
             radius={3}
@@ -135,7 +150,7 @@ export function StudioAnnouncementsCard({
                 {title}
               </Text>
             </Stack>
-          </FloatingCard>
+          </Card>
           <ButtonRoot>
             <Button
               id="close-floating-button"

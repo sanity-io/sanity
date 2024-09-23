@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {afterEach, describe, expect, jest, test} from '@jest/globals'
 import {Menu} from '@sanity/ui'
 import {fireEvent, render, screen} from '@testing-library/react'
@@ -5,6 +6,7 @@ import {type ReactNode} from 'react'
 import {defineConfig} from 'sanity'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {ProductAnnouncementCardSeen} from '../__telemetry__/studioAnnouncements.telemetry'
 import {StudioAnnouncementsCard} from '../StudioAnnouncementsCard'
 
 const config = defineConfig({
@@ -21,6 +23,22 @@ async function createAnnouncementWrapper() {
   return ({children}: {children: ReactNode}) => wrapper({children: <Menu>{children}</Menu>})
 }
 
+jest.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: jest.fn().mockReturnValue({
+    log: jest.fn(),
+  }),
+}))
+
+jest.mock('../../../version', () => ({
+  SANITY_VERSION: '3.57.0',
+}))
+
+const announcementCardProps = {
+  title: 'New Features Available',
+  id: 'foo',
+  announcementType: 'whats-new',
+} as const
+
 describe('StudioAnnouncementsCard', () => {
   afterEach(() => {
     jest.clearAllMocks()
@@ -28,37 +46,41 @@ describe('StudioAnnouncementsCard', () => {
   test('renders correctly when isOpen is true', async () => {
     const onCardClickMock = jest.fn()
     const onCardDismissMock = jest.fn()
-    const announcementType = 'whats-new'
-    const title = 'New Features Available'
+
+    const mockLog = jest.fn()
+    const {useTelemetry} = require('@sanity/telemetry/react')
+    useTelemetry.mockReturnValue({log: mockLog})
 
     const wrapper = await createAnnouncementWrapper()
     render(
       <StudioAnnouncementsCard
+        {...announcementCardProps}
         isOpen
-        title={title}
-        announcementType={announcementType}
         onCardClick={onCardClickMock}
         onCardDismiss={onCardDismissMock}
       />,
       {wrapper},
     )
 
+    expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardSeen, {
+      announcement_id: 'foo',
+      announcement_title: 'New Features Available',
+      source: 'studio',
+      studio_version: '3.57.0',
+    })
     expect(screen.getByText("What's new")).toBeInTheDocument()
-    expect(screen.getByText(title)).toBeInTheDocument()
+    expect(screen.getByText(announcementCardProps.title)).toBeInTheDocument()
   })
   test('does not render when isOpen is false', async () => {
     const onCardClickMock = jest.fn()
     const onCardDismissMock = jest.fn()
-    const announcementType = 'whats-new'
-    const title = 'New Features Available'
 
     const wrapper = await createAnnouncementWrapper()
 
     const {queryByText} = render(
       <StudioAnnouncementsCard
-        title={title}
+        {...announcementCardProps}
         isOpen={false}
-        announcementType={announcementType}
         onCardClick={onCardClickMock}
         onCardDismiss={onCardDismissMock}
       />,
@@ -66,21 +88,18 @@ describe('StudioAnnouncementsCard', () => {
     )
 
     expect(queryByText("What's new")).toBeNull()
-    expect(queryByText(title)).toBeNull()
+    expect(queryByText(announcementCardProps.title)).toBeNull()
   })
   test('calls onCardClick when the card is clicked', async () => {
     const onCardClickMock = jest.fn()
     const onCardDismissMock = jest.fn()
-    const announcementType = 'whats-new'
-    const title = 'New Features Available'
 
     const wrapper = await createAnnouncementWrapper()
 
     render(
       <StudioAnnouncementsCard
+        {...announcementCardProps}
         isOpen
-        title={title}
-        announcementType={announcementType}
         onCardClick={onCardClickMock}
         onCardDismiss={onCardDismissMock}
       />,
@@ -95,15 +114,12 @@ describe('StudioAnnouncementsCard', () => {
   test('calls onCardDismiss when the close button is clicked', async () => {
     const onCardClickMock = jest.fn()
     const onCardDismissMock = jest.fn()
-    const announcementType = 'whats-new'
-    const title = 'New Features Available'
 
     const wrapper = await createAnnouncementWrapper()
     render(
       <StudioAnnouncementsCard
+        {...announcementCardProps}
         isOpen
-        title={title}
-        announcementType={announcementType}
         onCardClick={onCardClickMock}
         onCardDismiss={onCardDismissMock}
       />,

@@ -9,7 +9,6 @@ import {SANITY_VERSION} from '../../version'
 import {
   ProductAnnouncementCardClicked,
   ProductAnnouncementCardDismissed,
-  ProductAnnouncementCardSeen,
   ProductAnnouncementModalDismissed,
 } from './__telemetry__/studioAnnouncements.telemetry'
 import {StudioAnnouncementsCard} from './StudioAnnouncementsCard'
@@ -48,16 +47,9 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
 
     // Filter out the seen announcements
     const unseen = studioAnnouncements.filter((doc) => !seenAnnouncements.value?.includes(doc._id))
-    if (unseen.length > 0) {
-      telemetry.log(ProductAnnouncementCardSeen, {
-        announcement_id: unseen[0]._id,
-        announcement_title: unseen[0].title,
-        source: 'studio',
-        studio_version: SANITY_VERSION,
-      })
-    }
+
     return unseen
-  }, [seenAnnouncements, studioAnnouncements, telemetry])
+  }, [seenAnnouncements, studioAnnouncements])
 
   useEffect(() => {
     const request = client.observable
@@ -144,6 +136,7 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
       {unseenAnnouncements.length > 0 && (
         <StudioAnnouncementsCard
           title={unseenAnnouncements[0].title}
+          id={unseenAnnouncements[0]._id}
           announcementType={unseenAnnouncements[0].announcementType}
           onCardClick={handleCardClick}
           isOpen={!isCardDismissed}
