@@ -13,10 +13,7 @@ import {
 
 import {Button} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {
-  DiscardedLiveEditDraft,
-  PublishedLiveEditDraft,
-} from './__telemetry__/DraftLiveEditBanner.telemetry'
+import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
 import {Banner} from './Banner'
 
 interface DraftLiveEditBannerProps {
@@ -40,13 +37,13 @@ export function DraftLiveEditBanner({
   const handlePublish = useCallback(() => {
     publish.execute()
     setPublishing(true)
-    telemetry.log(PublishedLiveEditDraft)
+    telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'publish'})
   }, [publish, telemetry])
 
   const handleDiscard = useCallback(() => {
     discardChanges.execute()
     setDiscarding(true)
-    telemetry.log(DiscardedLiveEditDraft)
+    telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'discard'})
   }, [discardChanges, telemetry])
 
   useEffect(() => {
