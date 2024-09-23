@@ -22,18 +22,12 @@ interface UseDocumentTitle {
  * @returns The document title or error. See {@link UseDocumentTitle}
  */
 export function useDocumentTitle(): UseDocumentTitle {
-  const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
-  const subscribed = Boolean(documentValue) && connectionState !== 'connecting'
+  const {schemaType, title, value: documentValue} = useDocumentPane()
 
   const {error, value} = useValuePreview({
-    enabled: subscribed,
     schemaType,
     value: documentValue,
   })
-
-  if (connectionState === 'connecting') {
-    return {error: undefined, title: undefined}
-  }
 
   if (title) {
     return {error: undefined, title}
