@@ -60,15 +60,15 @@ describe('isValidAnnouncementAudience', () => {
   })
 
   describe('when audience is "above-version"', () => {
-    const document = {audience: 'above-version', studioVersion: '3.55.0'} as const
+    const document = {audience: 'greater-than-or-equal-version', studioVersion: '3.55.0'} as const
     test('should return true when sanityVersion is above document.studioVersion', () => {
       const sanityVersion = '3.56.0'
       expect(isValidAnnouncementAudience(document, sanityVersion)).toBe(true)
     })
 
-    test('should return false when sanityVersion is equal to document.studioVersion', () => {
+    test('should return true when sanityVersion is equal to document.studioVersion', () => {
       const sanityVersion = '3.55.0'
-      expect(isValidAnnouncementAudience(document, sanityVersion)).toBe(false)
+      expect(isValidAnnouncementAudience(document, sanityVersion)).toBe(true)
     })
 
     test('should return false when sanityVersion is below document.studioVersion', () => {
@@ -77,15 +77,15 @@ describe('isValidAnnouncementAudience', () => {
     })
   })
   describe('when audience is "below-version"', () => {
-    const document = {audience: 'below-version', studioVersion: '3.55.0'} as const
+    const document = {audience: 'less-than-or-equal-version', studioVersion: '3.55.0'} as const
     test('should return false when sanityVersion is above document.studioVersion', () => {
       const sanityVersion = '3.56.0'
       expect(isValidAnnouncementAudience(document, sanityVersion)).toBe(false)
     })
 
-    test('should return false when sanityVersion is equal to document.studioVersion', () => {
+    test('should return true when sanityVersion is equal to document.studioVersion', () => {
       const sanityVersion = '3.55.0'
-      expect(isValidAnnouncementAudience(document, sanityVersion)).toBe(false)
+      expect(isValidAnnouncementAudience(document, sanityVersion)).toBe(true)
     })
 
     test('should return true when sanityVersion is below document.studioVersion', () => {

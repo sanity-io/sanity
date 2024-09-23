@@ -442,15 +442,7 @@ describe('StudioAnnouncementsProvider', () => {
     test('if the audience is everyone, it shows the announcement regardless the version', () => {
       const announcements: StudioAnnouncementDocument[] = [
         {
-          _id: 'studioAnnouncement-1',
-          _type: 'productAnnouncement',
-          _rev: '1',
-          _createdAt: '2024-09-10T14:44:00.000Z',
-          _updatedAt: "2024-09-10T14:44:00.000Z'",
-          title: 'Announcement 1',
-          body: [],
-          announcementType: 'whats-new',
-          publishedDate: '2024-09-10T14:44:00.000Z',
+          ...mockAnnouncements[1],
           audience: 'everyone',
         },
       ]
@@ -463,20 +455,12 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.unseenAnnouncements).toEqual(announcements)
       expect(result.current.studioAnnouncements).toEqual(announcements)
     })
-    test('if the audience is above-version and studio version is not above', () => {
+    test('if the audience is greater-than-or-equal-version and studio version is not above', () => {
       const announcements: StudioAnnouncementDocument[] = [
         {
-          _id: 'studioAnnouncement-1',
-          _type: 'productAnnouncement',
-          _rev: '1',
-          _createdAt: '2024-09-10T14:44:00.000Z',
-          _updatedAt: "2024-09-10T14:44:00.000Z'",
-          title: 'Announcement 1',
-          body: [],
-          announcementType: 'whats-new',
-          publishedDate: '2024-09-10T14:44:00.000Z',
-          audience: 'above-version',
-          studioVersion: '3.57.0',
+          ...mockAnnouncements[1],
+          audience: 'greater-than-or-equal-version',
+          studioVersion: '3.58.0',
         },
       ]
       mockClient(announcements)
@@ -488,20 +472,29 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.unseenAnnouncements).toEqual([])
       expect(result.current.studioAnnouncements).toEqual([])
     })
-    test('if the audience is above-version and studio version is above', () => {
+    test('if the audience is greater-than-or-equal-version and studio version is above', () => {
       const announcements: StudioAnnouncementDocument[] = [
         {
-          _id: 'studioAnnouncement-1',
-          _type: 'productAnnouncement',
-          _rev: '1',
-          _createdAt: '2024-09-10T14:44:00.000Z',
-          _updatedAt: "2024-09-10T14:44:00.000Z'",
-          title: 'Announcement 1',
-          body: [],
-          announcementType: 'whats-new',
-          publishedDate: '2024-09-10T14:44:00.000Z',
-          audience: 'above-version',
+          ...mockAnnouncements[1],
+          audience: 'greater-than-or-equal-version',
           studioVersion: '3.56.0',
+        },
+      ]
+      mockClient(announcements)
+
+      const {result} = renderHook(() => useStudioAnnouncements(), {
+        wrapper,
+      })
+
+      expect(result.current.unseenAnnouncements).toEqual(announcements)
+      expect(result.current.studioAnnouncements).toEqual(announcements)
+    })
+    test('if the audience is above-equal.version and studio version is equal', () => {
+      const announcements: StudioAnnouncementDocument[] = [
+        {
+          ...mockAnnouncements[1],
+          audience: 'greater-than-or-equal-version',
+          studioVersion: '3.57.0',
         },
       ]
       mockClient(announcements)
@@ -516,15 +509,7 @@ describe('StudioAnnouncementsProvider', () => {
     test('if the audience is specific-version and studio matches', () => {
       const announcements: StudioAnnouncementDocument[] = [
         {
-          _id: 'studioAnnouncement-1',
-          _type: 'productAnnouncement',
-          _rev: '1',
-          _createdAt: '2024-09-10T14:44:00.000Z',
-          _updatedAt: "2024-09-10T14:44:00.000Z'",
-          title: 'Announcement 1',
-          body: [],
-          announcementType: 'whats-new',
-          publishedDate: '2024-09-10T14:44:00.000Z',
+          ...mockAnnouncements[1],
           audience: 'specific-version',
           studioVersion: '3.57.0',
         },
@@ -541,15 +526,7 @@ describe('StudioAnnouncementsProvider', () => {
     test("if the audience is specific-version and studio doesn't match ", () => {
       const announcements: StudioAnnouncementDocument[] = [
         {
-          _id: 'studioAnnouncement-1',
-          _type: 'productAnnouncement',
-          _rev: '1',
-          _createdAt: '2024-09-10T14:44:00.000Z',
-          _updatedAt: "2024-09-10T14:44:00.000Z'",
-          title: 'Announcement 1',
-          body: [],
-          announcementType: 'whats-new',
-          publishedDate: '2024-09-10T14:44:00.000Z',
+          ...mockAnnouncements[1],
           audience: 'specific-version',
           studioVersion: '3.56.0',
         },
@@ -563,20 +540,12 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.unseenAnnouncements).toEqual([])
       expect(result.current.studioAnnouncements).toEqual([])
     })
-    test('if the audience is below-version and studio is above', () => {
+    test('if the audience is less-than-or-equal-version and studio is above', () => {
       const announcements: StudioAnnouncementDocument[] = [
         {
-          _id: 'studioAnnouncement-1',
-          _type: 'productAnnouncement',
-          _rev: '1',
-          _createdAt: '2024-09-10T14:44:00.000Z',
-          _updatedAt: "2024-09-10T14:44:00.000Z'",
-          title: 'Announcement 1',
-          body: [],
-          announcementType: 'whats-new',
-          publishedDate: '2024-09-10T14:44:00.000Z',
-          audience: 'below-version',
-          studioVersion: '3.57.0',
+          ...mockAnnouncements[1],
+          audience: 'less-than-or-equal-version',
+          studioVersion: '3.56.0',
         },
       ]
       mockClient(announcements)
@@ -588,20 +557,29 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.unseenAnnouncements).toEqual([])
       expect(result.current.studioAnnouncements).toEqual([])
     })
-    test('if the audience is below-version and studio is below', () => {
+    test('if the audience is less-than-or-equal-version and studio is below', () => {
       const announcements: StudioAnnouncementDocument[] = [
         {
-          _id: 'studioAnnouncement-1',
-          _type: 'productAnnouncement',
-          _rev: '1',
-          _createdAt: '2024-09-10T14:44:00.000Z',
-          _updatedAt: "2024-09-10T14:44:00.000Z'",
-          title: 'Announcement 1',
-          body: [],
-          announcementType: 'whats-new',
-          publishedDate: '2024-09-10T14:44:00.000Z',
-          audience: 'below-version',
+          ...mockAnnouncements[1],
+          audience: 'less-than-or-equal-version',
           studioVersion: '3.58.0',
+        },
+      ]
+      mockClient(announcements)
+
+      const {result} = renderHook(() => useStudioAnnouncements(), {
+        wrapper,
+      })
+
+      expect(result.current.unseenAnnouncements).toEqual(announcements)
+      expect(result.current.studioAnnouncements).toEqual(announcements)
+    })
+    test('if the audience is less-than-or-equal-version and studio is equal', () => {
+      const announcements: StudioAnnouncementDocument[] = [
+        {
+          ...mockAnnouncements[1],
+          audience: 'less-than-or-equal-version',
+          studioVersion: '3.57.0',
         },
       ]
       mockClient(announcements)
@@ -617,15 +595,7 @@ describe('StudioAnnouncementsProvider', () => {
       // mocked workspace roles is  [ { name: 'administrator', title: 'Administrator' } ]
       const announcements: StudioAnnouncementDocument[] = [
         {
-          _id: 'studioAnnouncement-1',
-          _type: 'productAnnouncement',
-          _rev: '1',
-          _createdAt: '2024-09-10T14:44:00.000Z',
-          _updatedAt: "2024-09-10T14:44:00.000Z'",
-          title: 'Announcement 1',
-          body: [],
-          announcementType: 'whats-new',
-          publishedDate: '2024-09-10T14:44:00.000Z',
+          ...mockAnnouncements[1],
           audienceRole: ['developer'],
           audience: 'everyone',
         },
@@ -643,15 +613,7 @@ describe('StudioAnnouncementsProvider', () => {
       // mocked workspace roles is  [ { name: 'administrator', title: 'Administrator' } ]
       const announcements: StudioAnnouncementDocument[] = [
         {
-          _id: 'studioAnnouncement-1',
-          _type: 'productAnnouncement',
-          _rev: '1',
-          _createdAt: '2024-09-10T14:44:00.000Z',
-          _updatedAt: "2024-09-10T14:44:00.000Z'",
-          title: 'Announcement 1',
-          body: [],
-          announcementType: 'whats-new',
-          publishedDate: '2024-09-10T14:44:00.000Z',
+          ...mockAnnouncements[1],
           audienceRole: ['administrator'],
           audience: 'everyone',
         },

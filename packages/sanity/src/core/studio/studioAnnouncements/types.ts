@@ -22,7 +22,11 @@ export interface StudioAnnouncementDocument {
   announcementType: 'whats-new'
   publishedDate: string
   expiryDate?: string
-  audience: 'everyone' | 'specific-version' | 'above-version' | 'below-version'
+  audience:
+    | 'everyone'
+    | 'specific-version'
+    | 'greater-than-or-equal-version'
+    | 'less-than-or-equal-version'
   audienceRole?: AudienceRole[] | undefined
   studioVersion?: string
 }

@@ -21,12 +21,12 @@ export function isValidAnnouncementAudience(
       return satisfies(sanityVersion, `= ${document.studioVersion}`, {
         includePrerelease: true,
       })
-    case 'above-version':
-      return satisfies(sanityVersion, `> ${document.studioVersion}`, {
+    case 'greater-than-or-equal-version':
+      return satisfies(sanityVersion, `>= ${document.studioVersion}`, {
         includePrerelease: true,
       })
-    case 'below-version':
-      return satisfies(sanityVersion, `< ${document.studioVersion}`, {
+    case 'less-than-or-equal-version':
+      return satisfies(sanityVersion, `<= ${document.studioVersion}`, {
         includePrerelease: true,
       })
     default:
