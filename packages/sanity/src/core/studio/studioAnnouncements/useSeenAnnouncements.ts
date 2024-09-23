@@ -1,6 +1,5 @@
 import {useCallback, useEffect, useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {catchError, map, of} from 'rxjs'
+import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {useRouter} from 'sanity/router'
 
 import {useKeyValueStore} from '../../store/_legacy/datastores'
@@ -8,7 +7,7 @@ import {useKeyValueStore} from '../../store/_legacy/datastores'
 const KEY = 'studio.announcement.seen'
 const RESET_PARAM = 'reset-announcements'
 
-interface SeenAnnouncementsState {
+export interface SeenAnnouncementsState {
   value: string[] | null
   error: Error | null
   loading: boolean
@@ -19,19 +18,21 @@ const INITIAL_STATE: SeenAnnouncementsState = {
   loading: true,
 }
 
-export function useSeenAnnouncements(): [SeenAnnouncementsState, (seen: string[]) => void] {
+export function useSeenAnnouncements(): [
+  Observable<SeenAnnouncementsState>,
+  (seen: string[]) => void,
+] {
   const router = useRouter()
   const keyValueStore = useKeyValueStore()
-  const seenAnnouncements$ = useMemo(
+  const seenAnnouncements$: Observable<SeenAnnouncementsState> = useMemo(
     () =>
       keyValueStore.getKey(KEY).pipe(
         map((value) => ({value: value as string[] | null, error: null, loading: false})),
+        startWith(INITIAL_STATE),
         catchError((error) => of({value: null, error: error, loading: false})),
       ),
     [keyValueStore],
   )
-
-  const seenAnnouncements = useObservable(seenAnnouncements$, INITIAL_STATE)
 
   const setSeenAnnouncements = useCallback(
     (seen: string[]) => {
@@ -52,5 +53,5 @@ export function useSeenAnnouncements(): [SeenAnnouncementsState, (seen: string[]
     }
   }, [resetAnnouncementsParams, setSeenAnnouncements])
 
-  return [seenAnnouncements, setSeenAnnouncements]
+  return [seenAnnouncements$, setSeenAnnouncements]
 }

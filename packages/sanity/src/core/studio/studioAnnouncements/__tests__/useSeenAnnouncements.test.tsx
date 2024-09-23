@@ -4,7 +4,7 @@ import {of, Subject} from 'rxjs'
 import {useRouter} from 'sanity/router'
 
 import {useKeyValueStore} from '../../../store/_legacy/datastores'
-import {useSeenAnnouncements} from '../useSeenAnnouncements'
+import {type SeenAnnouncementsState, useSeenAnnouncements} from '../useSeenAnnouncements'
 
 jest.mock('../../../store/_legacy/datastores', () => ({
   useKeyValueStore: jest.fn(),
@@ -24,20 +24,26 @@ describe('useSeenAnnouncements', () => {
     const observable = new Subject<string[]>()
     const getKeyMock = jest.fn().mockReturnValue(observable)
     const setKeyMock = jest.fn()
-
     useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
 
     const {result} = renderHook(() => useSeenAnnouncements())
-    expect(result.current[0]).toEqual({value: null, error: null, loading: true})
-
+    const seenAnnouncements$ = result.current[0]
     const seenAnnouncements = ['announcement1', 'announcement2']
+
+    const expectedStates: SeenAnnouncementsState[] = [
+      {value: null, error: null, loading: true},
+      {value: seenAnnouncements, error: null, loading: false},
+    ]
+    const emissions: SeenAnnouncementsState[] = []
+
+    seenAnnouncements$.subscribe((state) => {
+      emissions.push(state)
+    })
+
     act(() => {
       observable.next(seenAnnouncements)
     })
-
-    await waitFor(() => {
-      expect(result.current[0]).toEqual({value: seenAnnouncements, error: null, loading: false})
-    })
+    expect(emissions).toEqual(expectedStates)
   })
   test('should handle errors on the keyValueStore', async () => {
     const observable = new Subject<string[]>()
@@ -47,20 +53,23 @@ describe('useSeenAnnouncements', () => {
     useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
 
     const {result} = renderHook(() => useSeenAnnouncements())
-    expect(result.current[0]).toEqual({value: null, error: null, loading: true})
+    const seenAnnouncements$ = result.current[0]
+
+    const emissions: SeenAnnouncementsState[] = []
+
+    seenAnnouncements$.subscribe((state) => {
+      emissions.push(state)
+    })
 
     const error = new Error('An error occurred')
     act(() => {
       observable.error(error)
     })
-
-    await waitFor(() => {
-      expect(result.current[0]).toEqual({
-        value: null,
-        error: error,
-        loading: false,
-      })
-    })
+    const expectedStates: SeenAnnouncementsState[] = [
+      {value: null, error: null, loading: true},
+      {value: null, error: error, loading: false},
+    ]
+    expect(emissions).toEqual(expectedStates)
   })
 
   test('should call the getKey function with the correct key when the hook is called', () => {

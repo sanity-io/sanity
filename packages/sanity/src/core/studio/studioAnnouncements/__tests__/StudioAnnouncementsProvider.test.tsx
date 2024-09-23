@@ -94,7 +94,10 @@ describe('StudioAnnouncementsProvider', () => {
   describe('if seen announcements is loading', () => {
     beforeEach(() => {
       jest.clearAllMocks()
-      seenAnnouncementsMock.mockReturnValue([{loading: true, value: null, error: null}, jest.fn()])
+      seenAnnouncementsMock.mockReturnValue([
+        of({loading: true, value: null, error: null}),
+        jest.fn(),
+      ])
       mockClient(mockAnnouncements)
     })
     test('returns empty unseen announcements ', () => {
@@ -114,7 +117,7 @@ describe('StudioAnnouncementsProvider', () => {
     beforeEach(() => {
       jest.clearAllMocks()
       seenAnnouncementsMock.mockReturnValue([
-        {loading: false, value: null, error: new Error('something went wrong')},
+        of({loading: false, value: null, error: new Error('something went wrong')}),
         jest.fn(),
       ])
       mockClient(mockAnnouncements)
@@ -135,7 +138,10 @@ describe('StudioAnnouncementsProvider', () => {
   describe('if seen announcements is not loading and has no values', () => {
     beforeEach(() => {
       jest.clearAllMocks()
-      seenAnnouncementsMock.mockReturnValue([{value: [], error: null, loading: false}, jest.fn()])
+      seenAnnouncementsMock.mockReturnValue([
+        of({value: [], error: null, loading: false}),
+        jest.fn(),
+      ])
       mockClient(mockAnnouncements)
     })
     test('returns unseen announcements', () => {
@@ -157,7 +163,7 @@ describe('StudioAnnouncementsProvider', () => {
       jest.clearAllMocks()
       // It doesn't show the first element
       seenAnnouncementsMock.mockReturnValue([
-        {value: ['studioAnnouncement-1'], error: null, loading: false},
+        of({value: ['studioAnnouncement-1'], error: null, loading: false}),
         jest.fn(),
       ])
 
@@ -182,7 +188,7 @@ describe('StudioAnnouncementsProvider', () => {
       jest.clearAllMocks()
       // It doesn't show the first element
       seenAnnouncementsMock.mockReturnValue([
-        {value: ['studioAnnouncement-1'], error: null, loading: false},
+        of({value: ['studioAnnouncement-1'], error: null, loading: false}),
         jest.fn(),
       ])
 
@@ -428,7 +434,10 @@ describe('StudioAnnouncementsProvider', () => {
     beforeEach(() => {
       jest.clearAllMocks()
       // It doesn't show the first element
-      seenAnnouncementsMock.mockReturnValue([{value: [], error: null, loading: false}, jest.fn()])
+      seenAnnouncementsMock.mockReturnValue([
+        of({value: [], error: null, loading: false}),
+        jest.fn(),
+      ])
     })
     test('if the audience is everyone, it shows the announcement regardless the version', () => {
       const announcements: StudioAnnouncementDocument[] = [
@@ -664,7 +673,7 @@ describe('StudioAnnouncementsProvider', () => {
     test('when the card is dismissed, and only 1 announcement received', () => {
       const saveSeenAnnouncementsMock = jest.fn()
       seenAnnouncementsMock.mockReturnValue([
-        {value: [], error: null, loading: false},
+        of({value: [], error: null, loading: false}),
         saveSeenAnnouncementsMock,
       ])
       mockClient([mockAnnouncements[0]])
@@ -678,7 +687,7 @@ describe('StudioAnnouncementsProvider', () => {
     test('when the card is dismissed, and 2 announcements are received', () => {
       const saveSeenAnnouncementsMock = jest.fn()
       seenAnnouncementsMock.mockReturnValue([
-        {value: [], error: null, loading: false},
+        of({value: [], error: null, loading: false}),
         saveSeenAnnouncementsMock,
       ])
       mockClient(mockAnnouncements)
@@ -693,7 +702,7 @@ describe('StudioAnnouncementsProvider', () => {
       const saveSeenAnnouncementsMock = jest.fn()
       // The id received here is not present anymore in the mock announcements, this id won't be stored in next save.
       seenAnnouncementsMock.mockReturnValue([
-        {value: ['not-to-be-persisted'], error: null, loading: false},
+        of({value: ['not-to-be-persisted'], error: null, loading: false}),
         saveSeenAnnouncementsMock,
       ])
       mockClient(mockAnnouncements)
@@ -707,7 +716,7 @@ describe('StudioAnnouncementsProvider', () => {
       const saveSeenAnnouncementsMock = jest.fn()
       // The id received here is present in the mock announcements, this id will be persisted in next save.
       seenAnnouncementsMock.mockReturnValue([
-        {value: [mockAnnouncements[0]._id], error: null, loading: false},
+        of({value: [mockAnnouncements[0]._id], error: null, loading: false}),
         saveSeenAnnouncementsMock,
       ])
       mockClient(mockAnnouncements)
@@ -721,7 +730,7 @@ describe('StudioAnnouncementsProvider', () => {
     test('when the dialog is closed', () => {
       const saveSeenAnnouncementsMock = jest.fn()
       seenAnnouncementsMock.mockReturnValue([
-        {value: [], error: null, loading: false},
+        of({value: [], error: null, loading: false}),
         saveSeenAnnouncementsMock,
       ])
       mockClient(mockAnnouncements)

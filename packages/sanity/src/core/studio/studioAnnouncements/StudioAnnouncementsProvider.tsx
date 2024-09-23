@@ -2,7 +2,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, map, type Observable, startWith} from 'rxjs'
+import {catchError, combineLatest, map, type Observable, startWith} from 'rxjs'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
@@ -36,12 +36,15 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
   const telemetry = useTelemetry()
   const [dialogMode, setDialogMode] = useState<DialogMode | null>(null)
   const [isCardDismissed, setIsCardDismissed] = useState(false)
-  const [seenAnnouncements, setSeenAnnouncements] = useSeenAnnouncements()
+  const [seenAnnouncements$, setSeenAnnouncements] = useSeenAnnouncements()
   const {currentUser} = useWorkspace()
   const client = useClient(CLIENT_OPTIONS)
 
-  const fetchAnnouncements: Observable<StudioAnnouncementDocument[]> = useMemo(() => {
-    return client.observable
+  const getAnnouncements$: Observable<{
+    unseen: StudioAnnouncementDocument[]
+    all: StudioAnnouncementDocument[]
+  }> = useMemo(() => {
+    const allAnnouncements$ = client.observable
       .request<StudioAnnouncementDocument[] | null>({url: '/journey/announcements'})
       .pipe(
         map((docs) => {
@@ -58,20 +61,20 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
         catchError(() => []),
         startWith([]),
       )
-  }, [client, currentUser?.roles])
-  const studioAnnouncements = useObservable(fetchAnnouncements, [])
 
-  const unseenAnnouncements: StudioAnnouncementDocument[] = useMemo(() => {
-    // If it's loading or it has errored return an empty array to avoid showing the card
-    if (seenAnnouncements.loading || seenAnnouncements.error) return []
-    // If none is seen, return all the announcements
-    if (!seenAnnouncements.value) return studioAnnouncements
+    return combineLatest([allAnnouncements$, seenAnnouncements$]).pipe(
+      map(([all, seen]) => {
+        if (seen.loading || seen.error) return {unseen: [], all: all}
+        if (!seen.value) return {unseen: all, all: all}
+        const unseen = all.filter((doc) => !seen.value?.includes(doc._id))
+        return {unseen: unseen, all: all}
+      }),
+    )
+  }, [client.observable, currentUser?.roles, seenAnnouncements$])
 
-    // Filter out the seen announcements
-    const unseen = studioAnnouncements.filter((doc) => !seenAnnouncements.value?.includes(doc._id))
-
-    return unseen
-  }, [seenAnnouncements, studioAnnouncements])
+  const announcements = useObservable(getAnnouncements$, {unseen: [], all: []})
+  const unseenAnnouncements = announcements.unseen
+  const studioAnnouncements = announcements.all
 
   const saveSeenAnnouncements = useCallback(() => {
     // Mark all the announcements as seen
