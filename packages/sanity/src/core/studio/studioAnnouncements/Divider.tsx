@@ -17,6 +17,15 @@ interface DividerProps {
 }
 
 /**
+ * This is the threshold for the divider to start fading
+ * uses a negative value to start fading before reaching the top
+ * of the parent.
+ * We want to fade out the divider so it doesn't overlap with the close icon when reaching the top.
+ * It's the sum of the title height (48px) and the divider padding top (12px)
+ */
+const DIVIDER_FADE_THRESHOLD = '-60px 0px 0px 0px'
+
+/**
  * A divider that fades when reaching the top of the parent.
  */
 export function Divider({parentRef}: DividerProps): JSX.Element {
@@ -32,7 +41,7 @@ export function Divider({parentRef}: DividerProps): JSX.Element {
       ([entry]) => {
         setShow(entry.isIntersecting)
       },
-      {root: parent, threshold: 0, rootMargin: '-60px 0px 0px 0px'},
+      {root: parent, threshold: 0, rootMargin: DIVIDER_FADE_THRESHOLD},
     )
 
     observer.observe(item)
