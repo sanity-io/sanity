@@ -24,7 +24,7 @@ const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
 
 const Root = styled(Box)`
   overflow: auto;
-  max-height: calc(100vh - 200px);
+  max-height: 75vh;
 `
 
 const DialogHeader = styled(Grid)`
