@@ -5,8 +5,9 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 
 export function DocumentHeaderTitle(): ReactElement {
-  const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
-  const subscribed = Boolean(documentValue) && connectionState !== 'connecting'
+  const {connectionState, schemaType, title, editState} = useDocumentPane()
+  const documentValue = editState?.draft || editState?.published
+  const subscribed = Boolean(documentValue)
 
   const {error, value} = useValuePreview({
     enabled: subscribed,
@@ -15,7 +16,7 @@ export function DocumentHeaderTitle(): ReactElement {
   })
   const {t} = useTranslation(structureLocaleNamespace)
 
-  if (connectionState === 'connecting') {
+  if (connectionState === 'connecting' && !subscribed) {
     return <></>
   }
 
