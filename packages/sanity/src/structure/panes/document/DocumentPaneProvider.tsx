@@ -8,7 +8,7 @@ import {
   type SanityDocumentLike,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
+import {fromString as pathFromString, pathFor, resolveKeyedPath} from '@sanity/util/paths'
 import {omit, throttle} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
@@ -517,6 +517,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
+    // in cases where the document has drafts but the schema is live edit,
+    // there is a risk of data loss, so we disable editing in this case
+    const isLiveEditAndDraft = Boolean(liveEdit && editState.draft)
 
     return (
       !ready ||
@@ -527,19 +530,22 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       reconnecting ||
       isLocked ||
       isDeleting ||
-      isDeleted
+      isDeleted ||
+      isLiveEditAndDraft
     )
   }, [
-    connectionState,
-    editState.transactionSyncLock,
-    isNonExistent,
-    isDeleted,
-    isDeleting,
     isPermissionsLoading,
     permissions?.granted,
+    schemaType,
+    isNonExistent,
+    connectionState,
+    editState.transactionSyncLock?.enabled,
+    editState.draft,
+    liveEdit,
     ready,
     revTime,
-    schemaType,
+    isDeleting,
+    isDeleted,
   ])
 
   const formState = useFormState({
@@ -609,10 +615,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const handleFocus = useCallback(
-    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-      setFocusPath(nextFocusPath)
-      if (!deepEquals(focusPathRef.current, nextFocusPath)) {
-        setOpenPath(nextFocusPath.slice(0, -1))
+    (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+      const nextFocusPath = pathFor(_nextFocusPath)
+      if (nextFocusPath !== focusPathRef.current) {
+        setFocusPath(pathFor(nextFocusPath))
+        setOpenPath(pathFor(nextFocusPath.slice(0, -1)))
         focusPathRef.current = nextFocusPath
         onFocusPath?.(nextFocusPath)
       }

@@ -178,35 +178,35 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     }
   }, [hasFocusWithin])
 
-  const setFocusPathFromEditorSelection = useCallback(() => {
-    const selection = nextSelectionRef.current
-    const focusPath = selection?.focus.path
-    if (!focusPath) return
+  const setFocusPathFromEditorSelection = useCallback(
+    (nextSelection: EditorSelection) => {
+      const focusPath = nextSelection?.focus.path
+      if (!focusPath) return
 
-    // Report focus on spans with `.text` appended to the reported focusPath.
-    // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
-    // The PT-input already supports these paths the other way around.
-    // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
-    // having to change the PTE's internals.
-    const isSpanPath =
-      focusPath.length === 3 && // A span path is always 3 segments long
-      focusPath[1] === 'children' && // Is a child of a block
-      isKeySegment(focusPath[2]) && // Contains the key of the child
-      !portableTextMemberItems.some(
-        (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
-      )
-    const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
+      // Report focus on spans with `.text` appended to the reported focusPath.
+      // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
+      // The PT-input already supports these paths the other way around.
+      // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
+      // having to change the PTE's internals.
+      const isSpanPath =
+        focusPath.length === 3 && // A span path is always 3 segments long
+        focusPath[1] === 'children' && // Is a child of a block
+        isKeySegment(focusPath[2]) && // Contains the key of the child
+        !portableTextMemberItems.some(
+          (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
+        )
+      const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
 
-    // Must called in a transition useTrackFocusPath hook
-    // will try to effectuate a focusPath that is different from what currently is the editor focusPath
-    startTransition(() => {
-      onPathFocus(nextFocusPath, {
-        selection,
+      // Must called in a transition useTrackFocusPath hook
+      // will try to effectuate a focusPath that is different from what currently is the editor focusPath
+      startTransition(() => {
+        onPathFocus(nextFocusPath, {
+          selection: nextSelection,
+        })
       })
-    })
-  }, [onPathFocus, portableTextMemberItems])
-
-  const nextSelectionRef = useRef<EditorSelection | null>(null)
+    },
+    [onPathFocus, portableTextMemberItems],
+  )
 
   // Handle editor changes
   const handleEditorChange = useCallback(
@@ -223,8 +223,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           }
           break
         case 'selection':
-          nextSelectionRef.current = change.selection
-          setFocusPathFromEditorSelection()
+          setFocusPathFromEditorSelection(change.selection)
           break
         case 'focus':
           setIsActive(true)
