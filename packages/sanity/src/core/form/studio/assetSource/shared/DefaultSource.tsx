@@ -1,4 +1,4 @@
-import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
+import {AddIcon, DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {uniqueId} from 'lodash'
@@ -114,6 +114,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   const [hasResetAutoFocus, setHasResetFocus] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const {selectedAssets, assetType = 'image', dialogHeaderTitle, onClose, onSelect, accept} = props
+  const [selectedImages, setSelectedImages] = useState<AssetFromSource[]>([])
 
   const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
   const fetchPage = useCallback(
@@ -148,26 +149,48 @@ const DefaultAssetSource = function DefaultAssetSource(
   )
 
   const select = useCallback(
-    (id: string) => {
-      const selected = assets.find((doc) => doc._id === id)
+    (id: string | string[]) => {
+      if (Array.isArray(id)) {
+        const selected = assets.filter((doc) => id.includes(doc._id))
 
-      if (selected) {
-        const selectedSource: AssetFromSource[] = [{kind: 'assetDocumentId', value: id}]
+        if (selected.length > 0) {
+          const selectedSources: AssetFromSource[] = selected.map((doc) => ({
+            kind: 'assetDocumentId',
+            value: doc._id,
+          }))
 
-        onSelect(selectedSource)
+          setSelectedImages(selectedSources)
+        }
+      } else {
+        const selected = assets.find((doc) => doc._id === id)
+
+        if (selected) {
+          const selectedSource: AssetFromSource[] = [{kind: 'assetDocumentId', value: id}]
+
+          onSelect(selectedSource)
+        }
       }
     },
     [assets, onSelect],
   )
 
   const handleItemClick = useCallback(
-    (event: MouseEvent) => {
-      event.preventDefault()
-      const id = event.currentTarget.getAttribute('data-id')
-      if (!id) {
-        throw new Error('Missing data-id attribute on item')
+    (event: MouseEvent | MouseEvent[]) => {
+      if (Array.isArray(event)) {
+        const ids = event.map((e) => (e.target as HTMLElement).getAttribute('data-id'))
+        if (!ids) {
+          throw new Error('Missing data-id attribute on item')
+        }
+
+        select(ids.filter((id): id is string => id !== null))
+      } else {
+        event.preventDefault()
+        const id = event.currentTarget.getAttribute('data-id')
+        if (!id) {
+          throw new Error('Missing data-id attribute on item')
+        }
+        select(id)
       }
-      select(id)
     },
     [select],
   )
@@ -199,6 +222,27 @@ const DefaultAssetSource = function DefaultAssetSource(
     },
     [fetchPage],
   )
+
+  const uploadAssets = useCallback(() => {
+    onSelect(selectedImages)
+    /*const patches = selectedImages.map((image) =>
+      insert(
+        [
+          {
+            _type: 'reference',
+            _ref: image.value,
+          },
+
+          ['asset'],
+        ],
+        'after',
+        [-1],
+      ),
+    )
+
+    console.log(patches)
+    PatchEvent.from(patches)*/
+  }, [onSelect, selectedImages])
 
   useEffect(() => {
     fetchPage(currentPageNumber.current)
@@ -274,16 +318,28 @@ const DefaultAssetSource = function DefaultAssetSource(
             selectedAssets={selectedAssets}
           />
         )}
-        {assets.length > 0 && !isLastPage && (
+        {assets.length > 0 && (
           <CardLoadMore tone="default" padding={4}>
-            <Flex direction="column">
+            <Flex direction="row">
+              {!isLastPage && (
+                <Button
+                  type="button"
+                  icon={DownloadIcon}
+                  loading={isLoading}
+                  onClick={handleFetchNextPage}
+                  size="large"
+                  text={t('asset-source.dialog.load-more')}
+                  tone="primary"
+                />
+              )}
               <Button
                 type="button"
-                icon={DownloadIcon}
+                icon={AddIcon}
                 loading={isLoading}
-                onClick={handleFetchNextPage}
+                onClick={uploadAssets}
                 size="large"
-                text={t('asset-source.dialog.load-more')}
+                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                text={'Add Assets'}
                 tone="primary"
               />
             </Flex>

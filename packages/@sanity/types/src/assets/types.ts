@@ -145,7 +145,7 @@ export interface AssetSourceComponentProps {
   dialogHeaderTitle?: React.ReactNode
   selectedAssets: Asset[]
   onClose: () => void
-  onSelect: (assetFromSource: AssetFromSource[]) => void
+  onSelect: (assetFromSource: AssetFromSource[] | AssetFromSource[][]) => void
 }
 
 /** @public */

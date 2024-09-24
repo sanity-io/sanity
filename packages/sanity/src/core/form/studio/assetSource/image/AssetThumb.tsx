@@ -214,7 +214,7 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
         mode="ghost"
         onKeyPress={onKeyPress}
         padding={0}
-        style={{padding: 2}}
+        style={{padding: 2, background: isSelected ? 'red' : 'transparent'}}
       >
         <Container __unstable_checkered>
           <Image alt={originalFilename} src={imageUrl} onClick={onClick} data-id={_id} />

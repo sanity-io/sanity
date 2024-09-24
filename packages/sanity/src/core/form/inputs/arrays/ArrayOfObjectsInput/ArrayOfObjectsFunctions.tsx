@@ -34,6 +34,11 @@ export function ArrayOfObjectsFunctions<
     insertItem(schemaType.of[0])
   }, [schemaType, insertItem])
 
+  const handleAddMultipleBtnClick = useCallback(() => {
+    // eslint-disable-next-line no-console
+    console.log('multi btn clicked')
+  }, [])
+
   // If we have more than a single type candidate, we render a menu, so the button might show
   // "Add item..." instead of simply "Add item", to indicate that further choices are available.
   const addItemI18nKey =
@@ -75,6 +80,8 @@ export function ArrayOfObjectsFunctions<
     )
   }
 
+  const containsImage = schemaType.of.some((item) => item.type && item.type.name === 'image')
+
   return (
     <Grid
       ref={setGridElement}
@@ -82,11 +89,24 @@ export function ArrayOfObjectsFunctions<
       style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
     >
       {schemaType.of.length === 1 ? (
-        <Button
-          {...insertButtonProps}
-          onClick={handleAddBtnClick}
-          data-testid="add-single-object-button"
-        />
+        <>
+          <Button
+            {...insertButtonProps}
+            onClick={handleAddBtnClick}
+            data-testid="add-single-object-button"
+          />
+
+          {containsImage && (
+            <Button
+              icon={AddIcon}
+              mode="ghost"
+              onClick={handleAddMultipleBtnClick}
+              size="large"
+              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              text={'Add Multiples'}
+            />
+          )}
+        </>
       ) : (
         <>
           <Button
