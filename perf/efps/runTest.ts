@@ -11,7 +11,6 @@ import sourcemaps from 'rollup-plugin-sourcemaps'
 import handler from 'serve-handler'
 import * as vite from 'vite'
 
-import {remapCpuProfile} from './helpers/remapCpuProfile'
 import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './types'
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
@@ -109,7 +108,7 @@ export async function runTest({
       typeof test.document === 'function' ? await test.document(runnerContext) : test.document
     document = await client.create(documentToCreate)
 
-    const cdp = await context.newCDPSession(page)
+    // const cdp = await context.newCDPSession(page)
 
     log('Loading editor…')
     await page.goto(
@@ -118,8 +117,8 @@ export async function runTest({
       )};type=${encodeURIComponent(documentToCreate._type)}`,
     )
 
-    await cdp.send('Profiler.enable')
-    await cdp.send('Profiler.start')
+    // await cdp.send('Profiler.enable')
+    // await cdp.send('Profiler.start')
 
     log('Benchmarking…')
     const result = await test.run({...runnerContext, document})
@@ -127,22 +126,22 @@ export async function runTest({
     log('Saving results…')
     const results = Array.isArray(result) ? result : [result]
 
-    const {profile} = await cdp.send('Profiler.stop')
-    const remappedProfile = await remapCpuProfile(profile, outDir)
+    // const {profile} = await cdp.send('Profiler.stop')
+    // const remappedProfile = await remapCpuProfile(profile, outDir)
 
     await fs.promises.mkdir(testResultsDir, {recursive: true})
     await fs.promises.writeFile(
       path.join(testResultsDir, 'results.json'),
       JSON.stringify(results, null, 2),
     )
-    await fs.promises.writeFile(
-      path.join(testResultsDir, 'raw.cpuprofile'),
-      JSON.stringify(profile),
-    )
-    await fs.promises.writeFile(
-      path.join(testResultsDir, 'mapped.cpuprofile'),
-      JSON.stringify(remappedProfile),
-    )
+    // await fs.promises.writeFile(
+    //   path.join(testResultsDir, 'raw.cpuprofile'),
+    //   JSON.stringify(profile),
+    // )
+    // await fs.promises.writeFile(
+    //   path.join(testResultsDir, 'mapped.cpuprofile'),
+    //   JSON.stringify(remappedProfile),
+    // )
 
     spinner.succeed(`Ran benchmark '${test.name}' (${versionLabel})`)
 
