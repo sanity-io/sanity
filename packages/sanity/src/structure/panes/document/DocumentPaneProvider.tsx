@@ -748,7 +748,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout
+    let timeout: ReturnType<typeof setTimeout>
     if (connectionState === 'reconnecting') {
       timeout = setTimeout(() => {
         pushToast({
