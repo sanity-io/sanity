@@ -67,6 +67,6 @@
   "devDependencies": {
     "babel-plugin-react-compiler": "19.0.0-beta-37ed2a7-20241206",
     "chokidar": "^3.6.0",
-    "vite": "^5.3.5"
+    "vite": "^5.4.8"
   }
 }

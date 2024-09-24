@@ -217,7 +217,7 @@ importers:
         specifier: 5.7.2
         version: 5.7.2
       vite:
-        specifier: ^5.3.5
+        specifier: ^5.4.8
         version: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
       vite-tsconfig-paths:
         specifier: ^4.3.2
@@ -283,7 +283,7 @@ importers:
         specifier: 5.7.2
         version: 5.7.2
       vite:
-        specifier: ^5.3.5
+        specifier: ^5.4.8
         version: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
 
   dev/page-building-studio:
@@ -614,7 +614,7 @@ importers:
         specifier: 19.0.0-beta-37ed2a7-20241206
         version: 19.0.0-beta-37ed2a7-20241206
       vite:
-        specifier: ^5.3.5
+        specifier: ^5.4.8
         version: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
 
   examples/blog-studio:
@@ -1003,7 +1003,7 @@ importers:
         specifier: ^6.1.11
         version: 6.2.1
       vite:
-        specifier: ^5.3.5
+        specifier: ^5.4.8
         version: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
       vitest:
         specifier: ^2.1.1
@@ -1782,7 +1782,7 @@ importers:
         specifier: ^1.2.0
         version: 1.2.2(react@18.3.1)
       vite:
-        specifier: ^5.3.5
+        specifier: ^5.4.8
         version: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
       yargs:
         specifier: ^17.3.0
