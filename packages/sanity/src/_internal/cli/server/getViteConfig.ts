@@ -3,7 +3,7 @@ import path from 'node:path'
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import debug from 'debug'
 import readPkgUp from 'read-pkg-up'
-import {type ConfigEnv, type InlineConfig} from 'vite'
+import {type ConfigEnv, type InlineConfig, type Rollup} from 'vite'
 
 import {createExternalFromImportMap} from './createExternalFromImportMap'
 import {getSanityPkgExportAliases} from './getBrowserAliases'
@@ -147,6 +147,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       emptyOutDir: false, // Rely on CLI to do this
 
       rollupOptions: {
+        onwarn: onRollupWarn,
         external: createExternalFromImportMap(importMap),
         input: {
           sanity: path.join(cwd, '.sanity', 'runtime', 'app.js'),
@@ -156,6 +157,32 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
   }
 
   return viteConfig
+}
+
+function onRollupWarn(warning: Rollup.RollupLog, warn: Rollup.LoggingFunction) {
+  if (suppressUnusedImport(warning)) {
+    return
+  }
+
+  warn(warning)
+}
+
+function suppressUnusedImport(warning: Rollup.RollupLog & {ids?: string[]}): boolean {
+  if (warning.code !== 'UNUSED_EXTERNAL_IMPORT') return false
+
+  // Suppress:
+  // ```
+  // "useDebugValue" is imported from external module "react"…
+  // ```
+  if (warning.names?.includes('useDebugValue')) {
+    warning.names = warning.names.filter((n) => n !== 'useDebugValue')
+    if (warning.names.length === 0) return true
+  }
+
+  // If some library does something unexpected, we suppress since it isn't actionable
+  if (warning.ids?.every((id) => id.includes('/node_modules/'))) return true
+
+  return false
 }
 
 /**
