@@ -1,4 +1,5 @@
 import {assist} from '@sanity/assist'
+import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
 import {koKRLocale} from '@sanity/locale-ko-kr'
@@ -127,6 +128,7 @@ const sharedSettings = definePlugin({
         lng: -74.1180863,
       },
     }),
+    colorInput(),
     workshopTool({
       collections: [
         {name: 'sanity', title: 'sanity'},

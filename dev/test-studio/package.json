@@ -22,6 +22,7 @@
     "@sanity/block-tools": "3.58.0",
     "@sanity/client": "^6.21.3",
     "@sanity/color": "^3.0.0",
+    "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
     "@sanity/icons": "^3.4.0",
     "@sanity/image-url": "^1.0.2",
