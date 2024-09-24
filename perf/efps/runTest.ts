@@ -52,7 +52,7 @@ export async function runTest({
 
   const alias: Record<string, string> = {'#config': fileURLToPath(test.configPath!)}
   if (sanityPackagePath) {
-    alias.sanity = sanityPackagePath
+    // alias.sanity = sanityPackagePath
   }
 
   await vite.build({
