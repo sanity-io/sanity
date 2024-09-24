@@ -7,9 +7,12 @@ import {
   type SlugSourceFn,
   type SlugValue,
 } from '@sanity/types'
-import {Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Box, Card, Code, Flex, Stack, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
+import {uuid} from '@sanity/uuid'
 import {type FormEvent, useCallback, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {getPublishedId, useDocumentStore, useFormValue} from 'sanity'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -54,6 +57,18 @@ async function getNewFromSource(
  * @beta
  */
 export function SlugInput(props: SlugInputProps) {
+  const formValue = useFormValue([]) as SanityDocument
+  const documentStore = useDocumentStore()
+  const id = getPublishedId(formValue._id)
+  const type = formValue._type
+  const observable = useMemo(
+    () => documentStore.pair.editState(id, type),
+    [documentStore.pair, id, type],
+  )
+  const {published} = useObservable(observable)!
+  // @ts-expect-error fix this
+  const publishedSlug = published?.slug?.current as string | undefined
+
   const getFormValue = useGetFormValue()
   const {path, value, schemaType, validation, onChange, readOnly, elementProps} = props
   const sourceField = schemaType.options?.source
@@ -66,15 +81,62 @@ export function SlugInput(props: SlugInputProps) {
   const updateSlug = useCallback(
     (nextSlug: string) => {
       if (!nextSlug) {
-        onChange(PatchEvent.from(unset([])))
+        onChange(PatchEvent.from(unset(['current'])))
         return
       }
 
       onChange(
         PatchEvent.from([setIfMissing({_type: schemaType.name}), set(nextSlug, ['current'])]),
       )
+
+      if (publishedSlug) {
+        const currentHistory = props.value?.history || []
+
+        // Check if the current slug is the same as the last published slug
+        // if it's the same, remove the last published slug from the history array
+        const lastHistory = currentHistory[currentHistory.length - 1]
+        if (lastHistory?.slug === nextSlug) {
+          const nextHistory = currentHistory.slice(0, -1)
+          if (nextHistory.length === 0) {
+            onChange(PatchEvent.from([unset(['history'])]))
+          } else {
+            onChange(PatchEvent.from([set(nextHistory, ['history'])]))
+          }
+          return
+        }
+
+        if (nextSlug !== publishedSlug) {
+          // We need to check if the currentHistory includes the last published slug with the lastSeen matching the published._rev
+          // If it's included, don't do anything
+          // If it's not included, push the published slug to the history array
+          const newSlugEntry = {
+            slug: publishedSlug,
+            lastSeen: published?._rev,
+            _key: uuid(),
+            lastSeenPublishedAt: published?._updatedAt,
+          }
+          const exists = currentHistory.find(
+            (item) => item.slug === newSlugEntry.slug && item.lastSeen === newSlugEntry.lastSeen,
+          )
+          if (exists) return
+          // Create the history array if it doesn't exist and push the published slug to it
+          onChange(
+            PatchEvent.from([
+              setIfMissing([], ['history']),
+              set([...currentHistory, newSlugEntry], ['history']),
+            ]),
+          )
+        }
+      }
     },
-    [onChange, schemaType.name],
+    [
+      onChange,
+      schemaType.name,
+      publishedSlug,
+      props.value?.history,
+      published?._rev,
+      published?._updatedAt,
+    ],
   )
 
   const handleAsyncGenerateSlug = useCallback(() => {
@@ -133,6 +195,9 @@ export function SlugInput(props: SlugInputProps) {
           />
         )}
       </Flex>
+      <Code size={1} muted>
+        {JSON.stringify(value, null, 2)}
+      </Code>
     </Stack>
   )
 }

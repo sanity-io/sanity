@@ -9,6 +9,7 @@ import {type BaseSchemaDefinition} from './common'
 export interface SlugValue {
   _type: 'slug'
   current?: string
+  history?: {slug: string; lastSeen: string; lastSeenPublishedAt: string}[]
 }
 
 /** @public */

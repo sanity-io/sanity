@@ -6,7 +6,8 @@ export default defineType({
   type: 'document',
   // eslint-disable-next-line camelcase
   __experimental_formPreviewTitle: false,
-  liveEdit: true,
+  // TODO: How to handle live edit? Push to history with every keypress?
+  // liveEdit: true,
   fields: [
     {
       name: 'name',
@@ -14,20 +15,12 @@ export default defineType({
       type: 'string',
     },
     {
-      name: 'description',
-      title: 'Description',
-      type: 'text',
-    },
-    {
-      name: 'tracks',
-      title: 'Tracks',
-      type: 'array',
-      of: [{type: 'playlistTrack'}],
-    },
-    {
-      name: 'image',
-      title: 'Image',
-      type: 'image',
+      name: 'slug',
+      type: 'slug',
+      title: 'Slug',
+      options: {
+        source: 'name',
+      },
     },
   ],
 })

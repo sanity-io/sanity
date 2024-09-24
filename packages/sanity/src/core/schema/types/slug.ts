@@ -19,5 +19,32 @@ export default {
       type: 'string',
       hidden: true,
     },
+    {
+      name: 'history',
+      title: 'Slug history',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'slug',
+              title: 'Slug',
+              type: 'string',
+            },
+            {
+              name: 'lastSeen',
+              title: 'Last seen revision',
+              type: 'string',
+            },
+            {
+              name: 'lastSeenPublishedAt',
+              title: 'Last seen published at',
+              type: 'datetime',
+            },
+          ],
+        },
+      ],
+    },
   ],
 }
