@@ -51,7 +51,7 @@ export interface TransactionLogEventWithEffects extends TransactionLogEvent {
  */
 export interface TransactionLogEventWithMutations extends TransactionLogEvent {
   /**
-   * Array of mutations that occured in this transaction. Note that the transaction
+   * Array of mutations that occurred in this transaction. Note that the transaction
    * log has an additional mutation type not typically seen in other APIs;
    * `createSquashed` ({@link CreateSquashedMutation}).
    */
@@ -83,7 +83,7 @@ export interface CreateSquashedMutation {
     createdAt: string
 
     /**
-     * The document as it exists after squashing has occured
+     * The document as it exists after squashing has occurred
      */
     document: {
       _id: string
