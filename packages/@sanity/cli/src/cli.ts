@@ -44,9 +44,8 @@ function installProcessExitHack(finalTask: () => Promise<unknown>) {
 async function getDeviceId() {
   try {
     return await machineId()
-  } catch(error) {
-    console.error('Failed to get device ID:', error)
-    return 'unknown device id'
+  } catch (error) {
+    return undefined
   }
 }
 

@@ -94,7 +94,7 @@ export interface CliBaseCommandContext {
 }
 
 export interface TelemetryUserProperties {
-  deviceId: string
+  deviceId: string | undefined
   runtime: string
   runtimeVersion: string
   cliVersion: string
