@@ -44,7 +44,7 @@ const INITIAL_STATE = {
 
 export const StudioErrorBoundary: ComponentType<StudioErrorBoundaryProps> = ({
   children,
-  heading = 'An error occured',
+  heading = 'An error occurred',
 }) => {
   const [{error, eventId}, setError] = useState<ErrorBoundaryState>(INITIAL_STATE)
 
