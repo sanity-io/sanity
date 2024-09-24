@@ -748,12 +748,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>
     if (connectionState === 'reconnecting') {
-      pushToast({
-        id: 'sanity/structure/reconnecting',
-        status: 'warning',
-        title: t('panes.document-pane-provider.reconnecting.title'),
-      })
+      timeout = setTimeout(() => {
+        pushToast({
+          id: 'sanity/structure/reconnecting',
+          status: 'warning',
+          title: t('panes.document-pane-provider.reconnecting.title'),
+        })
+      }, 2000) // 2 seconds, we can iterate on the value
+    }
+    return () => {
+      if (timeout) clearTimeout(timeout)
     }
   }, [connectionState, pushToast, t])
 
