@@ -114,7 +114,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   const [hasResetAutoFocus, setHasResetFocus] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const {selectedAssets, assetType = 'image', dialogHeaderTitle, onClose, onSelect, accept} = props
-  const [selectedImages, setSelectedImages] = useState<AssetFromSource[]>([])
+  const [selectedImages, setSelectedImages] = useState<AssetFromSource[][]>([])
 
   const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
   const fetchPage = useCallback(
@@ -154,10 +154,12 @@ const DefaultAssetSource = function DefaultAssetSource(
         const selected = assets.filter((doc) => id.includes(doc._id))
 
         if (selected.length > 0) {
-          const selectedSources: AssetFromSource[] = selected.map((doc) => ({
-            kind: 'assetDocumentId',
-            value: doc._id,
-          }))
+          const selectedSources: AssetFromSource[][] = selected.map((doc) => [
+            {
+              kind: 'assetDocumentId',
+              value: doc._id,
+            },
+          ])
 
           setSelectedImages(selectedSources)
         }
@@ -223,25 +225,10 @@ const DefaultAssetSource = function DefaultAssetSource(
     [fetchPage],
   )
 
-  const uploadAssets = useCallback(() => {
-    onSelect(selectedImages)
-    /*const patches = selectedImages.map((image) =>
-      insert(
-        [
-          {
-            _type: 'reference',
-            _ref: image.value,
-          },
-
-          ['asset'],
-        ],
-        'after',
-        [-1],
-      ),
-    )
-
-    console.log(patches)
-    PatchEvent.from(patches)*/
+  const addMultipleAssets = useCallback(() => {
+    selectedImages.forEach((image) => {
+      onSelect(image)
+    })
   }, [onSelect, selectedImages])
 
   useEffect(() => {
@@ -336,7 +323,7 @@ const DefaultAssetSource = function DefaultAssetSource(
                 type="button"
                 icon={AddIcon}
                 loading={isLoading}
-                onClick={uploadAssets}
+                onClick={addMultipleAssets}
                 size="large"
                 // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
                 text={'Add Assets'}

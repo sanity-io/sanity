@@ -1,7 +1,7 @@
 import {type AssetFromSource, type FileSchemaType} from '@sanity/types'
 
 import {type FIXME} from '../../../../FIXME'
-import {type FormPatch, insert, type PatchEvent, set, setIfMissing, unset} from '../../../patch'
+import {type FormPatch, type PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {
   type Uploader,
   type UploaderResolver,
@@ -48,44 +48,20 @@ export function handleSelectAssetFromSource({
   const imagePatches = isImage ? [unset(['hotspot']), unset(['crop'])] : []
   switch (firstAsset.kind) {
     case 'assetDocumentId':
-      if (assetFromSource.length > 1) {
-        const inserts = assetFromSource.map((image) =>
-          insert(
-            [
-              {
-                _type: 'reference',
-                _ref: image.value,
-              },
+      onChange([
+        setIfMissing({
+          _type: type.name,
+        }),
+        ...imagePatches,
+        set(
+          {
+            _type: 'reference',
+            _ref: firstAsset.value,
+          },
 
-              ['asset'],
-            ],
-            'after',
-            [-1],
-          ),
-        )
-
-        onChange([
-          setIfMissing({
-            _type: type.name,
-          }),
-          ...inserts,
-        ])
-      } else {
-        onChange([
-          setIfMissing({
-            _type: type.name,
-          }),
-          ...imagePatches,
-          set(
-            {
-              _type: 'reference',
-              _ref: firstAsset.value,
-            },
-
-            ['asset'],
-          ),
-        ])
-      }
+          ['asset'],
+        ),
+      ])
 
       break
     case 'file': {
