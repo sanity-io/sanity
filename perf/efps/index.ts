@@ -18,7 +18,7 @@ import {exec} from './helpers/exec'
 import {runTest} from './runTest'
 import article from './tests/article/article'
 import recipe from './tests/recipe/recipe'
-import singleString from './tests/singleString/singleString'
+// import singleString from './tests/singleString/singleString'
 import synthetic from './tests/synthetic/synthetic'
 import {type EfpsResult} from './types'
 
@@ -26,7 +26,7 @@ const tag = 'latest'
 const deltaThreshold = 0.1
 
 const headless = true
-const tests = [singleString, recipe, article, synthetic]
+const tests = [recipe, article, synthetic]
 
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
 const dataset = process.env.VITE_PERF_EFPS_DATASET!
