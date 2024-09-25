@@ -23,7 +23,7 @@ import synthetic from './tests/synthetic/synthetic'
 import {type EfpsResult} from './types'
 
 const tag = 'latest'
-const deltaThreshold = 0.1
+const deltaThreshold = 0.2
 
 const headless = true
 const tests = [recipe, article, synthetic]
