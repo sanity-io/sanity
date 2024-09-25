@@ -22,6 +22,9 @@ import singleString from './tests/singleString/singleString'
 import synthetic from './tests/synthetic/synthetic'
 import {type EfpsResult} from './types'
 
+const tag = 'latest'
+const deltaThreshold = 0.1
+
 const headless = true
 const tests = [singleString, recipe, article, synthetic]
 
@@ -66,17 +69,17 @@ await exec({
   cwd: monorepoRoot,
 })
 
-// Prepare the latest version of the 'sanity' package
-const tmpDir = path.join(os.tmpdir(), `sanity-latest-${Date.now()}`)
+const tmpDir = path.join(os.tmpdir(), `sanity-${tag}-${Date.now()}`)
 await fs.promises.mkdir(tmpDir, {recursive: true})
 spinner.start('')
 await exec({
-  command: 'npm install sanity@latest --no-save',
+  command: `pnpm install sanity@${tag}`,
   cwd: tmpDir,
   spinner,
-  text: ['Downloading latest sanity package…', 'Downloaded latest sanity package'],
+  text: [`Downloading sanity@${tag} package…`, `Downloaded sanity@${tag}`],
 })
-const sanityPackagePath = path.join(tmpDir, 'node_modules', 'sanity')
+const baseSanityPkgPath = path.join(tmpDir, 'node_modules', 'sanity')
+const localSanityPkgPath = path.dirname(fileURLToPath(import.meta.resolve('sanity/package.json')))
 
 await exec({
   text: ['Ensuring playwright is installed…', 'Playwright is installed'],
@@ -84,25 +87,19 @@ await exec({
   spinner,
 })
 
-const table = new Table({
-  head: [chalk.bold('benchmark'), 'Passed?', 'p50 eFPS (Δ%)', 'p75 eFPS (Δ%)', 'p90 eFPS (Δ%)'].map(
-    (cell) => chalk.cyan(cell),
-  ),
-})
-
-const markdownRows: string[] = []
-
 const formatFps = (fps: number) => {
   const rounded = fps.toFixed(1)
+  if (fps >= 100) return chalk.green('99.9+')
   if (fps >= 60) return chalk.green(rounded)
-  if (fps < 20) return chalk.red(rounded)
-  return chalk.yellow(rounded)
+  if (fps >= 20) return chalk.yellow(rounded)
+  return chalk.red(rounded)
 }
 
-const formatPercentage = (value: number): string => {
-  const rounded = value.toFixed(1)
-  const sign = value >= 0 ? '+' : ''
-  if (value > -50) return `${sign}${rounded}%`
+const formatPercentage = (delta: number): string => {
+  const percentage = delta * 100
+  const rounded = percentage.toFixed(1)
+  const sign = delta >= 0 ? '+' : ''
+  if (delta >= -deltaThreshold) return `${sign}${rounded}%`
   return chalk.red(`${sign}${rounded}%`)
 }
 
@@ -118,163 +115,142 @@ const formatPercentagePlain = (value: number): string => {
   return `${sign}${rounded}%`
 }
 
-function getStatus(p50Diff: number, p75Diff: number, p90Diff: number): 'error' | 'passed' {
-  if (p50Diff < -50 || p75Diff < -50 || p90Diff < -50) {
-    return 'error'
-  }
-  return 'passed'
-}
-
-function getStatusEmoji(status: 'error' | 'passed'): string {
-  if (status === 'error') return '🔴'
-  return '✅'
-}
-
-// Initialize the overall status
-let overallStatus: 'error' | 'passed' = 'passed'
-
-interface TestResult {
-  testName: string
-  version: 'local' | 'latest'
-  results: EfpsResult[]
-}
-
-const allResults: TestResult[] = []
-
+const testOutput: Array<{
+  name: string
+  results: Array<EfpsResult & {delta: number; passed: boolean}>
+}> = []
 for (let i = 0; i < tests.length; i++) {
   const test = tests[i]
 
   // Run with local 'sanity' package
+  // [RUNS] [ singleString ] [local] [latest] [...]
+  //
   const localResults = await runTest({
-    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with local 'sanity'…`,
+    prefix: `Running test '${test.name}' [${i + 1}/${tests.length}] with local 'sanity'…`,
     test,
     resultsDir,
-    spinner,
     client,
     headless,
     projectId,
-  })
-
-  allResults.push({
-    testName: test.name,
-    version: 'local',
-    results: localResults,
+    sanityPkgPath: localSanityPkgPath,
+    log: () => {},
   })
 
   // Run with latest 'sanity' package
-  const latestResults = await runTest({
+  const baseResults = await runTest({
     prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@latest'…`,
     test,
     resultsDir,
-    spinner,
     client,
     headless,
     projectId,
-    sanityPackagePath,
+    sanityPkgPath: baseSanityPkgPath,
+    log: () => {},
   })
 
-  allResults.push({
-    testName: test.name,
-    version: 'latest',
-    results: latestResults,
+  const combinedResults = localResults.map((localResult, index) => {
+    const baseResult = baseResults[index]
+    const delta = (baseResult.p50 - localResult.p50) / baseResult.p50
+    return {
+      ...localResult,
+      delta,
+      passed: delta >= -deltaThreshold,
+    }
   })
+
+  testOutput.push({name: test.name, results: combinedResults})
 }
 
-for (const test of tests) {
-  const localResult = allResults.find((r) => r.testName === test.name && r.version === 'local')
-  const latestResult = allResults.find((r) => r.testName === test.name && r.version === 'latest')
+const p50Min = testOutput.flatMap((i) => i.results).sort((a, b) => a.p50 - b.p50)[0]
 
-  if (localResult && latestResult) {
-    const localResultsMap = new Map<string | undefined, EfpsResult>()
-    for (const res of localResult.results) {
-      localResultsMap.set(res.label, res)
-    }
-    const latestResultsMap = new Map<string | undefined, EfpsResult>()
-    for (const res of latestResult.results) {
-      latestResultsMap.set(res.label, res)
-    }
+const table = new Table({
+  head: [chalk.bold('Benchmark'), 'eFPS', `vs \`${tag}\``, 'Passed?'].map((cell) =>
+    chalk.cyan(cell),
+  ),
+})
 
-    for (const [label, latest] of latestResultsMap) {
-      const local = localResultsMap.get(label)
-      if (local) {
-        // Compute percentage differences
-        const p50Diff = ((local.p50 - latest.p50) / latest.p50) * 100
-        const p75Diff = ((local.p75 - latest.p75) / latest.p75) * 100
-        const p90Diff = ((local.p90 - latest.p90) / latest.p90) * 100
-
-        // Determine test status
-        const testStatus = getStatus(p50Diff, p75Diff, p90Diff)
-
-        // Update overall status
-        if (testStatus === 'error') {
-          overallStatus = 'error'
-        }
-
-        const rowLabel = [chalk.bold(test.name), label ? `(${label})` : ''].join(' ')
-
-        table.push([
-          rowLabel,
-          getStatusEmoji(testStatus),
-          `${formatFps(local.p50)} (${formatPercentage(p50Diff)})`,
-          `${formatFps(local.p75)} (${formatPercentage(p75Diff)})`,
-          `${formatFps(local.p90)} (${formatPercentage(p90Diff)})`,
-        ])
-
-        // Add to markdown rows
-        const markdownRow = [
-          [test.name, label ? `(${label})` : ''].join(' '),
-          getStatusEmoji(testStatus),
-          `${formatFpsPlain(local.p50)} (${formatPercentagePlain(p50Diff)})`,
-          `${formatFpsPlain(local.p75)} (${formatPercentagePlain(p75Diff)})`,
-          `${formatFpsPlain(local.p90)} (${formatPercentagePlain(p90Diff)})`,
-        ]
-        markdownRows.push(`| ${markdownRow.join(' | ')} |`)
-      } else {
-        spinner.fail(`Missing local result for test '${test.name}', label '${label}'`)
-      }
-    }
-  } else {
-    spinner.fail(`Missing results for test '${test.name}'`)
+for (const {name, results} of testOutput) {
+  for (const {delta, p50, label, passed} of results) {
+    table.push([
+      label ? `${name} (${label})` : name,
+      formatFps(p50),
+      formatPercentage(delta),
+      passed ? '✅' : '🔴',
+    ])
   }
 }
 
+const allPassed = testOutput.flatMap((i) => i.results).every((i) => i.passed)
+
+// const markdownRows: string[] = []
+
 console.log(table.toString())
 console.log(`
+${chalk.bold('Lowest eFPS:')} ${formatFps(p50Min.p50)}`)
+console.log(`
 
-│ ${chalk.bold('eFPS — editor "Frames Per Second"')}
-│
-│ The number of renders ("frames") that is assumed to be possible
+│ ${chalk.bold('eFPS — Editor "Frames Per Second"')}
+│ The number of renders, aka "frames", that are assumed to be possible
 │ within a second. Derived from input latency. ${chalk.green('Higher')} is better.
+│
+│ ${chalk.bold(`vs \`${tag}\``)}
+│ The percentage difference of the current branch when compared to \`sanity@${tag}\`.
+│
+│ ${chalk.bold('Passed?')}
+│ Tests are failed when any of the median eFPS results perform more than 10% worse.
 `)
 
 // Map overallStatus to status text
-const statusText = overallStatus === 'error' ? 'Error' : 'Passed'
-const statusEmoji = getStatusEmoji(overallStatus)
+// const statusText = overallStatus === 'error' ? 'Error' : 'Passed'
+// const statusEmoji = getStatusEmoji(overallStatus)
+
+const markdownRows = testOutput
+  .flatMap((test) =>
+    test.results.map((result) => ({
+      ...result,
+      label: result.label ? `${test.name} (${result.label})` : test.name,
+    })),
+  )
+  .map(
+    ({label, p50, delta, passed}) =>
+      `| ${label} | ${formatFpsPlain(p50)} | ${formatPercentagePlain(delta)} | ${passed ? '✅' : '🔴'} |`,
+  )
+  .join('\n')
 
 // Build the markdown content
-const markdownContent = [
-  '# Benchmark Results',
-  '',
-  `<details>`,
-  `<summary>${statusEmoji} Performance Benchmark Results — Status: **${statusText}** </summary>`,
-  '',
-  '| Benchmark | Passed? | p50 eFPS (Δ%) | p75 eFPS (Δ%) | p90 eFPS (Δ%) |',
-  '|-----------|---------|---------------|---------------|---------------|',
-  ...markdownRows,
-  '</details>',
-  '',
-  '> **eFPS — editor "Frames Per Second"**',
-  '> ',
-  '> The number of renders ("frames") that is assumed to be possible within a second. Derived from input latency. **Higher** is better.',
-  '',
-].join('\n')
+const markdown = `
+<details>
+<summary><strong>⚡️ Editor Performance Report</strong><br/><br/>
+
+| <strong>${formatFpsPlain(p50Min.p50)}</strong> <br/><sub>eFPS</sub> | ${formatPercentagePlain(p50Min.delta)}<br/><sub>vs <code>${tag}</code></sub> | ${allPassed ? '✅' : '🔴'} <br/> <sub>${allPassed ? 'Passed' : 'Failed'}</sub> |
+| --- | --- | --- |
+
+> **eFPS** — Editor "Frames Per Second"
+> <sup>The number of renders aka "frames" that is assumed to be possible within a second. Derived from input latency. _Higher_ is better.</sup>
+
+<sup>↓ expand for details</sup>
+</summary>
+
+| Benchmark | eFPS | vs \`${tag}\` | Passed? |
+|-----------| ---: | ------------: | :-----: |
+${markdownRows}
+
+> **eFPS — Editor "Frames Per Second"**
+> The number of renders, aka "frames", that are assumed to be possible within a second.
+> Derived from input latency. _Higher_ is better.
+>
+> **vs \`${tag}\`**
+> The percentage difference of the current branch when compared to \`sanity@${tag}\`.
+>
+> **Passed?**
+> Tests are failed when any of the median eFPS results perform more than 10% worse.
+`
 
 // Write markdown file to root of results
 const markdownOutputPath = path.join(workspaceDir, 'results', 'benchmark-results.md')
-await fs.promises.writeFile(markdownOutputPath, markdownContent)
+await fs.promises.writeFile(markdownOutputPath, markdown)
 
 // Exit with code 1 if regression detected
-if (overallStatus === 'error') {
-  console.error(chalk.red('Performance regression detected exceeding 50% threshold.'))
+if (!allPassed) {
   process.exit(1)
 }

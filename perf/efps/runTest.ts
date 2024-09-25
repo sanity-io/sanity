@@ -5,7 +5,6 @@ import {fileURLToPath} from 'node:url'
 
 import {type SanityClient} from '@sanity/client'
 import react from '@vitejs/plugin-react'
-import {type Ora} from 'ora'
 import {chromium} from 'playwright'
 import sourcemaps from 'rollup-plugin-sourcemaps'
 import handler from 'serve-handler'
@@ -19,39 +18,42 @@ interface RunTestOptions {
   prefix: string
   test: EfpsTest
   resultsDir: string
-  spinner: Ora
+  // spinner: Ora
   projectId: string
   headless: boolean
   client: SanityClient
-  sanityPackagePath?: string // Add this line
+  sanityPkgPath: string
+  log: (text: string) => void
 }
 
 export async function runTest({
   prefix,
   test,
   resultsDir,
-  spinner,
+  // spinner,
   projectId,
   headless,
   client,
-  sanityPackagePath,
+  sanityPkgPath,
+  log,
 }: RunTestOptions): Promise<EfpsResult[]> {
-  const log = (text: string) => {
-    spinner.text = `${prefix}\n  └ ${text}`
-  }
+  console.log(prefix)
+  // const log = (text: string) => {
+  //   // spinner.text = `${prefix}\n  └ ${text}`
+  // }
 
-  spinner.start(prefix)
+  // spinner.start(prefix)
 
-  const versionLabel = sanityPackagePath ? 'latest' : 'local'
+  const versionLabel = sanityPkgPath ? 'latest' : 'local'
   const outDir = path.join(workspaceDir, 'builds', test.name, versionLabel)
   const testResultsDir = path.join(resultsDir, test.name, versionLabel)
 
   await fs.promises.mkdir(outDir, {recursive: true})
   log('Building…')
 
-  const alias: Record<string, string> = {'#config': fileURLToPath(test.configPath!)}
-  if (sanityPackagePath) {
-    // alias.sanity = sanityPackagePath
+  const alias: Record<string, string> = {
+    '#config': fileURLToPath(test.configPath!),
+    'sanity': sanityPkgPath,
   }
 
   await vite.build({
@@ -143,7 +145,7 @@ export async function runTest({
     //   JSON.stringify(remappedProfile),
     // )
 
-    spinner.succeed(`Ran benchmark '${test.name}' (${versionLabel})`)
+    // spinner.succeed(`Ran benchmark '${test.name}' (${versionLabel})`)
 
     return results
   } finally {

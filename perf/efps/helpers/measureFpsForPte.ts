@@ -86,9 +86,9 @@ export async function measureFpsForPte(pteField: Locator): Promise<EfpsResult> {
     return matchingEvent.timestamp - inputEvent.timestamp - matchingEvent.textContentProcessingTime
   })
 
-  const p50 = Math.min(1000 / calculatePercentile(latencies, 0.5), 60)
-  const p75 = Math.min(1000 / calculatePercentile(latencies, 0.75), 60)
-  const p90 = Math.min(1000 / calculatePercentile(latencies, 0.9), 60)
+  const p50 = Math.min(1000 / calculatePercentile(latencies, 0.5), 100)
+  const p75 = Math.min(1000 / calculatePercentile(latencies, 0.75), 100)
+  const p90 = Math.min(1000 / calculatePercentile(latencies, 0.9), 100)
 
   return {p50, p75, p90, latencies}
 }
