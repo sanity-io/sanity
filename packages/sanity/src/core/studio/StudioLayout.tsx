@@ -24,7 +24,12 @@ const DetectViteDevServerStopped = lazy(() =>
   })),
 )
 
-const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
+const detectViteDevServerStopped = () => {
+  if (typeof import.meta !== 'undefined' && import.meta.hot) {
+    return import.meta && import.meta.hot && process.env.NODE_ENV === 'development'
+  }
+  return false
+}
 
 const SearchFullscreenPortalCard = styled(Card)`
   height: 100%;
@@ -181,7 +186,7 @@ export function StudioLayoutComponent() {
       {/* By using the tool name as the key on the error boundary, we force it to re-render
           when switching tools, which ensures we don't show the wrong tool having crashed */}
       <StudioErrorBoundary key={activeTool?.name} heading={`The ${activeTool?.name} tool crashed`}>
-        {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+        {detectViteDevServerStopped() && <DetectViteDevServerStopped />}
         <Card flex={1} hidden={searchFullscreenOpen}>
           {activeTool && activeToolName && (
             <RouteScope

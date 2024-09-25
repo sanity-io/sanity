@@ -1,10 +1,10 @@
-import {SyncIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
   type CommandListRenderItemCallback,
+  ErrorActions,
   type GeneralPreviewLayoutKey,
   getPublishedId,
   LoadingBlock,
@@ -15,7 +15,6 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components'
 import {Delay, PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {FULL_LIST_LIMIT} from './constants'
@@ -46,7 +45,7 @@ interface DocumentListPaneContentProps {
   layout?: GeneralPreviewLayoutKey
   loadingVariant?: LoadingVariant
   onListChange: () => void
-  onRetry?: (event: unknown) => void
+  onRetry?: () => void
   paneTitle: string
   searchInputElement: HTMLInputElement | null
   showIcons: boolean
@@ -198,17 +197,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
                   components={{Code: ({children}) => <code>{children}</code>}}
                 />
               </Text>
-
-              {onRetry && (
-                <Box>
-                  <Button
-                    icon={SyncIcon}
-                    onClick={onRetry}
-                    text={t('panes.document-list-pane.error.retry-button.text')}
-                    tone="primary"
-                  />
-                </Box>
-              )}
+              <ErrorActions error={error} eventId={null} onRetry={onRetry} />
             </Stack>
           </Container>
         </Flex>

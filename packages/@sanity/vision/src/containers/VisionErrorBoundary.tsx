@@ -69,7 +69,7 @@ export class VisionErrorBoundary extends Component<
               />
             </div>
 
-            <Heading>An error occured</Heading>
+            <Heading>An error occurred</Heading>
 
             <Card border radius={2} overflow="auto" padding={4} tone="inherit">
               <Stack space={4}>

@@ -159,7 +159,7 @@ export function useDocumentStore(): DocumentStore {
 
     resourceCache.set({
       namespace: 'documentStore',
-      dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n],
+      dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n, workspace],
       value: documentStore,
     })
 

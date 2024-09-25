@@ -1,6 +1,6 @@
 {
   "name": "@repo/package.config",
-  "version": "3.57.3",
+  "version": "3.58.0",
   "private": true,
   "description": "Shared @sanity/pkg-utils configuration",
   "main": "./src/package.config.ts",

@@ -1,7 +1,7 @@
 /* eslint-disable tsdoc/syntax */
 
 const path = require('node:path')
-const {escapeRegExp, omit} = require('lodash')
+const {escapeRegExp, omit, over} = require('lodash')
 const devAliases = require('../dev/aliases.cjs')
 
 /** Regex for matching file extensions. */
@@ -92,7 +92,7 @@ exports.createJestConfig = function createJestConfig(config = {}) {
             '@babel/preset-typescript',
             ['@babel/preset-react', {runtime: 'automatic'}],
           ],
-          plugins: ['@babel/plugin-proposal-class-properties'],
+          plugins: ['@babel/plugin-syntax-import-meta', '@babel/plugin-proposal-class-properties'],
         },
       ],
     },

@@ -21,7 +21,11 @@
     "PKG_FILE_PATH",
     "RUNNER_OS",
     "SANITY_BASE_PATH",
-    "TZ"
+    "TZ",
+    // these is for the perf/efps perf suite and should not be cached
+    "VITE_PERF_EFPS_PROJECT_ID",
+    "VITE_PERF_EFPS_DATASET",
+    "PERF_EFPS_SANITY_TOKEN"
   ],
   "globalDependencies": [
     ".npmrc",
