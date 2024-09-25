@@ -11,6 +11,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@repo/dev-aliases": "workspace:*",
+    "babel-plugin-transform-vite-meta-hot": "^1.0.0",
     "dotenv": "^16.4.5",
     "jest-environment-jsdom": "^29.7.0",
     "lodash-es": "^4.17.21",
