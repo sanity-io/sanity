@@ -11,7 +11,14 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {type ComponentType, type ErrorInfo, lazy, useCallback, useState} from 'react'
+import {
+  type ComponentType,
+  type ErrorInfo,
+  lazy,
+  type ReactNode,
+  useCallback,
+  useState,
+} from 'react'
 import {ErrorActions, isDev, isProd} from 'sanity'
 import {styled} from 'styled-components'
 import {useHotModuleReload} from 'use-hot-module-reload'
@@ -34,7 +41,7 @@ const DevServerStoppedErrorScreen = lazy(() =>
 )
 
 interface StudioErrorBoundaryProps {
-  children: React.ReactNode
+  children: ReactNode
   heading?: string
 }
 
