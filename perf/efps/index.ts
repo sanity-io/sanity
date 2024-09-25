@@ -105,13 +105,15 @@ const formatPercentage = (delta: number): string => {
 
 // For markdown formatting without colors
 const formatFpsPlain = (fps: number) => {
+  if (fps >= 100) return '99.9+'
   const rounded = fps.toFixed(1)
   return rounded
 }
 
-const formatPercentagePlain = (value: number): string => {
-  const rounded = value.toFixed(1)
-  const sign = value >= 0 ? '+' : ''
+const formatPercentagePlain = (delta: number): string => {
+  const percentage = delta * 100
+  const rounded = percentage.toFixed(1)
+  const sign = delta >= 0 ? '+' : ''
   return `${sign}${rounded}%`
 }
 
@@ -122,9 +124,6 @@ const testOutput: Array<{
 for (let i = 0; i < tests.length; i++) {
   const test = tests[i]
 
-  // Run with local 'sanity' package
-  // [RUNS] [ singleString ] [local] [latest] [...]
-  //
   const localResults = await runTest({
     prefix: `Running test '${test.name}' [${i + 1}/${tests.length}] with local 'sanity'…`,
     test,
@@ -150,7 +149,7 @@ for (let i = 0; i < tests.length; i++) {
 
   const combinedResults = localResults.map((localResult, index) => {
     const baseResult = baseResults[index]
-    const delta = (baseResult.p50 - localResult.p50) / baseResult.p50
+    const delta = (localResult.p50 - baseResult.p50) / baseResult.p50
     return {
       ...localResult,
       delta,
@@ -182,8 +181,6 @@ for (const {name, results} of testOutput) {
 
 const allPassed = testOutput.flatMap((i) => i.results).every((i) => i.passed)
 
-// const markdownRows: string[] = []
-
 console.log(table.toString())
 console.log(`
 ${chalk.bold('Lowest eFPS:')} ${formatFps(p50Min.p50)}`)
@@ -199,10 +196,6 @@ console.log(`
 │ ${chalk.bold('Passed?')}
 │ Tests are failed when any of the median eFPS results perform more than 10% worse.
 `)
-
-// Map overallStatus to status text
-// const statusText = overallStatus === 'error' ? 'Error' : 'Passed'
-// const statusEmoji = getStatusEmoji(overallStatus)
 
 const markdownRows = testOutput
   .flatMap((test) =>
