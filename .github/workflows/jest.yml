@@ -1,0 +1,77 @@
+name: Unit tests
+
+on:
+  # Build on pushes branches that have a PR (including drafts)
+  pull_request:
+  # Build on commits pushed to branches without a PR if it's in the allowlist
+  push:
+    branches: [next]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    name: Jest tests (${{ matrix.os }} / node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    continue-on-error: ${{ matrix.experimental }}
+
+    strategy:
+      # we want to know if a test fails on a specific node version
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [18, 20]
+        experimental: [false]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+        # include:
+        #   - os: windows-latest
+        #     node: 16
+        #     experimental: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-
+            v1-${{ runner.os }}-
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Test
+        id: test
+        run: |
+          node -v
+          pnpm test:jest --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --ignoreProjects=@sanity/cli
+        env:
+          GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}

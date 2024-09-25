@@ -1,14 +1,11 @@
-'use strict'
+import {createJestConfig, readPackageName, resolveDirName} from '@repo/test-config/jest'
 
-const {createJestConfig} = require('../../../test/config.cjs')
-
-module.exports = createJestConfig({
-  displayName: require('./package.json').name,
+export default createJestConfig({
+  displayName: readPackageName(import.meta.url),
   globalSetup: '<rootDir>/test/shared/globalSetup.ts',
   globalTeardown: '<rootDir>/test/shared/globalTeardown.ts',
-  rootDir: __dirname,
+  rootDir: resolveDirName(import.meta.url),
   setupFilesAfterEnv: ['<rootDir>/test/shared/setupAfterEnv.ts'],
   slowTestThreshold: 60000,
   testEnvironment: 'node',
-  testTimeout: 30000,
 })

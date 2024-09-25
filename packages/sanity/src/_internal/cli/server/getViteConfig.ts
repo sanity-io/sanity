@@ -6,11 +6,11 @@ import debug from 'debug'
 import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig, mergeConfig} from 'vite'
 
-import {getAliases} from './aliases'
 import {createExternalFromImportMap} from './createExternalFromImportMap'
+import {getSanityPkgExportAliases} from './getBrowserAliases'
 import {getStudioEnvironmentVariables} from './getStudioEnvironmentVariables'
 import {normalizeBasePath} from './helpers'
-import {loadSanityMonorepo} from './sanityMonorepo'
+import {getMonorepoAliases, loadSanityMonorepo} from './sanityMonorepo'
 import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityDotWorkaroundPlugin} from './vite/plugin-sanity-dot-workaround'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
@@ -113,7 +113,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     envPrefix: 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      alias: getAliases({monorepo, sanityPkgPath}),
+      alias: monorepo?.path
+        ? await getMonorepoAliases(monorepo.path)
+        : getSanityPkgExportAliases(sanityPkgPath),
       dedupe: ['styled-components'],
     },
     define: {

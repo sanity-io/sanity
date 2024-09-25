@@ -1,8 +1,8 @@
 import {types} from 'node:util'
 
-import {describe, expect, it, jest} from '@jest/globals'
 import {createClient, type SanityClient} from '@sanity/client'
 import {firstValueFrom, from} from 'rxjs'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createClientConcurrencyLimiter} from '../createClientConcurrencyLimiter'
 
@@ -17,7 +17,7 @@ describe('createConcurrencyLimitedClient', () => {
     })()
 
     const mockClient = {
-      fetch: jest.fn(() => deferredPromise),
+      fetch: vi.fn(() => deferredPromise),
     } as unknown as SanityClient
 
     const limitConcurrency = createClientConcurrencyLimiter(1)
@@ -45,7 +45,7 @@ describe('createConcurrencyLimitedClient', () => {
 
     const mockClient = {
       observable: {
-        fetch: jest.fn(() => from(deferredPromise)),
+        fetch: vi.fn(() => from(deferredPromise)),
       },
     } as unknown as SanityClient
 

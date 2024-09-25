@@ -1,4 +1,4 @@
-import {describe, it} from '@jest/globals'
+import {describe, it} from 'vitest'
 
 import {type ExtensionTypeExampleDef, type ObjectDefinition} from '../src/schema/definition'
 import {defineType} from '../src/schema/types'

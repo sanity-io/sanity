@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/test-config": "workspace:*",
     "@types/lodash": "^4.17.7",
     "@types/node": "^18.15.3",
     "esbuild": "0.21.5",

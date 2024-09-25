@@ -1,5 +1,5 @@
-import {expect, jest, test} from '@jest/globals'
 import {type PatchMutationOperation} from '@sanity/types'
+import {expect, test, vi} from 'vitest'
 
 import {Mutation} from '../src/document/Mutation'
 import {SquashingBuffer} from '../src/document/SquashingBuffer'
@@ -113,7 +113,7 @@ test.each(['create', 'createIfNotExists', 'createOrReplace'])(
   '%s defaults to current created at time',
   (createFnc) => {
     const globalMockDate = new Date('2020-01-01T12:34:55.000Z')
-    const globalDateSpy = jest.spyOn(global, 'Date').mockReturnValue(globalMockDate)
+    const globalDateSpy = vi.spyOn(global, 'Date').mockReturnValue(globalMockDate)
 
     const sb = new SquashingBuffer(null)
 
@@ -140,7 +140,7 @@ test.each(['create', 'createIfNotExists', 'createOrReplace'])(
 
 test('de-duplicate create respects deletes', () => {
   const globalMockDate = new Date('2020-01-01T12:34:55.000Z')
-  const globalDateSpy = jest.spyOn(global, 'Date').mockReturnValue(globalMockDate)
+  const globalDateSpy = vi.spyOn(global, 'Date').mockReturnValue(globalMockDate)
 
   const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
   const sb = new SquashingBuffer(initial)

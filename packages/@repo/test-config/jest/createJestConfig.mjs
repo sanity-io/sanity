@@ -1,18 +1,30 @@
 /* eslint-disable tsdoc/syntax */
 
-const path = require('node:path')
-const {escapeRegExp, omit, over} = require('lodash')
-const devAliases = require('../dev/aliases.cjs')
+import path from 'node:path'
+
+import devAliases from '@repo/dev-aliases'
+import {escapeRegExp, omit} from 'lodash-es'
+
+import {resolveDirName} from './resolveDirName.mjs'
+
+const dirname = resolveDirName(import.meta.url)
 
 /** Regex for matching file extensions. */
 const RE_EXT = /\.[0-9a-z]+$/i
 
 /** Path to the root of the Sanity monorepo. */
-const ROOT_PATH = path.resolve(__dirname, '..')
+const ROOT_PATH = path.resolve(dirname, '..', '..', '..', '..')
+
+const jestAliases = Object.fromEntries(
+  Object.entries(devAliases).map(([packageName, aliasPath]) => [
+    packageName,
+    path.join('./packages', aliasPath),
+  ]),
+)
 
 /** The default module name mapper (aka. aliases) for jest tests in the Sanity monorepo. */
 const defaultModuleNameMapper = resolveAliasPaths({
-  ...aliasesToModuleNameWrapper(devAliases),
+  ...aliasesToModuleNameWrapper(jestAliases),
   '.*\\.module\\.css$': './test/mocks/emptyObject',
   '.*\\.css$': './test/mocks/undefined',
 })
@@ -23,7 +35,7 @@ const defaultModuleNameMapper = resolveAliasPaths({
  * @param {import('jest').Config} config - Initial Jest configuration options.
  * @returns {import('jest').Config} The resulting Jest configuration options.
  */
-exports.createJestConfig = function createJestConfig(config = {}) {
+export function createJestConfig(config = {}) {
   const {
     testMatch = [],
     setupFiles = [],
@@ -57,10 +69,9 @@ exports.createJestConfig = function createJestConfig(config = {}) {
       '<rootDir>/coverage/',
       '<rootDir>/lib/',
     ],
-    resolver: path.resolve(__dirname, './resolver.cjs'),
-    testEnvironment: path.resolve(__dirname, './jsdom.jest.env.ts'),
-    setupFiles: [...setupFiles, path.resolve(__dirname, './setup.ts')],
-    // testEnvironment: 'jsdom',
+    resolver: path.resolve(dirname, './resolver.cjs'),
+    testEnvironment: path.resolve(dirname, './jsdom.jest.env.ts'),
+    setupFiles: [...setupFiles, path.resolve(dirname, './setup.ts')],
     testEnvironmentOptions: {
       url: 'http://localhost:3333',
     },
@@ -81,18 +92,18 @@ exports.createJestConfig = function createJestConfig(config = {}) {
               '@babel/preset-env',
               {
                 targets: {
-                  node: '14',
-                  chrome: '61',
-                  safari: '11.3',
-                  firefox: '60',
-                  edge: '79',
+                  node: '18',
+                  safari: '16',
+                  chrome: '110',
+                  firefox: '110',
+                  edge: '110',
                 },
               },
             ],
             '@babel/preset-typescript',
             ['@babel/preset-react', {runtime: 'automatic'}],
           ],
-          plugins: ['@babel/plugin-syntax-import-meta', '@babel/plugin-proposal-class-properties'],
+          plugins: ['babel-plugin-transform-vite-meta-hot'],
         },
       ],
     },

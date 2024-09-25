@@ -117,7 +117,7 @@
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "prepublishOnly": "turbo run build",
-    "test": "jest",
+    "test": "vitest run",
     "watch": "pkg-utils watch"
   },
   "dependencies": {
@@ -128,10 +128,11 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
+    "@repo/test-config": "workspace:*",
     "@types/moment": "^2.13.0",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "vitest": "^2.1.1"
   },
   "engines": {
     "node": ">=18"
