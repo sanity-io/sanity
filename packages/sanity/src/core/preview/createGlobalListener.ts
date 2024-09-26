@@ -19,7 +19,6 @@ export function createGlobalListener(client: SanityClient) {
         includePreviousRevision: false,
         includeMutations: false,
         visibility: 'query',
-        effectFormat: 'mendoza',
         tag: 'preview.global',
       },
     )
