@@ -27,32 +27,35 @@ const CREATE_TIMER = 'create-manifest'
 
 const EXTRACT_TASK_TIMEOUT_MS = minutesToMilliseconds(2)
 
+const EXTRACT_FAILURE_MESSAGE =
+  'Unable to extract manifest. Certain features like Sanity Create will not work with this studio.\n' +
+  //TODO: replace this link
+  'For more information, see: https://www.sanity.io/docs/cli'
+
 interface ExtractFlags {
   path?: string
 }
 
 /**
- * This method will never throw
+ * This function will never throw.
+ * @returns `undefined` if extract succeeded - caught error if it failed
  */
 export async function extractManifestSafe(
   args: CliCommandArguments<ExtractFlags>,
   context: CliCommandContext,
-): Promise<void> {
+): Promise<Error | undefined> {
   if (EXTRACT_MANIFEST_DISABLED) {
-    return
+    return undefined
   }
 
   try {
     await extractManifest(args, context)
+    return undefined
   } catch (err) {
-    // best-effort extraction
-    context.output.print(
-      'Unable to extract manifest. Certain features like Sanity Create will not work with this studio.\n' +
-        `To disable manifest extraction set ${FEATURE_ENABLED_ENV_NAME}=false`,
-    )
     if (EXTRACT_MANIFEST_LOG_ERRORS) {
       context.output.error(err)
     }
+    return err
   }
 }
 
@@ -98,7 +101,7 @@ async function extractManifest(
 
     spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
   } catch (err) {
-    spinner.fail()
+    spinner.info(EXTRACT_FAILURE_MESSAGE)
     throw err
   }
 }

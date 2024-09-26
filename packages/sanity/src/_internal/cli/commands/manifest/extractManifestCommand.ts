@@ -24,7 +24,11 @@ const extractManifestCommand: CliCommandDefinition = {
   helpText,
   action: async (args, context) => {
     const {extractManifestSafe} = await import('../../actions/manifest/extractManifestAction')
-    return extractManifestSafe(args, context)
+    const extractError = await extractManifestSafe(args, context)
+    if (extractError) {
+      throw extractError
+    }
+    return extractError
   },
 }
 
