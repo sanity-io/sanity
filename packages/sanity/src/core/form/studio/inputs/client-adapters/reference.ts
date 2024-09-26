@@ -4,10 +4,14 @@ import {type ReferenceFilterSearchOptions, type ReferenceSchemaType} from '@sani
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, mergeMap, switchMap} from 'rxjs/operators'
 
-import {type DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
+import {type DocumentPreviewStore} from '../../../../preview'
 import {createSearch} from '../../../../search'
-import {collate, type CollatedHit, getDraftId, getIdPair, isRecord} from '../../../../util'
-import {type ReferenceInfo, type ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
+import {collate, type CollatedHit, getDraftId, getIdPair} from '../../../../util'
+import {
+  type PreviewDocumentValue,
+  type ReferenceInfo,
+  type ReferenceSearchHit,
+} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {
   available: true,
@@ -58,9 +62,6 @@ export function getReferenceInfo(
         } as const)
       }
 
-      const draftRef = {_type: 'reference', _ref: draftId}
-      const publishedRef = {_type: 'reference', _ref: publishedId}
-
       const typeName$ = combineLatest([
         documentPreviewStore.observeDocumentTypeFromId(draftId),
         documentPreviewStore.observeDocumentTypeFromId(publishedId),
@@ -102,31 +103,15 @@ export function getReferenceInfo(
             } as const)
           }
 
-          const previewPaths = getPreviewPaths(refSchemaType?.preview) || []
-
-          const draftPreview$ = documentPreviewStore.observePaths(draftRef, previewPaths).pipe(
-            map((result) =>
-              result
-                ? {
-                    _id: draftId,
-                    ...prepareForPreview(result, refSchemaType),
-                  }
-                : undefined,
-            ),
+          const draftPreview$ = documentPreviewStore.observeForPreview(
+            {_id: draftId},
+            refSchemaType,
           )
 
-          const publishedPreview$ = documentPreviewStore
-            .observePaths(publishedRef, previewPaths)
-            .pipe(
-              map((result) =>
-                result
-                  ? {
-                      _id: publishedId,
-                      ...prepareForPreview(result, refSchemaType),
-                    }
-                  : undefined,
-              ),
-            )
+          const publishedPreview$ = documentPreviewStore.observeForPreview(
+            {_id: publishedId},
+            refSchemaType,
+          )
 
           const value$ = combineLatest([draftPreview$, publishedPreview$]).pipe(
             map(([draft, published]) => ({
@@ -150,8 +135,10 @@ export function getReferenceInfo(
                 id: publishedId,
                 availability,
                 preview: {
-                  draft: isRecord(value.draft) ? value.draft : undefined,
-                  published: isRecord(value.published) ? value.published : undefined,
+                  draft: (value.draft.snapshot || undefined) as PreviewDocumentValue | undefined,
+                  published: (value.published.snapshot || undefined) as
+                    | PreviewDocumentValue
+                    | undefined,
                 },
               }
             }),
