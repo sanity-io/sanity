@@ -1,13 +1,14 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema} from '@sanity/types'
-import {combineLatest, type Observable} from 'rxjs'
+import {combineLatest, defer, merge, type Observable, of} from 'rxjs'
 import {finalize, map, publishReplay, refCount, startWith, switchMap, tap} from 'rxjs/operators'
 
 import {type IdPair, type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {memoizeKeyGen} from './memoizeKeyGen'
 import {snapshotPair} from './snapshotPair'
 import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
-import {savePairToLocalStorage} from './utils/localStoragePOC'
+import {getPairFromLocalStorage, savePairToLocalStorage} from './utils/localStoragePOC'
 
 interface TransactionSyncLockState {
   enabled: boolean
@@ -38,13 +39,32 @@ export const editState = memoize(
     },
     idPair: IdPair,
     typeName: string,
-    localStoragePair: {draft: SanityDocument | null; published: SanityDocument | null} | undefined,
   ): Observable<EditStateFor> => {
     const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
-    let documentPair: {
+    const INITIAL = {
+      id: idPair.publishedId,
+      type: typeName,
+      draft: null,
+      published: null,
+      liveEdit,
+      ready: false,
+      transactionSyncLock: null,
+    }
+
+    let cachedDocumentPair: {
       draft: SanityDocument | null
       published: SanityDocument | null
     } | null = null
+
+    function getCachedPair() {
+      // try first read it from memory
+      // if we haven't got it in memory, see if it's in localstorage
+      if (cachedDocumentPair) {
+        return cachedDocumentPair
+      }
+      return getPairFromLocalStorage(idPair)
+    }
+
     return snapshotPair(ctx.client, idPair, typeName, ctx.serverActionsEnabled).pipe(
       switchMap((versions) =>
         combineLatest([
@@ -58,7 +78,7 @@ export const editState = memoize(
         ]),
       ),
       tap(([draft, published]) => {
-        documentPair = {draft, published}
+        cachedDocumentPair = {draft, published}
       }),
       map(([draftSnapshot, publishedSnapshot, transactionSyncLock]) => ({
         id: idPair.publishedId,
@@ -69,24 +89,32 @@ export const editState = memoize(
         ready: true,
         transactionSyncLock,
       })),
-      startWith({
-        id: idPair.publishedId,
-        type: typeName,
-        draft: localStoragePair?.draft || null,
-        published: localStoragePair?.published || null,
-        liveEdit,
-        ready: false,
-        transactionSyncLock: null,
-      }),
+      // todo: turn this into a proper operator function - It's like startWith only that it takes a function that will be invoked upon subscription
+      (input$) => {
+        return defer(() => {
+          const cachedPair = getCachedPair()
+          return merge(
+            cachedPair
+              ? of({
+                  id: idPair.publishedId,
+                  type: typeName,
+                  draft: cachedPair.draft,
+                  published: cachedPair.published,
+                  liveEdit,
+                  ready: false,
+                  transactionSyncLock: null,
+                })
+              : of(INITIAL),
+            input$,
+          )
+        })
+      },
       finalize(() => {
-        savePairToLocalStorage(documentPair)
+        savePairToLocalStorage(cachedDocumentPair)
       }),
       publishReplay(1),
       refCount(),
     )
   },
-  (ctx, idPair, typeName, lsPair) => {
-    const config = ctx.client.config()
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}-${lsPair?.draft?._rev}-${lsPair?.published?._rev}`
-  },
+  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName),
 )
