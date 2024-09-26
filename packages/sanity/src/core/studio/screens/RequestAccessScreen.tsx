@@ -13,7 +13,7 @@ import {
 import {Button, Dialog} from '../../../ui-components'
 import {NotAuthenticatedScreen} from './NotAuthenticatedScreen'
 
-interface AccessRequest {
+export interface AccessRequest {
   id: string
   status: 'pending' | 'accepted' | 'declined'
   resourceId: string
@@ -22,6 +22,8 @@ interface AccessRequest {
   updatedAt: string
   updatedByUserId: string
   requestedByUserId: string
+  requestedRole: string
+  type: 'access' | 'role'
   note: string
 }
 
@@ -127,7 +129,7 @@ export function RequestAccessScreen() {
       .request<AccessRequest | null>({
         url: `/access/project/${projectId}/requests`,
         method: 'post',
-        body: {note, requestUrl: window?.location.href},
+        body: {note, requestUrl: window?.location.href, type: 'access'},
       })
       .then((request) => {
         if (request) setHasPendingRequest(true)

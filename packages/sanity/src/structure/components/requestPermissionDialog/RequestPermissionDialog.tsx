@@ -3,22 +3,9 @@ import {useEffect, useId, useMemo, useState} from 'react'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
 import {styled} from 'styled-components'
 
+import {type AccessRequest} from '../../../core/studio/screens'
 import {Dialog} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
-
-interface AccessRequest {
-  id: string
-  status: 'pending' | 'accepted' | 'declined'
-  resourceId: string
-  resourceType: 'project'
-  createdAt: string
-  updatedAt: string
-  updatedByUserId: string
-  requestedByUserId: string
-  requestedRole: string
-  requestType: string
-  note: string
-}
 
 const MAX_NOTE_LENGTH = 150
 
