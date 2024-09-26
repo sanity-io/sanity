@@ -34,9 +34,9 @@ export const validation = memoize(
     },
     {draftId, publishedId}: IdPair,
     typeName: string,
-    visited$: Observable<(SanityDocument | undefined)[]>,
+    localStoragePair: {draft: SanityDocument | null; published: SanityDocument | null},
   ): Observable<ValidationStatus> => {
-    const document$ = editState(ctx, {draftId, publishedId}, typeName, visited$).pipe(
+    const document$ = editState(ctx, {draftId, publishedId}, typeName, localStoragePair).pipe(
       map(({draft, published}) => draft || published),
       throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
       distinctUntilChanged((prev, next) => {
