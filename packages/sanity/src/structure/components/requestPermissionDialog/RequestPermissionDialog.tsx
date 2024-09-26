@@ -67,7 +67,7 @@ export function RequestPermissionDialog({
   const [noteLength, setNoteLength] = useState<number>(0)
 
   const [msgError, setMsgError] = useState<string | undefined>()
-  const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean>(true)
+  const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean>(false)
   const [hasBeenDenied, setHasBeenDenied] = useState<boolean>(false)
 
   useEffect(() => {
