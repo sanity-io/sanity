@@ -39,7 +39,7 @@ export const LoadingContainer = styled(Flex).attrs({
 /** @internal */
 export interface RequestPermissionDialogProps {
   onClose?: () => void
-  onRequstSubmitted?: () => void
+  onRequestSubmitted?: () => void
 }
 
 /**
@@ -51,7 +51,7 @@ export interface RequestPermissionDialogProps {
  */
 export function RequestPermissionDialog({
   onClose,
-  onRequstSubmitted,
+  onRequestSubmitted,
 }: RequestPermissionDialogProps) {
   const {t} = useTranslation(structureLocaleNamespace)
   const dialogId = `request-permissions-${useId()}`
@@ -98,7 +98,7 @@ export function RequestPermissionDialog({
       })
       .then((request) => {
         if (request) {
-          if (onRequstSubmitted) onRequstSubmitted()
+          if (onRequestSubmitted) onRequestSubmitted()
           toast.push({title: 'Edit access requested'})
         }
       })

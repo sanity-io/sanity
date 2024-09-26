@@ -58,7 +58,10 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
         icon={ReadOnlyIcon}
       />
       {showRequestPermissionDialog && (
-        <RequestPermissionDialog onClose={() => setShowDialog(false)} />
+        <RequestPermissionDialog
+          onClose={() => setShowDialog(false)}
+          onRequestSubmitted={() => setShowDialog(false)}
+        />
       )}
     </>
   )
