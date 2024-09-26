@@ -93,6 +93,7 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
   const [showUsageDialog, setShowUsageDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isSelectedTemp, setIsSelectedTemp] = useState(false)
   const {t} = useTranslation()
 
   useEffect(() => {
@@ -181,6 +182,16 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
     )
   }, [asset, handleDialogClose, showUsageDialog])
 
+  const handleImageClick = useCallback(
+    (event: React.MouseEvent) => {
+      setIsSelectedTemp(!isSelectedTemp)
+      if (onClick) {
+        onClick(event)
+      }
+    },
+    [onClick, setIsSelectedTemp, isSelectedTemp],
+  )
+
   const deleteDialog = useMemo(() => {
     return (
       showDeleteDialog && (
@@ -208,21 +219,21 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
   return (
     <Root>
       <Button
-        selected={isSelected}
+        selected={isSelectedTemp}
         tabIndex={0}
         data-id={_id}
-        mode="ghost"
+        mode={isSelectedTemp ? 'default' : 'ghost'}
         onKeyPress={onKeyPress}
         padding={0}
-        style={{padding: 2, background: isSelected ? 'red' : 'transparent'}}
+        style={{padding: 2}}
       >
         <Container __unstable_checkered>
-          <Image alt={originalFilename} src={imageUrl} onClick={onClick} data-id={_id} />
+          <Image alt={originalFilename} src={imageUrl} onClick={handleImageClick} data-id={_id} />
           {isDeleting && <LoadingBlock />}
         </Container>
       </Button>
       <MenuContainer>
-        <AssetMenu isSelected={isSelected} onAction={handleMenuAction} />
+        <AssetMenu isSelected={isSelectedTemp} onAction={handleMenuAction} />
       </MenuContainer>
       {usageDialog || deleteDialog}
     </Root>
