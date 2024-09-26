@@ -20,8 +20,10 @@ import {structureLocaleNamespace} from '../../i18n'
 import {FULL_LIST_LIMIT} from './constants'
 import {type DocumentListPaneItem, type LoadingVariant} from './types'
 
-const RootBox = styled(Box)`
+const RootBox = styled(Box)<{$opacity?: number}>`
   position: relative;
+  opacity: ${(props) => props.$opacity || 1};
+  transition: opacity 0.4s;
 `
 
 const CommandListBox = styled(Box)`
@@ -44,7 +46,7 @@ interface DocumentListPaneContentProps {
   items: DocumentListPaneItem[]
   layout?: GeneralPreviewLayoutKey
   loadingVariant?: LoadingVariant
-  onListChange: () => void
+  onEndReached: () => void
   onRetry?: () => void
   paneTitle: string
   searchInputElement: HTMLInputElement | null
@@ -78,7 +80,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     items,
     layout,
     loadingVariant,
-    onListChange,
+    onEndReached,
     onRetry,
     paneTitle,
     searchInputElement,
@@ -89,14 +91,14 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
-  const [shouldRender, setShouldRender] = useState(false)
+  const [shouldRender, setShouldRender] = useState(!collapsed)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const handleEndReached = useCallback(() => {
-    if (isLoading || isLazyLoading || !shouldRender) return
-
-    onListChange()
-  }, [isLazyLoading, isLoading, onListChange, shouldRender])
+    if (shouldRender) {
+      onEndReached()
+    }
+  }, [onEndReached, shouldRender])
 
   useEffect(() => {
     if (collapsed) return undefined
@@ -224,7 +226,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const key = `${index}-${collapsed}`
 
     return (
-      <RootBox overflow="hidden" height="fill">
+      <RootBox overflow="hidden" height="fill" $opacity={loadingVariant === 'subtle' ? 0.8 : 1}>
         <CommandListBox>
           <CommandList
             activeItemDataAttr="data-hovered"
