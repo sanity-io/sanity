@@ -50,6 +50,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
             ? {
                 onClick: () => setShowDialog(true),
                 text: t('banners.permission-check-banner.request-permission-button.text'),
+                tone: 'primary',
               }
             : undefined
         }
