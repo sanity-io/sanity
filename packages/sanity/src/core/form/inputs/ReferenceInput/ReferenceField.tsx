@@ -30,7 +30,8 @@ import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
 import {ReferenceLinkCard} from './ReferenceLinkCard'
 import {ReferenceMetadataLoadErrorAlertStrip} from './ReferenceMetadataLoadFailure'
 import {ReferenceStrengthMismatchAlertStrip} from './ReferenceStrengthMismatchAlertStrip'
-import {useReferenceInfo} from './useReferenceInfo'
+import {type ReferenceInfo} from './types'
+import {type Loadable, useReferenceInfo} from './useReferenceInfo'
 import {useReferenceInput} from './useReferenceInput'
 
 interface ReferenceFieldProps extends Omit<ObjectFieldProps, 'renderDefault'> {
@@ -88,7 +89,10 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const hasErrors = props.validation.some((v) => v.level === 'error')
   const hasWarnings = props.validation.some((v) => v.level === 'warning')
 
-  const loadableReferenceInfo = useReferenceInfo(value?._ref, getReferenceInfo)
+  const loadableReferenceInfo: Loadable<ReferenceInfo> = useReferenceInfo(
+    value?._ref,
+    getReferenceInfo,
+  )
 
   const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
 
