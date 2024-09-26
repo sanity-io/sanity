@@ -1,7 +1,7 @@
-import {type ButtonMode, type ButtonTone, Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {Card, type CardTone, Flex, Text} from '@sanity/ui'
 import {type ComponentType, type ElementType, type JSX, type ReactNode} from 'react'
 
-import {Button} from '../../../../../ui-components'
+import {Button, type ButtonProps} from '../../../../../ui-components'
 
 interface BannerProps {
   action?: {
@@ -9,9 +9,7 @@ interface BannerProps {
     icon?: ComponentType
     onClick?: () => void
     text: string
-    tone?: ButtonTone
-    mode?: ButtonMode
-  }
+  } & ButtonProps
   content: ReactNode
   icon?: ComponentType
   tone?: CardTone
@@ -35,13 +33,7 @@ export function Banner(props: BannerProps) {
         </Flex>
 
         {action && (
-          <Button
-            as={action?.as}
-            mode={action.mode || 'ghost'}
-            onClick={action?.onClick}
-            text={action.text}
-            tone={action.tone || 'default'}
-          />
+          <Button {...action} mode={action.mode || 'ghost'} tone={action.tone || 'default'} />
         )}
       </Flex>
     </Card>
