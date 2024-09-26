@@ -104,16 +104,16 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, but a draft version of this document exists. Publish or discard the draft in order to continue live editing it.',
   /** The text for the permission check banner if the user only has one role, and it does not allow updating this document */
   'banners.permission-check-banner.missing-permission_create_one':
-    'Your role <Roles/> does not have permissions to create this document.',
+    'Your role <Roles/> does not have permissions to publish this document.',
   /** The text for the permission check banner if the user only has multiple roles, but they do not allow updating this document */
   'banners.permission-check-banner.missing-permission_create_other':
-    'Your roles <Roles/> do not have permissions to create this document.',
+    'Your roles <Roles/> do not have permissions to publish this document.',
   /** The text for the permission check banner if the user only has one role, and it does not allow updating this document */
   'banners.permission-check-banner.missing-permission_update_one':
-    'Your role <Roles/> does not have permissions to update this document.',
+    'Your role <Roles/> does not have permissions to edit this document.',
   /** The text for the permission check banner if the user only has multiple roles, but they do not allow updating this document */
   'banners.permission-check-banner.missing-permission_update_other':
-    'Your roles <Roles/> do not have permissions to update this document.',
+    'Your roles <Roles/> do not have permissions to edit this document.',
   /** The text for the request permission button that appears for viewer roles */
   'banners.permission-check-banner.request-permission-button.text': 'Ask to edit',
   /** The text for the reload button */
