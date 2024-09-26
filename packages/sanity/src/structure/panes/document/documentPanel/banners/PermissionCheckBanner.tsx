@@ -45,12 +45,14 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
             />
           </Text>
         }
+        center
         action={
           isOnlyViewer
             ? {
                 onClick: () => setShowDialog(true),
                 text: t('banners.permission-check-banner.request-permission-button.text'),
                 tone: 'primary',
+                // mode: 'bleed',
               }
             : undefined
         }
