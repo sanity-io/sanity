@@ -18,7 +18,6 @@ import {exec} from './helpers/exec'
 import {runTest} from './runTest'
 import article from './tests/article/article'
 import recipe from './tests/recipe/recipe'
-// import singleString from './tests/singleString/singleString'
 import synthetic from './tests/synthetic/synthetic'
 import {type EfpsResult} from './types'
 
@@ -81,6 +80,16 @@ await exec({
 const baseSanityPkgPath = path.join(tmpDir, 'node_modules', 'sanity')
 const localSanityPkgPath = path.dirname(fileURLToPath(import.meta.resolve('sanity/package.json')))
 
+// const compareTag = 'v3.57.0'
+
+// await exec({
+//   command: `pnpm install sanity@${compareTag}`,
+//   cwd: tmpDir,
+//   spinner,
+//   text: [`Downloading sanity@${compareTag} package…`, `Downloaded sanity@${compareTag}`],
+// })
+// const compareSanityPkgPath = path.join(tmpDir, 'node_modules', 'sanity')
+
 await exec({
   text: ['Ensuring playwright is installed…', 'Playwright is installed'],
   command: 'npx playwright install',
@@ -124,8 +133,28 @@ const testOutput: Array<{
 for (let i = 0; i < tests.length; i++) {
   const test = tests[i]
 
-  const localResults = await runTest({
-    prefix: `Running test '${test.name}' [${i + 1}/${tests.length}] with local 'sanity'…`,
+  const localResult1 = await runTest({
+    prefix: `Running test '${test.name}' [${i + 1}/${tests.length}] with local… 1`,
+    test,
+    resultsDir,
+    client,
+    headless,
+    projectId,
+    sanityPkgPath: localSanityPkgPath,
+    log: () => {},
+  })
+  const localResult2 = await runTest({
+    prefix: `Running test '${test.name}' [${i + 1}/${tests.length}] with local… 2`,
+    test,
+    resultsDir,
+    client,
+    headless,
+    projectId,
+    sanityPkgPath: localSanityPkgPath,
+    log: () => {},
+  })
+  const localResult3 = await runTest({
+    prefix: `Running test '${test.name}' [${i + 1}/${tests.length}] with local… 3`,
     test,
     resultsDir,
     client,
@@ -135,9 +164,24 @@ for (let i = 0; i < tests.length; i++) {
     log: () => {},
   })
 
-  // Run with latest 'sanity' package
-  const baseResults = await runTest({
-    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@latest'…`,
+  const localResults = localResult1.map((result1, index) => {
+    const result2 = localResult2[index]
+    const result3 = localResult3[index]
+
+    let min = result1
+    const arr = [result1, result2, result3]
+
+    for (const item of arr) {
+      if (item.p50 < min.p50) {
+        min = item
+      }
+    }
+
+    return min
+  })
+
+  const baseResult1 = await runTest({
+    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@${tag}'… 1`,
     test,
     resultsDir,
     client,
@@ -145,6 +189,42 @@ for (let i = 0; i < tests.length; i++) {
     projectId,
     sanityPkgPath: baseSanityPkgPath,
     log: () => {},
+  })
+  const baseResult2 = await runTest({
+    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@${tag}'… 2`,
+    test,
+    resultsDir,
+    client,
+    headless,
+    projectId,
+    sanityPkgPath: baseSanityPkgPath,
+    log: () => {},
+  })
+  const baseResult3 = await runTest({
+    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@${tag}'… 3`,
+    test,
+    resultsDir,
+    client,
+    headless,
+    projectId,
+    sanityPkgPath: baseSanityPkgPath,
+    log: () => {},
+  })
+
+  const baseResults = baseResult1.map((result1, index) => {
+    const result2 = baseResult2[index]
+    const result3 = baseResult3[index]
+
+    let min = result1
+    const arr = [result1, result2, result3]
+
+    for (const item of arr) {
+      if (item.p50 < min.p50) {
+        min = item
+      }
+    }
+
+    return min
   })
 
   const combinedResults = localResults.map((localResult, index) => {
@@ -194,23 +274,9 @@ console.log(`
 │ The percentage difference of the current branch when compared to \`sanity@${tag}\`.
 │
 │ ${chalk.bold('Passed?')}
-│ Tests are failed when any of the median eFPS results perform more than 10% worse.
+│ Tests are failed when any of the median eFPS results perform more than ${deltaThreshold * 100}% worse.
 `)
 
-const markdownRows = testOutput
-  .flatMap((test) =>
-    test.results.map((result) => ({
-      ...result,
-      label: result.label ? `${test.name} (${result.label})` : test.name,
-    })),
-  )
-  .map(
-    ({label, p50, delta, passed}) =>
-      `| ${label} | ${formatFpsPlain(p50)} | ${formatPercentagePlain(delta)} | ${passed ? '✅' : '🔴'} |`,
-  )
-  .join('\n')
-
-// Build the markdown content
 const markdown = `
 <details>
 <summary><strong>⚡️ Editor Performance Report</strong><br/><br/>
@@ -226,7 +292,18 @@ const markdown = `
 
 | Benchmark | eFPS | vs \`${tag}\` | Passed? |
 |-----------| ---: | ------------: | :-----: |
-${markdownRows}
+${testOutput
+  .flatMap((test) =>
+    test.results.map((result) => ({
+      ...result,
+      label: result.label ? `${test.name} (${result.label})` : test.name,
+    })),
+  )
+  .map(
+    ({label, p50, delta, passed}) =>
+      `| ${label} | ${formatFpsPlain(p50)} | ${formatPercentagePlain(delta)} | ${passed ? '✅' : '🔴'} |`,
+  )
+  .join('\n')}
 
 > **eFPS — Editor "Frames Per Second"**
 > The number of renders, aka "frames", that are assumed to be possible within a second.
@@ -236,7 +313,7 @@ ${markdownRows}
 > The percentage difference of the current branch when compared to \`sanity@${tag}\`.
 >
 > **Passed?**
-> Tests are failed when any of the median eFPS results perform more than 10% worse.
+> Tests are failed when any of the median eFPS results perform more than ${deltaThreshold * 100}% worse.
 `
 
 // Write markdown file to root of results

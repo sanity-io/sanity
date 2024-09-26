@@ -10,6 +10,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps'
 import handler from 'serve-handler'
 import * as vite from 'vite'
 
+// TODO: add test duration to metrics
 import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './types'
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
