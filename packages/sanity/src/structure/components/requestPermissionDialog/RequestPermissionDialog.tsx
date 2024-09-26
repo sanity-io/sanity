@@ -56,7 +56,7 @@ export function RequestPermissionDialog({
   const {t} = useTranslation(structureLocaleNamespace)
   const dialogId = `request-permissions-${useId()}`
   const projectId = useProjectId()
-  const client = useClient()
+  const client = useClient({apiVersion: '2024-09-26'})
   const toast = useToast()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -149,7 +149,6 @@ export function RequestPermissionDialog({
       <DialogBody>
         <Stack space={4}>
           <Text>{t('request-permission-dialog.description.text')}</Text>
-          <Text>{t('request-permission-dialog.note-input.description.text')}</Text>
           {hasTooManyRequests || hasBeenDenied ? (
             <Card tone={'caution'} padding={3} radius={2} shadow={1}>
               <Text size={1}>

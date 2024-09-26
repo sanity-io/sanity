@@ -417,9 +417,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'request-permission-dialog.confirm-button.text': 'Send request',
   /** The description text for the request permission dialog used in the permissions banner */
   'request-permission-dialog.description.text':
-    'A request will be made to administrators asking to grant you increased permission to this project.',
+    "Your request will be sent to the project administrator(s). If you'd like, you can also include a note",
   /** The header/title for the request permission dialog used in the permissions banner */
-  'request-permission-dialog.header.text': 'Ask to edit',
+  'request-permission-dialog.header.text': 'Ask for edit access',
   /** The text describing the note input for the request permission dialog used in the permissions banner */
   'request-permission-dialog.note-input.description.text': "If you'd like, you can add a note",
   /** The placeholder for the note input in the request permission dialog used in the permissions banner */
