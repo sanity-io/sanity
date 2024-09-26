@@ -71,6 +71,7 @@ export function RequestPermissionDialog({
   const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean>(false)
   const [hasBeenDenied, setHasBeenDenied] = useState<boolean>(false)
 
+  //   Get the available roles for the project
   useEffect(() => {
     if (!projectId || !client) return
     client
@@ -81,6 +82,7 @@ export function RequestPermissionDialog({
       .then((data) => setRoles(data))
   }, [projectId, client])
 
+  //   Set a default requestedRole based on the available roles
   const requestedRole = useMemo(() => {
     const hasEditor = roles?.find((role) => role.name === 'editor')
     return hasEditor ? 'Editor' : 'Administrator'
@@ -92,7 +94,7 @@ export function RequestPermissionDialog({
       .request<AccessRequest | null>({
         url: `/access/project/${projectId}/requests`,
         method: 'post',
-        body: {note, requestUrl: window?.location.href, requestedRole, requestType: 'role'},
+        body: {note, requestUrl: window?.location.href, requestedRole, type: 'role'},
       })
       .then((request) => {
         if (request) {
