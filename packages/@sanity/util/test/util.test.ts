@@ -3,7 +3,7 @@ import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'
 
-import {expect, test} from '@jest/globals'
+import {expect, test} from 'vitest'
 
 import {absolutify, expandHome, pathIsEmpty} from '../src/fsTools'
 

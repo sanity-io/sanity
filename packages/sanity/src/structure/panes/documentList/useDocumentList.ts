@@ -38,7 +38,7 @@ interface DocumentListState {
   isSearchReady: boolean
   items: DocumentListPaneItem[]
   onListChange: () => void
-  onRetry?: (event: unknown) => void
+  onRetry?: () => void
 }
 
 const INITIAL_QUERY_RESULTS: QueryResult = {

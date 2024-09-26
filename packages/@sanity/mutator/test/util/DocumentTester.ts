@@ -1,6 +1,6 @@
-import {expect} from '@jest/globals'
 // A test jig for the Document model
 import {type PatchMutationOperation} from '@sanity/types'
+import {expect} from 'vitest'
 
 import {Document, Mutation} from '../../src/document'
 import {type SubmissionResponder} from '../../src/document/Document'

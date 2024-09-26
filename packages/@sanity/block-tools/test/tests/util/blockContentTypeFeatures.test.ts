@@ -1,5 +1,5 @@
-import {describe, expect, it} from '@jest/globals'
 import {type ObjectSchemaType} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
 
 import blockContentTypeFeatures from '../../../src/util/blockContentTypeFeatures'
 import customSchema from '../../fixtures/customSchema'

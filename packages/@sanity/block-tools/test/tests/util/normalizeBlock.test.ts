@@ -1,6 +1,6 @@
 import assert from 'node:assert'
 
-import {describe, it} from '@jest/globals'
+import {describe, it} from 'vitest'
 
 import {normalizeBlock} from '../../../src/util/normalizeBlock'
 
@@ -22,7 +22,7 @@ describe('normalizeBlock', () => {
         },
       ],
     }
-    assert.deepEqual(normalizeBlock(block), {
+    assert.deepStrictEqual(normalizeBlock(block), {
       _key: 'randomKey0',
       _type: 'block',
       children: [

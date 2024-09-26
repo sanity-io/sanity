@@ -1,6 +1,6 @@
 {
   "name": "embedded-studio",
-  "version": "3.57.4",
+  "version": "3.58.0",
   "private": true,
   "scripts": {
     "build": "tsc && vite build && sanity manifest extract",

@@ -1,4 +1,4 @@
-import {describe, expect, it, jest} from '@jest/globals'
+import {describe, expect, it, vi} from 'vitest'
 
 import {ConcurrencyLimiter} from '../src/concurrency-limiter'
 
@@ -8,10 +8,10 @@ describe('ConcurrencyLimiter', () => {
   it('keeps track of inflight operations and prevents more than the max concurrency at a time', async () => {
     const limiter = new ConcurrencyLimiter(2)
 
-    const promise1Cb = jest.fn()
-    const promise2Cb = jest.fn()
-    const promise3Cb = jest.fn()
-    const promise4Cb = jest.fn()
+    const promise1Cb = vi.fn()
+    const promise2Cb = vi.fn()
+    const promise3Cb = vi.fn()
+    const promise4Cb = vi.fn()
 
     const allDone = Promise.all([
       limiter.ready().then(promise1Cb),

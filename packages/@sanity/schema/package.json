@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "3.57.4",
+  "version": "3.58.0",
   "description": "",
   "keywords": [
     "sanity",
@@ -58,13 +58,13 @@
     "clean": "rimraf _internal.js lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
-    "test": "jest",
-    "test:watch": "jest --watchAll",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "3.57.4",
+    "@sanity/types": "3.58.0",
     "arrify": "^1.0.1",
     "groq-js": "^1.13.0",
     "humanize-list": "^1.0.1",
@@ -73,12 +73,14 @@
     "object-inspect": "^1.13.1"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
+    "@repo/test-config": "workspace:*",
     "@sanity/icons": "^3.4.0",
     "@types/arrify": "^1.0.4",
+    "@types/lodash": "^4.17.7",
     "@types/object-inspect": "^1.13.0",
     "@types/react": "^18.3.5",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "vitest": "^2.1.1"
   }
 }

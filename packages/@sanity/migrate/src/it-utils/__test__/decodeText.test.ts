@@ -1,4 +1,4 @@
-import {expect, test} from '@jest/globals'
+import {expect, test} from 'vitest'
 
 import {decodeText} from '../decodeText'
 import {toArray} from '../toArray'

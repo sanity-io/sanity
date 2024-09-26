@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "3.57.4",
+  "version": "3.58.0",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -69,6 +69,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
+    "@repo/test-config": "workspace:*",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.6.8",
     "@types/babel__register": "^7.17.3",

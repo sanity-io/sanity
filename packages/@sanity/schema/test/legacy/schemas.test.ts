@@ -1,4 +1,4 @@
-import {expect, test} from '@jest/globals'
+import {expect, test} from 'vitest'
 
 import {Schema} from '../../src/legacy/Schema'
 import rawSchemas from './fixtures/schemas'

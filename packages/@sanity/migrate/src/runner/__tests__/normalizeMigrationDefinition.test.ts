@@ -1,13 +1,8 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {type SanityDocument} from '@sanity/types'
+import {describe, expect, it, vitest} from 'vitest'
 
 import {createIfNotExists} from '../../mutations'
-import {
-  type DocumentMigrationReturnValue,
-  type Migration,
-  type MigrationContext,
-  type NodeMigration,
-} from '../../types'
+import {type Migration, type MigrationContext, type NodeMigration} from '../../types'
 import {
   createAsyncIterableMutation,
   normalizeMigrateDefinition,
@@ -43,7 +38,7 @@ describe('#normalizeMigrateDefinition', () => {
     const result = normalizeMigrateDefinition(mockMigration)
 
     const res = []
-    for await (const item of result(jest.fn() as any, {} as any)) {
+    for await (const item of result(vitest.fn(), {} as any)) {
       res.push(item)
     }
 
@@ -96,7 +91,7 @@ describe('#normalizeMigrateDefinition', () => {
 describe('#createAsyncIterableMutation', () => {
   it('should return an async iterable', async () => {
     const mockMigration: NodeMigration = {
-      document: jest.fn<() => DocumentMigrationReturnValue>(),
+      document: vitest.fn(),
     }
 
     const iterable = createAsyncIterableMutation(mockMigration, {documentTypes: ['foo']})

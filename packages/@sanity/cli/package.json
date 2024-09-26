@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "3.57.4",
+  "version": "3.58.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "sanity",
@@ -58,9 +58,9 @@
   "dependencies": {
     "@babel/traverse": "^7.23.5",
     "@sanity/client": "^6.21.3",
-    "@sanity/codegen": "3.57.4",
+    "@sanity/codegen": "3.58.0",
     "@sanity/telemetry": "^0.7.7",
-    "@sanity/util": "3.57.4",
+    "@sanity/util": "3.58.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "decompress": "^4.2.0",
@@ -68,7 +68,6 @@
     "esbuild-register": "^3.5.0",
     "get-it": "^8.6.5",
     "groq-js": "^1.13.0",
-    "node-machine-id": "^1.1.12",
     "pkg-dir": "^5.0.0",
     "prettier": "^3.3.0",
     "semver": "^7.3.5",
@@ -78,6 +77,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
+    "@repo/test-config": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@sanity/eslint-config-studio": "^4.0.0",

@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('node:path')
 
 const ROOT_PATH = path.resolve(__dirname, '../../..')
 
