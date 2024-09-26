@@ -114,6 +114,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the permission check banner if the user only has multiple roles, but they do not allow updating this document */
   'banners.permission-check-banner.missing-permission_update_other':
     'Your roles <Roles/> do not have permissions to update this document.',
+  /** The text for the request permission button that appears for viewer roles */
+  'banners.permission-check-banner.request-permission-button.text': 'Ask to edit',
   /** The text for the reload button */
   'banners.reference-changed-banner.reason-changed.reload-button.text': 'Reload reference',
   /** The text for the reference change banner if the reason is that the reference has been changed */

@@ -38,7 +38,7 @@ export const LoadingContainer = styled(Flex).attrs({
 
 /** @internal */
 export interface RequestPermissionDialogProps {
-  onCancel?: () => void
+  onClose?: () => void
   onRequstSubmitted?: () => void
 }
 
@@ -50,7 +50,7 @@ export interface RequestPermissionDialogProps {
  * @internal
  */
 export function RequestPermissionDialog({
-  onCancel,
+  onClose,
   onRequstSubmitted,
 }: RequestPermissionDialogProps) {
   const {t} = useTranslation(structureLocaleNamespace)
@@ -132,7 +132,7 @@ export function RequestPermissionDialog({
       header={t('request-permission-dialog.header.text')}
       footer={{
         cancelButton: {
-          onClick: onCancel,
+          onClick: onClose,
           text: t('confirm-dialog.cancel-button.fallback-text'),
         },
         confirmButton: {
@@ -143,8 +143,8 @@ export function RequestPermissionDialog({
           onClick: onConfirm,
         },
       }}
-      onClose={onCancel}
-      onClickOutside={onCancel}
+      onClose={onClose}
+      onClickOutside={onClose}
     >
       <DialogBody>
         <Stack space={4}>
