@@ -32,12 +32,7 @@ import {
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {
-  shouldArrayDialogOpen,
-  TreeEditingDialog,
-  TreeEditingEnabledProvider,
-  useTreeEditingEnabled,
-} from './tree-editing'
+import {TreeEditingDialog, TreeEditingEnabledProvider, useTreeEditingEnabled} from './tree-editing'
 
 /**
  * @alpha
@@ -307,15 +302,9 @@ interface RootInputProps {
 function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
   const treeEditing = useTreeEditingEnabled()
-
-  const open = useMemo(
-    () => shouldArrayDialogOpen(rootInputProps.schemaType, openPath),
-    [openPath, rootInputProps.schemaType],
-  )
-
   const isRoot = rootInputProps.id === 'root'
 
-  const arrayEditingModal = treeEditing.enabled && isRoot && open && (
+  const arrayEditingModal = treeEditing.enabled && isRoot && (
     <TreeEditingDialog
       // eslint-disable-next-line react/jsx-handler-names
       onPathFocus={rootInputProps.onPathFocus}
