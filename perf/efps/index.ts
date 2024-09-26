@@ -143,6 +143,16 @@ for (let i = 0; i < tests.length; i++) {
     sanityPkgPath: localSanityPkgPath,
     log: () => {},
   })
+  const baseResult1 = await runTest({
+    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@${tag}'… 1`,
+    test,
+    resultsDir,
+    client,
+    headless,
+    projectId,
+    sanityPkgPath: localSanityPkgPath,
+    log: () => {},
+  })
   const localResult2 = await runTest({
     prefix: `Running test '${test.name}' [${i + 1}/${tests.length}] with local… 2`,
     test,
@@ -153,8 +163,28 @@ for (let i = 0; i < tests.length; i++) {
     sanityPkgPath: localSanityPkgPath,
     log: () => {},
   })
+  const baseResult2 = await runTest({
+    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@${tag}'… 2`,
+    test,
+    resultsDir,
+    client,
+    headless,
+    projectId,
+    sanityPkgPath: localSanityPkgPath,
+    log: () => {},
+  })
   const localResult3 = await runTest({
     prefix: `Running test '${test.name}' [${i + 1}/${tests.length}] with local… 3`,
+    test,
+    resultsDir,
+    client,
+    headless,
+    projectId,
+    sanityPkgPath: localSanityPkgPath,
+    log: () => {},
+  })
+  const baseResult3 = await runTest({
+    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@${tag}'… 3`,
     test,
     resultsDir,
     client,
@@ -178,37 +208,6 @@ for (let i = 0; i < tests.length; i++) {
     }
 
     return min
-  })
-
-  const baseResult1 = await runTest({
-    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@${tag}'… 1`,
-    test,
-    resultsDir,
-    client,
-    headless,
-    projectId,
-    sanityPkgPath: baseSanityPkgPath,
-    log: () => {},
-  })
-  const baseResult2 = await runTest({
-    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@${tag}'… 2`,
-    test,
-    resultsDir,
-    client,
-    headless,
-    projectId,
-    sanityPkgPath: baseSanityPkgPath,
-    log: () => {},
-  })
-  const baseResult3 = await runTest({
-    prefix: `Running '${test.name}' [${i + 1}/${tests.length}] with 'sanity@${tag}'… 3`,
-    test,
-    resultsDir,
-    client,
-    headless,
-    projectId,
-    sanityPkgPath: baseSanityPkgPath,
-    log: () => {},
   })
 
   const baseResults = baseResult1.map((result1, index) => {
