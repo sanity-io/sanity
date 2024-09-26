@@ -5,7 +5,6 @@ import path from 'node:path'
 
 import chalk from 'chalk'
 import dotenv from 'dotenv'
-import {machineId} from 'node-machine-id'
 import resolveFrom from 'resolve-from'
 
 import {CliCommand} from './__telemetry__/cli.telemetry'
@@ -85,7 +84,6 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   )
 
   telemetry.updateUserProperties({
-    deviceId: await machineId(),
     runtimeVersion: process.version,
     runtime: detectRuntime(),
     cliVersion: pkg.version,

@@ -19,6 +19,11 @@ const corePkgs = ['sanity', '@sanity/vision'] as const
 
 const appVersion = 'v1'
 
+const mimeTypes: Record<string, string | undefined> = {
+  '.mjs': 'application/javascript',
+  '.map': 'application/json',
+}
+
 /**
  * Replaces all slashes with double underscores
  */
@@ -60,16 +65,22 @@ async function copyPackages() {
     packageVersions.set(pkg, version)
 
     // Convert slashes to double underscores
-    // Needed for `@sanity/vision`
+    // Needed for `@sanity/vision` and other scoped packages
     const cleanDir = cleanDirName(pkg)
 
     for await (const filePath of getFiles(`packages/${pkg}/dist`)) {
       try {
         const fileName = path.basename(filePath)
+        const ext = path.extname(fileName)
+        const contentType = mimeTypes[ext]
+        if (!contentType) {
+          throw new Error(`Unknown content type for file ${filePath}`)
+        }
+
         const options: UploadOptions = {
           destination: `modules/${appVersion}/${cleanDir}/${version}/bare/${fileName}`,
           gzip: true,
-          contentType: 'application/javascript',
+          contentType,
           metadata: {
             // 1 year cache
             cacheControl: 'public, max-age=31536000, immutable',
