@@ -1,14 +1,15 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema} from '@sanity/types'
-import {combineLatest, type Observable} from 'rxjs'
+import {combineLatest, defer, merge, type Observable, of} from 'rxjs'
 import {finalize, map, publishReplay, refCount, startWith, switchMap, tap} from 'rxjs/operators'
 
 import {type PairListenerOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {memoizeKeyGen} from './memoizeKeyGen'
 import {snapshotPair} from './snapshotPair'
 import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
-import {savePairToLocalStorage} from './utils/localStoragePOC'
+import {getPairFromLocalStorage, savePairToLocalStorage} from './utils/localStoragePOC'
 
 interface TransactionSyncLockState {
   enabled: boolean
@@ -40,7 +41,6 @@ export const editState = memoize(
     },
     idPair: IdPair,
     typeName: string,
-    localStoragePair: {draft: SanityDocument | null; published: SanityDocument | null} | undefined,
   ): Observable<EditStateFor> => {
     const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
     return snapshotPair(
@@ -82,8 +82,5 @@ export const editState = memoize(
       refCount(),
     )
   },
-  (ctx, idPair, typeName, lsPair) => {
-    const config = ctx.client.config()
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}-${lsPair?.draft?._rev}-${lsPair?.published?._rev}`
-  },
+  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName),
 )
