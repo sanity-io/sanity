@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type SanityDocument, type Schema} from '@sanity/types'
+import {type Schema} from '@sanity/types'
 import {omit} from 'lodash'
 import {asyncScheduler, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
@@ -34,9 +34,8 @@ export const validation = memoize(
     },
     {draftId, publishedId}: IdPair,
     typeName: string,
-    localStoragePair: {draft: SanityDocument | null; published: SanityDocument | null},
   ): Observable<ValidationStatus> => {
-    const document$ = editState(ctx, {draftId, publishedId}, typeName, localStoragePair).pipe(
+    const document$ = editState(ctx, {draftId, publishedId}, typeName).pipe(
       map(({draft, published}) => draft || published),
       throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
       distinctUntilChanged((prev, next) => {

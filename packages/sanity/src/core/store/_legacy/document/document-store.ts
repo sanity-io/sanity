@@ -22,7 +22,6 @@ import {
   type OperationSuccess,
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
-import {getPairFromLocalStorage} from './document-pair/utils/localStoragePOC'
 import {validation} from './document-pair/validation'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
@@ -159,7 +158,7 @@ export function createDocumentStore({
       editState(publishedId, type) {
         const idPair = getIdPairFromPublished(publishedId)
 
-        const edit = editState(ctx, idPair, type, getPairFromLocalStorage(idPair))
+        const edit = editState(ctx, idPair, type)
         return edit
       },
       operationEvents(publishedId, type) {
@@ -183,7 +182,7 @@ export function createDocumentStore({
       },
       validation(publishedId, type) {
         const idPair = getIdPairFromPublished(publishedId)
-        return validation(ctx, idPair, type, getPairFromLocalStorage(idPair))
+        return validation(ctx, idPair, type)
       },
     },
   }
