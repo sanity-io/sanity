@@ -1,6 +1,6 @@
-import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
+import {Box, Card, DialogProvider, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {useEffect, useId, useMemo, useState} from 'react'
-import {type Role, useClient, useProjectId, useTranslation} from 'sanity'
+import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
@@ -58,6 +58,7 @@ export function RequestPermissionDialog({
   const projectId = useProjectId()
   const client = useClient({apiVersion: '2024-09-26'})
   const toast = useToast()
+  const zOffset = useZIndex()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -126,61 +127,63 @@ export function RequestPermissionDialog({
   }
 
   return (
-    <Dialog
-      width={1}
-      id={dialogId}
-      header={t('request-permission-dialog.header.text')}
-      footer={{
-        cancelButton: {
-          onClick: onClose,
-          text: t('confirm-dialog.cancel-button.fallback-text'),
-        },
-        confirmButton: {
-          loading: isSubmitting,
-          disabled: hasTooManyRequests || hasBeenDenied,
-          text: t('request-permission-dialog.confirm-button.text'),
-          tone: 'primary',
-          onClick: onConfirm,
-        },
-      }}
-      onClose={onClose}
-      onClickOutside={onClose}
-    >
-      <DialogBody>
-        <Stack space={4}>
-          <Text>{t('request-permission-dialog.description.text')}</Text>
-          {hasTooManyRequests || hasBeenDenied ? (
-            <Card tone={'caution'} padding={3} radius={2} shadow={1}>
-              <Text size={1}>
-                {hasTooManyRequests && (
-                  <>{msgError ?? t('request-permission-dialog.warning.limit-reached.text')}</>
-                )}
-                {hasBeenDenied && (
-                  <>{msgError ?? t('request-permission-dialog.warning.denied.text')}</>
-                )}
-              </Text>
-            </Card>
-          ) : (
-            <Stack space={3} paddingBottom={0}>
-              <TextInput
-                placeholder={t('request-permission-dialog.note-input.placeholder.text')}
-                disabled={isSubmitting}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') onConfirm()
-                }}
-                maxLength={MAX_NOTE_LENGTH}
-                value={note}
-                onChange={(e) => {
-                  setNote(e.currentTarget.value)
-                  setNoteLength(e.currentTarget.value.length)
-                }}
-              />
+    <DialogProvider position={'fixed'} zOffset={zOffset.fullscreen}>
+      <Dialog
+        width={1}
+        id={dialogId}
+        header={t('request-permission-dialog.header.text')}
+        footer={{
+          cancelButton: {
+            onClick: onClose,
+            text: t('confirm-dialog.cancel-button.fallback-text'),
+          },
+          confirmButton: {
+            loading: isSubmitting,
+            disabled: hasTooManyRequests || hasBeenDenied,
+            text: t('request-permission-dialog.confirm-button.text'),
+            tone: 'primary',
+            onClick: onConfirm,
+          },
+        }}
+        onClose={onClose}
+        onClickOutside={onClose}
+      >
+        <DialogBody>
+          <Stack space={4}>
+            <Text>{t('request-permission-dialog.description.text')}</Text>
+            {hasTooManyRequests || hasBeenDenied ? (
+              <Card tone={'caution'} padding={3} radius={2} shadow={1}>
+                <Text size={1}>
+                  {hasTooManyRequests && (
+                    <>{msgError ?? t('request-permission-dialog.warning.limit-reached.text')}</>
+                  )}
+                  {hasBeenDenied && (
+                    <>{msgError ?? t('request-permission-dialog.warning.denied.text')}</>
+                  )}
+                </Text>
+              </Card>
+            ) : (
+              <Stack space={3} paddingBottom={0}>
+                <TextInput
+                  placeholder={t('request-permission-dialog.note-input.placeholder.text')}
+                  disabled={isSubmitting}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') onConfirm()
+                  }}
+                  maxLength={MAX_NOTE_LENGTH}
+                  value={note}
+                  onChange={(e) => {
+                    setNote(e.currentTarget.value)
+                    setNoteLength(e.currentTarget.value.length)
+                  }}
+                />
 
-              <Text align="right" muted size={1}>{`${noteLength}/${MAX_NOTE_LENGTH}`}</Text>
-            </Stack>
-          )}
-        </Stack>
-      </DialogBody>
-    </Dialog>
+                <Text align="right" muted size={1}>{`${noteLength}/${MAX_NOTE_LENGTH}`}</Text>
+              </Stack>
+            )}
+          </Stack>
+        </DialogBody>
+      </Dialog>
+    </DialogProvider>
   )
 }
