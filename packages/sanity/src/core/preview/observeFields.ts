@@ -154,9 +154,10 @@ export function createObserveFields(options: {
     fields: FieldName[],
     apiConfig?: ApiConfig,
   ): CachedFieldObserver {
-    let latest: T | null = null
+    // Note: `undefined` means the memo has not been set, while `null` means the memo is explicitly set to null (e.g. we did fetch, but got null back)
+    let latest: T | undefined | null = undefined
     const changes$ = merge(
-      defer(() => (latest === null ? EMPTY : observableOf(latest))),
+      defer(() => (latest === undefined ? EMPTY : observableOf(latest))),
       (apiConfig
         ? (crossDatasetListenFields(id, fields, apiConfig) as any)
         : currentDatasetListenFields(id, fields)) as Observable<T>,
