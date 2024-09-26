@@ -1,4 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
+import {type Rule} from '@sanity/types'
 
 export default {
   name: 'sanity.fileAsset',
@@ -44,6 +45,7 @@ export default {
       title: 'SHA1 hash',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule): Rule => Rule.required(),
     },
     {
       name: 'extension',
@@ -51,6 +53,7 @@ export default {
       title: 'File extension',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule): Rule => Rule.required(),
     },
     {
       name: 'mimeType',
@@ -58,6 +61,7 @@ export default {
       title: 'Mime type',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule): Rule => Rule.required(),
     },
     {
       name: 'size',
@@ -65,6 +69,7 @@ export default {
       title: 'File size in bytes',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule): Rule => Rule.required(),
     },
     {
       name: 'assetId',
@@ -72,7 +77,11 @@ export default {
       title: 'Asset ID',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule): Rule => Rule.required(),
     },
+    /**
+     * Added in 2020, so not "required" because of backwards compatibility
+     */
     {
       name: 'uploadId',
       type: 'string',
@@ -86,6 +95,7 @@ export default {
       title: 'Path',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule): Rule => Rule.required(),
     },
     {
       name: 'url',
@@ -93,6 +103,7 @@ export default {
       title: 'Url',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule): Rule => Rule.required(),
     },
     {
       name: 'source',

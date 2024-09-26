@@ -1,3 +1,5 @@
+import {type Rule} from '@sanity/types'
+
 export default {
   name: 'sanity.imageMetadata',
   title: 'Image metadata',
@@ -21,6 +23,7 @@ export default {
       title: 'Dimensions',
       type: 'sanity.imageDimensions',
       fieldset: 'extra',
+      validation: (Rule: Rule): Rule => Rule.required(),
     },
     {
       name: 'palette',
@@ -45,10 +48,21 @@ export default {
       title: 'Has alpha channel',
       type: 'boolean',
       readOnly: true,
+      validation: (Rule: Rule): Rule => Rule.required(),
     },
     {
       name: 'isOpaque',
       title: 'Is opaque',
+      type: 'boolean',
+      readOnly: true,
+      validation: (Rule: Rule): Rule => Rule.required(),
+    },
+    /**
+     * Added in 2024, so not "required" because of backwards compatibility
+     */
+    {
+      name: 'isAnimated',
+      title: 'Is animated',
       type: 'boolean',
       readOnly: true,
     },
