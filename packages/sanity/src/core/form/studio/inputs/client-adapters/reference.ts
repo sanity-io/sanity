@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type ReferenceFilterSearchOptions, type ReferenceSchemaType} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
-import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
+import {map, mergeMap, switchMap} from 'rxjs/operators'
 
 import {type DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
 import {createSearch} from '../../../../search'
@@ -113,7 +113,6 @@ export function getReferenceInfo(
                   }
                 : undefined,
             ),
-            startWith(undefined),
           )
 
           const publishedPreview$ = documentPreviewStore
@@ -127,7 +126,6 @@ export function getReferenceInfo(
                     }
                   : undefined,
               ),
-              startWith(undefined),
             )
 
           const value$ = combineLatest([draftPreview$, publishedPreview$]).pipe(
