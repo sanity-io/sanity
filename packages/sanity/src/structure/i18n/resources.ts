@@ -411,6 +411,24 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the "Open preview" action for a document */
   'production-preview.menu-item.title': 'Open preview',
 
+  /** The text for the confirm button in the request permission dialog used in the permissions banner */
+  'request-permission-dialog.confirm-button.text': 'Send request',
+  /** The description text for the request permission dialog used in the permissions banner */
+  'request-permission-dialog.description.text':
+    'A request will be made to administrators asking to grant you increased permission to this project.',
+  /** The header/title for the request permission dialog used in the permissions banner */
+  'request-permission-dialog.header.text': 'Ask to edit',
+  /** The text describing the note input for the request permission dialog used in the permissions banner */
+  'request-permission-dialog.note-input.description.text': "If you'd like, you can add a note",
+  /** The placeholder for the note input in the request permission dialog used in the permissions banner */
+  'request-permission-dialog.note-input.placeholder.text': 'Add note...',
+  /** The error/warning text in the request permission dialog when the user's request has been declined */
+  'request-permission-dialog.warning.denied.text':
+    'Your request to access this project has been declined.',
+  /** The error/warning text in the request permission dialog when the user's request has been denied due to too many outstanding requests */
+  'request-permission-dialog.warning.limit-reached.text':
+    "You've reached the limit for role requests across all projects. Please wait before submitting more requests or contact an admin for assistance.",
+
   /** Label for button when status is saved */
   'status-bar.document-status-pulse.status.saved.text': 'Saved',
   /** Label for button when status is syncing */

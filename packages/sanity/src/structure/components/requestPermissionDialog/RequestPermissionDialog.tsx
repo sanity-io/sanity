@@ -1,5 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
-
 import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {useEffect, useId, useMemo, useState} from 'react'
 import {type Role, useClient, useProjectId, useTranslation} from 'sanity'
@@ -131,16 +129,16 @@ export function RequestPermissionDialog({
     <Dialog
       width={1}
       id={dialogId}
-      header={'Ask to edit'}
+      header={t('request-permission-dialog.header.text')}
       footer={{
         cancelButton: {
           onClick: onCancel,
-          text: t('confirm-delete-dialog.cancel-button.text'),
+          text: t('confirm-dialog.cancel-button.fallback-text'),
         },
         confirmButton: {
           loading: isSubmitting,
           disabled: hasTooManyRequests || hasBeenDenied,
-          text: 'Send request',
+          text: t('request-permission-dialog.confirm-button.text'),
           tone: 'primary',
           onClick: onConfirm,
         },
@@ -150,30 +148,23 @@ export function RequestPermissionDialog({
     >
       <DialogBody>
         <Stack space={4}>
-          <Text>
-            A request will be made to administrators asking to grant you increased permission to
-            this project.
-          </Text>
-          <Text>If you'd like, you can add a note</Text>
+          <Text>{t('request-permission-dialog.description.text')}</Text>
+          <Text>{t('request-permission-dialog.note-input.description.text')}</Text>
           {hasTooManyRequests || hasBeenDenied ? (
             <Card tone={'caution'} padding={3} radius={2} shadow={1}>
               <Text size={1}>
                 {hasTooManyRequests && (
-                  <>
-                    {msgError ??
-                      `You've reached the limit for role requests across all projects. Please wait
-                      before submitting more requests or contact an admin for assistance.`}
-                  </>
+                  <>{msgError ?? t('request-permission-dialog.warning.limit-reached.text')}</>
                 )}
                 {hasBeenDenied && (
-                  <>{msgError ?? `Your request to access this project has been declined.`}</>
+                  <>{msgError ?? t('request-permission-dialog.warning.denied.text')}</>
                 )}
               </Text>
             </Card>
           ) : (
             <Stack space={3} paddingBottom={0}>
               <TextInput
-                placeholder="Add note..."
+                placeholder={t('request-permission-dialog.note-input.placeholder.text')}
                 disabled={isSubmitting}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') onConfirm()
