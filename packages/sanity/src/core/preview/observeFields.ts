@@ -1,4 +1,3 @@
-import {type SanityClient} from '@sanity/client'
 import {difference, flatten, memoize} from 'lodash'
 import {
   combineLatest,
@@ -47,13 +46,28 @@ type Cache = {
 }
 
 /**
+ * Note: this should be the minimal interface createObserveFields needs to function
+ * It should be kept compatible with the Sanity Client
+ */
+export interface ClientLike {
+  withConfig(config: ApiConfig): ClientLike
+  observable: {
+    fetch: (
+      query: string,
+      params: Record<string, string>,
+      options: {tag: string},
+    ) => Observable<unknown>
+  }
+}
+
+/**
  * Creates a function that allows observing individual fields on a document.
  * It will automatically debounce and batch requests, and maintain an in-memory cache of the latest field values
  * @param options - Options to use when creating the observer
  * @internal
  */
 export function createObserveFields(options: {
-  client: SanityClient
+  client: ClientLike
   invalidationChannel: Observable<InvalidationChannelEvent>
 }) {
   const {client: currentDatasetClient, invalidationChannel} = options
@@ -63,11 +77,11 @@ export function createObserveFields(options: {
     )
   }
 
-  function fetchAllDocumentPathsWith(client: SanityClient) {
+  function fetchAllDocumentPathsWith(client: ClientLike) {
     return function fetchAllDocumentPath(selections: Selection[]) {
       const combinedSelections = combineSelections(selections)
       return client.observable
-        .fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths'} as any)
+        .fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
         .pipe(map((result: any) => reassemble(result, combinedSelections)))
     }
   }
