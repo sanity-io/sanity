@@ -1,25 +1,29 @@
 import {type SanityClient} from '@sanity/client'
+import QuickLRU from 'quick-lru'
 import {
   asyncScheduler,
   defer,
+  EMPTY,
   map,
   merge,
   mergeMap,
   type Observable,
   of,
+  type OperatorFunction,
   partition,
+  pipe,
   share,
   take,
   throttleTime,
   throwError,
   timer,
 } from 'rxjs'
+import {tap} from 'rxjs/operators'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {createSearch, getSearchableTypes, type SanityDocumentLike, type Schema} from 'sanity'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
-// FIXME
-// eslint-disable-next-line boundaries/element-types
+import {ENABLE_LRU_MEMO} from './constants'
 import {type SortOrder} from './types'
 
 interface ListenQueryOptions {
@@ -35,7 +39,12 @@ interface ListenQueryOptions {
   enableLegacySearch?: boolean
 }
 
-export function listenSearchQuery(options: ListenQueryOptions): Observable<SanityDocumentLike[]> {
+export interface SearchQueryResult {
+  fromCache: boolean
+  documents: SanityDocumentLike[]
+}
+
+export function listenSearchQuery(options: ListenQueryOptions): Observable<SearchQueryResult> {
   const {
     client,
     schema,
@@ -81,6 +90,8 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
   )
 
   const [welcome$, mutationAndReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
+
+  const memoKey = JSON.stringify({filter, limit, params, searchQuery, sort, staticTypeNames})
 
   return merge(
     welcome$.pipe(take(1)),
@@ -146,5 +157,37 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
         }),
       )
     }),
+    ENABLE_LRU_MEMO
+      ? pipe(
+          memoLRU(memoKey, lru),
+          map((memo) => ({
+            fromCache: memo.type === 'memo',
+            documents: memo.value,
+          })),
+        )
+      : map((documents) => ({
+          fromCache: false,
+          documents,
+        })),
   )
+}
+
+const lru = new QuickLRU<string, SanityDocumentLike[]>({maxSize: 100})
+function memoLRU<T>(
+  memoKey: string,
+  cache: QuickLRU<string, T>,
+): OperatorFunction<T, {type: 'memo'; value: T} | {type: 'value'; value: T}> {
+  return (input$: Observable<T>) =>
+    merge(
+      defer(() =>
+        cache.has(memoKey) ? of({type: 'memo' as const, value: cache.get(memoKey)!}) : EMPTY,
+      ),
+      input$.pipe(
+        tap((result) => cache.set(memoKey, result)),
+        map((value) => ({
+          type: 'value' as const,
+          value: value,
+        })),
+      ),
+    )
 }
