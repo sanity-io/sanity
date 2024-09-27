@@ -1,15 +1,15 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema} from '@sanity/types'
-import {combineLatest, defer, merge, type Observable, of} from 'rxjs'
-import {finalize, map, publishReplay, refCount, startWith, switchMap, tap} from 'rxjs/operators'
+import {combineLatest, defer, type Observable, of} from 'rxjs'
+import {map, publishReplay, refCount, startWith, switchMap, tap} from 'rxjs/operators'
 
 import {type PairListenerOptions} from '../getPairListener'
+import {type DocumentsStorage} from '../documentsStorage'
 import {type IdPair, type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
 import {snapshotPair} from './snapshotPair'
 import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
-import {getPairFromLocalStorage, savePairToLocalStorage} from './utils/localStoragePOC'
 
 interface TransactionSyncLockState {
   enabled: boolean
