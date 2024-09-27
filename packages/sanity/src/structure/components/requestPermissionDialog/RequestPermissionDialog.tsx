@@ -70,7 +70,7 @@ export function RequestPermissionDialog({
   }, [projectId, client])
 
   //   Set a default requestedRole based on the available roles
-  const roleName = useMemo(() => {
+  const requestedRole = useMemo(() => {
     const hasEditor = roles?.find((role) => role.name === 'editor')
     return hasEditor ? 'Editor' : 'Administrator'
   }, [roles])
@@ -81,7 +81,7 @@ export function RequestPermissionDialog({
       .request<AccessRequest | null>({
         url: `/access/project/${projectId}/requests`,
         method: 'post',
-        body: {note, requestUrl: window?.location.href, roleName, type: 'role'},
+        body: {note, requestUrl: window?.location.href, requestedRole, type: 'role'},
       })
       .then((request) => {
         if (request) {
