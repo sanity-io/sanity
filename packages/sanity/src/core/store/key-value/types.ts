@@ -12,5 +12,5 @@ export type KeyValueStoreValue = JsonPrimitive | JsonObject | JsonArray
 /** @internal */
 export interface KeyValueStore {
   getKey(key: string): Observable<KeyValueStoreValue | null>
-  setKey(key: string, value: KeyValueStoreValue): Observable<KeyValueStoreValue>
+  setKey(key: string, value: KeyValueStoreValue): Promise<KeyValueStoreValue>
 }
