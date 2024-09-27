@@ -77,11 +77,11 @@ const sharedSettings = definePlugin({
     },
   },
 
-  onStudioError: (error, errorMessage) => {
+  onStudioError: (error, errorInfo) => {
     // eslint-disable-next-line no-console
     console.log(error)
     // eslint-disable-next-line no-console
-    console.log(errorMessage)
+    console.log(errorInfo)
   },
 
   document: {
@@ -253,6 +253,12 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings(), studioComponentsPlugin(), formComponentsPlugin()],
     basePath: '/custom-components',
+    onStudioError: (error, errorInfo) => {
+      // eslint-disable-next-line no-console
+      console.log(error)
+      // eslint-disable-next-line no-console
+      console.log(errorInfo)
+    },
     form: {
       components: {
         input: Input,
