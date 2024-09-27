@@ -23,11 +23,11 @@ import {
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
 import {validation} from './document-pair/validation'
+import {createDocumentsStorage} from './documentsStorage'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {type IdPair} from './types'
-
 /**
  * @hidden
  * @beta */
@@ -104,7 +104,7 @@ export function createDocumentStore({
   // internal operations, and a `getClient` method that we expose to user-land
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
+  const storage = createDocumentsStorage()
   const ctx = {
     client,
     getClient,
@@ -113,6 +113,7 @@ export function createDocumentStore({
     schema,
     i18n,
     serverActionsEnabled,
+    storage,
   }
 
   return {

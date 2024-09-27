@@ -9,6 +9,7 @@ import {type SourceClientOptions} from '../../../../config'
 import {type LocaleSource} from '../../../../i18n'
 import {type DraftsModelDocumentAvailability} from '../../../../preview'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../../validation'
+import {type DocumentsStorage} from '../documentsStorage'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {editState} from './editState'
@@ -31,6 +32,7 @@ export const validation = memoize(
       schema: Schema
       i18n: LocaleSource
       serverActionsEnabled: Observable<boolean>
+      storage: DocumentsStorage
     },
     {draftId, publishedId}: IdPair,
     typeName: string,
