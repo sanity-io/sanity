@@ -77,13 +77,6 @@ const sharedSettings = definePlugin({
     },
   },
 
-  onStudioError: (error, errorInfo) => {
-    // eslint-disable-next-line no-console
-    console.log(error)
-    // eslint-disable-next-line no-console
-    console.log(errorInfo)
-  },
-
   document: {
     actions: documentActions,
     inspectors: (prev, ctx) => {
@@ -160,6 +153,13 @@ const defaultWorkspace = {
   projectId: 'ppsg7ml5',
   dataset: 'test',
   plugins: [sharedSettings()],
+
+  onStudioError: (error, errorInfo) => {
+    // eslint-disable-next-line no-console
+    console.log(error)
+    // eslint-disable-next-line no-console
+    console.log(errorInfo)
+  },
   basePath: '/test',
   icon: SanityMonogram,
   // eslint-disable-next-line camelcase

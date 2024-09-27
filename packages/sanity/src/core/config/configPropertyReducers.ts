@@ -322,6 +322,7 @@ export const onStudioErrorResolver = (opts: {
   const resolver = config.onStudioError
 
   if (typeof resolver === 'function') return resolver(context.error, context.errorInfo)
+  if (!resolver) return undefined
 
   throw new Error(
     `Expected \`document.onStudioError\` to be a a function, but received ${getPrintableType(
