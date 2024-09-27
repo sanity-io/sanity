@@ -77,6 +77,13 @@ const sharedSettings = definePlugin({
     },
   },
 
+  onStudioError: (error, errorMessage) => {
+    // eslint-disable-next-line no-console
+    console.log(error)
+    // eslint-disable-next-line no-console
+    console.log(errorMessage)
+  },
+
   document: {
     actions: documentActions,
     inspectors: (prev, ctx) => {
