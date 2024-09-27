@@ -17,7 +17,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
 
   const currentUserRoles = currentUser?.roles || []
   const isOnlyViewer = currentUserRoles.length === 1 && currentUserRoles[0].name === 'viewer'
-  const [showRequestPermissionDialog, setShowDialog] = useState(false)
+  const [showRequestPermissionDialog, setShowRequestPermissionDialog] = useState(false)
 
   const listFormat = useListFormat({style: 'short'})
   const {t} = useTranslation(structureLocaleNamespace)
@@ -49,7 +49,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
         action={
           isOnlyViewer
             ? {
-                onClick: () => setShowDialog(true),
+                onClick: () => setShowRequestPermissionDialog(true),
                 text: t('banners.permission-check-banner.request-permission-button.text'),
                 tone: 'primary',
                 // mode: 'bleed',
@@ -61,8 +61,8 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
       />
       {showRequestPermissionDialog && (
         <RequestPermissionDialog
-          onClose={() => setShowDialog(false)}
-          onRequestSubmitted={() => setShowDialog(false)}
+          onClose={() => setShowRequestPermissionDialog(false)}
+          onRequestSubmitted={() => setShowRequestPermissionDialog(false)}
         />
       )}
     </>

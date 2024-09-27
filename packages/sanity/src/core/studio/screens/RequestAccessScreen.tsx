@@ -150,7 +150,7 @@ export function RequestAccessScreen() {
         } else {
           toast.push({
             title: 'There was a problem submitting your request.',
-            status: errMessage,
+            status: 'error',
           })
         }
       })

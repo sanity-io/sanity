@@ -1,5 +1,7 @@
 import {Box, Card, DialogProvider, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
-import {useEffect, useId, useMemo, useState} from 'react'
+import {useId, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -49,8 +51,6 @@ export function RequestPermissionDialog({
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const [roles, setRoles] = useState<Role[]>()
-
   const [note, setNote] = useState('')
   const [noteLength, setNoteLength] = useState<number>(0)
 
@@ -58,22 +58,20 @@ export function RequestPermissionDialog({
   const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean>(false)
   const [hasBeenDenied, setHasBeenDenied] = useState<boolean>(false)
 
-  //   Get the available roles for the project
-  useEffect(() => {
-    if (!projectId || !client) return
-    client
-      .request({
-        url: `/projects/${projectId}/roles`,
-        method: 'get',
-      })
-      .then((data) => setRoles(data))
+  const requestedRole$: Observable<'Administrator' | 'Editor'> = useMemo(() => {
+    const adminRole = 'Administrator' as const
+    if (!projectId || !client) return of(adminRole)
+    return client.observable.request<Role[]>({url: `/projects/${projectId}/roles`}).pipe(
+      map((roles) => {
+        const hasEditor = roles.find((role) => role.name === 'editor')
+        return hasEditor ? 'Editor' : adminRole
+      }),
+      startWith(adminRole),
+      catchError(() => of(adminRole)),
+    )
   }, [projectId, client])
 
-  //   Set a default requestedRole based on the available roles
-  const requestedRole = useMemo(() => {
-    const hasEditor = roles?.find((role) => role.name === 'editor')
-    return hasEditor ? 'Editor' : 'Administrator'
-  }, [roles])
+  const requestedRole = useObservable(requestedRole$)
 
   const onConfirm = () => {
     setIsSubmitting(true)
@@ -105,14 +103,13 @@ export function RequestPermissionDialog({
         } else {
           toast.push({
             title: 'There was a problem submitting your request.',
-            status: errMessage,
+            status: 'error',
           })
         }
       })
       .finally(() => {
         setIsSubmitting(false)
       })
-    setIsSubmitting(false)
   }
 
   return (
