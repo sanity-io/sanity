@@ -55,7 +55,7 @@ export const useRoleRequestsStatus = () => {
               return 'expired'
             }
           }
-          return 'none' // No relevant requests found
+          return 'none' // No pending requests found
         }),
         catchError((err) => {
           console.error(err)
@@ -76,7 +76,7 @@ export const useRoleRequestsStatus = () => {
     })
 
     return () => {
-      subscription.unsubscribe() // Cleanup on component unmount
+      subscription.unsubscribe()
     }
   }, [client, projectId])
 
