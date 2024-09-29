@@ -10,6 +10,7 @@ interface BannerProps {
     onClick?: () => void
     text: string
     tone?: ButtonTone
+    disabled?: boolean
   }
   content: ReactNode
   icon?: ComponentType

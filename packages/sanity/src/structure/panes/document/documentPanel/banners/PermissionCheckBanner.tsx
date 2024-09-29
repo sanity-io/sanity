@@ -3,7 +3,10 @@ import {Text} from '@sanity/ui'
 import {useState} from 'react'
 import {Translate, useCurrentUser, useListFormat, useTranslation} from 'sanity'
 
-import {RequestPermissionDialog} from '../../../../components/requestPermissionDialog/RequestPermissionDialog'
+import {
+  RequestPermissionDialog,
+  useRoleRequestsStatus,
+} from '../../../../components/requestPermissionDialog'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
@@ -15,6 +18,7 @@ interface PermissionCheckBannerProps {
 export function PermissionCheckBanner({granted, requiredPermission}: PermissionCheckBannerProps) {
   const currentUser = useCurrentUser()
 
+  const roleRequestStatus = useRoleRequestsStatus()
   const currentUserRoles = currentUser?.roles || []
   const isOnlyViewer = currentUserRoles.length === 1 && currentUserRoles[0].name === 'viewer'
   const [showRequestPermissionDialog, setShowRequestPermissionDialog] = useState(false)
@@ -47,11 +51,18 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
         }
         center
         action={
-          isOnlyViewer
+          isOnlyViewer && roleRequestStatus
             ? {
-                onClick: () => setShowRequestPermissionDialog(true),
-                text: t('banners.permission-check-banner.request-permission-button.text'),
-                tone: 'primary',
+                onClick:
+                  roleRequestStatus === 'none'
+                    ? () => setShowRequestPermissionDialog(true)
+                    : undefined,
+                text:
+                  roleRequestStatus === 'none'
+                    ? t('banners.permission-check-banner.request-permission-button.text')
+                    : t('banners.permission-check-banner.request-permission-button.sent'),
+                tone: roleRequestStatus === 'none' ? 'primary' : 'default',
+                disabled: roleRequestStatus !== 'none',
                 // mode: 'bleed',
               }
             : undefined
