@@ -10,9 +10,12 @@ export const useRoleRequestsStatus = () => {
   const client = useClient()
   const projectId = useProjectId()
   const [status, setStatus] = useState<string>()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     const checkRoleRequests$ = () => {
+      setLoading(true)
       if (!client || !projectId) {
         return of()
       }
@@ -54,16 +57,22 @@ export const useRoleRequestsStatus = () => {
           }
           return 'none' // No relevant requests found
         }),
-        catchError((error) => {
-          console.error(error)
-          return of('error') // Return 'error' status on request failure
+        catchError((err) => {
+          console.error(err)
+          return of()
         }),
       )
     }
 
     const subscription = checkRoleRequests$().subscribe({
-      next: (value) => setStatus(value),
-      error: (err) => console.error(err),
+      next: (value) => {
+        setLoading(false)
+        setStatus(value)
+      },
+      error: (err) => {
+        console.error(err)
+        setError(err)
+      },
     })
 
     return () => {
@@ -71,5 +80,5 @@ export const useRoleRequestsStatus = () => {
     }
   }, [client, projectId])
 
-  return status
+  return {data: status, loading, error}
 }

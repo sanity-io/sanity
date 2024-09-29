@@ -18,7 +18,11 @@ interface PermissionCheckBannerProps {
 export function PermissionCheckBanner({granted, requiredPermission}: PermissionCheckBannerProps) {
   const currentUser = useCurrentUser()
 
-  const roleRequestStatus = useRoleRequestsStatus()
+  const {
+    data: roleRequestStatus,
+    loading: requestStatusLoading,
+    error: requestStatusError,
+  } = useRoleRequestsStatus()
   const currentUserRoles = currentUser?.roles || []
   const isOnlyViewer = currentUserRoles.length === 1 && currentUserRoles[0].name === 'viewer'
   const [showRequestPermissionDialog, setShowRequestPermissionDialog] = useState(false)
@@ -51,18 +55,18 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
         }
         center
         action={
-          isOnlyViewer && roleRequestStatus
+          isOnlyViewer && roleRequestStatus && !requestStatusError && !requestStatusLoading
             ? {
                 onClick:
-                  roleRequestStatus === 'none'
-                    ? () => setShowRequestPermissionDialog(true)
-                    : undefined,
+                  roleRequestStatus === 'pending'
+                    ? undefined
+                    : () => setShowRequestPermissionDialog(true),
                 text:
-                  roleRequestStatus === 'none'
-                    ? t('banners.permission-check-banner.request-permission-button.text')
-                    : t('banners.permission-check-banner.request-permission-button.sent'),
-                tone: roleRequestStatus === 'none' ? 'primary' : 'default',
-                disabled: roleRequestStatus !== 'none',
+                  roleRequestStatus === 'pending'
+                    ? t('banners.permission-check-banner.request-permission-button.sent')
+                    : t('banners.permission-check-banner.request-permission-button.text'),
+                tone: roleRequestStatus === 'pending' ? 'default' : 'primary',
+                disabled: roleRequestStatus === 'pending',
                 // mode: 'bleed',
               }
             : undefined
