@@ -24,8 +24,10 @@ const WARNING_THRESHOLD = 0.2
 const TEST_ATTEMPTS = process.env.CI ? 3 : 1
 
 const HEADLESS = true
-const ENABLE_PROFILER = false
-const REFERENCE_TAG = 'latest'
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
 const TESTS = [article, recipe, synthetic]
 
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
