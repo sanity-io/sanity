@@ -24,6 +24,7 @@ const WARNING_THRESHOLD = 0.2
 const TEST_ATTEMPTS = process.env.CI ? 3 : 1
 
 const HEADLESS = true
+const ENABLE_PROFILER = false
 const REFERENCE_TAG = 'latest'
 const TESTS = [article, recipe, synthetic]
 
@@ -134,8 +135,8 @@ function mergeResults(baseResults: EfpsResult[] | undefined, incomingResults: Ef
   return incomingResults.map((incomingResult, index) => {
     const baseResult = baseResults[index]
 
-    const incomingMedianLatency = incomingResult.latency.median
-    const baseMedianLatency = baseResult.latency.median
+    const incomingMedianLatency = incomingResult.latency.p50
+    const baseMedianLatency = baseResult.latency.p50
 
     // if the incoming test run performed better, we'll take that one
     if (incomingMedianLatency < baseMedianLatency) return incomingResult
@@ -154,35 +155,47 @@ async function runAbTest(test: EfpsTest) {
   let experimentResults: EfpsResult[] | undefined
 
   for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
+    const attemptMessage = TEST_ATTEMPTS > 1 ? ` [${attempt + 1}/${TEST_ATTEMPTS}]` : ''
+    const referenceMessage = `Running test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`
+    spinner.start(referenceMessage)
+
     referenceResults = mergeResults(
       referenceResults,
       await runTest({
-        prefix: `running ${referenceSanityPkgPath}`,
         key: 'reference',
         test,
         resultsDir,
         client,
         headless: HEADLESS,
+        enableProfiler: ENABLE_PROFILER,
         projectId,
         sanityPkgPath: referenceSanityPkgPath,
-        log: () => {},
+        log: (message) => {
+          spinner.text = `${referenceMessage}: ${message}`
+        },
       }),
     )
+    spinner.succeed(`Ran test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`)
 
+    const experimentMessage = `Running test '${test.name}' on this branch${attemptMessage}`
+    spinner.start(experimentMessage)
     experimentResults = mergeResults(
       experimentResults,
       await runTest({
-        prefix: `running ${experimentSanityPkgPath}`,
         key: 'experiment',
         test,
         resultsDir,
         client,
         headless: HEADLESS,
+        enableProfiler: ENABLE_PROFILER,
         projectId,
         sanityPkgPath: experimentSanityPkgPath,
-        log: () => {},
+        log: (message) => {
+          spinner.text = `${experimentMessage}: ${message}`
+        },
       }),
     )
+    spinner.succeed(`Ran test '${test.name}' on this branch${attemptMessage}`)
   }
 
   return experimentResults!.map(
@@ -228,30 +241,27 @@ function isSignificantlyDifferent(experiment: number, reference: number) {
 for (const {name, results} of testResults) {
   for (const {experiment, reference} of results) {
     const significantlyDifferent = isSignificantlyDifferent(
-      experiment.latency.median,
-      reference.latency.median,
+      experiment.latency.p50,
+      reference.latency.p50,
     )
 
-    const sign = experiment.latency.median >= reference.latency.median ? '+' : ''
-    const msDifference = `${sign}${(experiment.latency.median - reference.latency.median).toFixed(0)}ms`
-    const percentageChange = formatPercentageChange(
-      experiment.latency.median,
-      reference.latency.median,
-    )
+    const sign = experiment.latency.p50 >= reference.latency.p50 ? '+' : ''
+    const msDifference = `${sign}${(experiment.latency.p50 - reference.latency.p50).toFixed(0)}ms`
+    const percentageChange = formatPercentageChange(experiment.latency.p50, reference.latency.p50)
 
     const benchmarkName = `${name} (${experiment.label})`
 
     comparisonTableCli.push([
       benchmarkName,
-      `${formatEfps(reference.latency.median)} efps (${reference.latency.median.toFixed(0)}ms)`,
-      `${formatEfps(experiment.latency.median)} efps (${experiment.latency.median.toFixed(0)}ms)`,
+      `${formatEfps(reference.latency.p50)} efps (${reference.latency.p50.toFixed(0)}ms)`,
+      `${formatEfps(experiment.latency.p50)} efps (${experiment.latency.p50.toFixed(0)}ms)`,
       `${significantlyDifferent ? chalk.red(msDifference) : msDifference} (${percentageChange})`,
       significantlyDifferent ? '🔴' : '✅',
     ])
 
     referenceTableCli.push([
       benchmarkName,
-      `${reference.latency.median.toFixed(0)}±${reference.latency.spread.toFixed(0)}ms`,
+      `${reference.latency.p50.toFixed(0)}ms`,
       `${reference.latency.p75.toFixed(0)}ms`,
       `${reference.latency.p90.toFixed(0)}ms`,
       `${reference.latency.p99.toFixed(0)}ms`,
@@ -261,7 +271,7 @@ for (const {name, results} of testResults) {
 
     experimentTableCli.push([
       benchmarkName,
-      `${experiment.latency.median.toFixed(0)}±${experiment.latency.spread.toFixed(0)}ms`,
+      `${experiment.latency.p50.toFixed(0)}ms`,
       `${experiment.latency.p75.toFixed(0)}ms`,
       `${experiment.latency.p90.toFixed(0)}ms`,
       `${experiment.latency.p99.toFixed(0)}ms`,
@@ -282,7 +292,7 @@ console.log('Experiment result')
 console.log(experimentTableCli.toString())
 
 let comparisonTable = `
-| Benchmark | reference<br/><sup>input latency</sup> | experiment<br/><sup>input latency</sup> | Δ (%)<br/><sup>latency difference</sup> | |
+| Benchmark | reference<br/><sup>latency of \`sanity@${REFERENCE_TAG}\`</sup> | experiment<br/><sup>latency of this branch</sup> | Δ (%)<br/><sup>latency difference</sup> | |
 | :-- | :-- | :-- | :-- | --- |
 `
 
@@ -297,16 +307,13 @@ let experimentTable = detailedInformationHeader
 for (const {name, results} of testResults) {
   for (const {experiment, reference} of results) {
     const significantlyDifferent = isSignificantlyDifferent(
-      experiment.latency.median,
-      reference.latency.median,
+      experiment.latency.p50,
+      reference.latency.p50,
     )
 
-    const sign = experiment.latency.median >= reference.latency.median ? '+' : ''
-    const msDifference = `${sign}${(experiment.latency.median - reference.latency.median).toFixed(0)}ms`
-    const percentageChange = formatPercentageChange(
-      experiment.latency.median,
-      reference.latency.median,
-    )
+    const sign = experiment.latency.p50 >= reference.latency.p50 ? '+' : ''
+    const msDifference = `${sign}${(experiment.latency.p50 - reference.latency.p50).toFixed(0)}ms`
+    const percentageChange = formatPercentageChange(experiment.latency.p50, reference.latency.p50)
 
     const benchmarkName = `${name} (${experiment.label})`
 
@@ -314,9 +321,9 @@ for (const {name, results} of testResults) {
       // benchmark name
       `| ${benchmarkName} ` +
       // reference latency
-      `| ${formatEfpsPlain(reference.latency.median)} efps (${reference.latency.median.toFixed(0)}ms) ` +
+      `| ${formatEfpsPlain(reference.latency.p50)} efps (${reference.latency.p50.toFixed(0)}ms) ` +
       // experiment latency
-      `| ${formatEfpsPlain(experiment.latency.median)} efps (${experiment.latency.median.toFixed(0)}ms) ` +
+      `| ${formatEfpsPlain(experiment.latency.p50)} efps (${experiment.latency.p50.toFixed(0)}ms) ` +
       // difference
       `| ${msDifference} (${percentageChange}) ` +
       // status
@@ -327,7 +334,7 @@ for (const {name, results} of testResults) {
       // benchmark name
       `| ${benchmarkName} ` +
       // latency
-      `| ${reference.latency.median.toFixed(0)}±${reference.latency.spread.toFixed(0)}ms ` +
+      `| ${reference.latency.p50.toFixed(0)}ms ` +
       // p75
       `| ${reference.latency.p75.toFixed(0)}ms ` +
       // p90
@@ -344,7 +351,7 @@ for (const {name, results} of testResults) {
       // benchmark name
       `| ${benchmarkName} ` +
       // latency
-      `| ${experiment.latency.median.toFixed(0)}±${experiment.latency.spread.toFixed(0)}ms ` +
+      `| ${experiment.latency.p50.toFixed(0)}ms ` +
       // p75
       `| ${experiment.latency.p75.toFixed(0)}ms ` +
       // p90
@@ -391,7 +398,7 @@ ${experimentTable}
 > #### column definitions
 >
 > - **benchmark** — the name of the test, e.g. "article", followed by the label of the field being measured, e.g. "(title)".
-> - **latency** — the time between when a key was pressed and when it was rendered. derived from a set of samples. the median (p50) is shown along with its spread.
+> - **latency** — the time between when a key was pressed and when it was rendered. derived from a set of samples. the median (p50) is shown to show the most common latency.
 > - **p75** — the 75th percentile of the input latency in the test run. 75% of the sampled inputs in this benchmark were processed faster than this value. this provides insight into the upper range of typical performance.
 > - **p90** — the 90th percentile of the input latency in the test run. 90% of the sampled inputs were faster than this. this metric helps identify slower interactions that occurred less frequently during the benchmark.
 > - **p99** — the 99th percentile of the input latency in the test run. only 1% of sampled inputs were slower than this. this represents the worst-case scenarios encountered during the benchmark, useful for identifying potential performance outliers.

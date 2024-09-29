@@ -10,42 +10,34 @@ import sourcemaps from 'rollup-plugin-sourcemaps'
 import handler from 'serve-handler'
 import * as vite from 'vite'
 
+import {remapCpuProfile} from './helpers/remapCpuProfile'
 import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './types'
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
 
 interface RunTestOptions {
-  prefix: string
   test: EfpsTest
   resultsDir: string
-  // spinner: Ora
   projectId: string
   headless: boolean
   client: SanityClient
   sanityPkgPath: string
   key: string
+  enableProfiler: boolean
   log: (text: string) => void
 }
 
 export async function runTest({
-  prefix,
   test,
   resultsDir,
-  // spinner,
   projectId,
   headless,
   client,
   sanityPkgPath,
   key,
+  enableProfiler,
   log,
 }: RunTestOptions): Promise<EfpsResult[]> {
-  console.log(prefix)
-  // const log = (text: string) => {
-  //   // spinner.text = `${prefix}\n  └ ${text}`
-  // }
-
-  // spinner.start(prefix)
-
   const outDir = path.join(workspaceDir, 'builds', test.name, key)
   const testResultsDir = path.join(resultsDir, test.name, key)
 
@@ -111,7 +103,7 @@ export async function runTest({
       typeof test.document === 'function' ? await test.document(runnerContext) : test.document
     document = await client.create(documentToCreate)
 
-    // const cdp = await context.newCDPSession(page)
+    const cdp = enableProfiler ? await context.newCDPSession(page) : null
 
     log('Loading editor…')
     await page.goto(
@@ -120,8 +112,10 @@ export async function runTest({
       )};type=${encodeURIComponent(documentToCreate._type)}`,
     )
 
-    // await cdp.send('Profiler.enable')
-    // await cdp.send('Profiler.start')
+    if (cdp) {
+      await cdp.send('Profiler.enable')
+      await cdp.send('Profiler.start')
+    }
 
     log('Benchmarking…')
     const result = await test.run({...runnerContext, document})
@@ -129,24 +123,24 @@ export async function runTest({
     log('Saving results…')
     const results = Array.isArray(result) ? result : [result]
 
-    // const {profile} = await cdp.send('Profiler.stop')
-    // const remappedProfile = await remapCpuProfile(profile, outDir)
-
     await fs.promises.mkdir(testResultsDir, {recursive: true})
     await fs.promises.writeFile(
       path.join(testResultsDir, 'results.json'),
       JSON.stringify(results, null, 2),
     )
-    // await fs.promises.writeFile(
-    //   path.join(testResultsDir, 'raw.cpuprofile'),
-    //   JSON.stringify(profile),
-    // )
-    // await fs.promises.writeFile(
-    //   path.join(testResultsDir, 'mapped.cpuprofile'),
-    //   JSON.stringify(remappedProfile),
-    // )
 
-    // spinner.succeed(`Ran benchmark '${test.name}' (${versionLabel})`)
+    if (cdp) {
+      const {profile} = await cdp.send('Profiler.stop')
+      await fs.promises.writeFile(
+        path.join(testResultsDir, 'raw.cpuprofile'),
+        JSON.stringify(profile),
+      )
+      const remappedProfile = await remapCpuProfile(profile, outDir)
+      await fs.promises.writeFile(
+        path.join(testResultsDir, 'mapped.cpuprofile'),
+        JSON.stringify(remappedProfile),
+      )
+    }
 
     return results
   } finally {
