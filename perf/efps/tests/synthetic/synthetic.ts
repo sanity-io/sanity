@@ -120,20 +120,12 @@ export default defineEfpsTest({
 
     return synthetic
   },
-  run: async ({page}) => {
-    return [
-      {
-        label: 'title',
-        ...(await measureFpsForInput(
-          page.locator('[data-testid="field-title"] input[type="text"]'),
-        )),
-      },
-      {
-        label: 'string in object',
-        ...(await measureFpsForInput(
-          page.locator('[data-testid="field-syntheticObject.name"] input[type="text"]'),
-        )),
-      },
-    ]
-  },
+  run: async ({page}) => [
+    await measureFpsForInput({page, fieldName: 'title'}),
+    await measureFpsForInput({
+      page,
+      fieldName: 'syntheticObject.name',
+      label: 'string inside object',
+    }),
+  ],
 })

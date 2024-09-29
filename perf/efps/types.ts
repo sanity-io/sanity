@@ -12,18 +12,26 @@ export interface EfpsTest {
   name: string
   configPath: string | undefined
   document: SanityDocumentStub | ((context: EfpsTestRunnerContext) => Promise<SanityDocumentStub>)
-  run: (context: EfpsTestRunnerContext & {document: SanityDocument}) => Promise<EfpsTestResult>
+  run: (context: EfpsTestRunnerContext & {document: SanityDocument}) => Promise<EfpsResult[]>
 }
 
 export interface EfpsResult {
-  label?: string
-  p50: number
-  p75: number
-  p90: number
-  latencies: number[]
+  label: string
+  runDuration: number
+  blockingTime: number
+  latency: {
+    median: number
+    error: number
+    p75: number
+    p90: number
+    p99: number
+  }
 }
 
-export type EfpsTestResult = EfpsResult | EfpsResult[]
+export interface EfpsAbResult {
+  experiment: EfpsResult
+  reference: EfpsResult
+}
 
 export function defineEfpsTest(config: EfpsTest): EfpsTest {
   return config
