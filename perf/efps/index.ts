@@ -1,4 +1,3 @@
-/* eslint-disable max-depth */
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-unassigned-import
 import 'dotenv/config'
@@ -21,11 +20,12 @@ import recipe from './tests/recipe/recipe'
 import synthetic from './tests/synthetic/synthetic'
 import {type EfpsAbResult, type EfpsResult, type EfpsTest} from './types'
 
-const warningThreshold = 0.2
-const testAttemptCount = process.env.CI ? 3 : 1
+const WARNING_THRESHOLD = 0.2
+const TEST_ATTEMPTS = process.env.CI ? 3 : 1
 
-const headless = true
-const tests = [article, recipe, synthetic]
+const HEADLESS = true
+const REFERENCE_TAG = 'latest'
+const TESTS = [article, recipe, synthetic]
 
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
 const dataset = process.env.VITE_PERF_EFPS_DATASET!
@@ -77,14 +77,6 @@ const getSanityPkgPathForTag = async (tag: string) => {
   return path.join(tmpDir, 'node_modules', 'sanity')
 }
 
-const formatFps = (fps: number) => {
-  const rounded = fps.toFixed(1)
-  if (fps >= 100) return chalk.green('99.9+')
-  if (fps >= 60) return chalk.green(rounded)
-  if (fps >= 20) return chalk.yellow(rounded)
-  return chalk.red(rounded)
-}
-
 const formatEfps = (latencyMs: number) => {
   const efps = 1000 / latencyMs
   const rounded = efps.toFixed(1)
@@ -105,14 +97,6 @@ const formatPercentageChange = (experiment: number, reference: number): string =
   return `${sign}${rounded}%`
 }
 
-const formatPercentage = (delta: number): string => {
-  const percentage = delta * 100
-  const rounded = percentage.toFixed(1)
-  const sign = delta >= 0 ? '+' : ''
-  if (delta >= -warningThreshold) return `${sign}${rounded}%`
-  return chalk.red(`${sign}${rounded}%`)
-}
-
 // For markdown formatting without colors
 const formatEfpsPlain = (latencyMs: number) => {
   const efps = 1000 / latencyMs
@@ -122,18 +106,9 @@ const formatEfpsPlain = (latencyMs: number) => {
   return rounded
 }
 
-const formatPercentagePlain = (delta: number): string => {
-  const percentage = delta * 100
-  const rounded = percentage.toFixed(1)
-  const sign = delta >= 0 ? '+' : ''
-  return `${sign}${rounded}%`
-}
-
-// START
-
 const spinner = Ora()
 
-spinner.info(`Running ${tests.length} tests: ${tests.map((t) => `'${t.name}'`).join(', ')}`)
+spinner.info(`Running ${TESTS.length} tests: ${TESTS.map((t) => `'${t.name}'`).join(', ')}`)
 
 await exec({
   text: ['Building the monorepo…', 'Built monorepo'],
@@ -150,8 +125,8 @@ await exec({
 
 const localSanityPkgPath = path.dirname(fileURLToPath(import.meta.resolve('sanity/package.json')))
 
-const referenceSanityPkgPath = await getSanityPkgPathForTag('v3.57.4')
-const experimentSanityPkgPath = await getSanityPkgPathForTag('v3.58.0')
+const referenceSanityPkgPath = await getSanityPkgPathForTag(REFERENCE_TAG)
+const experimentSanityPkgPath = localSanityPkgPath
 
 function mergeResults(baseResults: EfpsResult[] | undefined, incomingResults: EfpsResult[]) {
   if (!baseResults) return incomingResults
@@ -178,15 +153,16 @@ async function runAbTest(test: EfpsTest) {
   let referenceResults: EfpsResult[] | undefined
   let experimentResults: EfpsResult[] | undefined
 
-  for (let attempt = 0; attempt < testAttemptCount; attempt++) {
+  for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
     referenceResults = mergeResults(
       referenceResults,
       await runTest({
         prefix: `running ${referenceSanityPkgPath}`,
+        key: 'reference',
         test,
         resultsDir,
         client,
-        headless,
+        headless: HEADLESS,
         projectId,
         sanityPkgPath: referenceSanityPkgPath,
         log: () => {},
@@ -197,10 +173,11 @@ async function runAbTest(test: EfpsTest) {
       experimentResults,
       await runTest({
         prefix: `running ${experimentSanityPkgPath}`,
+        key: 'experiment',
         test,
         resultsDir,
         client,
-        headless,
+        headless: HEADLESS,
         projectId,
         sanityPkgPath: experimentSanityPkgPath,
         log: () => {},
@@ -216,25 +193,36 @@ async function runAbTest(test: EfpsTest) {
   )
 }
 
-for (let i = 0; i < tests.length; i++) {
-  const test = tests[i]
+for (let i = 0; i < TESTS.length; i++) {
+  const test = TESTS[i]
   testResults.push({
     name: test.name,
     results: await runAbTest(test),
   })
 }
 
-const table = new Table({
-  head: [chalk.bold('Benchmark'), 'reference', 'experiment', 'Δ (%)', ''].map((cell) =>
-    chalk.cyan(cell),
-  ),
+const comparisonTableCli = new Table({
+  head: ['Benchmark', 'reference', 'experiment', 'Δ (%)', ''].map((cell) => chalk.cyan(cell)),
 })
+
+const detailedInformationCliHead = [
+  'Benchmark',
+  'latency',
+  'p75',
+  'p90',
+  'p99',
+  'blocking time',
+  'test duration',
+].map((i) => chalk.cyan(i))
+
+const referenceTableCli = new Table({head: detailedInformationCliHead})
+const experimentTableCli = new Table({head: detailedInformationCliHead})
 
 function isSignificantlyDifferent(experiment: number, reference: number) {
   // values are too small to and are already performing well
   if (experiment < 16 && reference < 16) return false
   const delta = (experiment - reference) / reference
-  return delta >= warningThreshold
+  return delta >= WARNING_THRESHOLD
 }
 
 for (const {name, results} of testResults) {
@@ -251,21 +239,51 @@ for (const {name, results} of testResults) {
       reference.latency.median,
     )
 
-    table.push([
-      `${name} (${experiment.label})`,
+    const benchmarkName = `${name} (${experiment.label})`
+
+    comparisonTableCli.push([
+      benchmarkName,
       `${formatEfps(reference.latency.median)} efps (${reference.latency.median.toFixed(0)}ms)`,
       `${formatEfps(experiment.latency.median)} efps (${experiment.latency.median.toFixed(0)}ms)`,
       `${significantlyDifferent ? chalk.red(msDifference) : msDifference} (${percentageChange})`,
       significantlyDifferent ? '🔴' : '✅',
     ])
+
+    referenceTableCli.push([
+      benchmarkName,
+      `${reference.latency.median.toFixed(0)}±${reference.latency.spread.toFixed(0)}ms`,
+      `${reference.latency.p75.toFixed(0)}ms`,
+      `${reference.latency.p90.toFixed(0)}ms`,
+      `${reference.latency.p99.toFixed(0)}ms`,
+      `${reference.blockingTime.toFixed(0)}ms`,
+      `${(reference.runDuration / 1000).toFixed(1)}s`,
+    ])
+
+    experimentTableCli.push([
+      benchmarkName,
+      `${experiment.latency.median.toFixed(0)}±${experiment.latency.spread.toFixed(0)}ms`,
+      `${experiment.latency.p75.toFixed(0)}ms`,
+      `${experiment.latency.p90.toFixed(0)}ms`,
+      `${experiment.latency.p99.toFixed(0)}ms`,
+      `${experiment.blockingTime.toFixed(0)}ms`,
+      `${(experiment.runDuration / 1000).toFixed(1)}s`,
+    ])
   }
 }
 
-console.log(table.toString())
+console.log()
+console.log('Reference vs experiment')
+console.log(comparisonTableCli.toString())
+console.log()
+console.log('Reference result')
+console.log(referenceTableCli.toString())
+console.log()
+console.log('Experiment result')
+console.log(experimentTableCli.toString())
 
 let comparisonTable = `
-|     | Benchmark | reference<br/><sup>input latency</sup> | experiment<br/><sup>input latency</sup> | Δ (%)<br/><sup>latency difference</sup> |
-| --- | :-- | :-- | :-- | :-- |
+| Benchmark | reference<br/><sup>input latency</sup> | experiment<br/><sup>input latency</sup> | Δ (%)<br/><sup>latency difference</sup> | |
+| :-- | :-- | :-- | :-- | --- |
 `
 
 const detailedInformationHeader = `
@@ -293,8 +311,6 @@ for (const {name, results} of testResults) {
     const benchmarkName = `${name} (${experiment.label})`
 
     comparisonTable +=
-      // status
-      `| ${significantlyDifferent ? '🔴' : '✅'} ` +
       // benchmark name
       `| ${benchmarkName} ` +
       // reference latency
@@ -302,13 +318,16 @@ for (const {name, results} of testResults) {
       // experiment latency
       `| ${formatEfpsPlain(experiment.latency.median)} efps (${experiment.latency.median.toFixed(0)}ms) ` +
       // difference
-      `| ${msDifference} (${percentageChange}) |\n`
+      `| ${msDifference} (${percentageChange}) ` +
+      // status
+      `| ${significantlyDifferent ? '🔴' : '✅'} ` +
+      `|\n`
 
     referenceTable +=
       // benchmark name
       `| ${benchmarkName} ` +
       // latency
-      `| ${reference.latency.median.toFixed(0)}±${reference.latency.error.toFixed(0)}ms ` +
+      `| ${reference.latency.median.toFixed(0)}±${reference.latency.spread.toFixed(0)}ms ` +
       // p75
       `| ${reference.latency.p75.toFixed(0)}ms ` +
       // p90
@@ -325,7 +344,7 @@ for (const {name, results} of testResults) {
       // benchmark name
       `| ${benchmarkName} ` +
       // latency
-      `| ${experiment.latency.median.toFixed(0)}±${experiment.latency.error.toFixed(0)}ms ` +
+      `| ${experiment.latency.median.toFixed(0)}±${experiment.latency.spread.toFixed(0)}ms ` +
       // p75
       `| ${experiment.latency.p75.toFixed(0)}ms ` +
       // p90
@@ -346,7 +365,7 @@ Updated ${new Date().toUTCString()}
 
 ${comparisonTable}
 
-> **efps** — editor "frames per second". The number of updates assumed to be possible within a second.
+> **efps** — editor "frames per second". The number of updates assumed to be possible within a second.
 >
 > Derived from input latency. \`efps = 1000 / input_latency\`
 
@@ -356,7 +375,7 @@ ${comparisonTable}
 
 ### 🏠 Reference result
 
-The performance result of \`sanity@latest\`
+The performance result of \`sanity@${REFERENCE_TAG}\`
 
 
 ${referenceTable}
@@ -372,7 +391,7 @@ ${experimentTable}
 > #### column definitions
 >
 > - **benchmark** — the name of the test, e.g. "article", followed by the label of the field being measured, e.g. "(title)".
-> - **latency** — the time between when a key was pressed and when it was rendered. derived from a set of samples. the median (p50) is shown along with a margin of error.
+> - **latency** — the time between when a key was pressed and when it was rendered. derived from a set of samples. the median (p50) is shown along with its spread.
 > - **p75** — the 75th percentile of the input latency in the test run. 75% of the sampled inputs in this benchmark were processed faster than this value. this provides insight into the upper range of typical performance.
 > - **p90** — the 90th percentile of the input latency in the test run. 90% of the sampled inputs were faster than this. this metric helps identify slower interactions that occurred less frequently during the benchmark.
 > - **p99** — the 99th percentile of the input latency in the test run. only 1% of sampled inputs were slower than this. this represents the worst-case scenarios encountered during the benchmark, useful for identifying potential performance outliers.

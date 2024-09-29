@@ -21,7 +21,7 @@ export interface EfpsResult {
   blockingTime: number
   latency: {
     median: number
-    error: number
+    spread: number
     p75: number
     p90: number
     p99: number

@@ -10,7 +10,6 @@ import sourcemaps from 'rollup-plugin-sourcemaps'
 import handler from 'serve-handler'
 import * as vite from 'vite'
 
-// TODO: add test duration to metrics
 import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './types'
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
@@ -24,6 +23,7 @@ interface RunTestOptions {
   headless: boolean
   client: SanityClient
   sanityPkgPath: string
+  key: string
   log: (text: string) => void
 }
 
@@ -36,6 +36,7 @@ export async function runTest({
   headless,
   client,
   sanityPkgPath,
+  key,
   log,
 }: RunTestOptions): Promise<EfpsResult[]> {
   console.log(prefix)
@@ -45,9 +46,8 @@ export async function runTest({
 
   // spinner.start(prefix)
 
-  const versionLabel = sanityPkgPath ? 'latest' : 'local'
-  const outDir = path.join(workspaceDir, 'builds', test.name, versionLabel)
-  const testResultsDir = path.join(resultsDir, test.name, versionLabel)
+  const outDir = path.join(workspaceDir, 'builds', test.name, key)
+  const testResultsDir = path.join(resultsDir, test.name, key)
 
   await fs.promises.mkdir(outDir, {recursive: true})
   log('Building…')

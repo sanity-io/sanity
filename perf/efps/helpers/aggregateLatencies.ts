@@ -22,7 +22,7 @@ function calculatePercentile(numbers: number[], percentile: number): number {
   return lowerValue + (upperValue - lowerValue) * fraction
 }
 
-function calculateError(numbers: number[]) {
+function calculateSpread(numbers: number[]) {
   const mean = numbers.reduce((sum, num) => sum + num, 0) / numbers.length
 
   // calculate the sum of squared differences from the mean
@@ -40,7 +40,7 @@ function calculateError(numbers: number[]) {
 export function aggregateLatencies(values: number[]): EfpsResult['latency'] {
   return {
     median: calculatePercentile(values, 0.5),
-    error: calculateError(values),
+    spread: calculateSpread(values),
     p75: calculatePercentile(values, 0.75),
     p90: calculatePercentile(values, 0.9),
     p99: calculatePercentile(values, 0.99),
