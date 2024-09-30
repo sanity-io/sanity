@@ -58,7 +58,6 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
             />
           </Text>
         }
-        center
         action={
           isOnlyViewer && roleRequestStatus && !requestStatusError && !requestStatusLoading
             ? {
