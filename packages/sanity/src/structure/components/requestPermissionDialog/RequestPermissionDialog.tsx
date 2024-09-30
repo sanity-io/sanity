@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, DialogProvider, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {useId, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -8,6 +9,7 @@ import {styled} from 'styled-components'
 import {type AccessRequest} from '../../../core/studio/screens'
 import {Dialog} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
+import {AskToEditRequestSent} from './__telemetry__/RequestPermissionDialog.telemetry'
 
 const MAX_NOTE_LENGTH = 150
 
@@ -43,6 +45,7 @@ export function RequestPermissionDialog({
   onRequestSubmitted,
 }: RequestPermissionDialogProps) {
   const {t} = useTranslation(structureLocaleNamespace)
+  const telemtry = useTelemetry()
   const dialogId = `request-permissions-${useId()}`
   const projectId = useProjectId()
   const client = useClient({apiVersion: '2024-09-26'})
@@ -84,6 +87,7 @@ export function RequestPermissionDialog({
       .then((request) => {
         if (request) {
           if (onRequestSubmitted) onRequestSubmitted()
+          telemtry.log(AskToEditRequestSent)
           toast.push({title: 'Edit access requested'})
         }
       })

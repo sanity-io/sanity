@@ -1,4 +1,5 @@
 import {ReadOnlyIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {Translate, useCurrentUser, useListFormat, useTranslation} from 'sanity'
@@ -7,6 +8,7 @@ import {
   RequestPermissionDialog,
   useRoleRequestsStatus,
 } from '../../../../components/requestPermissionDialog'
+import {AskToEditDialogOpened} from '../../../../components/requestPermissionDialog/__telemetry__/RequestPermissionDialog.telemetry'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
@@ -34,6 +36,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
 
   const listFormat = useListFormat({style: 'short'})
   const {t} = useTranslation(structureLocaleNamespace)
+  const telemtry = useTelemetry()
 
   if (granted) return null
 
@@ -61,7 +64,12 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
         action={
           isOnlyViewer && roleRequestStatus && !requestStatusError && !requestStatusLoading
             ? {
-                onClick: requestPending ? undefined : () => setShowRequestPermissionDialog(true),
+                onClick: requestPending
+                  ? undefined
+                  : () => {
+                      setShowRequestPermissionDialog(true)
+                      telemtry.log(AskToEditDialogOpened)
+                    },
                 text: requestPending
                   ? t('banners.permission-check-banner.request-permission-button.sent')
                   : t('banners.permission-check-banner.request-permission-button.text'),
