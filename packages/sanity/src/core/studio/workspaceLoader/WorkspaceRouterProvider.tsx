@@ -9,7 +9,6 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {useSource} from 'sanity'
 import {type Router, RouterProvider, type RouterState} from 'sanity/router'
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector.js'
 
@@ -17,6 +16,7 @@ import {type Tool, type Workspace} from '../../config'
 import {createRouter, type RouterHistory, type RouterStateEvent} from '../router'
 import {decodeUrlState, resolveDefaultState, resolveIntentState} from '../router/helpers'
 import {useRouterHistory} from '../router/RouterHistoryContext'
+import {useSource} from '../source'
 
 interface WorkspaceRouterProviderProps {
   children: ReactNode
