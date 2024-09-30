@@ -7,7 +7,7 @@ import {useClient, useProjectId} from 'sanity'
 import {type AccessRequest} from '../../../core/studio/screens'
 
 export const useRoleRequestsStatus = () => {
-  const client = useClient()
+  const client = useClient({apiVersion: '2024-07-01'})
   const projectId = useProjectId()
   const [status, setStatus] = useState<string>()
   const [loading, setLoading] = useState(false)
