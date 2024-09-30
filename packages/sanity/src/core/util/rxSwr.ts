@@ -2,6 +2,10 @@ import QuickLRU from 'quick-lru'
 import {concat, defer, EMPTY, map, type Observable, of, type OperatorFunction} from 'rxjs'
 import {tap} from 'rxjs/operators'
 
+/**
+ * The interface that any caching layer must implement
+ * @internal
+ */
 interface SWRCache<T> {
   /**
    * Note: This will throw if key does not exist. Always check for existence with `has` before calling
@@ -38,6 +42,11 @@ export function createSWR<T>(options: {maxSize: number}) {
   }
 }
 
+/**
+ * For now, the only cache layer implemented is an in-memory LRU.
+ * @param options - LRU options
+ * @internal
+ */
 function createLRUCache<T>(options: {maxSize: number}): SWRCache<T> {
   const lru = new QuickLRU<string, {value: T}>(options)
   return {
