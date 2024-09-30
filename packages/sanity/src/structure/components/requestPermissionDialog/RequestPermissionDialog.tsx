@@ -124,6 +124,7 @@ export function RequestPermissionDialog({
             text: t('confirm-dialog.cancel-button.fallback-text'),
           },
           confirmButton: {
+            onClick: onSubmit,
             loading: isSubmitting,
             disabled: hasTooManyRequests || hasBeenDenied,
             text: t('request-permission-dialog.confirm-button.text'),
