@@ -67,7 +67,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
                     : t('banners.permission-check-banner.request-permission-button.text'),
                 tone: roleRequestStatus === 'pending' ? 'default' : 'primary',
                 disabled: roleRequestStatus === 'pending',
-                // mode: 'bleed',
+                mode: roleRequestStatus === 'pending' ? 'bleed' : undefined,
               }
             : undefined
         }
