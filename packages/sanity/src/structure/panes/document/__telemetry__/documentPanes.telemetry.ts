@@ -14,7 +14,7 @@ export const DocumentURLCopied = defineEvent({
  * @internal
  */
 export const CreatedDraft = defineEvent({
-  name: 'Create a new draft',
+  name: 'New Draft Created',
   version: 1,
   description: 'User created a new draft',
 })
