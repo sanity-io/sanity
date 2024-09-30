@@ -58,13 +58,13 @@ export function RequestPermissionDialog({
   const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean>(false)
   const [hasBeenDenied, setHasBeenDenied] = useState<boolean>(false)
 
-  const requestedRole$: Observable<'Administrator' | 'Editor'> = useMemo(() => {
-    const adminRole = 'Administrator' as const
+  const requestedRole$: Observable<'administrator' | 'editor'> = useMemo(() => {
+    const adminRole = 'administrator' as const
     if (!projectId || !client) return of(adminRole)
     return client.observable.request<Role[]>({url: `/projects/${projectId}/roles`}).pipe(
       map((roles) => {
         const hasEditor = roles.find((role) => role.name === 'editor')
-        return hasEditor ? 'Editor' : adminRole
+        return hasEditor ? 'editor' : adminRole
       }),
       startWith(adminRole),
       catchError(() => of(adminRole)),
@@ -73,7 +73,7 @@ export function RequestPermissionDialog({
 
   const requestedRole = useObservable(requestedRole$)
 
-  const onConfirm = () => {
+  const onSubmit = () => {
     setIsSubmitting(true)
     client
       .request<AccessRequest | null>({
@@ -128,7 +128,7 @@ export function RequestPermissionDialog({
             disabled: hasTooManyRequests || hasBeenDenied,
             text: t('request-permission-dialog.confirm-button.text'),
             tone: 'primary',
-            onClick: onConfirm,
+            type: 'submit',
           },
         }}
         onClose={onClose}
@@ -154,7 +154,7 @@ export function RequestPermissionDialog({
                   placeholder={t('request-permission-dialog.note-input.placeholder.text')}
                   disabled={isSubmitting}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') onConfirm()
+                    if (e.key === 'Enter') onSubmit()
                   }}
                   maxLength={MAX_NOTE_LENGTH}
                   value={note}
