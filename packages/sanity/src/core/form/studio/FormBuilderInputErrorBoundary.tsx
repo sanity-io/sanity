@@ -1,12 +1,12 @@
 import {Box, Card, Code, ErrorBoundary, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {useSource} from 'sanity'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {SchemaError} from '../../config'
 import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'
 import {CorsOriginError} from '../../store'
+import {useSource} from '../../studio/source'
 import {isRecord} from '../../util'
 import {Alert} from '../components/Alert'
 
