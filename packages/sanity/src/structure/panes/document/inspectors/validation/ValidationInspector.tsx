@@ -13,7 +13,7 @@ import {
 } from '@sanity/types'
 import {Box, Card, type CardTone, ErrorBoundary, Flex, Stack, Text} from '@sanity/ui'
 import {createElement, type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
-import {type DocumentInspectorProps, useSource, useTranslation} from 'sanity'
+import {type DocumentInspectorProps, useTranslation} from 'sanity'
 
 import {DocumentInspectorHeader} from '../../documentInspector'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -44,7 +44,6 @@ export function ValidationInspector(props: DocumentInspectorProps) {
     [onFocus, onPathOpen],
   )
 
-  throw new Error('This is an error from the validation inspector')
   return (
     <Flex direction="column" height="fill" overflow="hidden">
       <DocumentInspectorHeader
