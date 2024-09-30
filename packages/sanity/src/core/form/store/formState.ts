@@ -242,6 +242,7 @@ export interface PrepareFormState {
 export function createPrepareFormState({
   decorators = {},
 }: CreatePrepareFormStateOptions = {}): PrepareFormState {
+  console.log('prep')
   const memoizePrepareFieldMember = createMemoizer<PrepareFieldMember>({
     decorator: decorators.prepareFieldMember,
     getPath: ({parent, field}) => [...parent.path, field.name],
@@ -1220,6 +1221,8 @@ export function createPrepareFormState({
         comparisonValue: itemComparisonValue,
         readOnly: scopedReadOnly,
       })
+
+      console.log('open me', isEqual(itemPath, parent.openPath))
 
       return {
         kind: 'item',

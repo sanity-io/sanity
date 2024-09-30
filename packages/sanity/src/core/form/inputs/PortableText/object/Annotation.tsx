@@ -6,6 +6,7 @@ import {
   type ReactElement,
   type ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react'
@@ -269,6 +270,10 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
   const hasWarning = validation.some((v) => v.level === 'warning')
   const hasMarkers = markers.length > 0
 
+  useEffect(() => {
+    console.log('open', open)
+  }, [open])
+
   const {t} = useTranslation()
   const toneKey = useMemo(() => {
     if (hasError) {
@@ -318,6 +323,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
           referenceElement={referenceElement}
           schemaType={schemaType}
         >
+          <div>testing</div>
           {children}
         </ObjectEditModal>
       )}

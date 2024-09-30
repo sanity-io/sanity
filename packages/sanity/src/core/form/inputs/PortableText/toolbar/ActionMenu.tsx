@@ -76,6 +76,9 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const children = useMemo(
     () =>
       actions.map((action) => {
+        if (action.title === 'Link') {
+          // console.log(action)
+        }
         const annotationDisabled =
           action.type === 'annotation' && (isEmptyTextBlock || isSelectingMultipleBlocks)
         const annotationDisabledText = isEmptyTextBlock
@@ -102,7 +105,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}
-            tooltipText={annotationDisabled ? annotationDisabledText : action.title || action.key}
+            tooltipText={isSelectingMultipleBlocks ? 'multi' : 'not'}
             tooltipProps={{
               disabled: disabled,
               placement: tooltipPlacement,

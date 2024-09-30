@@ -548,20 +548,42 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     isDeleted,
   ])
 
-  const formState = useFormState({
-    schemaType: schemaType!,
-    documentValue: displayed,
-    readOnly,
-    comparisonValue: compareValue,
-    focusPath,
-    openPath,
-    collapsedPaths,
-    presence,
-    validation,
-    collapsedFieldSets,
-    fieldGroupState,
-    changesOpen,
-  })
+  const memoFormStateArg = useMemo(
+    () => ({
+      schemaType: schemaType!,
+      documentValue: displayed,
+      readOnly,
+      comparisonValue: compareValue,
+      focusPath,
+      openPath,
+      collapsedPaths,
+      presence,
+      validation,
+      collapsedFieldSets,
+      fieldGroupState,
+      changesOpen,
+    }),
+    [
+      changesOpen,
+      collapsedFieldSets,
+      collapsedPaths,
+      compareValue,
+      displayed,
+      fieldGroupState,
+      focusPath,
+      openPath,
+      presence,
+      readOnly,
+      schemaType,
+      validation,
+    ],
+  )
+
+  const formState = useFormState(memoFormStateArg)
+
+  useEffect(() => {
+    console.log('new form state')
+  }, [formState])
 
   useEffect(() => {
     setDocumentMeta({
@@ -578,6 +600,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const setOpenPath = useCallback(
     (path: Path) => {
       const ops = getExpandOperations(formStateRef.current!, path)
+      console.log(ops)
       ops.forEach((op) => {
         if (op.type === 'expandPath') {
           onSetCollapsedPath((prevState) => setAtPath(prevState, op.path, false))
@@ -767,6 +790,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   // Reset `focusPath` when `documentId` or `params.path` changes
   useEffect(() => {
+    console.log('this effect')
     if (ready && params.path) {
       const {path, ...restParams} = params
       const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
