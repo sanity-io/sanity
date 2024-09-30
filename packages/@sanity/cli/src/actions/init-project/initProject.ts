@@ -594,11 +594,8 @@ export default async function initSanity(
 
   trace.log({step: 'importTemplateDataset', selectedOption: shouldImport ? 'yes' : 'no'})
 
-  // Bootstrap Sanity, creating required project files, manifests etc
-  await bootstrapTemplate(templateOptions, context)
-
-  // update that files were initialized locally; do not halt flow for request
-  apiClient({api: {projectId: projectId}})
+  // record that template files attempted to be created locally
+  await apiClient({api: {projectId: projectId}})
     .request<SanityProject>({uri: `/projects/${projectId}`})
     .then((project: SanityProject) => {
       if (!project?.metadata?.cliInitializedAt) {
@@ -614,6 +611,9 @@ export default async function initSanity(
       // Non-critical update
       debug('Failed to update cliInitializedAt metadata')
     })
+
+  // Bootstrap Sanity, creating required project files, manifests etc
+  await bootstrapTemplate(templateOptions, context)
 
   let pkgManager: PackageManager
 
