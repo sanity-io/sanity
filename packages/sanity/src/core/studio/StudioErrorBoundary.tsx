@@ -98,7 +98,7 @@ export const StudioErrorBoundary: ComponentType<StudioErrorBoundaryProps> = ({
     return <SchemaErrorsScreen schema={error.schema} />
   }
 
-  if (error && 'isDevServerStoppedError' in error && error.isDevServerStoppedError) {
+  if (error && 'ViteDevServerStoppedError' in error && error.ViteDevServerStoppedError) {
     return <DevServerStoppedErrorScreen />
   }
 

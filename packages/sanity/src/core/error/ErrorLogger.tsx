@@ -64,7 +64,7 @@ function isKnownError(err: Error): boolean {
     return true
   }
 
-  if ('isViteDevServerStoppedError' in err && err.isViteDevServerStoppedError) {
+  if ('ViteDevServerStoppedError' in err && err.ViteDevServerStoppedError) {
     return true
   }
 
