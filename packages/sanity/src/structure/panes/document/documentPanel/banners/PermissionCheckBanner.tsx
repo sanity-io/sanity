@@ -1,6 +1,6 @@
 import {ReadOnlyIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {Translate, useCurrentUser, useListFormat, useTranslation} from 'sanity'
 
 import {
@@ -23,6 +23,11 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
     loading: requestStatusLoading,
     error: requestStatusError,
   } = useRoleRequestsStatus()
+  const [requestSent, setRequestSent] = useState(false)
+  const requestPending = useMemo(
+    () => roleRequestStatus === 'pending' || requestSent,
+    [roleRequestStatus, requestSent],
+  )
   const currentUserRoles = currentUser?.roles || []
   const isOnlyViewer = currentUserRoles.length === 1 && currentUserRoles[0].name === 'viewer'
   const [showRequestPermissionDialog, setShowRequestPermissionDialog] = useState(false)
@@ -57,17 +62,13 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
         action={
           isOnlyViewer && roleRequestStatus && !requestStatusError && !requestStatusLoading
             ? {
-                onClick:
-                  roleRequestStatus === 'pending'
-                    ? undefined
-                    : () => setShowRequestPermissionDialog(true),
-                text:
-                  roleRequestStatus === 'pending'
-                    ? t('banners.permission-check-banner.request-permission-button.sent')
-                    : t('banners.permission-check-banner.request-permission-button.text'),
-                tone: roleRequestStatus === 'pending' ? 'default' : 'primary',
-                disabled: roleRequestStatus === 'pending',
-                mode: roleRequestStatus === 'pending' ? 'bleed' : undefined,
+                onClick: requestPending ? undefined : () => setShowRequestPermissionDialog(true),
+                text: requestPending
+                  ? t('banners.permission-check-banner.request-permission-button.sent')
+                  : t('banners.permission-check-banner.request-permission-button.text'),
+                tone: requestPending ? 'default' : 'primary',
+                disabled: requestPending,
+                mode: requestPending ? 'bleed' : undefined,
               }
             : undefined
         }
@@ -77,7 +78,10 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
       {showRequestPermissionDialog && (
         <RequestPermissionDialog
           onClose={() => setShowRequestPermissionDialog(false)}
-          onRequestSubmitted={() => setShowRequestPermissionDialog(false)}
+          onRequestSubmitted={() => {
+            setRequestSent(true)
+            setShowRequestPermissionDialog(false)
+          }}
         />
       )}
     </>
