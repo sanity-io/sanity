@@ -14,10 +14,10 @@ export function measureBlockingTime(page: Page): () => Promise<number> {
       last = current
 
       if (done) return
-      requestIdleCallback(handler)
+      requestAnimationFrame(handler)
     }
 
-    requestIdleCallback(handler)
+    requestAnimationFrame(handler)
 
     await new Promise((resolve) => {
       document.addEventListener('__blockingTimeFinish', resolve, {once: true})
