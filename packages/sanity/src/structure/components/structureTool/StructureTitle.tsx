@@ -46,6 +46,7 @@ const DocumentTitle = (props: {documentId: string; documentType: string}) => {
     document.title = newTitle
   }, [documentTitle, settled, newTitle])
 
+  throw new Error('This is an error from the structure tool')
   return null
 }
 
