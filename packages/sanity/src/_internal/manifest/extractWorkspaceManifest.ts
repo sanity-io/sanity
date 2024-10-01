@@ -468,7 +468,7 @@ export function transformBlockType(
 
 function resolveEnabledStyles(blockType: ObjectSchemaType): ManifestTitledValue[] | undefined {
   const styleField = blockType.fields?.find((btField) => btField.name === 'style')
-  return resolveTitleValueArray(styleField?.type.options.list)
+  return resolveTitleValueArray(styleField?.type?.options?.list)
 }
 
 function resolveEnabledDecorators(spanType: ObjectSchemaType): ManifestTitledValue[] | undefined {
@@ -477,7 +477,7 @@ function resolveEnabledDecorators(spanType: ObjectSchemaType): ManifestTitledVal
 
 function resolveEnabledListItems(blockType: ObjectSchemaType): ManifestTitledValue[] | undefined {
   const listField = blockType.fields?.find((btField) => btField.name === 'listItem')
-  return resolveTitleValueArray(listField?.type?.options.list)
+  return resolveTitleValueArray(listField?.type?.options?.list)
 }
 
 function resolveTitleValueArray(possibleArray: unknown): ManifestTitledValue[] | undefined {
