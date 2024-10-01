@@ -28,9 +28,8 @@ const CREATE_TIMER = 'create-manifest'
 const EXTRACT_TASK_TIMEOUT_MS = minutesToMilliseconds(2)
 
 const EXTRACT_FAILURE_MESSAGE =
-  'Unable to extract manifest. Certain features like Sanity Create will not work with this studio.\n' +
-  //TODO: replace this link
-  'For more information, see: https://www.sanity.io/docs/cli'
+  "Couldn't extract manifest file. Sanity Create will not be available for the studio.\n" +
+  `Disable this message with ${FEATURE_ENABLED_ENV_NAME}=false`
 
 interface ExtractFlags {
   path?: string
