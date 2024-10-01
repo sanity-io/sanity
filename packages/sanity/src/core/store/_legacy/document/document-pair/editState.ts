@@ -1,10 +1,10 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema} from '@sanity/types'
-import {combineLatest, defer, type Observable, of} from 'rxjs'
-import {map, publishReplay, refCount, startWith, switchMap, tap} from 'rxjs/operators'
+import {combineLatest, type Observable} from 'rxjs'
+import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
 
+import {createSWR} from '../../../../util/rxSwr'
 import {type PairListenerOptions} from '../getPairListener'
-import {type DocumentsStorage} from '../documentsStorage'
 import {type IdPair, type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
@@ -14,6 +14,8 @@ import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
 interface TransactionSyncLockState {
   enabled: boolean
 }
+
+const swr = createSWR<[SanityDocument, SanityDocument, TransactionSyncLockState]>({maxSize: 50})
 
 /**
  * @hidden
@@ -43,6 +45,7 @@ export const editState = memoize(
     typeName: string,
   ): Observable<EditStateFor> => {
     const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
+
     return snapshotPair(
       ctx.client,
       idPair,
@@ -60,14 +63,15 @@ export const editState = memoize(
           ),
         ]),
       ),
-      map(([draftSnapshot, publishedSnapshot, transactionSyncLock]) => ({
+      swr(`${idPair.publishedId}-${idPair.draftId}`),
+      map(({value: [draftSnapshot, publishedSnapshot, transactionSyncLock], fromCache}) => ({
         id: idPair.publishedId,
         type: typeName,
         draft: draftSnapshot,
         published: publishedSnapshot,
         liveEdit,
-        ready: true,
-        transactionSyncLock,
+        ready: !fromCache,
+        transactionSyncLock: fromCache ? null : transactionSyncLock,
       })),
       startWith({
         id: idPair.publishedId,

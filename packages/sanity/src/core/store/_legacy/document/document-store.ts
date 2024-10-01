@@ -30,6 +30,7 @@ import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} f
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {type IdPair} from './types'
+
 /**
  * @hidden
  * @beta */
@@ -108,7 +109,7 @@ export function createDocumentStore({
   // internal operations, and a `getClient` method that we expose to user-land
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const storage = createDocumentsStorage()
+
   const ctx = {
     client,
     getClient,
@@ -118,7 +119,6 @@ export function createDocumentStore({
     i18n,
     serverActionsEnabled,
     pairListenerOptions,
-    storage,
   }
 
   return {
