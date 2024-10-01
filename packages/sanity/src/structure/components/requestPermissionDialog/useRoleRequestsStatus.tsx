@@ -5,6 +5,7 @@ import {from, of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
 import {useClient, useProjectId} from 'sanity'
 
+/** @internal */
 export interface AccessRequest {
   id: string
   status: 'pending' | 'accepted' | 'declined'
@@ -19,6 +20,7 @@ export interface AccessRequest {
   note: string
 }
 
+/** @internal */
 export const useRoleRequestsStatus = () => {
   const client = useClient({apiVersion: '2024-07-01'})
   const projectId = useProjectId()
@@ -69,7 +71,7 @@ export const useRoleRequestsStatus = () => {
         return {loading: false, error: false, status: 'none'}
       }),
       catchError((err) => {
-        console.error(err)
+        console.error('Failed to fetch access requests', err)
         return of({loading: false, error: true, status: undefined})
       }),
       startWith({loading: true, error: false, status: undefined}), // Start with loading state

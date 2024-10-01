@@ -10,6 +10,7 @@ export const AskToEditDialogOpened = defineEvent({
   description: 'User clicked the "Ask to edit" button in the document permissions banner',
 })
 
+/** @internal */
 export const AskToEditRequestSent = defineEvent({
   name: 'Ask To Edit Request Sent',
   version: 1,

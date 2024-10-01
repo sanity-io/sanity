@@ -102,18 +102,18 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text content for the live edit document when it's a draft */
   'banners.live-edit-draft-banner.text':
     'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, but a draft version of this document exists. Publish or discard the draft in order to continue live editing it.',
-  /** The text for the permission check banner if the user only has one role, and it does not allow updating this document */
+  /** The text for the permission check banner if the user only has one role, and it does not allow publishing this document */
   'banners.permission-check-banner.missing-permission_create_one':
-    'Your role <Roles/> does not have permissions to publish this document.',
-  /** The text for the permission check banner if the user only has multiple roles, but they do not allow updating this document */
+    'Your role <Roles/> does not have permission to publish this document.',
+  /** The text for the permission check banner if the user only has multiple roles, but they do not allow publishing this document */
   'banners.permission-check-banner.missing-permission_create_other':
-    'Your roles <Roles/> do not have permissions to publish this document.',
-  /** The text for the permission check banner if the user only has one role, and it does not allow updating this document */
+    'Your roles <Roles/> do not have permission to publish this document.',
+  /** The text for the permission check banner if the user only has one role, and it does not allow editing this document */
   'banners.permission-check-banner.missing-permission_update_one':
-    'Your role <Roles/> does not have permissions to edit this document.',
-  /** The text for the permission check banner if the user only has multiple roles, but they do not allow updating this document */
+    'Your role <Roles/> does not have permission to edit this document.',
+  /** The text for the permission check banner if the user only has multiple roles, but they do not allow editing this document */
   'banners.permission-check-banner.missing-permission_update_other':
-    'Your roles <Roles/> do not have permissions to edit this document.',
+    'Your roles <Roles/> do not have permission to edit this document.',
   /** The pending text for the request permission button that appears for viewer roles */
   'banners.permission-check-banner.request-permission-button.sent': 'Editor request sent',
   /** The text for the request permission button that appears for viewer roles */
@@ -431,7 +431,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Your request to access this project has been declined.',
   /** The error/warning text in the request permission dialog when the user's request has been denied due to too many outstanding requests */
   'request-permission-dialog.warning.limit-reached.text':
-    "You've reached the limit for role requests across all projects. Please wait before submitting more requests or contact an admin for assistance.",
+    "You've reached the limit for role requests across all projects. Please wait before submitting more requests or contact an administrator for assistance.",
 
   /** Label for button when status is saved */
   'status-bar.document-status-pulse.status.saved.text': 'Saved',

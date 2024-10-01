@@ -13,6 +13,7 @@ import {
 import {Button, Dialog} from '../../../ui-components'
 import {NotAuthenticatedScreen} from './NotAuthenticatedScreen'
 
+/** @internal */
 export interface AccessRequest {
   id: string
   status: 'pending' | 'accepted' | 'declined'

@@ -36,7 +36,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
 
   const listFormat = useListFormat({style: 'short'})
   const {t} = useTranslation(structureLocaleNamespace)
-  const telemtry = useTelemetry()
+  const telemetry = useTelemetry()
 
   if (granted) return null
 
@@ -68,7 +68,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
                   ? undefined
                   : () => {
                       setShowRequestPermissionDialog(true)
-                      telemtry.log(AskToEditDialogOpened)
+                      telemetry.log(AskToEditDialogOpened)
                     },
                 text: requestPending
                   ? t('banners.permission-check-banner.request-permission-button.sent')
