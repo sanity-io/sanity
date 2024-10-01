@@ -29,8 +29,11 @@ export const useRoleRequestsStatus = () => {
           )
 
           const declinedRequest = projectRequests.find((request) => request.status === 'declined')
-          if (declinedRequest) {
-            return {loading: false, error: false, status: 'denied'}
+          if (
+            declinedRequest &&
+            isAfter(addWeeks(new Date(declinedRequest.createdAt), 2), new Date())
+          ) {
+            return {loading: false, error: false, status: 'declined'}
           }
 
           const pendingRequest = projectRequests.find(

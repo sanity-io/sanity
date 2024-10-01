@@ -84,7 +84,10 @@ export function RequestAccessScreen() {
         if (requests && requests?.length) {
           const projectRequests = requests.filter((request) => request.resourceId === projectId)
           const declinedRequest = projectRequests.find((request) => request.status === 'declined')
-          if (declinedRequest) {
+          if (
+            declinedRequest &&
+            isAfter(addWeeks(new Date(declinedRequest.createdAt), 2), new Date())
+          ) {
             setHasBeenDenied(true)
             return
           }

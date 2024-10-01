@@ -115,7 +115,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.permission-check-banner.missing-permission_update_other':
     'Your roles <Roles/> do not have permissions to edit this document.',
   /** The pending text for the request permission button that appears for viewer roles */
-  'banners.permission-check-banner.request-permission-button.sent': 'Request sent',
+  'banners.permission-check-banner.request-permission-button.sent': 'Editor request sent',
   /** The text for the request permission button that appears for viewer roles */
   'banners.permission-check-banner.request-permission-button.text': 'Ask to edit',
   /** The text for the reload button */

@@ -27,7 +27,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
   } = useRoleRequestsStatus()
   const [requestSent, setRequestSent] = useState(false)
   const requestPending = useMemo(
-    () => roleRequestStatus === 'pending' || requestSent,
+    () => roleRequestStatus === 'pending' || roleRequestStatus === 'declined' || requestSent,
     [roleRequestStatus, requestSent],
   )
   const currentUserRoles = currentUser?.roles || []
