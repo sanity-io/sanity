@@ -20,7 +20,7 @@ const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
 
 /** Escape-hatch env flags to change action behavior */
 const FEATURE_ENABLED_ENV_NAME = 'SANITY_CLI_EXTRACT_MANIFEST_ENABLED'
-const EXTRACT_MANIFEST_DISABLED = process.env[FEATURE_ENABLED_ENV_NAME] === 'false'
+const EXTRACT_MANIFEST_ENABLED = process.env[FEATURE_ENABLED_ENV_NAME] !== 'false'
 const EXTRACT_MANIFEST_LOG_ERRORS = process.env.SANITY_CLI_EXTRACT_MANIFEST_LOG_ERRORS === 'true'
 
 const CREATE_TIMER = 'create-manifest'
@@ -44,7 +44,7 @@ export async function extractManifestSafe(
   args: CliCommandArguments<ExtractFlags>,
   context: CliCommandContext,
 ): Promise<Error | undefined> {
-  if (EXTRACT_MANIFEST_DISABLED) {
+  if (!EXTRACT_MANIFEST_ENABLED) {
     return undefined
   }
 
