@@ -1,6 +1,7 @@
 import {beforeAll, beforeEach, describe, expect, jest, test} from '@jest/globals'
-import {type TypedObject} from '@sanity/types'
+import {type ConditionalPropertyCallbackContext, type TypedObject} from '@sanity/types'
 import {omit} from 'lodash'
+import {createSchema} from 'sanity'
 
 import {resolveSchemaTypeForPath} from '../resolveSchemaTypeForPath'
 import {transferValue} from '../transferValue'
@@ -16,6 +17,14 @@ beforeAll(() => {
   expect(schema).toBeDefined()
   expect(schema?._validation).toEqual([])
 })
+
+const currentUser = {
+  id: 'test',
+  name: 'test',
+  email: 'hello@example.com',
+  role: '',
+  roles: [],
+}
 
 describe('transferValue', () => {
   test('cannot copy from one type to another if the schema json type is different', async () => {
@@ -38,6 +47,7 @@ describe('transferValue', () => {
       targetPath: ['bio'],
       targetRootValue: {},
       targetRootPath: [],
+      currentUser,
     })
     expect(transferValueResult.errors).not.toEqual([])
     expect(transferValueResult.errors[0].i18n.key).toEqual(
@@ -56,6 +66,7 @@ describe('transferValue', () => {
         targetPath: [],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual({_type: 'author', name: 'Knut'})
     })
@@ -82,6 +93,7 @@ describe('transferValue', () => {
         targetPath: [],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toEqual({
@@ -109,6 +121,7 @@ describe('transferValue', () => {
         targetPath: ['name'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual('Knut')
     })
@@ -123,6 +136,7 @@ describe('transferValue', () => {
         targetPath: ['born'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors.length).toEqual(1)
     })
@@ -137,6 +151,7 @@ describe('transferValue', () => {
         targetPath: ['testNumberWithListObjects'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors.length).toEqual(1)
     })
@@ -151,6 +166,7 @@ describe('transferValue', () => {
         targetPath: ['favoriteStrings'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toEqual(['Knut'])
@@ -173,6 +189,7 @@ describe('transferValue', () => {
         targetPath: ['bestAuthorFriend'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual({_type: 'reference', _ref: 'yyy'})
     })
@@ -190,6 +207,7 @@ describe('transferValue', () => {
         targetPath: ['referenceWithFilter'],
         targetRootValue: {},
         targetRootPath: ['referenceWithFilter'],
+        currentUser,
         options: {
           validateReferences: true,
           client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'yyy'}]),
@@ -216,6 +234,7 @@ describe('transferValue', () => {
         targetPath: ['decadeFilteredBook', 'book'],
         targetRootValue,
         targetRootPath: ['decadeFilteredBook', 'book'],
+        currentUser,
         options: {
           validateReferences: true,
           client: createMockClient([
@@ -247,6 +266,7 @@ describe('transferValue', () => {
         targetPath: ['arrayOfReferences'],
         targetRootValue,
         targetRootPath: [],
+        currentUser,
         options: {
           validateReferences: true,
           client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
@@ -284,6 +304,7 @@ describe('transferValue', () => {
         targetPath: ['arrayOfReferences'],
         targetRootValue,
         targetRootPath: [],
+        currentUser,
         options: {
           validateReferences: true,
           client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
@@ -319,6 +340,7 @@ describe('transferValue', () => {
         targetPath: ['relatedEditor'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
         options: {
           validateReferences: true,
           client: createMockClient([{_type: 'author', _id: 'yyy'}]),
@@ -347,6 +369,7 @@ describe('transferValue', () => {
         targetPath: ['referenceWithFilter'],
         targetRootValue,
         targetRootPath: ['referenceWithFilter'],
+        currentUser,
         options: {
           validateReferences: true,
           client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
@@ -384,6 +407,7 @@ describe('transferValue', () => {
         targetPath: ['referenceWithFilter'],
         targetRootValue,
         targetRootPath: ['referenceWithFilter'],
+        currentUser,
         options: {
           validateReferences: true,
           client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
@@ -424,6 +448,7 @@ describe('transferValue', () => {
         targetPath: [],
         targetRootValue,
         targetRootPath: [],
+        currentUser,
         options: {
           validateReferences: true,
           client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
@@ -462,6 +487,7 @@ describe('transferValue', () => {
         targetPath: ['decadeFilteredBook', 'book'],
         targetRootValue,
         targetRootPath: ['decadeFilteredBook', 'book'],
+        currentUser,
         options: {
           validateReferences: true,
           client: createMockClient([
@@ -495,6 +521,7 @@ describe('transferValue', () => {
         targetPath: ['isVerified'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual(true)
     })
@@ -508,6 +535,7 @@ describe('transferValue', () => {
         targetPath: ['favoriteBooleans'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toEqual([false])
@@ -530,6 +558,7 @@ describe('transferValue', () => {
         targetPath: ['profile'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toMatchObject({
         _type: 'object',
@@ -551,6 +580,7 @@ describe('transferValue', () => {
         targetPath: [],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toMatchObject({
@@ -571,6 +601,7 @@ describe('transferValue', () => {
         targetPath: ['favoriteNumbers'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual([1, 2, 3])
     })
@@ -589,6 +620,7 @@ describe('transferValue', () => {
         targetPath: ['favoriteStrings'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual(['Alice', 'Bob', 'Charlie'])
     })
@@ -692,6 +724,7 @@ describe('transferValue', () => {
         targetPath: [],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(expectedOutput)
@@ -728,6 +761,7 @@ describe('transferValue', () => {
         targetPath: ['arrayOfPredefinedOptions'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual([
         {_key: expect.any(String), title: 'Red', name: 'red', _type: 'color'},
@@ -761,6 +795,7 @@ describe('transferValue', () => {
         targetPath: ['arrayOfPredefinedOptions'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual([
         {_key: expect.any(String), title: 'Red', name: 'red', _type: 'color'},
@@ -783,6 +818,7 @@ describe('transferValue', () => {
         targetPath: ['arrayOfPredefinedOptions'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual([
         {_key: expect.any(String), title: 'Red', name: 'red', _type: 'color'},
@@ -803,6 +839,7 @@ describe('transferValue', () => {
         targetPath: ['arrayOfPredefinedOptions'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual([
         {_key: expect.any(String), myString: 'hello world', _type: 'myStringObject'},
@@ -827,6 +864,7 @@ describe('transferValue', () => {
         targetRootValue: {},
         targetRootPath: [],
         // targetValue,
+        currentUser,
       })
       expect(transferValueResult?.errors).not.toEqual([])
       expect(transferValueResult?.targetValue).toEqual(undefined)
@@ -848,6 +886,7 @@ describe('transferValue', () => {
         targetPath: ['arrayOfMultipleNestedTypes', {_key: '39fd2dd21625'}, 'nestedArray'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors).not.toEqual([])
       expect(transferValueResult?.targetValue).toEqual(undefined)
@@ -870,6 +909,7 @@ describe('transferValue', () => {
         targetRootValue: {},
         targetRootPath: [],
         targetValue,
+        currentUser,
       })
       expect(transferValueResult?.errors).not.toEqual([])
       expect(transferValueResult?.targetValue).toEqual(undefined)
@@ -895,6 +935,7 @@ describe('transferValue', () => {
         targetRootValue: {},
         targetRootPath: [],
         //targetValue: [],
+        currentUser,
       })
       expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual([
@@ -929,6 +970,7 @@ describe('transferValue', () => {
         targetPath: ['arrayOfMultipleNestedTypes', {_key: 'color-1'}, 'nestedArray'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual([
@@ -996,6 +1038,7 @@ describe('transferValue', () => {
         targetPath: ['hotspots'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(expectValue)
@@ -1039,6 +1082,7 @@ describe('transferValue', () => {
         targetPath: [],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(expectedOutput)
@@ -1056,6 +1100,7 @@ describe('transferValue', () => {
         targetPath: ['born'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual(1984)
     })
@@ -1070,6 +1115,7 @@ describe('transferValue', () => {
         targetPath: ['name'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toEqual('1984')
@@ -1085,6 +1131,7 @@ describe('transferValue', () => {
         targetPath: ['born'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual(1984)
     })
@@ -1099,6 +1146,7 @@ describe('transferValue', () => {
         targetPath: ['testNumberWithListObjects'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual(1)
     })
@@ -1113,6 +1161,7 @@ describe('transferValue', () => {
         targetPath: ['favoriteStrings'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors.length).toEqual(0)
       expect(transferValueResult?.targetValue).toEqual(['1'])
@@ -1128,6 +1177,7 @@ describe('transferValue', () => {
         targetPath: ['favoriteNumbers'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual([1])
     })
@@ -1142,6 +1192,7 @@ describe('transferValue', () => {
         targetPath: ['testNumberWithListObjects'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual(1)
     })
@@ -1168,6 +1219,7 @@ describe('transferValue', () => {
         targetPath: [],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       const targetValue = transferValueResult?.targetValue as {
         bio: (TypedObject & {children: TypedObject[]})[]
@@ -1199,6 +1251,7 @@ describe('transferValue', () => {
         targetPath: ['nestedTest'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toMatchObject({
         _type: 'nestedObject',
@@ -1224,6 +1277,7 @@ describe('transferValue', () => {
         targetPath: ['profileImage'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(sourceValue)
@@ -1261,6 +1315,7 @@ describe('transferValue', () => {
         targetPath: ['profileImagePNG'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
         options: {
           client: mockClient,
           validateAssets: true,
@@ -1305,6 +1360,7 @@ describe('transferValue', () => {
         targetPath: ['profileImageJpeg'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
         options: {
           client: mockClient,
           validateAssets: true,
@@ -1331,6 +1387,7 @@ describe('transferValue', () => {
         targetPath: [],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult.errors).not.toEqual([])
       expect(transferValueResult.errors[0].i18n.key).toEqual(
@@ -1355,6 +1412,7 @@ describe('transferValue', () => {
         targetPath: [],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult.errors).not.toEqual([])
       expect(transferValueResult.errors[0].i18n.key).toEqual(
@@ -1377,6 +1435,7 @@ describe('transferValue', () => {
         targetPath: ['bestAuthorFriend'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual(omit(sourceValue, ['_weak']))
     })
@@ -1395,6 +1454,7 @@ describe('transferValue', () => {
         targetPath: ['bestFriend'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       expect(transferValueResult?.targetValue).toEqual({...sourceValue, _weak: true})
     })
@@ -1423,6 +1483,7 @@ describe('transferValue', () => {
         targetPath: [],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser,
       })
       const targetValue = transferValueResult?.targetValue as {
         bio: (TypedObject & {children: TypedObject[]})[]
@@ -1446,6 +1507,105 @@ describe('transferValue', () => {
       expect(targetValue.bio[0].children[0]._key).not.toEqual('someOtherKey')
       expect(targetValue.bio[1]._type).toEqual('reference')
       expect(targetValue.bio.length).toEqual(2)
+    })
+  })
+
+  describe('readOnly', () => {
+    const getTargetSchema = (readOnly: unknown) => {
+      return createSchema({
+        name: 'default',
+        types: [
+          {
+            name: 'author',
+            type: 'document',
+            fields: [
+              {
+                name: 'name',
+                type: 'string',
+                readOnly,
+              },
+            ],
+          },
+        ],
+      })
+    }
+
+    test('can copy into readOnly boolean field is false', async () => {
+      const targetSchema = getTargetSchema(false)
+      const sourceValue = {_type: 'author', _id: 'xxx', name: 'Knut'}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['name'],
+        sourceValue,
+        targetRootSchemaType: targetSchema.get('author')!,
+        targetPath: ['name'],
+        targetRootValue: {},
+        targetRootPath: [],
+        currentUser,
+      })
+
+      expect(transferValueResult.errors).toEqual([])
+    })
+
+    test('can copy into readOnly function if it resolves to false', async () => {
+      const targetSchema = getTargetSchema(
+        (props: ConditionalPropertyCallbackContext) => props.currentUser?.name !== 'sanity',
+      )
+      const sourceValue = {_type: 'author', _id: 'xxx', name: 'Knut'}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['name'],
+        sourceValue,
+        targetRootSchemaType: targetSchema.get('author')!,
+        targetPath: ['name'],
+        targetRootValue: {},
+        targetRootPath: [],
+        currentUser: {...currentUser, name: 'sanity'},
+      })
+
+      expect(transferValueResult.errors).toEqual([])
+    })
+
+    test('cannot copy into readOnly boolean field is true', async () => {
+      const targetSchema = getTargetSchema(true)
+      const sourceValue = {_type: 'author', _id: 'xxx', name: 'Knut'}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['name'],
+        sourceValue,
+        targetRootSchemaType: targetSchema.get('author')!,
+        targetPath: ['name'],
+        targetRootValue: {},
+        targetRootPath: [],
+        currentUser,
+      })
+
+      expect(transferValueResult.errors).not.toEqual([])
+      expect(transferValueResult.errors[0].i18n.key).toEqual(
+        'copy-paste.on-paste.validation.read-only-target.description',
+      )
+    })
+
+    test('cannot copy into readOnly function if it resolves to true', async () => {
+      const targetSchema = getTargetSchema(
+        (props: ConditionalPropertyCallbackContext) => props.currentUser?.name !== 'sanity',
+      )
+      const sourceValue = {_type: 'author', _id: 'xxx', name: 'Knut'}
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: ['name'],
+        sourceValue,
+        targetRootSchemaType: targetSchema.get('author')!,
+        targetPath: ['name'],
+        targetRootValue: {},
+        targetRootPath: [],
+        currentUser: {...currentUser, name: 'not-sanity'},
+      })
+
+      expect(transferValueResult.errors).not.toEqual([])
+      expect(transferValueResult.errors[0].i18n.key).toEqual(
+        'copy-paste.on-paste.validation.read-only-target.description',
+      )
     })
   })
 })
