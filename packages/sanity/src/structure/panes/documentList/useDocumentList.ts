@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {concat, fromEvent, merge, of, Subject, throwError} from 'rxjs'
+import {concat, fromEvent, merge, of, retry, Subject, throwError} from 'rxjs'
 import {catchError, map, mergeMap, scan, startWith, take} from 'rxjs/operators'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -177,9 +177,21 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       catchError((err, caught$) => {
         return concat(
           of({result: null, error: err}),
-          merge(fromEvent(window, 'online'), onRetry$).pipe(
-            take(1),
-            mergeMap(() => caught$),
+          merge(
+            fromEvent(window, 'online').pipe(
+              mergeMap(() =>
+                caught$.pipe(
+                  retry({
+                    delay: (_: unknown, attempt) => of(Math.max(30000, attempt * 1000)),
+                    count: 3,
+                  }),
+                ),
+              ),
+            ),
+            onRetry$.pipe(
+              take(1),
+              mergeMap(() => caught$),
+            ),
           ),
         )
       }),
