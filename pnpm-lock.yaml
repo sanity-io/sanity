@@ -428,7 +428,7 @@ importers:
     dependencies:
       '@portabletext/editor':
         specifier: ^1.1.0
-        version: 1.1.1(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@sanity/util@packages+@sanity+util)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 1.1.2(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@sanity/util@packages+@sanity+util)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.1.0(react@18.3.1)
@@ -1422,8 +1422,8 @@ importers:
         specifier: ^3.3.1
         version: 3.4.0
       '@portabletext/editor':
-        specifier: ^1.1.1
-        version: 1.1.1(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@sanity/util@packages+@sanity+util)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: ^1.1.2
+        version: 1.1.2(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@sanity/util@packages+@sanity+util)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.1.0(react@18.3.1)
@@ -4227,8 +4227,8 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/editor@1.1.1':
-    resolution: {integrity: sha512-tq8mMeISdvv0uZ3lxtj/WGpYZHihx9be7SXs1JxHtL/Nqm65A/UYEnwhlTKLti/P4XWH/zk/SfX4aoCQZboEJA==}
+  '@portabletext/editor@1.1.2':
+    resolution: {integrity: sha512-LDEavM8OAfWO1VFuT2llfIQqvjNmEuFT5KZjp40A/Ofq3vho9B7PsndpN+xs6RR7oHdfqc41U34MLs9NsFo87Q==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/block-tools': ^3.47.1
@@ -4236,8 +4236,8 @@ packages:
       '@sanity/types': ^3.47.1
       '@sanity/util': ^3.47.1
       react: ^16.9 || ^17 || ^18
-      rxjs: ^7
-      styled-components: ^6.1
+      rxjs: ^7.8.1
+      styled-components: ^6.1.13
 
   '@portabletext/patches@1.1.0':
     resolution: {integrity: sha512-2qn4WaRc23m5qRwclT3sAyuHwTyjxCb4Lg0BQyhp7CABd83HtnPPYoP6hycREs6HRdWA48H3sU5gqUVPoxJxdg==}
@@ -10736,8 +10736,8 @@ packages:
     resolution: {integrity: sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==}
     engines: {node: '>=12'}
 
-  slate-react@0.108.0:
-    resolution: {integrity: sha512-vzQuQ1t/gR+1pJh9ABbU4rgckPK0A1AZV5iVKO3isBpJ9z5xPCXf6hqnCNIogMvLU0pZIjjyQJVSL2OtxrQ/xA==}
+  slate-react@0.110.1:
+    resolution: {integrity: sha512-bx6J0PkY9A50O4w78k4NPqNOXGo49fmSbCRgr8OBDWKKo4BeSt9y3vGXCkQ/Mm4lQ8riyRKr3TrJXzqMY7lRZg==}
     peerDependencies:
       react: '>=18.2.0'
       react-dom: '>=18.2.0'
@@ -11959,6 +11959,9 @@ packages:
 
   xregexp@2.0.0:
     resolution: {integrity: sha512-xl/50/Cf32VsGq/1R8jJE5ajH1yMCQkpmoS10QbFZWl2Oor4H0Me64Pu2yxvsRWK3m6soJbmGfzSR7BYmDcWAA==}
+
+  xstate@5.18.2:
+    resolution: {integrity: sha512-hab5VOe29D0agy8/7dH1lGw+7kilRQyXwpaChoMu4fe6rDP+nsHYhDYKfS2O4iXE7myA98TW6qMEudj/8NXEkA==}
 
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
@@ -14532,7 +14535,7 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/editor@1.1.1(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@sanity/util@packages+@sanity+util)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@portabletext/editor@1.1.2(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@sanity/util@packages+@sanity+util)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@portabletext/patches': 1.1.0
       '@sanity/block-tools': link:packages/@sanity/block-tools
@@ -14545,8 +14548,9 @@ snapshots:
       react: 18.3.1
       rxjs: 7.8.1
       slate: 0.103.0
-      slate-react: 0.108.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate@0.103.0)
+      slate-react: 0.110.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate@0.103.0)
       styled-components: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      xstate: 5.18.2
     transitivePeerDependencies:
       - react-dom
       - supports-color
@@ -23024,7 +23028,7 @@ snapshots:
 
   slash@4.0.0: {}
 
-  slate-react@0.108.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate@0.103.0):
+  slate-react@0.110.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate@0.103.0):
     dependencies:
       '@juggle/resize-observer': 3.4.0
       direction: 1.0.4
@@ -24401,6 +24405,8 @@ snapshots:
   xmlchars@2.2.0: {}
 
   xregexp@2.0.0: {}
+
+  xstate@5.18.2: {}
 
   xtend@4.0.2: {}
 
