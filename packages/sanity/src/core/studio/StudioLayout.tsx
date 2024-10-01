@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
-import {Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -17,6 +17,14 @@ import {
 } from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
+
+const DetectViteDevServerStopped = lazy(() =>
+  import('./ViteDevServerStopped').then((DevServerStopped) => ({
+    default: DevServerStopped.DetectViteDevServerStopped,
+  })),
+)
+
+const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
 
 const SearchFullscreenPortalCard = styled(Card)`
   height: 100%;
@@ -173,6 +181,7 @@ export function StudioLayoutComponent() {
       {/* By using the tool name as the key on the error boundary, we force it to re-render
           when switching tools, which ensures we don't show the wrong tool having crashed */}
       <StudioErrorBoundary key={activeTool?.name} heading={`The ${activeTool?.name} tool crashed`}>
+        {detectViteDevServerStopped && <DetectViteDevServerStopped />}
         <Card flex={1} hidden={searchFullscreenOpen}>
           {activeTool && activeToolName && (
             <RouteScope

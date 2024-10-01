@@ -12,11 +12,10 @@ type Props = {
   uploadState: UploadState
   onCancel?: () => void
   onStale?: () => void
-  height?: number
 }
 const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
 
-export function UploadProgress({uploadState, onCancel, onStale, height}: Props) {
+export function UploadProgress({uploadState, onCancel, onStale}: Props) {
   const filename = uploadState.file.name
 
   useEffect(() => {
@@ -27,13 +26,15 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
 
   const {t} = useTranslation()
   return (
-    <CardWrapper
-      tone="primary"
-      padding={4}
-      border
-      style={{height: height ? `${height}px` : undefined}}
-    >
-      <FlexWrapper align="center" justify="space-between" height="fill" direction="row" gap={2}>
+    <CardWrapper tone="primary" border>
+      <FlexWrapper
+        padding={4}
+        align="center"
+        justify="space-between"
+        height="fill"
+        direction="row"
+        gap={2}
+      >
         <LeftSection>
           <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>
             <Text size={1}>

@@ -11,7 +11,14 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {type ComponentType, type ErrorInfo, type ReactNode, useCallback, useState} from 'react'
+import {
+  type ComponentType,
+  type ErrorInfo,
+  lazy,
+  type ReactNode,
+  useCallback,
+  useState,
+} from 'react'
 import {ErrorActions, isDev, isProd} from 'sanity'
 import {styled} from 'styled-components'
 import {useHotModuleReload} from 'use-hot-module-reload'
@@ -21,6 +28,17 @@ import {errorReporter} from '../error/errorReporter'
 import {CorsOriginError} from '../store'
 import {isRecord} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
+
+/**
+ * The DevServerStoppedErrorScreen will always have been lazy loaded to client
+ * in instances where it is used, since DevServerStoppedError is only thrown
+ * when this module is loaded, and this screen is also conditional on this error type
+ */
+const DevServerStoppedErrorScreen = lazy(() =>
+  import('./ViteDevServerStopped').then((DevServerStopped) => ({
+    default: DevServerStopped.DevServerStoppedErrorScreen,
+  })),
+)
 
 interface StudioErrorBoundaryProps {
   children: ReactNode
@@ -78,6 +96,10 @@ export const StudioErrorBoundary: ComponentType<StudioErrorBoundaryProps> = ({
 
   if (error instanceof SchemaError) {
     return <SchemaErrorsScreen schema={error.schema} />
+  }
+
+  if (error && 'ViteDevServerStoppedError' in error && error.ViteDevServerStoppedError) {
+    return <DevServerStoppedErrorScreen />
   }
 
   if (!error) {

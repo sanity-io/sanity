@@ -1,9 +1,10 @@
 /* eslint-disable tsdoc/syntax */
 
-import devAliases from '@repo/dev-aliases'
-
 import path from 'node:path'
+
+import devAliases from '@repo/dev-aliases'
 import {escapeRegExp, omit} from 'lodash-es'
+
 import {resolveDirName} from './resolveDirName.mjs'
 
 const dirname = resolveDirName(import.meta.url)
@@ -71,7 +72,6 @@ export function createJestConfig(config = {}) {
     resolver: path.resolve(dirname, './resolver.cjs'),
     testEnvironment: path.resolve(dirname, './jsdom.jest.env.ts'),
     setupFiles: [...setupFiles, path.resolve(dirname, './setup.ts')],
-    // testEnvironment: 'jsdom',
     testEnvironmentOptions: {
       url: 'http://localhost:3333',
     },
@@ -103,6 +103,7 @@ export function createJestConfig(config = {}) {
             '@babel/preset-typescript',
             ['@babel/preset-react', {runtime: 'automatic'}],
           ],
+          plugins: ['babel-plugin-transform-vite-meta-hot'],
         },
       ],
     },

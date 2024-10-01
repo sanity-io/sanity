@@ -70,16 +70,16 @@ export default (html: string, doc: Document): Document => {
   for (let i = mappedElements.snapshotLength - 1; i >= 0; i--) {
     const mappedElm = mappedElements.snapshotItem(i) as HTMLElement
     const tags = elementMap[mappedElm.className]
-    const text = new Text(mappedElm.textContent || '')
+    const text = doc.createTextNode(mappedElm.textContent || '')
     if (!tags) {
       continue
     }
 
-    const parentElement = document.createElement(tags[0])
+    const parentElement = doc.createElement(tags[0])
     let parent = parentElement
     let child = parentElement
     tags.slice(1).forEach((tag) => {
-      child = document.createElement(tag)
+      child = doc.createElement(tag)
       parent.appendChild(child)
       parent = child
     })
