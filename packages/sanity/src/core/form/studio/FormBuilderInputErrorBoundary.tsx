@@ -28,17 +28,18 @@ export function FormBuilderInputErrorBoundary(
     error: null,
     info: {},
   })
-  const {onStudioError} = useSource()
+  const source = useSource()
   const handleRetry = useCallback(() => setError({error: null, info: {}}), [])
   const handleCatch = useCallback(
     ({error: caughtError, info: caughtInfo}: {error: Error; info: React.ErrorInfo}) => {
       setError({error: caughtError, info: caughtInfo})
 
-      if (onStudioError) {
+      if (source?.onStudioError) {
+        const {onStudioError} = source
         onStudioError(caughtError, caughtInfo)
       }
     },
-    [onStudioError],
+    [source],
   )
 
   if (!error) {
