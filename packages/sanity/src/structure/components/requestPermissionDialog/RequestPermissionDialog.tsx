@@ -64,14 +64,18 @@ export function RequestPermissionDialog({
   const requestedRole$: Observable<'administrator' | 'editor'> = useMemo(() => {
     const adminRole = 'administrator' as const
     if (!projectId || !client) return of(adminRole)
-    return client.observable.request<Role[]>({url: `/projects/${projectId}/roles`}).pipe(
-      map((roles) => {
-        const hasEditor = roles.find((role) => role.name === 'editor')
-        return hasEditor ? 'editor' : adminRole
-      }),
-      startWith(adminRole),
-      catchError(() => of(adminRole)),
-    )
+    return client.observable
+      .request<(Role & {appliesToUsers?: boolean})[]>({url: `/projects/${projectId}/roles`})
+      .pipe(
+        map((roles) => {
+          const hasEditor = roles
+            .filter((role) => role?.appliesToUsers)
+            .find((role) => role.name === 'editor')
+          return hasEditor ? 'editor' : adminRole
+        }),
+        startWith(adminRole),
+        catchError(() => of(adminRole)),
+      )
   }, [projectId, client])
 
   const requestedRole = useObservable(requestedRole$)
