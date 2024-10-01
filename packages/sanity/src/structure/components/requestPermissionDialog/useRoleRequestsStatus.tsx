@@ -5,7 +5,19 @@ import {from, of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
 import {useClient, useProjectId} from 'sanity'
 
-import {type AccessRequest} from '../../../core/studio/screens'
+export interface AccessRequest {
+  id: string
+  status: 'pending' | 'accepted' | 'declined'
+  resourceId: string
+  resourceType: 'project'
+  createdAt: string
+  updatedAt: string
+  updatedByUserId: string
+  requestedByUserId: string
+  requestedRole: string
+  type: 'access' | 'role'
+  note: string
+}
 
 export const useRoleRequestsStatus = () => {
   const client = useClient({apiVersion: '2024-07-01'})
