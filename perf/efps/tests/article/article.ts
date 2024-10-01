@@ -140,30 +140,10 @@ export default defineEfpsTest({
 
     return document
   },
-  run: async ({page}) => {
-    return [
-      {
-        label: 'title',
-        ...(await measureFpsForInput(
-          page.locator('[data-testid="field-title"] input[type="text"]'),
-        )),
-      },
-      {
-        label: 'body',
-        ...(await measureFpsForPte(page.locator('[data-testid="field-body"]'))),
-      },
-      {
-        label: 'string in object',
-        ...(await measureFpsForInput(
-          page.locator('[data-testid="field-seo.metaTitle"] input[type="text"]'),
-        )),
-      },
-      {
-        label: 'string in array',
-        ...(await measureFpsForInput(
-          page.locator('[data-testid="field-tags"] input[type="text"]').first(),
-        )),
-      },
-    ]
-  },
+  run: async ({page}) => [
+    await measureFpsForInput({page, fieldName: 'title'}),
+    await measureFpsForPte({page, fieldName: 'body'}),
+    await measureFpsForInput({page, fieldName: 'seo.metaTitle', label: 'string inside object'}),
+    await measureFpsForInput({page, fieldName: 'tags', label: 'string inside array'}),
+  ],
 })

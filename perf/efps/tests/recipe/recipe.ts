@@ -160,22 +160,9 @@ export default defineEfpsTest({
 
     return recipe
   },
-  run: async ({page}) => {
-    return [
-      {
-        label: 'name',
-        ...(await measureFpsForInput(
-          page.locator('[data-testid="field-name"] input[type="text"]'),
-        )),
-      },
-      {
-        label: 'description',
-        ...(await measureFpsForInput(page.locator('[data-testid="field-description"] textarea'))),
-      },
-      {
-        label: 'instructions',
-        ...(await measureFpsForPte(page.locator('[data-testid="field-instructions"]'))),
-      },
-    ]
-  },
+  run: async ({page}) => [
+    await measureFpsForInput({page, fieldName: 'name'}),
+    await measureFpsForInput({page, fieldName: 'description'}),
+    await measureFpsForPte({page, fieldName: 'instructions'}),
+  ],
 })
