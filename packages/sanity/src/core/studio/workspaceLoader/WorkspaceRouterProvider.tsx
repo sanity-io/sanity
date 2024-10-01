@@ -33,18 +33,19 @@ export function WorkspaceRouterProvider({
   const history = useRouterHistory()
   const router = useMemo(() => createRouter({basePath, tools}), [basePath, tools])
   const [state, onNavigate] = useRouterFromWorkspaceHistory(history, router, tools)
-  const {onStudioError} = useSource()
+  const source = useSource()
 
   const handleCatchError = useCallback(
     ({error, info}: {error: Error; info: React.ErrorInfo}) => {
       /** catches errors in studio to be able to be caught in the config */
-      if (onStudioError) {
+      if (source?.onStudioError) {
+        const {onStudioError} = source
         onStudioError(error, info)
       }
 
       throw new Error(error.message)
     },
-    [onStudioError],
+    [source],
   )
 
   // `state` is only null if the Studio is somehow rendering in SSR or using hydrateRoot in combination with `unstable_noAuthBoundary`.
@@ -65,7 +66,7 @@ type HandleNavigate = (opts: {path: string; replace?: boolean}) => void
 /**
  * @internal
  */
-function useRouterFromWorkspaceHistory(
+export function useRouterFromWorkspaceHistory(
   history: RouterHistory,
   router: Router,
   tools: Tool[],
