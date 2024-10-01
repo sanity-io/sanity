@@ -13,7 +13,8 @@ import {
 import {Button, Dialog} from '../../../ui-components'
 import {NotAuthenticatedScreen} from './NotAuthenticatedScreen'
 
-interface AccessRequest {
+/** @internal */
+export interface AccessRequest {
   id: string
   status: 'pending' | 'accepted' | 'declined'
   resourceId: string
@@ -22,6 +23,8 @@ interface AccessRequest {
   updatedAt: string
   updatedByUserId: string
   requestedByUserId: string
+  requestedRole: string
+  type: 'access' | 'role'
   note: string
 }
 
@@ -82,7 +85,10 @@ export function RequestAccessScreen() {
         if (requests && requests?.length) {
           const projectRequests = requests.filter((request) => request.resourceId === projectId)
           const declinedRequest = projectRequests.find((request) => request.status === 'declined')
-          if (declinedRequest) {
+          if (
+            declinedRequest &&
+            isAfter(addWeeks(new Date(declinedRequest.createdAt), 2), new Date())
+          ) {
             setHasBeenDenied(true)
             return
           }
@@ -127,7 +133,7 @@ export function RequestAccessScreen() {
       .request<AccessRequest | null>({
         url: `/access/project/${projectId}/requests`,
         method: 'post',
-        body: {note, requestUrl: window?.location.href},
+        body: {note, requestUrl: window?.location.href, type: 'access'},
       })
       .then((request) => {
         if (request) setHasPendingRequest(true)
@@ -148,7 +154,7 @@ export function RequestAccessScreen() {
         } else {
           toast.push({
             title: 'There was a problem submitting your request.',
-            status: errMessage,
+            status: 'error',
           })
         }
       })
