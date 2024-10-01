@@ -594,26 +594,31 @@ export default async function initSanity(
 
   trace.log({step: 'importTemplateDataset', selectedOption: shouldImport ? 'yes' : 'no'})
 
-  // Bootstrap Sanity, creating required project files, manifests etc
-  await bootstrapTemplate(templateOptions, context)
+  const [_, bootstrapPromise] = await Promise.allSettled([
+    // record template files attempted to be created locally
+    apiClient({api: {projectId: projectId}})
+      .request<SanityProject>({uri: `/projects/${projectId}`})
+      .then((project: SanityProject) => {
+        if (!project?.metadata?.cliInitializedAt) {
+          return apiClient({api: {projectId}}).request({
+            method: 'PATCH',
+            uri: `/projects/${projectId}`,
+            body: {metadata: {cliInitializedAt: new Date().toISOString()}},
+          })
+        }
+        return Promise.resolve()
+      })
+      .catch(() => {
+        // Non-critical update
+        debug('Failed to update cliInitializedAt metadata')
+      }),
+    // Bootstrap Sanity, creating required project files, manifests etc
+    bootstrapTemplate(templateOptions, context),
+  ])
 
-  // update that files were initialized locally; do not halt flow for request
-  apiClient({api: {projectId: projectId}})
-    .request<SanityProject>({uri: `/projects/${projectId}`})
-    .then((project: SanityProject) => {
-      if (!project?.metadata?.cliInitializedAt) {
-        return apiClient({api: {projectId}}).request({
-          method: 'PATCH',
-          uri: `/projects/${projectId}`,
-          body: {metadata: {cliInitializedAt: new Date().toISOString()}},
-        })
-      }
-      return Promise.resolve()
-    })
-    .catch(() => {
-      // Non-critical update
-      debug('Failed to update cliInitializedAt metadata')
-    })
+  if (bootstrapPromise.status === 'rejected' && bootstrapPromise.reason instanceof Error) {
+    throw bootstrapPromise.reason
+  }
 
   let pkgManager: PackageManager
 
