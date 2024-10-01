@@ -37,9 +37,9 @@ const listProjectsCommand: CliCommandDefinition = {
 
     const projects = await client.projects.list()
     const ordered = sortBy(
-      projects.map(({displayName, id, members = [], studioHost = '', createdAt}) => {
-        const studio = studioHost ? `https://${studioHost}.sanity.studio` : 'Not deployed'
-        return [id, members.length, displayName, studio, createdAt].map(String)
+      projects.map(({displayName, id, members = [], createdAt}) => {
+        const manage = `https://www.sanity.io/manage/project/${id}`
+        return [id, members.length, displayName, manage, createdAt].map(String)
       }),
       [headings.indexOf(flags.sort)],
     )
