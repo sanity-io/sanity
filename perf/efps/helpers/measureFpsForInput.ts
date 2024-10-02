@@ -1,9 +1,28 @@
-import {type Locator} from 'playwright'
+import {type Page} from 'playwright'
 
 import {type EfpsResult} from '../types'
-import {calculatePercentile} from './calculatePercentile'
+import {aggregateLatencies} from './aggregateLatencies'
+import {measureBlockingTime} from './measureBlockingTime'
 
-export async function measureFpsForInput(input: Locator): Promise<EfpsResult> {
+interface MeasureFpsForInputOptions {
+  label?: string
+  page: Page
+  fieldName: string
+}
+
+export async function measureFpsForInput({
+  label,
+  fieldName,
+  page,
+}: MeasureFpsForInputOptions): Promise<EfpsResult> {
+  const start = Date.now()
+
+  const input = page
+    .locator(
+      `[data-testid="field-${fieldName}"] input[type="text"], ` +
+        `[data-testid="field-${fieldName}"] textarea`,
+    )
+    .first()
   await input.waitFor({state: 'visible'})
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -49,6 +68,8 @@ export async function measureFpsForInput(input: Locator): Promise<EfpsResult> {
   await input.pressSequentially(startingMarker)
   await new Promise((resolve) => setTimeout(resolve, 500))
 
+  const getBlockingTime = measureBlockingTime(page)
+
   for (const character of characters) {
     inputEvents.push({character, timestamp: Date.now()})
     await input.press(character)
@@ -57,6 +78,9 @@ export async function measureFpsForInput(input: Locator): Promise<EfpsResult> {
 
   await input.blur()
 
+  await page.evaluate(() => window.document.dispatchEvent(new CustomEvent('__finish')))
+
+  const blockingTime = await getBlockingTime()
   const renderEvents = await rendersPromise
 
   await new Promise((resolve) => setTimeout(resolve, 500))
@@ -74,9 +98,10 @@ export async function measureFpsForInput(input: Locator): Promise<EfpsResult> {
     return matchingEvent.timestamp - inputEvent.timestamp
   })
 
-  const p50 = 1000 / calculatePercentile(latencies, 0.5)
-  const p75 = 1000 / calculatePercentile(latencies, 0.75)
-  const p90 = 1000 / calculatePercentile(latencies, 0.9)
-
-  return {p50, p75, p90, latencies}
+  return {
+    latency: aggregateLatencies(latencies),
+    blockingTime,
+    label: label || fieldName,
+    runDuration: Date.now() - start,
+  }
 }
