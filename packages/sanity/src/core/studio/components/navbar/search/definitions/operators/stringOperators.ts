@@ -37,7 +37,7 @@ export const stringOperators = {
     nameKey: 'search.operator.string-contains.name',
     descriptionKey: 'search.operator.string-contains.description',
     groqFilter: ({fieldPath, value}) =>
-      value && fieldPath ? `${fieldPath} match ${toJSON(value)}` : null,
+      value && fieldPath ? `${fieldPath} match "*${value}*"` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput as SearchOperatorInput<string | number>,
     type: 'stringMatches',
@@ -55,7 +55,7 @@ export const stringOperators = {
     nameKey: 'search.operator.string-not-contains.name',
     descriptionKey: 'search.operator.string-not-contains.description',
     groqFilter: ({fieldPath, value}) =>
-      value && fieldPath ? `!(${fieldPath} match ${toJSON(value)})` : null,
+      value && fieldPath ? `!(${fieldPath} match "*${value}*")` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput as SearchOperatorInput<string | number>,
     type: 'stringNotMatches',
