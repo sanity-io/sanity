@@ -23,7 +23,12 @@ describe('stringOperators', () => {
 
   it('should create a valid filter for stringMatches', () => {
     const filter = stringOperators.stringMatches.groqFilter({fieldPath, value})
-    expect(filter).toEqual(`${fieldPath} match "${value}"`)
+    expect(filter).toEqual(`${fieldPath} match "*${value}*"`)
+  })
+
+  it('should create a valid filter for stringNotMatches', () => {
+    const filter = stringOperators.stringNotMatches.groqFilter({fieldPath, value})
+    expect(filter).toEqual(`!(${fieldPath} match "*${value}*")`)
   })
 
   it('should create a valid filter for stringNotEqual', () => {
