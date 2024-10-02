@@ -2,9 +2,12 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {groupBy} from 'lodash'
-import {defer, type Observable, of as observableOf, of, timer} from 'rxjs'
-import {concatMap, map, mergeMap, scan} from 'rxjs/operators'
+import {concat, defer, EMPTY, merge, type Observable, of, throwError, timer} from 'rxjs'
+import {catchError, concatMap, filter, map, mergeMap, scan} from 'rxjs/operators'
 
+import {LISTENER_RESET_DELAY} from '../../../preview/constants'
+import {shareReplayLatest} from '../../../preview/utils/shareReplayLatest'
+import {debug} from './debug'
 import {
   type IdPair,
   type MutationEvent,
@@ -12,6 +15,7 @@ import {
   type ReconnectEvent,
   type WelcomeEvent,
 } from './types'
+import {OutOfSyncError, sequentializeListenerEvents} from './utils/sequentializeListenerEvents'
 
 interface Snapshots {
   draft: SanityDocument | null
@@ -22,8 +26,12 @@ interface Snapshots {
 export interface InitialSnapshotEvent {
   type: 'snapshot'
   documentId: string
+  initialRevision: string | undefined
   document: SanityDocument | null
 }
+
+/** @internal */
+export type ListenerEventWithSnapshot = MutationEvent | ReconnectEvent | InitialSnapshotEvent
 
 /** @internal */
 export interface PairListenerOptions {
@@ -65,9 +73,10 @@ export function getPairListener(
   options: PairListenerOptions = {},
 ): Observable<ListenerEvent> {
   const {publishedId, draftId} = idPair
-  return defer(
-    () =>
-      client.observable.listen(
+
+  const sharedEvents = defer(() =>
+    client
+      .listen(
         `*[_id == $publishedId || _id == $draftId]`,
         {
           publishedId,
@@ -79,18 +88,55 @@ export function getPairListener(
           effectFormat: 'mendoza',
           tag: options.tag || 'document.pair-listener',
         },
-      ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>,
-  ).pipe(
-    concatMap((event) =>
-      event.type === 'welcome'
+      )
+      .pipe(
+        shareReplayLatest({
+          predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
+          resetOnRefCountZero: () => timer(LISTENER_RESET_DELAY),
+        }),
+      ),
+  ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
+
+  return defer(() => sharedEvents).pipe(
+    concatMap((event) => {
+      return event.type === 'welcome'
         ? fetchInitialDocumentSnapshots().pipe(
-            concatMap((snapshots) => [
-              createSnapshotEvent(draftId, snapshots.draft),
-              createSnapshotEvent(publishedId, snapshots.published),
-            ]),
+            concatMap((snapshots) => {
+              return merge(
+                concat(
+                  of(createSnapshotEvent(draftId, snapshots.draft)),
+                  sharedEvents.pipe(
+                    filter((event) => event.type !== 'welcome'),
+                    filter(
+                      (sharedListenerEvent) =>
+                        sharedListenerEvent.type !== 'mutation' ||
+                        sharedListenerEvent.documentId === draftId,
+                    ),
+                  ),
+                ).pipe(sequentializeListenerEvents()),
+                concat(
+                  of(createSnapshotEvent(publishedId, snapshots.published)),
+                  sharedEvents.pipe(
+                    filter((event) => event.type !== 'welcome'),
+                    filter(
+                      (sharedListenerEvent) =>
+                        sharedListenerEvent.type !== 'mutation' ||
+                        sharedListenerEvent.documentId === publishedId,
+                    ),
+                  ),
+                ).pipe(sequentializeListenerEvents()),
+              )
+            }),
           )
-        : observableOf(event),
-    ),
+        : EMPTY
+    }),
+    catchError((err, caught$) => {
+      if (err instanceof OutOfSyncError) {
+        console.error(err)
+        return caught$
+      }
+      return throwError(err)
+    }),
     scan(
       (acc: {next: ListenerEvent[]; buffer: ListenerEvent[]}, msg) => {
         // we only care about mutation events
@@ -124,9 +170,6 @@ export function getPairListener(
     ),
     // note: this flattens the array, and in the case of an empty array, no event will be pushed downstream
     mergeMap((v) => v.next),
-    concatMap((result) =>
-      (window as any).SLOW ? timer(10000).pipe(map(() => result)) : of(result),
-    ),
   )
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
@@ -149,5 +192,6 @@ function createSnapshotEvent(
     type: 'snapshot',
     documentId,
     document,
+    initialRevision: document?._rev,
   }
 }
