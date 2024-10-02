@@ -172,11 +172,10 @@ function getEventFromTransaction(
             transaction.documentIDs.length > 1 && transaction.documentIDs.includes(draftId)
               ? draftId
               : undefined,
-          // TODO: Should this be the actual transaction id that created the draft document?
-          // The revision id of the last edit in the publish document
           versionRevisionId:
-            previousTransactions.find((t) => t.documentIDs.includes(publishedId))?.id ||
-            'not-found',
+            transaction.documentIDs.length > 1 && transaction.documentIDs.includes(draftId)
+              ? transaction.id
+              : undefined,
           releaseId: getVersionFromId(documentId),
         }
       }

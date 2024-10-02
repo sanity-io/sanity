@@ -247,7 +247,7 @@ export interface UnpublishDocumentEvent extends BaseEvent {
 
   /** The version that was created based on it */
   versionId: string | undefined
-  versionRevisionId: string
+  versionRevisionId?: string
   releaseId?: string
 }
 

@@ -601,7 +601,7 @@ describe('getDocumentEvents', () => {
           timestamp: '2024-09-30T14:40:02.837538Z',
           type: 'document.unpublish',
           versionId: 'drafts.foo', // Is it correct to use the draft version id here, we are creating a draft by unpublishing the document.
-          versionRevisionId: 'publish-tx', //
+          versionRevisionId: 'unpublish-tx', //
         },
         {
           type: 'document.publishVersion',
@@ -763,7 +763,7 @@ describe('getDocumentEvents', () => {
           timestamp: '2024-09-30T15:04:37.077740Z',
           author: 'p8xDvUMxC',
           versionId: undefined, // Draft already exists, a new draft was not created from this tx
-          versionRevisionId: 'publish-draft-tx',
+          versionRevisionId: undefined, // Draft already exists, a new draft was not created from this tx, no revisionId to assign
           releaseId: undefined,
         },
         {
@@ -1696,7 +1696,7 @@ describe('getDocumentEvents', () => {
           author: 'p8xDvUMxC',
           type: 'document.unpublish',
           versionId: 'drafts.foo',
-          versionRevisionId: '7X3uqAgvtaInRcPnekXqDV',
+          versionRevisionId: 'Cs9MM9AmleFTukvUAmGEQ4',
         },
         {
           timestamp: '2024-10-01T13:56:19.108493Z',
