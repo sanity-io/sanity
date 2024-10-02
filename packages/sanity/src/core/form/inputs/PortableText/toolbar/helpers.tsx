@@ -98,8 +98,6 @@ function getPTEAnnotationActions(
   const types = editor.schemaTypes
   const focusChild = PortableTextEditor.focusChild(editor)
   const hasText = focusChild && focusChild.text
-
-  console.log(types.annotations)
   return types.annotations.map((aType) => {
     return {
       type: 'annotation',

@@ -91,7 +91,6 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const handleOpenItem = useCallback(
     (path: Path) => {
-      console.log('item')
       onPathOpen(path)
       onSetPathCollapsed(path, false)
     },

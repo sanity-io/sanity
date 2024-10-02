@@ -11,7 +11,7 @@ import {
 } from '@portabletext/editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
@@ -55,7 +55,9 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
 export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement
 
 /** @internal */
-export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>): ReactNode {
+export const Compositor = memo(function Compositor(
+  props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>,
+): ReactNode {
   const {
     changed,
     elementRef,
@@ -509,4 +511,4 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       </PortalProvider>
     </TreeEditingEnabledProvider>
   )
-}
+})

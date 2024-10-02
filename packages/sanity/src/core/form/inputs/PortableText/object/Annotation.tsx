@@ -3,10 +3,10 @@ import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity
 import {isEqual} from '@sanity/util/paths'
 import {
   type ComponentType,
+  memo,
   type ReactElement,
   type ReactNode,
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react'
@@ -61,7 +61,7 @@ interface AnnotationProps {
   value: PortableTextObject
 }
 
-export function Annotation(props: AnnotationProps): ReactNode {
+export const Annotation = memo(function Annotation(props: AnnotationProps): ReactNode {
   const {
     children,
     editorNodeFocused,
@@ -233,19 +233,16 @@ export function Annotation(props: AnnotationProps): ReactNode {
     [memberItem],
   )
 
-  return useMemo(
-    () => (
-      <span ref={setRef} style={debugRender()}>
-        {CustomComponent ? (
-          <CustomComponent {...componentProps} />
-        ) : (
-          <DefaultAnnotationComponent {...componentProps} />
-        )}
-      </span>
-    ),
-    [CustomComponent, componentProps, setRef],
+  return (
+    <span ref={setRef} style={debugRender()}>
+      {CustomComponent ? (
+        <CustomComponent {...componentProps} />
+      ) : (
+        <DefaultAnnotationComponent {...componentProps} />
+      )}
+    </span>
   )
-}
+})
 
 export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
   const {
@@ -269,10 +266,6 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
   const hasError = validation.some((v) => v.level === 'error')
   const hasWarning = validation.some((v) => v.level === 'warning')
   const hasMarkers = markers.length > 0
-
-  useEffect(() => {
-    console.log('open', open)
-  }, [open])
 
   const {t} = useTranslation()
   const toneKey = useMemo(() => {
@@ -323,7 +316,6 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
           referenceElement={referenceElement}
           schemaType={schemaType}
         >
-          <div>testing</div>
           {children}
         </ObjectEditModal>
       )}

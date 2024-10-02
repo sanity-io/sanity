@@ -168,9 +168,7 @@ export function ArrayOfObjectsField(props: {
 
   const handleOpenItem = useCallback(
     (path: Path) => {
-      console.log('field')
       onPathOpen(path)
-      return
       onSetPathCollapsed(path, false)
     },
     [onPathOpen, onSetPathCollapsed],

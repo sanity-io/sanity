@@ -54,9 +54,9 @@ export function useActionGroups({
 
   const handleInsertAnnotation = useCallback(
     async (schemaType: ObjectSchemaType) => {
-      console.log('res', Date.now())
-      // const initialValue = resolveInitialValue(schemaType)
-      // console.log(initialValue,  Date.now())
+      console.log('start insert annotation', Date.now())
+      const initialValue = await resolveInitialValue(schemaType)
+      console.log('after initialValue', Date.now())
       const paths = PortableTextEditor.addAnnotation(editor, schemaType, {})
       if (paths && paths.markDefPath) {
         onMemberOpen(paths.markDefPath)

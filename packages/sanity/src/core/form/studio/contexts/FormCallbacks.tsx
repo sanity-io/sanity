@@ -43,7 +43,6 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
     ref.current.onPathBlur(path)
   }, [])
   const onPathOpen = useCallback((path: Path) => {
-    console.log(ref.current.onPathOpen)
     ref.current.onPathOpen(path)
   }, [])
   const onSetPathCollapsed = useCallback((path: Path, collapsed: boolean) => {

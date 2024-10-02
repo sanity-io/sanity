@@ -120,7 +120,6 @@ export function useFormState<
   ])
 
   return useMemo(() => {
-    // console.log('mem go', openPath)
     return prepareFormState({
       schemaType,
       fieldGroupState: reconciledFieldGroupState,
