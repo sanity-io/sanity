@@ -18,7 +18,7 @@ export function usePortableTextMemberItem(key: string): PortableTextMemberItem |
   if (!ctx) {
     throw new Error('Form context not provided')
   }
-  return ctx.find((m) => m.key === key)
+  return useMemo(() => ctx.find((m) => m.key === key), [ctx, key])
 }
 
 export function usePortableTextMemberItems(): PortableTextMemberItem[] {

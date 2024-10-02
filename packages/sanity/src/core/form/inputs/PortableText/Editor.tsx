@@ -84,7 +84,7 @@ const renderListItem: RenderListItemFunction = (props) => {
 /**
  * @internal
  */
-export function Editor(props: EditorProps): ReactNode {
+export const Editor = memo(function Editor(props: EditorProps): ReactNode {
   const {
     elementRef,
     hideToolbar,
@@ -230,4 +230,4 @@ export function Editor(props: EditorProps): ReactNode {
       </EditableCard>
     </Root>
   )
-}
+})

@@ -104,6 +104,7 @@ function Content(props: PopoverEditDialogProps) {
         <ContentScrollerBox flex={1}>
           <PresenceOverlay margins={[0, 0, 1, 0]}>
             <Box padding={3} ref={setContentElement}>
+              <div>Popover</div>
               {props.children}
             </Box>
           </PresenceOverlay>
