@@ -3,10 +3,10 @@ import {expect, test} from '@jest/globals'
 import {from, lastValueFrom} from 'rxjs'
 import {toArray} from 'rxjs/operators'
 
-import {type MutationPayload} from '../buffered-doc'
-import {type ListenerEvent} from '../getPairListener'
+import {type MutationPayload} from '../../buffered-doc'
+import {type ListenerEventWithSnapshot} from '../../getPairListener'
+import {type MutationEvent} from '../../types'
 import {sequentializeListenerEvents} from '../sequentializeListenerEvents'
-import {type MutationEvent} from '../types'
 
 function mutationEvent({
   previousRev,
@@ -71,7 +71,7 @@ test("it accumulates events that doesn't apply in a chain starting at the curren
       resultRev: 'three',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
     }),
-  ] satisfies ListenerEvent[])
+  ] satisfies ListenerEventWithSnapshot[])
 
   expect(
     (await lastValueFrom(events.pipe(sequentializeListenerEvents(), toArray()))).map((event) => {
