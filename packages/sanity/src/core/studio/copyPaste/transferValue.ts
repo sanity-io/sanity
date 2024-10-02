@@ -4,6 +4,8 @@ import {isAssetObjectStub, isFileAssetId, isImageAssetId} from '@sanity/asset-ut
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
+  type ConditionalPropertyCallbackContext,
+  type CurrentUser,
   isArrayOfObjectsSchemaType,
   isArrayOfPrimitivesSchemaType,
   isArraySchemaType,
@@ -34,6 +36,7 @@ import {
   getIdPair,
   isRecord,
   type Path,
+  resolveConditionalProperty,
   type SanityClient,
   type SchemaType,
 } from 'sanity'
@@ -141,6 +144,7 @@ export async function transferValue({
   targetValue,
   targetPath,
   keyGenerator = defaultKeyGenerator,
+  currentUser,
   options = {
     validateReferences: true,
     validateAssets: true,
@@ -157,6 +161,7 @@ export async function transferValue({
   targetRootPath: Path
   targetValue?: unknown
   keyGenerator?: () => string
+  currentUser: CurrentUser | null
   options?: TransferValueOptions
 }): Promise<{
   targetValue: unknown
@@ -189,7 +194,23 @@ export async function transferValue({
     throw new Error('Could not find target schema type at path')
   }
 
-  if (targetRootSchemaType.readOnly || targetSchemaTypeAtPath.readOnly) {
+  const targetRootSchemaTypeReadOnly = resolveConditionalProperty(targetRootSchemaType.readOnly, {
+    value: targetRootValue,
+    parent: null,
+    document: targetRootValue as ConditionalPropertyCallbackContext['document'],
+    currentUser,
+  })
+  const targetSchemaTypeAtPathReadOnly = resolveConditionalProperty(
+    targetSchemaTypeAtPath.readOnly,
+    {
+      value: targetValue,
+      parent: null,
+      document: targetRootValue as ConditionalPropertyCallbackContext['document'],
+      currentUser,
+    },
+  )
+
+  if (targetRootSchemaTypeReadOnly || targetSchemaTypeAtPathReadOnly) {
     return {
       targetValue: undefined,
       errors: [
