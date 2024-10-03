@@ -315,20 +315,22 @@ export const onStudioErrorResolver = (opts: {
   context: {error: Error; errorInfo: ErrorInfo}
 }) => {
   const {config, context} = opts
+  const flattenedConfig = flattenConfig(config, [])
+  flattenedConfig.forEach(({config: pluginConfig}) => {
+    // There is no concept of 'previous value' in this API. We only care about the final value.
+    // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
+    // The last plugin 'wins'.
+    const resolver = pluginConfig.onStudioError
 
-  // There is no concept of 'previous value' in this API. We only care about the final value.
-  // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
-  // The last plugin 'wins'.
-  const resolver = config.onStudioError
+    if (typeof resolver === 'function') return resolver(context.error, context.errorInfo)
+    if (!resolver) return undefined
 
-  if (typeof resolver === 'function') return resolver(context.error, context.errorInfo)
-  if (!resolver) return undefined
-
-  throw new Error(
-    `Expected \`document.onStudioError\` to be a a function, but received ${getPrintableType(
-      resolver,
-    )}`,
-  )
+    throw new Error(
+      `Expected \`document.onStudioError\` to be a a function, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  })
 }
 
 export const internalTasksReducer = (opts: {
