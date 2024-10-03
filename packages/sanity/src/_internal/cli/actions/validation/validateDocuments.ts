@@ -23,6 +23,7 @@ export interface ValidateDocumentsOptions<TReturn = unknown> {
   maxCustomValidationConcurrency?: number
   maxFetchConcurrency?: number
   reporter?: (worker: WorkerChannelReceiver<ValidationWorkerChannel>) => TReturn
+  studioHost?: string
 }
 
 export interface DocumentValidationResult {
@@ -102,6 +103,7 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
       ndjsonFilePath,
       maxCustomValidationConcurrency,
       maxFetchConcurrency,
+      studioHost: options.studioHost,
     } satisfies ValidateDocumentsWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,
