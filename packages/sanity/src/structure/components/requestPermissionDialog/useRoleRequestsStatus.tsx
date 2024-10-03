@@ -33,6 +33,7 @@ export const useRoleRequestsStatus = () => {
     return from(
       client.request<AccessRequest[] | null>({
         url: `/access/requests/me`,
+        tag: 'use-role-requests-status',
       }),
     ).pipe(
       map((requests) => {

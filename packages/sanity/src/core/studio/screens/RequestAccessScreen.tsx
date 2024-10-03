@@ -80,6 +80,7 @@ export function RequestAccessScreen() {
     client
       .request<AccessRequest[] | null>({
         url: `/access/requests/me`,
+        tag: 'request-access',
       })
       .then((requests) => {
         if (requests && requests?.length) {
