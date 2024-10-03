@@ -34,9 +34,9 @@ export interface RequestPermissionDialogProps {
 }
 
 /**
- * A confirmation dialog used to prevent unwanted document deletes. Loads all
- * the referencing internal and cross-data references prior to showing the
- * delete button.
+ * A dialog that enables the user to request permission to change their
+ * member role from "Viewer" to "Editor" or "Admin" depending on the
+ * project's available roles.
  *
  * @internal
  */
@@ -55,7 +55,6 @@ export function RequestPermissionDialog({
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [note, setNote] = useState('')
-  const [noteLength, setNoteLength] = useState<number>(0)
 
   const [msgError, setMsgError] = useState<string | undefined>()
   const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean>(false)
@@ -169,11 +168,10 @@ export function RequestPermissionDialog({
                   value={note}
                   onChange={(e) => {
                     setNote(e.currentTarget.value)
-                    setNoteLength(e.currentTarget.value.length)
                   }}
                 />
 
-                <Text align="right" muted size={1}>{`${noteLength}/${MAX_NOTE_LENGTH}`}</Text>
+                <Text align="right" muted size={1}>{`${note.length}/${MAX_NOTE_LENGTH}`}</Text>
               </Stack>
             )}
           </Stack>
