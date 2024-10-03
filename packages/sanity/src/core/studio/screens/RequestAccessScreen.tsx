@@ -83,35 +83,35 @@ export function RequestAccessScreen() {
         tag: 'request-access',
       })
       .then((requests) => {
-        if (requests && requests?.length) {
-          const projectRequests = requests.filter((request) => request.resourceId === projectId)
-          const declinedRequest = projectRequests.find((request) => request.status === 'declined')
-          if (
-            declinedRequest &&
-            isAfter(addWeeks(new Date(declinedRequest.createdAt), 2), new Date())
-          ) {
-            setHasBeenDenied(true)
-            return
-          }
-          const pendingRequest = projectRequests.find(
-            (request) =>
-              request.status === 'pending' &&
-              // Access request is less than 2 weeks old
-              isAfter(addWeeks(new Date(request.createdAt), 2), new Date()),
-          )
-          if (pendingRequest) {
-            setHasPendingRequest(true)
-            return
-          }
-          const oldPendingRequest = projectRequests.find(
-            (request) =>
-              request.status === 'pending' &&
-              // Access request is more than 2 weeks old
-              isBefore(addWeeks(new Date(request.createdAt), 2), new Date()),
-          )
-          if (oldPendingRequest) {
-            setExpiredHasPendingRequest(true)
-          }
+        if (!requests || !requests.length) return
+
+        const projectRequests = requests.filter((request) => request.resourceId === projectId)
+        const declinedRequest = projectRequests.find((request) => request.status === 'declined')
+        if (
+          declinedRequest &&
+          isAfter(addWeeks(new Date(declinedRequest.createdAt), 2), new Date())
+        ) {
+          setHasBeenDenied(true)
+          return
+        }
+        const pendingRequest = projectRequests.find(
+          (request) =>
+            request.status === 'pending' &&
+            // Access request is less than 2 weeks old
+            isAfter(addWeeks(new Date(request.createdAt), 2), new Date()),
+        )
+        if (pendingRequest) {
+          setHasPendingRequest(true)
+          return
+        }
+        const oldPendingRequest = projectRequests.find(
+          (request) =>
+            request.status === 'pending' &&
+            // Access request is more than 2 weeks old
+            isBefore(addWeeks(new Date(request.createdAt), 2), new Date()),
+        )
+        if (oldPendingRequest) {
+          setExpiredHasPendingRequest(true)
         }
       })
       .catch((err) => {
