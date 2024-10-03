@@ -92,6 +92,7 @@ function ValidationCard(props: {
   const handleOpen = useCallback(() => onOpen(marker.path), [marker, onOpen])
   const [errorInfo, setErrorInfo] = useState<{error: Error; info: ErrorInfo} | null>(null)
 
+  // Context for onStudioError config property: This ErrorBoundary will bubble to the ErrorBoundary in WorkspaceRouterProvider
   return (
     <ErrorBoundary onCatch={setErrorInfo}>
       {errorInfo && (

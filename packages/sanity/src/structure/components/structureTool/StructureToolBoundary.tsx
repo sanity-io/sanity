@@ -1,7 +1,7 @@
-import {ErrorBoundary} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {SourceProvider, type Tool, useWorkspace} from 'sanity'
 
+import {ErrorBoundary} from '../../../ui-components/errorBoundary'
 import {setActivePanes} from '../../getIntentState'
 import {StructureToolProvider} from '../../StructureToolProvider'
 import {type StructureToolOptions} from '../../types'
@@ -26,23 +26,11 @@ export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryPr
 
   const [{error}, setError] = useState<{error: unknown}>({error: null})
 
-  const handleCatchError = useCallback(
-    ({error: caughtError, info: caughtInfo}: {error: Error; info: React.ErrorInfo}) => {
-      setError({error: caughtError})
-      const {onStudioError} = firstSource
-
-      if (onStudioError) {
-        onStudioError(caughtError, caughtInfo)
-      }
-    },
-    [firstSource],
-  )
-
   // this re-throws if the error it catches is not a PaneResolutionError
   if (error) return <StructureError error={error} />
 
   return (
-    <ErrorBoundary onCatch={handleCatchError}>
+    <ErrorBoundary onCatch={setError}>
       <SourceProvider name={source || firstSource.name}>
         <StructureToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
           <StructureTool onPaneChange={setActivePanes} />

@@ -1,12 +1,12 @@
-import {Box, Card, Code, ErrorBoundary, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
+import {ErrorBoundary} from '../../../ui-components/errorBoundary'
 import {SchemaError} from '../../config'
 import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'
 import {CorsOriginError} from '../../store'
-import {useSource} from '../../studio/source'
 import {isRecord} from '../../util'
 import {Alert} from '../components/Alert'
 
@@ -28,22 +28,10 @@ export function FormBuilderInputErrorBoundary(
     error: null,
     info: {},
   })
-  const source = useSource()
   const handleRetry = useCallback(() => setError({error: null, info: {}}), [])
-  const handleCatch = useCallback(
-    ({error: caughtError, info: caughtInfo}: {error: Error; info: React.ErrorInfo}) => {
-      setError({error: caughtError, info: caughtInfo})
-
-      if (source?.onStudioError) {
-        const {onStudioError} = source
-        onStudioError(caughtError, caughtInfo)
-      }
-    },
-    [source],
-  )
 
   if (!error) {
-    return <ErrorBoundary onCatch={handleCatch}>{children}</ErrorBoundary>
+    return <ErrorBoundary onCatch={setError}>{children}</ErrorBoundary>
   }
 
   return <ErrorCard error={error} info={info} onRetry={handleRetry} />

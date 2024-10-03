@@ -64,6 +64,7 @@ export function FilterForm({filter}: FilterFormProps) {
   }
 
   // Flex order is reversed to ensure form inputs are focusable first
+  // Context for onStudioError config property: This ErrorBoundary will bubble to the ErrorBoundary in WorkspaceRouterProvider
   return (
     <ErrorBoundary onCatch={handleCatchError}>
       <FocusLock autoFocus={!supportsTouch} returnFocus>
