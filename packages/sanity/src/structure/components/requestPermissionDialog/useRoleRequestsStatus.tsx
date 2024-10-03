@@ -37,39 +37,41 @@ export const useRoleRequestsStatus = () => {
       }),
     ).pipe(
       map((requests) => {
-        if (requests && requests.length) {
-          // Filter requests for the specific project and where type is 'role'
-          const projectRequests = requests.filter(
-            (request) => request.resourceId === projectId && request.type === 'role',
-          )
-
-          const declinedRequest = projectRequests.find((request) => request.status === 'declined')
-          if (
-            declinedRequest &&
-            isAfter(addWeeks(new Date(declinedRequest.createdAt), 2), new Date())
-          ) {
-            return {loading: false, error: false, status: 'declined'}
-          }
-
-          const pendingRequest = projectRequests.find(
-            (request) =>
-              request.status === 'pending' &&
-              isAfter(addWeeks(new Date(request.createdAt), 2), new Date()),
-          )
-          if (pendingRequest) {
-            return {loading: false, error: false, status: 'pending'}
-          }
-
-          const oldPendingRequest = projectRequests.find(
-            (request) =>
-              request.status === 'pending' &&
-              isBefore(addWeeks(new Date(request.createdAt), 2), new Date()),
-          )
-          if (oldPendingRequest) {
-            return {loading: false, error: false, status: 'expired'}
-          }
+        if (!requests || requests.length === 0) {
+          return {loading: false, error: false, status: 'none'}
         }
-        return {loading: false, error: false, status: 'none'}
+
+        // Filter requests for the specific project and where type is 'role'
+        const projectRequests = requests.filter(
+          (request) => request.resourceId === projectId && request.type === 'role',
+        )
+
+        const declinedRequest = projectRequests.find((request) => request.status === 'declined')
+        if (
+          declinedRequest &&
+          isAfter(addWeeks(new Date(declinedRequest.createdAt), 2), new Date())
+        ) {
+          return {loading: false, error: false, status: 'declined'}
+        }
+
+        const pendingRequest = projectRequests.find(
+          (request) =>
+            request.status === 'pending' &&
+            isAfter(addWeeks(new Date(request.createdAt), 2), new Date()),
+        )
+        if (pendingRequest) {
+          return {loading: false, error: false, status: 'pending'}
+        }
+
+        const oldPendingRequest = projectRequests.find(
+          (request) =>
+            request.status === 'pending' &&
+            isBefore(addWeeks(new Date(request.createdAt), 2), new Date()),
+        )
+
+        return oldPendingRequest
+          ? {loading: false, error: false, status: 'expired'}
+          : {loading: false, error: false, status: 'none'}
       }),
       catchError((err) => {
         console.error('Failed to fetch access requests', err)
