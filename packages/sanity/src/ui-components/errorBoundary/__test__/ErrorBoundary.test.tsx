@@ -1,7 +1,10 @@
 import {beforeAll, describe, expect, it, jest} from '@jest/globals'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
+import {type SanityClient} from 'sanity'
 
+import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {LocaleProviderBase, usEnglishLocale} from '../../../core/i18n'
 import {prepareI18n} from '../../../core/i18n/i18nConfig'
 import {ErrorBoundary} from '../ErrorBoundary'
@@ -33,7 +36,7 @@ describe('ErrorBoundary', () => {
     )
   }
 
-  it('calls onStudioError when an error is caught', () => {
+  it('calls onStudioError when an error is caught', async () => {
     const onStudioError = jest.fn()
     const onCatch = jest.fn()
 
@@ -41,12 +44,24 @@ describe('ErrorBoundary', () => {
       throw new Error('An EXPECTED, testing error occurred!')
     }
 
+    const client = createMockSanityClient() as unknown as SanityClient
+
+    const TestProvider = await createTestProvider({
+      client,
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        onStudioError,
+      },
+    })
+
     render(
-      <Wrapper>
+      <TestProvider>
         <ErrorBoundary onCatch={onCatch}>
           <ThrowErrorComponent />
         </ErrorBoundary>
-      </Wrapper>,
+      </TestProvider>,
     )
 
     expect(onStudioError).toHaveBeenCalledTimes(1)
