@@ -14,28 +14,6 @@ describe('ErrorBoundary', () => {
     jest.clearAllMocks()
   })
 
-  const Wrapper = ({children}: {children: React.ReactNode}) => {
-    const locales = [usEnglishLocale]
-    const {i18next} = prepareI18n({
-      projectId: 'test',
-      dataset: 'test',
-      name: 'test',
-    })
-
-    return (
-      <ThemeProvider theme={studioTheme}>
-        <LocaleProviderBase
-          projectId={'test'}
-          sourceId={'test'}
-          locales={locales}
-          i18next={i18next}
-        >
-          {children}
-        </LocaleProviderBase>
-      </ThemeProvider>
-    )
-  }
-
   it('calls onStudioError when an error is caught', async () => {
     const onStudioError = jest.fn()
     const onCatch = jest.fn()
