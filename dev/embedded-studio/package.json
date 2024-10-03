@@ -3,7 +3,7 @@
   "version": "3.59.1",
   "private": true,
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && sanity manifest extract",
     "dev": "vite",
     "preview": "vite preview"
   },
