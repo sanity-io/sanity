@@ -56,7 +56,7 @@ type HandleNavigate = (opts: {path: string; replace?: boolean}) => void
 /**
  * @internal
  */
-export function useRouterFromWorkspaceHistory(
+function useRouterFromWorkspaceHistory(
   history: RouterHistory,
   router: Router,
   tools: Tool[],
