@@ -1,7 +1,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import {type CliCommandArguments, type CliCommandContext, type CliOutputter} from '@sanity/cli'
+import {
+  type CliCommandArguments,
+  type CliCommandContext,
+  type CliConfig,
+  type CliOutputter,
+} from '@sanity/cli'
 import {type ClientConfig} from '@sanity/client'
 import chalk from 'chalk'
 import logSymbols from 'log-symbols'
@@ -31,7 +36,7 @@ export type BuiltInValidationReporter = (options: {
 
 export default async function validateAction(
   args: CliCommandArguments<ValidateFlags>,
-  {apiClient, workDir, output, prompt}: CliCommandContext,
+  {apiClient, workDir, output, cliConfig, prompt}: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
   const unattendedMode = Boolean(flags.yes || flags.y)
@@ -160,6 +165,7 @@ export default async function validateAction(
 
       return reporter({output, worker, flags})
     },
+    studioHost: (cliConfig as CliConfig)?.studioHost,
   })
 
   process.exitCode = overallLevel === 'error' ? 1 : 0
