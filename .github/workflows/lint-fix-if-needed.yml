@@ -66,7 +66,7 @@ jobs:
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
-      - uses: peter-evans/create-pull-request@8867c4aba1b742c39f8d0ba35429c2dfa4b6cb20 # v7
+      - uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f # v7
         # Run even if `lint:fix` fails
         if: always()
         with:
