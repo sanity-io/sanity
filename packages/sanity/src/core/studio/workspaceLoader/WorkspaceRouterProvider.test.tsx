@@ -1,10 +1,10 @@
 import {describe, expect, it, jest} from '@jest/globals'
-import {ErrorBoundary, studioTheme, ThemeProvider} from '@sanity/ui'
+import {ErrorBoundary} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
+import {type SanityClient} from 'sanity'
 
-import {LocaleProviderBase, usEnglishLocale} from '../../i18n'
-import {prepareI18n} from '../../i18n/i18nConfig'
-import {useSource} from '../source'
+import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {WorkspaceRouterProvider} from './WorkspaceRouterProvider'
 
 jest.mock('../router/RouterHistoryContext', () => ({
@@ -12,10 +12,6 @@ jest.mock('../router/RouterHistoryContext', () => ({
     location: {pathname: '/'},
     listen: jest.fn(),
   }),
-}))
-
-jest.mock('../source', () => ({
-  useSource: jest.fn(),
 }))
 
 jest.mock('../router', () => ({
@@ -35,8 +31,6 @@ jest.mock('./WorkspaceRouterProvider', () => ({
   ...(jest.requireActual('./WorkspaceRouterProvider') as object),
   useRouterFromWorkspaceHistory: jest.fn(),
 }))
-
-const useSourceMock = useSource as jest.Mock
 
 describe('WorkspaceRouterProvider', () => {
   const LoadingComponent = () => <div>Loading...</div>
@@ -76,37 +70,34 @@ describe('WorkspaceRouterProvider', () => {
     expect(screen.getByText('Children')).toBeInTheDocument()
   })
 
-  it('calls onStudioError when an error is caught', () => {
+  it('calls onStudioError when an error is caught', async () => {
     const onStudioError = jest.fn()
-    useSourceMock.mockReturnValue({onStudioError})
 
     const ThrowErrorComponent = () => {
       throw new Error('An EXPECTED, testing error occurred!')
     }
 
-    const locales = [usEnglishLocale]
-    const {i18next} = prepareI18n({
-      projectId: 'test',
-      dataset: 'test',
-      name: 'test',
+    const client = createMockSanityClient() as unknown as SanityClient
+
+    const TestProvider = await createTestProvider({
+      client,
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        onStudioError,
+      },
     })
 
     render(
-      <ThemeProvider theme={studioTheme}>
-        <LocaleProviderBase
-          projectId={'test'}
-          sourceId={'test'}
-          locales={locales}
-          i18next={i18next}
-        >
-          {/* prevents thrown error from breaking the test */}
-          <ErrorBoundary onCatch={({error, info}) => <></>}>
-            <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
-              <ThrowErrorComponent />
-            </WorkspaceRouterProvider>
-          </ErrorBoundary>
-        </LocaleProviderBase>
-      </ThemeProvider>,
+      <TestProvider>
+        {/* prevents thrown error from breaking the test */}
+        <ErrorBoundary onCatch={({error, info}) => <></>}>
+          <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
+            <ThrowErrorComponent />
+          </WorkspaceRouterProvider>
+        </ErrorBoundary>
+      </TestProvider>,
     )
 
     expect(onStudioError).toHaveBeenCalledTimes(1)

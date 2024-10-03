@@ -1,23 +1,14 @@
 import {beforeAll, describe, expect, it, jest} from '@jest/globals'
-import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
+import {type SanityClient} from 'sanity'
 
-import {LocaleProviderBase} from '../../i18n/components/LocaleProvider'
-import {prepareI18n} from '../../i18n/i18nConfig'
-import {usEnglishLocale} from '../../i18n/locales'
-import {useSource} from '../../studio/source'
+import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
-
-// Mock dependencies
-jest.mock('../../studio/source', () => ({
-  useSource: jest.fn(),
-}))
 
 jest.mock('use-hot-module-reload', () => ({
   useHotModuleReload: jest.fn(),
 }))
-
-const useSourceMock = useSource as jest.Mock
 
 describe('FormBuilderInputErrorBoundary', () => {
   beforeAll(() => {
@@ -36,32 +27,29 @@ describe('FormBuilderInputErrorBoundary', () => {
 
   it('calls onStudioError when an error is caught', async () => {
     const onStudioError = jest.fn()
-    useSourceMock.mockReturnValue({onStudioError})
 
     const ThrowErrorComponent = () => {
       throw new Error('An EXPECTED, testing error occurred!')
     }
 
-    const locales = [usEnglishLocale]
-    const {i18next} = prepareI18n({
-      projectId: 'test',
-      dataset: 'test',
-      name: 'test',
+    const client = createMockSanityClient() as unknown as SanityClient
+
+    const TestProvider = await createTestProvider({
+      client,
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        onStudioError,
+      },
     })
 
     render(
-      <ThemeProvider theme={studioTheme}>
-        <LocaleProviderBase
-          projectId={'test'}
-          sourceId={'test'}
-          locales={locales}
-          i18next={i18next}
-        >
-          <FormBuilderInputErrorBoundary>
-            <ThrowErrorComponent />
-          </FormBuilderInputErrorBoundary>
-        </LocaleProviderBase>
-      </ThemeProvider>,
+      <TestProvider>
+        <FormBuilderInputErrorBoundary>
+          <ThrowErrorComponent />
+        </FormBuilderInputErrorBoundary>
+      </TestProvider>,
     )
 
     expect(onStudioError).toHaveBeenCalledTimes(1)
