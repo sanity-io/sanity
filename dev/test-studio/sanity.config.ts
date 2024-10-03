@@ -214,6 +214,15 @@ export default defineConfig([
     basePath: '/playground',
   },
   {
+    name: 'listener-events',
+    title: 'Listener events debug',
+    subtitle: 'Listener events debugging',
+    projectId: 'ppsg7ml5',
+    dataset: 'data-loss',
+    plugins: [sharedSettings()],
+    basePath: '/listener-events',
+  },
+  {
     name: 'playground-partial-indexing',
     title: 'Test Studio (playground-partial-indexing)',
     subtitle: 'Playground dataset',
