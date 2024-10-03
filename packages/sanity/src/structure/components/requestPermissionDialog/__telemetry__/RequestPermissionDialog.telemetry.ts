@@ -1,9 +1,6 @@
 import {defineEvent} from '@sanity/telemetry'
 
-/**
- * When a draft in a live edit document is published
- * @internal
- */
+/** @internal */
 export const AskToEditDialogOpened = defineEvent({
   name: 'Ask To Edit Dialog Opened',
   version: 1,
