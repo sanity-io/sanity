@@ -1,8 +1,8 @@
-import {Box, ErrorBoundary, Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
 import {type ComponentProps, useCallback, useId, useState} from 'react'
 import {useTranslation} from 'sanity'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog, ErrorBoundary} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {ConfirmDeleteDialog, type ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
 
@@ -18,7 +18,6 @@ function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
   const [error, setError] = useState<ErrorInfo | null>(null)
   const handleRetry = useCallback(() => setError(null), [])
 
-  // Context for onStudioError config property: This ErrorBoundary will bubble to the ErrorBoundary in WorkspaceRouterProvider
   return error ? (
     <Dialog
       id={`dialog-error-${id}`}

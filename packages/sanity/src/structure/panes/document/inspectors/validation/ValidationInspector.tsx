@@ -11,10 +11,11 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, type CardTone, ErrorBoundary, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
 import {createElement, type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, useTranslation} from 'sanity'
 
+import {ErrorBoundary} from '../../../../../ui-components'
 import {DocumentInspectorHeader} from '../../documentInspector'
 import {useDocumentPane} from '../../useDocumentPane'
 import {getPathTitles} from './getPathTitles'
@@ -92,7 +93,6 @@ function ValidationCard(props: {
   const handleOpen = useCallback(() => onOpen(marker.path), [marker, onOpen])
   const [errorInfo, setErrorInfo] = useState<{error: Error; info: ErrorInfo} | null>(null)
 
-  // Context for onStudioError config property: This ErrorBoundary will bubble to the ErrorBoundary in WorkspaceRouterProvider
   return (
     <ErrorBoundary onCatch={setErrorInfo}>
       {errorInfo && (
