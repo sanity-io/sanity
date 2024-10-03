@@ -7,7 +7,9 @@ import {inspect} from 'node:util'
 import {generateOutput, groupTests, readJsonFile} from './utils'
 
 const DEBUG = Boolean(parseInt(process.env.DEBUG || '0', 2))
-const DEFAULT_ARTIFACT_OUTPUT_PATH = path.resolve(path.join(__dirname, '..', 'results'))
+const DEFAULT_ARTIFACT_OUTPUT_PATH = path.resolve(
+  path.join(__dirname, '..', 'playwright-ct-report'),
+)
 
 /**
  * Summarize the Playwright report JSON into a Markdown string that can be posted as a comment to PRs
