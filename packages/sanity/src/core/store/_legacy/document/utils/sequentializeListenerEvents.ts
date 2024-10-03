@@ -99,7 +99,7 @@ export function sequentializeListenerEvents(options?: {
         } satisfies State,
       ),
       switchMap((state) => {
-        if (state.buffer.length > 1) {
+        if (state.buffer.length > 0) {
           return concat(
             of(state),
             timer(brokenChainDeadline).pipe(
