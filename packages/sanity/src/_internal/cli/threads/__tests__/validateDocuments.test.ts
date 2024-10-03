@@ -3,7 +3,7 @@ import path from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {afterAll, beforeAll, describe, expect, it, jest} from '@jest/globals'
-import {type SanityDocument, type SanityProject} from '@sanity/client'
+import {type SanityDocument} from '@sanity/client'
 import {evaluate, parse} from 'groq-js'
 
 import {getMonorepoAliases} from '../../server/sanityMonorepo'
@@ -125,14 +125,6 @@ describe('validateDocuments', () => {
       }
 
       switch (resource) {
-        case 'projects': {
-          json({
-            studioHost: 'https://example.sanity.studio',
-            metadata: {externalStudioHost: localhost},
-          } satisfies Partial<SanityProject>)
-          return
-        }
-
         case 'data': {
           const [method] = rest
           switch (method) {
@@ -195,6 +187,7 @@ describe('validateDocuments', () => {
         useCdn: true,
         useProjectHostname: false,
       },
+      studioHost: localhost,
     }
 
     const filepath = require.resolve('../validateDocuments')

@@ -7,6 +7,7 @@ import tar from 'tar-fs'
 
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
+import {extractManifestSafe} from '../manifest/extractManifestAction'
 import {
   checkDir,
   createDeployment,
@@ -101,16 +102,25 @@ export default async function deployStudioAction(
   // Always build the project, unless --no-build is passed
   const shouldBuild = flags.build
   if (shouldBuild) {
-    const buildArgs = [customSourceDir].filter(Boolean)
-    const {didCompile} = await buildSanityStudio(
-      {...args, extOptions: flags, argsWithoutOptions: buildArgs},
-      context,
-      {basePath: '/'},
-    )
+    const buildArgs = {
+      ...args,
+      extOptions: flags,
+      argsWithoutOptions: [customSourceDir].filter(Boolean),
+    }
+    const {didCompile} = await buildSanityStudio(buildArgs, context, {basePath: '/'})
 
     if (!didCompile) {
       return
     }
+
+    await extractManifestSafe(
+      {
+        ...buildArgs,
+        extOptions: {},
+        extraArguments: [],
+      },
+      context,
+    )
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content

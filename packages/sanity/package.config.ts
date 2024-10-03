@@ -41,6 +41,11 @@ export default defineConfig({
       require: './lib/_internal/cli/threads/extractSchema.js',
       runtime: 'node',
     },
+    {
+      source: './src/_internal/cli/threads/extractManifest.ts',
+      require: './lib/_internal/cli/threads/extractManifest.js',
+      runtime: 'node',
+    },
   ],
 
   extract: {

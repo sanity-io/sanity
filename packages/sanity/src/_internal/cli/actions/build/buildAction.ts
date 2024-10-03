@@ -187,6 +187,7 @@ export default async function buildSanityStudio(
 
     spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
     spin.succeed()
+
     trace.complete()
     if (flags.stats) {
       output.print('\nLargest module files:')
