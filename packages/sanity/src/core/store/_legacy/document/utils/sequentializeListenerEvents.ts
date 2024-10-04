@@ -9,8 +9,9 @@ import {discardChainTo, linkedSort} from './eventChainUtils'
 interface ListenerSequenceState {
   /**
    * Base revision will be undefined if document doesn't exist
+   * base is `undefined` until the snapshot event is received
    */
-  baseRevision: string | undefined
+  base: {revision: string | undefined} | undefined
   /**
    * Array of events to pass on to the stream, e.g. when mutation applies to current head revision, or a chain is complete
    */
@@ -73,13 +74,13 @@ export function sequentializeListenerEvents(options?: {
     return input$.pipe(
       scan(
         (state: ListenerSequenceState, event: ListenerEventWithSnapshot): ListenerSequenceState => {
-          if (event.type === 'mutation' && !state.baseRevision) {
+          if (event.type === 'mutation' && !state.base) {
             throw new Error('Invalid state. Cannot create a sequence without a base')
           }
           if (event.type === 'snapshot') {
             // When receiving a new snapshot, we can safely discard the current orphaned and chainable buffers
             return {
-              baseRevision: event.initialRevision,
+              base: {revision: event.initialRevision},
               buffer: EMPTY_ARRAY,
               emitEvents: [event],
             }
@@ -89,7 +90,7 @@ export function sequentializeListenerEvents(options?: {
             const sortedBuffer = linkedSort(state.buffer.concat(event))
 
             // Discard any mutation events that leads up to the base revision
-            const [discarded, nextBuffer] = discardChainTo(sortedBuffer, state.baseRevision)
+            const [discarded, nextBuffer] = discardChainTo(sortedBuffer, state.base!.revision)
 
             if (discarded.length > 0) {
               debug('discarded %d mutations already applied to document', discarded.length)
@@ -99,12 +100,12 @@ export function sequentializeListenerEvents(options?: {
               return {...state, emitEvents: EMPTY_ARRAY, buffer: EMPTY_ARRAY}
             }
 
-            if (nextBuffer[0].previousRev === state.baseRevision) {
-              // we have a continuous chain and can now flush the buffer
-              const nextBase = nextBuffer.at(-1)?.resultRev
+            if (nextBuffer[0].previousRev === state.base!.revision) {
+              // we now have a continuous chain and can flush the buffer
+
+              const nextBaseRevision = nextBuffer.at(-1)?.resultRev
               return {
-                ...state,
-                baseRevision: nextBase,
+                base: {revision: nextBaseRevision},
                 emitEvents: nextBuffer,
                 buffer: EMPTY_ARRAY,
               }
@@ -128,7 +129,7 @@ export function sequentializeListenerEvents(options?: {
         },
         {
           emitEvents: EMPTY_ARRAY,
-          baseRevision: undefined,
+          base: undefined,
           buffer: EMPTY_ARRAY,
         },
       ),
