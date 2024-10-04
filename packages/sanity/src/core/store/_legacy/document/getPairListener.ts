@@ -33,6 +33,13 @@ export interface InitialSnapshotEvent {
 /** @internal */
 export interface PairListenerOptions {
   tag?: string
+
+  /**
+   * Called when we recover from sync error
+   * Meant for error tracking / telemetry purposes
+   * @param error - the {@link OutOfSyncError} recovered from
+   */
+  onSyncErrorRecovery?(error: OutOfSyncError): void
 }
 
 /** @internal */
@@ -167,7 +174,8 @@ export function getPairListener(
   return merge(draftEvents$, publishedEvents$).pipe(
     catchError((err, caught$) => {
       if (err instanceof OutOfSyncError) {
-        console.error(err)
+        options?.onSyncErrorRecovery(err)
+
         // this will retry immediately
         return caught$
       }
