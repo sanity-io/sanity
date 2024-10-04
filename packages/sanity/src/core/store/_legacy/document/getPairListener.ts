@@ -174,8 +174,12 @@ export function getPairListener(
   return merge(draftEvents$, publishedEvents$).pipe(
     catchError((err, caught$) => {
       if (err instanceof OutOfSyncError) {
-        options?.onSyncErrorRecovery(err)
-
+        debug('Recovering from OutOfSyncError: %s', OutOfSyncError.name)
+        if (typeof options?.onSyncErrorRecovery === 'function') {
+          options?.onSyncErrorRecovery(err)
+        } else {
+          console.error(err)
+        }
         // this will retry immediately
         return caught$
       }
