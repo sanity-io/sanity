@@ -6,10 +6,10 @@ import {
   type DocumentActionComponent,
   type DocumentActionDescription,
   type DocumentActionProps,
+  Hotkeys,
   isBundleDocument,
   LATEST,
   ReleaseActions,
-  shouldArrayDialogOpen,
   usePerspective,
   useTimelineSelector,
 } from 'sanity'

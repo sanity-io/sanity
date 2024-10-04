@@ -183,7 +183,7 @@ export interface CollatedHit<T extends {_id: string} = {_id: string}> {
 export function collate<T extends {_id: string; _type: string}>(documents: {
   documents: SanityDocumentLike[]
 }): CollatedHit<T>[] {
-  const byId = documents.documents?.reduce((res, doc) => {
+  const byId = documents.documents.reduce((res, doc) => {
     const publishedId = getPublishedId(doc._id)
     let entry = res.get(publishedId)
     if (!entry) {
