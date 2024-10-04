@@ -16,6 +16,7 @@ test('partitionChainableAndOrphaned', () => {
   expect(chainable.map((ev) => ev.resultRev)).toEqual(['c', 'd', 'e', 'f'])
   expect(orphaned.map((ev) => ev.resultRev)).toEqual(['b'])
 })
+
 test('partitionChainableAndOrphaned of out of order', () => {
   const events = [
     mutationEvent({previousRev: 'e', resultRev: 'f', mutations: []}),
@@ -52,7 +53,8 @@ test('discardChainTo', () => {
     mutationEvent({previousRev: 'd', resultRev: 'e', mutations: []}),
     mutationEvent({previousRev: 'e', resultRev: 'f', mutations: []}),
   ]
-  const [discarded, sorted] = discardChainTo(events, 'd')
+  const [discarded, applicable] = discardChainTo(events, 'd')
   // Note, it's still in the order received
-  expect(sorted.map((ev) => ev.resultRev)).toEqual(['e', 'f'])
+  expect(discarded.map((ev) => ev.resultRev)).toEqual(['b', 'c', 'd'])
+  expect(applicable.map((ev) => ev.resultRev)).toEqual(['e', 'f'])
 })

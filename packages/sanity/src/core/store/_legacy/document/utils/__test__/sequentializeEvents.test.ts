@@ -4,7 +4,7 @@ import {from, lastValueFrom} from 'rxjs'
 import {toArray} from 'rxjs/operators'
 
 import {type MutationPayload} from '../../buffered-doc'
-import {type ListenerEventWithSnapshot} from '../../getPairListener'
+import {type ListenerEvent, type ListenerEventWithSnapshot} from '../../getPairListener'
 import {type MutationEvent} from '../../types'
 import {sequentializeListenerEvents} from '../sequentializeListenerEvents'
 
@@ -32,7 +32,7 @@ function mutationEvent({
   }
 }
 
-test("it accumulates events that doesn't apply in a chain starting at the current revision", async () => {
+test("it accumulates events that doesn't apply in a chain starting at the current head revision", async () => {
   const events = from([
     {
       type: 'snapshot',
@@ -91,4 +91,46 @@ test("it accumulates events that doesn't apply in a chain starting at the curren
     ['mutation', 'three'],
     ['mutation', 'four'],
   ])
+})
+
+test('it ignores events before the current head revision', async () => {
+  const events = from([
+    {
+      type: 'snapshot',
+      documentId: 'test',
+      initialRevision: 'one',
+      document: {
+        _rev: 'one',
+        _id: 'test',
+        _type: 'test',
+        name: 'initial',
+        _createdAt: '2024-10-02T06:40:16.414Z',
+        _updatedAt: '2024-10-02T06:40:16.414Z',
+      },
+    },
+    // this is already applied to the snapshot emitted above and should be ignored
+    mutationEvent({
+      previousRev: 'minus-one',
+      resultRev: 'zero',
+      mutations: [{patch: {set: {name: 'SHOULD BE IGNORED'}}}],
+    }),
+    // this is already applied to the snapshot emitted above and should be ignored
+    mutationEvent({
+      previousRev: 'zero',
+      resultRev: 'one',
+      mutations: [{patch: {set: {name: 'SHOULD ALSO BE IGNORED'}}}],
+    }),
+    // this has the snapshot revision as it's previous and should be applied
+    mutationEvent({
+      previousRev: 'one',
+      resultRev: 'two',
+      mutations: [{patch: {set: {name: 'SHOULD BE APPLIED'}}}],
+    }),
+  ] satisfies ListenerEvent[])
+
+  expect(
+    (await lastValueFrom(events.pipe(sequentializeListenerEvents(), toArray()))).map((event) => {
+      return event?.type === 'mutation' ? event.mutations : event?.type
+    }),
+  ).toEqual(['snapshot', [{patch: {set: {name: 'SHOULD BE APPLIED'}}}]])
 })

@@ -2,18 +2,19 @@ import {partition} from 'lodash'
 
 import {type MutationEvent} from '../types'
 
-export function discardChainTo(events: MutationEvent[], revision: string) {
+export function discardChainTo(events: MutationEvent[], revision: string | undefined) {
   const sortedChain = linkedSort(events)
   const revisionIndex = sortedChain.findIndex((event) => event.resultRev === revision)
 
-  return split(events, revisionIndex)
+  // We
+  return split(events, revisionIndex + 1)
 }
 
 function split<T>(array: T[], index: number) {
   if (index < 0) {
     return [[], array]
   }
-  return [array.slice(0, index), array.slice(index + 1)]
+  return [array.slice(0, index), array.slice(index)]
 }
 
 export function linkedSort<T extends {previousRev: string; resultRev: string}>(events: T[]) {
