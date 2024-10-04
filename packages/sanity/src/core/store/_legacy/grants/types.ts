@@ -27,7 +27,7 @@ export interface GrantsStore {
   /**
    * Returns an observable of `PermissionCheckResult`
    *
-   * This API is returns an observable (vs a promise) so the consumer can reac
+   * This API is returns an observable (vs a promise) so the consumer can react
    * to incoming changes to the user permissions (e.g. for changing _debug_
    * roles).
    *
