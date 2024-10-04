@@ -79,7 +79,7 @@ type PrepareFieldMember = <T>(props: {
   field: ObjectField
   parent: FormStateOptions<ObjectSchemaType, T> & {
     groups: FormFieldGroup[]
-    selectedGroup: FormFieldGroup
+    selectedGroup?: FormFieldGroup
   }
   index: number
 }) => ObjectMember | HiddenField | null
@@ -117,8 +117,12 @@ function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
   groupsConfig: FormFieldGroup[],
   fieldGroup: string | string[] | undefined,
-  selectedGroup: FormFieldGroup,
+  selectedGroup: FormFieldGroup | undefined,
 ) {
+  if (!selectedGroup) {
+    return false
+  }
+
   if (selectedGroup.name === ALL_FIELDS_GROUP.name) {
     return true
   }
@@ -827,7 +831,7 @@ export function createPrepareFormState({
       },
     )
 
-    const selectedGroup = groups.find((group) => group.selected)!
+    const selectedGroup = groups.find((group) => group.selected)
 
     // note: this is needed because not all object types gets a ´fieldsets´ property during schema parsing.
     // ideally members should be normalized as part of the schema parsing and not here
