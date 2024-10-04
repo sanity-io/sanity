@@ -66,10 +66,10 @@ export function sequentializeListenerEvents(options?: {
           }
 
           if (event.type === 'mutation') {
-            // Note: the buffer may have several holes in it (worst case, and quite unlikely, but still),
-            // we need to consider all possible chains
-            // toOrderedChains will return all detected chains and each chain will be orderered
-            // Once we have a list of chains, we can discard any chain that ends at the current revision
+            // Note: the buffer may have multiple holes in it (this is a worst case scenario, and probably not likely, but still),
+            // so we need to consider all possible chains
+            // `toOrderedChains` will return all detected chains and each of the returned chains will be orderered
+            // Once we have a list of chains, we can then discard any chain that leads up to the current revision
             // since they are already applied on the document
             const orderedChains = toOrderedChains(state.buffer.concat(event)).map((chain) => {
               // in case the chain leads up to the current revision
@@ -89,10 +89,14 @@ export function sequentializeListenerEvents(options?: {
             if (applicableChains.length > 1) {
               throw new Error('Expected at most one applicable chain')
             }
-            if (applicableChains.length > 0) {
+            if (applicableChains.length > 0 && applicableChains[0].length > 0) {
               // we now have a continuous chain that can apply on the base revision
               // Move current base revision to the last mutation event in the applicable chain
-              const nextBaseRevision = applicableChains[0].at(-1)?.resultRev
+              const lastMutation = applicableChains[0].at(-1)!
+              const nextBaseRevision =
+                // special case: if the mutation deletes the document it technically has  no revision, despite
+                // resultRev pointing at a transaction id.
+                lastMutation.transition === 'disappear' ? undefined : lastMutation?.resultRev
               return {
                 base: {revision: nextBaseRevision},
                 emitEvents: applicableChains[0],
