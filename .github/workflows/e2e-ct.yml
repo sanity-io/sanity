@@ -207,7 +207,7 @@ jobs:
         run: npx playwright merge-reports --reporter json ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report >> ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report/playwright-ct-test-results.json
 
       - name: Get Current Job Log URL
-        uses: Tiryoh/gha-jobid-action@c1d1cf7334b70c29374ae382b91053674c8049a2 # v1
+        uses: Tiryoh/gha-jobid-action@be260d8673c9211a84cdcf37794ebd654ba81eef # v1
         id: job_html_url
         if: always()
         with:
