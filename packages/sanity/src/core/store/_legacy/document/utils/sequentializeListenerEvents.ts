@@ -1,12 +1,12 @@
-/* eslint-disable no-console */
 import {concat, type Observable, of, switchMap, throwError, timer} from 'rxjs'
 import {mergeMap, scan} from 'rxjs/operators'
 
+import {debug} from '../debug'
 import {type ListenerEventWithSnapshot} from '../getPairListener'
 import {type MutationEvent} from '../types'
 import {discardChainTo, linkedSort} from './eventChainUtils'
 
-interface DocumentMutationSequenceState {
+interface ListenerSequenceState {
   /**
    * Base revision will be undefined if document doesn't exist
    */
@@ -23,9 +23,27 @@ interface DocumentMutationSequenceState {
 }
 
 export class OutOfSyncError extends Error {
-  constructor(message: string) {
+  /**
+   * Attach state to the error for debugging/reporting
+   */
+  state: ListenerSequenceState
+  constructor(message: string, state: ListenerSequenceState) {
     super(message)
     this.name = 'OutOfSyncError'
+    this.state = state
+  }
+}
+
+export class DeadlineExceededError extends OutOfSyncError {
+  constructor(message: string, state: ListenerSequenceState) {
+    super(message, state)
+    this.name = 'DeadlineExceededError'
+  }
+}
+export class MaxBufferExceededError extends OutOfSyncError {
+  constructor(message: string, state: ListenerSequenceState) {
+    super(message, state)
+    this.name = 'MaxBufferExceededError'
   }
 }
 
@@ -46,7 +64,7 @@ const EMPTY_ARRAY: never[] = []
  */
 export function sequentializeListenerEvents(options?: {
   maxBufferSize?: number
-  resolveChainDeadline: number
+  resolveChainDeadline?: number
 }) {
   const {resolveChainDeadline = DEFAULT_DEADLINE_MS, maxBufferSize = DEFAULT_MAX_BUFFER_SIZE} =
     options || {}
@@ -54,10 +72,7 @@ export function sequentializeListenerEvents(options?: {
   return (input$: Observable<ListenerEventWithSnapshot>): Observable<ListenerEventWithSnapshot> => {
     return input$.pipe(
       scan(
-        (
-          state: DocumentMutationSequenceState,
-          event: ListenerEventWithSnapshot,
-        ): DocumentMutationSequenceState => {
+        (state: ListenerSequenceState, event: ListenerEventWithSnapshot): ListenerSequenceState => {
           if (event.type === 'mutation' && !state.baseRevision) {
             throw new Error('Invalid state. Cannot create a sequence without a base')
           }
@@ -77,7 +92,7 @@ export function sequentializeListenerEvents(options?: {
             const [discarded, nextBuffer] = discardChainTo(sortedBuffer, state.baseRevision)
 
             if (discarded.length > 0) {
-              console.log('DISCARDED MUTATIONS ALREADY APPLIED IN DOCUMENT', discarded)
+              debug('discarded %d mutations already applied to document', discarded.length)
             }
 
             if (nextBuffer.length === 0) {
@@ -94,9 +109,12 @@ export function sequentializeListenerEvents(options?: {
                 buffer: EMPTY_ARRAY,
               }
             }
-            if (state.buffer.length >= maxBufferSize) {
-              throw new OutOfSyncError(
+            if (
+              state.buffer.length >= ((window as any).__sanity_debug_maxBufferSize ?? maxBufferSize)
+            ) {
+              throw new MaxBufferExceededError(
                 `Too many unchainable mutation events: ${state.buffer.length}`,
+                state,
               )
             }
             return {
@@ -118,11 +136,12 @@ export function sequentializeListenerEvents(options?: {
         if (state.buffer.length > 0) {
           return concat(
             of(state),
-            timer(resolveChainDeadline).pipe(
+            timer((window as any).__sanity_debug_resolveChainDeadline ?? resolveChainDeadline).pipe(
               mergeMap(() =>
                 throwError(() => {
-                  return new OutOfSyncError(
+                  return new DeadlineExceededError(
                     `Did not resolve chain within a deadline of ${resolveChainDeadline}ms`,
+                    state,
                   )
                 }),
               ),

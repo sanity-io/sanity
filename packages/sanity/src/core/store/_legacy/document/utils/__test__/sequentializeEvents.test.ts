@@ -6,7 +6,11 @@ import {toArray} from 'rxjs/operators'
 import {type MutationPayload} from '../../buffered-doc'
 import {type ListenerEvent, type ListenerEventWithSnapshot} from '../../getPairListener'
 import {type MutationEvent} from '../../types'
-import {sequentializeListenerEvents} from '../sequentializeListenerEvents'
+import {
+  DeadlineExceededError,
+  MaxBufferExceededError,
+  sequentializeListenerEvents,
+} from '../sequentializeListenerEvents'
 
 function mutationEvent({
   previousRev,
@@ -133,4 +137,108 @@ test('it ignores events before the current head revision', async () => {
       return event?.type === 'mutation' ? event.mutations : event?.type
     }),
   ).toEqual(['snapshot', [{patch: {set: {name: 'SHOULD BE APPLIED'}}}]])
+})
+
+test('it throws an MaxBufferExceededError if the buffer exceeds `maxBuffer`', async () => {
+  const events = from([
+    {
+      type: 'snapshot',
+      documentId: 'test',
+      initialRevision: 'one',
+      document: {
+        _rev: 'one',
+        _id: 'test',
+        _type: 'test',
+        name: 'initial',
+        _createdAt: '2024-10-02T06:40:16.414Z',
+        _updatedAt: '2024-10-02T06:40:16.414Z',
+      },
+    },
+    // this has the snapshot revision as it's previous and should be passed on as-is
+    mutationEvent({
+      previousRev: 'one',
+      resultRev: 'two',
+      mutations: [{patch: {set: {name: 'OK'}}}],
+    }),
+    // this is part of an unbroken chain, but received out of order
+    mutationEvent({
+      previousRev: 'four',
+      resultRev: 'five',
+      mutations: [{patch: {set: {name: 'Out of order'}}}],
+    }),
+    // this breaks the chain
+    mutationEvent({
+      previousRev: 'six',
+      resultRev: 'seven',
+      mutations: [{patch: {set: {name: 'Out of order'}}}],
+    }),
+    // this is part of an unbroken chain, but received out of order
+    mutationEvent({
+      previousRev: 'three',
+      resultRev: 'four',
+      mutations: [{patch: {set: {name: 'Out of order'}}}],
+    }),
+    // we have a complete unbroken chain when receiving this
+    mutationEvent({
+      previousRev: 'two',
+      resultRev: 'three',
+      mutations: [{patch: {set: {name: 'Out of order'}}}],
+    }),
+  ] satisfies ListenerEventWithSnapshot[])
+
+  await expect(
+    lastValueFrom(events.pipe(sequentializeListenerEvents({maxBufferSize: 3}), toArray())),
+  ).rejects.toThrowError(MaxBufferExceededError)
+})
+
+test('it throws an OutOfSyncError if the buffer exceeds `maxBuffer`', async () => {
+  const events = from([
+    {
+      type: 'snapshot',
+      documentId: 'test',
+      initialRevision: 'one',
+      document: {
+        _rev: 'one',
+        _id: 'test',
+        _type: 'test',
+        name: 'initial',
+        _createdAt: '2024-10-02T06:40:16.414Z',
+        _updatedAt: '2024-10-02T06:40:16.414Z',
+      },
+    },
+    // this has the snapshot revision as it's previous and should be passed on as-is
+    mutationEvent({
+      previousRev: 'one',
+      resultRev: 'two',
+      mutations: [{patch: {set: {name: 'OK'}}}],
+    }),
+    // this is part of an unbroken chain, but received out of order
+    mutationEvent({
+      previousRev: 'four',
+      resultRev: 'five',
+      mutations: [{patch: {set: {name: 'Out of order'}}}],
+    }),
+    // this breaks the chain
+    mutationEvent({
+      previousRev: 'six',
+      resultRev: 'seven',
+      mutations: [{patch: {set: {name: 'Out of order'}}}],
+    }),
+    // this is part of an unbroken chain, but received out of order
+    mutationEvent({
+      previousRev: 'three',
+      resultRev: 'four',
+      mutations: [{patch: {set: {name: 'Out of order'}}}],
+    }),
+    // we have a complete unbroken chain when receiving this
+    mutationEvent({
+      previousRev: 'two',
+      resultRev: 'three',
+      mutations: [{patch: {set: {name: 'Out of order'}}}],
+    }),
+  ] satisfies ListenerEventWithSnapshot[])
+
+  await expect(
+    lastValueFrom(events.pipe(sequentializeListenerEvents({resolveChainDeadline: 100}), toArray())),
+  ).rejects.toThrowError(DeadlineExceededError)
 })
