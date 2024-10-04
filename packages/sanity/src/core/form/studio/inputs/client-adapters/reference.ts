@@ -243,7 +243,7 @@ export function referenceSearch(
   })
   return search(textTerm, {includeDrafts: true}).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
-    map((docs) => collate(docs)),
+    map((docs) => collate({documents: docs})),
     // pick the 100 best matches
     map((collated) => collated.slice(0, 100)),
     mergeMap((collated) => {
