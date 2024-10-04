@@ -3,6 +3,7 @@ import {type SanityDocument, type Schema} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
 
+import {type PairListenerOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
@@ -35,12 +36,19 @@ export const editState = memoize(
       client: SanityClient
       schema: Schema
       serverActionsEnabled: Observable<boolean>
+      pairListenerOptions?: PairListenerOptions
     },
     idPair: IdPair,
     typeName: string,
   ): Observable<EditStateFor> => {
     const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
-    return snapshotPair(ctx.client, idPair, typeName, ctx.serverActionsEnabled).pipe(
+    return snapshotPair(
+      ctx.client,
+      idPair,
+      typeName,
+      ctx.serverActionsEnabled,
+      ctx.pairListenerOptions,
+    ).pipe(
       switchMap((versions) =>
         combineLatest([
           versions.draft.snapshots$,

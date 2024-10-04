@@ -4,6 +4,7 @@ import {type Observable} from 'rxjs'
 import {filter, map, publishReplay, refCount} from 'rxjs/operators'
 
 import {type BufferedDocumentEvent, type MutationPayload, type SnapshotEvent} from '../buffered-doc'
+import {type PairListenerOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {type DocumentVersion} from './checkoutPair'
@@ -66,8 +67,9 @@ export const snapshotPair = memoize(
     idPair: IdPair,
     typeName: string,
     serverActionsEnabled: Observable<boolean>,
+    pairListenerOptions?: PairListenerOptions,
   ): Observable<SnapshotPair> => {
-    return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
+    return memoizedPair(client, idPair, typeName, serverActionsEnabled, pairListenerOptions).pipe(
       map(({published, draft, transactionsPendingEvents$}): SnapshotPair => {
         return {
           transactionsPendingEvents$,
