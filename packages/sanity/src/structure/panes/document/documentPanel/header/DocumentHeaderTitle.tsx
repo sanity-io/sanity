@@ -13,7 +13,10 @@ const TitleContainer = styled(Text)`
   min-width: 0;
 `
 
-export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactElement {
+export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(props: {
+  collapsed: boolean
+}): ReactElement {
+  const {collapsed} = props
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
   const subscribed = Boolean(documentValue)
 
@@ -47,24 +50,27 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactEle
   }
 
   return (
-    <Flex flex={1} align="center" gap={3} paddingX={2}>
-      <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
-      <TitleContainer
-        muted={!value?.title}
-        size={1}
-        textOverflow="ellipsis"
-        weight={value?.title ? 'semibold' : undefined}
-        title={value?.title}
-      >
-        {value?.title || (
-          <span style={{color: 'var(--card-muted-fg-color)'}}>
-            {t('panes.document-header-title.untitled.text')}
-          </span>
-        )}
-      </TitleContainer>
-      <Flex flex="none" align="center" gap={1}>
+    <Flex flex={1} align="center" gap={collapsed ? 3 : 1} paddingX={collapsed ? 2 : 0}>
+      {collapsed ? (
+        <>
+          <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
+          <TitleContainer
+            muted={!value?.title}
+            size={1}
+            textOverflow="ellipsis"
+            weight={value?.title ? 'semibold' : undefined}
+            title={value?.title}
+          >
+            {value?.title || (
+              <span style={{color: 'var(--card-muted-fg-color)'}}>
+                {t('panes.document-header-title.untitled.text')}
+              </span>
+            )}
+          </TitleContainer>
+        </>
+      ) : (
         <DocumentPerspectiveMenu />
-      </Flex>
+      )}
     </Flex>
   )
 })
