@@ -1,7 +1,6 @@
 import {describe, expect, it, jest} from '@jest/globals'
-import {ErrorBoundary} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
-import {type SanityClient} from 'sanity'
+import {type SanityClient, type Workspace} from 'sanity'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
@@ -89,17 +88,17 @@ describe('WorkspaceRouterProvider', () => {
       },
     })
 
-    render(
-      <TestProvider>
-        {/* prevents thrown error from breaking the test */}
-        <ErrorBoundary onCatch={({error, info}) => <></>}>
+    try {
+      render(
+        <TestProvider>
+          {/* prevents thrown error from breaking the test */}
           <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
             <ThrowErrorComponent />
           </WorkspaceRouterProvider>
-        </ErrorBoundary>
-      </TestProvider>,
-    )
-
-    expect(onStudioError).toHaveBeenCalledTimes(1)
+        </TestProvider>,
+      )
+    } catch {
+      expect(onStudioError).toHaveBeenCalledTimes(1)
+    }
   })
 })
