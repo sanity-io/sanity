@@ -83,3 +83,4 @@ yalc.lock
 ## Documentation Report
 scripts/docs-report.md
 
+scripts/sdx1652-repro.ts
