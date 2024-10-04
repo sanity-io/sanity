@@ -4,7 +4,7 @@ import {from, lastValueFrom} from 'rxjs'
 import {toArray} from 'rxjs/operators'
 
 import {type MutationPayload} from '../../buffered-doc'
-import {type ListenerEvent, type ListenerEventWithSnapshot} from '../../getPairListener'
+import {type ListenerEvent} from '../../getPairListener'
 import {type MutationEvent} from '../../types'
 import {
   DeadlineExceededError,
@@ -75,7 +75,7 @@ test("it accumulates events that doesn't apply in a chain starting at the curren
       resultRev: 'three',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
     }),
-  ] satisfies ListenerEventWithSnapshot[])
+  ] satisfies ListenerEvent[])
 
   expect(
     (await lastValueFrom(events.pipe(sequentializeListenerEvents(), toArray()))).map((event) => {
@@ -97,7 +97,7 @@ test("it accumulates events that doesn't apply in a chain starting at the curren
   ])
 })
 
-test('it ignores events before the current head revision', async () => {
+test('it ignores events already applied to the current head revision', async () => {
   const events = from([
     {
       type: 'snapshot',
@@ -184,7 +184,7 @@ test('it throws an MaxBufferExceededError if the buffer exceeds `maxBuffer`', as
       resultRev: 'three',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
     }),
-  ] satisfies ListenerEventWithSnapshot[])
+  ] satisfies ListenerEvent[])
 
   await expect(
     lastValueFrom(events.pipe(sequentializeListenerEvents({maxBufferSize: 3}), toArray())),
@@ -236,7 +236,7 @@ test('it throws an OutOfSyncError if the buffer exceeds `maxBuffer`', async () =
       resultRev: 'three',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
     }),
-  ] satisfies ListenerEventWithSnapshot[])
+  ] satisfies ListenerEvent[])
 
   await expect(
     lastValueFrom(events.pipe(sequentializeListenerEvents({resolveChainDeadline: 100}), toArray())),

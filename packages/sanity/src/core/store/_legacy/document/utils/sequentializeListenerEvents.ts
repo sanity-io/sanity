@@ -1,10 +1,11 @@
+import {partition} from 'lodash'
 import {concat, type Observable, of, switchMap, throwError, timer} from 'rxjs'
 import {mergeMap, scan} from 'rxjs/operators'
 
 import {debug} from '../debug'
-import {type ListenerEventWithSnapshot} from '../getPairListener'
+import {type ListenerEvent} from '../getPairListener'
 import {type MutationEvent} from '../types'
-import {discardChainTo, linkedSort} from './eventChainUtils'
+import {discardChainTo, toOrderedChains} from './eventChainUtils'
 
 interface ListenerSequenceState {
   /**
@@ -15,7 +16,7 @@ interface ListenerSequenceState {
   /**
    * Array of events to pass on to the stream, e.g. when mutation applies to current head revision, or a chain is complete
    */
-  emitEvents: ListenerEventWithSnapshot[]
+  emitEvents: ListenerEvent[]
   /**
    * Buffer to keep track of events that doesn't line up in a [previousRev, resultRev] -- [previousRev, resultRev] sequence
    * This can happen if events arrive out of order, or if an event in the middle for some reason gets lost
@@ -48,7 +49,7 @@ export class MaxBufferExceededError extends OutOfSyncError {
   }
 }
 
-const DEFAULT_MAX_BUFFER_SIZE = 10
+const DEFAULT_MAX_BUFFER_SIZE = 20
 const DEFAULT_DEADLINE_MS = 3000
 
 const EMPTY_ARRAY: never[] = []
@@ -70,10 +71,10 @@ export function sequentializeListenerEvents(options?: {
   const {resolveChainDeadline = DEFAULT_DEADLINE_MS, maxBufferSize = DEFAULT_MAX_BUFFER_SIZE} =
     options || {}
 
-  return (input$: Observable<ListenerEventWithSnapshot>): Observable<ListenerEventWithSnapshot> => {
+  return (input$: Observable<ListenerEvent>): Observable<ListenerEvent> => {
     return input$.pipe(
       scan(
-        (state: ListenerSequenceState, event: ListenerEventWithSnapshot): ListenerSequenceState => {
+        (state: ListenerSequenceState, event: ListenerEvent): ListenerSequenceState => {
           if (event.type === 'mutation' && !state.base) {
             throw new Error('Invalid state. Cannot create a sequence without a base')
           }
@@ -87,31 +88,42 @@ export function sequentializeListenerEvents(options?: {
           }
 
           if (event.type === 'mutation') {
-            const sortedBuffer = linkedSort(state.buffer.concat(event))
+            // Note: the buffer may have several holes in it (worst case, and quite unlikely, but still),
+            // we need to consider all possible chains
+            // toOrderedChains will return all detected chains and each chain will be orderered
+            // Once we have a list of chains, we can discard any chain that ends at the current revision
+            // since they are already applied on the document
+            const orderedChains = toOrderedChains(state.buffer.concat(event)).map((chain) => {
+              // in case the chain leads up to the current revision
+              const [discarded, rest] = discardChainTo(chain, state.base!.revision)
+              if (discarded.length > 0) {
+                debug('Discarded %d mutations already applied to document', discarded.length)
+              }
+              return rest
+            })
 
-            // Discard any mutation events that leads up to the base revision
-            const [discarded, nextBuffer] = discardChainTo(sortedBuffer, state.base!.revision)
+            const [applicableChains, _nextBuffer] = partition(orderedChains, (chain) => {
+              // note: there can be at most one applicable chain
+              return state.base!.revision === chain[0]?.previousRev
+            })
 
-            if (discarded.length > 0) {
-              debug('discarded %d mutations already applied to document', discarded.length)
+            const nextBuffer = _nextBuffer.flat()
+            if (applicableChains.length > 1) {
+              throw new Error('Expected at most one applicable chain')
             }
-
-            if (nextBuffer.length === 0) {
-              return {...state, emitEvents: EMPTY_ARRAY, buffer: EMPTY_ARRAY}
-            }
-
-            if (nextBuffer[0].previousRev === state.base!.revision) {
-              // we now have a continuous chain and can flush the buffer
-
-              const nextBaseRevision = nextBuffer.at(-1)?.resultRev
+            if (applicableChains.length > 0) {
+              // we now have a continuous chain that can apply on the base revision
+              // Move current base revision to the last mutation event in the applicable chain
+              const nextBaseRevision = applicableChains[0].at(-1)?.resultRev
               return {
                 base: {revision: nextBaseRevision},
-                emitEvents: nextBuffer,
-                buffer: EMPTY_ARRAY,
+                emitEvents: applicableChains[0],
+                buffer: nextBuffer,
               }
             }
+
             if (
-              state.buffer.length >= ((window as any).__sanity_debug_maxBufferSize ?? maxBufferSize)
+              nextBuffer.length >= ((window as any).__sanity_debug_maxBufferSize ?? maxBufferSize)
             ) {
               throw new MaxBufferExceededError(
                 `Too many unchainable mutation events: ${state.buffer.length}`,
@@ -120,7 +132,7 @@ export function sequentializeListenerEvents(options?: {
             }
             return {
               ...state,
-              buffer: state.buffer.concat(event),
+              buffer: nextBuffer,
               emitEvents: EMPTY_ARRAY,
             }
           }

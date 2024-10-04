@@ -2,8 +2,8 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {groupBy} from 'lodash'
-import {concat, defer, EMPTY, merge, type Observable, of, throwError, timer} from 'rxjs'
-import {catchError, concatMap, filter, map, mergeMap, scan} from 'rxjs/operators'
+import {defer, merge, type Observable, of, throwError, timer} from 'rxjs'
+import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
 
 import {LISTENER_RESET_DELAY} from '../../../preview/constants'
 import {shareReplayLatest} from '../../../preview/utils/shareReplayLatest'
@@ -29,9 +29,6 @@ export interface InitialSnapshotEvent {
   initialRevision: string | undefined
   document: SanityDocument | null
 }
-
-/** @internal */
-export type ListenerEventWithSnapshot = MutationEvent | ReconnectEvent | InitialSnapshotEvent
 
 /** @internal */
 export interface PairListenerOptions {
@@ -90,6 +87,7 @@ export function getPairListener(
         },
       )
       .pipe(
+        //filter((event) => Math.random() < 0.99 || event.type !== 'mutation'),
         shareReplayLatest({
           predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
           resetOnRefCountZero: () => timer(LISTENER_RESET_DELAY),
@@ -97,48 +95,25 @@ export function getPairListener(
       ),
   ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
 
-  return defer(() => sharedEvents).pipe(
+  const pairEvents$ = sharedEvents.pipe(
     concatMap((event) => {
       return event.type === 'welcome'
         ? fetchInitialDocumentSnapshots().pipe(
-            concatMap((snapshots) => {
-              return merge(
-                concat(
-                  of(createSnapshotEvent(draftId, snapshots.draft)),
-                  sharedEvents.pipe(
-                    filter((event) => event.type !== 'welcome'),
-                    filter(
-                      (sharedListenerEvent) =>
-                        sharedListenerEvent.type !== 'mutation' ||
-                        sharedListenerEvent.documentId === draftId,
-                    ),
-                  ),
-                ).pipe(sequentializeListenerEvents()),
-                concat(
-                  of(createSnapshotEvent(publishedId, snapshots.published)),
-                  sharedEvents.pipe(
-                    filter((event) => event.type !== 'welcome'),
-                    filter(
-                      (sharedListenerEvent) =>
-                        sharedListenerEvent.type !== 'mutation' ||
-                        sharedListenerEvent.documentId === publishedId,
-                    ),
-                  ),
-                ).pipe(sequentializeListenerEvents()),
-              )
-            }),
+            mergeMap(({draft, published}) => [
+              createSnapshotEvent(draftId, draft),
+              createSnapshotEvent(publishedId, published),
+            ]),
           )
-        : EMPTY
-    }),
-    catchError((err, caught$) => {
-      if (err instanceof OutOfSyncError) {
-        console.error(err)
-        return caught$
-      }
-      return throwError(err)
+        : of(event)
     }),
     scan(
-      (acc: {next: ListenerEvent[]; buffer: ListenerEvent[]}, msg) => {
+      (
+        acc: {
+          next: (InitialSnapshotEvent | ListenerEvent)[]
+          buffer: (InitialSnapshotEvent | ListenerEvent)[]
+        },
+        msg,
+      ) => {
         // we only care about mutation events
         if (!isMutationEvent(msg)) {
           return {next: [msg], buffer: []}
@@ -170,6 +145,34 @@ export function getPairListener(
     ),
     // note: this flattens the array, and in the case of an empty array, no event will be pushed downstream
     mergeMap((v) => v.next),
+    share(),
+  )
+
+  const draftEvents$ = pairEvents$.pipe(
+    filter((event) =>
+      event.type === 'mutation' || event.type === 'snapshot' ? event.documentId === draftId : true,
+    ),
+    sequentializeListenerEvents(),
+  )
+
+  const publishedEvents$ = pairEvents$.pipe(
+    filter((event) =>
+      event.type === 'mutation' || event.type === 'snapshot'
+        ? event.documentId === publishedId
+        : true,
+    ),
+    sequentializeListenerEvents(),
+  )
+
+  return merge(draftEvents$, publishedEvents$).pipe(
+    catchError((err, caught$) => {
+      if (err instanceof OutOfSyncError) {
+        console.error(err)
+        // this will retry immediately
+        return caught$
+      }
+      return throwError(() => err)
+    }),
   )
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
