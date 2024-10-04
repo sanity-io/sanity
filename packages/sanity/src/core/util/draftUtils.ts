@@ -180,8 +180,10 @@ export interface CollatedHit<T extends {_id: string} = {_id: string}> {
 }
 
 /** @internal */
-export function collate<T extends {_id: string; _type: string}>(documents: T[]): CollatedHit<T>[] {
-  const byId = documents.reduce((res, doc) => {
+export function collate<T extends {_id: string; _type: string}>(documents: {
+  documents: SanityDocumentLike[]
+}): CollatedHit<T>[] {
+  const byId = documents.documents?.reduce((res, doc) => {
     const publishedId = getPublishedId(doc._id)
     let entry = res.get(publishedId)
     if (!entry) {
@@ -199,7 +201,7 @@ export function collate<T extends {_id: string; _type: string}>(documents: T[]):
 /** @internal */
 // Removes published documents that also has a draft
 export function removeDupes(documents: SanityDocumentLike[]): SanityDocumentLike[] {
-  return collate(documents)
+  return collate({documents})
     .map((entry) => entry.draft || entry.published)
     .filter(isNonNullable)
 }
