@@ -1,6 +1,5 @@
-import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {createElement, memo, type ReactElement} from 'react'
+import {memo, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -48,23 +47,7 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactEle
 
   return (
     <Flex flex={1} align="center" gap={3} paddingX={2}>
-      <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
-      <TitleContainer
-        muted={!value?.title}
-        size={1}
-        textOverflow="ellipsis"
-        weight={value?.title ? 'semibold' : undefined}
-        title={value?.title}
-      >
-        {value?.title || (
-          <span style={{color: 'var(--card-muted-fg-color)'}}>
-            {t('panes.document-header-title.untitled.text')}
-          </span>
-        )}
-      </TitleContainer>
-      <Flex flex="none" align="center" gap={1}>
-        <DocumentPerspectiveMenu />
-      </Flex>
+      <DocumentPerspectiveMenu />
     </Flex>
   )
 })
