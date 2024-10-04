@@ -1,9 +1,9 @@
 import {addWeeks, isAfter, isBefore} from 'date-fns'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {from, of} from 'rxjs'
+import {of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
-import {useClient, useProjectId} from 'sanity'
+import {type SanityClient, useClient, useProjectId} from 'sanity'
 
 /** @internal */
 export interface AccessRequest {
@@ -20,25 +20,39 @@ export interface AccessRequest {
   note: string
 }
 
+const LOADING_STATE = {loading: true, error: false, status: undefined}
+const EMPTY_STATE = {loading: false, error: false, status: 'none'}
+const DECLINED_STATE = {loading: false, error: false, status: 'declined'}
+const PENDING_STATE = {loading: false, error: false, status: 'pending'}
+const EXPIRED_STATE = {loading: false, error: false, status: 'expired'}
+
 /** @internal */
 export const useRoleRequestsStatus = () => {
   const client = useClient({apiVersion: '2024-07-01'})
   const projectId = useProjectId()
 
-  const checkRoleRequests = useMemo(() => {
+  const checkRoleRequests$ = useMemo(() => {
     if (!client || !projectId) {
-      return of({loading: false, error: false, status: 'none'})
+      return of(EMPTY_STATE)
     }
 
-    return from(
-      client.request<AccessRequest[] | null>({
-        url: `/access/requests/me`,
-        tag: 'use-role-requests-status',
-      }),
-    ).pipe(
+    return checkRoleRequests(client, projectId)
+  }, [client, projectId])
+
+  const {loading, error, status} = useObservable(checkRoleRequests$, LOADING_STATE)
+  return {data: status, loading, error}
+}
+
+function checkRoleRequests(client: SanityClient, projectId: string) {
+  return client.observable
+    .request<AccessRequest[] | null>({
+      url: '/access/requests/me',
+      tag: 'use-role-requests-status',
+    })
+    .pipe(
       map((requests) => {
         if (!requests || requests.length === 0) {
-          return {loading: false, error: false, status: 'none'}
+          return EMPTY_STATE
         }
 
         // Filter requests for the specific project and where type is 'role'
@@ -51,7 +65,7 @@ export const useRoleRequestsStatus = () => {
           declinedRequest &&
           isAfter(addWeeks(new Date(declinedRequest.createdAt), 2), new Date())
         ) {
-          return {loading: false, error: false, status: 'declined'}
+          return DECLINED_STATE
         }
 
         const pendingRequest = projectRequests.find(
@@ -60,7 +74,7 @@ export const useRoleRequestsStatus = () => {
             isAfter(addWeeks(new Date(request.createdAt), 2), new Date()),
         )
         if (pendingRequest) {
-          return {loading: false, error: false, status: 'pending'}
+          return PENDING_STATE
         }
 
         const oldPendingRequest = projectRequests.find(
@@ -69,24 +83,12 @@ export const useRoleRequestsStatus = () => {
             isBefore(addWeeks(new Date(request.createdAt), 2), new Date()),
         )
 
-        return oldPendingRequest
-          ? {loading: false, error: false, status: 'expired'}
-          : {loading: false, error: false, status: 'none'}
+        return oldPendingRequest ? EXPIRED_STATE : EMPTY_STATE
       }),
       catchError((err) => {
         console.error('Failed to fetch access requests', err)
         return of({loading: false, error: true, status: undefined})
       }),
-      startWith({loading: true, error: false, status: undefined}), // Start with loading state
+      startWith(LOADING_STATE), // Start with loading state
     )
-  }, [client, projectId])
-
-  // Use useObservable to subscribe to the checkRoleRequests observable
-  const {loading, error, status} = useObservable(checkRoleRequests, {
-    loading: true,
-    error: false,
-    status: undefined,
-  })
-
-  return {data: status, loading, error}
 }
