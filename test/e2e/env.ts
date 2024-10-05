@@ -5,6 +5,7 @@ import {loadEnvFiles} from '../../scripts/utils/loadEnvFiles'
 
 loadEnvFiles()
 
+const SANITY_E2E_IS_AUTO_UPDATING = process.env.SANITY_E2E_IS_AUTO_UPDATING === 'true'
 const SANITY_E2E_SESSION_TOKEN = process.env.SANITY_E2E_SESSION_TOKEN!
 const SANITY_E2E_PROJECT_ID = process.env.SANITY_E2E_PROJECT_ID!
 const SANITY_E2E_DATASET = process.env.SANITY_E2E_DATASET!
@@ -27,4 +28,9 @@ if (!SANITY_E2E_DATASET) {
   process.exit(1)
 }
 
-export {SANITY_E2E_DATASET, SANITY_E2E_PROJECT_ID, SANITY_E2E_SESSION_TOKEN}
+export {
+  SANITY_E2E_DATASET,
+  SANITY_E2E_IS_AUTO_UPDATING,
+  SANITY_E2E_PROJECT_ID,
+  SANITY_E2E_SESSION_TOKEN,
+}
