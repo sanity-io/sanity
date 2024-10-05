@@ -167,7 +167,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       requireProject: false,
     }).config()
 
-    if (!project && projectConfig.projectId) {
+    if (!project && !projectConfig.projectId) {
       throw new Error(
         'sanity.cli.js does not contain a project identifier ("api.projectId") and no --project option was provided.',
       )
