@@ -8,8 +8,6 @@ on:
       TURBO_TOKEN:
       SANITY_E2E_SESSION_TOKEN_NEW:
         required: true
-      SANITY_E2E_PROJECT_ID:
-        required: true
 
 jobs:
   prepare:
@@ -152,8 +150,8 @@ jobs:
       #     # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
       #     # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
       #     SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-      #     SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
-      #     SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
+      #     SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
+      #     SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
       #   run: pnpm e2e:setup && pnpm e2e:build
 
       - name: Build E2E test studio on PR
@@ -164,7 +162,7 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
         run: pnpm e2e:setup && pnpm e2e:build
 
