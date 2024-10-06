@@ -79,7 +79,7 @@ export function getPairListener(
   const {publishedId, draftId} = idPair
 
   const sharedEvents = defer(() =>
-    client
+    client.observable
       .listen(
         `*[_id == $publishedId || _id == $draftId]`,
         {
