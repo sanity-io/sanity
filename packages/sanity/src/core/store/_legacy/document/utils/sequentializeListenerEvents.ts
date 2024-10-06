@@ -50,7 +50,7 @@ export class MaxBufferExceededError extends OutOfSyncError {
 }
 
 const DEFAULT_MAX_BUFFER_SIZE = 20
-const DEFAULT_DEADLINE_MS = 3000
+const DEFAULT_DEADLINE_MS = 30000
 
 const EMPTY_ARRAY: never[] = []
 
