@@ -26,7 +26,6 @@ interface Snapshots {
 export interface InitialSnapshotEvent {
   type: 'snapshot'
   documentId: string
-  initialRevision: string | undefined
   document: SanityDocument | null
 }
 
@@ -207,6 +206,5 @@ function createSnapshotEvent(
     type: 'snapshot',
     documentId,
     document,
-    initialRevision: document?._rev,
   }
 }

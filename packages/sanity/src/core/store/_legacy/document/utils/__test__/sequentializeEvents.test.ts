@@ -41,7 +41,6 @@ test("it accumulates events that doesn't apply in a chain starting at the curren
     {
       type: 'snapshot',
       documentId: 'test',
-      initialRevision: 'one',
       document: {
         _rev: 'one',
         _id: 'test',
@@ -84,7 +83,7 @@ test("it accumulates events that doesn't apply in a chain starting at the curren
         event.type === 'mutation'
           ? event.previousRev
           : event.type === 'snapshot'
-            ? event.initialRevision
+            ? event.document?._rev
             : null,
       ]
     }),
@@ -102,7 +101,6 @@ test('it ignores events already applied to the current head revision', async () 
     {
       type: 'snapshot',
       documentId: 'test',
-      initialRevision: 'one',
       document: {
         _rev: 'one',
         _id: 'test',
@@ -144,7 +142,6 @@ test('it throws an MaxBufferExceededError if the buffer exceeds `maxBuffer`', as
     {
       type: 'snapshot',
       documentId: 'test',
-      initialRevision: 'one',
       document: {
         _rev: 'one',
         _id: 'test',
@@ -196,7 +193,6 @@ test('it throws an OutOfSyncError if the buffer exceeds `maxBuffer`', async () =
     {
       type: 'snapshot',
       documentId: 'test',
-      initialRevision: 'one',
       document: {
         _rev: 'one',
         _id: 'test',

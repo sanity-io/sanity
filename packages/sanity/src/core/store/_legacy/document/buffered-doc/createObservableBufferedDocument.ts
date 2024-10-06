@@ -140,13 +140,6 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
   }
 
   const currentBufferedDocument$ = listenerEvent$.pipe(
-    // filter((e, i) => {
-    //   const drop = i < 10 || Math.random() < 0.9
-    //   if (drop) {
-    //     console.log('DROP EVENT!!!', e)
-    //   }
-    //   return drop
-    // }),
     scan((bufferedDocument: BufferedDocument | null, listenerEvent) => {
       // consider renaming 'snapshot' to initial/welcome
       if (listenerEvent.type === 'snapshot') {

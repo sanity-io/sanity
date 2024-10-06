@@ -157,7 +157,7 @@ const defaultWorkspace = {
   icon: SanityMonogram,
   // eslint-disable-next-line camelcase
   __internal_serverDocumentActions: {
-    //enabled: true,
+    enabled: true,
   },
   scheduledPublishing: {
     enabled: true,

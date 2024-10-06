@@ -9,8 +9,11 @@ import {discardChainTo, toOrderedChains} from './eventChainUtils'
 
 interface ListenerSequenceState {
   /**
-   * Base revision will be undefined if document doesn't exist
-   * base is `undefined` until the snapshot event is received
+   * Tracks the latest revision from the server that can be applied locally
+   * Once we receive a mutation event that has a `previousRev` that equals `base.revision`
+   * we will move `base.revision` to the event's `resultRev`
+   * `base.revision` will be undefined if document doesn't exist.
+   * `base` is `undefined` until the snapshot event is received
    */
   base: {revision: string | undefined} | undefined
   /**
@@ -22,31 +25,6 @@ interface ListenerSequenceState {
    * This can happen if events arrive out of order, or if an event in the middle for some reason gets lost
    */
   buffer: MutationEvent[]
-}
-
-export class OutOfSyncError extends Error {
-  /**
-   * Attach state to the error for debugging/reporting
-   */
-  state: ListenerSequenceState
-  constructor(message: string, state: ListenerSequenceState) {
-    super(message)
-    this.name = 'OutOfSyncError'
-    this.state = state
-  }
-}
-
-export class DeadlineExceededError extends OutOfSyncError {
-  constructor(message: string, state: ListenerSequenceState) {
-    super(message, state)
-    this.name = 'DeadlineExceededError'
-  }
-}
-export class MaxBufferExceededError extends OutOfSyncError {
-  constructor(message: string, state: ListenerSequenceState) {
-    super(message, state)
-    this.name = 'MaxBufferExceededError'
-  }
 }
 
 const DEFAULT_MAX_BUFFER_SIZE = 20
@@ -81,7 +59,7 @@ export function sequentializeListenerEvents(options?: {
           if (event.type === 'snapshot') {
             // When receiving a new snapshot, we can safely discard the current orphaned and chainable buffers
             return {
-              base: {revision: event.initialRevision},
+              base: {revision: event.document?._rev},
               buffer: EMPTY_ARRAY,
               emitEvents: [event],
             }
@@ -173,5 +151,30 @@ export function sequentializeListenerEvents(options?: {
         return state.emitEvents
       }),
     )
+  }
+}
+
+export class OutOfSyncError extends Error {
+  /**
+   * Attach state to the error for debugging/reporting
+   */
+  state: ListenerSequenceState
+  constructor(message: string, state: ListenerSequenceState) {
+    super(message)
+    this.name = 'OutOfSyncError'
+    this.state = state
+  }
+}
+
+export class DeadlineExceededError extends OutOfSyncError {
+  constructor(message: string, state: ListenerSequenceState) {
+    super(message, state)
+    this.name = 'DeadlineExceededError'
+  }
+}
+export class MaxBufferExceededError extends OutOfSyncError {
+  constructor(message: string, state: ListenerSequenceState) {
+    super(message, state)
+    this.name = 'MaxBufferExceededError'
   }
 }

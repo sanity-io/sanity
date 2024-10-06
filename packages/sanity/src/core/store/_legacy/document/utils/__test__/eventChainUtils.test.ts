@@ -1,37 +1,7 @@
 import {describe, expect, it} from '@jest/globals'
 
-import {discardChainTo, partitionChainableAndOrphaned, toOrderedChains} from '../eventChainUtils'
+import {discardChainTo, toOrderedChains} from '../eventChainUtils'
 import {mutationEvent} from './test-utils'
-
-describe(partitionChainableAndOrphaned.name, () => {
-  it('returns an array of chainable and orphaned events', () => {
-    const events = [
-      mutationEvent({previousRev: 'a', resultRev: 'b', mutations: []}), // <-- orphaned
-      mutationEvent({previousRev: 'b', resultRev: 'c', mutations: []}),
-      mutationEvent({previousRev: 'c', resultRev: 'd', mutations: []}),
-      mutationEvent({previousRev: 'd', resultRev: 'e', mutations: []}),
-      mutationEvent({previousRev: 'e', resultRev: 'f', mutations: []}),
-    ]
-    const [chainable, orphaned] = partitionChainableAndOrphaned(events)
-    expect(chainable.map((ev) => ev.resultRev)).toEqual(['c', 'd', 'e', 'f'])
-    expect(orphaned.map((ev) => ev.resultRev)).toEqual(['b'])
-  })
-
-  it('is not order sensitive', () => {
-    const events = [
-      mutationEvent({previousRev: 'e', resultRev: 'f', mutations: []}),
-      mutationEvent({previousRev: 'b', resultRev: 'c', mutations: []}),
-      mutationEvent({previousRev: 'x', resultRev: 'y', mutations: []}), // <-- orphaned
-      mutationEvent({previousRev: 'c', resultRev: 'd', mutations: []}),
-      mutationEvent({previousRev: 'a', resultRev: 'b', mutations: []}), // <-- orphaned
-      mutationEvent({previousRev: 'd', resultRev: 'e', mutations: []}),
-    ]
-    const [chainable, orphaned] = partitionChainableAndOrphaned(events)
-    // Note, it's still in the order received
-    expect(chainable.map((ev) => ev.resultRev)).toEqual(['f', 'c', 'd', 'e'])
-    expect(orphaned.map((ev) => ev.resultRev)).toEqual(['y', 'b'])
-  })
-})
 
 describe(toOrderedChains.name, () => {
   it('returns a list of chains', () => {

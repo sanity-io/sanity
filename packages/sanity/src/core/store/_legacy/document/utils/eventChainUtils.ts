@@ -1,5 +1,3 @@
-import {partition} from 'lodash'
-
 import {type MutationEvent} from '../types'
 
 export function discardChainTo(chain: MutationEvent[], revision: string | undefined) {
@@ -39,13 +37,5 @@ export function toOrderedChains<T extends {previousRev: string; resultRev: strin
       current = events.find((event) => event.previousRev === current?.resultRev)
     }
     return sortedList
-  })
-}
-
-export function partitionChainableAndOrphaned(
-  events: MutationEvent[],
-): [chainable: MutationEvent[], orphaned: MutationEvent[]] {
-  return partition(events, (event) => {
-    return events.some((other) => event.previousRev === other.resultRev)
   })
 }
