@@ -80,8 +80,8 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
+          SANITY_E2E_PROJECT_ID: ${{ env.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: ${{ env.SANITY_E2E_DATASET }}
         run: pnpm e2e:setup && pnpm e2e:build
 
       - name: Build E2E test studio on PR
@@ -91,7 +91,7 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_PROJECT_ID: ${{ env.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
         run: pnpm e2e:setup && pnpm e2e:build
 
@@ -197,8 +197,8 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
+          SANITY_E2E_PROJECT_ID: ${{ env.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: ${{ env.SANITY_E2E_DATASET }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Run E2E tests on PR
@@ -211,7 +211,7 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_PROJECT_ID: ${{ env.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
