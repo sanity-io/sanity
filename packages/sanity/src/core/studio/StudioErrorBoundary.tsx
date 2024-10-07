@@ -1,16 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
-import {
-  Box,
-  Card,
-  Code,
-  Container,
-  ErrorBoundary,
-  type ErrorBoundaryProps,
-  Heading,
-  Stack,
-  Text,
-} from '@sanity/ui'
+import {Box, Card, Code, Container, type ErrorBoundaryProps, Heading, Stack, Text} from '@sanity/ui'
 import {
   type ComponentType,
   type ErrorInfo,
@@ -23,6 +13,7 @@ import {ErrorActions, isDev, isProd} from 'sanity'
 import {styled} from 'styled-components'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
+import {ErrorBoundary} from '../../ui-components'
 import {SchemaError} from '../config'
 import {errorReporter} from '../error/errorReporter'
 import {CorsOriginError} from '../store'
