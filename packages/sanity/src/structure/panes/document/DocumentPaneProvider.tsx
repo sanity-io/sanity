@@ -252,7 +252,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
    * a timeline revision in this instance will display an error localized to the popover itself.
    */
   const ready =
-    connectionState === 'connected' && editState.ready && (timelineReady || !!timelineError)
+    connectionState === 'connected' &&
+    editState.ready &&
+    (!params.rev || timelineReady || !!timelineError)
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
     () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
