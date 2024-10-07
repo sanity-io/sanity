@@ -35,7 +35,7 @@ export function WorkspaceRouterProvider({
 
   const handleCatchError = useCallback(({error}: {error: Error}) => {
     /** catches errors in studio that bubble up, throwing the error */
-    throw new Error(error.message)
+throw error
   }, [])
 
   // `state` is only null if the Studio is somehow rendering in SSR or using hydrateRoot in combination with `unstable_noAuthBoundary`.
