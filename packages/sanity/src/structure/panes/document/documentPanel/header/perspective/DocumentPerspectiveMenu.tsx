@@ -3,7 +3,7 @@ import {ChevronDownIcon, DotIcon} from '@sanity/icons'
 import {Box, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {memo, useMemo} from 'react'
+import {memo, useCallback, useMemo} from 'react'
 import {
   type BundleDocument,
   ReleaseBadge,
@@ -71,7 +71,7 @@ const ReleaseLink = ({release}: {release: Partial<BundleDocument>}) => {
 export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   const paneRouter = usePaneRouter()
   const {t} = useTranslation()
-  const {currentGlobalBundle} = usePerspective(paneRouter.perspective)
+  const {currentGlobalBundle, setPerspective} = usePerspective(paneRouter.perspective)
   const dateTimeFormat = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -88,6 +88,18 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
       />
     ),
     [t],
+  )
+
+  const handleClick = useCallback(() => {
+    // eslint-disable-next-line no-console
+    console.log(editState)
+  }, [editState])
+
+  const handleBundleChange = useCallback(
+    (bundleId: string) => () => {
+      setPerspective(bundleId)
+    },
+    [setPerspective],
   )
 
   return (
@@ -111,9 +123,8 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         <Chip
           disabled={!editState?.published}
           forwardedAs={editState?.published ? 'a' : 'button'}
-          href="google.com"
           mode="bleed"
-          onClick={() => {}}
+          onClick={handleClick}
           padding={2}
           paddingRight={3}
           radius="full"
@@ -126,7 +137,44 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         />
       </Tooltip>
 
-      {documentVersions?.map((release) => <div key={release._id}>{release.title}</div>)}
+      <Tooltip
+        content={
+          <Text size={1}>
+            {editState?.draft ? (
+              <>
+                {editState?.draft.updatedAt ? (
+                  // eslint-disable-next-line i18next/no-literal-string
+                  <>Edited {dateTimeFormat.format(new Date(editState?.draft._updatedAt))}</>
+                ) : (
+                  // eslint-disable-next-line i18next/no-literal-string
+                  <>Created {dateTimeFormat.format(new Date(editState?.draft._createdAt))}</>
+                )}
+              </>
+            ) : (
+              // eslint-disable-next-line i18next/no-literal-string
+              <>No edits</>
+            )}
+          </Text>
+        }
+        portal
+      >
+        <Chip
+          disabled={!editState?.published && !editState?.draft}
+          forwardedAs={editState?.published || editState?.draft ? 'a' : 'button'}
+          icon={DotIcon}
+          mode="bleed"
+          onClick={handleClick}
+          padding={2}
+          paddingRight={3}
+          radius="full"
+          selected={editState?.draft?._id === displayed?._id}
+          style={{flex: 'none'}}
+          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          text={'Draft'}
+          tone={'caution'}
+        />
+      </Tooltip>
+
       {currentGlobalBundle && existsInBundle && <ReleaseLink release={currentGlobalBundle} />}
       <Box flex="none">
         <ReleasesMenu
