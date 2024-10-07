@@ -14,6 +14,8 @@ export interface MutationEvent {
   mutations: MutationPayload[]
   effects: {apply: unknown; revert: unknown}
 
+  previousRev: string
+  resultRev: string
   transactionTotalEvents: number
   transactionCurrentEvent: number
   visibility: 'transaction' | 'query'
