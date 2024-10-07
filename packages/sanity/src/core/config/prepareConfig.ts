@@ -38,7 +38,7 @@ import {
   internalTasksReducer,
   legacySearchEnabledReducer,
   newDocumentOptionsResolver,
-  onStudioErrorResolver,
+  onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
@@ -633,8 +633,8 @@ function resolveSource({
       staticInitialValueTemplateItems,
       options: config,
     },
-    onStudioError: (error: Error, errorInfo: ErrorInfo) => {
-      return onStudioErrorResolver({
+    onUncaughtError: (error: Error, errorInfo: ErrorInfo) => {
+      return onUncaughtErrorResolver({
         config,
         context: {
           error: error,

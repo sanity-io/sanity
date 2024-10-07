@@ -154,7 +154,7 @@ const defaultWorkspace = {
   dataset: 'test',
   plugins: [sharedSettings()],
 
-  onStudioError: (error, errorInfo) => {
+  onUncaughtError: (error, errorInfo) => {
     // eslint-disable-next-line no-console
     console.log(error)
     // eslint-disable-next-line no-console
@@ -253,7 +253,7 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings(), studioComponentsPlugin(), formComponentsPlugin()],
     basePath: '/custom-components',
-    onStudioError: (error, errorInfo) => {
+    onUncaughtError: (error, errorInfo) => {
       // eslint-disable-next-line no-console
       console.log(error)
       // eslint-disable-next-line no-console

@@ -25,8 +25,8 @@ describe('FormBuilderInputErrorBoundary', () => {
     expect(screen.getByTestId('child')).toBeInTheDocument()
   })
 
-  it('calls onStudioError when an error is caught', async () => {
-    const onStudioError = jest.fn()
+  it('calls onUncaughtError when an error is caught', async () => {
+    const onUncaughtError = jest.fn()
 
     const ThrowErrorComponent = () => {
       throw new Error('An EXPECTED, testing error occurred!')
@@ -40,7 +40,7 @@ describe('FormBuilderInputErrorBoundary', () => {
         name: 'default',
         projectId: 'test',
         dataset: 'test',
-        onStudioError,
+        onUncaughtError,
       },
     })
 
@@ -52,6 +52,6 @@ describe('FormBuilderInputErrorBoundary', () => {
       </TestProvider>,
     )
 
-    expect(onStudioError).toHaveBeenCalledTimes(1)
+    expect(onUncaughtError).toHaveBeenCalledTimes(1)
   })
 })

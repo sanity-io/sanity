@@ -310,7 +310,7 @@ export const documentCommentsEnabledReducer = (opts: {
   return result
 }
 
-export const onStudioErrorResolver = (opts: {
+export const onUncaughtErrorResolver = (opts: {
   config: PluginOptions
   context: {error: Error; errorInfo: ErrorInfo}
 }) => {
@@ -320,13 +320,13 @@ export const onStudioErrorResolver = (opts: {
     // There is no concept of 'previous value' in this API. We only care about the final value.
     // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
     // The last plugin 'wins'.
-    const resolver = pluginConfig.onStudioError
+    const resolver = pluginConfig.onUncaughtError
 
     if (typeof resolver === 'function') return resolver(context.error, context.errorInfo)
     if (!resolver) return undefined
 
     throw new Error(
-      `Expected \`document.onStudioError\` to be a a function, but received ${getPrintableType(
+      `Expected \`document.onUncaughtError\` to be a a function, but received ${getPrintableType(
         resolver,
       )}`,
     )

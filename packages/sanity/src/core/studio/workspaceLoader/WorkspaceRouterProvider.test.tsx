@@ -69,8 +69,8 @@ describe('WorkspaceRouterProvider', () => {
     expect(screen.getByText('Children')).toBeInTheDocument()
   })
 
-  it('calls onStudioError when an error is caught', async () => {
-    const onStudioError = jest.fn()
+  it('calls onUncaughtError when an error is caught', async () => {
+    const onUncaughtError = jest.fn()
 
     const ThrowErrorComponent = () => {
       throw new Error('An EXPECTED, testing error occurred!')
@@ -84,7 +84,7 @@ describe('WorkspaceRouterProvider', () => {
         name: 'default',
         projectId: 'test',
         dataset: 'test',
-        onStudioError,
+        onUncaughtError,
       },
     })
 
@@ -98,7 +98,7 @@ describe('WorkspaceRouterProvider', () => {
         </TestProvider>,
       )
     } catch {
-      expect(onStudioError).toHaveBeenCalledTimes(1)
+      expect(onUncaughtError).toHaveBeenCalledTimes(1)
     }
   })
 })

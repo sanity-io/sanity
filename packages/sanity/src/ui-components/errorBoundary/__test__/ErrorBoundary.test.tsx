@@ -14,8 +14,8 @@ describe('ErrorBoundary', () => {
     jest.clearAllMocks()
   })
 
-  it('calls onStudioError when an error is caught', async () => {
-    const onStudioError = jest.fn()
+  it('calls onUncaughtError when an error is caught', async () => {
+    const onUncaughtError = jest.fn()
     const onCatch = jest.fn()
 
     const ThrowErrorComponent = () => {
@@ -30,7 +30,7 @@ describe('ErrorBoundary', () => {
         name: 'default',
         projectId: 'test',
         dataset: 'test',
-        onStudioError,
+        onUncaughtError,
       },
     })
 
@@ -42,10 +42,10 @@ describe('ErrorBoundary', () => {
       </TestProvider>,
     )
 
-    expect(onStudioError).toHaveBeenCalledTimes(1)
+    expect(onUncaughtError).toHaveBeenCalledTimes(1)
   })
 
-  it('calls onCatch prop when an error is caught when no onStudioError exists', () => {
+  it('calls onCatch prop when an error is caught when no onUncaughtError exists', () => {
     const onCatch = jest.fn()
 
     const WrapperWithoutError = ({children}: {children: React.ReactNode}) => {

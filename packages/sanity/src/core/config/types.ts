@@ -393,9 +393,9 @@ export interface PluginOptions {
    */
   beta?: BetaFeatures
   /** Configuration for error handling.
-   * @internal
+   * @beta
    */
-  onStudioError?: (error: Error, errorInfo: ErrorInfo) => void
+  onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
 }
 
 /** @internal */
@@ -788,7 +788,7 @@ export interface Source {
   /** Configuration for error handling.
    * @internal
    */
-  onStudioError?: (error: Error, errorInfo: ErrorInfo) => void
+  onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
 }
 
 /** @internal */
