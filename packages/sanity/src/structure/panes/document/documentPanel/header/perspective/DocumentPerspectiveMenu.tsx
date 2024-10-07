@@ -1,13 +1,12 @@
 import {ChevronDownIcon, DotIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {memo, useCallback, useMemo} from 'react'
 import {
   type BundleDocument,
   ReleaseBadge,
-  ReleasesMenu,
   useDateTimeFormat,
   usePerspective,
   useTranslation,
@@ -175,15 +174,25 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         />
       </Tooltip>
 
-      {currentGlobalBundle && existsInBundle && <ReleaseLink release={currentGlobalBundle} />}
-      <Box flex="none">
-        <ReleasesMenu
-          button={releasesMenuButton}
-          bundles={documentVersions}
-          loading={!documentVersions}
-          perspective={paneRouter.perspective}
-        />
-      </Box>
+      {documentVersions?.map((release) => (
+        // eslint-disable-next-line i18next/no-literal-string
+        <Tooltip key={release._id} content={<Text size={1}>temporary text</Text>} portal>
+          <Chip
+            forwardedAs="a"
+            icon={DotIcon}
+            mode="bleed"
+            padding={2}
+            paddingRight={3}
+            radius="full"
+            selected={editState?.version?._id === displayed?._id}
+            onClick={handleBundleChange(release._id)}
+            tone={'primary'}
+            style={{flex: 'none'}}
+            tooltipProps={{content: release.title}}
+            text={release.title}
+          />
+        </Tooltip>
+      ))}
     </>
   )
 })

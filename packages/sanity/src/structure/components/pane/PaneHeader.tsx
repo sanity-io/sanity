@@ -2,7 +2,7 @@ import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
-import {Layout, Root, TabsBox, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
+import {Layout, Root, TabsBox, TitleTextSkeleton} from './PaneHeader.styles'
 import {usePane} from './usePane'
 
 /**
@@ -63,37 +63,24 @@ export const PaneHeader = forwardRef(function PaneHeader(
       >
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
-            <Layout
-              gap={1}
-              onClick={handleLayoutClick}
-              padding={3}
-              paddingBottom={collapsed ? 3 : 2}
-              sizing="border"
-              style={layoutStyle}
-            >
+            <Layout gap={1} onClick={handleLayoutClick} sizing="border" style={layoutStyle}>
               {backButton && <Box flex="none">{backButton}</Box>}
 
-              <TitleCard
-                __unstable_focusRing
-                flex={1}
-                forwardedAs="button"
-                onClick={handleTitleClick}
-                paddingLeft={backButton ? 1 : 2}
-                padding={2}
-                tabIndex={tabIndex}
-              >
-                {loading && <TitleTextSkeleton animated radius={1} size={1} />}
-                {!loading && (
-                  <TitleText size={1} textOverflow="ellipsis" weight="semibold">
-                    {title}
-                  </TitleText>
-                )}
-              </TitleCard>
+              {loading && (
+                <Box padding={3}>
+                  <TitleTextSkeleton animated radius={1} size={1} />
+                </Box>
+              )}
+              {!loading && (
+                <Box flex={1} overflow="auto" padding={3}>
+                  {title}
+                </Box>
+              )}
 
               {actions && (
-                <Flex align="center" hidden={collapsed}>
+                <Box hidden={collapsed} padding={3}>
                   <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
-                </Flex>
+                </Box>
               )}
             </Layout>
 
