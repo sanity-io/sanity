@@ -89,11 +89,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
     [t],
   )
 
-  const handleClick = useCallback(() => {
-    // eslint-disable-next-line no-console
-    console.log(editState)
-  }, [editState])
-
   const handleBundleChange = useCallback(
     (bundleId: string) => () => {
       setPerspective(bundleId)
@@ -123,7 +118,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           disabled={!editState?.published}
           forwardedAs={editState?.published ? 'a' : 'button'}
           mode="bleed"
-          onClick={handleClick}
+          onClick={handleBundleChange('published')}
           padding={2}
           paddingRight={3}
           radius="full"
@@ -162,7 +157,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           forwardedAs={editState?.published || editState?.draft ? 'a' : 'button'}
           icon={DotIcon}
           mode="bleed"
-          onClick={handleClick}
+          onClick={handleBundleChange('previewDrafts')}
           padding={2}
           paddingRight={3}
           radius="full"
