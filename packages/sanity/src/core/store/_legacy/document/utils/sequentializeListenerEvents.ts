@@ -105,7 +105,8 @@ export function sequentializeListenerEvents(options?: {
             }
 
             if (
-              nextBuffer.length >= ((window as any).__sanity_debug_maxBufferSize ?? maxBufferSize)
+              nextBuffer.length >=
+              ((globalThis as any).__sanity_debug_maxBufferSize ?? maxBufferSize)
             ) {
               throw new MaxBufferExceededError(
                 `Too many unchainable mutation events: ${state.buffer.length}`,
@@ -128,10 +129,18 @@ export function sequentializeListenerEvents(options?: {
         },
       ),
       switchMap((state) => {
+        const deadline =
+          (globalThis as any).__sanity_debug_resolveChainDeadline ?? resolveChainDeadline
+
         if (state.buffer.length > 0) {
+          debug(
+            "Detected %d listener event(s) that can't be applied in sequence. This could be due to events arriving out of order. Will throw an error if chain can't be resolved within %dms",
+            state.buffer.length,
+            deadline,
+          )
           return concat(
             of(state),
-            timer((window as any).__sanity_debug_resolveChainDeadline ?? resolveChainDeadline).pipe(
+            timer(deadline).pipe(
               mergeMap(() =>
                 throwError(() => {
                   return new DeadlineExceededError(
