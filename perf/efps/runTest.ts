@@ -16,27 +16,29 @@ import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './type
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
 
 interface RunTestOptions {
-  test: EfpsTest
-  resultsDir: string
-  projectId: string
-  headless: boolean
   client: SanityClient
-  sanityPkgPath: string
-  key: string
   enableProfiler: boolean
+  headless: boolean
+  key: string
   log: (text: string) => void
+  projectId: string
+  recordVideo: boolean
+  resultsDir: string
+  sanityPkgPath: string
+  test: EfpsTest
 }
 
 export async function runTest({
-  test,
-  resultsDir,
-  projectId,
-  headless,
   client,
-  sanityPkgPath,
-  key,
   enableProfiler,
+  headless,
+  key,
   log,
+  projectId,
+  recordVideo,
+  resultsDir,
+  sanityPkgPath,
+  test,
 }: RunTestOptions): Promise<EfpsResult[]> {
   const outDir = path.join(workspaceDir, 'builds', test.name, key)
   const testResultsDir = path.join(resultsDir, test.name, key)
@@ -75,6 +77,7 @@ export async function runTest({
     log('Launching browser…')
     browser = await chromium.launch({headless})
     context = await browser.newContext({
+      recordVideo: recordVideo ? {dir: testResultsDir} : undefined,
       storageState: {
         cookies: [],
         origins: [
