@@ -15,7 +15,7 @@ import {
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
 import {createDocumentStore, type DocumentStore} from './document'
-import {DocumentOutOfSync} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
+import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {fetchFeatureToggle} from './document/document-pair/utils/fetchFeatureToggle'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {createGrantsStore, type GrantsStore} from './grants'
@@ -148,7 +148,7 @@ export function useDocumentStore(): DocumentStore {
 
   const handleSyncErrorRecovery = useCallback(
     (error: OutOfSyncError) => {
-      telemetry.log(DocumentOutOfSync, {errorName: error.name})
+      telemetry.log(DocumentDesynced, {errorName: error.name})
     },
     [telemetry],
   )
