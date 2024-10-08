@@ -6,7 +6,7 @@ import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
-import {getDraftId, getPublishedId, isRecord} from '../util'
+import {createSWR, getDraftId, getPublishedId, isRecord} from '../util'
 import {
   AVAILABILITY_NOT_FOUND,
   AVAILABILITY_PERMISSION_DENIED,
@@ -21,6 +21,11 @@ import {
 import {debounceCollect} from './utils/debounceCollect'
 
 const MAX_DOCUMENT_ID_CHUNK_SIZE = 11164
+
+/**
+ * Create an SWR operator for document availability
+ */
+const swr = createSWR<DocumentAvailability>({maxSize: 1000})
 
 /**
  * Takes an array of document IDs and puts them into individual chunks.
@@ -89,6 +94,8 @@ export function createPreviewAvailabilityObserver(
           : // we can't read the _rev field for two possible reasons: 1) the document isn't readable or 2) the document doesn't exist
             fetchDocumentReadability(id)
       }),
+      swr(id),
+      map((ev) => ev.value),
     )
   }
 

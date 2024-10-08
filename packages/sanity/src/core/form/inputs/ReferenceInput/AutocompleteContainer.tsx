@@ -35,7 +35,7 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
   const inputWrapperRect = useElementRect(rootElement)
 
   return (
-    <Root ref={handleNewRef} gap={1} $narrow={(inputWrapperRect?.width || 0) < 480}>
+    <Root ref={handleNewRef} gap={1} $narrow={(inputWrapperRect?.width || 480) < 480}>
       {props.children}
     </Root>
   )

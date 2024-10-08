@@ -42,10 +42,12 @@ export function PreviewLoader(
   const [element, setElement] = useState<HTMLDivElement | null>(null)
 
   // Subscribe to visibility
-  const isVisible = useVisibility({
-    element: skipVisibilityCheck ? null : element,
-    hideDelay: _HIDE_DELAY,
-  })
+  const isVisible =
+    useVisibility({
+      disabled: skipVisibilityCheck,
+      element: element,
+      hideDelay: _HIDE_DELAY,
+    }) || skipVisibilityCheck
 
   // Subscribe document preview value
   const preview = useValuePreview({
