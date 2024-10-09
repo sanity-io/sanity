@@ -28,6 +28,8 @@ const HEADLESS = true
 const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
 const TESTS = [article, recipe, synthetic]
 
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
@@ -169,6 +171,7 @@ async function runAbTest(test: EfpsTest) {
         resultsDir,
         client,
         headless: HEADLESS,
+        recordVideo: RECORD_VIDEO,
         enableProfiler: ENABLE_PROFILER,
         projectId,
         sanityPkgPath: referenceSanityPkgPath,
@@ -189,6 +192,7 @@ async function runAbTest(test: EfpsTest) {
         resultsDir,
         client,
         headless: HEADLESS,
+        recordVideo: RECORD_VIDEO,
         enableProfiler: ENABLE_PROFILER,
         projectId,
         sanityPkgPath: experimentSanityPkgPath,
