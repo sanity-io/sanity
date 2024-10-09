@@ -162,7 +162,10 @@ export function createDocumentStore({
         return editOperations(ctx, getIdPairFromPublished(publishedId), type)
       },
       editState(publishedId, type) {
-        return editState(ctx, getIdPairFromPublished(publishedId), type)
+        const idPair = getIdPairFromPublished(publishedId)
+
+        const edit = editState(ctx, idPair, type)
+        return edit
       },
       operationEvents(publishedId, type) {
         return operationEvents({
@@ -185,7 +188,8 @@ export function createDocumentStore({
         )
       },
       validation(publishedId, type) {
-        return validation(ctx, getIdPairFromPublished(publishedId), type)
+        const idPair = getIdPairFromPublished(publishedId)
+        return validation(ctx, idPair, type)
       },
     },
   }
