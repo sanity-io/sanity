@@ -106,11 +106,7 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         title: options?.title || 'Structure',
         icon,
         component: lazy(() => import('./components/structureTool')),
-        canHandleIntent: (intent, params) => {
-          if (intent === 'create') return canHandleCreateIntent(params)
-          if (intent === 'edit') return canHandleEditIntent(params)
-          return false
-        },
+        canHandleIntent: options?.canHandleIntent || canHandleIntent,
         getIntentState,
         // Controlled by sanity/src/structure/components/structureTool/StructureTitle.tsx
         controlsDocumentTitle: true,
@@ -124,6 +120,18 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
     },
   }
 })
+
+/**
+ * The default implementation of the `canHandleIntent` function for the Structure Tool.
+ */
+export function canHandleIntent(
+  intent: string,
+  params: Record<string, unknown>,
+): boolean | {[key: string]: boolean} {
+  if (intent === 'create') return canHandleCreateIntent(params)
+  if (intent === 'edit') return canHandleEditIntent(params)
+  return false
+}
 
 function canHandleCreateIntent(params: Record<string, unknown>) {
   // We can't handle create intents without a `type` parameter
