@@ -4,6 +4,7 @@ const path = require('path')
 
 require('esbuild-register/dist/node').register({
   target: `node${process.version.slice(1)}`,
+  supported: {'dynamic-import': true},
   jsx: 'automatic',
 })
 

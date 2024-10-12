@@ -42,7 +42,7 @@ export async function getCliConfig(
 
   const {unregister} = __DEV__
     ? {unregister: () => undefined}
-    : require('esbuild-register/dist/node').register()
+    : require('esbuild-register/dist/node').register({supported: {'dynamic-import': true}})
 
   try {
     const v3Config = getSanityCliConfig(cwd)

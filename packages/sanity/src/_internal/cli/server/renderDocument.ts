@@ -183,6 +183,7 @@ function renderDocumentFromWorkerData() {
     ? {unregister: () => undefined}
     : require('esbuild-register/dist/node').register({
         target: `node${process.version.slice(1)}`,
+        supported: {'dynamic-import': true},
         jsx: 'automatic',
         extensions: ['.jsx', '.ts', '.tsx', '.mjs'],
       })
@@ -194,6 +195,7 @@ function renderDocumentFromWorkerData() {
     ? {unregister: () => undefined}
     : require('esbuild-register/dist/node').register({
         target: `node${process.version.slice(1)}`,
+        supported: {'dynamic-import': true},
         extensions: ['.js'],
         jsx: 'automatic',
         loader: 'jsx',

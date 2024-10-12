@@ -12,6 +12,7 @@ describeCliTest('CLI: `sanity preview`', () => {
       const {html: previewHtml, stderr} = await testServerCommand({
         command: 'preview',
         args: ['--port', '3330', '../../static'],
+        basePath: '/',
         port: 3330,
         cwd: path.join(studiosPath, 'v3'),
         expectedTitle: 'Sanity Static',
@@ -24,6 +25,7 @@ describeCliTest('CLI: `sanity preview`', () => {
       const {html: previewHtml, stdout} = await testServerCommand({
         command: 'preview',
         args: ['--port', '3456', '../../static-basepath'],
+        basePath: '/some-base-path',
         port: 3456,
         cwd: path.join(studiosPath, 'v3'),
         expectedTitle: 'Sanity Static, Base Pathed',
@@ -39,6 +41,7 @@ describeCliTest('CLI: `sanity preview`', () => {
       const {html: previewHtml} = await testServerCommand({
         command: 'preview',
         args: ['--port', '3457', '../../static-root-basepath'],
+        basePath: '/',
         port: 3457,
         cwd: path.join(studiosPath, 'v3'),
         expectedTitle: 'Sanity Static',
@@ -50,6 +53,7 @@ describeCliTest('CLI: `sanity preview`', () => {
       const {html: previewHtml} = await testServerCommand({
         command: 'start',
         args: ['--port', '3331', '../../static'],
+        basePath: '/',
         port: 3331,
         cwd: path.join(studiosPath, 'v3'),
         expectedTitle: 'Sanity Static',

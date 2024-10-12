@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import {type UserViteConfig} from '@sanity/cli'
 import chalk from 'chalk'
-import {type InlineConfig, preview} from 'vite'
+import {type InlineConfig} from 'vite'
 
 import {debug as serverDebug} from './debug'
 import {extendViteConfigWithUserConfig} from './getViteConfig'
@@ -75,10 +75,11 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
   }
 
   debug('Creating vite server')
+  const {preview} = await import('vite')
   const server = await preview(previewConfig)
   const warn = server.config.logger.warn
   const info = server.config.logger.info
-  const url = server.resolvedUrls.local[0]
+  const url = server.resolvedUrls!.local[0]
 
   if (typeof basePath === 'undefined') {
     warn('Could not determine base path from index.html, using "/" as default')
@@ -96,7 +97,7 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
   )
 
   return {
-    urls: server.resolvedUrls,
+    urls: server.resolvedUrls!,
     close: () =>
       new Promise((resolve, reject) =>
         server.httpServer.close((err) => (err ? reject(err) : resolve())),

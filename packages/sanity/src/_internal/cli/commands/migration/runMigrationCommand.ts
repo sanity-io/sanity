@@ -109,6 +109,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     if (!__DEV__) {
       register({
         target: `node${process.version.slice(1)}`,
+        supported: {'dynamic-import': true},
       })
     }
 
