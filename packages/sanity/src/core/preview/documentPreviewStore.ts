@@ -1,11 +1,11 @@
-import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
-import {distinctUntilChanged, filter, map} from 'rxjs/operators'
+import {distinctUntilChanged, map} from 'rxjs/operators'
 
+import {getGlobalLiveClient} from '../store/live/globalLiveClient'
 import {isRecord} from '../util'
 import {createPreviewAvailabilityObserver} from './availability'
-import {createGlobalListener} from './createGlobalListener'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
@@ -67,19 +67,12 @@ export interface DocumentPreviewStoreOptions {
 export function createDocumentPreviewStore({
   client,
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
-  const versionedClient = client.withConfig({apiVersion: '1'})
-  const globalListener = createGlobalListener(versionedClient).pipe(
-    filter(
-      (event): event is MutationEvent | WelcomeEvent =>
-        // ignore reconnect events for now until we've verified that downstream consumers can handle them
-        event.type === 'mutation' || event.type === 'welcome',
-    ),
-  )
-  const invalidationChannel = globalListener.pipe(
-    map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
-  )
+  const versionedClient = client.withConfig({apiVersion: '2024-10-12'})
+  const {projectId, dataset} = client.config()
 
-  const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
+  const liveMessages = getGlobalLiveClient({projectId: projectId!, dataset: dataset!})
+
+  const observeFields = createObserveFields({client: versionedClient, liveMessages})
   const observePaths = createPathObserver({observeFields})
 
   function observeDocumentTypeFromId(

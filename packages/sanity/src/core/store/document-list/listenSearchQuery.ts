@@ -11,15 +11,9 @@ import {
   type SortOrdering,
 } from 'sanity'
 
-import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {type WeightedSearchResults} from '../../search'
-import {memoize} from '../_legacy/document/utils/createMemoizer'
+import {getGlobalLiveClient} from '../live/globalLiveClient'
 import {getExtendedProjection} from './getExtendedProjection'
-import {
-  type LiveClientConfig,
-  liveClientConfigFromClient,
-  observeLiveEvents,
-} from './observeLiveEvents'
 
 interface ListenQueryOptions {
   client: SanityClient
@@ -41,12 +35,6 @@ export interface SearchQueryResult {
 
 const swr = createSWR<SanityDocumentLike[]>({maxSize: 100})
 
-const getLiveEvents = memoize(
-  (config: LiveClientConfig) =>
-    observeLiveEvents(config).pipe(shareReplayLatest((e) => e.type === 'welcome')),
-  (config) => config.projectId + config.dataset + config.apiVersion,
-)
-
 export function listenSearchQuery(options: ListenQueryOptions): Observable<SearchQueryResult> {
   const {
     client: _client,
@@ -63,11 +51,12 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   const sortBy = sort.by
   const extendedProjection = sort?.extendedProjection
 
-  const client = _client.withConfig({apiVersion: 'X'})
+  const vxClient = _client.withConfig({apiVersion: 'X'})
   const swrKey = JSON.stringify({groqFilter, limit, params, searchQuery, sort, staticTypeNames})
 
   let currentSyncTags: string[] = []
-  const invalidations$ = getLiveEvents(liveClientConfigFromClient(client))
+  const {dataset, projectId} = vxClient.config()
+  const invalidations$ = getGlobalLiveClient({dataset: dataset!, projectId: projectId!})
   return invalidations$.pipe(
     filter(
       (event) =>
@@ -80,7 +69,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
       // If we have a static list of types, we can skip fetching the types and use the static list.
       const typeNames$ = staticTypeNames
         ? of(staticTypeNames)
-        : client.observable.fetch(`array::unique(*[${groqFilter}][]._type)`, params)
+        : vxClient.observable.fetch(`array::unique(*[${groqFilter}][]._type)`, params)
 
       // Use the type names to create a search query and fetch the documents that match the query.
       return typeNames$.pipe(
@@ -96,7 +85,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
             return false
           })
 
-          const search = createSearch(types, client, {
+          const search = createSearch(types, vxClient, {
             filter: groqFilter,
             params,
             tag: 'document-list-search',

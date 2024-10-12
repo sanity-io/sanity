@@ -1,12 +1,8 @@
 import {createClient, type SanityClient} from '@sanity/client'
 import EventSource from '@sanity/eventsource'
-import {defer, mergeMap, of, share, shareReplay, timer} from 'rxjs'
+import {mergeMap, share, timer} from 'rxjs'
 
 import {connectEventSource} from './eventsource'
-
-const eventSourceImpl = defer(() => {
-  return of(EventSource)
-}).pipe(shareReplay(1))
 
 export type LiveApiEvent =
   | {type: 'message'; id: string; tags: string[]}
@@ -17,39 +13,27 @@ export type LiveApiEvent =
 
 export interface LiveClientConfig {
   projectId: string
-  includeDrafts?: boolean
   dataset: string
-  apiVersion?: string
-  useCdn?: boolean
 }
 
-const requiredApiVersion = 'vX'
-
 export function observeLiveEvents(configOrClient: LiveClientConfig) {
-  return _createLiveEventsFromClient(createClient(configOrClient))
+  return _createLiveEventsFromClient(
+    createClient({...configOrClient, apiVersion: 'vX', withCredentials: true}),
+  )
 }
 
 export function liveClientConfigFromClient(client: SanityClient): LiveClientConfig {
-  const {apiVersion = '2024-07-06', dataset, projectId} = client.config()
-  if (apiVersion !== 'X' && apiVersion < requiredApiVersion) {
-    throw new Error(
-      `The live events API requires API version ${requiredApiVersion} or later. ` +
-        `The current API version is ${apiVersion}. ` +
-        `Please update your API version to use this feature.`,
-    )
-  }
+  const {dataset, projectId} = client.config()
   if (dataset === undefined) {
     throw new Error('Dataset is required')
   }
   if (projectId === undefined) {
     throw new Error('Dataset is required')
   }
-  return {apiVersion, dataset, projectId}
+  return {dataset, projectId}
 }
 
 function _createLiveEventsFromClient(client: SanityClient) {
-  // todo: feels unnecessary to have to have a full client here
-  //  would be better to import and use getDataUrl and getUrl separately from the client
   const path = client.getDataUrl('live/events')
   const url = `${client.getUrl(path, false)}?includeDrafts=true`
 
@@ -85,7 +69,7 @@ function _createLiveEventsFromClient(client: SanityClient) {
     share({
       resetOnError: true,
       resetOnComplete: true,
-      resetOnRefCountZero: () => timer(1000),
+      resetOnRefCountZero: () => timer(10_000),
     }),
   )
 }

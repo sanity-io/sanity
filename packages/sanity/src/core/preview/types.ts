@@ -116,9 +116,7 @@ export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocume
  * @hidden
  * @beta
  */
-export type InvalidationChannelEvent =
-  | {type: 'connected'}
-  | {type: 'mutation'; documentId: string; visibility: string}
+export type InvalidationChannelEvent = {type: 'connected'} | {type: 'refresh'; syncTags: string[]}
 
 /**
  * @hidden

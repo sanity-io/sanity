@@ -1,7 +1,6 @@
 import {difference, flatten, memoize} from 'lodash'
 import {
   combineLatest,
-  concat,
   defer,
   EMPTY,
   fromEvent,
@@ -14,22 +13,17 @@ import {
   distinctUntilChanged,
   filter,
   map,
-  mergeMap,
   share,
   shareReplay,
   startWith,
   switchMap,
   tap,
 } from 'rxjs/operators'
+import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 
+import {type LiveApiEvent} from '../store/live/observeLiveEvents'
 import {INCLUDE_FIELDS} from './constants'
-import {
-  type ApiConfig,
-  type FieldName,
-  type Id,
-  type InvalidationChannelEvent,
-  type Selection,
-} from './types'
+import {type ApiConfig, type FieldName, type Id, type Selection} from './types'
 import {debounceCollect} from './utils/debounceCollect'
 import {hasEqualFields} from './utils/hasEqualFields'
 import {isUniqueBy} from './utils/isUniqueBy'
@@ -55,8 +49,8 @@ export interface ClientLike {
     fetch: (
       query: string,
       params: Record<string, string>,
-      options: {tag: string},
-    ) => Observable<unknown>
+      options: {tag: string; filterResponse: boolean},
+    ) => Observable<{result: unknown; syncTags: string[]}>
   }
 }
 
@@ -68,55 +62,40 @@ export interface ClientLike {
  */
 export function createObserveFields(options: {
   client: ClientLike
-  invalidationChannel: Observable<InvalidationChannelEvent>
+  liveMessages: Observable<LiveApiEvent>
 }) {
-  const {client: currentDatasetClient, invalidationChannel} = options
-  function listen(id: Id) {
-    return invalidationChannel.pipe(
-      filter((event) => event.type === 'connected' || event.documentId === id),
-    )
-  }
+  const {client: currentDatasetClient, liveMessages} = options
 
   function fetchAllDocumentPathsWith(client: ClientLike) {
     return function fetchAllDocumentPath(selections: Selection[]) {
       const combinedSelections = combineSelections(selections)
-      return client.observable
-        .fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
-        .pipe(map((result: any) => reassemble(result, combinedSelections)))
+      let currentSyncTags: string[] = []
+      return liveMessages.pipe(
+        filter(
+          (event) =>
+            event.type === 'welcome' ||
+            event.type === 'restart' ||
+            (event.type === 'message' && event.tags.some((tag) => currentSyncTags.includes(tag))),
+        ),
+        exhaustMapWithTrailing(() => {
+          return client.observable
+            .fetch(
+              toQuery(combinedSelections),
+              {},
+              {filterResponse: false, tag: 'preview.document-paths'},
+            )
+            .pipe(
+              map((response) => {
+                currentSyncTags = response.syncTags
+                return reassemble(response.result as any, combinedSelections)
+              }),
+            )
+        }),
+      )
     }
   }
 
-  const fetchDocumentPathsFast = debounceCollect(
-    fetchAllDocumentPathsWith(currentDatasetClient),
-    100,
-  )
-
-  const fetchDocumentPathsSlow = debounceCollect(
-    fetchAllDocumentPathsWith(currentDatasetClient),
-    1000,
-  )
-
-  function currentDatasetListenFields(id: Id, fields: FieldName[]) {
-    return listen(id).pipe(
-      switchMap((event) => {
-        if (event.type === 'connected' || event.visibility === 'query') {
-          return fetchDocumentPathsFast(id, fields as any).pipe(
-            mergeMap((result) => {
-              return concat(
-                observableOf(result),
-                result === undefined // hack: if we get undefined as result here it can be because the document has
-                  ? // just been created and is not yet indexed. We therefore need to wait a bit
-                    // and then re-fetch.
-                    fetchDocumentPathsSlow(id, fields as any)
-                  : [],
-              )
-            }),
-          )
-        }
-        return fetchDocumentPathsSlow(id, fields as any)
-      }),
-    )
-  }
+  const listenFields = debounceCollect(fetchAllDocumentPathsWith(currentDatasetClient), 100)
 
   const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
@@ -160,7 +139,7 @@ export function createObserveFields(options: {
       defer(() => (latest === undefined ? EMPTY : observableOf(latest))),
       (apiConfig
         ? (crossDatasetListenFields(id, fields, apiConfig) as any)
-        : currentDatasetListenFields(id, fields)) as Observable<T>,
+        : listenFields(id, fields)) as Observable<T>,
     ).pipe(
       tap((v: T | null) => (latest = v)),
       shareReplay({refCount: true, bufferSize: 1}),
