@@ -36,7 +36,7 @@ type CachedFieldObserver = {
 }
 
 type Cache = {
-  [id: string]: CachedFieldObserver[]
+  [key: string]: CachedFieldObserver[]
 }
 
 /**
@@ -45,6 +45,7 @@ type Cache = {
  */
 export interface ClientLike {
   withConfig(config: ApiConfig): ClientLike
+  config: {dataset: string; projectId: string}
   observable: {
     fetch: (
       query: string,
@@ -65,6 +66,8 @@ export function createObserveFields(options: {
   liveMessages: Observable<LiveApiEvent>
 }) {
   const {client: currentDatasetClient, liveMessages} = options
+
+  const currentDatasetConfig = currentDatasetClient.config()
 
   function fetchAllDocumentPathsWith(client: ClientLike) {
     return function fetchAllDocumentPath(selections: Selection[]) {
@@ -97,7 +100,7 @@ export function createObserveFields(options: {
 
   const listenFields = debounceCollect(fetchAllDocumentPathsWith(currentDatasetClient), 100)
 
-  const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
+  const CACHE: Cache = {}
 
   const getBatchFetcherForDataset = memoize(
     function getBatchFetcherForDataset(apiConfig: ApiConfig) {
@@ -149,25 +152,24 @@ export function createObserveFields(options: {
   }
 
   function cachedObserveFields(id: Id, fields: FieldName[], apiConfig?: ApiConfig) {
-    const cacheKey = apiConfig
-      ? `${apiConfig.projectId}:${apiConfig.dataset}:${id}`
-      : `$current$-${id}`
+    const {projectId, dataset} = apiConfig ? apiConfig : currentDatasetConfig
+    const cacheKey = `${projectId}:${dataset}:${id}`
 
     if (!(cacheKey in CACHE)) {
       CACHE[cacheKey] = []
     }
 
-    const existingObservers = CACHE[cacheKey]
+    const cacheEntry = CACHE[cacheKey]
     const missingFields = difference(
       fields,
-      flatten(existingObservers.map((cachedFieldObserver) => cachedFieldObserver.fields)),
+      flatten(cacheEntry.map((cachedFieldObserver) => cachedFieldObserver.fields)),
     )
 
     if (missingFields.length > 0) {
-      existingObservers.push(createCachedFieldObserver(id, fields, apiConfig))
+      cacheEntry.push(createCachedFieldObserver(id, fields, apiConfig))
     }
 
-    const cachedFieldObservers = existingObservers
+    const cachedFieldObservers = cacheEntry
       .filter((observer) => observer.fields.some((fieldName) => fields.includes(fieldName)))
       .map((cached) => cached.changes$)
 
