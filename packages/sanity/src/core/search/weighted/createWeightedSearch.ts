@@ -38,15 +38,28 @@ export const createWeightedSearch: SearchStrategyFactory<WeightedSearchResults> 
       ...searchOptions,
     })
 
-    return client.observable.fetch<SanityDocumentLike[]>(query, params, options).pipe(
-      factoryOptions.unique ? map(removeDupes) : tap(),
-      // Assign weighting and scores based on current search terms.
-      // No scores will be assigned when terms are empty.
-      map((hits) => applyWeights(searchSpec, hits, terms)),
-      // Optionally skip client-side score sorting.
-      // This can be relevant when ordering results by specific fields, especially dates.
-      searchOptions?.skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score)),
-      map((hits) => ({type: 'weighted', hits})),
-    )
+    return client.observable
+      .fetch<SanityDocumentLike[]>(query, params, {...options, filterResponse: false})
+      .pipe(
+        factoryOptions.unique
+          ? map((response) => ({...response, result: removeDupes(response.result)}))
+          : tap(),
+        // Assign weighting and scores based on current search terms.
+        // No scores will be assigned when terms are empty.
+        map((response) => ({
+          ...response,
+          result: applyWeights(searchSpec, response.result, terms),
+        })),
+        // Optionally skip client-side score sorting.
+        // This can be relevant when ordering results by specific fields, especially dates.
+        searchOptions?.skipSortByScore
+          ? tap()
+          : map((response) => {
+              return {...response, result: sortBy(response.result, (hit) => -hit.score)}
+            }),
+        map((response) => {
+          return {type: 'weighted', syncTags: response.syncTags, hits: response.result}
+        }),
+      )
   }
 }

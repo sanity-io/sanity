@@ -1,8 +1,11 @@
 import {Box, Card, Stack, Text} from '@sanity/ui'
 
+import {useUser} from '../../../packages/sanity/src/core'
 import {useQuery} from './loader'
 
 export function FieldGroups(): JSX.Element {
+  const user = useUser('foo')
+
   const {data, loading, error} = useQuery<
     {
       _id: string

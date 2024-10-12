@@ -114,6 +114,7 @@ export type SortOrdering = {
   i18n?: I18nTextRecord<'title'>
   name: string
   by: SortOrderingItem[]
+  extendedProjection?: string
 }
 
 /** @public */

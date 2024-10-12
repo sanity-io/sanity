@@ -82,6 +82,7 @@ export interface TextSearchResults {
 export interface WeightedSearchResults {
   type: 'weighted'
   hits: WeightedHit[]
+  syncTags: string[]
   nextCursor?: never
 }
 
