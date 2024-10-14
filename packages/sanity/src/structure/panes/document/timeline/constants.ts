@@ -9,8 +9,8 @@ import {
   TrashIcon,
   UnpublishIcon,
 } from '@sanity/icons'
+import {type DocumentVersionEventType} from 'sanity'
 
-import {type DocumentVersionEventType} from '../../../../core/store/events/types'
 import {type ButtonProps} from '../../../../ui-components'
 
 export const TIMELINE_ICON_COMPONENTS: Record<DocumentVersionEventType, IconComponent> = {

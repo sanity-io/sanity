@@ -1,6 +1,4 @@
-import {type StudioLocaleResourceKeys} from 'sanity'
-
-import {type DocumentVersionEventType} from '../../../../core/store/events/types'
+import {type DocumentVersionEventType, type StudioLocaleResourceKeys} from 'sanity'
 
 /**
  * Maps from a chunk type to an i18n key for the operation

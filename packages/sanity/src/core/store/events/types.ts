@@ -162,6 +162,10 @@ export const documentVersionEventTypes = [
   'document.updateLive',
 ] as const
 
+/**
+ * @internal
+ * @beta
+ **/
 export type DocumentVersionEventType = (typeof documentVersionEventTypes)[number]
 
 /**
