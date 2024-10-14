@@ -1,8 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable react/jsx-no-bind */
 import {type TransactionLogEventWithEffects} from '@sanity/types'
-import {Box, Card, Code, Container, Flex, Text, useToast} from '@sanity/ui'
-import {useString} from '@sanity/ui-workshop'
+import {Box, Card, Code, Container, Flex, Text, TextInput, useToast} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith, Subject, switchMap} from 'rxjs'
@@ -33,9 +32,10 @@ const query = {
 const refresh$ = new Subject<void>()
 
 export default function DocumentEvents() {
-  const documentId = useString('Document Id', '') || ''
+  const [documentId, setDocumentId] = useState('')
   const client = useClient()
   const [selectedEventId, setSelectedEventId] = useState<string>('')
+
   const transactions$: Observable<TransactionLogEventWithEffects[]> = useMemo(() => {
     const dataset = client.config().dataset
     if (!documentId) return of([])
@@ -105,8 +105,6 @@ export default function DocumentEvents() {
       }))
   }, [documentId, transactions])
 
-  const selectedChunk = chunks.find((e) => e.event.id === selectedEventId)
-
   const selectedEvents = useMemo(() => {
     if (!selectedEventId) return []
     const event = events.find((e) => {
@@ -121,6 +119,7 @@ export default function DocumentEvents() {
     }
     return [event?.id].filter(Boolean)
   }, [events, selectedEventId])
+  const selectedChunk = chunks.find((e) => selectedEvents.includes(e.event.id))
 
   const handleSelectItem = (chunk: Chunk) => {
     const {event} = chunk
@@ -154,7 +153,22 @@ export default function DocumentEvents() {
         padding: '4px',
       }}
     >
-      <Button mode="bleed" text="Refresh" onClick={() => refresh$.next()} />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          refresh$.next()
+        }}
+      >
+        <Flex gap={3} padding={3}>
+          <TextInput
+            value={documentId}
+            onChange={(e) => setDocumentId(e.currentTarget.value)}
+            placeholder="Add document id"
+            style={{minWidth: '360px'}}
+          />
+          <Button mode="bleed" text="Refresh" type="submit" />
+        </Flex>
+      </form>
       <Flex gap={3} direction="column" height="fill">
         <Card flex={1} border height={'fill'}>
           <Flex flex={1} height={'fill'}>
