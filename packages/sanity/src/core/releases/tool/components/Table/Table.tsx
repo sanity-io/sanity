@@ -1,4 +1,4 @@
-import {Box, Card, type CardProps, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardProps, Container, Flex, Stack, Text} from '@sanity/ui'
 import {
   defaultRangeExtractor,
   type Range,
@@ -52,19 +52,17 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   scrollContainerRef: MutableRefObject<HTMLDivElement | null>
 }
 
-const RowStack = styled(Stack)({
-  '& > *:not([first-child])': {
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-    marginTop: -1,
-  },
-
-  '& > *:not([last-child])': {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-})
-
+const CustomCard = styled(Card)`
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  ::before {
+    content: '';
+    display: block;
+    border: 1px solid red;
+    position: absolute;
+  }
+`
 const ITEM_HEIGHT = 59
 
 /**
@@ -112,6 +110,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
     if (!sort) return filteredResult
 
     return [...filteredResult].sort((a, b) => {
+      // TODO: Update this tos support sorting not only by date but also by string
       const parseDate = (dateString: unknown) =>
         typeof dateString === 'string' ? Date.parse(dateString) : 0
 
@@ -178,12 +177,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
             key={String(get(datum, rowId))}
             data-testid="table-row"
             as="tr"
-            border
-            radius={3}
+            borderBottom
             display="flex"
-            first-child={datum.isFirst ? '' : undefined}
-            last-child={datum.isLast ? '' : undefined}
-            margin={-1}
             style={{
               height: `${datum.virtualRow.size}px`,
               transform: `translateY(${datum.virtualRow.start - datum.index * datum.virtualRow.size}px)`,
@@ -251,23 +246,25 @@ const TableInner = <TableData, AdditionalRowTableData>({
           position: 'relative',
         }}
       >
-        <Stack as="table" space={1}>
-          <TableHeader headers={headers} searchDisabled={!searchTerm && !data.length} />
-          <RowStack as="tbody">
-            {filteredData.length === 0
-              ? emptyContent
-              : rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
-                  const datum = filteredData[virtualRow.index]
-                  return renderRow({
-                    ...datum,
-                    virtualRow,
-                    index,
-                    isFirst: virtualRow.index === 0,
-                    isLast: virtualRow.index === filteredData.length - 1,
-                  })
-                })}
-          </RowStack>
-        </Stack>
+        <Container width={3} paddingX={3}>
+          <Stack as="table">
+            <TableHeader headers={headers} searchDisabled={!searchTerm && !data.length} />
+            <Stack as="tbody">
+              {filteredData.length === 0
+                ? emptyContent
+                : rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
+                    const datum = filteredData[virtualRow.index]
+                    return renderRow({
+                      ...datum,
+                      virtualRow,
+                      index,
+                      isFirst: virtualRow.index === 0,
+                      isLast: virtualRow.index === filteredData.length - 1,
+                    })
+                  })}
+            </Stack>
+          </Stack>
+        </Container>
       </div>
     </div>
   )
