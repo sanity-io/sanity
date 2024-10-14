@@ -80,34 +80,15 @@ describe('DocumentPerspectiveMenu', () => {
     })
   })
 
-  it('should render the bundle badge if the document exists in the global bundle', async () => {
-    mockUseDocumentPane.mockReturnValue({
-      documentVersions: [
-        {
-          _id: 'spring-drop',
-          title: 'Spring Drop',
-          hue: 'magenta',
-          icon: 'heart-filled',
-          _type: 'release',
-          authorId: '',
-          _createdAt: '',
-          _updatedAt: '',
-          _rev: '',
-        },
-      ],
-      existsInBundle: true,
-    })
-
+  it('should render "Published" and "Draft" chips when it has no other version', async () => {
     const wrapper = await createTestProvider()
     render(<DocumentPerspectiveMenu />, {wrapper})
 
-    const linkButton = screen.getByRole('link', {name: 'Spring Drop'})
-    expect(linkButton).toBeInTheDocument()
-    expect(linkButton).toHaveAttribute('href', '/intent/release/id=spring-drop')
-    expect(linkButton).toHaveTextContent('Spring Drop')
+    expect(screen.getByRole('button', {name: 'Published'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Draft'})).toBeInTheDocument()
   })
 
-  it('should not render the bundle badge if the document does not exist in the bundle', async () => {
+  it('should render the release chip when it has a release version', async () => {
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [
         {
@@ -122,12 +103,14 @@ describe('DocumentPerspectiveMenu', () => {
           _rev: '',
         },
       ],
-      existsInBundle: false,
+      displayed: {
+        _id: 'versions.spring-drop.KJAiOpAH5r6P3dWt1df9ql',
+      },
     })
 
     const wrapper = await createTestProvider()
     render(<DocumentPerspectiveMenu />, {wrapper})
 
-    expect(screen.queryByRole('link', {name: 'Spring Drop'})).toBeNull()
+    expect(screen.getByRole('button', {name: 'Spring Drop'})).toBeInTheDocument()
   })
 })
