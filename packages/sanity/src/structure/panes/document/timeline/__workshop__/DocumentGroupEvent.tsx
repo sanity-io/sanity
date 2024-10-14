@@ -6,12 +6,19 @@ import {useString} from '@sanity/ui-workshop'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith, Subject, switchMap} from 'rxjs'
-import {type Chunk, getDraftId, getPublishedId, useClient} from 'sanity'
+import {
+  addTransactionEffect,
+  type Chunk,
+  chunkFromTransaction,
+  getDocumentEvents,
+  getDraftId,
+  getPublishedId,
+  mergeChunk,
+  useClient,
+} from 'sanity'
 
-import {Timeline} from '../../../../structure/panes/document/timeline/timeline'
-import {Button} from '../../../../ui-components'
-import {chunkFromTransaction, mergeChunk} from '../../_legacy/history/history/chunker'
-import {addTransactionEffect, getDocumentEvents} from '../getDocumentEvents'
+import {Button} from '../../../../../ui-components'
+import {Timeline} from '../timeline'
 
 const query = {
   excludeContent: 'true',

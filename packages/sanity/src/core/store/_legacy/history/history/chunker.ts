@@ -21,6 +21,10 @@ const mergeEvents = (
   }
 }
 
+/**
+ * @internal
+ * Decides whether to merge two chunks or not according to their type and timestamp
+ */
 export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
   if (left.end !== right.start) throw new Error('chunks are not next to each other')
   if (
@@ -42,6 +46,10 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
   return [left, right]
 }
 
+/**
+ * @internal
+ * Creates a chunk for the timeline from a transaction.
+ */
 export function chunkFromTransaction(
   publishedId: string,
   transaction: Transaction,

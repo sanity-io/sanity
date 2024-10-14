@@ -10,5 +10,10 @@ export default defineScope({
       title: 'Default',
       component: lazy(() => import('./DefaultStory')),
     },
+    {
+      name: 'get-document-events',
+      title: 'Document group events',
+      component: lazy(() => import('./DocumentGroupEvent')),
+    },
   ],
 })

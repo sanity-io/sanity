@@ -93,7 +93,13 @@ function isDeletePatch(patch: MendozaPatch): boolean {
   return patch[0] === 0 && patch[1] === null
 }
 
-// This assumes the view is from the publishedDocument having only drafts. (Versions are not yet supported here)
+/**
+ * @internal
+ * @beta
+ * This might change, don't use.
+ * This function receives a transaction and returns a document group event.
+ * Assumes the user is viewing the published document with only drafts. (Versions are not yet supported here)
+ */
 export function getEventFromTransaction(
   documentId: string,
   transaction: Transaction,
@@ -312,6 +318,12 @@ const isDocumentGroupEvent = (event: unknown): event is DocumentGroupEvent => {
   return eventType ? documentVersionEventTypes.includes(eventType) : false
 }
 
+/**
+ *
+ * @internal
+ * @beta
+ * This function receives a transaction and returns a transaction with the draft and published effects.
+ */
 export const addTransactionEffect = (
   documentId: string,
   transaction: TransactionLogEventWithEffects,
