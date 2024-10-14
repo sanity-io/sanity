@@ -1,4 +1,4 @@
-import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
+import {AddDocumentIcon, CopyIcon, InsertAboveIcon, InsertBelowIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Flex, Menu} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
@@ -9,7 +9,7 @@ import {useTranslation} from '../../../../i18n'
 import {FieldPresence} from '../../../../presence'
 import {FormFieldValidationStatus} from '../../../components/formField'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
-import {InsertMenuGroups} from '../ArrayOfObjectsInput/InsertMenuGroups'
+import {InsertMenuGroup} from '../ArrayOfObjectsInput/InsertMenuGroups'
 import {RowLayout} from '../layouts/RowLayout'
 import {getEmptyValue} from './getEmptyValue'
 
@@ -33,6 +33,7 @@ export const ItemRow = forwardRef(function ItemRow(
     onRemove,
     readOnly,
     inputId,
+    parentSchemaType,
     validation,
     children,
     presence,
@@ -72,28 +73,61 @@ export const ItemRow = forwardRef(function ItemRow(
 
   const {t} = useTranslation()
 
+  const disableActions = parentSchemaType.options?.disableActions || []
+
+  const menuItems = [
+    !disableActions.includes('remove') && (
+      <MenuItem
+        key="remove"
+        text={t('inputs.array.action.remove')}
+        tone="critical"
+        icon={TrashIcon}
+        onClick={onRemove}
+      />
+    ),
+    !disableActions.includes('copy') && (
+      <MenuItem
+        key="copy"
+        text={t('inputs.array.action.copy')}
+        icon={CopyIcon}
+        onClick={handleCopy}
+      />
+    ),
+    !disableActions.includes('duplicate') && (
+      <MenuItem
+        key="duplicate"
+        text={t('inputs.array.action.duplicate')}
+        icon={AddDocumentIcon}
+        onClick={handleDuplicate}
+      />
+    ),
+    !(disableActions.includes('add') || disableActions.includes('addBefore')) && (
+      <InsertMenuGroup
+        pos="before"
+        types={insertableTypes}
+        onInsert={handleInsert}
+        text={t('inputs.array.action.add-before')}
+        icon={InsertAboveIcon}
+      />
+    ),
+    !disableActions.includes('add') &&
+      !(disableActions.includes('addAfter') && disableActions.includes('addBefore')) && (
+        <InsertMenuGroup
+          pos="after"
+          types={insertableTypes}
+          onInsert={handleInsert}
+          text={t('inputs.array.action.add-after')}
+          icon={InsertBelowIcon}
+        />
+      ),
+  ]
+
   const menu = (
     <MenuButton
       button={<ContextMenuButton />}
       id={`${inputId}-menuButton`}
       popover={MENU_BUTTON_POPOVER_PROPS}
-      menu={
-        <Menu>
-          <MenuItem
-            text={t('inputs.array.action.remove')}
-            tone="critical"
-            icon={TrashIcon}
-            onClick={onRemove}
-          />
-          <MenuItem text={t('inputs.array.action.copy')} icon={CopyIcon} onClick={handleCopy} />
-          <MenuItem
-            text={t('inputs.array.action.duplicate')}
-            icon={AddDocumentIcon}
-            onClick={handleDuplicate}
-          />
-          <InsertMenuGroups types={insertableTypes} onInsert={handleInsert} />
-        </Menu>
-      }
+      menu={<Menu>{menuItems}</Menu>}
     />
   )
 

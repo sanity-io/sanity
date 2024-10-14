@@ -41,7 +41,7 @@ export const InsertMenuGroups = memo(function InsertMenuGroups(props: Props) {
   )
 })
 
-function InsertMenuGroup(
+export function InsertMenuGroup(
   props: Props & {
     pos: 'before' | 'after'
     text: ComponentProps<typeof MenuItem>['text']
