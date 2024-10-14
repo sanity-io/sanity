@@ -55,27 +55,6 @@ export function useBundleOperations() {
     [currentUser?.id, getOrCreateAddonClient],
   )
 
-  const handleDeleteBundle = useCallback(
-    async (bundle: BundleDocument) => {
-      const addonClient = getAddonClient()
-
-      // Fetch the related version documents from the main dataset, this documents will be removed
-      const versionDocuments = await studioClient.fetch<SanityDocument[]>(
-        `*[_id in path("versions.${bundle._id}.*")]`,
-      )
-      // Starts the transaction to remove the documents.
-      const transaction = studioClient.transaction()
-      versionDocuments.forEach((doc) => {
-        transaction.delete(doc._id)
-      })
-      await transaction.commit()
-      // Remove the bundle metadata document from the addon dataset
-      const res = await addonClient.delete(bundle._id)
-      return res
-    },
-    [getAddonClient, studioClient],
-  )
-
   const handleUpdateBundle = useCallback(
     async (bundle: Partial<BundleDocument>) => {
       const addonClient = getAddonClient()
@@ -147,7 +126,6 @@ export function useBundleOperations() {
 
   return {
     createBundle: handleCreateBundle,
-    deleteBundle: handleDeleteBundle,
     updateBundle: handleUpdateBundle,
     publishBundle: handlePublishBundle,
   }
