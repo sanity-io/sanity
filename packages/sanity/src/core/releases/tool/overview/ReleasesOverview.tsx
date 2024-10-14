@@ -166,9 +166,7 @@ export function ReleasesOverview() {
 
     if (bundle.isDeleted) return null
 
-    return (
-      <ReleaseMenuButton bundle={bundle} documentCount={bundle.documentsMetadata?.documentCount} />
-    )
+    return <ReleaseMenuButton bundle={bundle} />
   }, [])
 
   return (
