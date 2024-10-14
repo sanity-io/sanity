@@ -6,7 +6,7 @@ import {
 
 import {getDraftId, getPublishedId, getVersionFromId} from '../../util/draftUtils'
 import {type Transaction} from '../_legacy/history/history/types'
-import {type DocumentGroupEvent, documentVersionEventTypes} from './types'
+import {type DocumentGroupEvent} from './types'
 
 type EffectState = 'unedited' | 'deleted' | 'upsert' | 'created'
 
@@ -98,7 +98,7 @@ function isDeletePatch(patch: MendozaPatch): boolean {
  * @beta
  * This might change, don't use.
  * This function receives a transaction and returns a document group event.
- * Assumes the user is viewing the published document with only drafts. (Versions are not yet supported here)
+ * Assumes the user is viewing the published document with only drafts. Versions are not yet supported here
  */
 export function getEventFromTransaction(
   documentId: string,
@@ -309,20 +309,9 @@ const mergeEvents = (events: DocumentGroupEvent[]): DocumentGroupEvent[] => {
   return result
 }
 
-const isDocumentGroupEvent = (event: unknown): event is DocumentGroupEvent => {
-  const eventType =
-    typeof event === 'object' && event !== null && 'type' in event && typeof event.type === 'string'
-      ? (event.type as (typeof documentVersionEventTypes)[number])
-      : ''
-
-  return eventType ? documentVersionEventTypes.includes(eventType) : false
-}
-
 /**
- *
  * @internal
  * @beta
- * This function receives a transaction and returns a transaction with the draft and published effects.
  */
 export const addTransactionEffect = (
   documentId: string,
@@ -345,16 +334,7 @@ export const addTransactionEffect = (
  * @internal
  * @beta
  *
- * This function receives a list of transactions that can be fetched from CL transactions API with the following query:
- * {@link https://www.sanity.io/docs/history-api#45ac5eece4ca}
- *   excludeContent: 'true',
- *   includeIdentifiedDocumentsOnly: 'true',
- *   tag: 'sanity.studio.structure.transactions',
- *   effectFormat: 'mendoza',
- *   excludeMutations: 'true',
- *   reverse: 'true',
- *   limit: '50'
- *
+ * This function receives a list of transactions that can be fetched from CL transactions API {@link https://www.sanity.io/docs/history-api#45ac5eece4ca}
  * It is intended at least now, to support fetching the transactions for the published and draft document and builds the
  * document group events from the response.
  */
@@ -362,18 +342,16 @@ export function getDocumentEvents(
   documentId: string,
   transactions: TransactionLogEventWithEffects[],
 ): DocumentGroupEvent[] {
-  const events = transactions
-    .map((transaction, index) => {
-      // The transactions are ordered from newest to oldest, so we can slice the array from the current index
-      const previousTransactions = transactions.slice(index + 1)
+  const events = transactions.map((transaction, index) => {
+    // The transactions are ordered from newest to oldest, so we can slice the array from the current index
+    const previousTransactions = transactions.slice(index + 1)
 
-      return getEventFromTransaction(
-        documentId,
-        addTransactionEffect(documentId, transaction, index),
-        previousTransactions.map((tx, i) => addTransactionEffect(documentId, tx, i)),
-      )
-    })
-    .filter(isDocumentGroupEvent)
+    return getEventFromTransaction(
+      documentId,
+      addTransactionEffect(documentId, transaction, index),
+      previousTransactions.map((tx, i) => addTransactionEffect(documentId, tx, i)),
+    )
+  })
 
   return mergeEvents(events)
 }

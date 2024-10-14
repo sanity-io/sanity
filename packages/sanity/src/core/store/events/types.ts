@@ -136,6 +136,8 @@
 
 /**
  * Events relevant for the whole document group.
+ * @internal
+ * @beta
  **/
 export type DocumentGroupEvent =
   | CreateDocumentVersionEvent
@@ -149,24 +151,11 @@ export type DocumentGroupEvent =
   | CreateLiveDocumentEvent
   | UpdateLiveDocumentEvent
 
-export const documentVersionEventTypes = [
-  'document.createVersion',
-  'document.editVersion',
-  'document.deleteVersion',
-  'document.publishVersion',
-  'document.unpublish',
-  'document.scheduleVersion',
-  'document.unscheduleVersion',
-  'document.deleteGroup',
-  'document.createLive',
-  'document.updateLive',
-] as const
-
 /**
  * @internal
  * @beta
  **/
-export type DocumentVersionEventType = (typeof documentVersionEventTypes)[number]
+export type DocumentVersionEventType = DocumentGroupEvent['type']
 
 /**
  * A generic event with a type and a timestamp.
@@ -176,7 +165,6 @@ interface BaseEvent {
    * The id of the transaction that generated this event, is the same as the `_rev` the documents that were affected by this event will have.
    **/
   id: string
-  type: (typeof documentVersionEventTypes)[number]
   timestamp: string
   // Moved author to baseEvent.
   author: string
@@ -184,7 +172,6 @@ interface BaseEvent {
 
 /**
  * The critical events related to the state of a release.
- * @todo
  */
 export type ReleaseEvent = any
 
