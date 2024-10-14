@@ -3,6 +3,7 @@ import {type MutationPayload} from './buffered-doc/types'
 /** @internal */
 export interface WelcomeEvent {
   type: 'welcome'
+  listenerName: string
 }
 
 /** @internal */
@@ -13,6 +14,8 @@ export interface MutationEvent {
   mutations: MutationPayload[]
   effects: {apply: unknown; revert: unknown}
 
+  previousRev: string
+  resultRev: string
   transactionTotalEvents: number
   transactionCurrentEvent: number
   visibility: 'transaction' | 'query'

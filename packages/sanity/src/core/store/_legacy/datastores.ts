@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
-import {useMemo} from 'react'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useCallback, useMemo} from 'react'
 import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
@@ -14,7 +15,9 @@ import {
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
 import {createDocumentStore, type DocumentStore} from './document'
+import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {fetchFeatureToggle} from './document/document-pair/utils/fetchFeatureToggle'
+import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {createGrantsStore, type GrantsStore} from './grants'
 import {createHistoryStore, type HistoryStore} from './history'
 import {__tmp_wrap_presenceStore, type PresenceStore} from './presence/presence-store'
@@ -141,6 +144,15 @@ export function useDocumentStore(): DocumentStore {
       : fetchFeatureToggle(getClient(DEFAULT_STUDIO_CLIENT_OPTIONS))
   }, [getClient, workspace.__internal_serverDocumentActions?.enabled])
 
+  const telemetry = useTelemetry()
+
+  const handleSyncErrorRecovery = useCallback(
+    (error: OutOfSyncError) => {
+      telemetry.log(DocumentDesynced, {errorName: error.name})
+    },
+    [telemetry],
+  )
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -155,11 +167,14 @@ export function useDocumentStore(): DocumentStore {
         schema,
         i18n,
         serverActionsEnabled,
+        pairListenerOptions: {
+          onSyncErrorRecovery: handleSyncErrorRecovery,
+        },
       })
 
     resourceCache.set({
       namespace: 'documentStore',
-      dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n],
+      dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n, workspace],
       value: documentStore,
     })
 
@@ -174,6 +189,7 @@ export function useDocumentStore(): DocumentStore {
     workspace,
     templates,
     serverActionsEnabled,
+    handleSyncErrorRecovery,
   ])
 }
 

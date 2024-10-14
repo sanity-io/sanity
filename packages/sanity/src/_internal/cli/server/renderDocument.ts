@@ -16,10 +16,9 @@ import {parse as parseHtml} from 'node-html-parser'
 import {createElement} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 
-import {getAliases} from './aliases'
 import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from './constants'
 import {debug as serverDebug} from './debug'
-import {type SanityMonorepo} from './sanityMonorepo'
+import {getMonorepoAliases, type SanityMonorepo} from './sanityMonorepo'
 
 const debug = serverDebug.extend('renderDocument')
 
@@ -173,7 +172,9 @@ function renderDocumentFromWorkerData() {
   // Require hook #1
   // Alias monorepo modules
   debug('Registering potential aliases')
-  require('module-alias').addAliases(getAliases({monorepo}))
+  if (monorepo) {
+    require('module-alias').addAliases(getMonorepoAliases(monorepo.path))
+  }
 
   // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features

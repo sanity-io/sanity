@@ -1,8 +1,8 @@
-import {ErrorBoundary} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 import {combineLatest, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
+import {ErrorBoundary} from '../../../ui-components'
 import {
   ConfigResolutionError,
   type Source,

@@ -15,6 +15,7 @@ export const defaultConfig: UserConfig = {
   plugins: [react(), tsconfigPaths()],
   build: {
     emptyOutDir: true,
+    sourcemap: true,
     lib: {
       entry: {},
       formats: ['es'],

@@ -7,6 +7,6 @@
     "./src/**/__workshop__",
     "./src/**/*.test.ts",
     "./src/**/*.test.tsx",
-    "**/jest.config.cjs"
+    "**/jest.config.mjs"
   ]
 }

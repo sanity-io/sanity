@@ -14,7 +14,7 @@ import {
   type PartialExcept,
 } from '../../../util'
 import {useGrantsStore} from '../datastores'
-import {snapshotPair} from '../document'
+import {type PairListenerOptions, snapshotPair} from '../document'
 import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
@@ -170,6 +170,7 @@ export interface DocumentPairPermissionsOptions {
   type: string
   permission: DocumentPermission
   serverActionsEnabled: Observable<boolean>
+  pairListenerOptions?: PairListenerOptions
 }
 
 /**
@@ -187,6 +188,7 @@ export function getDocumentPairPermissions({
   permission,
   type,
   serverActionsEnabled,
+  pairListenerOptions,
 }: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
   // omitted from `S.documentList()`
@@ -204,6 +206,7 @@ export function getDocumentPairPermissions({
     {draftId: getDraftId(id), publishedId: getPublishedId(id)},
     type,
     serverActionsEnabled,
+    pairListenerOptions,
   ).pipe(
     switchMap((pair) =>
       combineLatest([pair.draft.snapshots$, pair.published.snapshots$]).pipe(
@@ -283,6 +286,7 @@ export function useDocumentPairPermissions({
   client: overrideClient,
   schema: overrideSchema,
   grantsStore: overrideGrantsStore,
+  pairListenerOptions,
 }: PartialExcept<DocumentPairPermissionsOptions, 'id' | 'type' | 'permission'>): ReturnType<
   typeof useDocumentPairPermissionsFromHookFactory
 > {
@@ -306,8 +310,26 @@ export function useDocumentPairPermissions({
 
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(
-      () => ({client, schema, grantsStore, id, permission, type, serverActionsEnabled}),
-      [client, grantsStore, id, permission, schema, type, serverActionsEnabled],
+      () => ({
+        client,
+        schema,
+        grantsStore,
+        id,
+        permission,
+        type,
+        serverActionsEnabled,
+        pairListenerOptions,
+      }),
+      [
+        client,
+        schema,
+        grantsStore,
+        id,
+        permission,
+        type,
+        serverActionsEnabled,
+        pairListenerOptions,
+      ],
     ),
   )
 }

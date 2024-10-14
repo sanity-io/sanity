@@ -240,7 +240,11 @@ export default async function initSanity(
     throw new Error('`--reconfigure` is deprecated - manual configuration is now required')
   }
 
-  const envFilename = typeof env === 'string' ? env : '.env'
+  let envFilenameDefault = '.env'
+  if (detectedFramework && detectedFramework.slug === 'nextjs') {
+    envFilenameDefault = '.env.local'
+  }
+  const envFilename = typeof env === 'string' ? env : envFilenameDefault
   if (!envFilename.startsWith('.env')) {
     throw new Error(`Env filename must start with .env`)
   }
@@ -433,10 +437,39 @@ export default async function initSanity(
     const appendEnv = unattended ? true : await promptForAppendEnv(prompt, envFilename)
 
     if (appendEnv) {
-      await createOrAppendEnvVars(envFilename, detectedFramework, {
-        log: true,
-      })
+      await createOrAppendEnvVars(envFilename, detectedFramework, {log: true})
     }
+
+    if (embeddedStudio) {
+      const nextjsLocalDevOrigin = 'http://localhost:3000'
+      const existingCorsOrigins = await apiClient({api: {projectId}}).request({
+        method: 'GET',
+        uri: '/cors',
+      })
+      const hasExistingCorsOrigin = existingCorsOrigins.some(
+        (item: {origin: string}) => item.origin === nextjsLocalDevOrigin,
+      )
+      if (!hasExistingCorsOrigin) {
+        await apiClient({api: {projectId}})
+          .request({
+            method: 'POST',
+            url: '/cors',
+            body: {origin: nextjsLocalDevOrigin, allowCredentials: true},
+            maxRedirects: 0,
+          })
+          .then((res) => {
+            print(
+              res.id
+                ? `Added ${nextjsLocalDevOrigin} to CORS origins`
+                : `Failed to add ${nextjsLocalDevOrigin} to CORS origins`,
+            )
+          })
+          .catch((error) => {
+            print(`Failed to add ${nextjsLocalDevOrigin} to CORS origins`, error)
+          })
+      }
+    }
+
     const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
     const packages = ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1', 'styled-components@6']
@@ -534,6 +567,12 @@ export default async function initSanity(
     trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
   }
 
+  // we enable auto-updates by default, but allow users to specify otherwise
+  let autoUpdates = true
+  if (typeof cliFlags['auto-updates'] === 'boolean') {
+    autoUpdates = cliFlags['auto-updates']
+  }
+
   // Build a full set of resolved options
   const templateOptions: BootstrapOptions = {
     outputPath,
@@ -542,6 +581,7 @@ export default async function initSanity(
     schemaUrl,
     useTypeScript,
     variables: {
+      autoUpdates,
       dataset: datasetName,
       projectId,
       projectName: displayName || answers.projectName,
@@ -554,26 +594,31 @@ export default async function initSanity(
 
   trace.log({step: 'importTemplateDataset', selectedOption: shouldImport ? 'yes' : 'no'})
 
-  // Bootstrap Sanity, creating required project files, manifests etc
-  await bootstrapTemplate(templateOptions, context)
+  const [_, bootstrapPromise] = await Promise.allSettled([
+    // record template files attempted to be created locally
+    apiClient({api: {projectId: projectId}})
+      .request<SanityProject>({uri: `/projects/${projectId}`})
+      .then((project: SanityProject) => {
+        if (!project?.metadata?.cliInitializedAt) {
+          return apiClient({api: {projectId}}).request({
+            method: 'PATCH',
+            uri: `/projects/${projectId}`,
+            body: {metadata: {cliInitializedAt: new Date().toISOString()}},
+          })
+        }
+        return Promise.resolve()
+      })
+      .catch(() => {
+        // Non-critical update
+        debug('Failed to update cliInitializedAt metadata')
+      }),
+    // Bootstrap Sanity, creating required project files, manifests etc
+    bootstrapTemplate(templateOptions, context),
+  ])
 
-  // update that files were initialized locally; do not halt flow for request
-  apiClient({api: {projectId: projectId}})
-    .request<SanityProject>({uri: `/projects/${projectId}`})
-    .then((project: SanityProject) => {
-      if (!project?.metadata?.cliInitializedAt) {
-        return apiClient({api: {projectId}}).request({
-          method: 'PATCH',
-          uri: `/projects/${projectId}`,
-          body: {metadata: {cliInitializedAt: new Date().toISOString()}},
-        })
-      }
-      return Promise.resolve()
-    })
-    .catch(() => {
-      // Non-critical update
-      debug('Failed to update cliInitializedAt metadata')
-    })
+  if (bootstrapPromise.status === 'rejected' && bootstrapPromise.reason instanceof Error) {
+    throw bootstrapPromise.reason
+  }
 
   let pkgManager: PackageManager
 

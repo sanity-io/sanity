@@ -1,5 +1,5 @@
 import {type AssetSource, type SchemaTypeDefinition} from '@sanity/types'
-import {type ReactNode} from 'react'
+import {type ErrorInfo, type ReactNode} from 'react'
 
 import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
 import {type Template, type TemplateItem} from '../templates'
@@ -310,27 +310,27 @@ export const documentCommentsEnabledReducer = (opts: {
   return result
 }
 
-export const arrayEditingReducer = (opts: {
+export const onUncaughtErrorResolver = (opts: {
   config: PluginOptions
-  initialValue: boolean
-}): boolean => {
-  const {config, initialValue} = opts
+  context: {error: Error; errorInfo: ErrorInfo}
+}) => {
+  const {config, context} = opts
   const flattenedConfig = flattenConfig(config, [])
+  flattenedConfig.forEach(({config: pluginConfig}) => {
+    // There is no concept of 'previous value' in this API. We only care about the final value.
+    // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
+    // The last plugin 'wins'.
+    const resolver = pluginConfig.onUncaughtError
 
-  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver = innerConfig.beta?.treeArrayEditing?.enabled
-
-    if (!resolver && typeof resolver !== 'boolean') return acc
-    if (typeof resolver === 'boolean') return resolver
+    if (typeof resolver === 'function') return resolver(context.error, context.errorInfo)
+    if (!resolver) return undefined
 
     throw new Error(
-      `Expected \`beta.treeArrayEditing.enabled\` to be a boolean, but received ${getPrintableType(
+      `Expected \`document.onUncaughtError\` to be a a function, but received ${getPrintableType(
         resolver,
       )}`,
     )
-  }, initialValue)
-
-  return result
+  })
 }
 
 export const internalTasksReducer = (opts: {

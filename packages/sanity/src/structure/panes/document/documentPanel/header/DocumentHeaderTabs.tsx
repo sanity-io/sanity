@@ -35,7 +35,7 @@ function DocumentHeaderTab(props: {
   viewId: string | null
 }) {
   const {icon, id, isActive, label, tabPanelId, viewId, ...rest} = props
-  const {ready} = useDocumentPane()
+  const {ready, editState} = useDocumentPane()
   const {setView} = usePaneRouter()
   const handleClick = useCallback(() => setView(viewId), [setView, viewId])
 
@@ -43,7 +43,7 @@ function DocumentHeaderTab(props: {
     <Tab
       {...rest} // required to enable <TabList> keyboard navigation
       aria-controls={tabPanelId}
-      disabled={!ready}
+      disabled={!ready && !editState?.draft && !editState?.published}
       icon={icon}
       id={id}
       label={label}

@@ -3,6 +3,7 @@ import {
   type ComponentType,
   type MutableRefObject,
   type ReactNode,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -10,6 +11,7 @@ import {
 import {type Router, RouterProvider, type RouterState} from 'sanity/router'
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector.js'
 
+import {ErrorBoundary} from '../../../ui-components'
 import {type Tool, type Workspace} from '../../config'
 import {createRouter, type RouterHistory, type RouterStateEvent} from '../router'
 import {decodeUrlState, resolveDefaultState, resolveIntentState} from '../router/helpers'
@@ -31,14 +33,21 @@ export function WorkspaceRouterProvider({
   const router = useMemo(() => createRouter({basePath, tools}), [basePath, tools])
   const [state, onNavigate] = useRouterFromWorkspaceHistory(history, router, tools)
 
+  const handleCatchError = useCallback(({error}: {error: Error}) => {
+    /** catches errors in studio that bubble up, throwing the error */
+    throw error
+  }, [])
+
   // `state` is only null if the Studio is somehow rendering in SSR or using hydrateRoot in combination with `unstable_noAuthBoundary`.
   // Which makes this loading condition extremely rare, most of the time it'll render `RouteProvider` right away.
   if (!state) return <LoadingComponent />
 
   return (
-    <RouterProvider onNavigate={onNavigate} router={router} state={state}>
-      {children}
-    </RouterProvider>
+    <ErrorBoundary onCatch={handleCatchError}>
+      <RouterProvider onNavigate={onNavigate} router={router} state={state}>
+        {children}
+      </RouterProvider>
+    </ErrorBoundary>
   )
 }
 

@@ -1,17 +1,32 @@
-import {useEffect, useState} from 'react'
+import {useLayoutEffect, useState} from 'react'
 import {concat, of} from 'rxjs'
 import {delay, distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 
 import {intersectionObservableFor} from './streams/intersectionObservableFor'
 import {visibilityChange$} from './streams/visibilityChange'
 
-export function useVisibility(props: {element: HTMLElement | null; hideDelay?: number}): boolean {
-  const {element, hideDelay = 0} = props
+interface Props {
+  /**
+   * Disable the check. The hook will return false if disabled
+   */
+  disabled?: boolean
+  /** DOM Node to check visibility for */
+  element: HTMLElement | null
+  /** When element is hidden, wait this delay in milliseconds before reporting it as */
+  hideDelay?: number
+}
+
+export function useVisibility(props: Props): boolean {
+  const {element, hideDelay = 0, disabled} = props
   const [visible, setVisible] = useState(false)
 
-  useEffect(() => {
-    if (!element) {
+  useLayoutEffect(() => {
+    if (!element || disabled) {
       return undefined
+    }
+
+    if (element && 'checkVisibility' in element) {
+      setVisible(element.checkVisibility())
     }
 
     const isDocumentVisible$ = concat(
@@ -34,7 +49,7 @@ export function useVisibility(props: {element: HTMLElement | null; hideDelay?: n
     const sub = visible$.subscribe(setVisible)
 
     return () => sub.unsubscribe()
-  }, [element, hideDelay])
+  }, [element, hideDelay, disabled])
 
-  return visible
+  return disabled ? false : visible
 }

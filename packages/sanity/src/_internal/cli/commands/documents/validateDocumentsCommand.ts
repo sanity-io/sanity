@@ -11,6 +11,7 @@ Options
   --format <pretty|ndjson|json> The output format used to print the found validation markers and report progress.
   --level <error|warning|info> The minimum level reported out. Defaults to warning.
   --max-custom-validation-concurrency <number> Specify how many custom validators can run concurrently. Defaults to 5.
+  --max-fetch-concurrency <number> Specify how many \`client.fetch\` requests are allow concurrency at once. Defaults to 25.
 
 Examples
   # Validates all documents in a Sanity project with more than one workspace
@@ -20,7 +21,7 @@ Examples
   sanity documents validate --workspace default --dataset staging
 
   # Save the results of the report into a file
-  sanity documents validate > report.txt
+  sanity documents validate --yes > report.txt
 
   # Report out info level validation markers too
   sanity documents validate --level info

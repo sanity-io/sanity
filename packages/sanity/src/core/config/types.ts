@@ -10,7 +10,7 @@ import {
   type SchemaTypeDefinition,
 } from '@sanity/types'
 import {type i18n} from 'i18next'
-import {type ComponentType, type ReactNode} from 'react'
+import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 import {type Router, type RouterState} from 'sanity/router'
 
@@ -392,6 +392,10 @@ export interface PluginOptions {
    * @internal
    */
   beta?: BetaFeatures
+  /** Configuration for error handling.
+   * @beta
+   */
+  onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
 }
 
 /** @internal */
@@ -781,6 +785,10 @@ export interface Source {
    * @internal
    */
   beta?: BetaFeatures
+  /** Configuration for error handling.
+   * @internal
+   */
+  onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
 }
 
 /** @internal */
@@ -901,10 +909,11 @@ interface BetaFeatures {
   /**
    * @beta
    * @hidden
+   * @deprecated beta feature is no longer available.
    * */
   treeArrayEditing?: {
     /**
-     * Enables the tree array editing feature.
+     * @deprecated beta feature is no longer available.
      */
     enabled: boolean
   }

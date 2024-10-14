@@ -1,4 +1,4 @@
-import {describe, it} from '@jest/globals'
+import {describe, it} from 'vitest'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {type BooleanDefinition, type EmailDefinition} from '../src/schema/definition'

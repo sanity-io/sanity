@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.55.0",
+  "version": "3.60.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -44,18 +44,21 @@
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
-    "test": "jest",
-    "test:watch": "jest --watchAll",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.21.2",
-    "@types/react": "^18.3.3"
+    "@sanity/client": "^6.22.1",
+    "@types/react": "^18.3.5"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
-    "@sanity/insert-menu": "1.0.8",
-    "rimraf": "^3.0.2"
+    "@repo/test-config": "workspace:*",
+    "@sanity/insert-menu": "1.0.9",
+    "@vitejs/plugin-react": "^4.3.1",
+    "react": "^18.3.1",
+    "rimraf": "^3.0.2",
+    "vitest": "^2.1.1"
   }
 }

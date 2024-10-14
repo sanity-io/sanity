@@ -89,6 +89,7 @@ export default function HistoryTimelineStory() {
       rootDiff: diff,
       isComparingCurrent,
       value,
+      showFromValue: true,
     }),
     [diff, documentId, isComparingCurrent, schemaType, value],
   )

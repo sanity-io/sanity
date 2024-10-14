@@ -1,5 +1,5 @@
-import {expect, test} from '@jest/globals'
 import {cloneDeep} from 'lodash'
+import {expect, test} from 'vitest'
 
 import {type Doc} from '../src/document/types'
 import {Patcher} from '../src/patch'

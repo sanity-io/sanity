@@ -48,7 +48,7 @@ const SubtitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, 
   max-width: ${rem(120)};
   width: 60%;
 `
-
+const SKELETON_DELAY = 300
 /**
  * @hidden
  * @beta */
@@ -75,13 +75,18 @@ export function DefaultPreview(props: DefaultPreviewProps) {
         <Flex align="center" flex={1} gap={2}>
           {media && (
             <Box flex="none">
-              <Skeleton animated radius={1} style={PREVIEW_SIZES.default.media} />
+              <Skeleton
+                animated
+                delay={SKELETON_DELAY}
+                radius={1}
+                style={PREVIEW_SIZES.default.media}
+              />
             </Box>
           )}
 
           <Stack data-testid="default-preview__heading" flex={1} space={2}>
-            <TitleSkeleton />
-            <SubtitleSkeleton />
+            <TitleSkeleton delay={SKELETON_DELAY} />
+            <SubtitleSkeleton delay={SKELETON_DELAY} />
           </Stack>
 
           <Box flex="none" padding={1}>

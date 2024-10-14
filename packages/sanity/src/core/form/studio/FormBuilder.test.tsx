@@ -54,7 +54,7 @@ describe('FormBuilder', () => {
 
     const focusPath: Path = []
     const openPath: Path = []
-    const value = {_id: 'test', _type: 'test'}
+    const documentValue = {_id: 'test', _type: 'test'}
 
     const onChange = jest.fn()
     const onFieldGroupSelect = jest.fn()
@@ -79,9 +79,10 @@ describe('FormBuilder', () => {
 
       const patchChannel = useMemo(() => createPatchChannel(), [])
 
-      const formState = useFormState(schemaType, {
-        value,
-        comparisonValue: value,
+      const formState = useFormState({
+        schemaType,
+        documentValue,
+        comparisonValue: documentValue,
         focusPath,
         collapsedPaths: undefined,
         collapsedFieldSets: undefined,
@@ -150,7 +151,7 @@ describe('FormBuilder', () => {
 
     const focusPath: Path = []
     const openPath: Path = []
-    const value = {_id: 'test', _type: 'test'}
+    const documentValue = {_id: 'test', _type: 'test'}
 
     const onChange = jest.fn()
     const onFieldGroupSelect = jest.fn()
@@ -175,9 +176,10 @@ describe('FormBuilder', () => {
 
       const patchChannel = useMemo(() => createPatchChannel(), [])
 
-      const formState = useFormState(schemaType, {
-        value,
-        comparisonValue: value,
+      const formState = useFormState({
+        schemaType,
+        documentValue,
+        comparisonValue: documentValue,
         focusPath,
         collapsedPaths: undefined,
         collapsedFieldSets: undefined,

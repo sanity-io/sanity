@@ -2,9 +2,10 @@
 
 ## Overview
 
-- **Perf Studio** - (`perf/studio`) this is the Sanity Studio that we run the test suite against (using playwright). This studio is set up to capture various cases that we want to measure performance of (e.g. a very large document)
-- **Performance Test Runner and tests** (`perf/tests`) - this includes both performance tests and the runner script that sets up the required config, identifies the set of performance tests to run, instantiates a playwright instance that navigates to the set of perf studio deployments (urls), runs each defined performance test against each deployment and compares the difference.
-- Performance test helpers - (`perf/tests/helpers`) A set of performance test helpers that will be injected into the Performance Studio and exposed on `window.perf`.
+- **Perf Studio** — (`perf/studio`) this is the Sanity Studio that we run the test suite against (using playwright). This studio is set up to capture various cases that we want to measure performance of (e.g. a very large document)
+- **Performance Test Runner and tests** (`perf/tests`) — this includes both performance tests and the runner script that sets up the required config, identifies the set of performance tests to run, instantiates a playwright instance that navigates to the set of perf studio deployments (urls), runs each defined performance test against each deployment and compares the difference.
+- **Editor "Frames per Second" (eFPS) suite** — these are specialized performance benchmarks that are separate from the `perf/studio` and `perf/tests`. This suite aims to be more isolated and easier to run with more profiling data. See the [README](./efps/README.md) for more info.
+- Performance test helpers — (`perf/tests/helpers`) A set of performance test helpers that will be injected into the Performance Studio and exposed on `window.perf`.
 
 ## Prerequisites
 

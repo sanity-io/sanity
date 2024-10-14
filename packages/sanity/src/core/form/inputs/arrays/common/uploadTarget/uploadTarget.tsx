@@ -5,7 +5,10 @@ import {
   type ComponentType,
   type ForwardedRef,
   forwardRef,
+  type ForwardRefExoticComponent,
+  type PropsWithoutRef,
   type ReactNode,
+  type RefAttributes,
   useCallback,
   useState,
 } from 'react'
@@ -52,9 +55,15 @@ function getUploadCandidates(
     }))
     .filter((member) => member.uploader) as ResolvedUploader[]
 }
-export function uploadTarget<Props>(Component: ComponentType<Props>) {
+
+export function uploadTarget<Props>(
+  Component: ComponentType<Props>,
+): ForwardRefExoticComponent<
+  PropsWithoutRef<UploadTargetProps & Props> & RefAttributes<HTMLElement>
+> {
   const FileTarget = fileTarget<FIXME>(Component)
 
+  // @ts-expect-error TODO fix PropsWithoutRef related union typings
   return forwardRef(function UploadTarget(
     props: UploadTargetProps & Props,
     forwardedRef: ForwardedRef<HTMLElement>,

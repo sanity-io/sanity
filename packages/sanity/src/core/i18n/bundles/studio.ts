@@ -10,6 +10,16 @@ import {type LocaleResourceBundle} from '../types'
  * @hidden
  */
 export const studioLocaleStrings = defineLocalesResources('studio', {
+  /** The text used in the tooltip shown in the dialog close button */
+  'announcement.dialog.close': 'Close',
+  /** Aria label to be used in the dialog close button */
+  'announcement.dialog.close-label': 'Close dialog',
+  /**Text to be used in the tooltip in the button in the studio announcement card */
+  'announcement.floating-button.dismiss': 'Close',
+  /**Aria label to be used in the floating button in the studio announcement card, to dismiss the card */
+  'announcement.floating-button.dismiss-label': 'Dismiss announcements',
+  /**Aria label to be used in the floating button in the studio announcement card */
+  'announcement.floating-button.open-label': 'Open announcements',
   /** Menu item for deleting the asset */
   'asset-source.asset-list.menu.delete': 'Delete',
   /** Menu item for showing where a particular asset is used */
@@ -1099,8 +1109,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'package-version.new-package-available.reload-button': 'Push to reload',
   /** Title of the alert for studio users when packages in their studio are out-of-date */
   'package-version.new-package-available.title': 'Sanity Studio is ready to update!',
-  /** Label for action to manage members of the current studio project */
-  'presence.action.manage-members': 'Manage members',
+  /** Label for action to invite members to the current studio project */
+  'presence.action.manage-members': 'Invite members',
   /** Accessibility label for presence menu button */
   'presence.aria-label': 'Global presence',
   /** Message description for when no one else is currently present */

@@ -1,7 +1,8 @@
-import {Box, Card, Code, ErrorBoundary, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
+import {ErrorBoundary} from '../../../ui-components/errorBoundary'
 import {SchemaError} from '../../config'
 import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'

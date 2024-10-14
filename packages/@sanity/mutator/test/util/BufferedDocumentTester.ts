@@ -1,7 +1,7 @@
-import {expect} from '@jest/globals'
 // A test jig for the BufferedDocument model
 import {type PatchMutationOperation} from '@sanity/types'
 import debugLogger from 'debug'
+import {expect} from 'vitest'
 
 import {BufferedDocument, Mutation} from '../../src/document'
 import {type CommitHandlerMessage} from '../../src/document/BufferedDocument'

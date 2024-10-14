@@ -153,6 +153,13 @@ const defaultWorkspace = {
   projectId: 'ppsg7ml5',
   dataset: 'test',
   plugins: [sharedSettings()],
+
+  onUncaughtError: (error, errorInfo) => {
+    // eslint-disable-next-line no-console
+    console.log(error)
+    // eslint-disable-next-line no-console
+    console.log(errorInfo)
+  },
   basePath: '/test',
   icon: SanityMonogram,
   // eslint-disable-next-line camelcase
@@ -214,6 +221,15 @@ export default defineConfig([
     basePath: '/playground',
   },
   {
+    name: 'listener-events',
+    title: 'Listener events debug',
+    subtitle: 'Listener events debugging',
+    projectId: 'ppsg7ml5',
+    dataset: 'data-loss',
+    plugins: [sharedSettings()],
+    basePath: '/listener-events',
+  },
+  {
     name: 'playground-partial-indexing',
     title: 'Test Studio (playground-partial-indexing)',
     subtitle: 'Playground dataset',
@@ -246,6 +262,12 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings(), studioComponentsPlugin(), formComponentsPlugin()],
     basePath: '/custom-components',
+    onUncaughtError: (error, errorInfo) => {
+      // eslint-disable-next-line no-console
+      console.log(error)
+      // eslint-disable-next-line no-console
+      console.log(errorInfo)
+    },
     form: {
       components: {
         input: Input,

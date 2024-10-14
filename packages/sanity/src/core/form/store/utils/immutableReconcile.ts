@@ -1,78 +1,97 @@
-/**
- * Reconciles two versions of a state tree by iterating over the next and deep comparing against the next towards the previous.
- * Wherever identical values are found, the previous value is kept, preserving object identities for arrays and objects where possible
- * @param previous - the previous value
- * @param next - the next/current value
- */
-export function immutableReconcile<T>(previous: unknown, next: T): T {
-  return _immutableReconcile(previous, next, new WeakMap())
+import {type SchemaType} from '@sanity/types'
+
+function isPlainObject(obj: unknown): boolean {
+  return obj !== null && typeof obj === 'object' && obj.constructor === Object
 }
 
-function _immutableReconcile<T>(
-  previous: unknown,
-  next: T,
-  /**
-   * Keep track of visited nodes to prevent infinite recursion in case of circular structures
-   */
-  parents: WeakMap<any, any>,
-): T {
-  if (previous === next) return previous as T
-
-  if (parents.has(next)) {
-    return parents.get(next)
-  }
-
-  // eslint-disable-next-line no-eq-null
-  if (previous == null || next == null) return next
-
-  const prevType = typeof previous
-  const nextType = typeof next
-
-  // Different types
-  if (prevType !== nextType) return next
-
-  if (Array.isArray(next)) {
-    assertType<unknown[]>(previous)
-    assertType<unknown[]>(next)
-
-    let allEqual = previous.length === next.length
-    const result: unknown[] = []
-    parents.set(next, result)
-    for (let index = 0; index < next.length; index++) {
-      const nextItem = _immutableReconcile(previous[index], next[index], parents)
-
-      if (nextItem !== previous[index]) {
-        allEqual = false
-      }
-      result[index] = nextItem
-    }
-    parents.set(next, allEqual ? previous : result)
-    return (allEqual ? previous : result) as any
-  }
-
-  if (typeof next === 'object') {
-    assertType<Record<string, unknown>>(previous)
-    assertType<Record<string, unknown>>(next)
-
-    const nextKeys = Object.getOwnPropertyNames(next)
-    let allEqual = Object.getOwnPropertyNames(previous).length === nextKeys.length
-    const result: Record<string, unknown> = {}
-    parents.set(next, result)
-    for (const key of nextKeys) {
-      const nextValue = next.propertyIsEnumerable(key)
-        ? _immutableReconcile(previous[key], next[key]!, parents)
-        : next[key]
-      if (nextValue !== previous[key]) {
-        allEqual = false
-      }
-      result[key] = nextValue
-    }
-    parents.set(next, allEqual ? previous : result)
-    return (allEqual ? previous : result) as T
-  }
-  return next
+function isSchemaType(obj: unknown): obj is SchemaType {
+  if (typeof obj !== 'object') return false
+  if (!obj) return false
+  if (!('jsonType' in obj) || typeof obj.jsonType !== 'string') return false
+  if (!('name' in obj) || typeof obj.name !== 'string') return false
+  return true
 }
 
-// just some typescript trickery get type assertion
-// eslint-disable-next-line @typescript-eslint/no-empty-function, no-empty-function
-function assertType<T>(value: unknown): asserts value is T {}
+interface ImmutableReconcile<T> {
+  (prev: T | null, curr: T): T
+}
+
+export interface CreateImmutableReconcileOptions {
+  decorator?: <T>(fn: ImmutableReconcile<T>) => ImmutableReconcile<T>
+}
+
+function identity<T>(t: T) {
+  return t
+}
+
+export function createImmutableReconcile({
+  decorator = identity,
+}: CreateImmutableReconcileOptions = {}): <T>(prev: T | null, curr: T) => T {
+  const immutableReconcile = decorator(function _immutableReconcile<T>(prev: T | null, curr: T): T {
+    if (prev === curr) return curr
+    if (prev === null) return curr
+    if (typeof prev !== 'object' || typeof curr !== 'object') return curr
+
+    if (Array.isArray(prev) && Array.isArray(curr)) {
+      if (prev.length !== curr.length) return curr
+
+      const reconciled = curr.map((item, index) => immutableReconcile(prev[index], item))
+      if (reconciled.every((item, index) => item === prev[index])) return prev
+      return reconciled as T
+    }
+
+    // skip these, they're recursive structures and will cause stack overflows
+    // they're stable anyway
+    if (isSchemaType(prev) || isSchemaType(curr)) return curr
+
+    // skip these as well
+    if (!isPlainObject(prev) || !isPlainObject(curr)) return curr
+
+    const prevObj = prev as Record<string, unknown>
+    const currObj = curr as Record<string, unknown>
+
+    const reconciled: Record<string, unknown> = {}
+    let changed = false
+
+    const enumerableKeys = new Set(Object.keys(currObj))
+
+    for (const key of Object.getOwnPropertyNames(currObj)) {
+      if (key in prevObj) {
+        const reconciledValue = immutableReconcile(prevObj[key], currObj[key])
+        if (enumerableKeys.has(key)) {
+          reconciled[key] = reconciledValue
+        } else {
+          Object.defineProperty(reconciled, key, {
+            value: reconciledValue,
+            enumerable: false,
+          })
+        }
+        changed = changed || reconciledValue !== prevObj[key]
+      } else {
+        if (enumerableKeys.has(key)) {
+          reconciled[key] = currObj[key]
+        } else {
+          Object.defineProperty(reconciled, key, {
+            value: currObj[key],
+            enumerable: false,
+          })
+        }
+        changed = true
+      }
+    }
+
+    // Check if any keys were removed
+    for (const key of Object.getOwnPropertyNames(prevObj)) {
+      if (!(key in currObj)) {
+        changed = true
+        break
+      }
+    }
+
+    return changed ? (reconciled as T) : prev
+  })
+
+  return immutableReconcile
+}
+
+export const immutableReconcile = createImmutableReconcile()

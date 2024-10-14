@@ -7,6 +7,8 @@ import {defineLocalesResources} from 'sanity'
  * @internal
  */
 const structureLocaleStrings = defineLocalesResources('structure', {
+  /** Label for the "Copy Document URL" document action */
+  'action.copy-document-url.label': 'Copy Document URL',
   /** Tooltip when action button is disabled because the operation is not ready   */
   'action.delete.disabled.not-ready': 'Operation not ready',
   /** Tooltip when action button is disabled because the document does not exist */
@@ -93,18 +95,29 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.deleted-document-banner.text': 'This document has been deleted.',
   /** The text content for the deprecated document type banner */
   'banners.deprecated-document-type-banner.text': 'This document type has been deprecated.',
-  /** The text for the permission check banner if the user only has one role, and it does not allow updating this document */
+  /** The text for publish action for discarding the version */
+  'banners.live-edit-draft-banner.discard.tooltip': 'Discard draft',
+  /** The text for publish action for the draft banner */
+  'banners.live-edit-draft-banner.publish.tooltip': 'Publish to continue editing',
+  /** The text content for the live edit document when it's a draft */
+  'banners.live-edit-draft-banner.text':
+    'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, but a draft version of this document exists. Publish or discard the draft in order to continue live editing it.',
+  /** The text for the permission check banner if the user only has one role, and it does not allow publishing this document */
   'banners.permission-check-banner.missing-permission_create_one':
-    'Your role <Roles/> does not have permissions to create this document.',
-  /** The text for the permission check banner if the user only has multiple roles, but they do not allow updating this document */
+    'Your role <Roles/> does not have permission to publish this document.',
+  /** The text for the permission check banner if the user only has multiple roles, but they do not allow publishing this document */
   'banners.permission-check-banner.missing-permission_create_other':
-    'Your roles <Roles/> do not have permissions to create this document.',
-  /** The text for the permission check banner if the user only has one role, and it does not allow updating this document */
+    'Your roles <Roles/> do not have permission to publish this document.',
+  /** The text for the permission check banner if the user only has one role, and it does not allow editing this document */
   'banners.permission-check-banner.missing-permission_update_one':
-    'Your role <Roles/> does not have permissions to update this document.',
-  /** The text for the permission check banner if the user only has multiple roles, but they do not allow updating this document */
+    'Your role <Roles/> does not have permission to edit this document.',
+  /** The text for the permission check banner if the user only has multiple roles, but they do not allow editing this document */
   'banners.permission-check-banner.missing-permission_update_other':
-    'Your roles <Roles/> do not have permissions to update this document.',
+    'Your roles <Roles/> do not have permission to edit this document.',
+  /** The pending text for the request permission button that appears for viewer roles */
+  'banners.permission-check-banner.request-permission-button.sent': 'Editor request sent',
+  /** The text for the request permission button that appears for viewer roles */
+  'banners.permission-check-banner.request-permission-button.text': 'Ask to edit',
   /** The text for the reload button */
   'banners.reference-changed-banner.reason-changed.reload-button.text': 'Reload reference',
   /** The text for the reference change banner if the reason is that the reference has been changed */
@@ -318,8 +331,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-header-title.new.text': 'New {{schemaType}}',
   /** The text used in the document header title if no other title can be determined */
   'panes.document-header-title.untitled.text': 'Untitled',
-  /** The text for the retry button on the document list pane */
-  'panes.document-list-pane.error.retry-button.text': 'Retry',
   /** The error text on the document list pane */
   'panes.document-list-pane.error.text': 'Error: <Code>{{error}}</Code>',
   /** The error title on the document list pane */
@@ -347,8 +358,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-operation-results.operation-error_unpublish':
     'An error occurred while attempting to unpublish this document. This usually means that there are other documents that refers to it.',
   /** The text when a generic operation succeeded (fallback, generally not shown)  */
-  'panes.document-operation-results.operation-success':
-    'Successfully performed {{context}} on document',
+  'panes.document-operation-results.operation-success': 'Successfully performed {{op}} on document',
+  /** The text when copy URL operation succeeded  */
+  'panes.document-operation-results.operation-success_copy-url': 'Document URL copied to clipboard',
   /** The text when a delete operation succeeded  */
   'panes.document-operation-results.operation-success_delete':
     'The document was successfully deleted',
@@ -402,6 +414,24 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** The text for the "Open preview" action for a document */
   'production-preview.menu-item.title': 'Open preview',
+
+  /** The text for the confirm button in the request permission dialog used in the permissions banner */
+  'request-permission-dialog.confirm-button.text': 'Send request',
+  /** The description text for the request permission dialog used in the permissions banner */
+  'request-permission-dialog.description.text':
+    "Your request will be sent to the project administrator(s). If you'd like, you can also include a note",
+  /** The header/title for the request permission dialog used in the permissions banner */
+  'request-permission-dialog.header.text': 'Ask for edit access',
+  /** The text describing the note input for the request permission dialog used in the permissions banner */
+  'request-permission-dialog.note-input.description.text': "If you'd like, you can add a note",
+  /** The placeholder for the note input in the request permission dialog used in the permissions banner */
+  'request-permission-dialog.note-input.placeholder.text': 'Add note...',
+  /** The error/warning text in the request permission dialog when the user's request has been declined */
+  'request-permission-dialog.warning.denied.text':
+    'Your request to access this project has been declined.',
+  /** The error/warning text in the request permission dialog when the user's request has been denied due to too many outstanding requests */
+  'request-permission-dialog.warning.limit-reached.text':
+    "You've reached the limit for role requests across all projects. Please wait before submitting more requests or contact an administrator for assistance.",
 
   /** Label for button when status is saved */
   'status-bar.document-status-pulse.status.saved.text': 'Saved',
