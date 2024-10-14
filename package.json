@@ -114,7 +114,7 @@
     "@sanity/prettier-config": "^1.0.2",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.105",
-    "@sanity/ui": "^2.8.9",
+    "@sanity/ui": "file:registry/sanity-ui-2.8.9.tgz",
     "@sanity/uuid": "^3.0.2",
     "@types/glob": "^7.2.0",
     "@types/lodash": "^4.17.7",
@@ -186,6 +186,8 @@
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
       "@sanity/client": "bundle-perspective",
+      "@sanity/icons": "file:registry/sanity-icons-3.4.0.tgz",
+      "@sanity/ui": "file:registry/sanity-ui-2.8.9.tgz",
       "@sanity/ui@2": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
