@@ -6,6 +6,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {memo, useCallback, useMemo} from 'react'
 import {
   type BundleDocument,
+  getVersionFromId,
   ReleaseBadge,
   useDateTimeFormat,
   usePerspective,
@@ -169,25 +170,26 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         />
       </Tooltip>
 
-      {documentVersions?.map((release) => (
-        // eslint-disable-next-line i18next/no-literal-string
-        <Tooltip key={release._id} content={<Text size={1}>temporary text</Text>} portal>
-          <Chip
-            forwardedAs="a"
-            icon={DotIcon}
-            mode="bleed"
-            padding={2}
-            paddingRight={3}
-            radius="full"
-            selected={editState?.version?._id === displayed?._id}
-            onClick={handleBundleChange(release._id)}
-            tone={'primary'}
-            style={{flex: 'none'}}
-            tooltipProps={{content: release.title}}
-            text={release.title}
-          />
-        </Tooltip>
-      ))}
+      {displayed &&
+        documentVersions?.map((release) => (
+          // eslint-disable-next-line i18next/no-literal-string
+          <Tooltip key={release._id} content={<Text size={1}>temporary text</Text>} portal>
+            <Chip
+              forwardedAs="a"
+              icon={DotIcon}
+              mode="bleed"
+              padding={2}
+              paddingRight={3}
+              radius="full"
+              selected={release._id === getVersionFromId(displayed?._id || '')}
+              onClick={handleBundleChange(release._id)}
+              tone={'primary'}
+              style={{flex: 'none'}}
+              tooltipProps={{content: release.title}}
+              text={release.title}
+            />
+          </Tooltip>
+        ))}
     </>
   )
 })
