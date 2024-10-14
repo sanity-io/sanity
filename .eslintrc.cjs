@@ -92,6 +92,7 @@ const config = {
             'sortOrder',
             'status',
             'group',
+            'textWeight',
           ],
         },
       },
