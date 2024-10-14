@@ -46,7 +46,7 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactEle
   }
 
   return (
-    <Flex flex={1} align="center" gap={3} paddingX={2}>
+    <Flex flex={1} align="center" gap={1} paddingX={2}>
       <DocumentPerspectiveMenu />
     </Flex>
   )
