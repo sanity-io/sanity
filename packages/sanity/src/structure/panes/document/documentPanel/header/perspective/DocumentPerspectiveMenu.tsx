@@ -170,6 +170,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         />
       </Tooltip>
 
+      {/* @todo update temporary text for tooltip */}
       {displayed &&
         documentVersions?.map((release) => (
           // eslint-disable-next-line i18next/no-literal-string
