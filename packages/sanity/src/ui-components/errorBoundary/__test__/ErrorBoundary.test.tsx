@@ -1,7 +1,7 @@
-import {beforeAll, describe, expect, it, jest} from '@jest/globals'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import {type SanityClient} from 'sanity'
+import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
@@ -11,12 +11,12 @@ import {ErrorBoundary} from '../ErrorBoundary'
 
 describe('ErrorBoundary', () => {
   beforeAll(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('calls onUncaughtError when an error is caught', async () => {
-    const onUncaughtError = jest.fn()
-    const onCatch = jest.fn()
+    const onUncaughtError = vi.fn()
+    const onCatch = vi.fn()
 
     const ThrowErrorComponent = () => {
       throw new Error('An EXPECTED, testing error occurred!')
@@ -46,7 +46,7 @@ describe('ErrorBoundary', () => {
   })
 
   it('calls onCatch prop when an error is caught when no onUncaughtError exists', () => {
-    const onCatch = jest.fn()
+    const onCatch = vi.fn()
 
     const WrapperWithoutError = ({children}: {children: React.ReactNode}) => {
       const locales = [usEnglishLocale]
