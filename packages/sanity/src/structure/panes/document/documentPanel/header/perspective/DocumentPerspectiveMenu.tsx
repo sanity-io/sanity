@@ -61,7 +61,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
       >
         <Chip
           disabled={!editState?.published}
-          forwardedAs={editState?.published ? 'a' : 'button'}
           mode="bleed"
           onClick={handleBundleChange('published')}
           padding={2}
@@ -99,7 +98,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
       >
         <Chip
           disabled={!editState?.published && !editState?.draft}
-          forwardedAs={editState?.published || editState?.draft ? 'a' : 'button'}
           icon={DotIcon}
           mode="bleed"
           onClick={handleBundleChange('drafts')}
@@ -120,7 +118,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           // eslint-disable-next-line i18next/no-literal-string
           <Tooltip key={release._id} content={<Text size={1}>temporary text</Text>} portal>
             <Chip
-              forwardedAs="a"
               icon={DotIcon}
               mode="bleed"
               padding={2}
