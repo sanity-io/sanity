@@ -786,7 +786,7 @@ export interface Source {
    */
   beta?: BetaFeatures
   /** Configuration for error handling.
-   * @internal
+   * @beta
    */
   onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
 }
