@@ -1,4 +1,5 @@
 import {describe, expect, it} from '@jest/globals'
+import {type TransactionLogEventWithEffects} from '@sanity/types'
 
 import {getDocumentEvents} from './getDocumentEvents'
 import {
@@ -9,7 +10,6 @@ import {
   type DocumentGroupEvent,
   type EditDocumentVersionEvent,
   type PublishDocumentVersionEvent,
-  type Transaction,
   type UpdateLiveDocumentEvent,
 } from './types'
 
@@ -40,6 +40,7 @@ describe('getDocumentEvents', () => {
         },
       ]
       const expectedEvent: CreateDocumentVersionEvent = {
+        id: '3fb05c27-2beb-4228-95c4-48f33151dc80',
         timestamp: '2024-09-30T07:49:41.413474Z',
         type: 'document.createVersion',
         documentId: 'foo',
@@ -55,7 +56,7 @@ describe('getDocumentEvents', () => {
   })
   describe('document.editVersion ', () => {
     it('edits an existing draft', () => {
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: 'edit-draft-tx-1',
           timestamp: '2024-10-01T08:20:39.328125Z',
@@ -70,6 +71,7 @@ describe('getDocumentEvents', () => {
         },
       ]
       const expectedEvent: EditDocumentVersionEvent = {
+        id: 'edit-draft-tx-1',
         author: 'p8xDvUMxC',
         releaseId: undefined,
         timestamp: '2024-10-01T08:20:39.328125Z',
@@ -82,7 +84,7 @@ describe('getDocumentEvents', () => {
     })
     it('edits an existing draft multiple times within the time window, they are grouped', () => {
       // TODO: Confirm this is the expected behavior
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: 'edit-draft-tx-3',
           timestamp: '2024-10-01T08:20:40.759147Z',
@@ -109,6 +111,7 @@ describe('getDocumentEvents', () => {
         },
       ]
       const expectedEvent: EditDocumentVersionEvent = {
+        id: 'edit-draft-tx-3',
         type: 'document.editVersion',
         timestamp: '2024-10-01T08:20:40.759147Z',
         author: 'p8xDvUMxC',
@@ -116,6 +119,7 @@ describe('getDocumentEvents', () => {
         versionRevisionId: 'edit-draft-tx-3',
         mergedEvents: [
           {
+            id: 'edit-draft-tx-2',
             type: 'document.editVersion',
             timestamp: '2024-10-01T08:20:39.328125Z',
             author: 'p8xDvUMxC',
@@ -144,6 +148,7 @@ describe('getDocumentEvents', () => {
         ...transactions,
       ])
       const expectedAdditionalEvent: EditDocumentVersionEvent = {
+        id: 'edit-draft-tx-4',
         type: 'document.editVersion',
         timestamp: '2024-10-01T08:20:40.759147Z',
         author: 'p8xDvUMxC',
@@ -151,6 +156,7 @@ describe('getDocumentEvents', () => {
         versionRevisionId: 'edit-draft-tx-4',
         mergedEvents: [
           {
+            id: 'edit-draft-tx-3',
             type: 'document.editVersion',
             timestamp: '2024-10-01T08:20:40.759147Z',
             author: 'p8xDvUMxC',
@@ -158,6 +164,7 @@ describe('getDocumentEvents', () => {
             versionRevisionId: 'edit-draft-tx-3',
           },
           {
+            id: 'edit-draft-tx-2',
             type: 'document.editVersion',
             timestamp: '2024-10-01T08:20:39.328125Z',
             author: 'p8xDvUMxC',
@@ -218,6 +225,7 @@ describe('getDocumentEvents', () => {
       ]
 
       const expectedEvent: DeleteDocumentVersionEvent = {
+        id: 'delete-draft-tx',
         type: 'document.deleteVersion',
         timestamp: '2024-09-30T15:46:07.630718Z',
         author: 'p8xDvUMxC',
@@ -230,6 +238,7 @@ describe('getDocumentEvents', () => {
       expect(events).toEqual([
         expectedEvent,
         {
+          id: 'create-draft-tx',
           type: 'document.createVersion',
           timestamp: '2024-09-30T15:46:01.919235Z',
           author: 'p8xDvUMxC',
@@ -241,7 +250,7 @@ describe('getDocumentEvents', () => {
       ])
     })
     it('deletes a draft (discard changes), published version exists', () => {
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: 'discard-changes-tx',
           timestamp: '2024-09-30T16:04:31.096045Z',
@@ -341,6 +350,7 @@ describe('getDocumentEvents', () => {
         },
       ]
       const expectedEvent: DeleteDocumentVersionEvent = {
+        id: 'discard-changes-tx',
         type: 'document.deleteVersion',
         timestamp: '2024-09-30T16:04:31.096045Z',
         author: 'p8xDvUMxC',
@@ -353,31 +363,30 @@ describe('getDocumentEvents', () => {
       expect(events).toEqual([
         expectedEvent,
         {
-          type: 'document.createVersion',
+          id: 'creates-draft-2-tx',
+          type: 'document.editVersion',
           timestamp: '2024-09-30T16:04:22.624454Z',
           author: 'p8xDvUMxC',
-          documentId: 'foo',
           versionId: 'drafts.foo',
-          releaseId: undefined,
           versionRevisionId: 'creates-draft-2-tx',
         },
         {
-          type: 'document.publishVersion',
+          id: 'publish-draft-tx',
           timestamp: '2024-09-30T16:04:10.258891Z',
           author: 'p8xDvUMxC',
+          type: 'document.publishVersion',
           revisionId: 'publish-draft-tx',
-          releaseId: undefined,
           versionId: 'drafts.foo',
           versionRevisionId: 'create-draft-tx',
           cause: {type: 'document.publish'},
         },
         {
-          type: 'document.createVersion',
+          id: 'create-draft-tx',
           timestamp: '2024-09-30T16:04:07.646387Z',
           author: 'p8xDvUMxC',
+          type: 'document.createVersion',
           documentId: 'foo',
           versionId: 'drafts.foo',
-          releaseId: undefined,
           versionRevisionId: 'create-draft-tx',
         },
       ])
@@ -388,7 +397,7 @@ describe('getDocumentEvents', () => {
   describe('document.publishVersion', () => {
     describe('draft version', () => {
       it('publishes a draft', () => {
-        const transactions: Transaction[] = [
+        const transactions: TransactionLogEventWithEffects[] = [
           {
             id: 'publish-tx',
             timestamp: '2024-09-30T14:00:55.540022Z',
@@ -446,6 +455,7 @@ describe('getDocumentEvents', () => {
           },
         ]
         const expectedEvent: PublishDocumentVersionEvent = {
+          id: 'publish-tx',
           type: 'document.publishVersion',
           timestamp: '2024-09-30T14:00:55.540022Z',
           author: 'p8xDvUMxC',
@@ -459,6 +469,7 @@ describe('getDocumentEvents', () => {
         expect(events).toEqual([
           expectedEvent,
           {
+            id: 'create-draft-tx',
             type: 'document.createVersion',
             timestamp: '2024-09-30T14:00:46.027236Z',
             author: 'p8xDvUMxC',
@@ -471,8 +482,8 @@ describe('getDocumentEvents', () => {
       })
       it.skip('publishes a scheduled draft', () => {})
     })
-    describe('releases version  -- not-implemented', () => {
-      it.skip('publishes a release with no schedule', () => {
+    describe.skip('releases version  -- not-implemented', () => {
+      it('publishes a release with no schedule', () => {
         // TODO: Implement
         //   {
         //     type: 'document.publishVersion',
@@ -485,7 +496,7 @@ describe('getDocumentEvents', () => {
         //     cause: {type: 'release.publish'},
         //   },
       })
-      it.skip('publishes a release with  schedule', () => {
+      it('publishes a release with  schedule', () => {
         // TODO: Implement
         //   {
         //     type: 'document.publishVersion',
@@ -502,7 +513,7 @@ describe('getDocumentEvents', () => {
   })
   describe('document.unpublish', () => {
     it('unpublishes a document, no draft exists', () => {
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: 'unpublish-tx',
           timestamp: '2024-09-30T14:40:02.837538Z',
@@ -596,6 +607,7 @@ describe('getDocumentEvents', () => {
       const events = getDocumentEvents('foo', transactions)
       expect(events).toEqual([
         {
+          id: 'unpublish-tx',
           author: 'p8xDvUMxC',
           releaseId: undefined,
           timestamp: '2024-09-30T14:40:02.837538Z',
@@ -604,6 +616,7 @@ describe('getDocumentEvents', () => {
           versionRevisionId: 'unpublish-tx', //
         },
         {
+          id: 'publish-tx',
           type: 'document.publishVersion',
           timestamp: '2024-09-30T14:00:55.540022Z',
           author: 'p8xDvUMxC',
@@ -614,6 +627,7 @@ describe('getDocumentEvents', () => {
           cause: {type: 'document.publish'},
         },
         {
+          id: 'create-draft-tx',
           type: 'document.createVersion',
           timestamp: '2024-09-30T14:00:46.027236Z',
           author: 'p8xDvUMxC',
@@ -625,7 +639,7 @@ describe('getDocumentEvents', () => {
       ])
     })
     it('unpublishes a document, draft exists', () => {
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: 'unpublish-document-tx',
           timestamp: '2024-09-30T15:04:37.077740Z',
@@ -757,8 +771,10 @@ describe('getDocumentEvents', () => {
         },
       ]
       const events = getDocumentEvents('cffbb991', transactions)
+
       expect(events).toEqual([
         {
+          id: 'unpublish-document-tx',
           type: 'document.unpublish',
           timestamp: '2024-09-30T15:04:37.077740Z',
           author: 'p8xDvUMxC',
@@ -767,39 +783,43 @@ describe('getDocumentEvents', () => {
           releaseId: undefined,
         },
         {
+          id: 'edit-draft-tx',
           type: 'document.editVersion',
           timestamp: '2024-09-30T15:04:29.810025Z',
           author: 'p8xDvUMxC',
           releaseId: undefined,
           versionId: 'drafts.cffbb991',
           versionRevisionId: 'edit-draft-tx',
+          mergedEvents: [
+            {
+              id: 'create-draft-2-tx',
+              timestamp: '2024-09-30T15:04:27.776085Z',
+              author: 'p8xDvUMxC',
+              type: 'document.editVersion',
+              versionId: 'drafts.cffbb991',
+              versionRevisionId: 'create-draft-2-tx',
+            },
+          ],
         },
         {
-          type: 'document.createVersion',
-          timestamp: '2024-09-30T15:04:27.776085Z',
-          author: 'p8xDvUMxC',
-          documentId: 'cffbb991',
-          versionId: 'drafts.cffbb991',
-          releaseId: undefined,
-          versionRevisionId: 'create-draft-2-tx',
-        },
-        {
+          id: 'publish-draft-tx',
           type: 'document.publishVersion',
           timestamp: '2024-09-30T15:03:58.615758Z',
           author: 'p8xDvUMxC',
           revisionId: 'publish-draft-tx',
-          releaseId: undefined,
           versionId: 'drafts.cffbb991',
           versionRevisionId: 'create-draft-tx',
-          cause: {type: 'document.publish'},
+          cause: {
+            type: 'document.publish',
+          },
         },
         {
+          id: 'create-draft-tx',
           type: 'document.createVersion',
           timestamp: '2024-09-30T15:03:45.061639Z',
           author: 'p8xDvUMxC',
           documentId: 'cffbb991',
           versionId: 'drafts.cffbb991',
-          releaseId: undefined,
           versionRevisionId: 'create-draft-tx',
         },
       ])
@@ -815,11 +835,11 @@ describe('getDocumentEvents', () => {
     it('unschedules a version', () => {})
   })
 
-  describe('document.deleteGroup  -- not-implemented', () => {
+  describe('document.deleteGroup', () => {
     it('deletes a group - only published doc exists', () => {
       // TODO: How to distinguish this from from a unpublish transaction if the draft exists.
       // They do the same type of operation given the draft is "unedited" it'
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: 'NQAO7ykovR2JyvCJEXET8v',
           timestamp: '2024-10-01T09:13:02.083217Z',
@@ -877,6 +897,7 @@ describe('getDocumentEvents', () => {
         },
       ]
       const expectedEvent: DeleteDocumentGroupEvent = {
+        id: 'NQAO7ykovR2JyvCJEXET8v',
         type: 'document.deleteGroup',
         timestamp: '2024-10-01T09:13:02.083217Z',
         author: 'p8xDvUMxC',
@@ -885,6 +906,7 @@ describe('getDocumentEvents', () => {
       expect(events).toEqual([
         expectedEvent,
         {
+          id: 'NQAO7ykovR2JyvCJEXEQc9',
           type: 'document.publishVersion',
           timestamp: '2024-10-01T09:12:50.573839Z',
           author: 'p8xDvUMxC',
@@ -899,7 +921,7 @@ describe('getDocumentEvents', () => {
     it('deletes a group - only draft doc exists', () => {
       // TODO: Confirm we want to have a type: document.deleteVersion in this case
       // This uses the discard action
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: 'NQAO7ykovR2JyvCJEXQZNp',
           timestamp: '2024-10-01T10:19:35.130918Z',
@@ -935,6 +957,7 @@ describe('getDocumentEvents', () => {
         },
       ]
       const expectedEvent: DeleteDocumentVersionEvent = {
+        id: 'NQAO7ykovR2JyvCJEXQZNp',
         type: 'document.deleteVersion',
         timestamp: '2024-10-01T10:19:35.130918Z',
         author: 'p8xDvUMxC',
@@ -983,6 +1006,7 @@ describe('getDocumentEvents', () => {
         },
       ]
       const expectedEvent: DeleteDocumentGroupEvent = {
+        id: 'Cs9MM9AmleFTukvUAlITNA',
         author: 'p8xDvUMxC',
         timestamp: '2024-10-01T10:25:50.203497Z',
         type: 'document.deleteGroup',
@@ -995,7 +1019,7 @@ describe('getDocumentEvents', () => {
 
   describe('document.createLive', () => {
     it('creates a live document', () => {
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: 'create-live-doc-tx',
           timestamp: '2024-09-30T16:15:06.436356Z',
@@ -1018,6 +1042,7 @@ describe('getDocumentEvents', () => {
         },
       ]
       const expectedEvent: CreateLiveDocumentEvent = {
+        id: 'create-live-doc-tx',
         type: 'document.createLive',
         timestamp: '2024-09-30T16:15:06.436356Z',
         author: 'p8xDvUMxC',
@@ -1031,7 +1056,7 @@ describe('getDocumentEvents', () => {
   })
   describe('document.updateLive', () => {
     it('updates a live document', () => {
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: 'update-live-doc-tx',
           timestamp: '2024-09-30T16:22:37.797887Z',
@@ -1066,6 +1091,7 @@ describe('getDocumentEvents', () => {
         },
       ]
       const expectedEvent: UpdateLiveDocumentEvent = {
+        id: 'update-live-doc-tx',
         type: 'document.updateLive',
         timestamp: '2024-09-30T16:22:37.797887Z',
         author: 'p8xDvUMxC',
@@ -1076,6 +1102,7 @@ describe('getDocumentEvents', () => {
       expect(events).toEqual([
         expectedEvent,
         {
+          id: 'create-live-doc-tx',
           type: 'document.createLive',
           timestamp: '2024-09-30T16:22:30.845003Z',
           author: 'p8xDvUMxC',
@@ -1087,7 +1114,7 @@ describe('getDocumentEvents', () => {
   })
   describe('a long chain of transactions, imitating documents lifecycle', () => {
     it('creates a draft document, adds some edits, publishes the document, updates the draft and publishes again, then the group is removed', () => {
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: '7X3uqAgvtaInRcPnekUfOB',
           timestamp: '2024-10-01T13:50:40.265737Z',
@@ -1415,13 +1442,16 @@ describe('getDocumentEvents', () => {
         },
       ]
       const events = getDocumentEvents('foo', transactions)
+
       const expectedEvents: DocumentGroupEvent[] = [
         {
+          id: '7X3uqAgvtaInRcPnekUfOB',
           timestamp: '2024-10-01T13:50:40.265737Z',
           author: 'p8xDvUMxC',
           type: 'document.deleteGroup',
         },
         {
+          id: 'hfvKO9BRAN56Oji1mf9vyF',
           timestamp: '2024-10-01T13:50:27.113129Z',
           author: 'p8xDvUMxC',
           type: 'document.publishVersion',
@@ -1433,6 +1463,7 @@ describe('getDocumentEvents', () => {
           },
         },
         {
+          id: '43322dc5-dd5d-4264-8380-839820114a47',
           timestamp: '2024-10-01T13:50:22.074572Z',
           author: 'p8xDvUMxC',
           type: 'document.editVersion',
@@ -1440,23 +1471,25 @@ describe('getDocumentEvents', () => {
           versionRevisionId: '43322dc5-dd5d-4264-8380-839820114a47',
           mergedEvents: [
             {
+              id: '119a88fa-c842-460f-bf95-3f59e8a337cf',
               timestamp: '2024-10-01T13:50:20.790669Z',
               author: 'p8xDvUMxC',
               type: 'document.editVersion',
               versionId: 'drafts.foo',
               versionRevisionId: '119a88fa-c842-460f-bf95-3f59e8a337cf',
             },
+            {
+              id: 'f2090b01-2652-4022-a00f-1e2bab214feb',
+              timestamp: '2024-10-01T13:50:19.164999Z',
+              author: 'p8xDvUMxC',
+              type: 'document.editVersion',
+              versionId: 'drafts.foo',
+              versionRevisionId: 'f2090b01-2652-4022-a00f-1e2bab214feb',
+            },
           ],
         },
         {
-          timestamp: '2024-10-01T13:50:19.164999Z',
-          author: 'p8xDvUMxC',
-          type: 'document.createVersion',
-          documentId: 'foo',
-          versionId: 'drafts.foo',
-          versionRevisionId: 'f2090b01-2652-4022-a00f-1e2bab214feb',
-        },
-        {
+          id: '7X3uqAgvtaInRcPnekUQCf',
           timestamp: '2024-10-01T13:50:16.101750Z',
           author: 'p8xDvUMxC',
           type: 'document.publishVersion',
@@ -1468,6 +1501,7 @@ describe('getDocumentEvents', () => {
           },
         },
         {
+          id: 'df1015a4-56e3-4e9b-a113-58574d953872',
           timestamp: '2024-10-01T13:50:15.326470Z',
           author: 'p8xDvUMxC',
           type: 'document.editVersion',
@@ -1475,6 +1509,7 @@ describe('getDocumentEvents', () => {
           versionRevisionId: 'df1015a4-56e3-4e9b-a113-58574d953872',
           mergedEvents: [
             {
+              id: 'ee2fcd85-c6a7-4edf-81ba-020a09e43249',
               timestamp: '2024-10-01T13:50:13.565141Z',
               author: 'p8xDvUMxC',
               type: 'document.editVersion',
@@ -1482,6 +1517,7 @@ describe('getDocumentEvents', () => {
               versionRevisionId: 'ee2fcd85-c6a7-4edf-81ba-020a09e43249',
             },
             {
+              id: '4b6c1788-39d1-4735-9fbf-efba941ea228',
               timestamp: '2024-10-01T13:50:11.933594Z',
               author: 'p8xDvUMxC',
               type: 'document.editVersion',
@@ -1489,6 +1525,7 @@ describe('getDocumentEvents', () => {
               versionRevisionId: '4b6c1788-39d1-4735-9fbf-efba941ea228',
             },
             {
+              id: 'df84dbb2-a525-4535-ac0d-1e47452f87c4',
               timestamp: '2024-10-01T13:50:07.215155Z',
               author: 'p8xDvUMxC',
               type: 'document.editVersion',
@@ -1496,6 +1533,7 @@ describe('getDocumentEvents', () => {
               versionRevisionId: 'df84dbb2-a525-4535-ac0d-1e47452f87c4',
             },
             {
+              id: 'cf73dd44-c9fb-4277-93b1-1c7295fa4f91',
               timestamp: '2024-10-01T13:50:05.765932Z',
               author: 'p8xDvUMxC',
               type: 'document.editVersion',
@@ -1505,6 +1543,7 @@ describe('getDocumentEvents', () => {
           ],
         },
         {
+          id: '7f789263-e111-4e43-826e-c4f98013b531',
           timestamp: '2024-10-01T13:50:04.125782Z',
           author: 'p8xDvUMxC',
           type: 'document.createVersion',
@@ -1516,7 +1555,7 @@ describe('getDocumentEvents', () => {
       expect(events).toEqual(expectedEvents)
     })
     it('creates a draft document, adds some edits, publishes the doc, then the document is unpublished, draft is removed, finally draft is restored', () => {
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: 'NQAO7ykovR2JyvCJEYUfaz',
           timestamp: '2024-10-01T13:57:18.716920Z',
@@ -1674,17 +1713,20 @@ describe('getDocumentEvents', () => {
         },
       ]
       const events = getDocumentEvents('foo', transactions)
+
       const expectedEvents: DocumentGroupEvent[] = [
         {
+          id: 'NQAO7ykovR2JyvCJEYUfaz',
           timestamp: '2024-10-01T13:57:18.716920Z',
           author: 'p8xDvUMxC',
-          // TODO: Consider having a "document.restoreVersion" event
+          // TODO: Consider having a "document.restoreVersion" event?
           type: 'document.createVersion',
           documentId: 'foo',
           versionId: 'drafts.foo',
           versionRevisionId: 'NQAO7ykovR2JyvCJEYUfaz',
         },
         {
+          id: '7X3uqAgvtaInRcPnekY9ep',
           timestamp: '2024-10-01T13:57:02.426734Z',
           author: 'p8xDvUMxC',
           type: 'document.deleteVersion',
@@ -1692,6 +1734,7 @@ describe('getDocumentEvents', () => {
           versionRevisionId: 'Cs9MM9AmleFTukvUAmGEQ4',
         },
         {
+          id: 'Cs9MM9AmleFTukvUAmGEQ4',
           timestamp: '2024-10-01T13:56:25.700407Z',
           author: 'p8xDvUMxC',
           type: 'document.unpublish',
@@ -1699,6 +1742,7 @@ describe('getDocumentEvents', () => {
           versionRevisionId: 'Cs9MM9AmleFTukvUAmGEQ4',
         },
         {
+          id: '7X3uqAgvtaInRcPnekXqDV',
           timestamp: '2024-10-01T13:56:19.108493Z',
           author: 'p8xDvUMxC',
           type: 'document.publishVersion',
@@ -1710,6 +1754,7 @@ describe('getDocumentEvents', () => {
           },
         },
         {
+          id: 'a9953800-b9ef-4744-9f83-4b86caa3f988',
           timestamp: '2024-10-01T13:56:03.479036Z',
           author: 'p8xDvUMxC',
           type: 'document.editVersion',
@@ -1717,6 +1762,7 @@ describe('getDocumentEvents', () => {
           versionRevisionId: 'a9953800-b9ef-4744-9f83-4b86caa3f988',
           mergedEvents: [
             {
+              id: '6affadb3-925e-4705-a1a5-34f8258cbd14',
               timestamp: '2024-10-01T13:56:02.073790Z',
               author: 'p8xDvUMxC',
               type: 'document.editVersion',
@@ -1726,6 +1772,7 @@ describe('getDocumentEvents', () => {
           ],
         },
         {
+          id: '14e5c10d-e003-42ed-a289-785dd4d1c0d3',
           timestamp: '2024-10-01T13:56:00.375209Z',
           author: 'p8xDvUMxC',
           type: 'document.createVersion',
@@ -1737,7 +1784,7 @@ describe('getDocumentEvents', () => {
       expect(events).toEqual(expectedEvents)
     })
     it('creates a live editable document and do edits on it, then it is removed', () => {
-      const transactions: Transaction[] = [
+      const transactions: TransactionLogEventWithEffects[] = [
         {
           id: '7X3uqAgvtaInRcPnekknt5',
           timestamp: '2024-10-01T14:18:42.658609Z',
@@ -1875,11 +1922,13 @@ describe('getDocumentEvents', () => {
       const events = getDocumentEvents('foo', transactions)
       const expectedEvents = [
         {
+          id: '7X3uqAgvtaInRcPnekknt5',
           timestamp: '2024-10-01T14:18:42.658609Z',
           author: 'p8xDvUMxC',
           type: 'document.deleteGroup',
         },
         {
+          id: 'f7e370f2-0996-4f58-8ae7-ac9b074d4b2d',
           timestamp: '2024-10-01T14:18:05.245942Z',
           author: 'p8xDvUMxC',
           type: 'document.updateLive',
@@ -1887,6 +1936,7 @@ describe('getDocumentEvents', () => {
           revisionId: 'f7e370f2-0996-4f58-8ae7-ac9b074d4b2d',
         },
         {
+          id: '68cb1bd2-da1f-4680-b904-4c8663ef1978',
           timestamp: '2024-10-01T14:18:04.238826Z',
           author: 'p8xDvUMxC',
           type: 'document.updateLive',
@@ -1894,6 +1944,7 @@ describe('getDocumentEvents', () => {
           revisionId: '68cb1bd2-da1f-4680-b904-4c8663ef1978',
         },
         {
+          id: '9b84c71f-5757-4be9-a687-141a5ad60787',
           timestamp: '2024-10-01T14:18:03.193480Z',
           author: 'p8xDvUMxC',
           type: 'document.updateLive',
@@ -1901,6 +1952,7 @@ describe('getDocumentEvents', () => {
           revisionId: '9b84c71f-5757-4be9-a687-141a5ad60787',
         },
         {
+          id: '584182b2-2bc3-4808-a03d-da18774702b5',
           timestamp: '2024-10-01T14:18:01.900710Z',
           author: 'p8xDvUMxC',
           type: 'document.updateLive',
@@ -1908,6 +1960,7 @@ describe('getDocumentEvents', () => {
           revisionId: '584182b2-2bc3-4808-a03d-da18774702b5',
         },
         {
+          id: 'd7791764-2204-4a7e-89e3-3d6a6f2434d7',
           timestamp: '2024-10-01T14:17:59.547949Z',
           author: 'p8xDvUMxC',
           type: 'document.updateLive',
@@ -1915,6 +1968,7 @@ describe('getDocumentEvents', () => {
           revisionId: 'd7791764-2204-4a7e-89e3-3d6a6f2434d7',
         },
         {
+          id: 'b15933c6-0691-4436-8d75-b8bdfc4ec6eb',
           timestamp: '2024-10-01T14:17:58.508566Z',
           author: 'p8xDvUMxC',
           type: 'document.updateLive',
@@ -1922,6 +1976,7 @@ describe('getDocumentEvents', () => {
           revisionId: 'b15933c6-0691-4436-8d75-b8bdfc4ec6eb',
         },
         {
+          id: '1d551112-0866-480b-844a-ca370e86a95a',
           timestamp: '2024-10-01T14:17:58.047179Z',
           author: 'p8xDvUMxC',
           type: 'document.createLive',
@@ -1929,6 +1984,7 @@ describe('getDocumentEvents', () => {
           revisionId: '1d551112-0866-480b-844a-ca370e86a95a',
         },
       ]
+
       expect(events).toEqual(expectedEvents)
     })
   })

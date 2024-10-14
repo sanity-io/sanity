@@ -143,9 +143,9 @@ export default function HistoryTimelineStory() {
                     selected={realRevChunk === chunk}
                   >
                     <Stack space={2}>
-                      <Text>{chunk.type}</Text>
+                      <Text>{chunk.event.type}</Text>
                       <Text muted size={1}>
-                        {format(new Date(chunk.endTimestamp), 'MMM d, YYY @ HH:mm')}
+                        {format(new Date(chunk.event.type), 'MMM d, YYY @ HH:mm')}
                       </Text>
                     </Stack>
                   </Card>
@@ -169,7 +169,7 @@ export default function HistoryTimelineStory() {
                       selected={sinceTime === chunk}
                     >
                       <Stack space={2}>
-                        <Text>{chunk.type}</Text>
+                        <Text>{chunk.event.type}</Text>
                         <Text muted size={1}>
                           {format(new Date(chunk.endTimestamp), 'MMM d, YYY @ HH:mm')}
                         </Text>

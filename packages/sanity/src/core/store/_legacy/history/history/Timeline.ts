@@ -194,7 +194,11 @@ export class Timeline {
     const nextTransactionToChunk = this._chunks.length > 0 ? this._chunks.last.end : firstIdx
     for (let idx = nextTransactionToChunk; idx <= lastIdx; idx++) {
       const transaction = this._transactions.get(idx)
-      this._chunks.mergeAtEnd(chunkFromTransaction(transaction), mergeChunk)
+      const allTransactions = this._transactions.getAllItems
+      this._chunks.mergeAtEnd(
+        chunkFromTransaction(this.publishedId, transaction, allTransactions),
+        mergeChunk,
+      )
     }
 
     // Add transactions at the beginning:
@@ -204,7 +208,12 @@ export class Timeline {
 
     for (let idx = firstTransactionChunked - 1; idx >= firstIdx; idx--) {
       const transaction = this._transactions.get(idx)
-      this._chunks.mergeAtBeginning(chunkFromTransaction(transaction), mergeChunk)
+      const allTransactions = this._transactions.getAllItems
+
+      this._chunks.mergeAtBeginning(
+        chunkFromTransaction(this.publishedId, transaction, allTransactions),
+        mergeChunk,
+      )
     }
   }
 
@@ -216,12 +225,14 @@ export class Timeline {
 
   private _createInitialChunk() {
     if (this.reachedEarliestEntry) {
-      if (this._chunks.first?.type === 'initial') return
+      if (this._chunks.first?.event.type === 'document.createVersion') return
 
       const firstTx = this._transactions.first
       if (!firstTx) return
-      const initialChunk = chunkFromTransaction(firstTx)
-      initialChunk.type = 'initial'
+      const allTransactions = this._transactions.getAllItems
+
+      const initialChunk = chunkFromTransaction(this.publishedId, firstTx, allTransactions)
+      initialChunk.event.type = 'document.createVersion'
       initialChunk.id = '@initial'
       initialChunk.end = initialChunk.start
       this._chunks.addToBeginning(initialChunk)
@@ -275,7 +286,7 @@ export class Timeline {
       chunkIdx--
     ) {
       const currentChunk = this._chunks.get(chunkIdx)
-      if (currentChunk.type === 'publish' || currentChunk.type === 'initial') {
+      if (currentChunk.event.type === 'document.publishVersion' || currentChunk.id === '@initial') {
         return currentChunk
       }
     }

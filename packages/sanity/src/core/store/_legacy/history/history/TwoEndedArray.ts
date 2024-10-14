@@ -90,6 +90,10 @@ export class TwoEndedArray<T extends {index: number}> {
     }
   }
 
+  get getAllItems(): T[] {
+    return [...this._negative.slice().reverse(), ...this._postive.slice()]
+  }
+
   get lastIdx(): number {
     // Note: This also works correctly when _positive is empty (it returns -1)
     return this._postive.length - 1

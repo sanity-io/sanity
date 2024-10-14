@@ -1,7 +1,12 @@
-import {type MendozaEffectPair, type MendozaPatch} from '@sanity/types'
+import {
+  type MendozaEffectPair,
+  type MendozaPatch,
+  type TransactionLogEventWithEffects,
+} from '@sanity/types'
 
 import {getDraftId, getPublishedId, getVersionFromId} from '../../util/draftUtils'
-import {type DocumentGroupEvent, documentVersionEventTypes, type Transaction} from './types'
+import {type Transaction} from '../_legacy/history/history/types'
+import {type DocumentGroupEvent, documentVersionEventTypes} from './types'
 
 type EffectState = 'unedited' | 'deleted' | 'upsert' | 'created'
 
@@ -89,29 +94,40 @@ function isDeletePatch(patch: MendozaPatch): boolean {
 }
 
 // This assumes the view is from the publishedDocument having only drafts. (Versions are not yet supported here)
-function getEventFromTransaction(
+export function getEventFromTransaction(
   documentId: string,
   transaction: Transaction,
   previousTransactions: Transaction[],
-): DocumentGroupEvent | null {
+): DocumentGroupEvent {
   const base = {
+    id: transaction.id,
     timestamp: transaction.timestamp,
     author: transaction.author,
   }
 
   const draftId = getDraftId(documentId)
   const publishedId = getPublishedId(documentId)
-  const draftEffect = transaction.effects[draftId]
-  const publishedEffect = transaction.effects[publishedId]
-  const draftState = getEffectState(draftEffect)
-  const publishedState = getEffectState(publishedEffect)
-
+  const draftState = getEffectState(transaction.draftEffect)
+  const publishedState = getEffectState(transaction.publishedEffect)
   const getDocumentEvent = (
     type: DocumentEventType,
     document: DocumentToMapTheAction,
-  ): DocumentGroupEvent | null => {
+  ): DocumentGroupEvent => {
     switch (type) {
       case 'document.createVersion': {
+        if (document === 'draft') {
+          const lastDraftTransaction = previousTransactions.find((t) => t.draftEffect)
+          const wasDraftDeleted =
+            lastDraftTransaction?.draftEffect && // Modified the draft
+            isDeletePatch(lastDraftTransaction.draftEffect?.apply) && // Deleted the draft
+            !lastDraftTransaction.publishedEffect // No changes to publish doc, so it was not a publish action.
+
+          const draftExisted = previousTransactions.some((t) => Boolean(t.draftEffect))
+
+          if (draftExisted && !wasDraftDeleted) {
+            return getDocumentEvent('document.editVersion', document)
+          }
+        }
         return {
           ...base,
           type,
@@ -141,7 +157,7 @@ function getEventFromTransaction(
           versionId: document === 'draft' ? draftId : publishedId,
           // The revision id of the last edit in the draft document
           versionRevisionId:
-            previousTransactions.find((t) => t.documentIDs.includes(draftId))?.id || 'not-found',
+            previousTransactions.find((t) => Boolean(t.draftEffect))?.id || 'not-found',
           releaseId: getVersionFromId(documentId),
         }
       }
@@ -155,7 +171,7 @@ function getEventFromTransaction(
           releaseId: getVersionFromId(documentId),
           versionId: draftId, // TODO: How to get the version in case of releases
           versionRevisionId:
-            previousTransactions.find((t) => t.documentIDs.includes(draftId))?.id || 'not-found',
+            previousTransactions.find((t) => Boolean(t.draftEffect))?.id || 'not-found',
           cause: {
             type: 'document.publish', // TODO: How to get the `release.publish` and the `release.schedule` events?
           },
@@ -168,14 +184,8 @@ function getEventFromTransaction(
           type,
 
           // The version that will be created by this unpublish action, e.g. drafts.foo
-          versionId:
-            transaction.documentIDs.length > 1 && transaction.documentIDs.includes(draftId)
-              ? draftId
-              : undefined,
-          versionRevisionId:
-            transaction.documentIDs.length > 1 && transaction.documentIDs.includes(draftId)
-              ? transaction.id
-              : undefined,
+          versionId: transaction.draftEffect ? draftId : undefined,
+          versionRevisionId: transaction.draftEffect ? transaction.id : undefined,
           releaseId: getVersionFromId(documentId),
         }
       }
@@ -203,10 +213,19 @@ function getEventFromTransaction(
         }
       }
       case 'maybeUnpublishMaybeDelete': {
-        const lastDraftEffect = previousTransactions.find((t) => t.effects[draftId])?.effects[
-          draftId
-        ]
-        if ((lastDraftEffect && isDeletePatch(lastDraftEffect.apply)) || !lastDraftEffect) {
+        // In this tx, published is deleted and draft unedited.
+        // We need to determine if draft at this point exists or not.
+        const lastDraftTransaction = previousTransactions.find((t) => t.draftEffect)
+        if (!lastDraftTransaction) {
+          // Draft doesn't exist and it was not created, so it was a delete action
+          return getDocumentEvent('document.deleteGroup', document)
+        }
+        const wasDraftDeletedOrPublished =
+          lastDraftTransaction.draftEffect && // Modified the draft
+          isDeletePatch(lastDraftTransaction.draftEffect?.apply)
+
+        if (wasDraftDeletedOrPublished) {
+          // Draft was either deleted or published, so it doesn't exist, no draft was created, so it's a delete action.
           return getDocumentEvent('document.deleteGroup', document)
         }
         return getDocumentEvent('document.unpublish', document)
@@ -231,7 +250,14 @@ function getEventFromTransaction(
       }
 
       default: {
-        return null
+        console.error(`Unhandled event type: ${type}`)
+        return {
+          ...base,
+          type: 'document.editVersion',
+          releaseId: getVersionFromId(documentId),
+          versionId: draftId,
+          versionRevisionId: transaction.id,
+        }
       }
     }
   }
@@ -244,7 +270,7 @@ function getEventFromTransaction(
 const MERGE_WINDOW = 5 * 60 * 1000 // 5 minutes
 
 function isWithinMergeWindow(a: string, b: string) {
-  return Date.parse(b) - Date.parse(a) < MERGE_WINDOW
+  return Math.abs(Date.parse(a) - Date.parse(b)) < MERGE_WINDOW
 }
 
 const mergeEvents = (events: DocumentGroupEvent[]): DocumentGroupEvent[] => {
@@ -286,7 +312,27 @@ const isDocumentGroupEvent = (event: unknown): event is DocumentGroupEvent => {
   return eventType ? documentVersionEventTypes.includes(eventType) : false
 }
 
+export const addTransactionEffect = (
+  documentId: string,
+  transaction: TransactionLogEventWithEffects,
+  index: number,
+): Transaction => {
+  const draftEffect = transaction.effects[getDraftId(documentId)]
+  const publishedEffect = transaction.effects[getPublishedId(documentId)]
+  return {
+    index,
+    id: transaction.id,
+    timestamp: transaction.timestamp,
+    author: transaction.author,
+    draftEffect,
+    publishedEffect,
+  }
+}
+
 /**
+ * @internal
+ * @beta
+ *
  * This function receives a list of transactions that can be fetched from CL transactions API with the following query:
  * https://www.sanity.io/docs/history-api#45ac5eece4ca
  *  const query = \{
@@ -305,13 +351,18 @@ const isDocumentGroupEvent = (event: unknown): event is DocumentGroupEvent => {
  */
 export function getDocumentEvents(
   documentId: string,
-  transactions: Transaction[],
+  transactions: TransactionLogEventWithEffects[],
 ): DocumentGroupEvent[] {
   const events = transactions
     .map((transaction, index) => {
       // The transactions are ordered from newest to oldest, so we can slice the array from the current index
       const previousTransactions = transactions.slice(index + 1)
-      return getEventFromTransaction(documentId, transaction, previousTransactions)
+
+      return getEventFromTransaction(
+        documentId,
+        addTransactionEffect(documentId, transaction, index),
+        previousTransactions.map((tx, i) => addTransactionEffect(documentId, tx, i)),
+      )
     })
     .filter(isDocumentGroupEvent)
 

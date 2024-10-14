@@ -134,8 +134,6 @@
  *    - `UpdateLiveDocumentEvent`: Raw Update mutation => "Published document exists"
  */
 
-import {type MendozaEffectPair} from 'sanity'
-
 /**
  * Events relevant for the whole document group.
  **/
@@ -164,13 +162,18 @@ export const documentVersionEventTypes = [
   'document.updateLive',
 ] as const
 
+export type DocumentVersionEventType = (typeof documentVersionEventTypes)[number]
+
 /**
  * A generic event with a type and a timestamp.
  */
 interface BaseEvent {
+  /**
+   * The id of the transaction that generated this event, is the same as the `_rev` the documents that were affected by this event will have.
+   **/
+  id: string
   type: (typeof documentVersionEventTypes)[number]
   timestamp: string
-
   // Moved author to baseEvent.
   author: string
 }
@@ -286,14 +289,4 @@ export interface UpdateLiveDocumentEvent extends BaseEvent {
   type: 'document.updateLive'
   documentId: string
   revisionId: string
-}
-
-export interface Transaction {
-  id: string
-  timestamp: string
-  author: string
-  documentIDs: string[]
-  effects: {
-    [documentId: string]: MendozaEffectPair
-  }
 }

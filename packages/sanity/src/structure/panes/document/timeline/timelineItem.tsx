@@ -1,24 +1,11 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {createElement, type MouseEvent, useCallback, useMemo} from 'react'
-import {type Chunk, type ChunkType, useDateTimeFormat, useTranslation} from 'sanity'
+import {type Chunk, useDateTimeFormat, useTranslation} from 'sanity'
 
-import {type ButtonProps} from '../../../../ui-components'
-import {getTimelineEventIconComponent} from './helpers'
+import {TIMELINE_ICON_COMPONENTS, TIMELINE_ITEM_EVENT_TONE} from './constants'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
 import {UserAvatarStack} from './userAvatarStack'
-
-const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonProps['tone']> = {
-  initial: 'primary',
-  create: 'primary',
-  publish: 'positive',
-  editLive: 'caution',
-  editDraft: 'caution',
-  unpublish: 'critical',
-  discardDraft: 'critical',
-  delete: 'critical',
-  withinSelection: 'primary',
-}
 
 interface TimelineItemProps {
   chunk: Chunk
@@ -28,7 +15,6 @@ interface TimelineItemProps {
   isSelected: boolean
   onSelect: (chunk: Chunk) => void
   timestamp: string
-  type: ChunkType
 }
 
 export function TimelineItem({
@@ -39,13 +25,22 @@ export function TimelineItem({
   isSelected,
   onSelect,
   timestamp,
-  type,
 }: TimelineItemProps) {
+  const type = chunk.event.type
   const {t} = useTranslation('studio')
 
-  const iconComponent = getTimelineEventIconComponent(type)
-  const authorUserIds = Array.from(chunk.authors)
-  const isSelectable = type !== 'delete'
+  const iconComponent = TIMELINE_ICON_COMPONENTS[type]
+
+  const authorUserIds = useMemo(() => {
+    if (chunk.event.type === 'document.editVersion' && chunk.event.mergedEvents) {
+      return Array.from(
+        new Set([chunk.event.author, ...chunk.event.mergedEvents.map((event) => event.author)]),
+      )
+    }
+    return [chunk.event.author]
+  }, [chunk])
+
+  const isSelectable = type !== 'document.deleteGroup' && type !== 'document.deleteVersion'
   const dateFormat = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
   const formattedTimestamp = useMemo(() => {
     const parsedDate = new Date(timestamp)
@@ -79,7 +74,7 @@ export function TimelineItem({
       onClick={handleClick}
       padding={0}
       radius={2}
-      tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
+      tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[type]}
     >
       <Box paddingX={2}>
         <Flex align="stretch">
@@ -96,7 +91,7 @@ export function TimelineItem({
                   padding={1}
                   radius={2}
                   shadow={1}
-                  tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
+                  tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.event.type]}
                 >
                   <Text muted size={0} weight="medium">
                     {t('timeline.latest')}

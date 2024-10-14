@@ -202,8 +202,13 @@ export function useTimelineStore({
           .pipe(
             map((innerController) => {
               const chunks = innerController.timeline.mapChunks((c) => c)
-              const lastNonDeletedChunk = chunks.filter(
-                (chunk) => !['delete', 'initial'].includes(chunk.type),
+              const lastNonDeletedChunk = chunks.find(
+                (chunk) =>
+                  ![
+                    'document.deleteGroup',
+                    'document.deleteVersion',
+                    'document.createVersion',
+                  ].includes(chunk.event.type),
               )
               const hasMoreChunks = !innerController.timeline.reachedEarliestEntry
 
@@ -220,7 +225,7 @@ export function useTimelineStore({
                 isLoading: false,
                 isPristine: timelineReady ? chunks.length === 0 && hasMoreChunks === false : null,
                 hasMoreChunks: !innerController.timeline.reachedEarliestEntry,
-                lastNonDeletedRevId: lastNonDeletedChunk?.[0]?.id,
+                lastNonDeletedRevId: lastNonDeletedChunk?.id || null,
                 onOlderRevision: innerController.onOlderRevision(),
                 realRevChunk: innerController.realRevChunk,
                 revTime: innerController.revTime,
@@ -229,7 +234,7 @@ export function useTimelineStore({
                 sinceTime: innerController.sinceTime,
                 timelineDisplayed: innerController.displayed(),
                 timelineReady,
-              }
+              } satisfies TimelineState
             }),
             // Only emit (and in turn, re-render) when values have changed
             distinctUntilChanged(deepEquals),
