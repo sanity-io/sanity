@@ -1,58 +1,51 @@
-import {ArrowLeftIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useRef} from 'react'
+import {Card, Container, Flex, Heading, Stack} from '@sanity/ui'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {LoadingBlock} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
-import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
-import {useBundles} from '../../../store/bundles'
+import {type BundleDocument, useBundles} from '../../../store/bundles'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleasesRouterState} from '../../types/router'
-import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
-import {ReleasePublishAllButton} from '../components/ReleasePublishAllButton/ReleasePublishAllButton'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
+import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
+import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
+import {ReleaseDashboardFooter} from './ReleaseDashboardFooter'
+import {ReleaseDashboardHeader} from './ReleaseDashboardHeader'
 import {ReleaseReview} from './ReleaseReview'
 import {ReleaseSummary} from './ReleaseSummary'
 import {useBundleDocuments} from './useBundleDocuments'
 
-const SUPPORTED_SCREENS = ['summary', 'review'] as const
-type Screen = (typeof SUPPORTED_SCREENS)[number]
+export type ReleaseInspector = 'activity'
 
-const getActiveScreen = (router: RouterContextValue): Screen => {
-  const activeScreen = Object.fromEntries(router.state._searchParams || []).screen as Screen
-  if (
-    typeof activeScreen !== 'string' ||
-    !activeScreen ||
-    !SUPPORTED_SCREENS.includes(activeScreen)
-  ) {
+const SUPPORTED_SCREENS = ['summary', 'review'] as const
+export type ReleaseView = (typeof SUPPORTED_SCREENS)[number]
+
+const getActiveView = (router: RouterContextValue): ReleaseView => {
+  const activeView = Object.fromEntries(router.state._searchParams || []).screen as ReleaseView
+  if (typeof activeView !== 'string' || !activeView || !SUPPORTED_SCREENS.includes(activeView)) {
     return 'summary'
   }
-  return activeScreen
+  return activeView
 }
 
 export const ReleaseDetail = () => {
   const router = useRouter()
-
-  const activeScreen = getActiveScreen(router)
+  const [inspector, setInspector] = useState<ReleaseInspector | undefined>(undefined)
+  const {t} = useTranslation(releasesLocaleNamespace)
+  const activeView = getActiveView(router)
 
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
 
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading, deletedBundles} = useBundles()
-  const deletedBundle = deletedBundles[releaseId]
+  const deletedBundle = deletedBundles[releaseId] as BundleDocument | undefined
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
 
   const documentIds = results.map((result) => result.document?._id)
   const history = useReleaseHistory(documentIds, releaseId)
-
   const bundle = data?.find((storeBundle) => storeBundle._id === releaseId)
-  const bundleHasDocuments = !!results.length
-  const showPublishButton = loading || !bundle?.publishedAt
-  const isPublishButtonDisabled = loading || !bundle || !bundleHasDocuments
-
-  const {t} = useTranslation(releasesLocaleNamespace)
 
   const navigateToReview = useCallback(() => {
     router.navigate({
@@ -71,95 +64,10 @@ export const ReleaseDetail = () => {
   // review screen will not be available once published
   // so redirect to summary screen
   useEffect(() => {
-    if (activeScreen === 'review' && bundle?.publishedAt) {
+    if (activeView === 'review' && bundle?.publishedAt) {
       navigateToSummary()
     }
-  }, [activeScreen, bundle?.publishedAt, navigateToSummary])
-
-  const header = useMemo(() => {
-    const headerBundle = bundle || deletedBundle
-    const isBundleDeleted = !!deletedBundle
-
-    return (
-      <Card flex="none" padding={3}>
-        <Flex>
-          <Flex align="baseline" flex={1} gap={2}>
-            <Flex gap={1}>
-              <Button
-                as="a"
-                // navigate back to bundles overview
-                onClick={() => router.navigate({})}
-                data-testid="back-to-releases-button"
-                icon={ArrowLeftIcon}
-                mode="bleed"
-                tooltipProps={{content: 'Back to releases'}}
-              />
-              <Box paddingX={1} paddingY={2}>
-                <Text as="h1" size={1} weight="semibold">
-                  {headerBundle?.title}
-                </Text>
-              </Box>
-            </Flex>
-
-            <Flex gap={1}>
-              <Button
-                key="summary"
-                mode="bleed"
-                onClick={navigateToSummary}
-                selected={activeScreen === 'summary'}
-                text={t('actions.summary')}
-                data-testid="summary-button"
-              />
-              {/* StudioButton supports tooltip when button is disabled */}
-              {!headerBundle?.publishedAt && (
-                <Button
-                  tooltipProps={{
-                    disabled: bundleHasDocuments || isBundleDeleted,
-                    content: t('review.description'),
-                    placement: 'bottom',
-                  }}
-                  key="review"
-                  disabled={!bundleHasDocuments || isBundleDeleted}
-                  mode="bleed"
-                  onClick={navigateToReview}
-                  selected={activeScreen === 'review'}
-                  text={t('action.review')}
-                  data-testid="review-button"
-                />
-              )}
-            </Flex>
-          </Flex>
-
-          <Flex flex="none" gap={2}>
-            {!isBundleDeleted && showPublishButton && bundle && (
-              <ReleasePublishAllButton
-                bundle={bundle}
-                bundleDocuments={results}
-                disabled={isPublishButtonDisabled}
-              />
-            )}
-            <ReleaseMenuButton
-              disabled={isBundleDeleted}
-              bundle={headerBundle}
-              documentCount={results.length}
-            />
-          </Flex>
-        </Flex>
-      </Card>
-    )
-  }, [
-    activeScreen,
-    bundle,
-    bundleHasDocuments,
-    deletedBundle,
-    isPublishButtonDisabled,
-    navigateToReview,
-    navigateToSummary,
-    results,
-    router,
-    showPublishButton,
-    t,
-  ])
+  }, [activeView, bundle?.publishedAt, navigateToSummary])
 
   const scrollContainerRef = useRef(null)
 
@@ -177,20 +85,23 @@ export const ReleaseDetail = () => {
         </Card>
       )
     }
+    if (documentsLoading) {
+      return <LoadingBlock title={t('document-loading')} />
+    }
     if (!bundle) return null
 
-    if (activeScreen === 'summary') {
+    if (activeView === 'summary') {
       return (
         <ReleaseSummary
           documents={results}
           release={bundle}
           documentsHistory={history.documentsHistory}
-          collaborators={history.collaborators}
           scrollContainerRef={scrollContainerRef}
         />
       )
     }
-    if (activeScreen === 'review') {
+    if (activeView === 'review') {
+      // This screen needs to be confirmed, is not part of the prototype yet, maybe it could be removed...
       return (
         <ReleaseReview
           documents={results}
@@ -201,15 +112,7 @@ export const ReleaseDetail = () => {
       )
     }
     return null
-  }, [
-    activeScreen,
-    bundle,
-    deletedBundle,
-    history.collaborators,
-    history.documentsHistory,
-    results,
-    t,
-  ])
+  }, [activeView, bundle, deletedBundle, documentsLoading, history.documentsHistory, results, t])
 
   if (loading) {
     return (
@@ -217,26 +120,53 @@ export const ReleaseDetail = () => {
     )
   }
 
-  if (!bundle && !deletedBundle) {
+  const bundleInDetail = (bundle || deletedBundle) as BundleDocument
+  if (bundleInDetail) {
     return (
-      <Card flex={1} tone="critical">
-        <Container width={0}>
-          <Stack paddingX={4} paddingY={6} space={1}>
-            <Heading>{t('not-found', {releaseId})}</Heading>
-          </Stack>
-        </Container>
-      </Card>
+      <Flex direction="column" flex={1} height="fill">
+        <Card flex="none" padding={3}>
+          <ReleaseDashboardHeader
+            release={bundleInDetail}
+            inspector={inspector}
+            setInspector={setInspector}
+          />
+        </Card>
+        <Card flex="none" borderBottom style={{opacity: 0.6}} />
+
+        <Flex flex={1}>
+          <Flex direction="column" flex={1} height="fill">
+            <Card flex={1} overflow="auto">
+              <ReleaseDashboardDetails release={bundleInDetail} />
+              {detailContent}
+            </Card>
+
+            <ReleaseDashboardFooter
+              documents={results}
+              release={bundleInDetail}
+              isBundleDeleted={!!deletedBundle}
+            />
+          </Flex>
+
+          {inspector === 'activity' && (
+            <>
+              <Card flex="none" borderLeft marginY={2} style={{opacity: 0.6}} />
+              <Card flex="none" style={{width: 320}}>
+                <ReleaseDashboardActivityPanel />
+              </Card>
+            </>
+          )}
+        </Flex>
+      </Flex>
     )
   }
 
   return (
-    <Flex direction="column" height="fill">
-      {header}
-      <Flex paddingX={4} ref={scrollContainerRef} overflow="auto">
-        <Container width={2} paddingX={2}>
-          {documentsLoading ? <LoadingBlock title={t('document-loading')} /> : detailContent}
-        </Container>
-      </Flex>
-    </Flex>
+    <Card flex={1} tone="critical">
+      <Container width={0}>
+        <Stack paddingX={4} paddingY={6} space={1}>
+          <Heading>{t('not-found', {releaseId})}</Heading>
+        </Stack>
+      </Container>
+    </Card>
   )
 }
