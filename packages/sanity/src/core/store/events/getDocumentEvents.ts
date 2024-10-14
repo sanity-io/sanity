@@ -347,15 +347,13 @@ export const addTransactionEffect = (
  *
  * This function receives a list of transactions that can be fetched from CL transactions API with the following query:
  * {@link https://www.sanity.io/docs/history-api#45ac5eece4ca}
- *  query = \{
- *    excludeContent: 'true',
- *    includeIdentifiedDocumentsOnly: 'true',
- *    tag: 'sanity.studio.structure.transactions',
- *    effectFormat: 'mendoza',
- *    excludeMutations: 'true',
- *    reverse: 'true',
- *    limit: '50',
- *  \}
+ *   excludeContent: 'true',
+ *   includeIdentifiedDocumentsOnly: 'true',
+ *   tag: 'sanity.studio.structure.transactions',
+ *   effectFormat: 'mendoza',
+ *   excludeMutations: 'true',
+ *   reverse: 'true',
+ *   limit: '50'
  *
  * It is intended at least now, to support fetching the transactions for the published and draft document and builds the
  * document group events from the response.
