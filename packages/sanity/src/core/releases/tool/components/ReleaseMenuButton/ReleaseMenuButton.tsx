@@ -1,78 +1,32 @@
-import {
-  ArchiveIcon,
-  EditIcon,
-  EllipsisHorizontalIcon,
-  TrashIcon,
-  UnarchiveIcon,
-} from '@sanity/icons'
+import {ArchiveIcon, EditIcon, EllipsisHorizontalIcon, UnarchiveIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, Spinner, Text, useToast} from '@sanity/ui'
+import {Menu, Spinner} from '@sanity/ui'
 import {useState} from 'react'
-import {useRouter} from 'sanity/router'
 
-import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
-import {Translate, useTranslation} from '../../../../i18n'
+import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
 import {type BundleDocument} from '../../../../store/bundles/types'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
-import {
-  ArchivedRelease,
-  DeletedRelease,
-  UnarchivedRelease,
-} from '../../../__telemetry__/releases.telemetry'
+import {ArchivedRelease, UnarchivedRelease} from '../../../__telemetry__/releases.telemetry'
 import {ReleaseDetailsDialog} from '../../../components/dialog/ReleaseDetailsDialog'
 import {releasesLocaleNamespace} from '../../../i18n'
 
 export type ReleaseMenuButtonProps = {
   disabled?: boolean
   bundle?: BundleDocument
-  documentCount?: number
 }
 
-export const ReleaseMenuButton = ({disabled, bundle, documentCount}: ReleaseMenuButtonProps) => {
-  const {deleteBundle, updateBundle} = useBundleOperations()
-  const router = useRouter()
+export const ReleaseMenuButton = ({disabled, bundle}: ReleaseMenuButtonProps) => {
+  const {updateBundle} = useBundleOperations()
   const isBundleArchived = !!bundle?.archivedAt
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
-  const [selectedAction, setSelectedAction] = useState<'edit' | 'delete'>()
-  const [discardStatus, setDiscardStatus] = useState<'idle' | 'discarding' | 'error'>('idle')
+  const [selectedAction, setSelectedAction] = useState<'edit'>()
 
   const bundleMenuDisabled = !bundle || disabled
-  const toast = useToast()
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
 
   const resetSelectedAction = () => setSelectedAction(undefined)
-
-  const handleOnDeleteBundle = async () => {
-    if (bundleMenuDisabled) return
-    try {
-      setDiscardStatus('discarding')
-      await deleteBundle(bundle)
-      telemetry.log(DeletedRelease)
-      toast.push({
-        closable: true,
-        status: 'success',
-        description: (
-          <Translate t={t} i18nKey={'action.delete.success'} values={{title: bundle.title}} />
-        ),
-      })
-      setDiscardStatus('idle')
-      if (router.state.releaseId) {
-        // navigate back to bundle overview
-        router.navigate({releaseId: undefined})
-      }
-    } catch (e) {
-      setDiscardStatus('error')
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: t('action.delete.failure'),
-        description: e.message,
-      })
-    } finally {
-      resetSelectedAction()
-    }
-  }
 
   const handleOnToggleArchive = async () => {
     if (bundleMenuDisabled) return
@@ -92,8 +46,6 @@ export const ReleaseMenuButton = ({disabled, bundle, documentCount}: ReleaseMenu
     }
     setIsPerformingOperation(false)
   }
-
-  const bundleHasDocuments = !!documentCount
 
   return (
     <>
@@ -123,46 +75,15 @@ export const ReleaseMenuButton = ({disabled, bundle, documentCount}: ReleaseMenu
               text={isBundleArchived ? t('action.unarchive') : t('action.archive')}
               data-testid="archive-release"
             />
-            <MenuItem
-              onClick={() => setSelectedAction('delete')}
-              icon={TrashIcon}
-              text={t('action.delete')}
-              data-testid="delete-release"
-            />
           </Menu>
         }
         popover={{
           constrainSize: true,
-          fallbackPlacements: [],
+          fallbackPlacements: ['top-end'],
           placement: 'bottom',
           portal: true,
         }}
       />
-      {selectedAction === 'delete' && (
-        <Dialog
-          id="discard-version-dialog"
-          header={t('delete-dialog.header', {title: bundle?.title})}
-          onClose={resetSelectedAction}
-          // remove body padding if no documents in release
-          padding={bundleHasDocuments}
-          data-testid="delete-dialog"
-          footer={{
-            confirmButton: {
-              text: t('action.delete'),
-              tone: 'default',
-              onClick: handleOnDeleteBundle,
-              loading: discardStatus === 'discarding',
-              disabled: discardStatus === 'discarding',
-            },
-          }}
-        >
-          {bundleHasDocuments && (
-            <Text data-testid="confirm-delete-body" muted size={1}>
-              {t('delete.warning', {count: documentCount})}
-            </Text>
-          )}
-        </Dialog>
-      )}
       {selectedAction === 'edit' && (
         <ReleaseDetailsDialog
           onCancel={resetSelectedAction}
