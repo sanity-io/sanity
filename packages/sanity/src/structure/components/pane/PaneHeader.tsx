@@ -82,7 +82,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 )}
                 {!loading && (
                   <TitleText size={1} textOverflow="ellipsis" weight="semibold">
-                    <Box flex={1} overflow="auto" padding={3}>
+                    <Box flex={1} overflow="auto" padding={2}>
                       {title}
                     </Box>
                   </TitleText>
