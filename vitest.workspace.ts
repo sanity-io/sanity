@@ -7,4 +7,5 @@ export default defineWorkspace([
   'packages/@sanity/schema',
   'packages/@sanity/types',
   'packages/@sanity/util',
+  'packages/sanity',
 ])

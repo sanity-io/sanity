@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
-import {expect, test} from '@jest/globals'
 import {from, lastValueFrom} from 'rxjs'
 import {toArray} from 'rxjs/operators'
+import {expect, test} from 'vitest'
 
 import {type MutationPayload} from '../../buffered-doc'
 import {type ListenerEvent} from '../../getPairListener'

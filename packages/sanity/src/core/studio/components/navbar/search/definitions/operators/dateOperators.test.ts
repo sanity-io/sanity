@@ -1,6 +1,6 @@
-import {afterAll, beforeAll, describe, expect, it, jest} from '@jest/globals'
 /* eslint-disable max-nested-callbacks */
 import {endOfDay, endOfMinute, startOfDay, startOfMinute, sub} from 'date-fns'
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {
   dateOperators,
@@ -18,12 +18,12 @@ const fieldPath = 'dateField'
 
 describe('dateOperators', () => {
   beforeAll(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2023-01-01T00:00:00.000Z'))
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2023-01-01T00:00:00.000Z'))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   describe('(date)', () => {

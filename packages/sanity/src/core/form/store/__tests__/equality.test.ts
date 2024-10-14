@@ -1,6 +1,6 @@
-import {beforeEach, expect, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type ConditionalProperty} from '@sanity/types'
+import {beforeEach, expect, test} from 'vitest'
 
 import {createPrepareFormState, type PrepareFormState} from '../formState'
 import {DEFAULT_PROPS} from './shared'

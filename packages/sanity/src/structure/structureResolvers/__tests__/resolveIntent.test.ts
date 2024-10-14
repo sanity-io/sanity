@@ -1,9 +1,9 @@
 /* eslint-disable simple-import-sort/imports */
 /* this has to be imported after createStructureBuilder due to what looks like a circular import issue */
+import {describe, expect, it, vi} from 'vitest'
 import {createStructureBuilder, SerializeError} from '../../structureBuilder'
-import {type SchemaPluginOptions} from 'sanity'
 
-import {expect, describe, it, jest} from '@jest/globals'
+import {type SchemaPluginOptions} from 'sanity'
 
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 /* eslint-enable import/order */
@@ -238,7 +238,7 @@ describe('resolveIntent', () => {
 
     // this disables the default intent checker so we can try out matching
     // without relying on it
-    const canHandleIntentSpy = jest.spyOn(rootPaneNode, 'canHandleIntent').mockReturnValue(false)
+    const canHandleIntentSpy = vi.spyOn(rootPaneNode, 'canHandleIntent').mockReturnValue(false)
 
     const routerPanes = await resolveIntent({
       intent: 'edit',
@@ -261,7 +261,7 @@ describe('resolveIntent', () => {
       .title('My List')
       .serialize()
 
-    const canHandleIntentSpy = jest.spyOn(list, 'canHandleIntent')
+    const canHandleIntentSpy = vi.spyOn(list, 'canHandleIntent')
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -303,7 +303,7 @@ describe('resolveIntent', () => {
       .title('My Component')
       .serialize()
 
-    const canHandleIntentSpy = jest.spyOn(customComponent, 'canHandleIntent')
+    const canHandleIntentSpy = vi.spyOn(customComponent, 'canHandleIntent')
 
     const rootPaneNode = S.list()
       .title('Content')

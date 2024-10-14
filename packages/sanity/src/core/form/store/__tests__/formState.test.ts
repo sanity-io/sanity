@@ -1,4 +1,3 @@
-import {beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {
   type CurrentUser,
   defineField,
@@ -9,6 +8,7 @@ import {
   type Path,
 } from '@sanity/types'
 import {startsWith, toString} from '@sanity/util/paths'
+import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createSchema} from '../../../schema/createSchema'
 import {
@@ -37,13 +37,13 @@ type RemoveFirstChar<S extends string> = S extends `${infer _}${infer R}` ? R : 
 beforeEach(() => {
   prepareFormState = createPrepareFormState({
     decorators: {
-      prepareArrayOfObjectsInputState: jest.fn,
-      prepareArrayOfObjectsMember: jest.fn,
-      prepareArrayOfPrimitivesInputState: jest.fn,
-      prepareArrayOfPrimitivesMember: jest.fn,
-      prepareFieldMember: jest.fn,
-      prepareObjectInputState: jest.fn,
-      preparePrimitiveInputState: jest.fn,
+      prepareArrayOfObjectsInputState: vi.fn,
+      prepareArrayOfObjectsMember: vi.fn,
+      prepareArrayOfPrimitivesInputState: vi.fn,
+      prepareArrayOfPrimitivesMember: vi.fn,
+      prepareFieldMember: vi.fn,
+      prepareObjectInputState: vi.fn,
+      preparePrimitiveInputState: vi.fn,
     },
   })
 })
@@ -447,7 +447,7 @@ describe.each(
     const initialNodes = new Set(Array.from(traverseForm(initialFormState)).map(([node]) => node))
 
     // reset toHaveBeenCalledTimes amount
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const updatedFormState = prepareFormState({
       ...defaultOptions,
@@ -550,7 +550,7 @@ describe('hidden', () => {
     const initialNodes = new Set(Array.from(traverseForm(initialFormState)).map(([node]) => node))
 
     // reset toHaveBeenCalledTimes amount
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const updatedFormState = prepareFormState({
       ...defaultOptions,
@@ -639,7 +639,7 @@ describe('collapsedPaths', () => {
     prepareFormState(defaultOptions)
 
     // reset toHaveBeenCalledTimes amount
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Prepare updated form state with collapsedPaths set
     const updatedFormState = prepareFormState({
@@ -693,7 +693,7 @@ describe('collapsedFieldSets', () => {
     // Prepare initial form state
     prepareFormState(defaultOptions)
 
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     // Prepare updated form state with collapsedFieldSets set
     const updatedFormState = prepareFormState({
@@ -730,7 +730,7 @@ describe('fieldGroupState', () => {
     const initialNodes = new Set(Array.from(traverseForm(initialFormState)).map(([node]) => node))
 
     // Reset call counts
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     const updatedFormState = prepareFormState({
       ...defaultOptions,

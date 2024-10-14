@@ -1,6 +1,6 @@
-import {beforeEach, expect, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type ConditionalProperty, type ObjectSchemaType} from '@sanity/types'
+import {beforeEach, expect, test} from 'vitest'
 
 import {
   createCallbackResolver,

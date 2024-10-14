@@ -1,9 +1,9 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {firstValueFrom, from} from 'rxjs'
+import {describe, expect, it, vi} from 'vitest'
 
 import {type ActionsFeatureToggle, mapResponse} from './fetchFeatureToggle'
 
-jest.mock('sanity', () => ({
+vi.mock('sanity', () => ({
   SANITY_VERSION: '3.47.0',
 }))
 

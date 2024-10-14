@@ -1,29 +1,29 @@
-import {beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {act, renderHook, waitFor} from '@testing-library/react'
 import {of, Subject} from 'rxjs'
 import {useRouter} from 'sanity/router'
+import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {useKeyValueStore} from '../../../store/_legacy/datastores'
 import {type SeenAnnouncementsState, useSeenAnnouncements} from '../useSeenAnnouncements'
 
-jest.mock('../../../store/_legacy/datastores', () => ({
-  useKeyValueStore: jest.fn(),
+vi.mock('../../../store/_legacy/datastores', () => ({
+  useKeyValueStore: vi.fn(),
 }))
 
-const useKeyValueStoreMock = useKeyValueStore as jest.Mock
-jest.mock('sanity/router', () => ({
-  useRouter: jest.fn().mockReturnValue({state: {}}),
+const useKeyValueStoreMock = useKeyValueStore as ReturnType<typeof vi.fn>
+vi.mock('sanity/router', () => ({
+  useRouter: vi.fn().mockReturnValue({state: {}}),
 }))
-const useRouterMock = useRouter as jest.Mock
+const useRouterMock = useRouter as ReturnType<typeof vi.fn>
 
 describe('useSeenAnnouncements', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
   test('should return "loading" initially and update when observable emits', async () => {
     const observable = new Subject<string[]>()
-    const getKeyMock = jest.fn().mockReturnValue(observable)
-    const setKeyMock = jest.fn()
+    const getKeyMock = vi.fn().mockReturnValue(observable)
+    const setKeyMock = vi.fn()
     useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
 
     const {result} = renderHook(() => useSeenAnnouncements())
@@ -47,8 +47,8 @@ describe('useSeenAnnouncements', () => {
   })
   test('should handle errors on the keyValueStore', async () => {
     const observable = new Subject<string[]>()
-    const getKeyMock = jest.fn().mockReturnValue(observable)
-    const setKeyMock = jest.fn()
+    const getKeyMock = vi.fn().mockReturnValue(observable)
+    const setKeyMock = vi.fn()
 
     useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
 
@@ -74,9 +74,9 @@ describe('useSeenAnnouncements', () => {
 
   test('should call the getKey function with the correct key when the hook is called', () => {
     const observable = new Subject()
-    const getKeyMock = jest.fn().mockImplementation(() => observable)
+    const getKeyMock = vi.fn().mockImplementation(() => observable)
 
-    const setKeyMock = jest.fn().mockReturnValue(of([]))
+    const setKeyMock = vi.fn().mockReturnValue(of([]))
 
     useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
 
@@ -87,8 +87,8 @@ describe('useSeenAnnouncements', () => {
 
   test('should call setKey with the correct arguments when setSeenAnnouncements is called', () => {
     const newSeenAnnouncements = ['announcement1', 'announcement2']
-    const getKeyMock = jest.fn().mockImplementation(() => of([]))
-    const setKeyMock = jest.fn().mockReturnValue(of([]))
+    const getKeyMock = vi.fn().mockImplementation(() => of([]))
+    const setKeyMock = vi.fn().mockReturnValue(of([]))
 
     useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
     const {result} = renderHook(() => useSeenAnnouncements())
@@ -105,8 +105,8 @@ describe('useSeenAnnouncements', () => {
       useRouterMock.mockReturnValue({
         state: {_searchParams: [['reset-announcements', 'foo,bar']]},
       })
-      const getKeyMock = jest.fn().mockImplementation(() => of([]))
-      const setKeyMock = jest.fn().mockReturnValue(of([]))
+      const getKeyMock = vi.fn().mockImplementation(() => of([]))
+      const setKeyMock = vi.fn().mockReturnValue(of([]))
 
       useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
       renderHook(() => useSeenAnnouncements())
@@ -119,8 +119,8 @@ describe('useSeenAnnouncements', () => {
       useRouterMock.mockReturnValue({
         state: {_searchParams: [['reset-announcements', '']]},
       })
-      const getKeyMock = jest.fn().mockImplementation(() => of([]))
-      const setKeyMock = jest.fn().mockReturnValue(of([]))
+      const getKeyMock = vi.fn().mockImplementation(() => of([]))
+      const setKeyMock = vi.fn().mockReturnValue(of([]))
 
       useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
       renderHook(() => useSeenAnnouncements())
@@ -134,8 +134,8 @@ describe('useSeenAnnouncements', () => {
       useRouterMock.mockReturnValue({
         state: {_searchParams: []},
       })
-      const getKeyMock = jest.fn().mockImplementation(() => of([]))
-      const setKeyMock = jest.fn().mockReturnValue(of([]))
+      const getKeyMock = vi.fn().mockImplementation(() => of([]))
+      const setKeyMock = vi.fn().mockReturnValue(of([]))
 
       useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
       renderHook(() => useSeenAnnouncements())

@@ -1,34 +1,34 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {render, screen} from '@testing-library/react'
 import {type SanityClient, type Workspace} from 'sanity'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {WorkspaceRouterProvider} from './WorkspaceRouterProvider'
 
-jest.mock('../router/RouterHistoryContext', () => ({
+vi.mock('../router/RouterHistoryContext', () => ({
   useRouterHistory: () => ({
     location: {pathname: '/'},
-    listen: jest.fn(),
+    listen: vi.fn(),
   }),
 }))
 
-jest.mock('../router', () => ({
+vi.mock('../router', () => ({
   createRouter: () => ({
-    getBasePath: jest.fn(),
-    decode: jest.fn(),
-    isNotFound: jest.fn(),
+    getBasePath: vi.fn(),
+    decode: vi.fn(),
+    isNotFound: vi.fn(),
   }),
 }))
 
-jest.mock('sanity/router', () => ({
+vi.mock('sanity/router', () => ({
   RouterProvider: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
   IntentLink: () => <div>IntentLink</div>,
 }))
 
-jest.mock('./WorkspaceRouterProvider', () => ({
-  ...(jest.requireActual('./WorkspaceRouterProvider') as object),
-  useRouterFromWorkspaceHistory: jest.fn(),
+vi.mock('./WorkspaceRouterProvider', async () => ({
+  ...(await vi.importActual('./WorkspaceRouterProvider')),
+  useRouterFromWorkspaceHistory: vi.fn(),
 }))
 
 describe('WorkspaceRouterProvider', () => {
@@ -52,7 +52,7 @@ describe('WorkspaceRouterProvider', () => {
     currentUser: {},
     authenticated: true,
     auth: {},
-    getClient: jest.fn(),
+    getClient: vi.fn(),
     i18n: {},
     __internal: {},
     type: 'workspace',
@@ -70,7 +70,7 @@ describe('WorkspaceRouterProvider', () => {
   })
 
   it('calls onUncaughtError when an error is caught', async () => {
-    const onUncaughtError = jest.fn()
+    const onUncaughtError = vi.fn()
 
     const ThrowErrorComponent = () => {
       throw new Error('An EXPECTED, testing error occurred!')

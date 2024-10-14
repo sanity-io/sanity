@@ -1,4 +1,4 @@
-import {describe, it} from '@jest/globals'
+import {describe, it} from 'vitest'
 
 describe('createPlugin', () => {
   it.todo('normalizes its input to a function')

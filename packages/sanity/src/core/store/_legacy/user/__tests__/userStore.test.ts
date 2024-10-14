@@ -1,6 +1,6 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from 'sanity'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createUserStore} from '../userStore'
 
@@ -15,7 +15,7 @@ export class HttpError extends Error {
 
 // Mock client which always throws 403 Forbidden errors on `request`
 const failingClient = {
-  request: jest.fn(() => {
+  request: vi.fn(() => {
     const error = new HttpError('Forbidden')
     error.statusCode = 403
     throw error
@@ -26,7 +26,7 @@ const failingClient = {
 // Mock client which always throws 403 Forbidden errors on `request`
 const getClient = () => {
   const client = {
-    request: jest.fn((options: {uri: string}) => {
+    request: vi.fn((options: {uri: string}) => {
       const userIds = options.uri.slice(options.uri.lastIndexOf('/') + 1).split(',')
       return Promise.resolve(
         userIds

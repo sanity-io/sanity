@@ -1,5 +1,5 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {type SchemaTypeDefinition} from '@sanity/types'
+import {describe, expect, it, vi} from 'vitest'
 
 import {definePlugin} from '../definePlugin'
 import {resolveConfigProperty} from '../resolveConfigProperty'
@@ -51,7 +51,7 @@ describe('resolveConfigProperty', () => {
     const context = {}
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const reducer = jest.fn<ConfigPropertyReducer<SchemaTypeDefinition[], unknown>>(
+    const reducer = vi.fn<ConfigPropertyReducer<SchemaTypeDefinition[], unknown>>(
       (prev, config, _context) => {
         return [...prev, ...((config.schema?.types || []) as SchemaTypeDefinition[])]
       },
@@ -122,7 +122,7 @@ describe('resolveConfigProperty', () => {
     const context = {}
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const asyncReducer = jest.fn<AsyncConfigPropertyReducer<SchemaTypeDefinition[], unknown>>(
+    const asyncReducer = vi.fn<AsyncConfigPropertyReducer<SchemaTypeDefinition[], unknown>>(
       async (prev, config, _context) => {
         await new Promise((resolve) => setTimeout(resolve, 0))
         return [...prev, ...((config.schema?.types || []) as SchemaTypeDefinition[])]
@@ -176,7 +176,7 @@ describe('resolveConfigProperty', () => {
         },
       }),
     ).rejects.toMatchInlineSnapshot(
-      `"An error occurred while resolving \`example\` from plugin \`config\` > plugin \`deep\` > plugin \`deeper\` > plugin \`deepest\`: example error"`,
+      `[ConfigPropertyError: An error occurred while resolving \`example\` from config > deep > deeper > deepest: example error]`,
     )
   })
 })

@@ -1,6 +1,6 @@
-import {describe, expect, it} from '@jest/globals'
 import {lastValueFrom, timer} from 'rxjs'
 import {map, toArray} from 'rxjs/operators'
+import {describe, expect, it} from 'vitest'
 
 import {createSWR} from '../rxSwr'
 

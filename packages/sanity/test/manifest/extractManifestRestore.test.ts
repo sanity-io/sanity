@@ -1,4 +1,3 @@
-import {describe, expect, test} from '@jest/globals'
 import {
   defineArrayMember,
   defineField,
@@ -7,6 +6,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import pick from 'lodash/pick'
+import {describe, expect, test} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {createSchema} from '../../src/core'

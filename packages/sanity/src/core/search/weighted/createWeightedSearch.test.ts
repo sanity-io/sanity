@@ -1,15 +1,15 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {renderHook} from '@testing-library/react'
 import {defer, lastValueFrom, of} from 'rxjs'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {useClient} from '../../hooks'
 import {getSearchableTypes, type SearchTerms} from '../common'
 import {createWeightedSearch} from './createWeightedSearch'
 
 // Mock client
-jest.mock('../../hooks', () => ({
-  useClient: () => ({observable: {fetch: jest.fn()}}),
+vi.mock('../../hooks', () => ({
+  useClient: () => ({observable: {fetch: vi.fn()}}),
 }))
 
 const mockSchema = Schema.compile({
@@ -32,8 +32,8 @@ const {
 const search = createWeightedSearch(getSearchableTypes(mockSchema), client, {unique: true})
 
 beforeEach(() => {
-  ;(client.observable.fetch as jest.Mock).mockReset()
-  ;(client.observable.fetch as jest.Mock).mockReturnValue(searchHits)
+  ;(client.observable.fetch as Mock).mockReset()
+  ;(client.observable.fetch as Mock).mockReturnValue(searchHits)
 })
 
 describe('createWeightedSearch', () => {

@@ -1,97 +1,97 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`publish execute calls createOrReplace with _revision_lock_pseudo_field_ if there is an already published document 1`] = `
-Object {
-  "listen": Array [],
-  "observable": Object {
-    "action": Array [
-      Object {
-        "actions": Object {
+exports[`publish > execute > calls createOrReplace with _revision_lock_pseudo_field_ if there is an already published document 1`] = `
+{
+  "listen": [],
+  "observable": {
+    "action": [
+      {
+        "actions": {
           "actionType": "sanity.action.document.publish",
           "draftId": "drafts.my-id",
           "ifPublishedRevisionId": "exampleRev",
           "publishedId": "my-id",
         },
-        "options": Object {
+        "options": {
           "tag": "document.publish",
         },
       },
     ],
-    "fetch": Array [],
-    "getDocuments": Array [],
-    "listen": Array [],
-    "request": Array [],
+    "fetch": [],
+    "getDocuments": [],
+    "listen": [],
+    "request": [],
   },
-  "request": Array [],
-  "transaction": Array [],
+  "request": [],
+  "transaction": [],
 }
 `;
 
-exports[`publish execute removes the \`_updatedAt\` field 1`] = `
-Object {
-  "listen": Array [],
-  "observable": Object {
-    "action": Array [
-      Object {
-        "actions": Object {
+exports[`publish > execute > removes the \`_updatedAt\` field 1`] = `
+{
+  "listen": [],
+  "observable": {
+    "action": [
+      {
+        "actions": {
           "actionType": "sanity.action.document.publish",
           "draftId": "drafts.my-id",
           "ifPublishedRevisionId": undefined,
           "publishedId": "my-id",
         },
-        "options": Object {
+        "options": {
           "tag": "document.publish",
         },
       },
     ],
-    "fetch": Array [],
-    "getDocuments": Array [],
-    "listen": Array [],
-    "request": Array [],
+    "fetch": [],
+    "getDocuments": [],
+    "listen": [],
+    "request": [],
   },
-  "request": Array [],
-  "transaction": Array [],
+  "request": [],
+  "transaction": [],
 }
 `;
 
-exports[`publish execute takes in any and strengthens references where _strengthenOnPublish is true 1`] = `
-Object {
-  "listen": Array [],
-  "observable": Object {
-    "action": Array [
-      Object {
-        "actions": Object {
+exports[`publish > execute > takes in any and strengthens references where _strengthenOnPublish is true 1`] = `
+{
+  "listen": [],
+  "observable": {
+    "action": [
+      {
+        "actions": {
           "actionType": "sanity.action.document.publish",
           "draftId": "drafts.my-id",
           "ifPublishedRevisionId": undefined,
           "publishedId": "my-id",
         },
-        "options": Object {
+        "options": {
           "tag": "document.publish",
         },
       },
     ],
-    "fetch": Array [],
-    "getDocuments": Array [],
-    "listen": Array [],
-    "request": Array [],
+    "fetch": [],
+    "getDocuments": [],
+    "listen": [],
+    "request": [],
   },
-  "request": Array [],
-  "transaction": Array [],
+  "request": [],
+  "transaction": [],
 }
 `;
 
-exports[`publish execute throws an error if the client has no draft snaphot 1`] = `
-Object {
-  "listen": Array [],
-  "observable": Object {
-    "action": Array [],
-    "fetch": Array [],
-    "getDocuments": Array [],
-    "listen": Array [],
-    "request": Array [],
+exports[`publish > execute > throws an error if the client has no draft snaphot 1`] = `
+{
+  "listen": [],
+  "observable": {
+    "action": [],
+    "fetch": [],
+    "getDocuments": [],
+    "listen": [],
+    "request": [],
   },
-  "request": Array [],
-  "transaction": Array [],
+  "request": [],
+  "transaction": [],
 }
 `;

@@ -1,4 +1,3 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {
   type ArraySchemaType,
   type PortableTextTextBlock,
@@ -9,6 +8,7 @@ import {
   type SchemaTypeDefinition,
   type ValidationContext,
 } from '@sanity/types'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createSchema, type Workspace} from '../../src/core'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
@@ -24,18 +24,20 @@ type ConvertToValidationMarker =
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   typeof import('../../src/core/validation/util/convertToValidationMarker')
 
-jest.mock('../../src/core/validation/util/convertToValidationMarker', () => {
+vi.mock('../../src/core/validation/util/convertToValidationMarker', async () => {
   return {
-    convertToValidationMarker: jest.fn(
-      jest.requireActual<ConvertToValidationMarker>(
-        '../../src/core/validation/util/convertToValidationMarker',
+    convertToValidationMarker: vi.fn(
+      (
+        await vi.importActual<ConvertToValidationMarker>(
+          '../../src/core/validation/util/convertToValidationMarker',
+        )
       ).convertToValidationMarker,
     ),
   }
 })
 
 beforeEach(() => {
-  ;(convertToValidationMarker as jest.Mock).mockClear()
+  convertToValidationMarker.mockClear()
 })
 
 // mock client
@@ -292,8 +294,8 @@ describe('validateItem', () => {
 
   // @todo this one fails, needs investigation for what is actually the expected outcome
   it.skip('runs nested validation for markDefs', async () => {
-    const linkValidationSpy = jest.fn(() => true as const)
-    const internalLinkSpy = jest.fn(() => 'mock invalid response')
+    const linkValidationSpy = vi.fn(() => true as const)
+    const internalLinkSpy = vi.fn(() => 'mock invalid response')
 
     const schema = createSchema({
       name: 'default',
@@ -674,7 +676,7 @@ describe('validateItem', () => {
       },
     ])
 
-    const calls = (convertToValidationMarker as jest.Mock).mock.calls
+    const calls = convertToValidationMarker.mock.calls
 
     expect(calls.find((call) => call[0] === 'from root')).toMatchObject([
       'from root',

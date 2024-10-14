@@ -1,18 +1,18 @@
-import {beforeAll, describe, expect, it, jest} from '@jest/globals'
 import {render, screen} from '@testing-library/react'
 import {type SanityClient} from 'sanity'
+import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 
-jest.mock('use-hot-module-reload', () => ({
-  useHotModuleReload: jest.fn(),
+vi.mock('use-hot-module-reload', () => ({
+  useHotModuleReload: vi.fn(),
 }))
 
 describe('FormBuilderInputErrorBoundary', () => {
   beforeAll(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders children when there is no error', async () => {
@@ -26,7 +26,7 @@ describe('FormBuilderInputErrorBoundary', () => {
   })
 
   it('calls onUncaughtError when an error is caught', async () => {
-    const onUncaughtError = jest.fn()
+    const onUncaughtError = vi.fn()
 
     const ThrowErrorComponent = () => {
       throw new Error('An EXPECTED, testing error occurred!')

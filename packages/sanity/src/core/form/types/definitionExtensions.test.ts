@@ -1,4 +1,3 @@
-import {describe, it} from '@jest/globals'
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // noinspection JSUnusedLocalSymbols
 import {
@@ -58,6 +57,7 @@ import type {
   TextComponents,
   UrlComponents,
 } from 'sanity'
+import {describe, it} from 'vitest'
 
 import {type PreviewProps} from '../../components'
 import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'

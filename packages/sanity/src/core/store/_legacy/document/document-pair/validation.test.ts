@@ -1,4 +1,3 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {
   concat,
@@ -12,6 +11,7 @@ import {
   timer,
 } from 'rxjs'
 import {buffer, publish, takeWhile} from 'rxjs/operators'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {getFallbackLocaleSource} from '../../../../i18n/fallback'
@@ -21,8 +21,8 @@ import {editState, type EditStateFor} from './editState'
 import {validation} from './validation'
 
 // Mock `./editState`
-const mockEditState = editState as jest.Mock<typeof editState>
-jest.mock('./editState', () => ({editState: jest.fn()}))
+const mockEditState = editState as vi.Mock<typeof editState>
+vi.mock('./editState', () => ({editState: vi.fn()}))
 
 const schema = createSchema({
   name: 'default',
@@ -297,7 +297,7 @@ describe('validation', () => {
           client,
           schema,
           getClient: () => client,
-          observeDocumentPairAvailability: jest.fn(() => EMPTY),
+          observeDocumentPairAvailability: vi.fn(() => EMPTY),
           i18n: getFallbackLocaleSource(),
           serverActionsEnabled: false,
         },

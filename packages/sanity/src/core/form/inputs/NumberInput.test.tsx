@@ -1,4 +1,4 @@
-import {describe, expect, it} from '@jest/globals'
+import {describe, expect, it} from 'vitest'
 
 import {renderNumberInput} from '../../../../test/form'
 import {NumberInput} from './NumberInput'

@@ -1875,6 +1875,9 @@ importers:
       swr:
         specifier: 2.2.5
         version: 2.2.5(react@18.3.1)
+      vitest:
+        specifier: 2.1.1
+        version: 2.1.1(@types/node@18.19.44)(jsdom@23.2.0)(terser@5.32.0)
 
   packages/sanity/fixtures/examples/prj-with-react-18:
     dependencies:
@@ -7506,7 +7509,7 @@ packages:
     resolution: {integrity: sha512-oWb1Z6mkHIskLzEJ/XWX0srkpkTQ7vaopMQkyaEIoq0fmtFVxOthb8cCxeT+p3ynTdkk/RZwbgG4brR5BeWECw==}
     engines: {node: '>= 4.0'}
     os: [darwin]
-    deprecated: Upgrade to fsevents v2 to mitigate potential security issues
+    deprecated: The v1 package contains DANGEROUS / INSECURE binaries. Upgrade to safe fsevents v2
 
   fsevents@2.3.2:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}

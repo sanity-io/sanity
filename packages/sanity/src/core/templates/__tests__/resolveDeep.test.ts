@@ -1,5 +1,5 @@
-import {describe, expect, test} from '@jest/globals'
 import {type InitialValueResolverContext} from '@sanity/types'
+import {describe, expect, test} from 'vitest'
 
 import {resolveInitialValue} from '../'
 import {defaultTemplatesForSchema} from '../prepare'

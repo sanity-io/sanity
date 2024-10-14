@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
-import {afterEach, describe, expect, jest, test} from '@jest/globals'
 import {Menu} from '@sanity/ui'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {defineConfig} from 'sanity'
+import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {ProductAnnouncementCardSeen} from '../__telemetry__/studioAnnouncements.telemetry'
@@ -23,13 +23,13 @@ async function createAnnouncementWrapper() {
   return ({children}: {children: ReactNode}) => wrapper({children: <Menu>{children}</Menu>})
 }
 
-jest.mock('@sanity/telemetry/react', () => ({
-  useTelemetry: jest.fn().mockReturnValue({
-    log: jest.fn(),
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn().mockReturnValue({
+    log: vi.fn(),
   }),
 }))
 
-jest.mock('../../../version', () => ({
+vi.mock('../../../version', () => ({
   SANITY_VERSION: '3.57.0',
 }))
 
@@ -42,15 +42,15 @@ const announcementCardProps = {
 
 describe('StudioAnnouncementsCard', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
   test('renders correctly when isOpen is true', async () => {
-    const onCardClickMock = jest.fn()
-    const onCardDismissMock = jest.fn()
+    const onCardClickMock = vi.fn()
+    const onCardDismissMock = vi.fn()
 
-    const mockLog = jest.fn()
-    const {useTelemetry} = require('@sanity/telemetry/react')
-    useTelemetry.mockReturnValue({log: mockLog})
+    const mockLog = vi.fn()
+    const {useTelemetry} = await import('@sanity/telemetry/react')
+    ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
     const wrapper = await createAnnouncementWrapper()
     render(
@@ -74,8 +74,8 @@ describe('StudioAnnouncementsCard', () => {
     expect(screen.getByText(announcementCardProps.title)).toBeInTheDocument()
   })
   test('renders a different preHeader', async () => {
-    const onCardClickMock = jest.fn()
-    const onCardDismissMock = jest.fn()
+    const onCardClickMock = vi.fn()
+    const onCardDismissMock = vi.fn()
 
     const preHeader = 'Check out the new features'
     const wrapper = await createAnnouncementWrapper()
@@ -94,8 +94,8 @@ describe('StudioAnnouncementsCard', () => {
     expect(screen.getByText(announcementCardProps.title)).toBeInTheDocument()
   })
   test('does not render when isOpen is false', async () => {
-    const onCardClickMock = jest.fn()
-    const onCardDismissMock = jest.fn()
+    const onCardClickMock = vi.fn()
+    const onCardDismissMock = vi.fn()
 
     const wrapper = await createAnnouncementWrapper()
 
@@ -113,8 +113,8 @@ describe('StudioAnnouncementsCard', () => {
     expect(queryByText(announcementCardProps.title)).toBeNull()
   })
   test('calls onCardClick when the card is clicked', async () => {
-    const onCardClickMock = jest.fn()
-    const onCardDismissMock = jest.fn()
+    const onCardClickMock = vi.fn()
+    const onCardDismissMock = vi.fn()
 
     const wrapper = await createAnnouncementWrapper()
 
@@ -134,8 +134,8 @@ describe('StudioAnnouncementsCard', () => {
     expect(onCardClickMock).toHaveBeenCalled()
   })
   test('calls onCardDismiss when the close button is clicked', async () => {
-    const onCardClickMock = jest.fn()
-    const onCardDismissMock = jest.fn()
+    const onCardClickMock = vi.fn()
+    const onCardDismissMock = vi.fn()
 
     const wrapper = await createAnnouncementWrapper()
     render(

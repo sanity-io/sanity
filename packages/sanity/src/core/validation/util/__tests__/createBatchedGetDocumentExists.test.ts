@@ -1,6 +1,6 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {from, map, of} from 'rxjs'
+import {describe, expect, it, vi} from 'vitest'
 
 import {
   createBatchedGetDocumentExists,
@@ -16,7 +16,7 @@ describe('createBatchedGetDocumentExists', () => {
     const mockClient = {
       getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
       observable: {
-        request: jest.fn(() => of({omitted: [{id: 'baz', reason: 'existence'}]})),
+        request: vi.fn(() => of({omitted: [{id: 'baz', reason: 'existence'}]})),
       },
     }
 
@@ -40,7 +40,7 @@ describe('createBatchedGetDocumentExists', () => {
       getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
       observable: {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-        request: jest.fn((_params: any) => of({omitted: []})),
+        request: vi.fn((_params: any) => of({omitted: []})),
       },
     }
 
@@ -69,7 +69,7 @@ describe('createBatchedGetDocumentExists', () => {
       getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
       observable: {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-        request: jest.fn((_params: any) => from(promise).pipe(map(() => ({omitted: []})))),
+        request: vi.fn((_params: any) => from(promise).pipe(map(() => ({omitted: []})))),
       },
     }
 
