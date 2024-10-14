@@ -34,6 +34,14 @@ const releasesLocaleStrings = {
   /** Text for when a release / document was created */
   'created': 'Created <RelativeTime/>',
 
+  /** Text for the releases detail screen when a release was published */
+  'dashboard.details.published-on': 'Published on {{date}}',
+
+  /** Text for the releases detail screen in the pin release button. */
+  'dashboard.details.pin-release': 'Pin release',
+
+  /** Activity inspector button text */
+  'dashboard.details.activity': 'Activity',
   /** Warning for deleting a release that it will delete one document version */
   'delete.warning_one': 'This will also delete one document version.',
   /** Warning for deleting a release that it will delete multiple document version */
@@ -60,6 +68,14 @@ const releasesLocaleStrings = {
 
   /** Title text when error during release update */
   'failed-edit-title': 'Failed to save changes',
+  /**The text that will be shown in the footer to indicate the time the release was archived */
+  'footer.status.archived': 'Archived',
+  /**The text that will be shown in the footer to indicate the time the release was created */
+  'footer.status.created': 'Created',
+  /**The text that will be shown in the footer to indicate the time the release was created */
+  'footer.status.edited': 'Edited',
+  /**The text that will be shown in the footer to indicate the time the release was published */
+  'footer.status.published': 'Published',
 
   /** Label text for the loading state whilst release is being loaded */
   'loading-release': 'Loading release',
@@ -118,10 +134,19 @@ const releasesLocaleStrings = {
   /** Text for when the release is composed of multiple documents */
   'summary.document-count_other': '{{count}} documents',
 
+  /** add action type that will be shown in the table*/
+  'table-body.action.add': 'Add',
+  /** Change action type that will be shown in the table*/
+  'table-body.action.change': 'Change',
+
   /** Header for the document table in the release tool - contributors */
   'table-header.contributors': 'Contributors',
   /** Header for the document table in the release tool - created */
   'table-header.created': 'Created',
+  /** Header for the document table in the release tool - type */
+  'table-header.type': 'Type',
+  /** Header for the document table in the release tool - action */
+  'table-header.action': 'Action',
   /** Header for the document table in the release tool - title */
   'table-header.documents': 'Documents',
   /** Header for the document table in the release tool - edited */
