@@ -9,6 +9,7 @@ import {styled} from 'styled-components'
 import {Button, Tooltip} from '../../../../../../ui-components'
 import {usePaneRouter} from '../../../../../components'
 import {useDocumentPane} from '../../../useDocumentPane'
+import {AddVersionButton} from './AddVersionButton'
 
 const Chip = styled(Button)`
   border-radius: 9999px !important;
@@ -134,6 +135,8 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             />
           </Tooltip>
         ))}
+
+      <AddVersionButton />
     </>
   )
 })
