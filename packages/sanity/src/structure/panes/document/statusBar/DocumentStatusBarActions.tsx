@@ -5,8 +5,8 @@ import {memo, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
-  Hotkeys,
   type DocumentActionProps,
+  Hotkeys,
   isBundleDocument,
   LATEST,
   ReleaseActions,
