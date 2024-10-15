@@ -1,7 +1,12 @@
-name: "Validate PR"
+name: "Validate PR title"
 
 on:
-  pull_request:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
 
 permissions:
   pull-requests: read
