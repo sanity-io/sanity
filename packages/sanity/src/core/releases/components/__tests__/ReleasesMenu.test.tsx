@@ -1,8 +1,8 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {act} from 'react'
 import {type BundleDocument, useBundles} from 'sanity'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {Button} from '../../../../ui-components'
@@ -10,25 +10,25 @@ import {usePerspective} from '../../hooks/usePerspective'
 import {LATEST} from '../../util/const'
 import {ReleasesMenu} from '../ReleasesMenu'
 
-jest.mock('../../hooks/usePerspective', () => ({
-  usePerspective: jest.fn().mockReturnValue({
+vi.mock('../../hooks/usePerspective', () => ({
+  usePerspective: vi.fn().mockReturnValue({
     currentGlobalBundle: {},
-    setPerspective: jest.fn(),
+    setPerspective: vi.fn(),
   }),
 }))
 
-jest.mock('../../util/util', () => ({
-  isDraftOrPublished: jest.fn(),
+vi.mock('../../util/util', () => ({
+  isDraftOrPublished: vi.fn(),
 }))
 
-jest.mock('../../../store/bundles/useBundles', () => ({
-  useBundles: jest.fn().mockReturnValue({deletedBundles: {}}),
+vi.mock('../../../store/bundles/useBundles', () => ({
+  useBundles: vi.fn().mockReturnValue({deletedBundles: {}}),
 }))
 
-const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
+const mockUseBundles = useBundles as Mock<typeof useBundles>
 
 describe('ReleasesMenu', () => {
-  const mockUsePerspective = usePerspective as jest.Mock
+  const mockUsePerspective = usePerspective as Mock
   const ButtonTest = <Button text="Button Test" />
   const mockBundles: BundleDocument[] = [
     {
@@ -123,7 +123,7 @@ describe('ReleasesMenu', () => {
   it('should render latest bundle menu item as selected when currentGlobalBundle is LATEST', async () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: LATEST,
-      setPerspective: jest.fn(),
+      setPerspective: vi.fn(),
     })
 
     const wrapper = await createTestProvider()
@@ -142,7 +142,7 @@ describe('ReleasesMenu', () => {
   it('should render bundle as selected when currentGlobalBundle is that bundle', async () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: mockBundles[0],
-      setPerspective: jest.fn(),
+      setPerspective: vi.fn(),
     })
 
     const wrapper = await createTestProvider()
@@ -174,7 +174,7 @@ describe('ReleasesMenu', () => {
   })
 
   it('should call setPerspective when a bundle menu item is clicked', async () => {
-    const setPerspective = jest.fn()
+    const setPerspective = vi.fn()
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: LATEST,
       setPerspective,
@@ -213,7 +213,7 @@ describe('ReleasesMenu', () => {
 
   it('should not show deleted bundles when not included in the list', async () => {
     mockUseBundles.mockReturnValue({
-      dispatch: jest.fn(),
+      dispatch: vi.fn(),
       loading: false,
       data: [],
       deletedBundles: {
@@ -238,7 +238,7 @@ describe('ReleasesMenu', () => {
 
   it('should show deleted bundles that are included in the list', async () => {
     mockUseBundles.mockReturnValue({
-      dispatch: jest.fn(),
+      dispatch: vi.fn(),
       loading: false,
       data: [],
       deletedBundles: {

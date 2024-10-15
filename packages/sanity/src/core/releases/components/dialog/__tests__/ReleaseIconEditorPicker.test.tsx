@@ -1,5 +1,5 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {
@@ -7,12 +7,15 @@ import {
   type ReleaseIconEditorPickerValue,
 } from '../ReleaseIconEditorPicker'
 
-jest.mock('sanity', () => ({
-  useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
-}))
+vi.mock('sanity', () => {
+  return {
+    SANITY_VERSION: '0.0.0',
+    useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
+  }
+})
 
 describe('BundleIconEditorPicker', () => {
-  const onChangeMock = jest.fn()
+  const onChangeMock = vi.fn()
   const valueMock: ReleaseIconEditorPickerValue = {
     hue: 'gray',
     icon: 'cube',

@@ -1,27 +1,22 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {render, screen} from '@testing-library/react'
 import {type HTMLProps} from 'react'
 import {type BundleDocument, usePerspective} from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
+import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentPerspectiveMenu} from '../DocumentPerspectiveMenu'
 
-jest.mock('sanity', () => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = jest.requireActual<typeof import('sanity')>('sanity')
-
-  return {
-    ...actual,
-    usePerspective: jest.fn().mockReturnValue({
-      currentGlobalBundle: {},
-      setPerspective: jest.fn(),
-    }),
-    useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
-  }
-})
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
+  usePerspective: vi.fn().mockReturnValue({
+    currentGlobalBundle: {},
+    setPerspective: vi.fn(),
+  }),
+  useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
+}))
 
 const IntentLinkMock = (props: IntentLinkProps & HTMLProps<HTMLAnchorElement>) => {
   const {params = {}, intent, ...rest} = props
@@ -34,25 +29,25 @@ const IntentLinkMock = (props: IntentLinkProps & HTMLProps<HTMLAnchorElement>) =
   return <a {...rest} href={`/intent/${intent}/${stringParams}`} />
 }
 
-jest.mock('sanity/router', () => {
+vi.mock('sanity/router', () => {
   return {
-    useRouter: jest.fn().mockReturnValue({
+    useRouter: vi.fn().mockReturnValue({
       stickyParams: {},
     }),
     route: {
-      create: jest.fn(),
+      create: vi.fn(),
     },
     IntentLink: IntentLinkMock,
   }
 })
 
-jest.mock('../../../../useDocumentPane')
+vi.mock('../../../../useDocumentPane')
 
-const mockUseDocumentPane = useDocumentPane as jest.MockedFunction<
+const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
 
-const mockUsePerspective = usePerspective as jest.Mock
+const mockUsePerspective = usePerspective as Mock
 
 describe('DocumentPerspectiveMenu', () => {
   const mockCurrent: BundleDocument = {
@@ -69,10 +64,10 @@ describe('DocumentPerspectiveMenu', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: mockCurrent,
-      setPerspective: jest.fn(),
+      setPerspective: vi.fn(),
     })
 
     mockUseDocumentPane.mockReturnValue({

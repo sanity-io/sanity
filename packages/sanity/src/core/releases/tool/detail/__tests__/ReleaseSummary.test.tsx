@@ -1,7 +1,7 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen, within} from '@testing-library/react'
-import {type BundleDocument, type DefaultPreview, defineType} from 'sanity'
+import {type BundleDocument, defineType} from 'sanity'
 import {route, RouterProvider} from 'sanity/router'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -10,33 +10,22 @@ import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
 import {type DocumentInBundleResult} from '../useBundleDocuments'
 
-jest.mock('../../../../studio/addonDataset/useAddonDataset', () => ({
-  useAddonDataset: jest.fn().mockReturnValue({client: {}}),
+vi.mock('../../../../studio/addonDataset/useAddonDataset', () => ({
+  useAddonDataset: vi.fn().mockReturnValue({client: {}}),
 }))
 
-jest.mock('../../../../store', () => ({
-  ...(jest.requireActual('../../../../store') || {}),
-  useUser: jest.fn().mockReturnValue([{}]),
+vi.mock('../../../../store', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useUser: vi.fn().mockReturnValue([{}]),
 }))
 
-jest.mock('../../../../user-color', () => ({
-  useUserColor: jest.fn().mockReturnValue('red'),
+vi.mock('../../../../user-color', () => ({
+  useUserColor: vi.fn().mockReturnValue('red'),
 }))
 
-jest.mock('../../../components/ReleasesMenu', () => ({
+vi.mock('../../../components/ReleasesMenu', () => ({
   ReleasesMenu: () => <div>ReleasesMenu</div>,
 }))
-
-jest.mock('../../../../components', () => {
-  const {DefaultPreview: actualDefaultPreview} = jest.requireActual(
-    '../../../../components/previews/general/DefaultPreview',
-  ) as {DefaultPreview: typeof DefaultPreview}
-
-  return {
-    ...(jest.requireActual('../../../../components') || {}),
-    DefaultPreview: actualDefaultPreview,
-  }
-})
 
 const timeNow = new Date()
 
@@ -122,7 +111,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
   return render(
     <RouterProvider
       state={{}}
-      onNavigate={jest.fn()}
+      onNavigate={vi.fn()}
       router={route.create('/test', [route.intents('/intent')])}
     >
       <ReleaseSummary
@@ -158,7 +147,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
 
 describe('ReleaseSummary', () => {
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     await renderTest({})
   })

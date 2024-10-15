@@ -23,15 +23,13 @@ vi.mock('../sheetList/useDocumentSheetList', () => ({
   useDocumentSheetList: vi.fn().mockReturnValue({data: [], isLoading: false}),
 }))
 
-vi.mock('sanity', async () => {
-  const actual = await vi.importActual('sanity')
-  return {
-    ...actual,
-    useSearchState: vi.fn(),
-  }
-})
-jest.mock('sanity/router', () => ({
-  ...(jest.requireActual('sanity/router') || {}),
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
+
+  useSearchState: vi.fn(),
+}))
+vi.mock('sanity/router', () => ({
+  ...(vi.requireActual('sanity/router') || {}),
   useRouter: jest.fn().mockReturnValue({stickyParams: {}, state: {}, navigate: jest.fn()}),
 }))
 

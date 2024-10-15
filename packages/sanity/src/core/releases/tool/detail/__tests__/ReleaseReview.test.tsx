@@ -1,7 +1,7 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {act, fireEvent, render, screen, within} from '@testing-library/react'
 import {type ReactNode} from 'react'
-import {ColorSchemeProvider, type DefaultPreview, UserColorManagerProvider} from 'sanity'
+import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -122,37 +122,26 @@ const MOCKED_PROPS = {
   },
 }
 
-jest.mock('sanity/router', () => ({
-  ...(jest.requireActual('sanity/router') || {}),
-  IntentLink: jest.fn().mockImplementation((props: any) => <a> {props.children}</a>),
-  useRouter: jest.fn().mockReturnValue({
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
+  IntentLink: vi.fn().mockImplementation((props: any) => <a> {props.children}</a>),
+  useRouter: vi.fn().mockReturnValue({
     state: {releaseId: 'differences'},
-    navigate: jest.fn(),
+    navigate: vi.fn(),
   }),
 }))
 
-jest.mock('../../../components/ReleasesMenu', () => ({
+vi.mock('../../../components/ReleasesMenu', () => ({
   ReleasesMenu: () => <div>ReleasesMenu</div>,
 }))
 
-jest.mock('../../../../preview/useObserveDocument', () => {
+vi.mock('../../../../preview/useObserveDocument', () => {
   return {
-    useObserveDocument: jest.fn(),
+    useObserveDocument: vi.fn(),
   }
 })
 
-jest.mock('../../../../components', () => {
-  const {DefaultPreview: actualDefaultPreview} = jest.requireActual(
-    '../../../../components/previews/general/DefaultPreview',
-  ) as {DefaultPreview: typeof DefaultPreview}
-
-  return {
-    ...(jest.requireActual('../../../../components') || {}),
-    DefaultPreview: actualDefaultPreview,
-  }
-})
-
-const mockedUseObserveDocument = useObserveDocument as jest.Mock<typeof useObserveDocument>
+const mockedUseObserveDocument = useObserveDocument as Mock<typeof useObserveDocument>
 
 async function createReleaseReviewWrapper() {
   const wrapper = await createTestProvider({

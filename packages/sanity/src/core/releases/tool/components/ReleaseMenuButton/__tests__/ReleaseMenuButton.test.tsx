@@ -1,7 +1,7 @@
-import {beforeEach, describe, expect, jest, test} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {act} from 'react'
 import {useRouter} from 'sanity/router'
+import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {type BundleDocument} from '../../../../../store/bundles/types'
@@ -9,20 +9,21 @@ import {useBundleOperations} from '../../../../../store/bundles/useBundleOperati
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
-jest.mock('sanity', () => ({
-  useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
+vi.mock('sanity', () => ({
+  SANITY_VERSION: '0.0.0',
+  useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
 }))
 
-jest.mock('../../../../../store/bundles/useBundleOperations', () => ({
-  useBundleOperations: jest.fn().mockReturnValue({
-    deleteBundle: jest.fn(),
-    updateBundle: jest.fn(),
+vi.mock('../../../../../store/bundles/useBundleOperations', () => ({
+  useBundleOperations: vi.fn().mockReturnValue({
+    deleteBundle: vi.fn(),
+    updateBundle: vi.fn(),
   }),
 }))
 
-jest.mock('sanity/router', () => ({
-  ...(jest.requireActual('sanity/router') || {}),
-  useRouter: jest.fn().mockReturnValue({state: {}, navigate: jest.fn()}),
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
 const renderTest = async ({
@@ -41,7 +42,7 @@ const renderTest = async ({
 
 describe('BundleMenuButton', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   test('will archive an unarchived bundle', async () => {

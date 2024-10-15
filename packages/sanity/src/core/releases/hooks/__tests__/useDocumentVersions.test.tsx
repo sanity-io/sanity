@@ -1,6 +1,6 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {renderHook} from '@testing-library/react'
 import {of} from 'rxjs'
+import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
 import {type BundleDocument} from '../../../store'
@@ -8,17 +8,15 @@ import {type PublishedId} from '../../../util/draftUtils'
 import {useDocumentVersions} from '../useDocumentVersions'
 
 // Mock the entire module
-jest.mock('../../../studio/source')
+vi.mock('../../../studio/source')
 
-jest.mock('sanity', () => {
-  const actual = jest.requireActual('sanity')
-  return Object.assign({}, actual, {
-    useClient: jest.fn(),
-    useBundles: jest.fn(() => ({data: {}})),
-    getPublishedId: jest.fn(),
-    useDocumentPreviewStore: jest.fn(),
-  })
-})
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useClient: vi.fn(),
+  useBundles: vi.fn(() => ({data: {}})),
+  getPublishedId: vi.fn(),
+  useDocumentPreviewStore: vi.fn(),
+}))
 
 const mockBundles = [
   {
@@ -57,25 +55,23 @@ async function setupMocks({
 }) {
   const sanityModule = await import('sanity')
 
-  const useBundles = sanityModule.useBundles as jest.Mock<typeof sanityModule.useBundles>
-  const useDocumentPreviewStore = sanityModule.useDocumentPreviewStore as jest.Mock<
+  const useBundles = sanityModule.useBundles as Mock<typeof sanityModule.useBundles>
+  const useDocumentPreviewStore = sanityModule.useDocumentPreviewStore as Mock<
     typeof sanityModule.useDocumentPreviewStore
   >
-  const getPublishedId = sanityModule.getPublishedId as jest.Mock<
-    typeof sanityModule.getPublishedId
-  >
+  const getPublishedId = sanityModule.getPublishedId as Mock<typeof sanityModule.getPublishedId>
 
   useBundles.mockReturnValue({
     data: bundles,
     loading: false,
-    dispatch: jest.fn(),
+    dispatch: vi.fn(),
     deletedBundles: {},
   })
 
   getPublishedId.mockReturnValue('document-1' as PublishedId)
 
   useDocumentPreviewStore.mockReturnValue({
-    unstable_observeDocumentIdSet: jest
+    unstable_observeDocumentIdSet: vi
       .fn<DocumentPreviewStore['unstable_observeDocumentIdSet']>()
       .mockReturnValue(of({status: 'connected', documentIds: versionIds})),
   } as unknown as DocumentPreviewStore)

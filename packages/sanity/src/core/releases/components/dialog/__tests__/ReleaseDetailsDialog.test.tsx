@@ -1,44 +1,47 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {type BundleDocument, useBundles} from 'sanity'
+import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
 import {usePerspective} from '../../../hooks/usePerspective'
 import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
 
-/*jest.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
-  useDateTimeFormat: jest.fn(),
+/*vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
+  useDateTimeFormat: vi.fn(),
 }))*/
 
-jest.mock('../../../../store/bundles', () => ({
-  useBundles: jest.fn(),
+vi.mock('../../../../store/bundles', () => ({
+  useBundles: vi.fn(),
 }))
 
-jest.mock('../../../../store/bundles/useBundleOperations', () => ({
-  useBundleOperations: jest.fn().mockReturnValue({
-    createBundle: jest.fn(),
-    updateBundle: jest.fn(),
+vi.mock('../../../../store/bundles/useBundleOperations', () => ({
+  useBundleOperations: vi.fn().mockReturnValue({
+    createBundle: vi.fn(),
+    updateBundle: vi.fn(),
   }),
 }))
 
-jest.mock('../../../hooks/usePerspective', () => ({
-  usePerspective: jest.fn().mockReturnValue({
-    setPerspective: jest.fn(),
+vi.mock('../../../hooks/usePerspective', () => ({
+  usePerspective: vi.fn().mockReturnValue({
+    setPerspective: vi.fn(),
   }),
 }))
 
-const mockUseBundleStore = useBundles as jest.Mock<typeof useBundles>
-//const mockUseDateTimeFormat = useDateTimeFormat as jest.Mock
+const mockUseBundleStore = useBundles as Mock<typeof useBundles>
+//const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
 describe('ReleaseDetailsDialog', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
+  })
+  afterEach(() => {
+    vi.clearAllMocks()
   })
 
   describe('when creating a new bundle', () => {
-    const onCancelMock = jest.fn()
-    const onSubmitMock = jest.fn()
+    const onCancelMock = vi.fn()
+    const onSubmitMock = vi.fn()
 
     beforeEach(async () => {
       onCancelMock.mockClear()
@@ -47,12 +50,12 @@ describe('ReleaseDetailsDialog', () => {
       mockUseBundleStore.mockReturnValue({
         data: [],
         loading: true,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         error: undefined,
         deletedBundles: {},
       })
 
-      //mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
+      //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
 
       const wrapper = await createTestProvider()
       render(<ReleaseDetailsDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
@@ -96,8 +99,8 @@ describe('ReleaseDetailsDialog', () => {
   })
 
   describe('when updating an existing bundle', () => {
-    const onCancelMock = jest.fn()
-    const onSubmitMock = jest.fn()
+    const onCancelMock = vi.fn()
+    const onSubmitMock = vi.fn()
     const existingBundleValue: BundleDocument = {
       _id: 'existing-bundle',
       _type: 'release',
@@ -118,12 +121,12 @@ describe('ReleaseDetailsDialog', () => {
       mockUseBundleStore.mockReturnValue({
         data: [],
         loading: true,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         error: undefined,
         deletedBundles: {},
       })
 
-      //mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
+      //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
 
       const wrapper = await createTestProvider()
       render(

@@ -1,6 +1,6 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {useRouter} from 'sanity/router'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -10,27 +10,31 @@ import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {type BundlesMetadata, useBundlesMetadata} from '../../useBundlesMetadata'
 import {ReleasesOverview} from '../ReleasesOverview'
 
-jest.mock('../../useBundlesMetadata', () => ({
-  useBundlesMetadata: jest.fn(),
+vi.mock('sanity', () => {
+  return {
+    SANITY_VERSION: '0.0.0',
+    Translate: vi.fn(),
+    useCurrentUser: vi.fn().mockReturnValue({user: {id: 'user-id'}}),
+    useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
+  }
+})
+
+vi.mock('../../useBundlesMetadata', () => ({
+  useBundlesMetadata: vi.fn(),
 }))
 
-jest.mock('../../../../store', () => ({
-  ...(jest.requireActual('../../../../store') || {}),
-  useBundles: jest.fn(),
+vi.mock('../../../../store', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useBundles: vi.fn(),
 }))
 
-jest.mock('sanity', () => ({
-  useCurrentUser: jest.fn().mockReturnValue({user: {id: 'user-id'}}),
-  useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
-jest.mock('sanity/router', () => ({
-  ...(jest.requireActual('sanity/router') || {}),
-  useRouter: jest.fn().mockReturnValue({state: {}, navigate: jest.fn()}),
-}))
-
-const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
-const mockUseBundlesMetadata = useBundlesMetadata as jest.Mock<typeof useBundlesMetadata>
+const mockUseBundles = useBundles as Mock<typeof useBundles>
+const mockUseBundlesMetadata = useBundlesMetadata as Mock<typeof useBundlesMetadata>
 
 describe('ReleasesOverview', () => {
   describe('when loading bundles', () => {
@@ -38,7 +42,7 @@ describe('ReleasesOverview', () => {
       mockUseBundles.mockReturnValue({
         data: null,
         loading: true,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         deletedBundles: {},
       })
       mockUseBundlesMetadata.mockReturnValue({
@@ -78,7 +82,7 @@ describe('ReleasesOverview', () => {
       mockUseBundles.mockReturnValue({
         data: [],
         loading: false,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         deletedBundles: {},
       })
       mockUseBundlesMetadata.mockReturnValue({
@@ -150,7 +154,7 @@ describe('ReleasesOverview', () => {
       mockUseBundles.mockReturnValue({
         data: bundles,
         loading: false,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         deletedBundles: {
           'deleted-bundle-id': {
             title: 'Deleted Bundle',

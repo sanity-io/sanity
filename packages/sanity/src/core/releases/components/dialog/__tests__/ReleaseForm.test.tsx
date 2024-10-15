@@ -1,25 +1,25 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type BundleDocument, type FormBundleDocument, useDateTimeFormat} from 'sanity'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundles} from '../../../../store/bundles'
 import {ReleaseForm} from '../ReleaseForm'
 
-jest.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
-  useDateTimeFormat: jest.fn(),
+vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
+  useDateTimeFormat: vi.fn(),
 }))
 
-jest.mock('../../../../store/bundles', () => ({
-  useBundles: jest.fn(),
+vi.mock('../../../../store/bundles', () => ({
+  useBundles: vi.fn(),
 }))
 
-const mockUseBundleStore = useBundles as jest.Mock<typeof useBundles>
-const mockUseDateTimeFormat = useDateTimeFormat as jest.Mock
+const mockUseBundleStore = useBundles as Mock<typeof useBundles>
+const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
 describe('ReleaseForm', () => {
-  const onChangeMock = jest.fn()
-  const onErrorMock = jest.fn()
+  const onChangeMock = vi.fn()
+  const onErrorMock = vi.fn()
   const valueMock: FormBundleDocument = {
     _id: 'very-random',
     _type: 'release',
@@ -54,12 +54,12 @@ describe('ReleaseForm', () => {
       mockUseBundleStore.mockReturnValue({
         data: mockData,
         loading: false,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         error: undefined,
         deletedBundles: {},
       })
 
-      mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
+      mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
 
       const wrapper = await createTestProvider()
       render(<ReleaseForm onChange={onChangeMock} value={valueMock} />, {
@@ -139,11 +139,11 @@ describe('ReleaseForm', () => {
       mockUseBundleStore.mockReturnValue({
         data: mockData,
         loading: false,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         deletedBundles: {} as Record<string, BundleDocument>,
       })
 
-      mockUseDateTimeFormat.mockReturnValue({format: jest.fn().mockReturnValue('Mocked date')})
+      mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
 
       const wrapper = await createTestProvider()
       render(<ReleaseForm onChange={onChangeMock} value={existingBundleValue} />, {

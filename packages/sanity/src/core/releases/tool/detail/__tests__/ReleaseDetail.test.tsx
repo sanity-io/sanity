@@ -1,6 +1,6 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {route, RouterProvider} from 'sanity/router'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useBundles} from '../../../../store/bundles'
@@ -9,48 +9,52 @@ import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseDetail} from '../ReleaseDetail'
 import {useBundleDocuments} from '../useBundleDocuments'
 
-jest.mock('../../../../store/bundles', () => ({
-  useBundles: jest.fn().mockReturnValue({data: [], loading: false, deletedBundles: {}}),
+vi.mock('../../../../store/bundles', () => ({
+  useBundles: vi.fn().mockReturnValue({data: [], loading: false, deletedBundles: {}}),
 }))
 
-jest.mock('../../../../store/bundles/useBundleOperations', () => ({
-  useBundleOperations: jest.fn().mockReturnValue({
-    publishBundle: jest.fn(),
+vi.mock('../../../../store/bundles/useBundleOperations', () => ({
+  useBundleOperations: vi.fn().mockReturnValue({
+    publishBundle: vi.fn(),
   }),
 }))
 
-jest.mock('../useBundleDocuments', () => ({
-  useBundleDocuments: jest
+vi.mock('../useBundleDocuments', () => ({
+  useBundleDocuments: vi
     .fn<typeof useBundleDocuments>()
     .mockReturnValue({loading: true, results: []}),
 }))
 
-jest.mock('sanity', () => ({
-  LoadingBlock: () => <div data-testid="mocked-loading-block" />,
-  useClient: jest.fn().mockReturnValue({getUrl: jest.fn(), config: jest.fn().mockReturnValue({})}),
-  useCurrentUser: jest.fn().mockReturnValue({id: 'test-user-id'}),
-  useTranslation: jest.fn().mockReturnValue({t: jest.fn()}),
-}))
+vi.mock('sanity', async (importOriginal) => {
+  return {
+    ...(await importOriginal()),
+    SANITY_VERSION: '0.0.0',
+    LoadingBlock: () => <div data-testid="mocked-loading-block" />,
+    useClient: vi.fn().mockReturnValue({getUrl: vi.fn(), config: vi.fn().mockReturnValue({})}),
+    useCurrentUser: vi.fn().mockReturnValue({id: 'test-user-id'}),
+    useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
+  }
+})
 
-jest.mock('../../components/ReleasePublishAllButton/useObserveDocumentRevisions', () => ({
-  useObserveDocumentRevisions: jest.fn().mockReturnValue({
+vi.mock('../../components/ReleasePublishAllButton/useObserveDocumentRevisions', () => ({
+  useObserveDocumentRevisions: vi.fn().mockReturnValue({
     '123': 'mock revision id',
   }),
 }))
 
-jest.mock('../ReleaseSummary', () => ({
+vi.mock('../ReleaseSummary', () => ({
   ReleaseSummary: () => <div data-testid="mocked-release-summary" />,
 }))
 
-jest.mock('../documentTable/useReleaseHistory', () => ({
-  useReleaseHistory: jest.fn().mockReturnValue({
+vi.mock('../documentTable/useReleaseHistory', () => ({
+  useReleaseHistory: vi.fn().mockReturnValue({
     documentsHistory: new Map(),
   }),
 }))
 
-const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
-const mockUseBundleDocuments = useBundleDocuments as jest.Mock<typeof useBundleDocuments>
-const mockRouterNavigate = jest.fn()
+const mockUseBundles = useBundles as Mock<typeof useBundles>
+const mockUseBundleDocuments = useBundleDocuments as Mock<typeof useBundleDocuments>
+const mockRouterNavigate = vi.fn()
 
 const renderTest = async () => {
   const wrapper = await createTestProvider({
@@ -90,7 +94,7 @@ describe('ReleaseDetail', () => {
       mockUseBundles.mockReturnValue({
         data: [],
         loading: true,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         deletedBundles: {},
       })
       await renderTest()
@@ -127,7 +131,7 @@ describe('ReleaseDetail', () => {
           },
         ],
         loading: false,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         deletedBundles: {},
       })
       await renderTest()
@@ -168,7 +172,7 @@ describe('after bundles have loaded', () => {
           },
         ],
         loading: false,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         deletedBundles: {},
       })
     })
@@ -353,7 +357,7 @@ describe('after bundles have loaded', () => {
           },
         ],
         loading: false,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         deletedBundles: {},
       })
 
@@ -381,7 +385,7 @@ describe('after bundles have loaded', () => {
       mockUseBundles.mockReturnValue({
         data: [],
         loading: false,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         deletedBundles: {
           'test-bundle-id': {
             title: 'Test bundle',
@@ -417,7 +421,7 @@ describe('after bundles have loaded', () => {
       mockUseBundles.mockReturnValue({
         data: [],
         loading: false,
-        dispatch: jest.fn(),
+        dispatch: vi.fn(),
         deletedBundles: {},
       })
       await renderTest()

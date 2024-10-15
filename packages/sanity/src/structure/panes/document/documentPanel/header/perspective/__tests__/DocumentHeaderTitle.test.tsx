@@ -1,4 +1,3 @@
-import {jest} from '@jest/globals'
 import {render, waitFor} from '@testing-library/react'
 import {
   defineConfig,
@@ -8,7 +7,7 @@ import {
   useDocumentVersions,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
@@ -30,33 +29,29 @@ function createWrapperComponent(client: SanityClient) {
   })
 }
 
-jest.mock('../../../../useDocumentPane')
+vi.mock('../../../../useDocumentPane')
 
-jest.mock('sanity', () => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = vi.importActual<typeof import('sanity')>('sanity')
+vi.mock('sanity', async (importOriginal) => {
   return {
-    ...actual,
-    unstable_useValuePreview: jest.fn(),
-    useDocumentVersions: jest.fn(),
+    ...(await importOriginal()),
+    unstable_useValuePreview: vi.fn(),
+    useDocumentVersions: vi.fn(),
   }
 })
 
-jest.mock('sanity/router')
+vi.mock('sanity/router')
 
-jest.mock('../../../../../../../core/store/bundles/useBundles', () => ({
-  useBundles: jest.fn(),
+vi.mock('../../../../../../../core/store/bundles/useBundles', () => ({
+  useBundles: vi.fn(),
 }))
 
-const mockUseBundles = useBundles as jest.Mock<typeof useBundles>
-const mockUseDocumentVersions = useDocumentVersions as jest.MockedFunction<
-  typeof useDocumentVersions
->
+const mockUseBundles = useBundles as Mock<typeof useBundles>
+const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof useDocumentVersions>
 
 describe('DocumentHeaderTitle', () => {
-  const mockUseDocumentPane = useDocumentPane as jest.MockedFunction<typeof useDocumentPane>
-  const mockUseValuePreview = useValuePreview as jest.MockedFunction<typeof useValuePreview>
-  const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+  const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
+  const mockUseValuePreview = useValuePreview as MockedFunction<typeof useValuePreview>
+  const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
   const defaultProps = {
     connectionState: 'connected',
     schemaType: {title: 'Test Schema', name: 'testSchema'},
@@ -72,12 +67,12 @@ describe('DocumentHeaderTitle', () => {
     mockUseValuePreview.mockReturnValue({...defaultValue, error: undefined, value: undefined})
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: jest.fn()})
+    mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: vi.fn()})
     mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: undefined})
     mockUseBundles.mockReturnValue({
       data: [],
       loading: false,
-      dispatch: jest.fn(),
+      dispatch: vi.fn(),
       deletedBundles: {},
     })
   })
