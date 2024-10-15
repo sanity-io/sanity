@@ -32,8 +32,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states, actionProps} = props
-  const {__internal_tasks, documentId, documentType, documentVersions, formState} =
-    useDocumentPane()
+  const {__internal_tasks, documentType, formState} = useDocumentPane()
 
   const paneRouter = usePaneRouter()
   const [firstActionState, ...menuActionStates] = states
