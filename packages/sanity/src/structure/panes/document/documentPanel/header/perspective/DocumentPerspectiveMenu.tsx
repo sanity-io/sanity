@@ -4,35 +4,21 @@ import {Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {memo, useCallback} from 'react'
 import {getVersionFromId, useDateTimeFormat, usePerspective, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
-import {Button, Tooltip} from '../../../../../../ui-components'
 import {usePaneRouter} from '../../../../../components'
 import {useDocumentPane} from '../../../useDocumentPane'
-import {AddVersionButton} from './AddVersionButton'
-
-const Chip = styled(Button)`
-  border-radius: 9999px !important;
-  transition: none;
-  text-decoration: none !important;
-  cursor: pointer;
-
-  // target enabled state
-  &:not([data-disabled='true']) {
-    --card-border-color: var(--card-badge-default-bg-color);
-  }
-`
+import {VersionChip} from './VersionChip'
 
 export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   const paneRouter = usePaneRouter()
   const {t} = useTranslation() // @todo add and update translations
-  const {currentGlobalBundle, setPerspective} = usePerspective(paneRouter.perspective)
+  const {setPerspective} = usePerspective(paneRouter.perspective)
   const dateTimeFormat = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: 'short',
   })
 
-  const {documentVersions, existsInBundle, editState, displayed} = useDocumentPane()
+  const {documentVersions, editState, displayed} = useDocumentPane()
 
   const handleBundleChange = useCallback(
     (bundleId: string) => () => {
@@ -43,8 +29,8 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
 
   return (
     <>
-      <Tooltip
-        content={
+      <VersionChip
+        tooltipContent={
           <Text size={1}>
             {editState?.published && editState?.published?._updatedAt ? (
               // eslint-disable-next-line i18next/no-literal-string
@@ -55,28 +41,16 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             )}
           </Text>
         }
-        fallbackPlacements={[]}
-        portal
-        placement="bottom"
-      >
-        <Chip
-          disabled={!editState?.published}
-          mode="bleed"
-          onClick={handleBundleChange('published')}
-          padding={2}
-          paddingRight={3}
-          radius="full"
-          selected={editState?.published?._id === displayed?._id}
-          style={{flex: 'none'}}
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          text={'Published'}
-          tone="positive"
-          icon={DotIcon}
-        />
-      </Tooltip>
-
-      <Tooltip
-        content={
+        disabled={!editState?.published}
+        onClick={handleBundleChange('published')}
+        selected={editState?.published?._id === displayed?._id}
+        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+        text="Published"
+        icon={DotIcon}
+        tone="positive"
+      />
+      <VersionChip
+        tooltipContent={
           <Text size={1}>
             {editState?.draft ? (
               <>
@@ -94,46 +68,29 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             )}
           </Text>
         }
-        portal
-      >
-        <Chip
-          disabled={!editState?.published && !editState?.draft}
-          icon={DotIcon}
-          mode="bleed"
-          onClick={handleBundleChange('drafts')}
-          padding={2}
-          paddingRight={3}
-          radius="full"
-          selected={editState?.draft?._id === displayed?._id}
-          style={{flex: 'none'}}
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          text={'Draft'}
-          tone={'caution'}
-        />
-      </Tooltip>
+        disabled={!editState?.published && !editState?.draft}
+        icon={DotIcon}
+        selected={editState?.draft?._id === displayed?._id}
+        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+        text="Draft"
+        tone="caution"
+        onClick={handleBundleChange('drafts')}
+      />
 
       {/* @todo update temporary text for tooltip */}
       {displayed &&
         documentVersions?.map((release) => (
-          // eslint-disable-next-line i18next/no-literal-string
-          <Tooltip key={release._id} content={<Text size={1}>temporary text</Text>} portal>
-            <Chip
-              icon={DotIcon}
-              mode="bleed"
-              padding={2}
-              paddingRight={3}
-              radius="full"
-              selected={release._id === getVersionFromId(displayed?._id || '')}
-              onClick={handleBundleChange(release._id)}
-              tone={'primary'}
-              style={{flex: 'none'}}
-              tooltipProps={{content: release.title}}
-              text={release.title}
-            />
-          </Tooltip>
+          <VersionChip
+            key={release._id}
+            // eslint-disable-next-line i18next/no-literal-string
+            tooltipContent={<Text size={1}>temporary text</Text>}
+            selected={release._id === getVersionFromId(displayed?._id || '')}
+            onClick={handleBundleChange(release._id)}
+            text={release.title}
+            tone={'primary'}
+            icon={DotIcon}
+          />
         ))}
-
-      <AddVersionButton />
     </>
   )
 })
