@@ -12,7 +12,7 @@ import {useDocumentPane} from '../useDocumentPane'
 import {
   DeletedDocumentBanner,
   DeprecatedDocumentTypeBanner,
-  PermissionCheckBanner,
+  InsufficientPermissionBanner,
   ReferenceChangedBanner,
 } from './banners'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
@@ -51,7 +51,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     activeViewId,
     displayed,
     documentId,
-    documentType,
     editState,
     inspector,
     value,
@@ -63,7 +62,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     isDeleting,
     isDeleted,
     timelineStore,
-    onChange,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -164,10 +162,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
                   {activeView.type === 'form' && !isPermissionsLoading && ready && (
                     <>
-                      <PermissionCheckBanner
-                        granted={Boolean(permissions?.granted)}
-                        requiredPermission={requiredPermission}
-                      />
+                      {!permissions?.granted && (
+                        <InsufficientPermissionBanner requiredPermission={requiredPermission} />
+                      )}
                       {!isDeleting && isDeleted && (
                         <DeletedDocumentBanner revisionId={lastNonDeletedRevId} />
                       )}
