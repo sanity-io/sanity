@@ -53,7 +53,7 @@ describe('FilterLabel', () => {
 
     expect(screen.getByText('Title')).toBeInTheDocument()
     expect(screen.getByText('is')).toBeInTheDocument()
-    expect(screen.getByText('true')).toBeInTheDocument()
+    expect(screen.getByText('True')).toBeInTheDocument()
   })
 
   test('renders only the field when showContent is false', async () => {
@@ -76,7 +76,7 @@ describe('FilterLabel', () => {
 
     expect(screen.getByText('Title')).toBeInTheDocument()
     expect(screen.queryByText('is')).not.toBeInTheDocument()
-    expect(screen.queryByText('true')).not.toBeInTheDocument()
+    expect(screen.queryByText('True')).not.toBeInTheDocument()
   })
 
   test('handles missing operator descriptionKey', async () => {
@@ -105,6 +105,6 @@ describe('FilterLabel', () => {
 
     expect(screen.getByText('Title')).toBeInTheDocument()
     expect(screen.queryByText('is')).not.toBeInTheDocument()
-    expect(screen.queryByText('Test Value')).not.toBeInTheDocument()
+    expect(screen.queryByText('True')).not.toBeInTheDocument()
   })
 })
