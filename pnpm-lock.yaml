@@ -230,7 +230,7 @@ importers:
         version: 2.1.1(@types/node@18.19.44)(jsdom@23.2.0)(terser@5.32.0)
       yargs:
         specifier: ^17.3.0
-        version: 17.7.2
+        version: 17.3.0
 
   dev/depcheck-test: {}
 
@@ -1753,7 +1753,7 @@ importers:
         version: 4.5.3(@types/node@18.19.44)(terser@5.32.0)
       yargs:
         specifier: ^17.3.0
-        version: 17.7.2
+        version: 17.3.0
     devDependencies:
       '@jest/expect':
         specifier: ^29.7.0
