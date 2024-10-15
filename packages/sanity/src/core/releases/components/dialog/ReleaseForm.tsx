@@ -10,10 +10,11 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {Button} from '../../../../ui-components'
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
-import {type BundleDocument} from '../../../store/bundles/types'
+import {type BundleDocument, type releaseType} from '../../../store/bundles/types'
 import {ReleaseIconEditorPicker, type ReleaseIconEditorPickerValue} from './ReleaseIconEditorPicker'
 
 interface BaseBundleDocument extends Partial<BundleDocument> {
@@ -33,7 +34,7 @@ export function ReleaseForm(props: {
   value: FormBundleDocument
 }): JSX.Element {
   const {onChange, value} = props
-  const {title, description, icon, hue, publishedAt} = value
+  const {title, description, icon, hue, publishedAt, releaseType} = value
   // derive the action from whether the initial value prop has a slug
   // only editing existing bundles will provide a value.slug
   const {t} = useTranslation()
@@ -43,6 +44,8 @@ export function ReleaseForm(props: {
   // todo: figure out if these are needed
   const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
   const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
+
+  const [buttonReleaseType, setButtonReleaseType] = useState<releaseType>(releaseType ?? 'asap')
 
   const {t: coreT} = useTranslation()
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
@@ -95,11 +98,54 @@ export function ReleaseForm(props: {
     [onChange, value],
   )
 
+  const handleButtonReleaseTypeChange = useCallback(
+    (pickedReleaseType: releaseType) => {
+      setButtonReleaseType(pickedReleaseType)
+      onChange({...value, releaseType: pickedReleaseType})
+    },
+    [onChange, value],
+  )
+
   return (
     <Stack space={5}>
       <Flex>
         <ReleaseIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
       </Flex>
+
+      <Stack space={2} style={{margin: -1}}>
+        <Flex gap={1}>
+          <Button
+            mode="bleed"
+            onClick={() => handleButtonReleaseTypeChange('asap')}
+            selected={buttonReleaseType === 'asap'}
+            text={t('release.form.type.asap')}
+          />
+          <Button
+            mode="bleed"
+            onClick={() => handleButtonReleaseTypeChange('scheduled')}
+            selected={buttonReleaseType === 'scheduled'}
+            text={t('release.form.type.scheduled')}
+          />
+          <Button
+            mode="bleed"
+            onClick={() => handleButtonReleaseTypeChange('undecided')}
+            selected={buttonReleaseType === 'undecided'}
+            text={t('release.form.type.undecided')}
+          />
+        </Flex>
+
+        {buttonReleaseType === 'scheduled' && (
+          <DateTimeInput
+            selectTime
+            onChange={handleBundlePublishAtChange}
+            calendarLabels={calendarLabels}
+            value={value.publishedAt ? new Date(value.publishedAt) : undefined}
+            inputValue={inputValue || ''}
+            constrainSize={false}
+          />
+        )}
+      </Stack>
+
       <Stack space={3}>
         <FormFieldHeaderText title={t('release.form.title')} validation={titleErrors} />
         <TextInput
@@ -118,19 +164,6 @@ export function ReleaseForm(props: {
           onChange={handleBundleDescriptionChange}
           value={description}
           data-testid="release-form-description"
-        />
-      </Stack>
-
-      <Stack space={3}>
-        <FormFieldHeaderText title="Schedule for publishing at" validation={dateErrors} />
-
-        <DateTimeInput
-          selectTime
-          onChange={handleBundlePublishAtChange}
-          calendarLabels={calendarLabels}
-          value={value.publishedAt ? new Date(value.publishedAt) : undefined}
-          inputValue={inputValue || ''}
-          constrainSize={false}
         />
       </Stack>
     </Stack>

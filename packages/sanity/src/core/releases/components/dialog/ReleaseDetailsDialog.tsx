@@ -40,6 +40,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
       hue: bundle?.hue || 'gray',
       icon: bundle?.icon || 'cube',
       publishedAt: bundle?.publishedAt,
+      releaseType: bundle?.releaseType || 'asap',
     } as const
   })
   const [isSubmitting, setIsSubmitting] = useState(false)

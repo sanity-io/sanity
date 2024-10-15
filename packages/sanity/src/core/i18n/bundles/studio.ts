@@ -1165,6 +1165,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.form.search-icon-tooltip': 'Select release icon',
   /** Label for the title form field when creating releases */
   'release.form.title': 'Title',
+  /** Label for the release type 'as soon as possible' */
+  'release.form.type.asap': 'ASAP',
+  /** Label for the release type 'at time', meaning it's a release with a scheduled date */
+  'release.form.type.scheduled': 'At time',
+  /** Label for the release type 'undecided' */
+  'release.form.type.undecided': 'Undecided',
   /** Tooltip for the dropdown to show all versions of document */
   'release.version-list.tooltip': 'See all document versions',
 
