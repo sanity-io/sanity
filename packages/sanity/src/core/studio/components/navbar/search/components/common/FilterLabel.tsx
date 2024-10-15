@@ -94,6 +94,10 @@ function getFilterValues(filter: SearchFilter): SearchFilterValues {
   if (isStringOrNumber(filter.value)) {
     values.value = filter.value
   }
+  if (typeof filter.value === 'boolean') {
+    // Cast boolean into a string value
+    values.value = filter.value.toString()
+  }
   if (isRecord(filter.value) && 'from' in filter.value && isStringOrNumber(filter.value.from)) {
     values.from = filter.value.from
   }

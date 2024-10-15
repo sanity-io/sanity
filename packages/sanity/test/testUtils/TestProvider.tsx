@@ -6,16 +6,16 @@ import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {
   CopyPasteProvider,
-  LocaleProviderBase,
   type LocaleResourceBundle,
   ResourceCacheProvider,
   type SingleWorkspace,
   SourceProvider,
-  usEnglishLocale,
   WorkspaceProvider,
 } from '../../src/core'
 import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
+import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
+import {usEnglishLocale} from '../../src/core/i18n/locales'
 import {route, RouterProvider} from '../../src/router'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
