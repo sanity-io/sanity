@@ -9,6 +9,7 @@ import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
+  isPublishedId,
   isVersionId,
   Translate,
   useClient,
@@ -28,12 +29,14 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
   releasesLoading: boolean
   documentType: string
   menuReleaseId: string
+  fromRelease: string
 }) {
-  const {documentId, releases, releasesLoading, documentType, menuReleaseId} = props
+  const {documentId, releases, releasesLoading, documentType, menuReleaseId, fromRelease} = props
   const [isDiscarding, setIsDiscarding] = useState(false)
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
   const isVersion = isVersionId(documentId)
+  const isPublished = isPublishedId(documentId)
 
   const optionsReleaseList = releases.map((release) => ({
     value: release,
@@ -46,7 +49,7 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
 
   const releaseId = isVersion ? getVersionFromId(documentId) : documentId
 
-  const {createVersion} = useDocumentOperation(publishedId, documentType, menuReleaseId)
+  const {createVersion} = useDocumentOperation(publishedId, documentType, fromRelease)
 
   const telemetry = useTelemetry()
   const documentStore = useDocumentStore()
@@ -141,13 +144,17 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
           />
         ))}
       </MenuGroup>
-      <MenuDivider />
-      <MenuItem
-        icon={TrashIcon}
-        onClick={handleDiscardVersion}
-        disabled={isDiscarding}
-        text={t('release.action.discard-version')}
-      />
+      {!isPublished && (
+        <>
+          <MenuDivider />
+          <MenuItem
+            icon={TrashIcon}
+            onClick={handleDiscardVersion}
+            disabled={isDiscarding}
+            text={t('release.action.discard-version')}
+          />
+        </>
+      )}
     </Menu>
   )
 })
