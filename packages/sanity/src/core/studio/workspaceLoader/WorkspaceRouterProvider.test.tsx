@@ -21,7 +21,8 @@ vi.mock('../router', () => ({
   }),
 }))
 
-vi.mock('sanity/router', () => ({
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
   RouterProvider: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
   IntentLink: () => <div>IntentLink</div>,
 }))
