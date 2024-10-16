@@ -87,6 +87,7 @@
     "test": "run-s test:vitest test:jest",
     "test:jest": "jest --forceExit",
     "test:vitest": "vitest --run",
+    "test:vitest:watch": "vitest --watch",
     "test:e2e": "playwright test",
     "test:exports": "turbo run test --filter=@repo/test-exports",
     "tsdoc:dev": "sanity-tsdoc dev",
