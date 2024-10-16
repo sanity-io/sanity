@@ -1,15 +1,11 @@
-import {beforeAll, describe, expect, it} from 'vitest'
+import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {getTaskURL} from './TasksNotificationTarget'
 
 describe('getTaskURL', () => {
   beforeAll(() => {
     // Mock window.location
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: 'http://test-studio.com',
-      },
-    })
+    vi.stubGlobal('location', {origin: 'http://test-studio.com'})
   })
 
   it('constructs correct URL without basePath', () => {
