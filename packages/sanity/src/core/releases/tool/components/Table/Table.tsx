@@ -1,4 +1,4 @@
-import {Box, Card, type CardProps, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, rem, Stack, Text, useTheme} from '@sanity/ui'
 import {
   defaultRangeExtractor,
   type Range,
@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-virtual'
 import {get} from 'lodash'
 import {
+  type CSSProperties,
   Fragment,
   type HTMLProps,
   type MutableRefObject,
@@ -182,6 +183,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
             style={{
               height: `${datum.virtualRow.size}px`,
               transform: `translateY(${datum.virtualRow.start - datum.index * datum.virtualRow.size}px)`,
+              paddingInline: `max(
+                calc((100vw - var(--maxInlineSize)) / 2),
+                var(--paddingInline)
+              )`,
             }}
             {...cardRowProps}
           >
@@ -231,6 +236,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
     [amalgamatedColumnDefs],
   )
 
+  const theme = useTheme()
+
   if (loading) {
     return <LoadingBlock fill data-testid="table-loading" />
   }
@@ -238,33 +245,35 @@ const TableInner = <TableData, AdditionalRowTableData>({
   return (
     <div ref={virtualizerContainerRef}>
       <div
-        style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
-          // The padding accounts for the height of the <TableHeader> and extra space for padding at the bottom
-          paddingBottom: '110px',
-          width: '100%',
-          position: 'relative',
-        }}
+        style={
+          {
+            'height': `${rowVirtualizer.getTotalSize()}px`,
+            // The padding accounts for the height of the <TableHeader> and extra space for padding at the bottom
+            'paddingBottom': '110px',
+            'width': '100%',
+            'position': 'relative',
+            '--maxInlineSize': rem(theme.sanity.v2?.container[3] ?? 0),
+            '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
+          } as CSSProperties
+        }
       >
-        <Container width={3} paddingX={3}>
-          <Stack as="table">
-            <TableHeader headers={headers} searchDisabled={!searchTerm && !data.length} />
-            <Stack as="tbody">
-              {filteredData.length === 0
-                ? emptyContent
-                : rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
-                    const datum = filteredData[virtualRow.index]
-                    return renderRow({
-                      ...datum,
-                      virtualRow,
-                      index,
-                      isFirst: virtualRow.index === 0,
-                      isLast: virtualRow.index === filteredData.length - 1,
-                    })
-                  })}
-            </Stack>
+        <Stack as="table">
+          <TableHeader headers={headers} searchDisabled={!searchTerm && !data.length} />
+          <Stack as="tbody">
+            {filteredData.length === 0
+              ? emptyContent
+              : rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
+                  const datum = filteredData[virtualRow.index]
+                  return renderRow({
+                    ...datum,
+                    virtualRow,
+                    index,
+                    isFirst: virtualRow.index === 0,
+                    isLast: virtualRow.index === filteredData.length - 1,
+                  })
+                })}
           </Stack>
-        </Container>
+        </Stack>
       </div>
     </div>
   )
