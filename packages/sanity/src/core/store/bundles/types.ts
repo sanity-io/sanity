@@ -8,6 +8,9 @@ import {type PartialExcept} from '../../util'
 import {type MetadataWrapper} from './createBundlesMetadataAggregator'
 import {type bundlesReducerAction, type bundlesReducerState} from './reducer'
 
+/** @internal */
+export type releaseType = 'asap' | 'scheduled' | 'undecided'
+
 /**
  * @internal
  */
@@ -22,6 +25,7 @@ export interface BundleDocument
   publishedAt?: string
   archivedAt?: string
   publishedBy?: string
+  releaseType: releaseType
 }
 
 /**

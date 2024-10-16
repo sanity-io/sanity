@@ -171,6 +171,8 @@ describe('ReleaseDetailsDialog', () => {
         icon,
         title: 'New title',
         description: 'New description',
+        publishedAt: undefined,
+        releaseType: 'asap',
       })
     })
 
