@@ -5,7 +5,7 @@ import {type Scope} from '@babel/traverse'
 import * as babelTypes from '@babel/types'
 
 import {getBabelConfig} from '../getBabelConfig'
-import {type NamedQueryResult, resolveExpression} from './expressionResolvers'
+import {resolveExpression} from './expressionResolvers'
 import {parseSourceFile} from './parseSource'
 
 const require = createRequire(__filename)
@@ -18,7 +18,59 @@ const nextSanityModuleName = 'next-sanity'
 const ignoreValue = '@sanity-typegen-ignore'
 
 /**
- * findQueriesInSource takes a source string and returns all GROQ queries in it.
+ * QueryResult is a result of a query
+ */
+export type QueryResult = {
+  /** result is a groq query */
+  result: string
+
+  /** location is the location of the query in the source */
+  location: Location
+}
+
+/**
+ * NamedQueryResult is a result of a named query
+ */
+export type NamedQueryResult = QueryResult & {
+  /** name is the name of the query */
+  name: string
+}
+
+type Location = {
+  start?: {
+    line: number
+    column: number
+    index: number
+  }
+  end?: {
+    line: number
+    column: number
+    index: number
+  }
+}
+
+/**
+ * findNamedQueriesInSource takes a source string and returns all _named_ GROQ queries in it.
+ * @param source - The source code to search for queries
+ * @param filename - The filename of the source code
+ * @param babelConfig - The babel configuration to use when parsing the source
+ * @param resolver - A resolver function to use when resolving module imports
+ * @returns
+ * @beta
+ * @internal
+ * @deprecated - Use findNamedQueriesInSource instead
+ */
+export function findQueriesInSource(
+  source: string,
+  filename: string,
+  babelConfig: TransformOptions = getBabelConfig(),
+  resolver: NodeJS.RequireResolve = require.resolve,
+): NamedQueryResult[] {
+  return findNamedQueriesInSource(source, filename, babelConfig, resolver)
+}
+
+/**
+ * findNamedQueriesInSource takes a source string and returns all _named_ GROQ queries in it.
  * @param source - The source code to search for queries
  * @param filename - The filename of the source code
  * @param babelConfig - The babel configuration to use when parsing the source
@@ -27,7 +79,7 @@ const ignoreValue = '@sanity-typegen-ignore'
  * @beta
  * @internal
  */
-export function findQueriesInSource(
+export function findNamedQueriesInSource(
   source: string,
   filename: string,
   babelConfig: TransformOptions = getBabelConfig(),
@@ -86,6 +138,134 @@ export function findQueriesInSource(
 
         queries.push({name: queryName, result: queryResult, location})
       }
+    },
+  })
+
+  return queries
+}
+
+export function findAllQueriesInSource(
+  source: string,
+  filename: string,
+  babelConfig: TransformOptions = getBabelConfig(),
+  resolver: NodeJS.RequireResolve = require.resolve,
+): QueryResult[] {
+  const queries: QueryResult[] = []
+  const file = parseSourceFile(source, filename, babelConfig)
+
+  traverse(file, {
+    TaggedTemplateExpression(path) {
+      const {node, scope} = path
+      if (!babelTypes.isIdentifier(node.tag) || node.tag.name !== groqTagName) {
+        return
+      }
+      if (declarationLeadingCommentContains(path, ignoreValue)) {
+        return
+      }
+
+      const query = resolveExpression({
+        node,
+        file,
+        scope,
+        babelConfig,
+        filename,
+        resolver,
+      })
+
+      const location = node.loc
+        ? {
+            start: {
+              ...node.loc?.start,
+            },
+            end: {
+              ...node.loc?.end,
+            },
+          }
+        : {}
+
+      queries.push({result: query, location})
+    },
+    StringLiteral(path) {
+      const {node} = path
+      if (!node.leadingComments?.find((commentItem) => commentItem.value.trim() === 'groq')) {
+        return
+      }
+
+      const query = node.value
+      const location = node.loc
+        ? {
+            start: {
+              ...node.loc?.start,
+            },
+            end: {
+              ...node.loc?.end,
+            },
+          }
+        : {}
+      queries.push({result: query, location})
+    },
+    TemplateLiteral(path) {
+      const {node} = path
+      if (!node.leadingComments?.find((commentItem) => commentItem.value.trim() === 'groq')) {
+        return
+      }
+
+      const query = resolveExpression({
+        node,
+        file,
+        scope: path.scope,
+        babelConfig,
+        filename,
+        resolver,
+      })
+      const location = node.loc
+        ? {
+            start: {
+              ...node.loc?.start,
+            },
+            end: {
+              ...node.loc?.end,
+            },
+          }
+        : {}
+
+      queries.push({result: query, location})
+    },
+    CallExpression(path) {
+      const {node, scope} = path
+      // Look for strings wrapped in a defineQuery function call
+      const isDefineQueryCall =
+        isImportFrom(groqModuleName, defineQueryFunctionName, scope, node.callee) ||
+        isImportFrom(nextSanityModuleName, defineQueryFunctionName, scope, node.callee)
+
+      if (!isDefineQueryCall) {
+        return
+      }
+      if (declarationLeadingCommentContains(path, ignoreValue)) {
+        return
+      }
+
+      const query = resolveExpression({
+        node,
+        file,
+        scope,
+        babelConfig,
+        filename,
+        resolver,
+      })
+
+      const location = node.loc
+        ? {
+            start: {
+              ...node.loc?.start,
+            },
+            end: {
+              ...node.loc?.end,
+            },
+          }
+        : {}
+
+      queries.push({result: query, location})
     },
   })
 

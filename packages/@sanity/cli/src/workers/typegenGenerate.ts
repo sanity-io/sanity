@@ -1,7 +1,7 @@
 import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 
 import {
-  findQueriesInPath,
+  findNamedQueriesInPath,
   getResolver,
   readSchema,
   registerBabel,
@@ -80,7 +80,7 @@ async function main() {
     length: schema.length,
   } satisfies TypegenGenerateTypesWorkerMessage)
 
-  const queries = findQueriesInPath({
+  const queries = findNamedQueriesInPath({
     path: opts.searchPath,
     resolver,
   })
