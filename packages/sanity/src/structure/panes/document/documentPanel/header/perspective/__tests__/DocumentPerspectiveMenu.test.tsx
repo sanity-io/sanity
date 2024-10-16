@@ -18,17 +18,6 @@ vi.mock('sanity', async (importOriginal) => ({
   useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
 }))
 
-const IntentLinkMock = (props: IntentLinkProps & HTMLProps<HTMLAnchorElement>) => {
-  const {params = {}, intent, ...rest} = props
-  const stringParams = params
-    ? Object.entries(params)
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&')
-    : ''
-
-  return <a {...rest} href={`/intent/${intent}/${stringParams}`} />
-}
-
 vi.mock('sanity/router', () => {
   return {
     useRouter: vi.fn().mockReturnValue({
@@ -37,7 +26,16 @@ vi.mock('sanity/router', () => {
     route: {
       create: vi.fn(),
     },
-    IntentLink: IntentLinkMock,
+    IntentLink(props: IntentLinkProps & HTMLProps<HTMLAnchorElement>) {
+      const {params = {}, intent, ...rest} = props
+      const stringParams = params
+        ? Object.entries(params)
+            .map(([key, value]) => `${key}=${value}`)
+            .join('&')
+        : ''
+
+      return <a {...rest} href={`/intent/${intent}/${stringParams}`} />
+    },
   }
 })
 
