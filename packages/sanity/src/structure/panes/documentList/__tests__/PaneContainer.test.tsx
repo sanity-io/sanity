@@ -28,9 +28,9 @@ vi.mock('sanity', async (importOriginal) => ({
 
   useSearchState: vi.fn(),
 }))
-vi.mock('sanity/router', () => ({
-  ...(vi.requireActual('sanity/router') || {}),
-  useRouter: jest.fn().mockReturnValue({stickyParams: {}, state: {}, navigate: jest.fn()}),
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useRouter: vi.fn().mockReturnValue({stickyParams: {}, state: {}, navigate: vi.fn()}),
 }))
 
 const mockUseSearchState = useSearchState as Mock
