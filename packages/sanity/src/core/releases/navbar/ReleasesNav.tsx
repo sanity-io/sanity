@@ -62,7 +62,6 @@ export function ReleasesNav(): JSX.Element {
       <Button
         as={IntentLink}
         data-as="a"
-        target="_blank"
         rel="noopener noreferrer"
         intent={RELEASES_INTENT}
         params={{id: currentGlobalBundle._id}}
