@@ -121,7 +121,14 @@ export function __tmp_wrap_presenceStore(context: {
 }): PresenceStore {
   const {bifur, connectionStatusStore, userStore} = context
 
-  const [presenceEvents$, sendMessage] = createBifurTransport(bifur, SESSION_ID)
+  const [presenceEvents$, authorizationEvents$, sendMessage] = createBifurTransport(
+    bifur,
+    SESSION_ID,
+  )
+
+  authorizationEvents$.subscribe((event) => {
+    // console.log('[++++++]Authorization event', event)
+  })
 
   const currentLocation$ = new BehaviorSubject<PresenceLocation[]>([])
   const locationChange$ = currentLocation$.pipe(distinctUntilChanged())
@@ -142,6 +149,12 @@ export function __tmp_wrap_presenceStore(context: {
     // do not respond to my own rollcall requests
     filter((event: RollCallEvent) => event.sessionId !== SESSION_ID),
   )
+
+  // const authExpireNotifications$ = authorizationEvents$.pipe(
+  //   filter((event: TransportEvent): event is RollCallEvent => event === 'rollCall'),
+  //   // do not respond to my own rollcall requests
+  //   filter((event: RollCallEvent) => event.sessionId !== SESSION_ID),
+  // )
 
   const REPORT_MIN_INTERVAL = 30000
 
