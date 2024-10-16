@@ -64,6 +64,16 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         text="Published"
         icon={DotIcon}
         tone="positive"
+        menuContent={
+          <VersionPopoverMenu
+            documentId={editState?.published?._id || ''}
+            menuReleaseId={editState?.published?._id || ''}
+            releases={filteredReleases}
+            releasesLoading={loading}
+            documentType={documentType}
+            fromRelease={''}
+          />
+        }
       />
       <VersionChip
         tooltipContent={
@@ -91,6 +101,16 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         text="Draft"
         tone="caution"
         onClick={handleBundleChange('drafts')}
+        menuContent={
+          <VersionPopoverMenu
+            documentId={editState?.draft?._id || ''}
+            menuReleaseId={editState?.draft?._id || ''}
+            releases={filteredReleases}
+            releasesLoading={loading}
+            documentType={documentType}
+            fromRelease={''}
+          />
+        }
       />
 
       {/* @todo update temporary text for tooltip */}
@@ -112,6 +132,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
                 releases={filteredReleases}
                 releasesLoading={loading}
                 documentType={documentType}
+                fromRelease={release._id}
               />
             }
           />
