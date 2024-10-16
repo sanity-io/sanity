@@ -17,7 +17,7 @@ interface TransactionSyncLockState {
 }
 
 const swr = createSWR<
-  [SanityDocument, SanityDocument, TransactionSyncLockState, SanityDocument | undefined]
+  [SanityDocument, SanityDocument, TransactionSyncLockState, SanityDocument | null]
 >({maxSize: 50})
 
 /**
@@ -80,7 +80,7 @@ export const editState = memoize(
             map((ev: PendingMutationsEvent) => (ev.phase === 'begin' ? LOCKED : NOT_LOCKED)),
             startWith(NOT_LOCKED),
           ),
-          typeof versions.version === 'undefined' ? of(undefined) : versions.version.snapshots$,
+          typeof versions.version === 'undefined' ? of(null) : versions.version.snapshots$,
         ]),
       ),
       swr(`${idPair.publishedId}-${idPair.draftId}`),
