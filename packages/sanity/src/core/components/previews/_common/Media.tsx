@@ -47,16 +47,16 @@ function renderMedia(props: {
 }): ReactNode {
   const {dimensions, layout, media, styles} = props
 
-  if (isValidElementType(media)) {
-    return createElement(media, {dimensions, layout})
-  }
-
   if (typeof media === 'string') {
     return (
       <Text as="span" className={styles?.mediaString} size={1}>
         {media}
       </Text>
     )
+  }
+
+  if (isValidElementType(media)) {
+    return createElement(media, {dimensions, layout})
   }
 
   if (isValidElement(media)) {
