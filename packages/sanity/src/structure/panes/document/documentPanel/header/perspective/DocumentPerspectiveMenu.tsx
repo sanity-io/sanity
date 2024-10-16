@@ -1,13 +1,19 @@
 import {DotIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {memo, useCallback} from 'react'
-import {getVersionFromId, useDateTimeFormat, usePerspective, useTranslation} from 'sanity'
+import {
+  getVersionFromId,
+  useBundles,
+  useDateTimeFormat,
+  usePerspective,
+  useTranslation,
+} from 'sanity'
 
+import {versionDocumentExists} from '../../../../../../core/releases'
 import {usePaneRouter} from '../../../../../components'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {VersionChip} from './VersionChip'
+import {VersionPopoverMenu} from './VersionPopoverMenu'
 
 export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   const paneRouter = usePaneRouter()
@@ -17,8 +23,18 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
     dateStyle: 'medium',
     timeStyle: 'short',
   })
+  const {data: bundles, loading} = useBundles()
 
-  const {documentVersions, editState, displayed} = useDocumentPane()
+  const {documentVersions, editState, displayed, documentType} = useDocumentPane()
+
+  // remove the versions that the document already has
+  // remove the archived releases
+  const filteredReleases =
+    (documentVersions &&
+      bundles?.filter(
+        (bundle) => !versionDocumentExists(documentVersions, bundle._id) && !bundle.archivedAt,
+      )) ||
+    []
 
   const handleBundleChange = useCallback(
     (bundleId: string) => () => {
@@ -89,6 +105,15 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             text={release.title}
             tone={'primary'}
             icon={DotIcon}
+            menuContent={
+              <VersionPopoverMenu
+                documentId={displayed?._id || ''}
+                menuReleaseId={release._id}
+                releases={filteredReleases}
+                releasesLoading={loading}
+                documentType={documentType}
+              />
+            }
           />
         ))}
     </>
