@@ -3,6 +3,7 @@ import {Text} from '@sanity/ui'
 import {memo, useCallback} from 'react'
 import {
   getVersionFromId,
+  isVersionId,
   useBundles,
   useDateTimeFormat,
   usePerspective,
@@ -16,14 +17,16 @@ import {VersionChip} from './VersionChip'
 import {VersionPopoverMenu} from './VersionPopoverMenu'
 
 export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
-  const paneRouter = usePaneRouter()
+  const {perspective} = usePaneRouter()
   const {t} = useTranslation() // @todo add and update translations
-  const {setPerspective} = usePerspective(paneRouter.perspective)
+  const {setPerspective} = usePerspective(perspective)
   const dateTimeFormat = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: 'short',
   })
   const {data: bundles, loading} = useBundles()
+
+  console.log(perspective)
 
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()
 
@@ -59,20 +62,22 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         }
         disabled={!editState?.published}
         onClick={handleBundleChange('published')}
-        selected={editState?.published?._id === displayed?._id}
+        selected={perspective === 'published'}
         // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
         text="Published"
         icon={DotIcon}
         tone="positive"
         menuContent={
-          <VersionPopoverMenu
-            documentId={editState?.published?._id || ''}
-            menuReleaseId={editState?.published?._id || ''}
-            releases={filteredReleases}
-            releasesLoading={loading}
-            documentType={documentType}
-            fromRelease={''}
-          />
+          editState?.published ? (
+            <VersionPopoverMenu
+              documentId={editState?.published?._id || ''}
+              menuReleaseId={editState?.published?._id || ''}
+              releases={filteredReleases}
+              releasesLoading={loading}
+              documentType={documentType}
+              fromRelease={''}
+            />
+          ) : null
         }
       />
       <VersionChip
@@ -94,17 +99,22 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             )}
           </Text>
         }
-        disabled={!editState?.published && !editState?.draft}
         icon={DotIcon}
-        selected={editState?.draft?._id === displayed?._id}
+        selected={
+          (editState?.draft?._id === displayed?._id ||
+            !editState?.draft ||
+            !editState?.published) &&
+          !isVersionId(displayed?._id || '') &&
+          perspective !== 'published'
+        }
         // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
         text="Draft"
         tone="caution"
         onClick={handleBundleChange('drafts')}
         menuContent={
           <VersionPopoverMenu
-            documentId={editState?.draft?._id || ''}
-            menuReleaseId={editState?.draft?._id || ''}
+            documentId={editState?.draft?._id || editState?.published?._id || ''}
+            menuReleaseId={editState?.draft?._id || editState?.published?._id || ''}
             releases={filteredReleases}
             releasesLoading={loading}
             documentType={documentType}
