@@ -171,7 +171,7 @@ export function ReleasesOverview() {
 
   return (
     <Flex paddingX={4} height="fill" direction="column" ref={scrollContainerRef} overflow={'auto'}>
-      <Container width={2} paddingY={6}>
+      <Container width={3} paddingY={6}>
         <Flex align="flex-start" gap={2} paddingBottom={2}>
           <Flex align="flex-start" flex={1} gap={4}>
             <Stack paddingY={1} space={4}>
@@ -193,24 +193,24 @@ export function ReleasesOverview() {
           </Flex>
           {loadingOrHasBundles && createReleaseButton}
         </Flex>
-        {(hasBundles || loadingTableData) && (
-          <Table<TableBundle>
-            // for resetting filter and sort on table when mode changed
-            key={bundleGroupMode}
-            defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
-            loading={loadingTableData}
-            data={groupedBundles[bundleGroupMode]}
-            columnDefs={releasesOverviewColumnDefs(t)}
-            searchFilter={applySearchTermToBundles}
-            emptyState={t('no-releases')}
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-            rowId="_id"
-            rowActions={renderRowActions}
-            rowProps={getRowProps}
-            scrollContainerRef={scrollContainerRef}
-          />
-        )}
       </Container>
+      {(hasBundles || loadingTableData) && (
+        <Table<TableBundle>
+          // for resetting filter and sort on table when mode changed
+          key={bundleGroupMode}
+          defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
+          loading={loadingTableData}
+          data={groupedBundles[bundleGroupMode]}
+          columnDefs={releasesOverviewColumnDefs(t)}
+          searchFilter={applySearchTermToBundles}
+          emptyState={t('no-releases')}
+          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          rowId="_id"
+          rowActions={renderRowActions}
+          rowProps={getRowProps}
+          scrollContainerRef={scrollContainerRef}
+        />
+      )}
       {renderCreateBundleDialog()}
     </Flex>
   )
