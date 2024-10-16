@@ -1,16 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
-import {Box, Button} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {memo, useMemo} from 'react'
-import {
-  type BundleDocument,
-  ReleaseBadge,
-  ReleasesMenu,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+import {type BundleDocument, ReleaseBadge, usePerspective, useTranslation} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
 
@@ -79,15 +73,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
       {currentGlobalBundle && existsInBundle && <ReleaseLink release={currentGlobalBundle} />}
 
       {/** TODO IS THIS STILL NEEDED? VS THE PICKER IN STUDIO NAVBAR? */}
-
-      <Box flex="none">
-        <ReleasesMenu
-          button={releasesMenuButton}
-          bundles={documentVersions}
-          loading={!documentVersions}
-          perspective={paneRouter.perspective}
-        />
-      </Box>
     </>
   )
 })

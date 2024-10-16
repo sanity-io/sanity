@@ -1,4 +1,4 @@
-import {type ComponentType, type ReactElement} from 'react'
+import React, {type ComponentType, type ReactElement} from 'react';
 
 import {type Tool} from '../types'
 
@@ -18,19 +18,30 @@ export interface LogoProps {
   renderDefault: (props: LogoProps) => ReactElement
 }
 
+interface NavbarActionBase {
+  icon?: React.ComponentType
+  location: 'topbar' | 'sidebar'
+  name: string
+}
+
+interface TopbarActionWithCustomRender extends NavbarActionBase {
+  location: 'topbar'
+  render: () => ReactElement
+}
+
+interface Action extends NavbarActionBase {
+  onAction: () => void
+  selected: boolean
+  title: string
+  render?: undefined
+}
+
 /**
  * @internal
  * @beta
  * An internal API for defining actions in the navbar.
  */
-export interface NavbarAction {
-  icon?: React.ComponentType
-  location: 'topbar' | 'sidebar'
-  name: string
-  onAction: () => void
-  selected: boolean
-  title: string
-}
+export type NavbarAction = Action | TopbarActionWithCustomRender
 
 /**
  * @hidden

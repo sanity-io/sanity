@@ -9,6 +9,8 @@ import {type Tool} from '../../../../config'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {ToolLink, type ToolLinkProps} from './ToolLink'
 
+const HIDDEN_STUDIO_MENU_TOOLS = ['releases']
+
 interface ToolCollapseMenuProps {
   activeToolName?: string
   tools: Tool[]
@@ -37,6 +39,8 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   const children = useMemo(
     () =>
       tools.map((tool, index) => {
+        if (HIDDEN_STUDIO_MENU_TOOLS.includes(tool.name)) return null
+
         const title = tool?.title || startCase(tool.name)
 
         const Link = forwardRef(function Link(

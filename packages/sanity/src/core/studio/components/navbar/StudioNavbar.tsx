@@ -27,7 +27,6 @@ import {FreeTrialProvider} from './free-trial/FreeTrialProvider'
 import {HomeButton} from './home/HomeButton'
 import {NavDrawer} from './navDrawer'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
-import {GlobalPerspectiveMenu} from './perspective/GlobalPerspectiveMenu'
 import {PresenceMenu} from './presence'
 import {ResourcesButton} from './resources/ResourcesButton'
 import {SearchButton, SearchDialog} from './search'
@@ -168,6 +167,10 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     return actions
       ?.filter((v) => v.location === 'topbar')
       ?.map((action) => {
+        const {render: ActionComponent} = action
+
+        if (ActionComponent) return <ActionComponent key={action.name} />
+
         return (
           <Button
             iconRight={action?.icon}
@@ -213,19 +216,15 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                     <WorkspaceMenuButton />
                   </Flex>
                 </Flex>
-                {/* Versions button */}
-                <Flex gap={2}>
-                  <GlobalPerspectiveMenu />
-                  {/* New document button */}
-                  <NewDocumentButton
-                    {...newDocumentOptions}
-                    modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
-                  />
-                  {/* Search button (desktop) */}
-                  {!shouldRender.searchFullscreen && (
-                    <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
-                  )}
-                </Flex>
+                {/* New document button */}
+                <NewDocumentButton
+                  {...newDocumentOptions}
+                  modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
+                />
+                {/* Search button (desktop) */}
+                {!shouldRender.searchFullscreen && (
+                  <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
+                )}
               </Flex>
             </TooltipDelayGroupProvider>
 

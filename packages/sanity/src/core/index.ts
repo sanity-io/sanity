@@ -27,7 +27,6 @@ export {
   LATEST,
   ReleaseActions,
   ReleaseBadge,
-  ReleasesMenu,
   useDocumentVersions,
   usePerspective,
 } from './releases'
