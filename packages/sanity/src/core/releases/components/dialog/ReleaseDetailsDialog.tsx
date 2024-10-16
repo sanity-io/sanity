@@ -2,7 +2,7 @@ import {ArrowRightIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
-import {type FormBundleDocument, useTranslation} from 'sanity'
+import {DEFAULT_RELEASE_TYPE, type FormBundleDocument, useTranslation} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {type BundleDocument} from '../../../store/bundles/types'
@@ -40,7 +40,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
       hue: bundle?.hue || 'gray',
       icon: bundle?.icon || 'cube',
       publishedAt: bundle?.publishedAt,
-      releaseType: bundle?.releaseType || 'asap',
+      releaseType: bundle?.releaseType || DEFAULT_RELEASE_TYPE,
     } as const
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
