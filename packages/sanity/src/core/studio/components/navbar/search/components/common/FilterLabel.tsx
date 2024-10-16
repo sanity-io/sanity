@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {TextWithTone} from '../../../../../../components'
-import {useTranslation} from '../../../../../../i18n'
+import {type TFunction, useTranslation} from '../../../../../../i18n'
 import {Translate, type TranslateComponentMap} from '../../../../../../i18n/Translate'
 import {isRecord} from '../../../../../../util'
 import {useSearchState} from '../../contexts/search/useSearchState'
@@ -80,19 +80,26 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
         t={t}
         i18nKey={operator?.descriptionKey}
         components={components}
-        values={getFilterValues(filter)}
+        values={getFilterValues(filter, t)}
       />
     </Flex>
   )
 }
 
-function getFilterValues(filter: SearchFilter): SearchFilterValues {
+function getFilterValues(
+  filter: SearchFilter,
+  t: TFunction<'translation', undefined>,
+): SearchFilterValues {
   const values: SearchFilterValues = {}
   if (typeof filter.value === 'number') {
     values.count = filter.value
   }
   if (isStringOrNumber(filter.value)) {
     values.value = filter.value
+  }
+  if (typeof filter.value === 'boolean') {
+    // Cast boolean into a string value
+    values.value = filter.value ? t('search.filter-boolean-true') : t('search.filter-boolean-false')
   }
   if (isRecord(filter.value) && 'from' in filter.value && isStringOrNumber(filter.value.from)) {
     values.from = filter.value.from
