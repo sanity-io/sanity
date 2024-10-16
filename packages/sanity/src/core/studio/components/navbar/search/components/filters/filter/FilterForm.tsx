@@ -1,9 +1,9 @@
 import {TrashIcon} from '@sanity/icons'
-import {Box, Card, ErrorBoundary, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 
-import {Button} from '../../../../../../../../ui-components'
+import {Button, ErrorBoundary} from '../../../../../../../../ui-components'
 import {supportsTouch} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'

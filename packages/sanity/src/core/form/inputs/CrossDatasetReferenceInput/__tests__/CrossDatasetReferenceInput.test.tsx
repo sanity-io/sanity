@@ -1,9 +1,9 @@
-import {describe, expect, jest, test} from '@jest/globals'
 /* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
 import {act, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {of} from 'rxjs'
+import {describe, expect, test, vi} from 'vitest'
 
 import {renderCrossDatasetReferenceInput} from '../../../../../../test/form'
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
@@ -78,7 +78,7 @@ describe('render states', () => {
     const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
     const TestProvider = await createWrapperComponent(client as any)
 
-    const getReferenceInfo = jest.fn(() =>
+    const getReferenceInfo = vi.fn(() =>
       of({
         id: 'foo',
         type: 'product',
@@ -129,7 +129,7 @@ describe('render states', () => {
     const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
     const TestProvider = await createWrapperComponent(client as any)
 
-    const getReferenceInfo = jest.fn(() =>
+    const getReferenceInfo = vi.fn(() =>
       of({
         id: 'foo',
         type: 'product',
@@ -182,7 +182,7 @@ describe('render states', () => {
     const client = createMockSanityClient({requests: {'/features': featureDisabledRequest}})
     const TestProvider = await createWrapperComponent(client as any)
 
-    const getReferenceInfo = jest.fn(() =>
+    const getReferenceInfo = vi.fn(() =>
       of({
         id: 'foo',
         type: 'product',
@@ -236,7 +236,7 @@ describe('user interaction happy paths', () => {
     const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
     const TestProvider = await createWrapperComponent(client as any)
 
-    const handleSearch = jest.fn(() =>
+    const handleSearch = vi.fn(() =>
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
         {id: 'two', type: 'product', published: {_id: 'two', _type: 'product'}},
@@ -324,7 +324,7 @@ describe('user interaction happy paths', () => {
     const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
     const TestProvider = await createWrapperComponent(client as any)
 
-    const handleSearch = jest.fn(() =>
+    const handleSearch = vi.fn(() =>
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
         {id: 'two', type: 'product', published: {_id: 'two', _type: 'product'}},

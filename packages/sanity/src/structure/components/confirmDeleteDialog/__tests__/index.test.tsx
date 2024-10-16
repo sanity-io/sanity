@@ -1,4 +1,4 @@
-import {describe, it} from '@jest/globals'
+import {describe, it} from 'vitest'
 
 describe('confirmDeleteDialog', () => {
   it.todo('works')

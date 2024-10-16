@@ -17,8 +17,13 @@ interface State {
 const INITIAL_STATE: State = {
   isLoading: true,
 }
-const PENDING_STATE: State = {
+
+const IDLE_STATE: State = {
   isLoading: false,
+  value: {
+    title: undefined,
+    description: undefined,
+  },
 }
 /**
  * @internal
@@ -33,7 +38,8 @@ function useDocumentPreview(props: {
   const {enabled = true, ordering, schemaType, value: previewValue} = props || {}
   const {observeForPreview} = useDocumentPreviewStore()
   const observable = useMemo<Observable<State>>(() => {
-    if (!enabled || !previewValue || !schemaType) return of(PENDING_STATE)
+    // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
+    if (!enabled || !previewValue || !schemaType) return of(IDLE_STATE)
 
     return observeForPreview(previewValue as Previewable, schemaType, {
       viewOptions: {ordering: ordering},

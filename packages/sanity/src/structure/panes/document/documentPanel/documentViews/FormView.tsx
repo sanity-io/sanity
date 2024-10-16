@@ -167,7 +167,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     >
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
-          {connectionState === 'connecting' || !ready ? (
+          {connectionState === 'connecting' && !editState?.draft && !editState?.published ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
               <Flex align="center" direction="column" height="fill" justify="center">
@@ -206,7 +206,9 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 onSetPathCollapsed={onSetCollapsedPath}
                 openPath={openPath}
                 presence={presence}
-                readOnly={connectionState === 'reconnecting' || formState.readOnly}
+                readOnly={
+                  connectionState === 'reconnecting' || formState.readOnly || !editState?.ready
+                }
                 schemaType={formState.schemaType}
                 validation={validation}
                 value={

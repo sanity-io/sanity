@@ -1,6 +1,6 @@
-import {describe, expect, it} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type SchemaType} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
 
 import {filterDefinitions} from '../definitions/defaultFilters'
 import {createFieldDefinitionDictionary, createFieldDefinitions} from '../definitions/fields'

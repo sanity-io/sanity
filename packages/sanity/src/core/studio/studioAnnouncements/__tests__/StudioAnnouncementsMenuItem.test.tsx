@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
-import {afterEach, describe, expect, jest, test} from '@jest/globals'
 import {Menu} from '@sanity/ui'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {defineConfig} from 'sanity'
+import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {WhatsNewHelpMenuItemClicked} from '../__telemetry__/studioAnnouncements.telemetry'
@@ -11,14 +11,14 @@ import {StudioAnnouncementsMenuItem} from '../StudioAnnouncementsMenuItem'
 import {type StudioAnnouncementDocument} from '../types'
 import {useStudioAnnouncements} from '../useStudioAnnouncements'
 
-jest.mock('../useStudioAnnouncements')
-jest.mock('@sanity/telemetry/react', () => ({
-  useTelemetry: jest.fn().mockReturnValue({
-    log: jest.fn(),
+vi.mock('../useStudioAnnouncements')
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn().mockReturnValue({
+    log: vi.fn(),
   }),
 }))
 
-jest.mock('../../../version', () => ({
+vi.mock('../../../version', () => ({
   SANITY_VERSION: '3.57.0',
 }))
 
@@ -36,9 +36,7 @@ const MOCKED_ANNOUNCEMENT: StudioAnnouncementDocument = {
   preHeader: "What's new",
   name: 'announcement-1',
 }
-const useStudioAnnouncementsMock = useStudioAnnouncements as jest.Mock<
-  typeof useStudioAnnouncements
->
+const useStudioAnnouncementsMock = useStudioAnnouncements as ReturnType<typeof vi.fn>
 const config = defineConfig({
   projectId: 'test',
   dataset: 'test',
@@ -55,14 +53,14 @@ async function createAnnouncementWrapper() {
 
 describe('StudioAnnouncementsMenuItem', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   test('renders null when there are no studio announcements', async () => {
     useStudioAnnouncementsMock.mockReturnValue({
       studioAnnouncements: [],
       unseenAnnouncements: [],
-      onDialogOpen: jest.fn(),
+      onDialogOpen: vi.fn(),
     })
 
     const wrapper = await createAnnouncementWrapper()
@@ -78,7 +76,7 @@ describe('StudioAnnouncementsMenuItem', () => {
     useStudioAnnouncementsMock.mockReturnValue({
       studioAnnouncements: [MOCKED_ANNOUNCEMENT],
       unseenAnnouncements: [],
-      onDialogOpen: jest.fn(),
+      onDialogOpen: vi.fn(),
     })
 
     const wrapper = await createAnnouncementWrapper()
@@ -91,10 +89,10 @@ describe('StudioAnnouncementsMenuItem', () => {
   })
 
   test('clicking on MenuItem calls onDialogOpen with "all"', async () => {
-    const onDialogOpenMock = jest.fn()
-    const mockLog = jest.fn()
-    const {useTelemetry} = require('@sanity/telemetry/react')
-    useTelemetry.mockReturnValue({log: mockLog})
+    const onDialogOpenMock = vi.fn()
+    const mockLog = vi.fn()
+    const {useTelemetry} = await import('@sanity/telemetry/react')
+    ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
     useStudioAnnouncementsMock.mockReturnValue({
       studioAnnouncements: [MOCKED_ANNOUNCEMENT],

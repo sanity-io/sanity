@@ -1,23 +1,23 @@
-import {beforeEach, describe, expect, it, jest, xdescribe} from '@jest/globals'
 import {type SanityDocument} from '@sanity/types'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {publish} from './publish'
 import {type OperationArgs} from './types'
 
-jest.mock('../utils/isLiveEditEnabled', () => ({isLiveEditEnabled: jest.fn()}))
+vi.mock('../utils/isLiveEditEnabled', () => ({isLiveEditEnabled: vi.fn()}))
 
 beforeEach(() => {
-  ;(isLiveEditEnabled as jest.Mock).mockClear()
+  ;(isLiveEditEnabled as Mock).mockClear()
 })
 
 // TODO: Restore this test
-xdescribe('publish', () => {
+describe.skip('publish', () => {
   describe('disabled', () => {
     // kind of a useless test but preserves the order at least
     it('returns with LIVE_EDIT_ENABLED if isLiveEditEnabled', () => {
-      ;(isLiveEditEnabled as jest.Mock).mockImplementation(
+      ;(isLiveEditEnabled as Mock).mockImplementation(
         // eslint-disable-next-line max-nested-callbacks
         () => true,
       )
@@ -31,7 +31,7 @@ xdescribe('publish', () => {
     })
 
     it('returns ALREADY_PUBLISHED if there is no draft and there is a published version', () => {
-      ;(isLiveEditEnabled as jest.Mock).mockImplementation(
+      ;(isLiveEditEnabled as Mock).mockImplementation(
         // eslint-disable-next-line max-nested-callbacks
         () => false,
       )
@@ -48,7 +48,7 @@ xdescribe('publish', () => {
     })
 
     it('returns NO_CHANGES if there is no draft and there is no published version', () => {
-      ;(isLiveEditEnabled as jest.Mock).mockImplementation(
+      ;(isLiveEditEnabled as Mock).mockImplementation(
         // eslint-disable-next-line max-nested-callbacks
         () => false,
       )
@@ -65,7 +65,7 @@ xdescribe('publish', () => {
     })
 
     it("otherwise the operation isn't disabled", () => {
-      ;(isLiveEditEnabled as jest.Mock).mockImplementation(
+      ;(isLiveEditEnabled as Mock).mockImplementation(
         // eslint-disable-next-line max-nested-callbacks
         () => false,
       )

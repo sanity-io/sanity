@@ -1,11 +1,11 @@
-import {jest} from '@jest/globals'
+import {type Mock, vi} from 'vitest'
 
 type MockSanityClient = {
-  fetch: jest.Mock<(query: string) => Promise<unknown>>
+  fetch: Mock<(query: string) => Promise<unknown>>
   withConfig: () => MockSanityClient
 }
 export function createMockSanityClient(): MockSanityClient {
-  const fetch = jest.fn((query: string) => Promise.resolve(null))
+  const fetch = vi.fn((query: string) => Promise.resolve(null))
   const client = {
     fetch,
     withConfig: () => client,

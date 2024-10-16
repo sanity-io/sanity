@@ -62,7 +62,7 @@ export function TasksFooterOpenTasks() {
             }),
           }}
         />
-        <Badge tone="primary" fontSize={0}>
+        <Badge data-testid="tasks-badge" tone="primary" fontSize={0}>
           {pendingTasks.length}
         </Badge>
       </ButtonContainer>

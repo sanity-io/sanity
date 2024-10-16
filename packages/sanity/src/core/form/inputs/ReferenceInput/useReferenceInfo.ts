@@ -1,6 +1,7 @@
-import {useCallback, useMemo} from 'react'
+import {observableCallback} from 'observable-callback'
+import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {concat, type Observable, of, Subject} from 'rxjs'
+import {concat, type Observable, of} from 'rxjs'
 import {catchError, concatMap, map, startWith} from 'rxjs/operators'
 
 import {type ReferenceInfo} from './types'
@@ -33,16 +34,11 @@ export function useReferenceInfo(
   getReferenceInfo: GetReferenceInfo,
 ): Loadable<ReferenceInfo> {
   // NOTE: this is a small message queue to handle retries
-  const msgSubject = useMemo(() => new Subject<{type: 'retry'}>(), [])
-  const msg$ = useMemo(() => msgSubject.asObservable(), [msgSubject])
-
-  const retry = useCallback(() => {
-    msgSubject.next({type: 'retry'})
-  }, [msgSubject])
+  const [onRetry$, onRetry] = useMemo(() => observableCallback(), [])
 
   const referenceInfoObservable = useMemo(
     () =>
-      concat(of(null), msg$).pipe(
+      concat(of(null), onRetry$).pipe(
         map(() => id),
         concatMap((refId: string | undefined) =>
           refId
@@ -52,19 +48,24 @@ export function useReferenceInfo(
                     isLoading: false,
                     result,
                     error: undefined,
-                    retry,
+                    retry: onRetry,
                   } as const
                 }),
                 startWith(INITIAL_LOADING_STATE),
                 catchError((err: Error) => {
                   console.error(err)
-                  return of({isLoading: false, result: undefined, error: err, retry} as const)
+                  return of({
+                    isLoading: false,
+                    result: undefined,
+                    error: err,
+                    retry: onRetry,
+                  } as const)
                 }),
               )
             : of(EMPTY_STATE),
         ),
       ),
-    [getReferenceInfo, id, msg$, retry],
+    [getReferenceInfo, id, onRetry, onRetry$],
   )
   return useObservable(referenceInfoObservable, INITIAL_LOADING_STATE)
 }

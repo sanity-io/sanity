@@ -23,6 +23,7 @@ import {
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
 import {validation} from './document-pair/validation'
+import {type PairListenerOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
@@ -97,6 +98,7 @@ export interface DocumentStoreOptions {
   initialValueTemplates: Template[]
   i18n: LocaleSource
   serverActionsEnabled: Observable<boolean>
+  pairListenerOptions?: PairListenerOptions
 }
 
 /** @internal */
@@ -108,6 +110,7 @@ export function createDocumentStore({
   schema,
   i18n,
   serverActionsEnabled,
+  pairListenerOptions,
 }: DocumentStoreOptions): DocumentStore {
   const observeDocumentPairAvailability =
     documentPreviewStore.unstable_observeDocumentPairAvailability
@@ -125,12 +128,13 @@ export function createDocumentStore({
     schema,
     i18n,
     serverActionsEnabled,
+    pairListenerOptions,
   }
 
   return {
     // Public API
     checkoutPair(idPair) {
-      return checkoutPair(client, idPair, serverActionsEnabled)
+      return checkoutPair(client, idPair, serverActionsEnabled, pairListenerOptions)
     },
     initialValue(opts, context) {
       return getInitialValueStream(
@@ -141,8 +145,8 @@ export function createDocumentStore({
         context,
       )
     },
-    listenQuery(query, params, options) {
-      return listenQuery(client, query, params, options)
+    listenQuery(query, params, listenQueryOptions) {
+      return listenQuery(client, query, params, listenQueryOptions)
     },
     resolveTypeForDocument(id, specifiedType) {
       return resolveTypeForDocument(client, id, specifiedType)
@@ -154,6 +158,7 @@ export function createDocumentStore({
           getIdPairFromPublished(publishedId, version),
           type,
           serverActionsEnabled,
+          pairListenerOptions,
         )
       },
       documentEvents(publishedId, type, version) {
@@ -162,13 +167,17 @@ export function createDocumentStore({
           getIdPairFromPublished(publishedId, version),
           type,
           serverActionsEnabled,
+          pairListenerOptions,
         )
       },
       editOperations(publishedId, type, version) {
         return editOperations(ctx, getIdPairFromPublished(publishedId, version), type)
       },
-      editState(publishedId, type, version) {
-        return editState(ctx, getIdPairFromPublished(publishedId, version), type)
+      editState(publishedId, type) {
+        const idPair = getIdPairFromPublished(publishedId)
+
+        const edit = editState(ctx, idPair, type)
+        return edit
       },
       operationEvents(publishedId, type) {
         return operationEvents({
@@ -176,6 +185,7 @@ export function createDocumentStore({
           historyStore,
           schema,
           serverActionsEnabled,
+          pairListenerOptions,
         }).pipe(
           filter(
             (result) =>
@@ -189,8 +199,9 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(publishedId, type, version) {
-        return validation(ctx, getIdPairFromPublished(publishedId, version), type)
+      validation(publishedId, type) {
+        const idPair = getIdPairFromPublished(publishedId)
+        return validation(ctx, idPair, type)
       },
     },
   }

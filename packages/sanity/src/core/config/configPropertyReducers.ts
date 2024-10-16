@@ -1,5 +1,5 @@
 import {type AssetSource, type SchemaTypeDefinition} from '@sanity/types'
-import {type ReactNode} from 'react'
+import {type ErrorInfo, type ReactNode} from 'react'
 
 import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
 import {type Template, type TemplateItem} from '../templates'
@@ -308,6 +308,29 @@ export const documentCommentsEnabledReducer = (opts: {
   }, initialValue)
 
   return result
+}
+
+export const onUncaughtErrorResolver = (opts: {
+  config: PluginOptions
+  context: {error: Error; errorInfo: ErrorInfo}
+}) => {
+  const {config, context} = opts
+  const flattenedConfig = flattenConfig(config, [])
+  flattenedConfig.forEach(({config: pluginConfig}) => {
+    // There is no concept of 'previous value' in this API. We only care about the final value.
+    // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
+    // The last plugin 'wins'.
+    const resolver = pluginConfig.onUncaughtError
+
+    if (typeof resolver === 'function') return resolver(context.error, context.errorInfo)
+    if (!resolver) return undefined
+
+    throw new Error(
+      `Expected \`document.onUncaughtError\` to be a a function, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  })
 }
 
 export const internalTasksReducer = (opts: {

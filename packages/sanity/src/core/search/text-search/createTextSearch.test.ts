@@ -1,6 +1,6 @@
-import {describe, expect, it} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {defineField, defineType} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
 
 import {
   getDocumentTypeConfiguration,

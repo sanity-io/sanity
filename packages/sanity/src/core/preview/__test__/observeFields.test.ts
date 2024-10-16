@@ -1,6 +1,6 @@
-import {describe, expect, it} from '@jest/globals'
 import {firstValueFrom, of, Subject} from 'rxjs'
 import {take, tap} from 'rxjs/operators'
+import {describe, expect, it} from 'vitest'
 
 import {type ClientLike, createObserveFields} from '../observeFields'
 import {type InvalidationChannelEvent} from '../types'

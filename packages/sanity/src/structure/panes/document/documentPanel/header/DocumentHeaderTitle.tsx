@@ -15,7 +15,7 @@ const TitleContainer = styled(Text)`
 
 export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactElement {
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
-  const subscribed = Boolean(documentValue) && connectionState !== 'connecting'
+  const subscribed = Boolean(documentValue)
 
   const {error, value} = useValuePreview({
     enabled: subscribed,
@@ -24,7 +24,7 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactEle
   })
   const {t} = useTranslation(structureLocaleNamespace)
 
-  if (connectionState === 'connecting') {
+  if (connectionState === 'connecting' && !subscribed) {
     return <></>
   }
 

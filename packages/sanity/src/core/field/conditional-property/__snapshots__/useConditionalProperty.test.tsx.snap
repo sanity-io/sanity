@@ -1,22 +1,22 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Conditional property resolver calls callback function 1`] = `
-Array [
-  Array [
-    Object {
-      "currentUser": Object {
+exports[`Conditional property resolver > calls callback function 1`] = `
+[
+  [
+    {
+      "currentUser": {
         "email": "doug@sanity.io",
         "id": "doug",
         "name": "Doug",
         "role": "admin",
-        "roles": Array [
-          Object {
+        "roles": [
+          {
             "name": "administrator",
             "title": "Administrator",
           },
         ],
       },
-      "document": Object {
+      "document": {
         "_createdAt": "2021-11-04T15:41:48Z",
         "_id": "drafts.10053a07-8647-4ebd-9d1d-33a512d30d3a",
         "_rev": "5hb8s6-k75-ip4-4bq-5ztbf3fbx",
@@ -24,20 +24,20 @@ Array [
         "_updatedAt": "2021-11-05T12:34:29Z",
         "isPublished": true,
         "title": "Hello world",
-        "venue": Object {
-          "address": Object {
+        "venue": {
+          "address": {
             "city": "Oakland",
             "state": "California",
             "street": "2421 Telegraph Ave #102",
             "zip": 94612,
           },
-          "location": Object {
+          "location": {
             "lat": 37.813563,
             "lng": -122.268812,
           },
         },
       },
-      "parent": Object {
+      "parent": {
         "parentTest": "hello",
         "siblingProp": true,
       },

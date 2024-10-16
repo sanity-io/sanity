@@ -1,6 +1,6 @@
-import {describe, expect, it} from '@jest/globals'
 import {type Tool} from 'sanity'
 import {type RouterState} from 'sanity/router'
+import {describe, expect, it} from 'vitest'
 
 import {resolveIntentState} from './helpers'
 

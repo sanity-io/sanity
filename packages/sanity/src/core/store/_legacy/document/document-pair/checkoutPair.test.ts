@@ -1,12 +1,12 @@
-import {beforeEach, expect, jest, test, xdescribe} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {merge, of} from 'rxjs'
 import {delay} from 'rxjs/operators'
+import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {checkoutPair} from './checkoutPair'
 
-const mockedDataRequest = jest.fn(() => of({}))
-const mockedActionRequest = jest.fn(() => of({}))
+const mockedDataRequest = vi.fn(() => of({}))
+const mockedActionRequest = vi.fn(() => of({}))
 
 const client = {
   observable: {
@@ -19,17 +19,17 @@ const client = {
     action: mockedActionRequest,
   },
   dataRequest: mockedDataRequest,
-  withConfig: jest.fn(() => client),
+  withConfig: vi.fn(() => client),
 }
 
 const idPair = {publishedId: 'publishedId', draftId: 'draftId'}
 
 beforeEach(() => {
-  jest.clearAllMocks()
+  vi.clearAllMocks()
 })
 
 // TODO: Restore this test
-xdescribe('checkoutPair -- local actions', () => {
+describe.skip('checkoutPair -- local actions', () => {
   test('patch', async () => {
     const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
     const combined = merge(draft.events, published.events)
@@ -216,7 +216,7 @@ xdescribe('checkoutPair -- local actions', () => {
 })
 
 // TODO: Restore this test
-xdescribe('checkoutPair -- server actions', () => {
+describe.skip('checkoutPair -- server actions', () => {
   test('patch', async () => {
     const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
     const combined = merge(draft.events, published.events)

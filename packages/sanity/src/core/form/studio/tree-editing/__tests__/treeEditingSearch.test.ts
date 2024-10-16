@@ -1,4 +1,4 @@
-import {describe, expect, test} from '@jest/globals'
+import {describe, expect, test} from 'vitest'
 
 import {type SearchableTreeEditingMenuItem} from '../components/search/types'
 import {treeEditingSearch} from '../components/search/utils'

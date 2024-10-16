@@ -19,6 +19,7 @@ import {
 } from 'rxjs/operators'
 
 import {type HistoryStore} from '../../history'
+import {type PairListenerOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {consistencyStatus} from './consistencyStatus'
@@ -145,6 +146,7 @@ export const operationEvents = memoize(
     historyStore: HistoryStore
     schema: Schema
     serverActionsEnabled: Observable<boolean>
+    pairListenerOptions?: PairListenerOptions
   }) => {
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
       groupBy((op) => op.idPair.publishedId),
@@ -167,6 +169,7 @@ export const operationEvents = memoize(
                   args.idPair,
                   args.typeName,
                   ctx.serverActionsEnabled,
+                  ctx.pairListenerOptions,
                 ).pipe(filter(Boolean))
                 const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
                 return ready$.pipe(

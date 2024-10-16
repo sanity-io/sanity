@@ -1,14 +1,14 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {type SanityDocument} from '@sanity/types'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {DocumentSheetListSelect} from '../DocumentSheetListSelect'
 
-const mockToggleSelected = jest.fn()
-const mockSetSelectedAnchor = jest.fn()
-const mockSetRowSelection = jest.fn()
+const mockToggleSelected = vi.fn()
+const mockSetSelectedAnchor = vi.fn()
+const mockSetRowSelection = vi.fn()
 
 const props = {
   table: {
@@ -42,7 +42,7 @@ const renderTest = (renderProps?: Partial<CellContext<SanityDocument, unknown>>)
 
 describe('DocumentSheetListSelect', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('selects only current checkbox if shift key is not pressed', async () => {

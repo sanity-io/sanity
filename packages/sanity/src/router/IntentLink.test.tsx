@@ -1,12 +1,12 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {render} from '@testing-library/react'
 import {noop} from 'lodash'
+import {describe, expect, it, vi} from 'vitest'
 
 import {IntentLink} from './IntentLink'
 import {route} from './route'
 import {RouterProvider} from './RouterProvider'
 
-jest.mock('./stickyParams', () => ({
+vi.mock('./stickyParams', () => ({
   STICKY_PARAMS: ['aTestStickyParam'],
 }))
 

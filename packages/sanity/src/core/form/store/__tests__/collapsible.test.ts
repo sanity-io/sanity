@@ -1,6 +1,6 @@
-import {beforeEach, describe, expect, it, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type ObjectSchemaType, type Path} from '@sanity/types'
+import {beforeEach, describe, expect, it, test} from 'vitest'
 
 import {pathToString} from '../../../field'
 import {createPrepareFormState, type PrepareFormState} from '../formState'

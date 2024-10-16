@@ -1,8 +1,8 @@
-import {describe, expect, it} from '@jest/globals'
 /* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
 import {type InitialValueResolverContext} from '@sanity/types'
 import {firstValueFrom} from 'rxjs'
+import {describe, expect, it} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createSchema} from '../../../../schema'

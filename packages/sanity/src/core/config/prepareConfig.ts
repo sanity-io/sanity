@@ -4,7 +4,13 @@ import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sani
 import {studioTheme} from '@sanity/ui'
 import {type i18n} from 'i18next'
 import {startCase} from 'lodash'
-import {type ComponentType, createElement, type ElementType, isValidElement} from 'react'
+import {
+  type ComponentType,
+  createElement,
+  type ElementType,
+  type ErrorInfo,
+  isValidElement,
+} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
@@ -32,6 +38,7 @@ import {
   internalTasksReducer,
   legacySearchEnabledReducer,
   newDocumentOptionsResolver,
+  onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
@@ -626,6 +633,16 @@ function resolveSource({
       staticInitialValueTemplateItems,
       options: config,
     },
+    onUncaughtError: (error: Error, errorInfo: ErrorInfo) => {
+      return onUncaughtErrorResolver({
+        config,
+        context: {
+          error: error,
+          errorInfo: errorInfo,
+        },
+      })
+    },
+
     beta: {
       treeArrayEditing: {
         // This beta feature is no longer available.

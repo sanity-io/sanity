@@ -1,8 +1,8 @@
-import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {type ColumnDef, useReactTable} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type SanityDocument} from 'sanity'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {ColumnsControl} from '../ColumnsControl'
 
@@ -56,7 +56,7 @@ describe('ColumnsControl', () => {
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should set default column visibilities', () => {

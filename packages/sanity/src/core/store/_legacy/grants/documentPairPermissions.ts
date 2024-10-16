@@ -15,7 +15,7 @@ import {
   type PartialExcept,
 } from '../../../util'
 import {useGrantsStore} from '../datastores'
-import {snapshotPair} from '../document'
+import {type PairListenerOptions, snapshotPair} from '../document'
 import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
@@ -172,6 +172,7 @@ export interface DocumentPairPermissionsOptions {
   version?: string
   permission: DocumentPermission
   serverActionsEnabled: Observable<boolean>
+  pairListenerOptions?: PairListenerOptions
 }
 
 /**
@@ -190,6 +191,7 @@ export function getDocumentPairPermissions({
   type,
   serverActionsEnabled,
   version,
+  pairListenerOptions,
 }: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
   // omitted from `S.documentList()`
@@ -202,7 +204,13 @@ export function getDocumentPairPermissions({
 
   const liveEdit = Boolean(getSchemaType(schema, type).liveEdit)
 
-  return snapshotPair(client, getIdPair(id, {version}), type, serverActionsEnabled).pipe(
+  return snapshotPair(
+    client,
+    getIdPair(id, {version}),
+    type,
+    serverActionsEnabled,
+    pairListenerOptions,
+  ).pipe(
     switchMap((pair) =>
       combineLatest([pair.draft.snapshots$, pair.published.snapshots$]).pipe(
         map(([draft, published]) => ({draft, published})),
@@ -282,6 +290,7 @@ export function useDocumentPairPermissions({
   client: overrideClient,
   schema: overrideSchema,
   grantsStore: overrideGrantsStore,
+  pairListenerOptions,
 }: PartialExcept<DocumentPairPermissionsOptions, 'id' | 'type' | 'permission'>): ReturnType<
   typeof useDocumentPairPermissionsFromHookFactory
 > {
@@ -305,8 +314,28 @@ export function useDocumentPairPermissions({
 
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(
-      () => ({client, schema, grantsStore, id, permission, type, serverActionsEnabled, version}),
-      [client, grantsStore, id, permission, schema, type, serverActionsEnabled, version],
+      () => ({
+        client,
+        schema,
+        grantsStore,
+        id,
+        permission,
+        type,
+        serverActionsEnabled,
+        pairListenerOptions,
+        version,
+      }),
+      [
+        client,
+        schema,
+        grantsStore,
+        id,
+        permission,
+        type,
+        serverActionsEnabled,
+        pairListenerOptions,
+        version,
+      ],
     ),
   )
 }

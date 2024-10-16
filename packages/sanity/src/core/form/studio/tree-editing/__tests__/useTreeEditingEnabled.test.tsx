@@ -1,14 +1,14 @@
-import {describe, expect, jest, test} from '@jest/globals'
 import {renderHook} from '@testing-library/react'
 import {type PropsWithChildren} from 'react'
 import {useSource, useTreeEditingEnabled} from 'sanity'
+import {describe, expect, type Mock, test, vi} from 'vitest'
 
 import {TreeEditingEnabledProvider} from '../context'
 
 // Mock the entire module
-jest.mock('../../../../studio/source')
+vi.mock('../../../../studio/source')
 
-const mockedUseInnerHook = useSource as jest.Mock
+const mockedUseInnerHook = useSource as Mock
 
 const wrapper = ({children}: PropsWithChildren) => (
   <TreeEditingEnabledProvider>{children}</TreeEditingEnabledProvider>

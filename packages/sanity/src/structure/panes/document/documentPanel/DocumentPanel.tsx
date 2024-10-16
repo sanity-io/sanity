@@ -188,7 +188,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   >
                     <FormView
                       hidden={formViewHidden}
-                      key={documentId + (ready ? '_ready' : '_pending')}
                       margins={margins}
                       ref={formContainerElement}
                     />

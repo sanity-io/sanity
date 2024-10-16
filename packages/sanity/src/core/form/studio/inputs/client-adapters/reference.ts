@@ -7,7 +7,11 @@ import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
 import {type DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
 import {createSearch} from '../../../../search'
 import {collate, type CollatedHit, getDraftId, getIdPair, isRecord} from '../../../../util'
-import {type ReferenceInfo, type ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
+import {
+  type PreviewDocumentValue,
+  type ReferenceInfo,
+  type ReferenceSearchHit,
+} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {
   available: true,
@@ -42,11 +46,11 @@ export function getReferenceInfo(
   return pairAvailability$.pipe(
     switchMap((pairAvailability) => {
       if (
-        !pairAvailability.version?.available &&
         !pairAvailability.draft.available &&
+        !pairAvailability.published.available &&
         !pairAvailability.published.available
       ) {
-        // combine availability of draft + published + version
+        // combine availability of draft + published
         const availability =
           pairAvailability.version?.reason === 'PERMISSION_DENIED' ||
           pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
@@ -66,10 +70,6 @@ export function getReferenceInfo(
           },
         } as const)
       }
-
-      const draftRef = {_type: 'reference', _ref: draftId}
-      const publishedRef = {_type: 'reference', _ref: publishedId}
-      const versionRef = versionId ? {_type: 'reference', _ref: versionId} : undefined
 
       const typeName$ = combineLatest([
         documentPreviewStore.observeDocumentTypeFromId(draftId),
@@ -117,49 +117,30 @@ export function getReferenceInfo(
               },
             } as const)
           }
-
           const previewPaths = getPreviewPaths(refSchemaType?.preview) || []
-
-          const draftPreview$ = documentPreviewStore.observePaths(draftRef, previewPaths).pipe(
-            map((result) =>
-              result
-                ? {
-                    _id: draftId,
-                    ...prepareForPreview(result, refSchemaType),
-                  }
-                : undefined,
-            ),
-            startWith(undefined),
+          const draftPreview$ = documentPreviewStore.observeForPreview(
+            {_id: draftId},
+            refSchemaType,
           )
 
-          const publishedPreview$ = documentPreviewStore
-            .observePaths(publishedRef, previewPaths)
-            .pipe(
-              map((result) =>
-                result
-                  ? {
-                      _id: publishedId,
-                      ...prepareForPreview(result, refSchemaType),
-                    }
-                  : undefined,
-              ),
-              startWith(undefined),
-            )
+          const publishedPreview$ = documentPreviewStore.observeForPreview(
+            {_id: publishedId},
+            refSchemaType,
+          )
 
-          const versionPreview$ =
-            versionId && versionRef
-              ? documentPreviewStore.observePaths(versionRef, previewPaths).pipe(
-                  map((result) =>
-                    result
-                      ? {
-                          _id: versionId,
-                          ...prepareForPreview(result, refSchemaType),
-                        }
-                      : undefined,
-                  ),
-                  startWith(undefined),
-                )
-              : undefined
+          const versionPreview$ = versionId
+            ? documentPreviewStore.observePaths({_id: versionId}, previewPaths).pipe(
+                map((result) =>
+                  result
+                    ? {
+                        _id: versionId,
+                        ...prepareForPreview(result, refSchemaType),
+                      }
+                    : undefined,
+                ),
+                startWith(undefined),
+              )
+            : undefined
 
           const value$ = combineLatest([
             draftPreview$,
@@ -191,9 +172,15 @@ export function getReferenceInfo(
                 id: publishedId,
                 availability,
                 preview: {
-                  draft: isRecord(value.draft) ? value.draft : undefined,
-                  published: isRecord(value.published) ? value.published : undefined,
-                  version: isRecord(value.version) ? value.version : undefined,
+                  draft: (isRecord(value.draft) ? value.draft : undefined) as
+                    | PreviewDocumentValue
+                    | undefined,
+                  published: (isRecord(value.published) ? value.published : undefined) as
+                    | PreviewDocumentValue
+                    | undefined,
+                  version: (isRecord(value.version) ? value.version : undefined) as
+                    | PreviewDocumentValue
+                    | undefined,
                 },
               }
             }),

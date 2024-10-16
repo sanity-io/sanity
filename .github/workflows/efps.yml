@@ -12,6 +12,11 @@ on:
         required: true
         type: boolean
         default: false
+      record_video:
+        description: "Record video"
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   efps:
@@ -78,6 +83,7 @@ jobs:
           PERF_EFPS_SANITY_TOKEN: ${{ secrets.PERF_EFPS_SANITY_TOKEN }}
           REFERENCE_TAG: ${{ github.event.inputs.reference_tag || 'latest' }}
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
+          RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
         run: pnpm efps:test
 
       - name: PR comment with report

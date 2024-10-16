@@ -1,6 +1,6 @@
-import {jest} from '@jest/globals'
 import {type ArraySchemaType, type FieldDefinition} from '@sanity/types'
 import {type ReactElement} from 'react'
+import {vi} from 'vitest'
 
 import {
   type ArrayOfObjectsFormNode,
@@ -31,19 +31,19 @@ export async function renderArrayOfObjectsInput(options: {
 }) {
   const {fieldDefinition, props, render} = options
 
-  const onItemAppend = jest.fn()
-  const onItemClose = jest.fn()
-  const onCollapse = jest.fn()
-  const onItemCollapse = jest.fn()
-  const onExpand = jest.fn()
-  const onItemExpand = jest.fn()
-  const onPathFocus = jest.fn()
-  const onInsert = jest.fn()
-  const onItemMove = jest.fn()
-  const onItemOpen = jest.fn()
-  const onItemPrepend = jest.fn()
-  const onUpload = jest.fn()
-  const onItemRemove = jest.fn()
+  const onItemAppend = vi.fn()
+  const onItemClose = vi.fn()
+  const onCollapse = vi.fn()
+  const onItemCollapse = vi.fn()
+  const onExpand = vi.fn()
+  const onItemExpand = vi.fn()
+  const onPathFocus = vi.fn()
+  const onInsert = vi.fn()
+  const onItemMove = vi.fn()
+  const onItemOpen = vi.fn()
+  const onItemPrepend = vi.fn()
+  const onUpload = vi.fn()
+  const onItemRemove = vi.fn()
 
   let initialValueId = 0
   const resolveInitialValue = () => Promise.resolve({_key: String(initialValueId++)})

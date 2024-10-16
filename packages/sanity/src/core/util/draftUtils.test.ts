@@ -1,5 +1,5 @@
-import {describe, expect, it, test} from '@jest/globals'
 import {type SanityDocument} from '@sanity/types'
+import {describe, expect, it, test} from 'vitest'
 
 import {
   collate,

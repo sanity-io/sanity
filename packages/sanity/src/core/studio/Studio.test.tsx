@@ -1,4 +1,3 @@
-import {describe, expect, it, jest} from '@jest/globals'
 /**
  * SSR Hydration is hard to get right.
  * It's not a concern when using `sanity dev`, `sanity build` or `sanity deploy` as we ship a client-only application
@@ -22,6 +21,7 @@ import {act} from 'react'
 import {hydrateRoot} from 'react-dom/client'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'
 import {ServerStyleSheet} from 'styled-components'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
 import {createMockAuthStore} from '../store/_legacy/authStore/createMockAuthStore'
@@ -34,12 +34,12 @@ const config = {
   auth: createMockAuthStore({client, currentUser: null}),
 }
 
-jest.mock('./components/navbar/new-document')
-jest.mock('./components/navbar/presence/PresenceMenu')
+vi.mock('./components/navbar/new-document')
+vi.mock('./components/navbar/presence/PresenceMenu')
 
 describe('Studio', () => {
   it(`SSR to static markup doesn't throw or warn`, () => {
-    const spy = jest.spyOn(console, 'error')
+    const spy = vi.spyOn(console, 'error')
     const sheet = new ServerStyleSheet()
     try {
       renderToStaticMarkup(sheet.collectStyles(<Studio config={config} />))
@@ -53,7 +53,7 @@ describe('Studio', () => {
     spy.mockRestore()
   })
   it(`SSR to markup for hydration doesn't throw`, () => {
-    const spy = jest.spyOn(console, 'error')
+    const spy = vi.spyOn(console, 'error')
     const node = document.createElement('div')
     document.body.appendChild(node)
 

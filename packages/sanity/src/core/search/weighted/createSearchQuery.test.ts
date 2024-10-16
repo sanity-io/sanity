@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
-import {describe, expect, it, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {describe, expect, it, test} from 'vitest'
 
 import {FINDABILITY_MVI} from '../constants'
 import {

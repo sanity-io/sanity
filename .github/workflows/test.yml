@@ -71,5 +71,6 @@ jobs:
       - name: Test
         id: test
         run: |
-          node -v
-          pnpm test:vitest
+          pnpm test:vitest --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
+        env:
+          GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
