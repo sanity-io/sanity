@@ -10,3 +10,8 @@ export const LATEST = {
   icon: undefined,
   hue: 'gray',
 } as const
+
+/**
+ * @internal
+ */
+export const DEFAULT_RELEASE_TYPE = 'asap'

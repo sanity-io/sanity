@@ -22,6 +22,7 @@ export * from './i18n'
 export * from './presence'
 export * from './preview'
 export {
+  DEFAULT_RELEASE_TYPE,
   getDocumentIsInPerspective,
   LATEST,
   ReleaseActions,
