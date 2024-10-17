@@ -10,12 +10,14 @@ import {type KeyValueStore, type KeyValueStoreValue} from './types'
  */
 export function withLocalStorageSWR(wrappedStore: KeyValueStore): KeyValueStore {
   function getKey(key: string) {
-    return merge(of(localStoreStorage.getKey(key)), wrappedStore.getKey(key)).pipe(
-      distinctUntilChanged(isEqual),
-      tap((value) => {
-        localStoreStorage.setKey(key, value)
-      }),
-    )
+    return merge(
+      of(localStoreStorage.getKey(key)),
+      wrappedStore.getKey(key).pipe(
+        tap((wrappedStoreValue) => {
+          localStoreStorage.setKey(key, wrappedStoreValue)
+        }),
+      ),
+    ).pipe(distinctUntilChanged(isEqual))
   }
   function setKey(key: string, nextValue: KeyValueStoreValue) {
     localStoreStorage.setKey(key, nextValue)

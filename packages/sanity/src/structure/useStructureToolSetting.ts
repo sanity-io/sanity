@@ -1,5 +1,6 @@
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
+import {map} from 'rxjs/operators'
 import {useKeyValueStore} from 'sanity'
 
 const STRUCTURE_TOOL_NAMESPACE = 'studio.structure-tool'
@@ -17,8 +18,10 @@ export function useStructureToolSetting<ValueType>(
   const keyValueStoreKey = [STRUCTURE_TOOL_NAMESPACE, namespace, key].filter(Boolean).join('.')
 
   const value$ = useMemo(() => {
-    return keyValueStore.getKey(keyValueStoreKey)
-  }, [keyValueStore, keyValueStoreKey])
+    return keyValueStore
+      .getKey(keyValueStoreKey)
+      .pipe(map((value) => (value === null ? defaultValue : value)))
+  }, [defaultValue, keyValueStore, keyValueStoreKey])
 
   const value = useObservable(value$, defaultValue) as ValueType
   const set = useCallback(
