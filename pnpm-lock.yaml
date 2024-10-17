@@ -37,7 +37,7 @@ importers:
         specifier: workspace:*
         version: link:packages/@repo/tsconfig
       '@sanity/client':
-        specifier: ^6.22.1
+        specifier: ^6.22.2
         version: 6.22.2(debug@4.3.7)
       '@sanity/eslint-config-i18n':
         specifier: 1.0.0
@@ -774,7 +774,7 @@ importers:
         specifier: ^7.23.5
         version: 7.25.7
       '@sanity/client':
-        specifier: ^6.22.1
+        specifier: ^6.22.2
         version: 6.22.2(debug@4.3.7)
       '@sanity/codegen':
         specifier: 3.61.0
@@ -1080,7 +1080,7 @@ importers:
   packages/@sanity/migrate:
     dependencies:
       '@sanity/client':
-        specifier: ^6.22.1
+        specifier: ^6.22.2
         version: 6.22.2(debug@4.3.7)
       '@sanity/mutate':
         specifier: ^0.10.0
@@ -1221,7 +1221,7 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^6.22.1
+        specifier: ^6.22.2
         version: 6.22.2(debug@4.3.7)
       '@types/react':
         specifier: ^18.3.5
@@ -1252,7 +1252,7 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: ^6.22.1
+        specifier: ^6.22.2
         version: 6.22.2(debug@4.3.7)
       '@sanity/types':
         specifier: 3.61.0
@@ -1353,7 +1353,7 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: ^6.22.1
+        specifier: ^6.22.2
         version: 6.22.2(debug@4.3.7)
       '@sanity/codegen':
         specifier: workspace:*
@@ -1443,7 +1443,7 @@ importers:
         specifier: 3.61.0
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^6.22.1
+        specifier: ^6.22.2
         version: 6.22.2(debug@4.3.7)
       '@sanity/color':
         specifier: ^3.0.0
@@ -1921,7 +1921,7 @@ importers:
   perf/efps:
     devDependencies:
       '@sanity/client':
-        specifier: ^6.22.1
+        specifier: ^6.22.2
         version: 6.22.2(debug@4.3.7)
       '@swc-node/register':
         specifier: ^1.10.9
@@ -2005,7 +2005,7 @@ importers:
         specifier: 1.44.1
         version: 1.44.1
       '@sanity/client':
-        specifier: ^6.22.1
+        specifier: ^6.22.2
         version: 6.22.2(debug@4.3.7)
       '@sanity/uuid':
         specifier: ^3.0.1
