@@ -134,7 +134,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   }
 
   const revLabel = chunk
-    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[chunk.type], {
+    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[chunk.event.type], {
         context: 'timestamp',
         timestamp: new Date(chunk?.endTimestamp),
         formatParams,
