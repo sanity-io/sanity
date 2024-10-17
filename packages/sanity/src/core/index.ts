@@ -28,6 +28,7 @@ export {
   ReleaseActions,
   ReleaseBadge,
   ReleasesMenu,
+  RELEASETYPE,
   useDocumentVersions,
   usePerspective,
 } from './releases'

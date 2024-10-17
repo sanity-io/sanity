@@ -10,7 +10,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {versionDocumentExists} from '../../../../../../core/releases'
+import {RELEASETYPE, versionDocumentExists} from '../../../../../../core/releases'
 import {usePaneRouter} from '../../../../../components'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {VersionChip} from './VersionChip'
@@ -26,8 +26,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   })
   const {data: bundles, loading} = useBundles()
 
-  console.log(perspective)
-
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()
 
   // remove the versions that the document already has
@@ -39,6 +37,18 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
       )) ||
     []
 
+  const asapReleases = documentVersions?.filter(
+    (release) => release.releaseType === RELEASETYPE.asap.name,
+  )
+
+  const scheduledReleases = documentVersions?.filter(
+    (release) => release.releaseType === RELEASETYPE.scheduled.name,
+  )
+  const undecidedReleases = documentVersions?.filter(
+    (release) => release.releaseType === RELEASETYPE.undecided.name,
+  )
+
+  console.log(scheduledReleases)
   const handleBundleChange = useCallback(
     (bundleId: string) => () => {
       setPerspective(bundleId)
@@ -124,18 +134,71 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           />
         }
       />
-
       {/* @todo update temporary text for tooltip */}
       {displayed &&
-        documentVersions?.map((release) => (
+        asapReleases?.map((release) => (
           <VersionChip
             key={release._id}
             // eslint-disable-next-line i18next/no-literal-string
-            tooltipContent={<Text size={1}>temporary text</Text>}
+            tooltipContent={<Text size={1}>ASAP</Text>}
             selected={release._id === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release._id)}
             text={release.title}
-            tone={'primary'}
+            tone={RELEASETYPE[release.releaseType]?.tone}
+            icon={DotIcon}
+            menuContent={
+              <VersionPopoverMenu
+                documentId={displayed?._id || ''}
+                menuReleaseId={release._id}
+                releases={filteredReleases}
+                releasesLoading={loading}
+                documentType={documentType}
+                fromRelease={release._id}
+                isVersion
+              />
+            }
+          />
+        ))}
+      {/* @todo missing check if release is scheduled or only has a date version.scheduled ? */}
+      {displayed &&
+        scheduledReleases?.map((release) => (
+          <VersionChip
+            key={release._id}
+            // eslint-disable-next-line i18next/no-literal-string
+            tooltipContent={
+              <Text size={1}>
+                {release.publishedAt
+                  ? `Intended for ${dateTimeFormat.format(new Date(release.publishedAt))}`
+                  : 'Unknown date'}
+              </Text>
+            }
+            selected={release._id === getVersionFromId(displayed?._id || '')}
+            onClick={handleBundleChange(release._id)}
+            text={release.title}
+            tone={RELEASETYPE[release.releaseType]?.tone}
+            icon={DotIcon}
+            menuContent={
+              <VersionPopoverMenu
+                documentId={displayed?._id || ''}
+                menuReleaseId={release._id}
+                releases={filteredReleases}
+                releasesLoading={loading}
+                documentType={documentType}
+                fromRelease={release._id}
+                isVersion
+              />
+            }
+          />
+        ))}
+      {displayed &&
+        undecidedReleases?.map((release) => (
+          <VersionChip
+            key={release._id}
+            tooltipContent={'Undecided'}
+            selected={release._id === getVersionFromId(displayed?._id || '')}
+            onClick={handleBundleChange(release._id)}
+            text={release.title}
+            tone={RELEASETYPE[release.releaseType]?.tone}
             icon={DotIcon}
             menuContent={
               <VersionPopoverMenu
