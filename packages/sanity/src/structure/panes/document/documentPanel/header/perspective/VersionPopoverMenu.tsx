@@ -45,7 +45,7 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
   const [isDiscarding, setIsDiscarding] = useState(false)
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
-  const isPublished = isPublishedId(documentId)
+  const isPublished = isPublishedId(documentId) && !isVersion
   const {perspective} = usePaneRouter()
 
   const optionsReleaseList = releases.map((release) => ({
