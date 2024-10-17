@@ -98,7 +98,15 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
 
   const [welcome$, mutationAndReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
 
-  const swrKey = JSON.stringify({filter, limit, params, searchQuery, sort, staticTypeNames})
+  const swrKey = JSON.stringify({
+    filter,
+    limit,
+    params,
+    searchQuery,
+    perspective,
+    sort,
+    staticTypeNames,
+  })
 
   return merge(
     welcome$.pipe(take(1)),
