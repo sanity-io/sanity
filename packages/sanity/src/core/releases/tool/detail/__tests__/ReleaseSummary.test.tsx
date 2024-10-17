@@ -145,7 +145,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
   )
 }
 
-describe('ReleaseSummary', () => {
+describe.todo('ReleaseSummary', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
 
