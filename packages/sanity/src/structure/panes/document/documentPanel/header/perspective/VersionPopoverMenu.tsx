@@ -20,7 +20,7 @@ import {
 import {IntentLink} from 'sanity/router'
 
 import {AddedVersion} from '../../../../../../core/releases/__telemetry__/releases.telemetry'
-import {MenuGroup, MenuItem} from '../../../../../../ui-components'
+import {Button, MenuGroup, MenuItem} from '../../../../../../ui-components'
 
 export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
   documentId: string
@@ -130,21 +130,25 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
   return (
     <Menu>
       {isVersion && (
-        <MenuItem
-          as={IntentLink}
-          icon={CalendarIcon}
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          text={`View release`}
+        <IntentLink
+          intent="release"
           params={{id: releaseId}}
-          intent={'release'}
           target="_blank"
           rel="noopener noreferrer"
-        />
+          style={{textDecoration: 'none'}}
+        >
+          <MenuItem
+            icon={CalendarIcon}
+            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+            text={`View release`}
+          />
+        </IntentLink>
       )}
       {releasesLoading && <Spinner />}
       <MenuGroup icon={CopyIcon} popover={{placement: 'right-start'}} text="Copy version to">
         {optionsReleaseList.map((option) => (
           <MenuItem
+            as="a"
             key={option.value._id}
             onClick={() => handleAddVersion(option.value._id)}
             text={option.value.title}
