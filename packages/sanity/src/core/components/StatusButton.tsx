@@ -47,6 +47,7 @@ export const StatusButton = forwardRef(function StatusButton(
     ...restProps
   } = props
   const theme = useTheme()
+  // @ts-expect-error fixme after sanity/ui and sanity/icons release
   const toneColor = tone && theme.sanity.color.solid[tone]
   const dotStyle = useMemo(() => ({backgroundColor: toneColor?.enabled.bg}), [toneColor])
   const disabled = Boolean(disabledProp)

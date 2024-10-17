@@ -57,8 +57,16 @@ const TableHeaderSearch = ({
  */
 export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
   return (
-    <Card as="thead" radius={3}>
-      <Flex as="tr">
+    <Card as="thead" borderTop borderBottom>
+      <Flex
+        as="tr"
+        style={{
+          paddingInline: `max(
+          calc((100vw - var(--maxInlineSize)) / 2),
+          var(--paddingInline)
+        )`,
+        }}
+      >
         {headers.map(({header: Header, width, id, sorting}) => (
           <Header
             key={String(id)}
