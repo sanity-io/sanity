@@ -10,7 +10,6 @@ import {
   getVersionFromId,
   getVersionId,
   isPublishedId,
-  isVersionId,
   Translate,
   useClient,
   useDocumentOperation,
@@ -30,12 +29,20 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
   documentType: string
   menuReleaseId: string
   fromRelease: string
+  isVersion: boolean
 }) {
-  const {documentId, releases, releasesLoading, documentType, menuReleaseId, fromRelease} = props
+  const {
+    documentId,
+    releases,
+    releasesLoading,
+    documentType,
+    menuReleaseId,
+    fromRelease,
+    isVersion,
+  } = props
   const [isDiscarding, setIsDiscarding] = useState(false)
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
-  const isVersion = isVersionId(documentId)
   const isPublished = isPublishedId(documentId)
 
   const optionsReleaseList = releases.map((release) => ({
