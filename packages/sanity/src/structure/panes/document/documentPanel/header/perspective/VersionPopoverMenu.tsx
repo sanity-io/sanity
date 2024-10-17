@@ -20,7 +20,8 @@ import {
 import {IntentLink} from 'sanity/router'
 
 import {AddedVersion} from '../../../../../../core/releases/__telemetry__/releases.telemetry'
-import {Button, MenuGroup, MenuItem} from '../../../../../../ui-components'
+import {MenuGroup, MenuItem} from '../../../../../../ui-components'
+import {VersionPopoverMenuItem} from './VersionPopoverMenuItem'
 
 export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
   documentId: string
@@ -126,7 +127,7 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
     setIsDiscarding(false)
   }, [client, documentId, isVersion, menuReleaseId, t, toast])
 
-  /* @todo update literal */
+  /** @todo update literal */
   return (
     <Menu>
       {isVersion && (
@@ -146,14 +147,19 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
       )}
       {releasesLoading && <Spinner />}
       <MenuGroup icon={CopyIcon} popover={{placement: 'right-start'}} text="Copy version to">
-        {optionsReleaseList.map((option) => (
-          <MenuItem
-            as="a"
-            key={option.value._id}
-            onClick={() => handleAddVersion(option.value._id)}
-            text={option.value.title}
-          />
-        ))}
+        {optionsReleaseList.map((option) => {
+          return (
+            <>
+              <MenuItem
+                as="a"
+                key={option.value._id}
+                onClick={() => handleAddVersion(option.value._id)}
+                text={option.value.title}
+                renderMenuItem={() => <VersionPopoverMenuItem release={option.value} />}
+              />
+            </>
+          )
+        })}
       </MenuGroup>
       {!isPublished && (
         <>
