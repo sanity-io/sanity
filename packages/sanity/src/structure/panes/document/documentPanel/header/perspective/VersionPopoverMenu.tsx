@@ -18,6 +18,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
+import {usePaneRouter} from 'sanity/structure'
 
 import {AddedVersion} from '../../../../../../core/releases/__telemetry__/releases.telemetry'
 import {MenuGroup, MenuItem} from '../../../../../../ui-components'
@@ -45,6 +46,7 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
   const isPublished = isPublishedId(documentId)
+  const {perspective} = usePaneRouter()
 
   const optionsReleaseList = releases.map((release) => ({
     value: release,
@@ -105,6 +107,10 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
 
       await client.delete(docId)
 
+      if (perspective?.replace('bundle.', '') === menuReleaseId) {
+        setPerspective('drafts')
+      }
+
       toast.push({
         closable: true,
         status: 'success',
@@ -125,7 +131,7 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
     }
 
     setIsDiscarding(false)
-  }, [client, documentId, isVersion, menuReleaseId, t, toast])
+  }, [client, documentId, isVersion, menuReleaseId, perspective, setPerspective, t, toast])
 
   /** @todo update literal */
   return (
