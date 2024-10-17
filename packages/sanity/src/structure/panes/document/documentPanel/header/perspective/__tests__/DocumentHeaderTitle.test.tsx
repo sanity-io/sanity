@@ -82,7 +82,7 @@ describe('DocumentHeaderTitle', () => {
     const wrapper = await createWrapperComponent(client as any)
 
     const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('Untitled')).toBeInTheDocument())
+    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
   })
 
   it('should return an empty fragment when connectionState is not "connected" and editState is empty', async () => {
@@ -99,7 +99,9 @@ describe('DocumentHeaderTitle', () => {
   it('should render the header title when connectionState is not "connected" and editState has values', async () => {
     mockUseDocumentPane.mockReturnValue({
       ...defaultProps,
-      connectionState: 'connecting',
+      connectionState: 'reconnecting',
+      value: {title: 'Test Value'},
+      title: 'Test Title',
     } as unknown as DocumentPaneContextValue)
 
     mockUseValuePreview.mockReturnValue({
@@ -109,7 +111,7 @@ describe('DocumentHeaderTitle', () => {
     })
 
     const {getByText} = render(<DocumentHeaderTitle />)
-    await waitFor(() => expect(getByText('Test Value')).toBeInTheDocument())
+    await waitFor(() => expect(getByText('Test Title')).toBeInTheDocument())
   })
 
   it('should return the title if it is provided', async () => {
@@ -149,24 +151,28 @@ describe('DocumentHeaderTitle', () => {
     const wrapper = await createWrapperComponent(client as any)
 
     const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('Test Preview Value')).toBeInTheDocument())
+    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
   })
 
-  it('should return "Untitled" if value is not provided and no error occurred', async () => {
+  it('should return "New Test Schema" if value is not provided and no error occurred', async () => {
     mockUseValuePreview.mockReturnValue({...defaultValue, error: undefined, value: undefined})
 
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
     const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('Untitled')).toBeInTheDocument())
+    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
   })
 
   it('should return "Error: {error.message}" if an error occurred while getting the preview value', async () => {
+    mockUseDocumentPane.mockReturnValue({
+      ...defaultProps,
+      value: {title: 'Test Preview Value'},
+    } as unknown as DocumentPaneContextValue)
+
     mockUseValuePreview.mockReturnValue({
       ...defaultValue,
       error: new Error('Test Error'),
-      value: undefined,
     })
 
     const client = createMockSanityClient()
@@ -179,6 +185,11 @@ describe('DocumentHeaderTitle', () => {
   it('should call useValuePreview hook with the correct arguments', async () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
+
+    mockUseDocumentPane.mockReturnValue({
+      ...defaultProps,
+      value: defaultProps.editState.draft,
+    } as unknown as DocumentPaneContextValue)
 
     render(<DocumentHeaderTitle />, {wrapper})
     await waitFor(() =>
@@ -194,13 +205,12 @@ describe('DocumentHeaderTitle', () => {
     mockUseValuePreview.mockReturnValue({
       ...defaultValue,
       error: undefined,
-      value: {title: 'Test Preview Value'},
     })
 
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
     const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('Test Preview Value')).toBeInTheDocument())
+    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
   })
 })

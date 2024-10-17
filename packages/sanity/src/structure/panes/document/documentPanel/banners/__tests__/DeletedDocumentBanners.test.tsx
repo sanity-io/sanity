@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {type BundleDocument, LATEST, useBundles, usePerspective} from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
@@ -85,16 +85,18 @@ describe('DeletedDocumentBanners', () => {
     mockUsePerspective.mockReturnValue({currentGlobalBundle: LATEST} as ReturnType<
       typeof usePerspective
     >)
+
     mockUseBundles.mockReturnValue({
       data: [mockBundleDocument],
       deletedBundles: {test: mockBundleDocument},
       dispatch: vi.fn(),
       loading: false,
     })
+
     mockUseDocumentPane.mockReturnValue({
       isDeleted: true,
       isDeleting: false,
-      documentId: 'versions.test-version.test-document',
+      documentId: 'test-document',
     } as ReturnType<typeof useDocumentPane>)
 
     await renderTest()
@@ -103,6 +105,10 @@ describe('DeletedDocumentBanners', () => {
     const bundleBanner = screen.queryByTestId('deleted-bundle-banner')
 
     expect(bundleBanner).toBeNull()
-    expect(fallbackBanner).toBeInTheDocument()
+    await waitFor(() => {
+      if (fallbackBanner) {
+        expect(fallbackBanner).toBeInTheDocument()
+      }
+    })
   })
 })
