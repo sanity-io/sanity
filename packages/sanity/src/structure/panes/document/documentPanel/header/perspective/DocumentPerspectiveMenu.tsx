@@ -48,7 +48,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
     (release) => release.releaseType === RELEASETYPE.undecided.name,
   )
 
-  console.log(scheduledReleases)
   const handleBundleChange = useCallback(
     (bundleId: string) => () => {
       setPerspective(bundleId)
@@ -194,6 +193,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         undecidedReleases?.map((release) => (
           <VersionChip
             key={release._id}
+            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             tooltipContent={'Undecided'}
             selected={release._id === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release._id)}
