@@ -107,7 +107,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/client": "bundle-perspective",
+    "@sanity/client": "6.22.1-bundle-perspective",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/mutate": "^0.10.0",
@@ -186,7 +186,7 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
-      "@sanity/client": "bundle-perspective",
+      "@sanity/client": "6.22.1-bundle-perspective",
       "@sanity/ui@2": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
