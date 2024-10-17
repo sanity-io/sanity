@@ -1,4 +1,4 @@
-import {RestoreIcon} from '@sanity/icons'
+import {RevertIcon} from '@sanity/icons'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
@@ -66,14 +66,14 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
 
     return {
       label: t('action.restore.label'),
-      color: 'primary',
+      tone: 'caution',
       onHandle: handle,
       title: t(
         isRevisionInitial
           ? 'action.restore.disabled.cannot-restore-initial'
           : 'action.restore.tooltip',
       ),
-      icon: RestoreIcon,
+      icon: RevertIcon,
       dialog,
       disabled: isRevisionInitial,
     }
