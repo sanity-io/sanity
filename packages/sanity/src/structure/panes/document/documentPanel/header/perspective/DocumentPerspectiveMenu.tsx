@@ -76,6 +76,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
               releasesLoading={loading}
               documentType={documentType}
               fromRelease={''}
+              isVersion={false}
             />
           ) : null
         }
@@ -119,6 +120,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             releasesLoading={loading}
             documentType={documentType}
             fromRelease={''}
+            isVersion={false}
           />
         }
       />
@@ -143,6 +145,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
                 releasesLoading={loading}
                 documentType={documentType}
                 fromRelease={release._id}
+                isVersion
               />
             }
           />
