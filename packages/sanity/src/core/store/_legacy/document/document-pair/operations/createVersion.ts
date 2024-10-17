@@ -9,7 +9,7 @@ export const createVersion: OperationImpl<[baseDocumentId: string], 'NO_NEW_VERS
     return snapshots.published || snapshots.draft ? false : 'NO_NEW_VERSION'
   },
   execute: ({schema, client, snapshots, typeName}, dupeId) => {
-    const source = snapshots.draft || snapshots.published
+    const source = snapshots.version || snapshots.draft || snapshots.published
 
     if (!source) {
       throw new Error('cannot execute on empty document')
