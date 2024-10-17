@@ -10,11 +10,11 @@ export function getReleaseTone(release: BundleDocument): BadgeTone | undefined {
     return undefined
   }
 
-  if (release.releaseType === 'immediately') {
+  if (release.releaseType === 'asap') {
     return 'critical'
   }
 
-  if (release.releaseType === 'never') {
+  if (release.releaseType === 'undecided') {
     return 'explore'
   }
   return 'prospect'
