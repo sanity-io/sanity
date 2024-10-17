@@ -1,6 +1,6 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {createElement, useEffect, useMemo, useRef, useState} from 'react'
-import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
+import {ScrollContainer, VirtualizerScrollInstanceProvider} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
@@ -10,9 +10,9 @@ import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
 import {
-  DeletedDocumentBanner,
+  DeletedDocumentBanners,
   DeprecatedDocumentTypeBanner,
-  InsufficientPermissionBanner,
+  PermissionCheckBanner,
   ReferenceChangedBanner,
 } from './banners'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
@@ -59,9 +59,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
-    isDeleting,
-    isDeleted,
-    timelineStore,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -112,11 +109,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value],
   )
 
-  const lastNonDeletedRevId = useTimelineSelector(
-    timelineStore,
-    (state) => state.lastNonDeletedRevId,
-  )
-
   const isLiveEdit = isLiveEditEnabled(schemaType)
 
   // Scroll to top as `documentId` changes
@@ -138,6 +130,42 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const showInspector = Boolean(!collapsed && inspector)
 
+  const banners = useMemo(() => {
+    if (activeView.type === 'form' && isLiveEdit && ready) {
+      return (
+        <DraftLiveEditBanner
+          displayed={displayed}
+          documentId={documentId}
+          schemaType={schemaType}
+        />
+      )
+    }
+
+    if (activeView.type !== 'form' || isPermissionsLoading || !ready) return null
+
+    return (
+      <>
+        <PermissionCheckBanner
+          granted={Boolean(permissions?.granted)}
+          requiredPermission={requiredPermission}
+        />
+        <ReferenceChangedBanner />
+        <DeprecatedDocumentTypeBanner />
+        <DeletedDocumentBanners />
+      </>
+    )
+  }, [
+    activeView.type,
+    displayed,
+    documentId,
+    isLiveEdit,
+    isPermissionsLoading,
+    permissions?.granted,
+    ready,
+    requiredPermission,
+    schemaType,
+  ])
+
   return (
     <PaneContent>
       <Flex height="fill">
@@ -152,27 +180,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   scrollElement={documentScrollElement}
                   containerElement={formContainerElement}
                 >
-                  {activeView.type === 'form' && isLiveEdit && ready && (
-                    <DraftLiveEditBanner
-                      displayed={displayed}
-                      documentId={documentId}
-                      schemaType={schemaType}
-                    />
-                  )}
-
-                  {activeView.type === 'form' && !isPermissionsLoading && ready && (
-                    <>
-                      {!permissions?.granted && (
-                        <InsufficientPermissionBanner requiredPermission={requiredPermission} />
-                      )}
-                      {!isDeleting && isDeleted && (
-                        <DeletedDocumentBanner revisionId={lastNonDeletedRevId} />
-                      )}
-                      <ReferenceChangedBanner />
-                      <DeprecatedDocumentTypeBanner />
-                    </>
-                  )}
-
+                  {banners}
                   <Scroller
                     $disabled={layoutCollapsed || false}
                     data-testid="document-panel-scroller"

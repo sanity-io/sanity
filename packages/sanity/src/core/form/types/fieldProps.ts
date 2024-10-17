@@ -61,6 +61,7 @@ export interface BaseFieldProps {
   changed: boolean
   children: ReactNode
   renderDefault: (props: FieldProps) => ReactElement
+  version?: string
 }
 
 /**

@@ -1,3 +1,5 @@
+import {type SearchParam} from 'sanity/router'
+
 import {getTypeNamesFromFilter, type PartialDocumentList} from './DocumentList'
 import {type StructureNode} from './StructureNodes'
 
@@ -75,6 +77,8 @@ export interface Intent {
   /** Intent parameters. See {@link IntentParams}
    */
   params?: IntentParams
+
+  searchParams?: SearchParam[]
 }
 
 /**

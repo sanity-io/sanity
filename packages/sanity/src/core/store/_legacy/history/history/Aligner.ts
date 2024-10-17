@@ -90,7 +90,7 @@ export class Aligner {
   constructor(timeline: Timeline) {
     this.timeline = timeline
     this._states = {
-      draft: emptyVersionState(timeline.draftId),
+      draft: emptyVersionState(timeline.versionId),
       published: emptyVersionState(timeline.publishedId),
     }
   }
@@ -101,6 +101,10 @@ export class Aligner {
   }
 
   appendRemoteSnapshotEvent(evt: RemoteSnapshotVersionEvent): void {
+    if (evt.version === 'version') {
+      return
+    }
+
     const state = this._states[evt.version]
 
     if (evt.type === 'snapshot') {

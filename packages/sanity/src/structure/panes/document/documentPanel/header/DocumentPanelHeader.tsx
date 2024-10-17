@@ -43,6 +43,8 @@ export interface DocumentPanelHeaderProps {
   menuItems: PaneMenuItem[]
 }
 
+const documentPaneHeaderTitle = <DocumentHeaderTitle />
+
 export const DocumentPanelHeader = memo(
   forwardRef(function DocumentPanelHeader(
     _props: DocumentPanelHeaderProps,
@@ -138,7 +140,7 @@ export const DocumentPanelHeader = memo(
           border
           ref={ref}
           loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
-          title={<DocumentHeaderTitle />}
+          title={documentPaneHeaderTitle}
           tabs={showTabs && <DocumentHeaderTabs />}
           tabIndex={tabIndex}
           backButton={
@@ -152,7 +154,6 @@ export const DocumentPanelHeader = memo(
               />
             )
           }
-          subActions={<TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />}
           actions={
             <Flex align="center" gap={1}>
               {unstable_languageFilter.length > 0 && (
@@ -171,13 +172,16 @@ export const DocumentPanelHeader = memo(
                 <PaneHeaderActionButton key={item.key} node={item} />
               ))}
               {editState && (
-                <RenderActionCollectionState
-                  actions={actions}
-                  actionProps={editState}
-                  group="paneActions"
-                >
-                  {renderPaneActions}
-                </RenderActionCollectionState>
+                <>
+                  <RenderActionCollectionState
+                    actions={actions}
+                    actionProps={editState}
+                    group="paneActions"
+                  >
+                    {renderPaneActions}
+                  </RenderActionCollectionState>
+                  <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
+                </>
               )}
 
               {showSplitPaneButton && (

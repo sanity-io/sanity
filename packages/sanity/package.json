@@ -252,6 +252,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.0",
     "rxjs-exhaustmap-with-trailing": "^2.1.1",
+    "rxjs-mergemap-array": "^0.1.0",
     "sanity-diff-patch": "^3.0.2",
     "scroll-into-view-if-needed": "^3.0.3",
     "semver": "^7.3.5",

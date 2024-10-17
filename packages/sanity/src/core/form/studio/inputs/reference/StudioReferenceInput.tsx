@@ -25,6 +25,7 @@ import {
   type EditReferenceEvent,
 } from '../../../inputs/ReferenceInput/types'
 import {type ObjectInputProps} from '../../../types'
+import {useFormBuilder} from '../../../useFormBuilder'
 import {useReferenceInputOptions} from '../../contexts'
 import * as adapter from '../client-adapters/reference'
 import {resolveUserDefinedFilter} from './resolveUserDefinedFilter'
@@ -61,6 +62,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
   const documentPreviewStore = useDocumentPreviewStore()
+  const {version} = useFormBuilder()
   const {path, schemaType} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
@@ -192,6 +194,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
       onEditReference={handleEditReference}
+      version={version}
     />
   )
 }

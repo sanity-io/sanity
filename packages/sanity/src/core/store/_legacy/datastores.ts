@@ -6,8 +6,10 @@ import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
-import {useSource, useWorkspace} from '../../studio'
+import {useAddonDataset, useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {createBundlesStore} from '../bundles/createBundlesStore'
+import {type BundlesStore} from '../bundles/types'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
 import {useCurrentUser} from '../user'
 import {
@@ -288,4 +290,35 @@ export function useKeyValueStore(): KeyValueStore {
 
     return keyValueStore
   }, [client, resourceCache, workspace])
+}
+
+/** @internal */
+export function useBundlesStore(): BundlesStore {
+  const resourceCache = useResourceCache()
+  const workspace = useWorkspace()
+  const currentUser = useCurrentUser()
+  const addonDataset = useAddonDataset()
+  const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+
+  return useMemo(() => {
+    const bundlesStore =
+      resourceCache.get<BundlesStore>({
+        dependencies: [workspace, addonDataset, currentUser],
+        namespace: 'BundlesStore',
+      }) ||
+      createBundlesStore({
+        addonClient: addonDataset.client,
+        addonClientReady: addonDataset.ready,
+        studioClient,
+        currentUser,
+      })
+
+    resourceCache.set({
+      dependencies: [workspace, addonDataset, currentUser],
+      namespace: 'BundlesStore',
+      value: bundlesStore,
+    })
+
+    return bundlesStore
+  }, [resourceCache, workspace, addonDataset, studioClient, currentUser])
 }

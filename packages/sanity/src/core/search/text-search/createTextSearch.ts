@@ -142,10 +142,14 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       searchOptions.includeDrafts === false && "!(_id in path('drafts.**'))",
       factoryOptions.filter ? `(${factoryOptions.filter})` : false,
       searchTerms.filter ? `(${searchTerms.filter})` : false,
+      // Versions are collated server-side using the `bundlePerspective` option. Therefore, they
+      // must not be fetched individually.
       '!(_id in path("versions.**"))',
     ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
     const textSearchParams: TextSearchParams = {
+      perspective: searchOptions.perspective,
+      bundlePerspective: searchOptions.bundlePerspective,
       query: {
         string: getQueryString(searchTerms.query, searchOptions),
       },
@@ -157,7 +161,9 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       },
       types: getDocumentTypeConfiguration(searchOptions, searchTerms),
       ...(searchOptions.sort ? {order: getOrder(searchOptions.sort)} : {}),
-      includeAttributes: ['_id', '_type'],
+      // Note: Text Search API does not currently expose fields containing an empty object, so
+      // we're not yet able to retrieve `_version` here.
+      includeAttributes: ['_id', '_type', '_version'],
       fromCursor: searchOptions.cursor,
       limit: searchOptions.limit ?? DEFAULT_LIMIT,
     }

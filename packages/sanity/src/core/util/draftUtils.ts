@@ -14,8 +14,10 @@ export type PublishedId = Opaque<string, 'publishedId'>
 
 /** @internal */
 export const DRAFTS_FOLDER = 'drafts'
+
 /** @internal */
 export const VERSION_FOLDER = 'versions'
+
 const PATH_SEPARATOR = '.'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
 const VERSION_PREFIX = `${VERSION_FOLDER}${PATH_SEPARATOR}`
@@ -64,11 +66,27 @@ export function isVersionId(id: string): boolean {
   return id.startsWith(VERSION_PREFIX)
 }
 
-/** @internal */
-export function getIdPair(id: string): {draftId: DraftId; publishedId: PublishedId} {
+/**
+ * TODO: Improve return type based on presence of `version` option.
+ *
+ * @internal
+ */
+export function getIdPair(
+  id: string,
+  {version}: {version?: string} = {},
+): {
+  draftId: DraftId
+  publishedId: PublishedId
+  versionId?: string
+} {
   return {
-    draftId: getDraftId(id),
     publishedId: getPublishedId(id),
+    draftId: getDraftId(id),
+    ...(version
+      ? {
+          versionId: isVersionId(id) ? id : getVersionId(id, version),
+        }
+      : {}),
   }
 }
 

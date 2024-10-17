@@ -52,6 +52,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     id,
     onPathFocus,
     value,
+    version,
     renderPreview,
     path,
     elementProps,
@@ -62,6 +63,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     path,
     schemaType,
     value,
+    version,
   })
 
   const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
@@ -187,6 +189,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const renderOption = useCallback(
     (option: AutocompleteOption) => {
+      // TODO: Account for checked-out version.
       const documentId = option.hit.draft?._id || option.hit.published?._id || option.value
 
       return (
@@ -205,6 +208,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const renderValue = useCallback(() => {
     return (
+      loadableReferenceInfo.result?.preview.version?.title ||
       loadableReferenceInfo.result?.preview.draft?.title ||
       loadableReferenceInfo.result?.preview.published?.title ||
       ''
@@ -212,6 +216,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   }, [
     loadableReferenceInfo.result?.preview.draft?.title,
     loadableReferenceInfo.result?.preview.published?.title,
+    loadableReferenceInfo.result?.preview.version?.title,
   ])
 
   const handleFocus = useCallback(() => onPathFocus(['_ref']), [onPathFocus])

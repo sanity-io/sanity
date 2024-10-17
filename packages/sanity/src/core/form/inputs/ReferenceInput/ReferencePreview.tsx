@@ -27,6 +27,7 @@ export function ReferencePreview(props: {
   const documentPresence = useDocumentPresence(id)
 
   const previewId =
+    preview.version?._id ||
     preview.draft?._id ||
     preview.published?._id ||
     // note: during publish of the referenced document we might have both a missing draft and a missing published version
@@ -44,7 +45,7 @@ export function ReferencePreview(props: {
     [previewId, refType.name],
   )
 
-  const {draft, published} = preview
+  const {draft, published, version} = preview
 
   const previewProps = useMemo(
     () => ({
@@ -57,13 +58,17 @@ export function ReferencePreview(props: {
               <DocumentPreviewPresence presence={documentPresence} />
             )}
 
-            <DocumentStatusIndicator draft={preview.draft} published={preview.published} />
+            <DocumentStatusIndicator
+              draft={preview.draft}
+              published={preview.published}
+              version={preview.version}
+            />
           </Inline>
         </Box>
       ),
       layout,
       schemaType: refType,
-      tooltip: <DocumentStatus draft={draft} published={published} />,
+      tooltip: <DocumentStatus draft={draft} published={published} version={version} />,
       value: previewStub,
     }),
     [
@@ -72,10 +77,12 @@ export function ReferencePreview(props: {
       layout,
       preview.draft,
       preview.published,
+      preview.version,
       previewStub,
       published,
       refType,
       showTypeLabel,
+      version,
     ],
   )
 

@@ -3,6 +3,7 @@ import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
+import {getPublishedId, resolveBundlePerspective} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
@@ -18,6 +19,7 @@ import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../
 
 interface SearchResultItemPreviewProps {
   documentId: string
+  perspective?: string
   layout?: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
@@ -28,7 +30,8 @@ interface SearchResultItemPreviewProps {
  * Temporary workaround: force all nested boxes on iOS to use `background-attachment: scroll`
  * to allow <Skeleton> components to render correctly within virtual lists.
  */
-const SearchResultItemPreviewBox = styled(Box)`
+const SearchResultItemPreviewBox = styled(Box)<{$isInPerspective: boolean}>`
+  opacity: ${(props) => (props.$isInPerspective ? 1 : 0.5)};
   @supports (-webkit-overflow-scrolling: touch) {
     * [data-ui='Box'] {
       background-attachment: scroll;
@@ -42,6 +45,7 @@ const SearchResultItemPreviewBox = styled(Box)`
 export function SearchResultItemPreview({
   documentId,
   layout,
+  perspective,
   presence,
   schemaType,
   showBadge = true,
@@ -49,13 +53,22 @@ export function SearchResultItemPreview({
   const documentPreviewStore = useDocumentPreviewStore()
 
   const observable = useMemo(
-    () => getPreviewStateObservable(documentPreviewStore, schemaType, documentId, ''),
-    [documentId, documentPreviewStore, schemaType],
+    () =>
+      getPreviewStateObservable(
+        documentPreviewStore,
+        schemaType,
+        getPublishedId(documentId),
+        '',
+        resolveBundlePerspective(perspective),
+      ),
+    [documentId, documentPreviewStore, perspective, schemaType],
   )
-  const {draft, published, isLoading} = useObservable(observable, {
+
+  const {draft, published, isLoading, version} = useObservable(observable, {
     draft: null,
     isLoading: true,
     published: null,
+    version: null,
   })
 
   const sanityDocument = useMemo(() => {
@@ -71,20 +84,22 @@ export function SearchResultItemPreview({
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         {showBadge && <Badge>{schemaType.title}</Badge>}
-        <DocumentStatusIndicator draft={draft} published={published} />
+        <DocumentStatusIndicator draft={draft} published={published} version={version} />
       </Flex>
     )
-  }, [draft, isLoading, presence, published, schemaType.title, showBadge])
+  }, [draft, isLoading, presence, published, schemaType.title, showBadge, version])
 
-  const tooltip = <DocumentStatus draft={draft} published={published} />
+  const tooltip = <DocumentStatus draft={draft} published={published} version={version} />
 
   return (
-    <SearchResultItemPreviewBox>
+    <SearchResultItemPreviewBox $isInPerspective={!perspective || Boolean(version)}>
       <SanityDefaultPreview
         {...getPreviewValueWithFallback({
           draft,
           published,
+          version,
           value: sanityDocument,
+          perspective,
         })}
         isPlaceholder={isLoading ?? true}
         layout={layout || 'default'}

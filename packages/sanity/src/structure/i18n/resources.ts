@@ -75,9 +75,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.restore.disabled.cannot-restore-initial': "You can't restore to the initial version",
 
   /** Label for the "Restore" document action */
-  'action.restore.label': 'Restore',
+  'action.restore.label': 'Revert to revision',
   /** Default tooltip for the action */
-  'action.restore.tooltip': 'Restore to this version',
+  'action.restore.tooltip': 'Restore to this revision',
 
   /** Tooltip when action is disabled because the document is not already published */
   'action.unpublish.disabled.not-published': 'This document is not published',
@@ -361,6 +361,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-operation-results.operation-success': 'Successfully performed {{op}} on document',
   /** The text when copy URL operation succeeded  */
   'panes.document-operation-results.operation-success_copy-url': 'Document URL copied to clipboard',
+  /**  */
+  'panes.document-operation-results.operation-success_createVersion':
+    '<Strong>{{title}}</Strong> was added to the release',
   /** The text when a delete operation succeeded  */
   'panes.document-operation-results.operation-success_delete':
     'The document was successfully deleted',

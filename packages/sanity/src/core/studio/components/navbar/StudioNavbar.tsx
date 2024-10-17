@@ -12,7 +12,7 @@ import {
 } from '@sanity/ui'
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
-import {type RouterState, useRouterState} from 'sanity/router'
+import {type RouterState, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
@@ -27,6 +27,7 @@ import {FreeTrialProvider} from './free-trial/FreeTrialProvider'
 import {HomeButton} from './home/HomeButton'
 import {NavDrawer} from './navDrawer'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
+import {GlobalPerspectiveMenu} from './perspective/GlobalPerspectiveMenu'
 import {PresenceMenu} from './presence'
 import {ResourcesButton} from './resources/ResourcesButton'
 import {SearchButton, SearchDialog} from './search'
@@ -68,6 +69,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   } = props
 
   const {name, tools} = useWorkspace()
+  const router = useRouter()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
@@ -158,6 +160,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     setDrawerOpen(true)
   }, [])
 
+  const perspective = useMemo(() => router.stickyParams.perspective, [router.stickyParams])
+
   const actionNodes = useMemo(() => {
     if (!shouldRender.tools) return null
 
@@ -209,15 +213,19 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                     <WorkspaceMenuButton />
                   </Flex>
                 </Flex>
-                {/* New document button */}
-                <NewDocumentButton
-                  {...newDocumentOptions}
-                  modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
-                />
-                {/* Search button (desktop) */}
-                {!shouldRender.searchFullscreen && (
-                  <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
-                )}
+                {/* Versions button */}
+                <Flex gap={2}>
+                  <GlobalPerspectiveMenu />
+                  {/* New document button */}
+                  <NewDocumentButton
+                    {...newDocumentOptions}
+                    modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
+                  />
+                  {/* Search button (desktop) */}
+                  {!shouldRender.searchFullscreen && (
+                    <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
+                  )}
+                </Flex>
               </Flex>
             </TooltipDelayGroupProvider>
 

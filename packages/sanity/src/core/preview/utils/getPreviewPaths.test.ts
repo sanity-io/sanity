@@ -32,6 +32,7 @@ describe('getPreviewPaths', () => {
       ['image'],
       ['_createdAt'],
       ['_updatedAt'],
+      ['_version'],
     ])
   })
 })

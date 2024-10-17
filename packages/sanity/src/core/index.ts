@@ -21,6 +21,16 @@ export * from './hooks'
 export * from './i18n'
 export * from './presence'
 export * from './preview'
+export {
+  DEFAULT_RELEASE_TYPE,
+  getDocumentIsInPerspective,
+  LATEST,
+  ReleaseActions,
+  ReleaseBadge,
+  ReleasesMenu,
+  useDocumentVersions,
+  usePerspective,
+} from './releases'
 export * from './scheduledPublishing'
 export * from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'

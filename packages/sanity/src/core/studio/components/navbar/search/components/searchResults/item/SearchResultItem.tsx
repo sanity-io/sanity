@@ -1,7 +1,7 @@
 import {type SanityDocumentLike} from '@sanity/types'
 import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
 import {type MouseEvent, useCallback, useMemo} from 'react'
-import {useIntentLink} from 'sanity/router'
+import {useIntentLink, useRouter} from 'sanity/router'
 
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
@@ -31,7 +31,7 @@ export function SearchResultItem({
   const schema = useSchema()
   const type = schema.get(documentType)
   const documentPresence = useDocumentPresence(documentId)
-
+  const perspective = useRouter().stickyParams.perspective
   const params = useMemo(() => ({id: documentId, type: type?.name}), [documentId, type?.name])
   const {onClick: onIntentClick, href} = useIntentLink({
     intent: 'edit',
@@ -65,6 +65,7 @@ export function SearchResultItem({
         <SearchResultItemPreview
           documentId={documentId}
           layout={layout}
+          perspective={perspective}
           presence={documentPresence}
           schemaType={type}
         />

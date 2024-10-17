@@ -20,8 +20,10 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  isVersionId,
   type OnPathFocusPayload,
   type PatchEvent,
+  resolveBundlePerspective,
   setAtPath,
   type StateTree,
   toMutationPatches,
@@ -29,6 +31,7 @@ import {
   useCopyPaste,
   useDocumentOperation,
   useDocumentValuePermissions,
+  useDocumentVersions,
   useEditState,
   useFormState,
   useInitialValue,
@@ -95,6 +98,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
+  const {perspective} = paneRouter
+
+  const bundlePerspective = resolveBundlePerspective(perspective)
+
+  /* Version and the global perspective should match.
+   * If user clicks on add document, and then switches to another version, he should click again on create document.
+   */
+  const newDocumentVersion = params.version === bundlePerspective ? params.version : undefined
+
   const panePayload = useUnique(paneRouter.payload)
   const {templateName, templateParams} = useMemo(
     () =>
@@ -112,14 +124,34 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     templateName,
     templateParams,
+    version: newDocumentVersion,
   })
+
   const initialValue = useUnique(initialValueRaw)
-  const {patch} = useDocumentOperation(documentId, documentType)
-  const editState = useEditState(documentId, documentType)
-  const {validation: validationRaw} = useValidationStatus(documentId, documentType)
-  const connectionState = useConnectionState(documentId, documentType)
+  const {patch} = useDocumentOperation(documentId, documentType, bundlePerspective)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
-  const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
+  const editState = useEditState(documentId, documentType, 'default', bundlePerspective)
+  const {validation: validationRaw} = useValidationStatus(
+    documentId,
+    documentType,
+    bundlePerspective,
+  )
+  const connectionState = useConnectionState(documentId, documentType, {version: bundlePerspective})
+  const {data: documentVersions} = useDocumentVersions({documentId})
+
+  let value: SanityDocumentLike = initialValue.value
+
+  switch (true) {
+    case typeof bundlePerspective !== 'undefined':
+      value = editState.version || editState.draft || editState.published || value
+      break
+    case perspective === 'published':
+      value = editState.published || editState.draft || value
+      break
+    default:
+      value = editState?.draft || editState?.published || value
+  }
+
   const [isDeleting, setIsDeleting] = useState(false)
 
   // Resolve document actions
@@ -163,6 +195,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onError: setTimelineError,
     rev: params.rev,
     since: params.since,
+    version: bundlePerspective,
   })
 
   // Subscribe to external timeline state changes
@@ -189,8 +222,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     if (!timelineReady) {
       return false
     }
-    return Boolean(!editState?.draft && !editState?.published) && !isPristine
-  }, [editState?.draft, editState?.published, isPristine, timelineReady])
+    return Boolean(!editState?.draft && !editState?.published && !editState?.version) && !isPristine
+  }, [editState?.draft, editState?.published, editState?.version, isPristine, timelineReady])
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
@@ -198,13 +231,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const [presence, setPresence] = useState<DocumentPresence[]>([])
   useEffect(() => {
-    const subscription = presenceStore.documentPresence(documentId).subscribe((nextPresence) => {
+    const subscription = presenceStore.documentPresence(value._id).subscribe((nextPresence) => {
       setPresence(nextPresence)
     })
     return () => {
       subscription.unsubscribe()
     }
-  }, [documentId, presenceStore])
+  }, [presenceStore, value._id])
 
   const inspectors: DocumentInspector[] = useMemo(
     () => inspectorsResolver({documentId, documentType}),
@@ -297,7 +330,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   patchRef.current = (event: PatchEvent) => {
     // when creating a new draft
-    if (!editState.draft && !editState.published) {
+    if (!editState.draft && !editState.published && !editState.version) {
       telemetry.log(CreatedDraft)
     }
     patch.execute(toMutationPatches(event.patches), initialValue.value)
@@ -512,6 +545,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
 
   const isNonExistent = !value?._id
+  const isNonExistentInBundle = typeof bundlePerspective !== 'undefined' && !isVersionId(value._id)
+  const existsInBundle = typeof bundlePerspective !== 'undefined' && isVersionId(value._id)
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
@@ -522,8 +557,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     // in cases where the document has drafts but the schema is live edit,
     // there is a risk of data loss, so we disable editing in this case
     const isLiveEditAndDraft = Boolean(liveEdit && editState.draft)
+    const isSystemPerspectiveApplied = perspective && typeof bundlePerspective === 'undefined'
 
     return (
+      isNonExistentInBundle ||
+      isSystemPerspectiveApplied ||
       !ready ||
       revTime !== null ||
       hasNoPermission ||
@@ -540,10 +578,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permissions?.granted,
     schemaType,
     isNonExistent,
+    isNonExistentInBundle,
     connectionState,
     editState.transactionSyncLock?.enabled,
     editState.draft,
     liveEdit,
+    perspective,
+    bundlePerspective,
     ready,
     revTime,
     isDeleting,
@@ -601,14 +642,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       presenceStore.setLocation([
         {
           type: 'document',
-          documentId,
+          documentId: value._id,
           path: nextFocusPath,
           lastActiveAt: new Date().toISOString(),
           selection: payload?.selection,
         },
       ])
     },
-    [documentId, presenceStore],
+    [presenceStore, value._id],
   )
 
   const updatePresenceThrottled = useMemo(
@@ -645,7 +686,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentId,
       documentIdRaw,
       documentType,
+      documentVersions,
       editState,
+      existsInBundle,
       fieldActions,
       focusPath,
       inspector: currentInspector || null,
@@ -686,6 +729,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       timelineStore,
       title,
       value,
+      version: bundlePerspective,
       views,
       formState,
       unstable_languageFilter: languageFilter,
@@ -695,6 +739,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       actions,
       activeViewId,
       badges,
+      bundlePerspective,
       changesOpen,
       closeInspector,
       collapsedFieldSets,
@@ -706,7 +751,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentId,
       documentIdRaw,
       documentType,
+      documentVersions,
       editState,
+      existsInBundle,
       fieldActions,
       focusPath,
       formState,

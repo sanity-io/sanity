@@ -2,7 +2,6 @@
 import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {addWeeks, isAfter, isBefore} from 'date-fns'
 import {useCallback, useEffect, useState} from 'react'
-import {finalize} from 'rxjs'
 import {
   type CurrentUser,
   getProviderTitle,
@@ -74,19 +73,16 @@ export function RequestAccessScreen() {
     }
   }, [activeWorkspace])
 
-  // Check if user has a pending access request for this project
+  // Check if user has a pending
+  // access request for this project
   useEffect(() => {
-    if (!client || !projectId) return () => {}
-    const request$ = client.observable
+    if (!client || !projectId) return
+    client
       .request<AccessRequest[] | null>({
-        url: '/access/requests/me',
-        tag: 'request-access',
+        url: `/access/requests/me`,
       })
-      .pipe(finalize(() => setLoading(false)))
-      .subscribe({
-        next: (requests) => {
-          if (!requests || !requests.length) return
-
+      .then((requests) => {
+        if (requests && requests?.length) {
           const projectRequests = requests.filter((request) => request.resourceId === projectId)
           const declinedRequest = projectRequests.find((request) => request.status === 'declined')
           if (
@@ -115,16 +111,15 @@ export function RequestAccessScreen() {
           if (oldPendingRequest) {
             setExpiredHasPendingRequest(true)
           }
-        },
-        error: (err) => {
-          console.error(err)
-          setError(true)
-        },
+        }
       })
-
-    return () => {
-      request$.unsubscribe()
-    }
+      .catch((err) => {
+        console.error(err)
+        setError(true)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [client, projectId])
 
   const handleSubmitRequest = useCallback(() => {

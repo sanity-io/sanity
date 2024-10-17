@@ -55,6 +55,7 @@ export interface FormProviderProps {
   readOnly?: boolean
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]
+  version?: string
 }
 
 /**
@@ -86,6 +87,7 @@ export function FormProvider(props: FormProviderProps) {
     readOnly,
     schemaType,
     validation,
+    version,
   } = props
 
   const {file, image} = useSource().form
@@ -164,6 +166,7 @@ export function FormProvider(props: FormProviderProps) {
       renderPreview={renderPreview}
       schemaType={schemaType}
       validation={validation}
+      version={version}
     >
       {children}
     </FormBuilderProvider>

@@ -7,6 +7,7 @@ import {styled} from 'styled-components'
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
+  version?: PreviewValue | Partial<SanityDocument> | null
 }
 
 const Root = styled(Text)`
@@ -25,26 +26,30 @@ const Root = styled(Text)`
  * - Yellow (caution) for published documents with edits
  * - Gray (default) for unpublished documents (with or without edits)
  *
- * No dot will be displayed for published documents without edits.
+ * No dot will be displayed for published documents without edits or for version documents.
  *
  * @internal
  */
-export function DocumentStatusIndicator({draft, published}: DocumentStatusProps) {
-  const $draft = !!draft
-  const $published = !!published
+export function DocumentStatusIndicator({draft, published, version}: DocumentStatusProps) {
+  const $draft = Boolean(draft)
+  const $published = Boolean(published)
+  const $version = Boolean(version)
 
   const status = useMemo(() => {
+    if ($version) return undefined
     if ($draft && !$published) return 'unpublished'
     return 'edited'
-  }, [$draft, $published])
+  }, [$draft, $published, $version])
 
   // Return null if the document is:
   // - Published without edits
   // - Neither published or without edits (this shouldn't be possible)
-  if ((!$draft && !$published) || (!$draft && $published)) {
+  // - A version
+  if ((!$draft && !$published) || (!$draft && $published) || $version) {
     return null
   }
 
+  // TODO: Remove debug `status[0]` output.
   return (
     <Root data-status={status} size={1}>
       <DotIcon />
