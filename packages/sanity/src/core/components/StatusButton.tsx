@@ -47,7 +47,8 @@ export const StatusButton = forwardRef(function StatusButton(
     ...restProps
   } = props
   const theme = useTheme()
-  const toneColor = tone && theme.sanity.color.solid[tone]
+  const toneToUse = tone === 'prospect' || tone === 'explore' ? 'default' : tone
+  const toneColor = toneToUse && theme.sanity.color.solid[toneToUse]
   const dotStyle = useMemo(() => ({backgroundColor: toneColor?.enabled.bg}), [toneColor])
   const disabled = Boolean(disabledProp)
 
