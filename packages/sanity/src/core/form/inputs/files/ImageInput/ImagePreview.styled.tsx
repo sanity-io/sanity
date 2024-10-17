@@ -22,7 +22,9 @@ export const Overlay = styled(Flex)<{
   $tone: Exclude<CardTone, 'inherit'>
 }>(({$tone}) => {
   const colorScheme = useColorSchemeValue()
+  // @ts-expect-error fixme after sanity/ui and sanity/icons release
   const textColor = studioTheme.color[colorScheme][$tone].card.enabled.fg
+  // @ts-expect-error fixme after sanity/ui and sanity/icons release
   const backgroundColor = rgba(studioTheme.color[colorScheme][$tone].card.enabled.bg, 0.8)
 
   return css`
