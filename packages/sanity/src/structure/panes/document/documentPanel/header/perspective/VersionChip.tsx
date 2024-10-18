@@ -4,6 +4,7 @@ import {type BundleDocument, getVersionId} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, Popover, Tooltip} from '../../../../../../ui-components'
+import {CreateReleaseDialog} from './CreateReleaseDialog'
 import {DiscardVersionDialog} from './DiscardVersionDialog'
 import {VersionPopoverMenu} from './VersionPopoverMenu'
 
@@ -61,6 +62,7 @@ export const VersionChip = memo(function VersionChip(props: {
   )
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
+  const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -93,6 +95,10 @@ export const VersionChip = memo(function VersionChip(props: {
   const openDiscardDialog = useCallback(() => {
     setIsDiscardDialogOpen(true)
   }, [setIsDiscardDialogOpen])
+
+  const openCreateReleaseDialog = useCallback(() => {
+    setIsCreateReleaseDialogOpen(true)
+  }, [setIsCreateReleaseDialogOpen])
 
   const referenceElement = useMemo(() => {
     if (!contextMenuPoint) {
@@ -144,6 +150,7 @@ export const VersionChip = memo(function VersionChip(props: {
             fromRelease={fromRelease}
             isVersion={isVersion}
             onDiscard={openDiscardDialog}
+            onCreateRelease={openCreateReleaseDialog}
           />
         }
         fallbackPlacements={[]}
@@ -158,6 +165,14 @@ export const VersionChip = memo(function VersionChip(props: {
       {isDiscardDialogOpen && (
         <DiscardVersionDialog
           onClose={() => setIsDiscardDialogOpen(false)}
+          documentId={isVersion ? getVersionId(documentId, menuReleaseId) : documentId}
+          documentType={documentType}
+        />
+      )}
+
+      {isCreateReleaseDialogOpen && (
+        <CreateReleaseDialog
+          onClose={() => setIsCreateReleaseDialogOpen(false)}
           documentId={isVersion ? getVersionId(documentId, menuReleaseId) : documentId}
           documentType={documentType}
         />
