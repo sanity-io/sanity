@@ -14,7 +14,6 @@ import {RELEASETYPE, versionDocumentExists} from '../../../../../../core/release
 import {usePaneRouter} from '../../../../../components'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {VersionChip} from './VersionChip'
-import {VersionPopoverMenu} from './VersionPopoverMenu'
 
 export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   const {perspective} = usePaneRouter()
@@ -76,19 +75,15 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         text="Published"
         icon={DotIcon}
         tone="positive"
-        menuContent={
-          editState?.published ? (
-            <VersionPopoverMenu
-              documentId={editState?.published?._id || ''}
-              menuReleaseId={editState?.published?._id || ''}
-              releases={filteredReleases}
-              releasesLoading={loading}
-              documentType={documentType}
-              fromRelease={''}
-              isVersion={false}
-            />
-          ) : null
-        }
+        contextValues={{
+          documentId: editState?.published?._id || '',
+          menuReleaseId: editState?.published?._id || '',
+          releases: filteredReleases,
+          releasesLoading: loading,
+          documentType,
+          fromRelease: '',
+          isVersion: false,
+        }}
       />
       <VersionChip
         tooltipContent={
@@ -121,17 +116,15 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         text="Draft"
         tone="caution"
         onClick={handleBundleChange('drafts')}
-        menuContent={
-          <VersionPopoverMenu
-            documentId={editState?.draft?._id || editState?.published?._id || ''}
-            menuReleaseId={editState?.draft?._id || editState?.published?._id || ''}
-            releases={filteredReleases}
-            releasesLoading={loading}
-            documentType={documentType}
-            fromRelease={''}
-            isVersion={false}
-          />
-        }
+        contextValues={{
+          documentId: editState?.draft?._id || editState?.published?._id || '',
+          menuReleaseId: editState?.draft?._id || editState?.published?._id || '',
+          releases: filteredReleases,
+          releasesLoading: loading,
+          documentType: documentType,
+          fromRelease: '',
+          isVersion: false,
+        }}
       />
       {/* @todo update temporary text for tooltip */}
       {displayed &&
@@ -145,17 +138,15 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             text={release.title}
             tone={RELEASETYPE[release.releaseType]?.tone}
             icon={DotIcon}
-            menuContent={
-              <VersionPopoverMenu
-                documentId={displayed?._id || ''}
-                menuReleaseId={release._id}
-                releases={filteredReleases}
-                releasesLoading={loading}
-                documentType={documentType}
-                fromRelease={release._id}
-                isVersion
-              />
-            }
+            contextValues={{
+              documentId: displayed?._id || '',
+              menuReleaseId: release._id,
+              releases: filteredReleases,
+              releasesLoading: loading,
+              documentType: documentType,
+              fromRelease: release._id,
+              isVersion: true,
+            }}
           />
         ))}
       {/* @todo missing check if release is scheduled or only has a date version.scheduled ? */}
@@ -176,17 +167,15 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             text={release.title}
             tone={RELEASETYPE[release.releaseType]?.tone}
             icon={DotIcon}
-            menuContent={
-              <VersionPopoverMenu
-                documentId={displayed?._id || ''}
-                menuReleaseId={release._id}
-                releases={filteredReleases}
-                releasesLoading={loading}
-                documentType={documentType}
-                fromRelease={release._id}
-                isVersion
-              />
-            }
+            contextValues={{
+              documentId: displayed?._id || '',
+              menuReleaseId: release._id,
+              releases: filteredReleases,
+              releasesLoading: loading,
+              documentType: documentType,
+              fromRelease: release._id,
+              isVersion: true,
+            }}
           />
         ))}
       {displayed &&
@@ -200,17 +189,15 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             text={release.title}
             tone={RELEASETYPE[release.releaseType]?.tone}
             icon={DotIcon}
-            menuContent={
-              <VersionPopoverMenu
-                documentId={displayed?._id || ''}
-                menuReleaseId={release._id}
-                releases={filteredReleases}
-                releasesLoading={loading}
-                documentType={documentType}
-                fromRelease={release._id}
-                isVersion
-              />
-            }
+            contextValues={{
+              documentId: displayed?._id || '',
+              menuReleaseId: release._id,
+              releases: filteredReleases,
+              releasesLoading: loading,
+              documentType: documentType,
+              fromRelease: release._id,
+              isVersion: true,
+            }}
           />
         ))}
     </>
