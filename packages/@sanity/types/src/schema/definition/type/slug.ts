@@ -21,6 +21,7 @@ export interface SlugOptions {
   maxLength?: number
   slugify?: SlugifierFn
   isUnique?: SlugIsUniqueValidator
+  disableArrayWarning?: boolean
 }
 
 /** @public */
