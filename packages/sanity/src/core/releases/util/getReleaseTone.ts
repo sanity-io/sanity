@@ -1,13 +1,13 @@
 import {type BadgeTone} from '@sanity/ui'
 import {type BundleDocument} from 'sanity'
 
-export function getReleaseTone(release: BundleDocument): BadgeTone | undefined {
+export function getReleaseTone(release: Partial<BundleDocument>): BadgeTone {
   if (release.publishedAt !== undefined) {
     return 'positive'
   }
 
   if (release.archived) {
-    return undefined
+    return 'default'
   }
 
   if (release.releaseType === 'asap') {
@@ -17,5 +17,9 @@ export function getReleaseTone(release: BundleDocument): BadgeTone | undefined {
   if (release.releaseType === 'undecided') {
     return 'explore'
   }
-  return 'prospect'
+
+  if (release.releaseType === 'scheduled') {
+    return 'prospect'
+  }
+  return 'default'
 }

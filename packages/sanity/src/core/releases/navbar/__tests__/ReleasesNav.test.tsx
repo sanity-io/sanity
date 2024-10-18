@@ -87,4 +87,15 @@ describe('ReleasesNav', () => {
 
     screen.getByText('Test Bundle')
   })
+
+  it('should show release avatar for chosen perspective', async () => {
+    mockUsePerspective.mockReturnValue({
+      currentGlobalBundle: {_id: 'a-bundle', title: 'Test Bundle', releaseType: 'asap'},
+      setPerspective: mockSetPerspective,
+    })
+
+    await renderTest()
+
+    screen.getByTestId('release-avatar-critical')
+  })
 })

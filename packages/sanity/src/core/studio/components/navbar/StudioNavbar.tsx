@@ -11,6 +11,7 @@ import {
   useMediaIndex,
 } from '@sanity/ui'
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {usePerspective} from 'sanity'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -19,6 +20,7 @@ import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
+import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
@@ -83,6 +85,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchFullscreenPortalEl,
     searchOpen,
   } = useContext(NavbarContext)
+
+  const {currentGlobalBundle} = usePerspective()
 
   const ToolMenu = useToolMenuComponent()
 
@@ -188,6 +192,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
+          tone={getReleaseTone(currentGlobalBundle)}
           borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"
