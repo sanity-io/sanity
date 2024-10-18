@@ -9,6 +9,7 @@ import {IntentLink, useRouterState} from 'sanity/router'
 import {Tooltip} from '../../../ui-components'
 import {usePerspective} from '../hooks/usePerspective'
 import {RELEASES_INTENT, RELEASES_TOOL_NAME} from '../plugin'
+import {ReleaseAvatar} from '../tool/components/ReleaseAvatar'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
 export function ReleasesNav(): JSX.Element {
@@ -44,7 +45,7 @@ export function ReleasesNav(): JSX.Element {
   )
 
   const currentGlobalPerspectiveLabel = useMemo(() => {
-    if (currentGlobalBundle._id === LATEST._id) return null
+    if (!currentGlobalBundle || currentGlobalBundle._id === LATEST._id) return null
     if (currentGlobalBundle._id === 'published') {
       return (
         <Card tone="inherit">
@@ -76,10 +77,10 @@ export function ReleasesNav(): JSX.Element {
         style={{maxWidth: '180px'}}
       >
         <Flex align="flex-start" gap={0}>
-          {/* <Box flex="none">
-            <VersionAvatar icon={current.icon} padding={2} tone={current.tone} />
-          </Box> */}
-          <Stack flex={1} paddingY={2} paddingX={2} space={2}>
+          <Box flex="none">
+            <ReleaseAvatar padding={2} release={currentGlobalBundle} />
+          </Box>
+          <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
             <Text size={1} textOverflow="ellipsis" weight="medium">
               {currentGlobalBundle.title}
             </Text>
@@ -87,7 +88,7 @@ export function ReleasesNav(): JSX.Element {
         </Flex>
       </Button>
     )
-  }, [currentGlobalBundle._id, currentGlobalBundle.title])
+  }, [currentGlobalBundle])
 
   return (
     <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
