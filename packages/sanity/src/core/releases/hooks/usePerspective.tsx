@@ -41,7 +41,13 @@ export function usePerspective(selectedPerspective?: string): PerspectiveValue {
       : LATEST
 
   // TODO: Improve naming; this may not be global.
-  const currentGlobalBundle = selectedBundle || LATEST
+  const currentGlobalBundle =
+    perspective === 'published'
+      ? {
+          _id: 'published',
+          title: 'Published',
+        }
+      : selectedBundle || LATEST
 
   return {
     setPerspective,

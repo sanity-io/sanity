@@ -155,12 +155,15 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'panel.navigation.tooltip': 'Open tasks',
   /** Title of the Tasks panel   */
   'panel.title': 'Tasks',
+
   /** Label for the Assigned Tab */
   'tab.assigned.label': 'Assigned',
   /** Label for the Active Document Tab */
   'tab.document.label': 'Active Document',
   /** Label for the Subscribed Tab */
   'tab.subscribed.label': 'Subscribed',
+  /** Tooltip for the tasks navbar icon */
+  'toolbar.tooltip': 'Tasks',
 })
 
 /**
