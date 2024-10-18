@@ -1,24 +1,20 @@
 import {CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, MenuDivider, Spinner, useToast} from '@sanity/ui'
-import {memo, useCallback, useState} from 'react'
+import {Menu, MenuDivider, Spinner} from '@sanity/ui'
+import {memo, useCallback} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   type BundleDocument,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
   getVersionFromId,
   getVersionId,
   isPublishedId,
-  Translate,
-  useClient,
   useDocumentOperation,
   useDocumentStore,
   usePerspective,
   useTranslation,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
-import {usePaneRouter} from 'sanity/structure'
 
 import {AddedVersion} from '../../../../../../core/releases/__telemetry__/releases.telemetry'
 import {MenuGroup, MenuItem} from '../../../../../../ui-components'
@@ -29,32 +25,20 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
   releases: BundleDocument[]
   releasesLoading: boolean
   documentType: string
-  menuReleaseId: string
   fromRelease: string
   isVersion: boolean
+  onDiscard: () => void
 }) {
-  const {
-    documentId,
-    releases,
-    releasesLoading,
-    documentType,
-    menuReleaseId,
-    fromRelease,
-    isVersion,
-  } = props
-  const [isDiscarding, setIsDiscarding] = useState(false)
+  const {documentId, releases, releasesLoading, documentType, fromRelease, isVersion, onDiscard} =
+    props
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
   const isPublished = isPublishedId(documentId) && !isVersion
-  const {perspective} = usePaneRouter()
 
   const optionsReleaseList = releases.map((release) => ({
     value: release,
   }))
 
-  const toast = useToast()
-
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const publishedId = getPublishedId(documentId)
 
   const releaseId = isVersion ? getVersionFromId(documentId) : documentId
@@ -98,86 +82,49 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
     ],
   )
 
-  const handleDiscardVersion = useCallback(async () => {
-    setIsDiscarding(true)
-    try {
-      // if it's a version it'll always use the versionId based on the menu that it's pressing
-      // otherwise it'll use the documentId
-      const docId = isVersion ? getVersionId(documentId, menuReleaseId) : documentId
-
-      await client.delete(docId)
-
-      if (perspective?.replace('bundle.', '') === menuReleaseId) {
-        setPerspective('drafts')
-      }
-
-      toast.push({
-        closable: true,
-        status: 'success',
-        description: (
-          <Translate
-            t={t}
-            i18nKey={'release.action.discard-version.success'}
-            values={{title: document.title as string}}
-          />
-        ),
-      })
-    } catch (e) {
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: t('release.action.discard-version.failure'),
-      })
-    }
-
-    setIsDiscarding(false)
-  }, [client, documentId, isVersion, menuReleaseId, perspective, setPerspective, t, toast])
-
   /** @todo update literal */
   return (
-    <Menu>
-      {isVersion && (
-        <IntentLink
-          intent="release"
-          params={{id: releaseId}}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{textDecoration: 'none'}}
-        >
-          <MenuItem
-            icon={CalendarIcon}
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-            text={`View release`}
-          />
-        </IntentLink>
-      )}
-      {releasesLoading && <Spinner />}
-      <MenuGroup icon={CopyIcon} popover={{placement: 'right-start'}} text="Copy version to">
-        {optionsReleaseList.map((option) => {
-          return (
-            <>
-              <MenuItem
-                as="a"
-                key={option.value._id}
-                onClick={() => handleAddVersion(option.value._id)}
-                text={option.value.title}
-                renderMenuItem={() => <VersionPopoverMenuItem release={option.value} />}
-              />
-            </>
-          )
-        })}
-      </MenuGroup>
-      {!isPublished && (
-        <>
-          <MenuDivider />
-          <MenuItem
-            icon={TrashIcon}
-            onClick={handleDiscardVersion}
-            disabled={isDiscarding}
-            text={t('release.action.discard-version')}
-          />
-        </>
-      )}
-    </Menu>
+    <>
+      <Menu>
+        {isVersion && (
+          <IntentLink
+            intent="release"
+            params={{id: releaseId}}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{textDecoration: 'none'}}
+          >
+            {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
+            <MenuItem icon={CalendarIcon} text={`View release`} />
+          </IntentLink>
+        )}
+        {releasesLoading && <Spinner />}
+        <MenuGroup icon={CopyIcon} popover={{placement: 'right-start'}} text="Copy version to">
+          {optionsReleaseList.map((option) => {
+            return (
+              <>
+                <MenuItem
+                  as="a"
+                  key={option.value._id}
+                  onClick={() => handleAddVersion(option.value._id)}
+                  text={option.value.title}
+                  renderMenuItem={() => <VersionPopoverMenuItem release={option.value} />}
+                />
+              </>
+            )
+          })}
+        </MenuGroup>
+        {!isPublished && (
+          <>
+            <MenuDivider />
+            <MenuItem
+              icon={TrashIcon}
+              onClick={onDiscard}
+              text={t('release.action.discard-version')}
+            />
+          </>
+        )}
+      </Menu>
+    </>
   )
 })

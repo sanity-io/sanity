@@ -1,8 +1,11 @@
 import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+import {type BundleDocument, getVersionId} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, Popover, Tooltip} from '../../../../../../ui-components'
+import {DiscardVersionDialog} from './DiscardVersionDialog'
+import {VersionPopoverMenu} from './VersionPopoverMenu'
 
 const Chip = styled(Button)`
   border-radius: 9999px !important;
@@ -24,14 +27,40 @@ export const VersionChip = memo(function VersionChip(props: {
   text: string
   tone: 'default' | 'primary' | 'positive' | 'caution' | 'critical'
   icon: React.ComponentType
-  menuContent?: ReactNode
+  contextValues: {
+    documentId: string
+    releases: BundleDocument[]
+    releasesLoading: boolean
+    documentType: string
+    menuReleaseId: string
+    fromRelease: string
+    isVersion: boolean
+  }
 }) {
-  const {disabled, selected, tooltipContent, onClick, text, tone, icon, menuContent} = props
+  const {
+    disabled,
+    selected,
+    tooltipContent,
+    onClick,
+    text,
+    tone,
+    icon,
+    contextValues: {
+      documentId,
+      releases,
+      releasesLoading,
+      documentType,
+      menuReleaseId,
+      fromRelease,
+      isVersion,
+    },
+  } = props
 
   const [contextMenuPoint, setContextMenuPoint] = useState<{x: number; y: number} | undefined>(
     undefined,
   )
   const popoverRef = useRef<HTMLDivElement | null>(null)
+  const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -60,6 +89,10 @@ export const VersionChip = memo(function VersionChip(props: {
       [close],
     ),
   )
+
+  const openDiscardDialog = useCallback(() => {
+    setIsDiscardDialogOpen(true)
+  }, [setIsDiscardDialogOpen])
 
   const referenceElement = useMemo(() => {
     if (!contextMenuPoint) {
@@ -102,15 +135,33 @@ export const VersionChip = memo(function VersionChip(props: {
       </Tooltip>
 
       <Popover
-        content={menuContent}
+        content={
+          <VersionPopoverMenu
+            documentId={documentId}
+            releases={releases}
+            releasesLoading={releasesLoading}
+            documentType={documentType}
+            fromRelease={fromRelease}
+            isVersion={isVersion}
+            onDiscard={openDiscardDialog}
+          />
+        }
         fallbackPlacements={[]}
         open={Boolean(referenceElement)}
         portal
         placement="bottom-start"
         ref={popoverRef}
         referenceElement={referenceElement}
-        zOffset={1000}
+        zOffset={10}
       />
+
+      {isDiscardDialogOpen && (
+        <DiscardVersionDialog
+          onClose={() => setIsDiscardDialogOpen(false)}
+          documentId={isVersion ? getVersionId(documentId, menuReleaseId) : documentId}
+          documentType={documentType}
+        />
+      )}
     </>
   )
 })
