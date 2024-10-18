@@ -10,10 +10,10 @@ export default defineType({
       name: 'title',
       title: 'Title',
     },
-    // {
-    //   type: 'markdown',
-    //   name: 'markdown',
-    //   title: 'Markdown',
-    // },
+    {
+      type: 'markdown',
+      name: 'markdown',
+      title: 'Markdown',
+    },
   ],
 })
