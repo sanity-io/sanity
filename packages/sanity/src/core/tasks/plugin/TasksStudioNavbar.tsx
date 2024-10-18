@@ -1,12 +1,29 @@
-import {PanelRightIcon, TaskIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon} from '@sanity/icons'
 import {useCallback, useMemo} from 'react'
 
+import {Button} from '../../../ui-components'
 import {type NavbarProps} from '../../config'
 import {useTranslation} from '../../i18n'
 import {useTasksEnabled, useTasksNavigation} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
 
 const EMPTY_ARRAY: [] = []
+
+const TasksToolbar = ({onClick, isOpen}: {onClick: () => void; isOpen: boolean}) => {
+  const {t} = useTranslation(tasksLocaleNamespace)
+
+  return (
+    <Button
+      tooltipProps={{
+        content: t('toolbar.tooltip'),
+      }}
+      icon={CheckmarkCircleIcon}
+      mode="bleed"
+      onClick={onClick}
+      selected={isOpen}
+    />
+  )
+}
 
 function TasksStudioNavbarInner(props: NavbarProps) {
   const {
@@ -25,19 +42,21 @@ function TasksStudioNavbarInner(props: NavbarProps) {
     }
   }, [isOpen, handleOpenTasks, handleCloseTasks])
 
+  const renderTasksNav = useCallback(
+    () => <TasksToolbar onClick={handleClick} isOpen={isOpen} />,
+    [handleClick, isOpen],
+  )
+
   const actions = useMemo((): NavbarProps['__internal_actions'] => {
     return [
       ...(props?.__internal_actions || EMPTY_ARRAY),
       {
-        icon: PanelRightIcon,
         location: 'topbar',
         name: 'tasks-topbar',
-        onAction: handleClick,
-        selected: isOpen,
-        title: t('actions.open.text'),
+        render: renderTasksNav,
       },
       {
-        icon: TaskIcon,
+        icon: CheckmarkCircleIcon,
         location: 'sidebar',
         name: 'tasks-sidebar',
         onAction: handleClick,
@@ -45,7 +64,7 @@ function TasksStudioNavbarInner(props: NavbarProps) {
         title: t('actions.open.text'),
       },
     ]
-  }, [handleClick, isOpen, props?.__internal_actions, t])
+  }, [handleClick, isOpen, props?.__internal_actions, renderTasksNav, t])
 
   return props.renderDefault({
     ...props,

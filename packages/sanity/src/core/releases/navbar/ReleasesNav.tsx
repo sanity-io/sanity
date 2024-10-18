@@ -1,12 +1,13 @@
 import {CalendarIcon, CloseIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {type PropsWithChildren, useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
-import {LATEST, ToolLink, usePerspective} from 'sanity'
+import {LATEST, ToolLink} from 'sanity'
 import {IntentLink, useRouterState} from 'sanity/router'
 
 import {Tooltip} from '../../../ui-components'
+import {usePerspective} from '../hooks/usePerspective'
 import {RELEASES_INTENT, RELEASES_TOOL_NAME} from '../plugin'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
@@ -25,7 +26,7 @@ export function ReleasesNav(): JSX.Element {
 
   const releasesToolLink = useMemo(
     () => (
-      <Tooltip content={t('release.tooltip')}>
+      <Tooltip content={t('release.navbar.tooltip')}>
         <Button
           as={ToolLink}
           name={RELEASES_TOOL_NAME}
@@ -58,16 +59,21 @@ export function ReleasesNav(): JSX.Element {
       )
     }
 
+    const releasesIntentLink = ({children, ...intentProps}: PropsWithChildren) => (
+      <IntentLink {...intentProps} intent={RELEASES_INTENT} params={{id: currentGlobalBundle._id}}>
+        {children}
+      </IntentLink>
+    )
+
     return (
       <Button
-        as={IntentLink}
+        as={releasesIntentLink}
         data-as="a"
         rel="noopener noreferrer"
-        intent={RELEASES_INTENT}
-        params={{id: currentGlobalBundle._id}}
         mode="bleed"
         padding={0}
         radius="full"
+        style={{maxWidth: '180px'}}
       >
         <Flex align="flex-start" gap={0}>
           {/* <Box flex="none">
@@ -87,7 +93,7 @@ export function ReleasesNav(): JSX.Element {
     <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
       <Flex gap={0}>
         <Box flex="none">{releasesToolLink}</Box>
-        <Stack flex={1}>{currentGlobalPerspectiveLabel}</Stack>
+        {currentGlobalPerspectiveLabel}
         <GlobalPerspectiveMenu />
         {currentGlobalBundle._id !== LATEST._id && (
           <div>
@@ -95,6 +101,7 @@ export function ReleasesNav(): JSX.Element {
               icon={CloseIcon}
               mode="bleed"
               onClick={handleClearPerspective}
+              data-testid="clear-perspective-button"
               padding={2}
               radius="full"
             />

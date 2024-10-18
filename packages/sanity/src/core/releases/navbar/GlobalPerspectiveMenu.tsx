@@ -148,7 +148,14 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     <>
       <MenuButton
         button={
-          <Button iconRight={ChevronDownIcon} mode="bleed" padding={2} radius="full" space={2} />
+          <Button
+            data-testid="global-perspective-menu-button"
+            iconRight={ChevronDownIcon}
+            mode="bleed"
+            padding={2}
+            radius="full"
+            space={2}
+          />
         }
         id="releases-menu"
         menu={

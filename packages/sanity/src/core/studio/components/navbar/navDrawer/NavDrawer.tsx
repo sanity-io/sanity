@@ -111,6 +111,10 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
     return actions
       ?.filter((v) => v.location === 'sidebar')
       ?.map((action) => {
+        const {render: ActionComponent} = action
+
+        if (ActionComponent) return <ActionComponent key={action.name} />
+
         return (
           <Button
             icon={action?.icon}

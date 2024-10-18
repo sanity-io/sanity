@@ -1171,6 +1171,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.form.type.scheduled': 'At time',
   /** Label for the release type 'undecided' */
   'release.form.type.undecided': 'Undecided',
+  /** Tooltip for releases navigation in navbar */
+  'release.navbar.tooltip': 'Releases',
   /** Tooltip for the dropdown to show all versions of document */
   'release.version-list.tooltip': 'See all document versions',
 

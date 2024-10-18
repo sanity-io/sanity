@@ -11,6 +11,11 @@ export const ReleasesStudioNavbar = (props: NavbarProps) => {
         name: 'releases-topbar',
         render: ReleasesNav,
       },
+      {
+        location: 'sidebar',
+        name: 'releases-sidebar',
+        render: ReleasesNav,
+      },
       ...(props?.__internal_actions || []),
     ],
     [props?.__internal_actions],

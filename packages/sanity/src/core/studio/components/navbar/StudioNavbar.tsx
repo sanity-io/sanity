@@ -244,46 +244,41 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             {/** Right flex */}
             <TooltipDelayGroupProvider>
               <Flex align="center" gap={1} justify="flex-end">
-                <Flex gap={1}>
-                  {/* Search */}
-                  <LayerProvider>
-                    <SearchProvider fullscreen={shouldRender.searchFullscreen}>
-                      <BoundaryElementProvider element={document.body}>
-                        {shouldRender.searchFullscreen ? (
-                          <PortalProvider element={searchFullscreenPortalEl}>
-                            <SearchDialog
-                              onClose={handleCloseSearchFullscreen}
-                              onOpen={handleOpenSearchFullscreen}
-                              open={searchFullscreenOpen}
-                            />
-                          </PortalProvider>
-                        ) : (
-                          <SearchPopover
-                            onClose={handleCloseSearch}
-                            onOpen={handleOpenSearch}
-                            open={searchOpen}
+                {/* Search */}
+                <LayerProvider>
+                  <SearchProvider fullscreen={shouldRender.searchFullscreen}>
+                    <BoundaryElementProvider element={document.body}>
+                      {shouldRender.searchFullscreen ? (
+                        <PortalProvider element={searchFullscreenPortalEl}>
+                          <SearchDialog
+                            onClose={handleCloseSearchFullscreen}
+                            onOpen={handleOpenSearchFullscreen}
+                            open={searchFullscreenOpen}
                           />
-                        )}
-                      </BoundaryElementProvider>
-                    </SearchProvider>
-                  </LayerProvider>
+                        </PortalProvider>
+                      ) : (
+                        <SearchPopover
+                          onClose={handleCloseSearch}
+                          onOpen={handleOpenSearch}
+                          open={searchOpen}
+                        />
+                      )}
+                    </BoundaryElementProvider>
+                  </SearchProvider>
+                </LayerProvider>
 
-                  {shouldRender.tools && <FreeTrial type="topbar" />}
-                  {shouldRender.configIssues && <ConfigIssuesButton />}
-                  {shouldRender.resources && <ResourcesButton />}
+                {shouldRender.tools && <FreeTrial type="topbar" />}
+                {shouldRender.configIssues && <ConfigIssuesButton />}
+                {shouldRender.resources && <ResourcesButton />}
 
-                  <PresenceMenu />
+                <PresenceMenu />
 
-                  {/* Search button (mobile) */}
-                  {shouldRender.searchFullscreen && (
-                    <SearchButton
-                      onClick={handleOpenSearchFullscreen}
-                      ref={setSearchOpenButtonEl}
-                    />
-                  )}
+                {/* Search button (mobile) */}
+                {shouldRender.searchFullscreen && (
+                  <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
+                )}
 
-                  {actionNodes}
-                </Flex>
+                {actionNodes}
 
                 {shouldRender.tools && (
                   <Box flex="none" marginLeft={1}>

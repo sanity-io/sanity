@@ -1,4 +1,4 @@
-import React, {type ComponentType, type ReactElement} from 'react';
+import {type ComponentType, type ReactElement} from 'react'
 
 import {type Tool} from '../types'
 
@@ -24,8 +24,7 @@ interface NavbarActionBase {
   name: string
 }
 
-interface TopbarActionWithCustomRender extends NavbarActionBase {
-  location: 'topbar'
+interface ActionWithCustomRender extends NavbarActionBase {
   render: () => ReactElement
 }
 
@@ -41,7 +40,7 @@ interface Action extends NavbarActionBase {
  * @beta
  * An internal API for defining actions in the navbar.
  */
-export type NavbarAction = Action | TopbarActionWithCustomRender
+export type NavbarAction = Action | ActionWithCustomRender
 
 /**
  * @hidden
