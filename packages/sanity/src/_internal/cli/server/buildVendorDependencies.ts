@@ -101,6 +101,19 @@ const VENDOR_IMPORTS: VendorImports = {
       './package.json': './package.json',
     },
   },
+  '@sanity/icons': {
+    '^3.0.0': {
+      '.': './dist/index.js',
+      './package.json': './package.json',
+    },
+  },
+  '@sanity/ui': {
+    '^2.0.0': {
+      '.': './dist/index.js',
+      './theme': './dist/theme.js',
+      './package.json': './package.json',
+    },
+  },
 }
 
 interface VendorBuildOptions {
