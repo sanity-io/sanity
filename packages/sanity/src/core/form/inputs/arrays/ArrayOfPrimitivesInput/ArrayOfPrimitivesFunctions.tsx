@@ -39,6 +39,10 @@ export function ArrayOfPrimitivesFunctions<
       ? 'inputs.array.action.add-item-select-type'
       : 'inputs.array.action.add-item'
 
+  if (schemaType.options?.disableActions?.includes('add')) {
+    return null
+  }
+
   if (readOnly) {
     return (
       <Tooltip portal content={t('inputs.array.read-only-label')}>

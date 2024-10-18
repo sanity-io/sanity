@@ -46,7 +46,7 @@ function getTone({
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
 const BUTTON_CARD_STYLE = {position: 'relative'} as const
-
+const EMPTY_ARRAY: never[] = []
 export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: PreviewItemProps<Item>) {
   const {
     schemaType,
@@ -144,9 +144,55 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     referenceElement: contextMenuButtonElement,
   })
 
+  const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
+
+  const menuItems = useMemo(() => {
+    return [
+      !disableActions.includes('remove') && (
+        <MenuItem
+          key="remove"
+          text={t('inputs.array.action.remove')}
+          tone="critical"
+          icon={TrashIcon}
+          onClick={onRemove}
+        />
+      ),
+      !disableActions.includes('copy') && (
+        <MenuItem
+          key="copy"
+          text={t('inputs.array.action.copy')}
+          icon={CopyIcon}
+          onClick={handleCopy}
+        />
+      ),
+      !disableActions.includes('duplicate') && (
+        <MenuItem
+          key="duplicate"
+          text={t('inputs.array.action.duplicate')}
+          icon={AddDocumentIcon}
+          onClick={handleDuplicate}
+        />
+      ),
+      !disableActions.includes('add') &&
+        !disableActions.includes('addBefore') &&
+        insertBefore.menuItem,
+      !disableActions.includes('add') &&
+        !disableActions.includes('addAfter') &&
+        insertAfter.menuItem,
+    ].filter(Boolean)
+  }, [
+    disableActions,
+    handleCopy,
+    handleDuplicate,
+    insertAfter.menuItem,
+    insertBefore.menuItem,
+    onRemove,
+    t,
+  ])
+
   const menu = useMemo(
     () =>
-      readOnly ? null : (
+      readOnly || menuItems.length === 0 ? null : (
         <>
           <MenuButton
             ref={setContextMenuButtonElement}
@@ -160,35 +206,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
               />
             }
             id={`${props.inputId}-menuButton`}
-            menu={
-              <Menu>
-                <MenuItem
-                  text={t('inputs.array.action.remove')}
-                  tone="critical"
-                  icon={TrashIcon}
-                  onClick={onRemove}
-                />
-                <MenuItem
-                  text={t('inputs.array.action.copy')}
-                  icon={CopyIcon}
-                  onClick={handleCopy}
-                />
-                <MenuItem
-                  text={t('inputs.array.action.duplicate')}
-                  icon={AddDocumentIcon}
-                  onClick={handleDuplicate}
-                />
-                {insertBefore.menuItem}
-                {insertAfter.menuItem}
-              </Menu>
-            }
+            menu={<Menu>{menuItems}</Menu>}
             popover={MENU_POPOVER_PROPS}
           />
           {insertBefore.popover}
           {insertAfter.popover}
         </>
       ),
-    [readOnly, insertBefore, insertAfter, props.inputId, t, onRemove, handleCopy, handleDuplicate],
+    [menuItems, readOnly, insertBefore, insertAfter, props.inputId],
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
