@@ -2,7 +2,6 @@ import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {type BundleDocument, type releaseType} from '../../../../../../core'
 import {Button, Popover, Tooltip} from '../../../../../../ui-components'
 
 const Chip = styled(Button)`
@@ -19,28 +18,15 @@ const Chip = styled(Button)`
 
 export const VersionChip = memo(function VersionChip(props: {
   disabled?: boolean
-  releaseOptions?: BundleDocument[]
   selected: boolean
   tooltipContent: ReactNode
-  version?: releaseType
   onClick: () => void
   text: string
   tone: 'default' | 'primary' | 'positive' | 'caution' | 'critical'
   icon: React.ComponentType
   menuContent?: ReactNode
 }) {
-  const {
-    disabled,
-    releaseOptions,
-    selected,
-    tooltipContent,
-    version,
-    onClick,
-    text,
-    tone,
-    icon,
-    menuContent,
-  } = props
+  const {disabled, selected, tooltipContent, onClick, text, tone, icon, menuContent} = props
 
   const [contextMenuPoint, setContextMenuPoint] = useState<{x: number; y: number} | undefined>(
     undefined,
@@ -55,7 +41,14 @@ export const VersionChip = memo(function VersionChip(props: {
     setContextMenuPoint({x: event.clientX, y: event.clientY})
   }, [])
 
-  useClickOutsideEvent(close, () => [popoverRef.current])
+  useClickOutsideEvent(
+    () => {
+      if (contextMenuPoint?.x && contextMenuPoint?.y) {
+        close()
+      }
+    },
+    () => [popoverRef.current],
+  )
 
   useGlobalKeyDown(
     useCallback(
