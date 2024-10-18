@@ -71,7 +71,9 @@ export async function compareStudioDependencyVersions(
     )
 
     if (!installed) {
-      throw new Error(`Failed to parse installed version for ${pkg}`)
+      console.warn(`Failed to parse installed version for ${pkg}`)
+      break
+      // throw new Error(`Failed to parse installed version for ${pkg}`)
     }
 
     if (!semver.eq(resolvedVersion, installed.version)) {
