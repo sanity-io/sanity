@@ -28,6 +28,8 @@ export function usePerspective(selectedPerspective?: string): PerspectiveValue {
   const setPerspective = (bundleId: string | undefined) => {
     if (bundleId === 'drafts') {
       router.navigateStickyParam('perspective', '')
+    } else if (bundleId === 'published') {
+      router.navigateStickyParam('perspective', 'published')
     } else {
       router.navigateStickyParam('perspective', `bundle.${bundleId}`)
     }

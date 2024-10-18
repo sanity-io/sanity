@@ -1,6 +1,5 @@
 import {fireEvent, render, screen} from '@testing-library/react'
 import {act} from 'react'
-import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -16,7 +15,6 @@ vi.mock('sanity', () => ({
 
 vi.mock('../../../../../store/bundles/useBundleOperations', () => ({
   useBundleOperations: vi.fn().mockReturnValue({
-    deleteBundle: vi.fn(),
     updateBundle: vi.fn(),
   }),
 }))
@@ -26,18 +24,11 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
-const renderTest = async ({
-  bundle,
-  documentCount = 2,
-  disabled = false,
-}: ReleaseMenuButtonProps) => {
+const renderTest = async ({bundle, disabled = false}: ReleaseMenuButtonProps) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  return render(
-    <ReleaseMenuButton disabled={disabled} bundle={bundle} documentCount={documentCount} />,
-    {wrapper},
-  )
+  return render(<ReleaseMenuButton disabled={disabled} bundle={bundle} />, {wrapper})
 }
 
 describe.todo('BundleMenuButton', () => {
@@ -49,6 +40,7 @@ describe.todo('BundleMenuButton', () => {
     const activeBundle: BundleDocument = {
       _id: 'activeBundle',
       _type: 'release',
+      timing: 'immediately',
       archivedAt: undefined,
       title: 'activeBundle',
       authorId: 'author',
@@ -77,6 +69,7 @@ describe.todo('BundleMenuButton', () => {
     const archivedBundle: BundleDocument = {
       _id: 'activeBundle',
       _type: 'release',
+      timing: 'immediately',
       archivedAt: new Date().toISOString(),
       title: 'activeBundle',
       authorId: 'author',
@@ -100,75 +93,13 @@ describe.todo('BundleMenuButton', () => {
     })
   })
 
-  test('will delete a bundle with documents', async () => {
-    const activeBundle: BundleDocument = {
-      _id: 'activeBundle',
-      _type: 'release',
-      archivedAt: new Date().toISOString(),
-      title: 'activeBundle',
-      authorId: 'author',
-      _createdAt: new Date().toISOString(),
-      _updatedAt: new Date().toISOString(),
-      _rev: '',
-      hue: 'gray',
-      icon: 'cube',
-    }
-    await renderTest({bundle: activeBundle})
-
-    fireEvent.click(screen.getByTestId('release-menu-button'))
-
-    await act(() => {
-      fireEvent.click(screen.getByTestId('delete-release'))
-    })
-    expect(useBundleOperations().deleteBundle).not.toHaveBeenCalled()
-    expect(screen.getByTestId('confirm-delete-body')).toBeVisible()
-
-    await act(() => {
-      fireEvent.click(screen.getByTestId('confirm-button'))
-    })
-
-    expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(activeBundle)
-    expect(useRouter().navigate).not.toHaveBeenCalled()
-  })
-
-  test('will delete a bundle with no documents', async () => {
-    const activeEmptyBundle: BundleDocument = {
-      _id: 'activeEmptyBundle',
-      _type: 'release',
-      archivedAt: new Date().toISOString(),
-      title: 'activeEmptyBundle',
-      authorId: 'author',
-      _createdAt: new Date().toISOString(),
-      _updatedAt: new Date().toISOString(),
-      _rev: '',
-      hue: 'gray',
-      icon: 'cube',
-    }
-    await renderTest({bundle: activeEmptyBundle, documentCount: 0})
-
-    fireEvent.click(screen.getByTestId('release-menu-button'))
-
-    await act(() => {
-      fireEvent.click(screen.getByTestId('delete-release'))
-    })
-    expect(useBundleOperations().deleteBundle).not.toHaveBeenCalled()
-    // confirm dialog body is hidden when no documents in bundle
-    expect(screen.queryByTestId('confirm-delete-body')).toBeNull()
-
-    await act(() => {
-      fireEvent.click(screen.getByTestId('confirm-button'))
-    })
-
-    expect(useBundleOperations().deleteBundle).toHaveBeenCalledWith(activeEmptyBundle)
-    expect(useRouter().navigate).not.toHaveBeenCalled()
-  })
-
   test('will be disabled', async () => {
     const disabledActionBundle: BundleDocument = {
       _id: 'activeEmptyBundle',
       _type: 'release',
       archivedAt: new Date().toISOString(),
       title: 'activeEmptyBundle',
+      timing: 'immediately',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -176,7 +107,7 @@ describe.todo('BundleMenuButton', () => {
       hue: 'gray',
       icon: 'cube',
     }
-    await renderTest({bundle: disabledActionBundle, disabled: true, documentCount: 0})
+    await renderTest({bundle: disabledActionBundle, disabled: true})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
   })

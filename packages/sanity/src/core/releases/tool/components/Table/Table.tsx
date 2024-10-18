@@ -1,4 +1,4 @@
-import {Box, Card, type CardProps, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, rem, Stack, Text, useTheme} from '@sanity/ui'
 import {
   defaultRangeExtractor,
   type Range,
@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-virtual'
 import {get} from 'lodash'
 import {
+  type CSSProperties,
   Fragment,
   type HTMLProps,
   type MutableRefObject,
@@ -52,19 +53,17 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   scrollContainerRef: MutableRefObject<HTMLDivElement | null>
 }
 
-const RowStack = styled(Stack)({
-  '& > *:not([first-child])': {
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-    marginTop: -1,
-  },
-
-  '& > *:not([last-child])': {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-})
-
+const CustomCard = styled(Card)`
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  ::before {
+    content: '';
+    display: block;
+    border: 1px solid red;
+    position: absolute;
+  }
+`
 const ITEM_HEIGHT = 59
 
 /**
@@ -112,6 +111,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
     if (!sort) return filteredResult
 
     return [...filteredResult].sort((a, b) => {
+      // TODO: Update this tos support sorting not only by date but also by string
       const parseDate = (dateString: unknown) =>
         typeof dateString === 'string' ? Date.parse(dateString) : 0
 
@@ -178,15 +178,15 @@ const TableInner = <TableData, AdditionalRowTableData>({
             key={String(get(datum, rowId))}
             data-testid="table-row"
             as="tr"
-            border
-            radius={3}
+            borderBottom
             display="flex"
-            first-child={datum.isFirst ? '' : undefined}
-            last-child={datum.isLast ? '' : undefined}
-            margin={-1}
             style={{
               height: `${datum.virtualRow.size}px`,
               transform: `translateY(${datum.virtualRow.start - datum.index * datum.virtualRow.size}px)`,
+              paddingInline: `max(
+                calc((100vw - var(--maxInlineSize)) / 2),
+                var(--paddingInline)
+              )`,
             }}
             {...cardRowProps}
           >
@@ -236,6 +236,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
     [amalgamatedColumnDefs],
   )
 
+  const theme = useTheme()
+
   if (loading) {
     return <LoadingBlock fill data-testid="table-loading" />
   }
@@ -243,17 +245,21 @@ const TableInner = <TableData, AdditionalRowTableData>({
   return (
     <div ref={virtualizerContainerRef}>
       <div
-        style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
-          // The padding accounts for the height of the <TableHeader> and extra space for padding at the bottom
-          paddingBottom: '110px',
-          width: '100%',
-          position: 'relative',
-        }}
+        style={
+          {
+            'height': `${rowVirtualizer.getTotalSize()}px`,
+            // The padding accounts for the height of the <TableHeader> and extra space for padding at the bottom
+            'paddingBottom': '110px',
+            'width': '100%',
+            'position': 'relative',
+            '--maxInlineSize': rem(theme.sanity.v2?.container[3] ?? 0),
+            '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
+          } as CSSProperties
+        }
       >
-        <Stack as="table" space={1}>
+        <Stack as="table">
           <TableHeader headers={headers} searchDisabled={!searchTerm && !data.length} />
-          <RowStack as="tbody">
+          <Stack as="tbody">
             {filteredData.length === 0
               ? emptyContent
               : rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
@@ -266,7 +272,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
                     isLast: virtualRow.index === filteredData.length - 1,
                   })
                 })}
-          </RowStack>
+          </Stack>
         </Stack>
       </div>
     </div>
