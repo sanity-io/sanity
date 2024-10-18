@@ -1,4 +1,5 @@
 import path from 'node:path'
+import fs from 'node:fs/promises'
 import {promisify} from 'node:util'
 
 import chalk from 'chalk'
@@ -8,7 +9,7 @@ import {noopLogger} from '@sanity/telemetry'
 import rimrafCallback from 'rimraf'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
-import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
+import {buildStaticFiles, ChunkModule, ChunkStats, getSanityStudioConfigPath} from '../../server'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
@@ -17,6 +18,7 @@ import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
+import {bundleConfig} from '../../config/bundleConfig'
 
 const rimraf = promisify(rimrafCallback)
 
@@ -196,6 +198,41 @@ export default async function buildSanityStudio(
   } catch (err) {
     spin.fail()
     trace.error(err)
+    throw err
+  }
+
+  try {
+    const studioConfigPath = await getSanityStudioConfigPath(workDir)
+
+    if (importMap && studioConfigPath) {
+      spin = output.spinner('Build config').start()
+
+      timer.start('bundleConfig')
+
+      // Bundle `sanity.config` to a single ES module
+      const configOutDir = path.join(outputDir, 'config')
+      await bundleConfig({
+        cwd: workDir,
+        mode: 'production',
+        outDir: configOutDir,
+        configPath: studioConfigPath,
+        importMap,
+      })
+      await fs.writeFile(
+        path.join(configOutDir, 'importmap.json'),
+        `${JSON.stringify(importMap, null, 2)}\n`,
+        'utf8',
+      )
+      const buildDuration = timer.end('bundleConfig')
+
+      spin.text = `Build config (${buildDuration.toFixed()}ms)`
+      spin.succeed()
+
+      // trace.complete()
+    }
+  } catch (err) {
+    spin.fail()
+    // trace.error(err)
     throw err
   }
 
