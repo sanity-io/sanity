@@ -388,10 +388,12 @@ export interface PluginOptions {
      */
     enableLegacySearch?: boolean
   }
+
   /** Configuration for studio beta features.
    * @internal
    */
   beta?: BetaFeatures
+
   /** Configuration for error handling.
    * @beta
    */
@@ -916,5 +918,15 @@ interface BetaFeatures {
      * @deprecated beta feature is no longer available.
      */
     enabled: boolean
+  }
+
+  /**
+   * @beta
+   */
+  create?: {
+    /**
+     * When true, a "Start in Create" action will be shown for all new documents, in place of regular document actions.
+     */
+    startInCreateEnabled: boolean
   }
 }

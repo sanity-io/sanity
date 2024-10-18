@@ -42,6 +42,7 @@ import {
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
+  startInCreateEnabledReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -647,6 +648,9 @@ function resolveSource({
       treeArrayEditing: {
         // This beta feature is no longer available.
         enabled: false,
+      },
+      create: {
+        startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: true}),
       },
     },
   }
