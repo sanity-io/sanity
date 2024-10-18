@@ -26,13 +26,13 @@ interface TaksEnabledProviderProps {
  */
 
 export function ScheduledPublishingEnabledProvider({children}: TaksEnabledProviderProps) {
-  const {enabled, isLoading} = useFeatureEnabled('scheduledPublishing')
+  const {enabled, isLoading, error} = useFeatureEnabled('scheduledPublishing')
   const {scheduledPublishing} = useWorkspace()
 
   const isWorkspaceEnabled = scheduledPublishing.enabled
 
   const value: ScheduledPublishingEnabledContextValue = useMemo(() => {
-    if (!isWorkspaceEnabled || isLoading) {
+    if (!isWorkspaceEnabled || isLoading || error) {
       return {
         enabled: false,
         mode: null,
@@ -42,7 +42,7 @@ export function ScheduledPublishingEnabledProvider({children}: TaksEnabledProvid
       enabled: true,
       mode: enabled ? 'default' : 'upsell',
     }
-  }, [enabled, isLoading, isWorkspaceEnabled])
+  }, [enabled, isLoading, isWorkspaceEnabled, error])
 
   return (
     <ScheduledPublishingEnabledContext.Provider value={value}>

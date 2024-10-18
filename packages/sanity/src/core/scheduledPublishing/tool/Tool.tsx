@@ -1,4 +1,4 @@
-import {Box, Flex, Text, useTheme} from '@sanity/ui'
+import {Box, Container, Flex, Text, useTheme} from '@sanity/ui'
 import {parse} from 'date-fns'
 import {useEffect, useMemo, useRef} from 'react'
 import {type RouterContextValue, useRouter} from 'sanity/router'
@@ -11,6 +11,7 @@ import {SCHEDULE_FILTERS, TOOL_HEADER_HEIGHT} from '../constants'
 import usePollSchedules from '../hooks/usePollSchedules'
 import useTimeZone from '../hooks/useTimeZone'
 import {type Schedule, type ScheduleState} from '../types'
+import {useScheduledPublishingEnabled} from './contexts/ScheduledPublishingEnabledProvider'
 import {SchedulesProvider} from './contexts/schedules'
 import {ScheduleFilters} from './scheduleFilters'
 import {Schedules} from './schedules'
@@ -32,6 +33,7 @@ export default function Tool() {
 
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
+  const {enabled} = useScheduledPublishingEnabled()
 
   const lastScheduleState = useRef<ScheduleState | undefined>()
 
@@ -72,6 +74,19 @@ export default function Tool() {
     } else {
       router.navigate({state: lastScheduleState?.current || SCHEDULE_FILTERS[0]})
     }
+  }
+
+  if (!enabled) {
+    return (
+      <Container width={1} paddingTop={4}>
+        <Box paddingTop={4} paddingX={4}>
+          <ErrorCallout
+            description="You do not have permission to edit schedules."
+            title="Insufficient permissions"
+          />
+        </Box>
+      </Container>
+    )
   }
 
   return (
