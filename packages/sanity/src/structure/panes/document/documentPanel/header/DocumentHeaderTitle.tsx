@@ -1,5 +1,6 @@
+import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {memo, type ReactElement} from 'react'
+import {createElement, memo, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -12,7 +13,10 @@ const TitleContainer = styled(Text)`
   min-width: 0;
 `
 
-export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactElement {
+export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(props: {
+  collapsed: boolean
+}): ReactElement {
+  const {collapsed} = props
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
   const subscribed = Boolean(documentValue) && connectionState !== 'connecting'
 
@@ -46,8 +50,27 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactEle
   }
 
   return (
-    <Flex flex={1} align="center" gap={1}>
-      <DocumentPerspectiveMenu />
+    <Flex flex={1} align="center" gap={collapsed ? 3 : 1} paddingX={collapsed ? 2 : 0}>
+      {collapsed ? (
+        <>
+          <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
+          <TitleContainer
+            muted={!value?.title}
+            size={1}
+            textOverflow="ellipsis"
+            weight={value?.title ? 'semibold' : undefined}
+            title={value?.title}
+          >
+            {value?.title || (
+              <span style={{color: 'var(--card-muted-fg-color)'}}>
+                {t('panes.document-header-title.untitled.text')}
+              </span>
+            )}
+          </TitleContainer>
+        </>
+      ) : (
+        <DocumentPerspectiveMenu />
+      )}
     </Flex>
   )
 })

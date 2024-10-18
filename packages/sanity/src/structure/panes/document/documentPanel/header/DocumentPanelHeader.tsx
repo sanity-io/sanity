@@ -37,8 +37,6 @@ export interface DocumentPanelHeaderProps {
   menuItems: PaneMenuItem[]
 }
 
-const documentPaneHeaderTitle = <DocumentHeaderTitle />
-
 export const DocumentPanelHeader = memo(
   forwardRef(function DocumentPanelHeader(
     _props: DocumentPanelHeaderProps,
@@ -84,6 +82,8 @@ export const DocumentPanelHeader = memo(
     const {collapsed, isLast} = usePane()
     // Prevent focus if this is the last (non-collapsed) pane.
     const tabIndex = isLast && !collapsed ? -1 : 0
+
+    const documentPaneHeaderTitle = <DocumentHeaderTitle collapsed={collapsed} />
 
     // there are three kinds of buttons possible:
     //
