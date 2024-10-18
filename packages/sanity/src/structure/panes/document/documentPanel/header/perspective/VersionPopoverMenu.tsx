@@ -1,6 +1,6 @@
-import {CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
+import {AddIcon, CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, MenuDivider, Spinner} from '@sanity/ui'
+import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
 import {memo, useCallback} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
@@ -28,9 +28,18 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
   fromRelease: string
   isVersion: boolean
   onDiscard: () => void
+  onCreateRelease: () => void
 }) {
-  const {documentId, releases, releasesLoading, documentType, fromRelease, isVersion, onDiscard} =
-    props
+  const {
+    documentId,
+    releases,
+    releasesLoading,
+    documentType,
+    fromRelease,
+    isVersion,
+    onDiscard,
+    onCreateRelease,
+  } = props
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
   const isPublished = isPublishedId(documentId) && !isVersion
@@ -100,9 +109,9 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
         )}
         {releasesLoading && <Spinner />}
         <MenuGroup icon={CopyIcon} popover={{placement: 'right-start'}} text="Copy version to">
-          {optionsReleaseList.map((option) => {
-            return (
-              <>
+          <Stack key={fromRelease} space={1}>
+            {optionsReleaseList.map((option) => {
+              return (
                 <MenuItem
                   as="a"
                   key={option.value._id}
@@ -110,9 +119,13 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
                   text={option.value.title}
                   renderMenuItem={() => <VersionPopoverMenuItem release={option.value} />}
                 />
-              </>
-            )
-          })}
+              )
+            })}
+
+            {optionsReleaseList.length > 1 && <MenuDivider />}
+            {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
+            <MenuItem onClick={onCreateRelease} text={'New release'} icon={AddIcon} />
+          </Stack>
         </MenuGroup>
         {!isPublished && (
           <>
