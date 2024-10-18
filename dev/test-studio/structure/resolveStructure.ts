@@ -1,4 +1,5 @@
 import {
+  BinaryDocumentIcon,
   CodeIcon,
   CogIcon,
   EarthGlobeIcon,
@@ -231,7 +232,7 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
                     options: {
                       filter: '_type == "author" || _type == "book"',
                     },
-                  }),
+                  }).apiVersion('2023-07-28'),
                 ),
 
               // A singleton not using `documentListItem`, eg no built-in preview
@@ -456,6 +457,9 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
             ]),
           )
         }),
+      S.divider(),
+      S.documentTypeListItem('sanity.imageAsset').icon(ImagesIcon),
+      S.documentTypeListItem('sanity.fileAsset').icon(BinaryDocumentIcon),
     ])
 }
 
