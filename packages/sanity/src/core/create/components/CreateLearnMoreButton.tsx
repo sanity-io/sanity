@@ -10,8 +10,12 @@ export const CreateLearnMoreButton = forwardRef(function CreateLearnMoreButton(
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const {t} = useTranslation(createLocaleNamespace)
+  // TODO - get the correct link
   return (
     <Button
+      as={'a'}
+      href={'https://sanity.io/create'}
+      target="_blank"
       ref={ref}
       text={t('start-in-create-dialog.cta.learn-more')}
       mode="bleed"
