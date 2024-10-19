@@ -10,7 +10,7 @@ import {useCreateDocumentUrl} from '../useCreateDocumentUrl'
 import {CreateUnlinkConfirmDialog} from './CreateUnlinkConfirmDialog'
 
 export function CreateLinkedActions(props: CreateLinkedActionsProps) {
-  const {metadata, panelPortalElementId} = props
+  const {metadata, panelPortalElementId, onDocumentChange, documentTitle} = props
   const {t} = useTranslation(createLocaleNamespace)
   const href = useCreateDocumentUrl(metadata)
 
@@ -31,7 +31,11 @@ export function CreateLinkedActions(props: CreateLinkedActionsProps) {
       <Button text={t('unlink-from-create-button.text')} paddingY={3} onClick={confirmUnlink} />
       {unlinkConfirm && (
         <DialogPortalProvider portalElementId={panelPortalElementId}>
-          <CreateUnlinkConfirmDialog onClose={cancelUnlink} />
+          <CreateUnlinkConfirmDialog
+            onClose={cancelUnlink}
+            onDocumentChange={onDocumentChange}
+            documentTitle={documentTitle}
+          />
         </DialogPortalProvider>
       )}
     </Flex>
