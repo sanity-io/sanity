@@ -29,6 +29,9 @@ describe('boolean types', () => {
         hidden: () => false,
         options: {
           layout: 'checkbox',
+          sanityCreate: {
+            exclude: true,
+          },
         },
       })
 

@@ -1,6 +1,7 @@
 import {type SanityDocument} from '../../../documents/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty, type SortOrdering} from '../../types'
+import {type BaseOptions} from './common'
 import {type ObjectDefinition} from './object'
 
 /**
@@ -9,7 +10,7 @@ import {type ObjectDefinition} from './object'
  * @public
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface DocumentOptions {}
+export interface DocumentOptions extends BaseOptions {}
 
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
