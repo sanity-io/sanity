@@ -1,5 +1,5 @@
 import {LaunchIcon} from '@sanity/icons'
-import {Box, Checkbox, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useId} from 'react'
 
 import {Button} from '../../../ui-components'
@@ -30,6 +30,7 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
 
   const {patch} = useDocumentOperation(publicId, type)
 
+  const {push: pushToast} = useToast()
   const currentUser = useCurrentUser()
   const userId = currentUser?.id ?? ''
   const [user] = useUser(userId)
@@ -43,7 +44,10 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
 
   const startLinking = useCallback(() => {
     if (!createUrl) {
-      //@todo error toast
+      pushToast({
+        title: t('start-in-create-dialog.error-toast.unresolved-url'),
+        status: 'warning',
+      })
       return
     }
     window?.open(createUrl, CREATE_LINK_TARGET)?.focus()
@@ -66,7 +70,7 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
         ]),
       )
     }, 2000)
-  }, [patch, createUrl, onLinkingStarted])
+  }, [patch, createUrl, onLinkingStarted, pushToast, t])
 
   return (
     <Stack space={4}>
