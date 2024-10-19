@@ -394,6 +394,21 @@ importers:
         specifier: ^6.1.0
         version: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
+  dev/test-create-integration-studio:
+    dependencies:
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      sanity:
+        specifier: workspace:*
+        version: link:../../packages/sanity
+      styled-components:
+        specifier: ^6.1.0
+        version: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+
   dev/test-next-studio:
     dependencies:
       '@sanity/vision':
