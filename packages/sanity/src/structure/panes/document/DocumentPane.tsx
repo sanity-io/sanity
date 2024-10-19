@@ -14,7 +14,6 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {StartInCreateProvider} from '../../../core/form/create/start-in-create/StartInCreateProvider'
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
@@ -36,9 +35,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
   return (
     <SourceProvider name={props.pane.source || parentSourceName}>
       <CopyPasteProvider>
-        <StartInCreateProvider>
-          <DocumentPaneInner {...props} />
-        </StartInCreateProvider>
+        <DocumentPaneInner {...props} />
       </CopyPasteProvider>
     </SourceProvider>
   )

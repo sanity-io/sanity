@@ -14,8 +14,11 @@ import {
   type DocumentInspectorMenuItem,
   FieldActionsProvider,
   FieldActionsResolver,
+  getCreateLinkMetadata,
   GetFormValueProvider,
+  isCreateLinked,
   useGlobalCopyPasteElementHandler,
+  useSanityCreateConfig,
   useZIndex,
 } from 'sanity'
 import {type Path} from 'sanity-diff-patch'
@@ -84,6 +87,9 @@ export function DocumentLayout() {
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const zOffsets = useZIndex()
   const previewUrl = usePreviewUrl(value)
+
+  const createLinkMetadata = getCreateLinkMetadata(value)
+  const CreateLinkedBanner = useSanityCreateConfig().components?.documentLinkedBanner
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
@@ -204,6 +210,10 @@ export function DocumentLayout() {
         >
           <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
 
+          {createLinkMetadata && isCreateLinked(createLinkMetadata) && CreateLinkedBanner && (
+            <CreateLinkedBanner metadata={createLinkMetadata} />
+          )}
+
           <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
             <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
               <StyledChangeConnectorRoot
@@ -231,7 +241,10 @@ export function DocumentLayout() {
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
               <PaneFooter ref={setFooterElement}>
                 <TooltipDelayGroupProvider>
-                  <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
+                  <DocumentStatusBar
+                    actionsBoxRef={setActionsBoxElement}
+                    createLinkMetadata={createLinkMetadata}
+                  />
                 </TooltipDelayGroupProvider>
               </PaneFooter>
             </DialogProvider>

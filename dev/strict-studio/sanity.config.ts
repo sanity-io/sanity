@@ -10,4 +10,10 @@ export default defineConfig({
   projectId: 'ppsg7ml5',
   dataset: 'test',
   schema: {types: schemaTypes},
+
+  beta: {
+    create: {
+      fallbackStudioOrigin: 'sanity-manifest-test.sanity.studio',
+    },
+  },
 })
