@@ -7,10 +7,10 @@
   "scripts": {
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
+    "deploy": "npx sanity deploy",
     "dev": "../.bin/sanity dev",
     "lint": "eslint .",
-    "start": "../.bin/sanity start",
-    "deploy": "npx sanity deploy"
+    "start": "../.bin/sanity start"
   },
   "dependencies": {
     "react": "^18.3.1",
