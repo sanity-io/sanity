@@ -23,6 +23,8 @@ const createLocaleStrings = defineLocalesResources('comments', {
   'start-in-create-dialog.cta.learn-more': 'Learn more',
   /** Text for checkbox in "Start writing in Create" dialog for disabling the dialog in the future */
   'start-in-create-dialog.dont-remind-me-checkbox': 'Don’t remind me again',
+  /** Toast error message when we dont have a resolved Sanity Create url*/
+  'start-in-create-dialog.error-toast.unresolved-url': 'Unable to determine Sanity Create URL.',
 
   /** Header of the "Linking in progress" dialog */
   'linking-in-progress-dialog.header': 'Linking in progress',
