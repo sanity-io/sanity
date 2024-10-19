@@ -173,8 +173,8 @@ export function createDocumentStore({
       editOperations(publishedId, type, version) {
         return editOperations(ctx, getIdPairFromPublished(publishedId, version), type)
       },
-      editState(publishedId, type) {
-        const idPair = getIdPairFromPublished(publishedId)
+      editState(publishedId, type, version) {
+        const idPair = getIdPairFromPublished(publishedId, version)
 
         const edit = editState(ctx, idPair, type)
         return edit
@@ -199,8 +199,8 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(publishedId, type) {
-        const idPair = getIdPairFromPublished(publishedId)
+      validation(publishedId, type, version) {
+        const idPair = getIdPairFromPublished(publishedId, version)
         return validation(ctx, idPair, type)
       },
     },
