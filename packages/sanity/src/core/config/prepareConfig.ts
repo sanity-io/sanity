@@ -14,6 +14,7 @@ import {
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
+import {getStartInCreateSortedActions} from '../create/getStartInCreateSortedActions'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
@@ -25,6 +26,7 @@ import {operatorDefinitions} from '../studio/components/navbar/search/definition
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
+  createFallbackOriginReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
@@ -496,14 +498,16 @@ function resolveSource({
       config,
     }),
     document: {
-      actions: (partialContext) =>
-        resolveConfigProperty({
+      actions: (partialContext) => {
+        const actions = resolveConfigProperty({
           config,
           context: {...context, ...partialContext},
           initialValue: initialDocumentActions,
           propertyName: 'document.actions',
           reducer: documentActionsReducer,
-        }),
+        })
+        return getStartInCreateSortedActions(actions)
+      },
       badges: (partialContext) =>
         resolveConfigProperty({
           config,
@@ -651,6 +655,7 @@ function resolveSource({
       },
       create: {
         startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: true}),
+        fallbackStudioOrigin: createFallbackOriginReducer(config),
       },
     },
   }

@@ -1,4 +1,5 @@
 import {comments} from '../comments/plugin'
+import {createIntegration} from '../create/createIntegration'
 import {DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS} from '../scheduledPublishing/constants'
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduledPublishing/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
@@ -9,7 +10,7 @@ import {
   type WorkspaceOptions,
 } from './types'
 
-const defaultPlugins = [comments(), tasks(), scheduledPublishing()]
+const defaultPlugins = [comments(), tasks(), scheduledPublishing(), createIntegration()]
 
 export function getDefaultPlugins(
   options: DefaultPluginsWorkspaceOptions,

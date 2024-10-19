@@ -414,3 +414,25 @@ export const startInCreateEnabledReducer = (opts: {
 
   return result
 }
+
+export const createFallbackOriginReducer = (config: PluginOptions): string | undefined => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce(
+    (acc, {config: innerConfig}) => {
+      const resolver = innerConfig.beta?.create?.fallbackStudioOrigin
+
+      if (!resolver) return acc
+      if (typeof resolver === 'string') return resolver
+
+      throw new Error(
+        `Expected \`beta.create.fallbackStudioOrigin\` to be a string, but received ${getPrintableType(
+          resolver,
+        )}`,
+      )
+    },
+    undefined as string | undefined,
+  )
+
+  return result
+}

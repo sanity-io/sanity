@@ -74,9 +74,11 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
 
   userLoader.prime('me', userFromCurrentUser)
 
-  if (userFromCurrentUser?.id) {
+  //@todo figure out if we are ok with this removal
+  // currentUser does not contain all data returned by userLoader (specifically sanityUserId)
+  /*if (userFromCurrentUser?.id) {
     userLoader.prime(userFromCurrentUser.id, userFromCurrentUser)
-  }
+  }*/
 
   INTERNAL_USER_IDS.forEach((user) => userLoader.prime(user.id, user))
 

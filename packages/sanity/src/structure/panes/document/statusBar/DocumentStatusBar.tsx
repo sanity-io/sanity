@@ -1,8 +1,14 @@
 import {Flex} from '@sanity/ui'
 import {type Ref, useCallback, useState} from 'react'
-import {useTimelineSelector} from 'sanity'
+import {
+  type CreateLinkMetadata,
+  isCreateLinked,
+  useSanityCreateConfig,
+  useTimelineSelector,
+} from 'sanity'
 
 import {SpacerButton} from '../../../components/spacerButton'
+import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
@@ -11,13 +17,16 @@ import {useResizeObserver} from './useResizeObserver'
 
 export interface DocumentStatusBarProps {
   actionsBoxRef?: Ref<HTMLDivElement>
+  createLinkMetadata?: CreateLinkMetadata
 }
 
 const CONTAINER_BREAKPOINT = 480 // px
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
-  const {actionsBoxRef} = props
+  const {actionsBoxRef, createLinkMetadata} = props
   const {editState, timelineStore} = useDocumentPane()
+
+  const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
 
   // Subscribe to external timeline state changes
   const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
@@ -32,6 +41,20 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   useResizeObserver({element: rootElement, onResize: handleResize})
 
   const shouldRender = editState?.ready && typeof collapsed === 'boolean'
+
+  let actions: JSX.Element | null = null
+  if (createLinkMetadata && isCreateLinked(createLinkMetadata) && CreateLinkedActions) {
+    actions = (
+      <CreateLinkedActions
+        metadata={createLinkMetadata}
+        panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
+      />
+    )
+  } else if (showingRevision) {
+    actions = <HistoryStatusBarActions />
+  } else {
+    actions = <DocumentStatusBarActions />
+  }
 
   return (
     <Flex direction="column" ref={setRootElement} sizing="border">
@@ -59,7 +82,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             style={{flexShrink: 0, marginLeft: 'auto'}}
           >
             <SpacerButton size="large" />
-            {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
+            {actions}
           </Flex>
         </Flex>
       )}
