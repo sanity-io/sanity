@@ -1,7 +1,6 @@
 import {Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'
 
-import {useDocumentPane, useDocumentTitle} from '../../../../structure'
 import {Button, Dialog} from '../../../ui-components'
 import {PatchEvent, unset} from '../../form'
 import {Translate, useTranslation} from '../../i18n'
@@ -9,16 +8,15 @@ import {createLocaleNamespace} from '../i18n'
 
 export interface CreateUnlinkConfirmDialogProps {
   onClose: () => void
+  onDocumentChange: (patchEvent: PatchEvent) => void
+  documentTitle: string
 }
 
 export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps) {
-  const {onClose} = props
+  const {onClose, onDocumentChange, documentTitle} = props
   const id = useId()
-  const {title} = useDocumentTitle()
   const [unlinking, setUnlinking] = useState(false)
   const {t} = useTranslation(createLocaleNamespace)
-
-  const {onChange: onDocumentChange} = useDocumentPane()
 
   const unlink = useCallback(() => {
     setUnlinking(true)
@@ -35,7 +33,7 @@ export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps)
           <Translate
             t={t}
             i18nKey="unlink-from-create-dialog.first-paragraph"
-            values={{title: title ?? 'Untitled'}}
+            values={{title: documentTitle}}
           />
         </Text>
 

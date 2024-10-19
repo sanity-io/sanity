@@ -10,6 +10,7 @@ import {
 import {SpacerButton} from '../../../components/spacerButton'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useDocumentPane} from '../useDocumentPane'
+import {useDocumentTitle} from '../useDocumentTitle'
 import {DocumentBadges} from './DocumentBadges'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentStatusLine} from './DocumentStatusLine'
@@ -24,7 +25,8 @@ const CONTAINER_BREAKPOINT = 480 // px
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
-  const {editState, timelineStore} = useDocumentPane()
+  const {editState, timelineStore, onChange: onDocumentChange} = useDocumentPane()
+  const {title} = useDocumentTitle()
 
   const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
 
@@ -48,6 +50,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
       <CreateLinkedActions
         metadata={createLinkMetadata}
         panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
+        onDocumentChange={onDocumentChange}
+        documentTitle={title ?? ''}
       />
     )
   } else if (showingRevision) {

@@ -9,7 +9,8 @@
     "clean": "rimraf .sanity dist",
     "dev": "../.bin/sanity dev",
     "lint": "eslint .",
-    "start": "../.bin/sanity start"
+    "start": "../.bin/sanity start",
+    "deploy": "../.bin/sanity deploy"
   },
   "dependencies": {
     "react": "^18.3.1",

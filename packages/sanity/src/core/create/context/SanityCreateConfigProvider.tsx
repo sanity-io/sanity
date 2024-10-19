@@ -10,6 +10,9 @@ interface SanityCreateConfigProviderProps {
   children: ReactNode
 }
 
+/**
+ * @internal
+ */
 export function SanityCreateConfigProvider(props: SanityCreateConfigProviderProps): JSX.Element {
   const {children} = props
   const {beta} = useSource()

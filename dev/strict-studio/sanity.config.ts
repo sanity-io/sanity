@@ -13,7 +13,7 @@ export default defineConfig({
 
   beta: {
     create: {
-      fallbackStudioOrigin: 'sanity-manifest-test.sanity.studio',
+      fallbackStudioOrigin: 'strict-studio-test.sanity.studio',
     },
   },
 })

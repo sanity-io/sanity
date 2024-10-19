@@ -1,4 +1,6 @@
-import {type SanityDocument} from 'sanity'
+import {type SanityDocument} from '@sanity/types'
+
+import {type PatchEvent} from '../form'
 
 /** @internal */
 export interface CreateLinkMetadata {
@@ -19,11 +21,15 @@ export interface CreateLinkedSanityDocument extends SanityDocument {
   _create?: CreateLinkMetadata
 }
 
+/** @internal */
 export interface CreateLinkedActionsProps {
   metadata: CreateLinkMetadata
   panelPortalElementId: string
+  onDocumentChange: (patchEvent: PatchEvent) => void
+  documentTitle: string
 }
 
+/** @internal */
 export interface CreateLinkedDocumentBannerProps {
   metadata: CreateLinkMetadata
 }
