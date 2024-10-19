@@ -1,6 +1,6 @@
 {
-  "name": "sanity-strict-studio",
-  "version": "3.62.0",
+  "name": "test-create-integration-studio",
+  "version": "3.61.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -9,7 +9,8 @@
     "clean": "rimraf .sanity dist",
     "dev": "../.bin/sanity dev",
     "lint": "eslint .",
-    "start": "../.bin/sanity start"
+    "start": "../.bin/sanity start",
+    "deploy": "npx sanity deploy"
   },
   "dependencies": {
     "react": "^18.3.1",

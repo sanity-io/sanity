@@ -6,5 +6,6 @@ export default defineCliConfig({
     dataset: 'test',
   },
 
-  studioHost: 'strict-studio-test',
+  studioHost: 'create-integration-test',
+  autoUpdates: false,
 })
