@@ -3,13 +3,13 @@ import {type ComponentType, type ReactNode} from 'react'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
 import {type ArrayOfType} from './array'
-import {type BaseSchemaDefinition} from './common'
+import {type BaseOptions, type BaseSchemaDefinition} from './common'
 import {type ObjectDefinition} from './object'
 
 /**
  * Schema options for a Block schema definition
  * @public */
-export interface BlockOptions {
+export interface BlockOptions extends BaseOptions {
   /**
    * Turn on or off the builtin browser spellchecking. Default is on.
    */

@@ -24,6 +24,25 @@ export type FieldGroupDefinition = {
   i18n?: I18nTextRecord<'title'>
 }
 
+/**
+ * Options for configuring how Sanity Create interfaces with the type or field.
+ */
+export interface SanityCreateTypeOptions {
+  /** Set to true to exclude a type or field from appearing in Sanity Create */
+  exclude?: boolean
+}
+
+/**
+ * `BaseOptions` applies to all type options.
+ *
+ *  It can be extended by interface declaration merging in plugins to provide generic options to all types and fields.
+ *
+ *  @public
+ *  */
+export interface BaseOptions {
+  sanityCreate?: SanityCreateTypeOptions
+}
+
 /** @public */
 export interface BaseSchemaDefinition {
   name: string

@@ -3,13 +3,14 @@ import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
 import {type FieldDefinition} from '../schemaDefinition'
 import {
+  type BaseOptions,
   type BaseSchemaDefinition,
   type FieldGroupDefinition,
   type FieldsetDefinition,
 } from './common'
 
 /** @public */
-export interface ObjectOptions {
+export interface ObjectOptions extends BaseOptions {
   collapsible?: boolean
   collapsed?: boolean
   columns?: number

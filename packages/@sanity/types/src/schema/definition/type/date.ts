@@ -1,10 +1,10 @@
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
-import {type BaseSchemaDefinition} from './common'
+import {type BaseOptions, type BaseSchemaDefinition} from './common'
 
 /** @public */
-export interface DateOptions {
+export interface DateOptions extends BaseOptions {
   dateFormat?: string
 }
 

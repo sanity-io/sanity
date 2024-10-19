@@ -1,11 +1,16 @@
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
-import {type BaseSchemaDefinition, type EnumListProps, type SearchConfiguration} from './common'
+import {
+  type BaseOptions,
+  type BaseSchemaDefinition,
+  type EnumListProps,
+  type SearchConfiguration,
+} from './common'
 
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface StringOptions extends EnumListProps<string>, SearchConfiguration {}
+export interface StringOptions extends EnumListProps<string>, SearchConfiguration, BaseOptions {}
 
 /** @public */
 export interface StringRule extends RuleDef<StringRule, string> {
