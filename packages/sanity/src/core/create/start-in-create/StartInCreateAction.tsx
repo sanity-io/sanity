@@ -6,6 +6,7 @@ import {
   type DocumentActionProps,
 } from '../../config'
 import {useTranslation} from '../../i18n'
+import {isStartInCreateAutoConfirmed, setStartInCreateAutoConfirm} from '../createStorage'
 import {createLocaleNamespace} from '../i18n'
 import {type AppIdCache} from '../studio-app/appIdCache'
 import {useStudioAppIdStore} from '../studio-app/useStudioAppIdStore'
@@ -40,9 +41,14 @@ export function StartInCreateAction(
 
   const [isDialogOpen, setDialogOpen] = useState(false)
   const [isLinking, setLinking] = useState(false)
+  const [autoConfirm, setAutoConfirm] = useState(() => isStartInCreateAutoConfirmed())
 
   const closeDialog = useCallback(() => setDialogOpen(false), [])
-  const linkingStarted = useCallback(() => setLinking(true), [])
+  const linkingStarted = useCallback((dontShowAgain: boolean) => {
+    setStartInCreateAutoConfirm(dontShowAgain)
+    setAutoConfirm(dontShowAgain)
+    setLinking(true)
+  }, [])
 
   const createLinkId = (draft?._id ?? published?._id ?? liveEdit) ? id : `drafts.${id}`
 
@@ -70,6 +76,7 @@ export function StartInCreateAction(
               createLinkId={createLinkId}
               appId={appId}
               type={type}
+              autoConfirm={autoConfirm}
             />
           ),
         },

@@ -1,6 +1,6 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Box, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useId} from 'react'
+import {useCallback, useEffect, useId, useState} from 'react'
 
 import {Button} from '../../../ui-components'
 import {set, toMutationPatches} from '../../form'
@@ -20,13 +20,16 @@ export interface StartInCreateDialogProps {
   createLinkId: string
   appId: string
   type: string
-  onLinkingStarted: () => void
+  onLinkingStarted: (autoConfirm: boolean) => void
+  autoConfirm: boolean
 }
 
 export function StartInCreateDialog(props: StartInCreateDialogProps) {
-  const {publicId, createLinkId, appId, type, onLinkingStarted} = props
+  const {publicId, createLinkId, appId, type, onLinkingStarted, autoConfirm} = props
   const {t} = useTranslation(createLocaleNamespace)
   const checkboxId = useId()
+  const [dontShowAgain, setDontShowAgain] = useState(false)
+  const toggleDontShowAgain = useCallback(() => setDontShowAgain((current) => !current), [])
 
   const {patch} = useDocumentOperation(publicId, type)
 
@@ -51,7 +54,7 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
       return
     }
     window?.open(createUrl, CREATE_LINK_TARGET)?.focus()
-    onLinkingStarted()
+    onLinkingStarted(autoConfirm || dontShowAgain)
 
     //@todo delete me
     setTimeout(() => {
@@ -69,8 +72,14 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
           ),
         ]),
       )
-    }, 2000)
-  }, [patch, createUrl, onLinkingStarted, pushToast, t])
+    }, 10000)
+  }, [patch, createUrl, onLinkingStarted, pushToast, t, dontShowAgain, autoConfirm])
+
+  useEffect(() => {
+    if (autoConfirm && createUrl) {
+      startLinking()
+    }
+  }, [autoConfirm, startLinking, createUrl])
 
   return (
     <Stack space={4}>
@@ -84,7 +93,7 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
         <Text>{t('start-in-create-dialog.details')}</Text>
       </Box>
       <Flex gap={2} align="center">
-        <Checkbox id={checkboxId} />
+        <Checkbox id={checkboxId} checked={dontShowAgain} onChange={toggleDontShowAgain} />
         <Text as="label" htmlFor={checkboxId}>
           {t('start-in-create-dialog.dont-remind-me-checkbox')}
         </Text>
