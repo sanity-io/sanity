@@ -8,11 +8,11 @@ import {useDocumentOperation} from '../../hooks'
 import {useTranslation} from '../../i18n'
 import {useWorkspace} from '../../studio'
 import {CreateLearnMoreButton} from '../components/CreateLearnMoreButton'
+import {StartInCreateSvg} from '../components/media/StartInCreateSvg'
 import {createLocaleNamespace} from '../i18n'
 import {type CreateLinkMetadata} from '../types'
 import {getCreateLinkUrl} from '../useCreateDocumentUrl'
 import {useGlobalUserId} from '../useGlobalUserId'
-import {StartInCreateSvg} from './StartInCreateSvg'
 
 export const CREATE_LINK_TARGET = 'create'
 
