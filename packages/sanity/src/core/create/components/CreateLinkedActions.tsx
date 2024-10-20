@@ -7,6 +7,7 @@ import {useTranslation} from '../../i18n'
 import {createLocaleNamespace} from '../i18n'
 import {type CreateLinkedActionsProps} from '../types'
 import {useCreateDocumentUrl} from '../useCreateDocumentUrl'
+import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 import {CreateUnlinkConfirmDialog} from './CreateUnlinkConfirmDialog'
 
 export function CreateLinkedActions(props: CreateLinkedActionsProps) {
@@ -14,9 +15,17 @@ export function CreateLinkedActions(props: CreateLinkedActionsProps) {
   const {t} = useTranslation(createLocaleNamespace)
   const href = useCreateDocumentUrl(metadata)
 
+  const telemetry = useSanityCreateTelemetry()
+
+  const onEditInCreateClicked = useCallback(() => telemetry.editInCreateClicked(), [telemetry])
+
   const [unlinkConfirm, setUnlinkConfirm] = useState(false)
 
-  const confirmUnlink = useCallback(() => setUnlinkConfirm(true), [])
+  const confirmUnlink = useCallback(() => {
+    setUnlinkConfirm(true)
+    telemetry.unlinkClicked()
+  }, [telemetry])
+
   const cancelUnlink = useCallback(() => setUnlinkConfirm(false), [])
   return (
     <Flex gap={2}>
@@ -27,6 +36,7 @@ export function CreateLinkedActions(props: CreateLinkedActionsProps) {
         mode="ghost"
         paddingY={3}
         href={href}
+        onClick={onEditInCreateClicked}
       />
       <Button text={t('unlink-from-create-button.text')} paddingY={3} onClick={confirmUnlink} />
       {unlinkConfirm && (

@@ -13,6 +13,7 @@ import {createLocaleNamespace} from '../i18n'
 import {type CreateLinkMetadata} from '../types'
 import {getCreateLinkUrl} from '../useCreateDocumentUrl'
 import {useGlobalUserId} from '../useGlobalUserId'
+import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 
 export const CREATE_LINK_TARGET = 'create'
 
@@ -31,6 +32,7 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
   const checkboxId = useId()
   const [dontShowAgain, setDontShowAgain] = useState(false)
 
+  const telemetry = useSanityCreateTelemetry()
   const toggleDontShowAgain = useCallback(() => setDontShowAgain((current) => !current), [])
 
   const {patch} = useDocumentOperation(publicId, type)
@@ -56,8 +58,10 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
       })
       return
     }
+
     window?.open(createUrl, CREATE_LINK_TARGET)?.focus()
     onLinkingStarted(autoConfirm || dontShowAgain)
+    telemetry.startInCreateAccepted()
 
     //@todo delete me
     setTimeout(() => {
@@ -76,7 +80,7 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
         ]),
       )
     }, 10000)
-  }, [patch, createUrl, onLinkingStarted, pushToast, t, dontShowAgain, autoConfirm])
+  }, [patch, createUrl, onLinkingStarted, pushToast, t, dontShowAgain, autoConfirm, telemetry])
 
   useEffect(() => {
     if (autoConfirm && createUrl) {
