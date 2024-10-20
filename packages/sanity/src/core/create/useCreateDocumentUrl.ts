@@ -1,5 +1,3 @@
-import {useCurrentUser, useUser, useWorkspace} from 'sanity'
-
 import {type CreateLinkMetadata} from './types'
 
 // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
@@ -11,28 +9,25 @@ function getCreateBaseUrl(customHost?: string) {
   return `https://${host}/app/create`
 }
 
-export function useCreateLinkUrl(args: {
+export function getCreateLinkUrl(args: {
   docId: string
   documentType: string
   appId: string
+  projectId: string
+  workspaceName: string
   globalUserId: string | undefined
 }): string | undefined {
-  const workspace = useWorkspace()
-  const currentUser = useCurrentUser()
-  const userId = currentUser?.id ?? ''
-  const [user] = useUser(userId)
-  const globalUserId = user?.sanityUserId
+  const {docId, documentType, appId, projectId, workspaceName, globalUserId} = args
 
   if (!globalUserId) {
     return undefined
   }
   const params = new URLSearchParams()
-
-  params.append('projectId', workspace.projectId)
-  params.append('applicationId', args.appId)
-  params.append('workspaceName', workspace.name)
-  params.append('documentType', args.documentType)
-  params.append('documentId', args.docId)
+  params.append('projectId', projectId)
+  params.append('applicationId', appId)
+  params.append('workspaceName', workspaceName)
+  params.append('documentType', documentType)
+  params.append('documentId', docId)
   return `${getCreateBaseUrl()}/studio-import/${globalUserId}?${params.toString()}`
 }
 

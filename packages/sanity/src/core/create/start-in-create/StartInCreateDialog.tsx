@@ -6,11 +6,12 @@ import {Button} from '../../../ui-components'
 import {set, toMutationPatches} from '../../form'
 import {useDocumentOperation} from '../../hooks'
 import {useTranslation} from '../../i18n'
-import {useCurrentUser, useUser} from '../../store'
+import {useWorkspace} from '../../studio'
 import {CreateLearnMoreButton} from '../components/CreateLearnMoreButton'
 import {createLocaleNamespace} from '../i18n'
 import {type CreateLinkMetadata} from '../types'
-import {useCreateLinkUrl} from '../useCreateDocumentUrl'
+import {getCreateLinkUrl} from '../useCreateDocumentUrl'
+import {useGlobalUserId} from '../useGlobalUserId'
 import {StartInCreateSvg} from './StartInCreateSvg'
 
 export const CREATE_LINK_TARGET = 'create'
@@ -29,20 +30,22 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
   const {t} = useTranslation(createLocaleNamespace)
   const checkboxId = useId()
   const [dontShowAgain, setDontShowAgain] = useState(false)
+
   const toggleDontShowAgain = useCallback(() => setDontShowAgain((current) => !current), [])
 
   const {patch} = useDocumentOperation(publicId, type)
 
   const {push: pushToast} = useToast()
-  const currentUser = useCurrentUser()
-  const userId = currentUser?.id ?? ''
-  const [user] = useUser(userId)
+  const globalUserId = useGlobalUserId()
+  const workspace = useWorkspace()
 
-  const createUrl = useCreateLinkUrl({
+  const createUrl = getCreateLinkUrl({
+    projectId: workspace.projectId,
     appId,
+    workspaceName: workspace.name,
     documentType: type,
     docId: createLinkId,
-    globalUserId: user?.sanityUserId,
+    globalUserId: globalUserId,
   })
 
   const startLinking = useCallback(() => {

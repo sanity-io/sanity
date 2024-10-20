@@ -14,9 +14,9 @@ import {
   type DocumentInspectorMenuItem,
   FieldActionsProvider,
   FieldActionsResolver,
-  getCreateLinkMetadata,
   GetFormValueProvider,
-  isCreateLinked,
+  getSanityCreateLinkMetadata,
+  isSanityCreateLinked,
   useGlobalCopyPasteElementHandler,
   useSanityCreateConfig,
   useZIndex,
@@ -89,7 +89,7 @@ export function DocumentLayout() {
   const zOffsets = useZIndex()
   const previewUrl = usePreviewUrl(value)
 
-  const createLinkMetadata = getCreateLinkMetadata(value)
+  const createLinkMetadata = getSanityCreateLinkMetadata(value)
   const CreateLinkedBanner = useSanityCreateConfig().components?.documentLinkedBanner
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
@@ -211,7 +211,7 @@ export function DocumentLayout() {
         >
           <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
 
-          {createLinkMetadata && isCreateLinked(createLinkMetadata) && CreateLinkedBanner && (
+          {createLinkMetadata && isSanityCreateLinked(createLinkMetadata) && CreateLinkedBanner && (
             <ShowWhenPaneOpen>
               <CreateLinkedBanner metadata={createLinkMetadata} />
             </ShowWhenPaneOpen>

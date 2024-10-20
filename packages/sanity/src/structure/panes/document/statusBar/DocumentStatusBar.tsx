@@ -2,7 +2,7 @@ import {Flex} from '@sanity/ui'
 import {type Ref, useCallback, useState} from 'react'
 import {
   type CreateLinkMetadata,
-  isCreateLinked,
+  isSanityCreateLinked,
   useSanityCreateConfig,
   useTimelineSelector,
 } from 'sanity'
@@ -45,7 +45,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const shouldRender = editState?.ready && typeof collapsed === 'boolean'
 
   let actions: JSX.Element | null = null
-  if (createLinkMetadata && isCreateLinked(createLinkMetadata) && CreateLinkedActions) {
+  if (createLinkMetadata && isSanityCreateLinked(createLinkMetadata) && CreateLinkedActions) {
     actions = (
       <CreateLinkedActions
         metadata={createLinkMetadata}

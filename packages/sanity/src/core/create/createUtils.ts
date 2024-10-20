@@ -1,11 +1,11 @@
-import {type SanityDocumentLike} from '@sanity/types'
+import {type BaseSchemaTypeOptions, type SanityDocumentLike, type SchemaType} from '@sanity/types'
 
 import {type CreateLinkedSanityDocument, type CreateLinkMetadata} from './types'
 
 /**
  * @internal
  */
-export function getCreateLinkMetadata(
+export function getSanityCreateLinkMetadata(
   doc: SanityDocumentLike | undefined,
 ): CreateLinkMetadata | undefined {
   return (doc as CreateLinkedSanityDocument | undefined)?._create
@@ -14,13 +14,20 @@ export function getCreateLinkMetadata(
 /**
  * @internal
  */
-export function isCreateLinked(metadata: CreateLinkMetadata | undefined): boolean {
+export function isSanityCreateLinked(metadata: CreateLinkMetadata | undefined): boolean {
   return metadata?.ejected === false
 }
 
 /**
  * @internal
  */
-export function isCreateLinkedDocument(doc: SanityDocumentLike | undefined): boolean {
-  return isCreateLinked(getCreateLinkMetadata(doc))
+export function isSanityCreateLinkedDocument(doc: SanityDocumentLike | undefined): boolean {
+  return isSanityCreateLinked(getSanityCreateLinkMetadata(doc))
+}
+
+/**
+ * @internal
+ */
+export function isSanityCreateExcludedType(schemaType: SchemaType): boolean {
+  return !!(schemaType?.type?.options as BaseSchemaTypeOptions | undefined)?.sanityCreate?.exclude
 }

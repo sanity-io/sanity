@@ -26,6 +26,8 @@ export type FieldGroupDefinition = {
 
 /**
  * Options for configuring how Sanity Create interfaces with the type or field.
+ *
+ * @public
  */
 export interface SanityCreateOptions {
   /** Set to true to exclude a type or field from appearing in Sanity Create */

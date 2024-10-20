@@ -20,7 +20,7 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
-  isCreateLinkedDocument,
+  isSanityCreateLinkedDocument,
   type OnPathFocusPayload,
   type PatchEvent,
   setAtPath,
@@ -512,7 +512,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permission: requiredPermission,
   })
 
-  const isCreateLinked = isCreateLinkedDocument(value)
+  const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
 
   const readOnly = useMemo(() => {

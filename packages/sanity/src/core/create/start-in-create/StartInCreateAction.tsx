@@ -1,4 +1,3 @@
-import {type BaseSchemaTypeOptions} from '@sanity/types'
 import {useCallback, useState} from 'react'
 
 import {
@@ -9,6 +8,7 @@ import {
 import {useSchema} from '../../hooks'
 import {useTranslation} from '../../i18n'
 import {isStartInCreateAutoConfirmed, setStartInCreateAutoConfirm} from '../createStorage'
+import {isSanityCreateExcludedType} from '../createUtils'
 import {createLocaleNamespace} from '../i18n'
 import {type AppIdCache} from '../studio-app/appIdCache'
 import {useStudioAppIdStore} from '../studio-app/useStudioAppIdStore'
@@ -42,9 +42,7 @@ export function StartInCreateAction(
   const {t} = useTranslation(createLocaleNamespace)
   const schema = useSchema()
   const schemaType = schema.get(type)
-  const isExcludedByOption = (schemaType?.type?.options as BaseSchemaTypeOptions | undefined)
-    ?.sanityCreate?.exclude
-
+  const isExcludedByOption = schemaType && isSanityCreateExcludedType(schemaType)
   const [isDialogOpen, setDialogOpen] = useState(false)
   const [isLinking, setLinking] = useState(false)
   const [autoConfirm, setAutoConfirm] = useState(() => isStartInCreateAutoConfirmed())
