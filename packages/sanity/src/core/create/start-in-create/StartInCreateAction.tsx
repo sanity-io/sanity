@@ -5,14 +5,15 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../config'
-import {useSchema} from '../../hooks'
 import {useTranslation} from '../../i18n'
+import {useSchemaType} from '../../scheduledPublishing/hooks/useSchemaType'
 import {isStartInCreateAutoConfirmed, setStartInCreateAutoConfirm} from '../createStorage'
 import {isSanityCreateExcludedType} from '../createUtils'
 import {createLocaleNamespace} from '../i18n'
 import {type AppIdCache} from '../studio-app/appIdCache'
 import {useStudioAppIdStore} from '../studio-app/useStudioAppIdStore'
 import {type CreateLinkedSanityDocument} from '../types'
+import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 import {CreateLinkingDialog} from './CreateLinkingDialog'
 import {StartInCreateDialog} from './StartInCreateDialog'
 
@@ -40,20 +41,21 @@ export function StartInCreateAction(
 
   const {appId} = useStudioAppIdStore(appIdCache)
   const {t} = useTranslation(createLocaleNamespace)
-  const schema = useSchema()
-  const schemaType = schema.get(type)
-  const isExcludedByOption = schemaType && isSanityCreateExcludedType(schemaType)
+  const schemaType = useSchemaType(type)
+  const telemetry = useSanityCreateTelemetry()
+
   const [isDialogOpen, setDialogOpen] = useState(false)
   const [isLinking, setLinking] = useState(false)
   const [autoConfirm, setAutoConfirm] = useState(() => isStartInCreateAutoConfirmed())
-
   const closeDialog = useCallback(() => setDialogOpen(false), [])
+
   const linkingStarted = useCallback((dontShowAgain: boolean) => {
     setStartInCreateAutoConfirm(dontShowAgain)
     setAutoConfirm(dontShowAgain)
     setLinking(true)
   }, [])
 
+  const isExcludedByOption = schemaType && isSanityCreateExcludedType(schemaType)
   const createLinkId = (draft?._id ?? published?._id ?? liveEdit) ? id : `drafts.${id}`
 
   //appId will always be undefined when start in create is disabled via config
@@ -85,6 +87,9 @@ export function StartInCreateAction(
           ),
         },
     onHandle: () => {
+      if (!isDialogOpen) {
+        telemetry.startInCreateClicked()
+      }
       setDialogOpen(true)
     },
   }
