@@ -1,6 +1,6 @@
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
-import {type BaseOptions, type BaseSchemaDefinition} from './common'
+import {type BaseSchemaDefinition, type BaseSchemaTypeOptions} from './common'
 
 /**
  * Geographical point representing a pair of latitude and longitude coordinates,
@@ -37,7 +37,7 @@ export interface GeopointRule extends RuleDef<GeopointRule, GeopointValue> {}
 
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface GeopointOptions extends BaseOptions {}
+export interface GeopointOptions extends BaseSchemaTypeOptions {}
 
 /** @public */
 export interface GeopointDefinition extends BaseSchemaDefinition {

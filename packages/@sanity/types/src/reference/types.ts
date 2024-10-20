@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 
 import {type SanityDocument} from '../documents'
 import {type Path} from '../paths'
-import {type BaseOptions} from '../schema'
+import {type BaseSchemaTypeOptions} from '../schema'
 
 /** @public */
 export interface Reference {
@@ -57,7 +57,7 @@ export interface ReferenceFilterQueryOptions {
 }
 
 /** @public */
-export interface ReferenceBaseOptions extends BaseOptions {
+export interface ReferenceBaseOptions extends BaseSchemaTypeOptions {
   disableNew?: boolean
 }
 
