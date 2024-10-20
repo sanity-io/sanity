@@ -5,6 +5,7 @@ import {type ReactNode, useCallback, useState} from 'react'
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {createLocaleNamespace} from '../i18n'
+import {CREATE_LINK_TARGET} from '../start-in-create/StartInCreateDialog'
 import {type CreateLinkedActionsProps} from '../types'
 import {useCreateDocumentUrl} from '../useCreateDocumentUrl'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
@@ -36,6 +37,7 @@ export function CreateLinkedActions(props: CreateLinkedActionsProps) {
         mode="ghost"
         paddingY={3}
         href={href}
+        target={CREATE_LINK_TARGET}
         onClick={onEditInCreateClicked}
       />
       <Button text={t('unlink-from-create-button.text')} paddingY={3} onClick={confirmUnlink} />
