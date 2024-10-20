@@ -3,14 +3,11 @@ import {Box, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useId, useState} from 'react'
 
 import {Button} from '../../../ui-components'
-import {set, toMutationPatches} from '../../form'
-import {useDocumentOperation} from '../../hooks'
 import {useTranslation} from '../../i18n'
 import {useWorkspace} from '../../studio'
 import {CreateLearnMoreButton} from '../components/CreateLearnMoreButton'
 import {StartInCreateSvg} from '../components/media/StartInCreateSvg'
 import {createLocaleNamespace} from '../i18n'
-import {type CreateLinkMetadata} from '../types'
 import {getCreateLinkUrl} from '../useCreateDocumentUrl'
 import {useGlobalUserId} from '../useGlobalUserId'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
@@ -18,7 +15,6 @@ import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 export const CREATE_LINK_TARGET = 'create'
 
 export interface StartInCreateDialogProps {
-  publicId: string
   createLinkId: string
   appId: string
   type: string
@@ -27,15 +23,13 @@ export interface StartInCreateDialogProps {
 }
 
 export function StartInCreateDialog(props: StartInCreateDialogProps) {
-  const {publicId, createLinkId, appId, type, onLinkingStarted, autoConfirm} = props
+  const {createLinkId, appId, type, onLinkingStarted, autoConfirm} = props
   const {t} = useTranslation(createLocaleNamespace)
   const checkboxId = useId()
   const [dontShowAgain, setDontShowAgain] = useState(false)
 
   const telemetry = useSanityCreateTelemetry()
   const toggleDontShowAgain = useCallback(() => setDontShowAgain((current) => !current), [])
-
-  const {patch} = useDocumentOperation(publicId, type)
 
   const {push: pushToast} = useToast()
   const globalUserId = useGlobalUserId()
@@ -62,25 +56,7 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
     window?.open(createUrl, CREATE_LINK_TARGET)?.focus()
     onLinkingStarted(autoConfirm || dontShowAgain)
     telemetry.startInCreateAccepted()
-
-    //@todo delete me
-    setTimeout(() => {
-      patch.execute(
-        toMutationPatches([
-          set(
-            {
-              _id: 'dummy',
-              userId: 'dummy',
-              host: 'dummy',
-              ejected: false,
-              dataset: 'dummy',
-            } satisfies CreateLinkMetadata,
-            ['_create'],
-          ),
-        ]),
-      )
-    }, 10000)
-  }, [patch, createUrl, onLinkingStarted, pushToast, t, dontShowAgain, autoConfirm, telemetry])
+  }, [createUrl, onLinkingStarted, pushToast, t, dontShowAgain, autoConfirm, telemetry])
 
   useEffect(() => {
     if (autoConfirm && createUrl) {
