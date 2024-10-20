@@ -32,6 +32,12 @@ export type FieldGroupDefinition = {
 export interface SanityCreateOptions {
   /** Set to true to exclude a type or field from appearing in Sanity Create */
   exclude?: boolean
+
+  /**
+   * A short description of what the type or field is used for.
+   * Purpose can be used to improve how and when content mapping uses the field.
+   * */
+  purpose?: string
 }
 
 /**
