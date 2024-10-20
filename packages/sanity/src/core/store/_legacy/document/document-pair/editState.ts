@@ -83,7 +83,7 @@ export const editState = memoize(
           typeof versions.version === 'undefined' ? of(null) : versions.version.snapshots$,
         ]),
       ),
-      swr(`${idPair.publishedId}-${idPair.draftId}`),
+      swr(`${idPair.publishedId}-${idPair.draftId}-${idPair.versionId}`),
       map(
         ({
           value: [draftSnapshot, publishedSnapshot, transactionSyncLock, versionSnapshot],
