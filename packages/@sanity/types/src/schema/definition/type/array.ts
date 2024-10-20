@@ -9,8 +9,8 @@ import {
   type TypeAliasDefinition,
 } from '../schemaDefinition'
 import {
-  type BaseOptions,
   type BaseSchemaDefinition,
+  type BaseSchemaTypeOptions,
   type SearchConfiguration,
   type TitledListValue,
 } from './common'
@@ -18,7 +18,7 @@ import {
 export type {InsertMenuOptions}
 
 /** @public */
-export interface ArrayOptions<V = unknown> extends SearchConfiguration, BaseOptions {
+export interface ArrayOptions<V = unknown> extends SearchConfiguration, BaseSchemaTypeOptions {
   list?: TitledListValue<V>[] | V[]
   // inferring the array.of value for ArrayDefinition cause too much code-noise and was removed.
   // Since we don't have the type-info needed here, we allow values

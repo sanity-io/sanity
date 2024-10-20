@@ -1,9 +1,9 @@
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
-import {type BaseOptions, type BaseSchemaDefinition} from './common'
+import {type BaseSchemaDefinition, type BaseSchemaTypeOptions} from './common'
 
 /** @public */
-export interface BooleanOptions extends BaseOptions {
+export interface BooleanOptions extends BaseSchemaTypeOptions {
   layout?: 'switch' | 'checkbox'
 }
 

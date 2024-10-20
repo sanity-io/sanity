@@ -1,3 +1,4 @@
+import {type BaseSchemaTypeOptions} from '@sanity/types'
 import {useCallback, useState} from 'react'
 
 import {
@@ -5,6 +6,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../config'
+import {useSchema} from '../../hooks'
 import {useTranslation} from '../../i18n'
 import {isStartInCreateAutoConfirmed, setStartInCreateAutoConfirm} from '../createStorage'
 import {createLocaleNamespace} from '../i18n'
@@ -38,6 +40,10 @@ export function StartInCreateAction(
 
   const {appId} = useStudioAppIdStore(appIdCache)
   const {t} = useTranslation(createLocaleNamespace)
+  const schema = useSchema()
+  const schemaType = schema.get(type)
+  const isExcludedByOption = (schemaType?.type?.options as BaseSchemaTypeOptions | undefined)
+    ?.sanityCreate?.exclude
 
   const [isDialogOpen, setDialogOpen] = useState(false)
   const [isLinking, setLinking] = useState(false)
@@ -53,7 +59,7 @@ export function StartInCreateAction(
   const createLinkId = (draft?._id ?? published?._id ?? liveEdit) ? id : `drafts.${id}`
 
   //appId will always be undefined when start in create is disabled via config
-  if (!appId || doc?._createdAt) {
+  if (isExcludedByOption || !appId || doc?._createdAt) {
     return null
   }
 
