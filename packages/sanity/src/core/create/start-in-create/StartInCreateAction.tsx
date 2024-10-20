@@ -78,7 +78,6 @@ export function StartInCreateAction(
           content: (
             <StartInCreateDialog
               onLinkingStarted={linkingStarted}
-              publicId={id}
               createLinkId={createLinkId}
               appId={appId}
               type={type}
