@@ -7,6 +7,7 @@ import {Translate, useTranslation} from '../../i18n'
 import {createLocaleNamespace} from '../i18n'
 import {type CreateLinkedDocumentBannerProps} from '../types'
 import {CreateLearnMoreButton} from './CreateLearnMoreButton'
+import {CreateInfoSvg} from './media/CreateInfoSvg'
 
 export function CreateLinkedDocumentBanner(props: CreateLinkedDocumentBannerProps) {
   const {metadata} = props
@@ -27,7 +28,7 @@ export function CreateLinkedDocumentBanner(props: CreateLinkedDocumentBannerProp
 
   const popoverContent = (
     <Stack space={0} ref={popoverRef}>
-      <Card border tone="primary" flex={1} style={{height: 150}} radius={3} />
+      <CreateInfoSvg />
       <Stack space={4} padding={4}>
         <Flex gap={2} align="center">
           <Text size={1} weight="semibold">
