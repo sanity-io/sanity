@@ -171,7 +171,16 @@ export function getPairListener(
     sequentializeListenerEvents(),
   )
 
-  return merge(draftEvents$, publishedEvents$).pipe(
+  const versionEvents$ = pairEvents$.pipe(
+    filter((event) =>
+      event.type === 'mutation' || event.type === 'snapshot'
+        ? event.documentId === versionId
+        : true,
+    ),
+    sequentializeListenerEvents(),
+  )
+
+  return merge(draftEvents$, publishedEvents$, versionEvents$).pipe(
     catchError((err, caught$) => {
       if (err instanceof OutOfSyncError) {
         debug('Recovering from OutOfSyncError: %s', OutOfSyncError.name)
