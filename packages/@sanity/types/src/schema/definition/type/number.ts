@@ -1,11 +1,11 @@
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
-import {type BaseSchemaDefinition, type EnumListProps} from './common'
+import {type BaseSchemaDefinition, type BaseSchemaTypeOptions, type EnumListProps} from './common'
 
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface NumberOptions extends EnumListProps<number> {}
+export interface NumberOptions extends EnumListProps<number>, BaseSchemaTypeOptions {}
 
 /** @public */
 export interface NumberRule extends RuleDef<NumberRule, number> {
