@@ -130,7 +130,6 @@ export const VersionChip = memo(function VersionChip(props: {
           onClick={onClick}
           padding={2}
           paddingRight={3}
-          radius="full"
           selected={selected}
           style={{flex: 'none'}}
           text={text}

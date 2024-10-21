@@ -27,8 +27,6 @@ type BaseButtonProps = Pick<
   | 'width'
 > & {
   size?: 'default' | 'large'
-  forwardedAs?: HTMLProps<HTMLButtonElement>['as']
-  radius: 'full'
 }
 
 type ButtonWithText = {
@@ -74,7 +72,7 @@ export const Button = forwardRef(function Button(
     tone = 'default',
     tooltipProps,
     ...rest
-  }: ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'forwardedAs' | 'size' | 'title'>,
+  }: ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title'>,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(

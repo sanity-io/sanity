@@ -177,6 +177,7 @@ export const DocumentPanelHeader = memo(
                   onClick={handleHistoryOpen}
                   padding={2}
                   selected={inspector?.name === 'sanity/structure/history'}
+                  tooltipProps={{content: t('buttons.history.tooltip')}}
                 />
               </Tooltip>
               {editState && (
