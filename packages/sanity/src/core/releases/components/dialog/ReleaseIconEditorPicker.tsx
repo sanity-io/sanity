@@ -6,7 +6,7 @@ import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, Popover, TooltipDelayGroupProvider} from '../../../../ui-components'
-import {type BundleDocument} from '../../../store/bundles/types'
+import {type BundleDocument} from '../../../store/release/types'
 import {ReleaseBadge} from '../ReleaseBadge'
 
 const StyledStack = styled(Stack)`

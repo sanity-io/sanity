@@ -13,7 +13,7 @@ vi.mock('../../../studio/source')
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useClient: vi.fn(),
-  useBundles: vi.fn(() => ({data: {}})),
+  useReleases: vi.fn(() => ({data: {}})),
   getPublishedId: vi.fn(),
   useDocumentPreviewStore: vi.fn(),
 }))
@@ -57,17 +57,17 @@ async function setupMocks({
 }) {
   const sanityModule = await import('sanity')
 
-  const useBundles = sanityModule.useBundles as Mock<typeof sanityModule.useBundles>
+  const useReleases = sanityModule.useReleases as Mock<typeof sanityModule.useReleases>
   const useDocumentPreviewStore = sanityModule.useDocumentPreviewStore as Mock<
     typeof sanityModule.useDocumentPreviewStore
   >
   const getPublishedId = sanityModule.getPublishedId as Mock<typeof sanityModule.getPublishedId>
 
-  useBundles.mockReturnValue({
+  useReleases.mockReturnValue({
     data: bundles,
     loading: false,
     dispatch: vi.fn(),
-    deletedBundles: {},
+    deletedReleases: {},
   })
 
   getPublishedId.mockReturnValue('document-1' as PublishedId)

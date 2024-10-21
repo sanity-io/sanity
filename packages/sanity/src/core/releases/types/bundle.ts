@@ -1,4 +1,4 @@
-import {type BundleDocument} from '../../store/bundles/types'
+import {type BundleDocument} from '../../store/release/types'
 
 export type AtLeastOneBundle = [BundleDocument, ...BundleDocument[]]
 

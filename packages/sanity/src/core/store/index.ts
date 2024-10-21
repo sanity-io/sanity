@@ -1,3 +1,3 @@
 export * from './_legacy'
-export * from './bundles'
+export * from './release'
 export * from './user'

@@ -3,9 +3,9 @@ import {memo, useCallback} from 'react'
 import {
   getVersionFromId,
   isVersionId,
-  useBundles,
   useDateTimeFormat,
   usePerspective,
+  useReleases,
   useTranslation,
 } from 'sanity'
 
@@ -23,7 +23,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
     dateStyle: 'medium',
     timeStyle: 'short',
   })
-  const {data: bundles, loading} = useBundles()
+  const {data: bundles, loading} = useReleases()
 
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()
 

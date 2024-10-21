@@ -1,8 +1,8 @@
 import {fireEvent, render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {act} from 'react'
-import {type BundleDocument, useBundles} from 'sanity'
-import {beforeEach, describe, expect, it, Mock, vi} from 'vitest'
+import {type BundleDocument, useReleases} from 'sanity'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {Button} from '../../../../ui-components'
@@ -21,16 +21,16 @@ vi.mock('../../util/util', () => ({
   isDraftOrPublished: vi.fn(),
 }))
 
-vi.mock('../../../store/bundles/useBundles', () => ({
-  useBundles: vi.fn().mockReturnValue({deletedBundles: {}}),
+vi.mock('../../../store/release/useReleases', () => ({
+  useReleases: vi.fn().mockReturnValue({deletedReleases: {}}),
 }))
 
-const mockUseBundles = useBundles as Mock<typeof useBundles>
+const mockUseReleases = useReleases as Mock<typeof useReleases>
 
 describe('ReleasesMenu', () => {
   const mockUsePerspective = usePerspective as Mock
   const ButtonTest = <Button text="Button Test" />
-  const mockBundles: BundleDocument[] = [
+  const mockReleases: BundleDocument[] = [
     {
       hue: 'magenta',
       _id: 'spring-drop',
@@ -107,7 +107,7 @@ describe('ReleasesMenu', () => {
 
   it('should render latest bundle menu item when bundles are archived', async () => {
     const wrapper = await createTestProvider()
-    const archivedBundles = mockBundles.map((bundle) => ({
+    const archivedBundles = mockReleases.map((bundle) => ({
       ...bundle,
       archivedAt: '2024-07-29T01:49:56.066Z',
     }))
@@ -144,26 +144,26 @@ describe('ReleasesMenu', () => {
 
   it('should render bundle as selected when currentGlobalBundle is that bundle', async () => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: mockBundles[0],
+      currentGlobalBundle: mockReleases[0],
       setPerspective: vi.fn(),
     })
 
     const wrapper = await createTestProvider()
-    render(<ReleasesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={mockReleases} loading={false} />, {
       wrapper,
     })
 
     fireEvent.click(screen.getByRole('button', {name: 'Button Test'}))
 
     act(() => {
-      expect(screen.getByText(mockBundles[0].title)).toBeInTheDocument()
-      expect(screen.getByTestId(`${mockBundles[0]._id}-checkmark-icon`)).toBeInTheDocument()
+      expect(screen.getByText(mockReleases[0].title)).toBeInTheDocument()
+      expect(screen.getByTestId(`${mockReleases[0]._id}-checkmark-icon`)).toBeInTheDocument()
     })
   })
 
   it('should render bundle menu items when bundles are provided', async () => {
     const wrapper = await createTestProvider()
-    render(<ReleasesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={mockReleases} loading={false} />, {
       wrapper,
     })
 
@@ -184,7 +184,7 @@ describe('ReleasesMenu', () => {
     })
 
     const wrapper = await createTestProvider()
-    render(<ReleasesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={mockReleases} loading={false} />, {
       wrapper,
     })
 
@@ -201,7 +201,7 @@ describe('ReleasesMenu', () => {
 
     const wrapper = await createTestProvider()
     render(
-      <ReleasesMenu button={ButtonTest} bundles={mockBundles} loading={false} actions={actions} />,
+      <ReleasesMenu button={ButtonTest} bundles={mockReleases} loading={false} actions={actions} />,
       {
         wrapper,
       },
@@ -215,11 +215,11 @@ describe('ReleasesMenu', () => {
   })
 
   it('should not show deleted bundles when not included in the list', async () => {
-    mockUseBundles.mockReturnValue({
+    mockUseReleases.mockReturnValue({
       dispatch: vi.fn(),
       loading: false,
       data: [],
-      deletedBundles: {
+      deletedReleases: {
         'mock-deleted-bundle': {
           _id: 'mock-deleted-bundle',
           _type: 'release',
@@ -228,7 +228,7 @@ describe('ReleasesMenu', () => {
       },
     })
     const wrapper = await createTestProvider()
-    render(<ReleasesMenu button={ButtonTest} bundles={mockBundles} loading={false} />, {
+    render(<ReleasesMenu button={ButtonTest} bundles={mockReleases} loading={false} />, {
       wrapper,
     })
 
@@ -240,11 +240,11 @@ describe('ReleasesMenu', () => {
   })
 
   it('should show deleted bundles that are included in the list', async () => {
-    mockUseBundles.mockReturnValue({
+    mockUseReleases.mockReturnValue({
       dispatch: vi.fn(),
       loading: false,
       data: [],
-      deletedBundles: {
+      deletedReleases: {
         'mock-deleted-bundle': {
           _id: 'mock-deleted-bundle',
           _type: 'release',
@@ -257,7 +257,7 @@ describe('ReleasesMenu', () => {
       <ReleasesMenu
         button={ButtonTest}
         bundles={[
-          ...mockBundles,
+          ...mockReleases,
           {
             _id: 'mock-deleted-bundle',
             _type: 'release',

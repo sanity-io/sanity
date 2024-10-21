@@ -1,7 +1,7 @@
 import {useRouter} from 'sanity/router'
 
-import {useBundles} from '../../store/bundles'
-import {type BundleDocument} from '../../store/bundles/types'
+import {useReleases} from '../../store/release'
+import {type BundleDocument} from '../../store/release/types'
 import {LATEST} from '../util/const'
 
 /**
@@ -21,7 +21,7 @@ export interface PerspectiveValue {
  */
 export function usePerspective(selectedPerspective?: string): PerspectiveValue {
   const router = useRouter()
-  const {data: bundles} = useBundles()
+  const {data: bundles} = useReleases()
   const perspective = selectedPerspective ?? router.stickyParams.perspective
 
   // TODO: Should it be possible to set the perspective within a pane, rather than globally?

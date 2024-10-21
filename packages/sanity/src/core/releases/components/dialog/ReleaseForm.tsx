@@ -14,7 +14,7 @@ import {Button} from '../../../../ui-components'
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
-import {type BundleDocument, type releaseType} from '../../../store/bundles/types'
+import {type BundleDocument, type releaseType} from '../../../store/release/types'
 import {ReleaseIconEditorPicker, type ReleaseIconEditorPickerValue} from './ReleaseIconEditorPicker'
 
 interface BaseBundleDocument extends Partial<BundleDocument> {

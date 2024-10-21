@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react'
 
-import {useBundlesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
+import {useBundlesMetadataProvider} from '../../releases/contexts/ReleasesMetadataProvider'
 
-export interface BundlesMetadata {
+export interface ReleasesMetadata {
   /**
    * The number of documents with the bundle version as a prefix
    */
@@ -13,15 +13,15 @@ export interface BundlesMetadata {
   updatedAt: string | null
 }
 
-export const useBundlesMetadata = (bundleIds: string[]) => {
+export const useReleasesMetadata = (releaseIds: string[]) => {
   const {addBundleIdsToListener, removeBundleIdsFromListener, state} = useBundlesMetadataProvider()
-  const [responseData, setResponseData] = useState<Record<string, BundlesMetadata> | null>(null)
+  const [responseData, setResponseData] = useState<Record<string, ReleasesMetadata> | null>(null)
 
   useEffect(() => {
-    if (bundleIds.length) addBundleIdsToListener([...new Set(bundleIds)])
+    if (releaseIds.length) addBundleIdsToListener([...new Set(releaseIds)])
 
-    return () => removeBundleIdsFromListener([...new Set(bundleIds)])
-  }, [addBundleIdsToListener, bundleIds, removeBundleIdsFromListener])
+    return () => removeBundleIdsFromListener([...new Set(releaseIds)])
+  }, [addBundleIdsToListener, releaseIds, removeBundleIdsFromListener])
 
   const {data, loading} = state
 
@@ -33,12 +33,12 @@ export const useBundlesMetadata = (bundleIds: string[]) => {
 
     if (hasUpdatedMetadata) {
       const nextResponseData = Object.fromEntries(
-        bundleIds.map((bundleId) => [bundleId, data[bundleId]]),
+        releaseIds.map((bundleId) => [bundleId, data[bundleId]]),
       )
 
       setResponseData(nextResponseData)
     }
-  }, [bundleIds, data, responseData])
+  }, [releaseIds, data, responseData])
 
   return {
     error: state.error,

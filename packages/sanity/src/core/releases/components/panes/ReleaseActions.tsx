@@ -17,7 +17,7 @@ import {
 } from 'sanity'
 
 import {Button} from '../../../../ui-components'
-import {type BundleDocument} from '../../../store/bundles/types'
+import {type BundleDocument} from '../../../store/release/types'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 
 interface ReleaseActionsProps {

@@ -3,8 +3,8 @@ import {act} from 'react'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {type BundleDocument} from '../../../../../store/bundles/types'
-import {useBundleOperations} from '../../../../../store/bundles/useBundleOperations'
+import {type BundleDocument} from '../../../../../store'
+import {useReleaseOperations} from '../../../../../store/release/useReleaseOperations'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
@@ -13,8 +13,8 @@ vi.mock('sanity', () => ({
   useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
 }))
 
-vi.mock('../../../../../store/bundles/useBundleOperations', () => ({
-  useBundleOperations: vi.fn().mockReturnValue({
+vi.mock('../../../../../store/release/useReleaseOperations', () => ({
+  useReleaseOperations: vi.fn().mockReturnValue({
     updateBundle: vi.fn(),
   }),
 }))
@@ -31,18 +31,18 @@ const renderTest = async ({bundle, disabled = false}: ReleaseMenuButtonProps) =>
   return render(<ReleaseMenuButton disabled={disabled} bundle={bundle} />, {wrapper})
 }
 
-describe.todo('BundleMenuButton', () => {
+describe.skip('ReleaseMenuButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  test('will archive an unarchived bundle', async () => {
-    const activeBundle: BundleDocument = {
-      _id: 'activeBundle',
+  test('will archive an unarchived release', async () => {
+    const activeRelease: BundleDocument = {
+      _id: 'activeRelease',
       _type: 'release',
       timing: 'immediately',
       archivedAt: undefined,
-      title: 'activeBundle',
+      title: 'activeRelease',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -51,7 +51,7 @@ describe.todo('BundleMenuButton', () => {
       icon: 'cube',
     }
 
-    await renderTest({bundle: activeBundle})
+    await renderTest({bundle: activeRelease})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
 
@@ -59,19 +59,19 @@ describe.todo('BundleMenuButton', () => {
       fireEvent.click(screen.getByTestId('archive-release'))
     })
 
-    expect(useBundleOperations().updateBundle).toHaveBeenCalledWith({
-      ...activeBundle,
+    expect(useReleaseOperations().updateBundle).toHaveBeenCalledWith({
+      ...activeRelease,
       archivedAt: expect.any(String),
     })
   })
 
-  test('will unarchive an archived bundle', async () => {
-    const archivedBundle: BundleDocument = {
-      _id: 'activeBundle',
+  test('will unarchive an archived release', async () => {
+    const archivedRelease: BundleDocument = {
+      _id: 'activeRelease',
       _type: 'release',
       timing: 'immediately',
       archivedAt: new Date().toISOString(),
-      title: 'activeBundle',
+      title: 'activeRelease',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
@@ -79,7 +79,7 @@ describe.todo('BundleMenuButton', () => {
       hue: 'gray',
       icon: 'cube',
     }
-    await renderTest({bundle: archivedBundle})
+    await renderTest({bundle: archivedRelease})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
 
@@ -87,18 +87,18 @@ describe.todo('BundleMenuButton', () => {
       fireEvent.click(screen.getByTestId('archive-release'))
     })
 
-    expect(useBundleOperations().updateBundle).toHaveBeenCalledWith({
-      ...archivedBundle,
+    expect(useReleaseOperations().updateBundle).toHaveBeenCalledWith({
+      ...archivedRelease,
       archivedAt: undefined,
     })
   })
 
   test('will be disabled', async () => {
-    const disabledActionBundle: BundleDocument = {
-      _id: 'activeEmptyBundle',
+    const disabledActionRelease: BundleDocument = {
+      _id: 'activeEmptyRelease',
       _type: 'release',
       archivedAt: new Date().toISOString(),
-      title: 'activeEmptyBundle',
+      title: 'activeEmptyRelease',
       timing: 'immediately',
       authorId: 'author',
       _createdAt: new Date().toISOString(),
@@ -107,7 +107,7 @@ describe.todo('BundleMenuButton', () => {
       hue: 'gray',
       icon: 'cube',
     }
-    await renderTest({bundle: disabledActionBundle, disabled: true})
+    await renderTest({bundle: disabledActionRelease, disabled: true})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
   })

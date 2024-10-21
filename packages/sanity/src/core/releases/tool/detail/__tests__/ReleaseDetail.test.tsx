@@ -3,19 +3,19 @@ import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useBundles} from '../../../../store/bundles'
-import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
+import {useReleases} from '../../../../store/release'
+import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseDetail} from '../ReleaseDetail'
 import {useBundleDocuments} from '../useBundleDocuments'
 
-vi.mock('../../../../store/bundles', () => ({
-  useBundles: vi.fn().mockReturnValue({data: [], loading: false, deletedBundles: {}}),
+vi.mock('../../../../store/release', () => ({
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false, deletedReleases: {}}),
 }))
 
-vi.mock('../../../../store/bundles/useBundleOperations', () => ({
-  useBundleOperations: vi.fn().mockReturnValue({
-    publishBundle: vi.fn(),
+vi.mock('../../../../store/release/useReleaseOperations', () => ({
+  useReleaseOperations: vi.fn().mockReturnValue({
+    publishRelease: vi.fn(),
   }),
 }))
 
@@ -52,8 +52,8 @@ vi.mock('../documentTable/useReleaseHistory', () => ({
   }),
 }))
 
-const mockUseBundles = useBundles as Mock<typeof useBundles>
-const mockUseBundleDocuments = useBundleDocuments as Mock<typeof useBundleDocuments>
+const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockUseReleaseDocuments = useBundleDocuments as Mock<typeof useBundleDocuments>
 const mockRouterNavigate = vi.fn()
 
 const renderTest = async () => {
@@ -63,7 +63,7 @@ const renderTest = async () => {
   return render(
     <RouterProvider
       state={{
-        releaseId: 'test-bundle-id',
+        releaseId: 'test-release-id',
       }}
       onNavigate={mockRouterNavigate}
       router={route.create('/', [route.create('/:releaseId')])}
@@ -80,7 +80,7 @@ const publishAgnosticTests = () => {
   })
 
   it('should show the release title', () => {
-    screen.getAllByText('Test bundle')
+    screen.getAllByText('Test release')
   })
 
   it('should default to showing summary screen', () => {
@@ -88,14 +88,14 @@ const publishAgnosticTests = () => {
   })
 }
 
-describe.todo('ReleaseDetail', () => {
-  describe('when loading bundles', () => {
+describe.skip('ReleaseDetail', () => {
+  describe('when loading releases', () => {
     beforeEach(async () => {
-      mockUseBundles.mockReturnValue({
+      mockUseReleases.mockReturnValue({
         data: [],
         loading: true,
         dispatch: vi.fn(),
-        deletedBundles: {},
+        deletedReleases: {},
       })
       await renderTest()
     })
@@ -112,15 +112,15 @@ describe.todo('ReleaseDetail', () => {
     })
   })
 
-  describe('when loaded bundles but still loading bundle documents', () => {
+  describe('when loaded releases but still loading release documents', () => {
     beforeEach(async () => {
-      mockUseBundles.mockReturnValue({
+      mockUseReleases.mockReturnValue({
         data: [
           {
-            title: 'Test bundle',
+            title: 'Test release',
             publishedAt: undefined,
             archivedAt: undefined,
-            _id: 'test-bundle-id',
+            _id: 'test-release-id',
             _createdAt: new Date().toISOString(),
             _type: 'release',
             hue: 'blue',
@@ -132,7 +132,7 @@ describe.todo('ReleaseDetail', () => {
         ],
         loading: false,
         dispatch: vi.fn(),
-        deletedBundles: {},
+        deletedReleases: {},
       })
       await renderTest()
     })
@@ -142,7 +142,7 @@ describe.todo('ReleaseDetail', () => {
     })
 
     it('should show the header', () => {
-      screen.getByText('Test bundle')
+      screen.getByText('Test release')
       screen.getByTestId('summary-button')
       expect(screen.getByTestId('review-button').closest('button')).toBeDisabled()
       screen.getByTestId('release-menu-button')
@@ -151,17 +151,17 @@ describe.todo('ReleaseDetail', () => {
   })
 })
 
-describe.todo('after bundles have loaded', () => {
+describe.skip('after releases have loaded', () => {
   describe('with unpublished release', () => {
     const currentDate = new Date().toISOString()
     beforeEach(async () => {
-      mockUseBundles.mockReturnValue({
+      mockUseReleases.mockReturnValue({
         data: [
           {
-            title: 'Test bundle',
+            title: 'Test release',
             publishedAt: undefined,
             archivedAt: undefined,
-            _id: 'test-bundle-id',
+            _id: 'test-release-id',
             _createdAt: currentDate,
             _type: 'release',
             hue: 'blue',
@@ -173,11 +173,11 @@ describe.todo('after bundles have loaded', () => {
         ],
         loading: false,
         dispatch: vi.fn(),
-        deletedBundles: {},
+        deletedReleases: {},
       })
     })
 
-    const loadedBundleAndDocumentsTests = () => {
+    const loadedReleaseAndDocumentsTests = () => {
       it('should allow for the release to be archived', () => {
         fireEvent.click(screen.getByTestId('release-menu-button'))
         screen.getByTestId('archive-release')
@@ -187,20 +187,20 @@ describe.todo('after bundles have loaded', () => {
         expect(screen.getByTestId('review-button').closest('button')).not.toBeDisabled()
         fireEvent.click(screen.getByTestId('review-button'))
         expect(mockRouterNavigate).toHaveBeenCalledWith({
-          path: '/test-bundle-id?screen=review',
+          path: '/test-release-id?screen=review',
         })
       })
     }
 
     describe('with pending document validation', () => {
       beforeEach(async () => {
-        mockUseBundleDocuments.mockReturnValue({
+        mockUseReleaseDocuments.mockReturnValue({
           loading: false,
           results: [
             {
               memoKey: 'key123',
               document: {
-                _id: 'test-bundle-id',
+                _id: 'test-release-id',
                 _type: 'document',
                 _rev: 'abc',
                 _createdAt: currentDate,
@@ -222,7 +222,7 @@ describe.todo('after bundles have loaded', () => {
       })
 
       publishAgnosticTests()
-      loadedBundleAndDocumentsTests()
+      loadedReleaseAndDocumentsTests()
 
       it('should disable publish all button', () => {
         expect(screen.getByTestId('publish-all-button').closest('button')).toBeDisabled()
@@ -231,13 +231,13 @@ describe.todo('after bundles have loaded', () => {
 
     describe('with passing document validation', () => {
       beforeEach(async () => {
-        mockUseBundleDocuments.mockReturnValue({
+        mockUseReleaseDocuments.mockReturnValue({
           loading: false,
           results: [
             {
               memoKey: 'key123',
               document: {
-                _id: 'test-bundle-id',
+                _id: 'test-release-id',
                 _type: 'document',
                 _rev: 'abc',
                 _createdAt: currentDate,
@@ -259,7 +259,7 @@ describe.todo('after bundles have loaded', () => {
       })
 
       publishAgnosticTests()
-      loadedBundleAndDocumentsTests()
+      loadedReleaseAndDocumentsTests()
 
       it('should show publish all button when release not published', () => {
         expect(screen.getByTestId('publish-all-button').closest('button')).not.toBeDisabled()
@@ -277,12 +277,12 @@ describe.todo('after bundles have loaded', () => {
         fireEvent.click(screen.getByText('Publish all'))
         fireEvent.click(screen.getByText('Publish'))
 
-        expect(useBundleOperations().publishBundle).toHaveBeenCalledWith(
-          'test-bundle-id',
+        expect(useReleaseOperations().publishBundle).toHaveBeenCalledWith(
+          'test-release-id',
           [
             {
               _createdAt: currentDate,
-              _id: 'test-bundle-id',
+              _id: 'test-release-id',
               _rev: 'abc',
               _type: 'document',
               _updatedAt: currentDate,
@@ -295,7 +295,7 @@ describe.todo('after bundles have loaded', () => {
 
     describe('with failing document validation', () => {
       beforeEach(async () => {
-        mockUseBundleDocuments.mockReturnValue({
+        mockUseReleaseDocuments.mockReturnValue({
           loading: false,
           results: [
             {
@@ -329,7 +329,7 @@ describe.todo('after bundles have loaded', () => {
       })
 
       publishAgnosticTests()
-      loadedBundleAndDocumentsTests()
+      loadedReleaseAndDocumentsTests()
 
       it('should disable publish all button', () => {
         expect(screen.getByTestId('publish-all-button')).toBeDisabled()
@@ -340,13 +340,13 @@ describe.todo('after bundles have loaded', () => {
 
   describe('with published release', () => {
     beforeEach(async () => {
-      mockUseBundles.mockReturnValue({
+      mockUseReleases.mockReturnValue({
         data: [
           {
-            title: 'Test bundle',
+            title: 'Test release',
             publishedAt: new Date().toISOString(),
             archivedAt: new Date().toISOString(),
-            _id: 'test-bundle-id',
+            _id: 'test-release-id',
             _createdAt: new Date().toISOString(),
             _type: 'release',
             hue: 'blue',
@@ -358,7 +358,7 @@ describe.todo('after bundles have loaded', () => {
         ],
         loading: false,
         dispatch: vi.fn(),
-        deletedBundles: {},
+        deletedReleases: {},
       })
 
       await renderTest()
@@ -382,16 +382,16 @@ describe.todo('after bundles have loaded', () => {
 
   describe('with deleted release', () => {
     beforeEach(async () => {
-      mockUseBundles.mockReturnValue({
+      mockUseReleases.mockReturnValue({
         data: [],
         loading: false,
         dispatch: vi.fn(),
-        deletedBundles: {
-          'test-bundle-id': {
-            title: 'Test bundle',
+        deletedReleases: {
+          'test-release-id': {
+            title: 'Test release',
             publishedAt: undefined,
             archivedAt: undefined,
-            _id: 'test-bundle-id',
+            _id: 'test-release-id',
             _createdAt: new Date().toISOString(),
             _type: 'release',
             hue: 'blue',
@@ -411,24 +411,24 @@ describe.todo('after bundles have loaded', () => {
       expect(screen.queryByText('Publish all')).toBeNull()
     })
 
-    it('should disable Bundle menu', () => {
+    it('should disable Release menu', () => {
       expect(screen.getByTestId('release-menu-button')).toBeDisabled()
     })
   })
 
   describe('with missing release', () => {
     beforeEach(async () => {
-      mockUseBundles.mockReturnValue({
+      mockUseReleases.mockReturnValue({
         data: [],
         loading: false,
         dispatch: vi.fn(),
-        deletedBundles: {},
+        deletedReleases: {},
       })
       await renderTest()
     })
 
     it('should show missing release message', () => {
-      screen.getByText('Release not found: test-bundle-id')
+      screen.getByText('Release not found: test-release-id')
     })
   })
 })

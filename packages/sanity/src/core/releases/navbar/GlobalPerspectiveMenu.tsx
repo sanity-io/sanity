@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 
 import {MenuButton, Tooltip} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
-import {useBundles} from '../../store/bundles/useBundles'
+import {useReleases} from '../../store/release/useReleases'
 import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
@@ -22,7 +22,7 @@ const StyledBox = styled(Box)`
 `
 
 export function GlobalPerspectiveMenu(): JSX.Element {
-  const {deletedBundles, loading, data: bundles} = useBundles()
+  const {deletedReleases, loading, data: bundles} = useReleases()
   const {currentGlobalBundle, setPerspective} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
@@ -32,10 +32,10 @@ export function GlobalPerspectiveMenu(): JSX.Element {
   const sortedBundlesToDisplay = useMemo(() => {
     if (!bundles) return []
 
-    return [...(bundles || []), ...Object.values(deletedBundles)].filter(
+    return [...(bundles || []), ...Object.values(deletedReleases)].filter(
       ({_id, archivedAt}) => !isDraftOrPublished(_id) && !archivedAt,
     )
-  }, [bundles, deletedBundles])
+  }, [bundles, deletedReleases])
   const hasBundles = sortedBundlesToDisplay.length > 0
 
   const handleBundleChange = useCallback(
@@ -46,8 +46,8 @@ export function GlobalPerspectiveMenu(): JSX.Element {
   )
 
   const isBundleDeleted = useCallback(
-    (bundleId: string) => Boolean(deletedBundles[bundleId]),
-    [deletedBundles],
+    (bundleId: string) => Boolean(deletedReleases[bundleId]),
+    [deletedReleases],
   )
 
   /* create new bundle */

@@ -5,8 +5,8 @@ import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type PartialExcept} from '../../util'
-import {type MetadataWrapper} from './createBundlesMetadataAggregator'
-import {type BundlesReducerAction, type BundlesReducerState} from './reducer'
+import {type MetadataWrapper} from './createReleaseMetadataAggregator'
+import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
 
 /** @internal */
 export type releaseType = 'asap' | 'scheduled' | 'undecided'
@@ -45,8 +45,8 @@ export function isBundleDocument(doc: unknown): doc is BundleDocument {
 /**
  * @internal
  */
-export interface BundlesStore {
-  state$: Observable<BundlesReducerState>
+export interface ReleasesStore {
+  state$: Observable<ReleasesReducerState>
   getMetadataStateForSlugs$: (slugs: string[]) => Observable<MetadataWrapper>
-  dispatch: Dispatch<BundlesReducerAction>
+  dispatch: Dispatch<ReleasesReducerAction>
 }

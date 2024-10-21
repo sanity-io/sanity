@@ -34,7 +34,7 @@ const useGuardedAddonClient = () => {
 }
 
 // WIP - Raw implementation for initial testing purposes
-export function useBundleOperations() {
+export function useReleaseOperations() {
   const {getAddonClient, getOrCreateAddonClient} = useGuardedAddonClient()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const currentUser = useCurrentUser()

@@ -8,9 +8,9 @@ import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useAddonDataset, useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {createBundlesStore} from '../bundles/createBundlesStore'
-import {type BundlesStore} from '../bundles/types'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
+import {createReleaseStore} from '../release/createReleaseStore'
+import {type ReleasesStore} from '../release/types'
 import {useCurrentUser} from '../user'
 import {
   type ConnectionStatusStore,
@@ -293,7 +293,7 @@ export function useKeyValueStore(): KeyValueStore {
 }
 
 /** @internal */
-export function useBundlesStore(): BundlesStore {
+export function useReleasesStore(): ReleasesStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
   const currentUser = useCurrentUser()
@@ -302,11 +302,11 @@ export function useBundlesStore(): BundlesStore {
 
   return useMemo(() => {
     const bundlesStore =
-      resourceCache.get<BundlesStore>({
+      resourceCache.get<ReleasesStore>({
         dependencies: [workspace, addonDataset, currentUser],
         namespace: 'BundlesStore',
       }) ||
-      createBundlesStore({
+      createReleaseStore({
         addonClient: addonDataset.client,
         addonClientReady: addonDataset.ready,
         studioClient,

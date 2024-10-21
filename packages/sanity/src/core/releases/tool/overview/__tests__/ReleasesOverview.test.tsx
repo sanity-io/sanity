@@ -4,10 +4,13 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useBundles} from '../../../../store'
-import {type BundleDocument} from '../../../../store/bundles/types'
+import {useReleases} from '../../../../store'
+import {type BundleDocument} from '../../../../store/release/types'
+import {
+  type ReleasesMetadata,
+  useReleasesMetadata,
+} from '../../../../store/release/useReleasesMetadata'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
-import {type BundlesMetadata, useBundlesMetadata} from '../../useBundlesMetadata'
 import {ReleasesOverview} from '../ReleasesOverview'
 
 vi.mock('sanity', () => {
@@ -19,13 +22,13 @@ vi.mock('sanity', () => {
   }
 })
 
-vi.mock('../../useBundlesMetadata', () => ({
-  useBundlesMetadata: vi.fn(),
+vi.mock('../../../../store/release/useReleasesMetadata', () => ({
+  useReleasesMetadata: vi.fn(),
 }))
 
 vi.mock('../../../../store', async (importOriginal) => ({
   ...(await importOriginal()),
-  useBundles: vi.fn(),
+  useReleases: vi.fn(),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -33,19 +36,19 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
-const mockUseBundles = useBundles as Mock<typeof useBundles>
-const mockUseBundlesMetadata = useBundlesMetadata as Mock<typeof useBundlesMetadata>
+const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockUseReleasesMetadata = useReleasesMetadata as Mock<typeof useReleasesMetadata>
 
 describe('ReleasesOverview', () => {
-  describe('when loading bundles', () => {
+  describe('when loading releases', () => {
     beforeEach(async () => {
-      mockUseBundles.mockReturnValue({
+      mockUseReleases.mockReturnValue({
         data: null,
         loading: true,
         dispatch: vi.fn(),
-        deletedBundles: {},
+        deletedReleases: {},
       })
-      mockUseBundlesMetadata.mockReturnValue({
+      mockUseReleasesMetadata.mockReturnValue({
         loading: true,
         error: null,
         data: null,
@@ -58,7 +61,7 @@ describe('ReleasesOverview', () => {
       return render(<ReleasesOverview />, {wrapper})
     })
 
-    it('does not show bundles table but shows loader', () => {
+    it('does not show releases table but shows loader', () => {
       expect(screen.queryByRole('table')).toBeNull()
       queryByDataUi(document.body, 'Spinner')
     })
@@ -72,20 +75,20 @@ describe('ReleasesOverview', () => {
       screen.getByText('Releases')
     })
 
-    it('allows for creating a new bundle', () => {
+    it('allows for creating a new release', () => {
       expect(screen.getByText('Create release')).not.toBeDisabled()
     })
   })
 
-  describe('when no bundles are available', () => {
+  describe('when no releases are available', () => {
     beforeEach(async () => {
-      mockUseBundles.mockReturnValue({
+      mockUseReleases.mockReturnValue({
         data: [],
         loading: false,
         dispatch: vi.fn(),
-        deletedBundles: {},
+        deletedReleases: {},
       })
-      mockUseBundlesMetadata.mockReturnValue({
+      mockUseReleasesMetadata.mockReturnValue({
         loading: false,
         error: null,
         data: null,
@@ -97,15 +100,15 @@ describe('ReleasesOverview', () => {
       return render(<ReleasesOverview />, {wrapper})
     })
 
-    it('shows a message about bundles', () => {
-      screen.getByTestId('no-bundles-info-text')
+    it('shows a message about releases', () => {
+      screen.getByTestId('no-releases-info-text')
     })
 
-    it('does not show the bundles table', () => {
+    it('does not show the releases table', () => {
       expect(screen.queryByRole('table')).toBeNull()
     })
 
-    it('does not show bundle history mode switch', () => {
+    it('does not show release history mode switch', () => {
       expect(screen.queryByText('Open')).toBeNull()
       expect(screen.queryByText('Archived')).toBeNull()
     })
@@ -119,31 +122,31 @@ describe('ReleasesOverview', () => {
     })
   })
 
-  describe('when bundles are loaded', () => {
-    const bundles = [
+  describe('when releases are loaded', () => {
+    const releases = [
       {
-        title: 'Bundle 1',
+        title: 'Release 1',
         _id: 'b1abcdefg',
-        slug: 'bundle-1',
+        slug: 'release-1',
         // yesterday
         _createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
       },
       {
-        title: 'Bundle 2',
+        title: 'Release 2',
         _id: 'b2abcdefg',
-        slug: 'bundle-2',
+        slug: 'release-2',
         // now
         _createdAt: new Date().toISOString(),
       },
       {
-        title: 'Bundle 3',
+        title: 'Release 3',
         _id: 'b3abcdefg',
         publishedAt: new Date().toISOString(),
-        slug: 'bundle-3',
+        slug: 'release-3',
         _createdAt: new Date().toISOString(),
       },
       {
-        title: 'Bundle 4',
+        title: 'Release 4',
         _id: 'b4abcdefg',
         archivedAt: new Date().toISOString(),
         _createdAt: new Date().toISOString(),
@@ -151,28 +154,28 @@ describe('ReleasesOverview', () => {
     ] as BundleDocument[]
 
     beforeEach(async () => {
-      mockUseBundles.mockReturnValue({
-        data: bundles,
+      mockUseReleases.mockReturnValue({
+        data: releases,
         loading: false,
         dispatch: vi.fn(),
-        deletedBundles: {
-          'deleted-bundle-id': {
-            title: 'Deleted Bundle',
-            _id: 'deleted-bundle-id',
+        deletedReleases: {
+          'deleted-release-id': {
+            title: 'Deleted Release',
+            _id: 'deleted-release-id',
             _createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * 5).toISOString(),
           } as BundleDocument,
         },
       })
-      mockUseBundlesMetadata.mockReturnValue({
+      mockUseReleasesMetadata.mockReturnValue({
         loading: false,
         error: null,
         data: Object.fromEntries(
-          bundles.map((bundle, index) => [
-            bundle._id,
+          releases.map((release, index) => [
+            release._id,
             {
               documentCount: 1,
               updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * (index + 1)).toISOString(),
-            } as BundlesMetadata,
+            } as ReleasesMetadata,
           ]),
         ),
       })
@@ -183,26 +186,26 @@ describe('ReleasesOverview', () => {
       return render(<ReleasesOverview />, {wrapper})
     })
 
-    it('shows each open bundle', () => {
-      const bundleRows = screen.getAllByTestId('table-row')
+    it('shows each open release', () => {
+      const releaseRows = screen.getAllByTestId('table-row')
       // 2 open releases & 1 deleted release)
-      expect(bundleRows).toHaveLength(3)
+      expect(releaseRows).toHaveLength(3)
 
       // reverse to match default sort order by _createdAt desc
-      const openBundles = [...bundles].slice(0, 2).reverse()
-      openBundles.forEach((bundle, index) => {
-        // bundle title
-        within(bundleRows[index]).getByText(bundle.title)
+      const openReleases = [...releases].slice(0, 2).reverse()
+      openReleases.forEach((release, index) => {
+        // release title
+        within(releaseRows[index]).getByText(release.title)
         // document count
-        within(bundleRows[index]).getByText('1')
+        within(releaseRows[index]).getByText('1')
         if (index === 0) {
           // updated at
-          within(bundleRows[index]).getByText('2 days ago')
+          within(releaseRows[index]).getByText('2 days ago')
           // created at
-          within(bundleRows[index]).getByText('just now')
+          within(releaseRows[index]).getByText('just now')
         } else if (index === 1) {
           // updated at & created at
-          expect(within(bundleRows[index]).getAllByText('yesterday')).toHaveLength(2)
+          expect(within(releaseRows[index]).getAllByText('yesterday')).toHaveLength(2)
         }
       })
     })
@@ -212,81 +215,81 @@ describe('ReleasesOverview', () => {
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
     })
 
-    it('shows published bundles', async () => {
+    it('shows published releases', async () => {
       fireEvent.click(screen.getByText('Archived'))
 
       await waitFor(() => {
-        screen.getByText('Bundle 3')
-        screen.getByText('Bundle 4')
-        expect(screen.queryByText('Bundle 1')).toBeNull()
+        screen.getByText('Release 3')
+        screen.getByText('Release 4')
+        expect(screen.queryByText('Release 1')).toBeNull()
       })
     })
 
-    it('allows for searching bundles', () => {
+    it('allows for searching releases', () => {
       expect(screen.getByPlaceholderText('Search releases')).not.toBeDisabled()
       fireEvent.change(screen.getByPlaceholderText('Search releases'), {
-        target: {value: 'Bundle 1'},
+        target: {value: 'Release 1'},
       })
 
-      screen.getByText('Bundle 1')
-      expect(screen.queryByText('Bundle 2')).toBeNull()
+      screen.getByText('Release 1')
+      expect(screen.queryByText('Release 2')).toBeNull()
 
-      // search for non-existent bundle title
+      // search for non-existent release title
       fireEvent.change(screen.getByPlaceholderText('Search releases'), {
         target: {value: 'Bananas'},
       })
 
       screen.getByText('No Releases')
-      expect(screen.queryByText('Bundle 1')).toBeNull()
+      expect(screen.queryByText('Release 1')).toBeNull()
     })
 
     it('sorts the list of releases', () => {
-      const [unsortedFirstBundle, unsortedSecondBundle] = screen.getAllByTestId('table-row')
-      within(unsortedFirstBundle).getByText('Bundle 2')
-      within(unsortedSecondBundle).getByText('Bundle 1')
+      const [unsortedFirstRelease, unsortedSecondRelease] = screen.getAllByTestId('table-row')
+      within(unsortedFirstRelease).getByText('Release 2')
+      within(unsortedSecondRelease).getByText('Release 1')
 
       // sort by asc created at
       fireEvent.click(screen.getByText('Created'))
       const [
-        ascCreatedSortedFirstBundle,
-        ascCreatedSortedSecondBundle,
-        ascCreatedSortedThirdBundle,
+        ascCreatedSortedFirstRelease,
+        ascCreatedSortedSecondRelease,
+        ascCreatedSortedThirdRelease,
       ] = screen.getAllByTestId('table-row')
-      within(ascCreatedSortedFirstBundle).getByText('Deleted Bundle')
-      within(ascCreatedSortedSecondBundle).getByText('Bundle 1')
-      within(ascCreatedSortedThirdBundle).getByText('Bundle 2')
+      within(ascCreatedSortedFirstRelease).getByText('Deleted Release')
+      within(ascCreatedSortedSecondRelease).getByText('Release 1')
+      within(ascCreatedSortedThirdRelease).getByText('Release 2')
 
       // searching retains sort order
       fireEvent.change(screen.getByPlaceholderText('Search releases'), {
-        target: {value: 'Bundle'},
+        target: {value: 'Release'},
       })
       const [
-        ascCreatedSortedFirstBundleAfterSearch,
-        ascCreatedSortedSecondBundleAfterSearch,
-        ascCreatedSortedThirdBundleAfterSearch,
+        ascCreatedSortedFirstReleaseAfterSearch,
+        ascCreatedSortedSecondReleaseAfterSearch,
+        ascCreatedSortedThirdReleaseAfterSearch,
       ] = screen.getAllByTestId('table-row')
-      within(ascCreatedSortedFirstBundleAfterSearch).getByText('Deleted Bundle')
-      within(ascCreatedSortedSecondBundleAfterSearch).getByText('Bundle 1')
-      within(ascCreatedSortedThirdBundleAfterSearch).getByText('Bundle 2')
+      within(ascCreatedSortedFirstReleaseAfterSearch).getByText('Deleted Release')
+      within(ascCreatedSortedSecondReleaseAfterSearch).getByText('Release 1')
+      within(ascCreatedSortedThirdReleaseAfterSearch).getByText('Release 2')
 
       // sort by desc created at
       fireEvent.click(screen.getByText('Created'))
-      const [descCreatedSortedFirstBundle, descCreatedSortedSecondBundle] =
+      const [descCreatedSortedFirstRelease, descCreatedSortedSecondRelease] =
         screen.getAllByTestId('table-row')
-      within(descCreatedSortedFirstBundle).getByText('Bundle 2')
-      within(descCreatedSortedSecondBundle).getByText('Bundle 1')
+      within(descCreatedSortedFirstRelease).getByText('Release 2')
+      within(descCreatedSortedSecondRelease).getByText('Release 1')
 
       // sort by asc updated at
       fireEvent.click(screen.getByText('Edited'))
-      const [ascEditedSortedFirstBundle, ascEditedSortedSecondBundle] =
+      const [ascEditedSortedFirstRelease, ascEditedSortedSecondRelease] =
         screen.getAllByTestId('table-row')
-      within(ascEditedSortedFirstBundle).getByText('Bundle 1')
-      within(ascEditedSortedSecondBundle).getByText('Bundle 2')
+      within(ascEditedSortedFirstRelease).getByText('Release 1')
+      within(ascEditedSortedSecondRelease).getByText('Release 2')
     })
 
     it('should navigate to release when row clicked', async () => {
-      const bundleRow = screen.getAllByTestId('table-row')[1]
-      fireEvent.click(within(bundleRow).getByText('Bundle 1'))
+      const releaseRow = screen.getAllByTestId('table-row')[1]
+      fireEvent.click(within(releaseRow).getByText('Release 1'))
 
       expect(useRouter().navigate).toHaveBeenCalledWith({releaseId: 'b1abcdefg'})
     })

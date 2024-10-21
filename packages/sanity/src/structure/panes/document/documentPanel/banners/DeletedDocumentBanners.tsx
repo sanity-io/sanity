@@ -4,9 +4,9 @@ import {useCallback, useEffect, useState} from 'react'
 import {
   type BundleDocument,
   Translate,
-  useBundles,
   useDocumentOperation,
   usePerspective,
+  useReleases,
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
@@ -18,7 +18,7 @@ import {Banner} from './Banner'
 
 const useIsLocaleBundleDeleted = () => {
   const {currentGlobalBundle} = usePerspective()
-  const {data: bundles, deletedBundles} = useBundles()
+  const {data: bundles, deletedReleases} = useReleases()
   const {_id: currentGlobalBundleId} = currentGlobalBundle
   const [checkedOutBundleId, setCheckedOutBundleId] = useState<string | undefined>(
     currentGlobalBundleId,
@@ -33,10 +33,10 @@ const useIsLocaleBundleDeleted = () => {
     }
   }, [currentGlobalBundleId, setCheckedOutBundleId])
 
-  if (!checkedOutBundleId || !Object.keys(deletedBundles).length || !bundles?.length) {
+  if (!checkedOutBundleId || !Object.keys(deletedReleases).length || !bundles?.length) {
     return null
   }
-  return deletedBundles[checkedOutBundleId]
+  return deletedReleases[checkedOutBundleId]
 }
 
 export function DeletedDocumentBanners() {

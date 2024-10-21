@@ -1,10 +1,10 @@
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {useBundlesStore} from 'sanity'
+import {useReleasesStore} from 'sanity'
 import {ReleasesMetadataContext} from 'sanity/_singletons'
 
-import {type MetadataWrapper} from '../../store/bundles/createBundlesMetadataAggregator'
-import {type BundlesMetadata} from '../tool/useBundlesMetadata'
+import {type MetadataWrapper} from '../../store/release/createReleaseMetadataAggregator'
+import {type ReleasesMetadata} from '../../store/release/useReleasesMetadata'
 
 /**
  * @internal
@@ -23,8 +23,8 @@ const DEFAULT_METADATA_STATE: MetadataWrapper = {
 
 const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) => {
   const [listenerBundleIds, setListenerBundleIds] = useState<string[]>([])
-  const {getMetadataStateForSlugs$} = useBundlesStore()
-  const [bundlesMetadata, setBundlesMetadata] = useState<Record<string, BundlesMetadata> | null>(
+  const {getMetadataStateForSlugs$} = useReleasesStore()
+  const [bundlesMetadata, setBundlesMetadata] = useState<Record<string, ReleasesMetadata> | null>(
     null,
   )
 

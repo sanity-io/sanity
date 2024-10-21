@@ -1,7 +1,7 @@
 import {type RefObject, useCallback, useMemo} from 'react'
 
 import {useTranslation} from '../../../i18n'
-import {type BundleDocument} from '../../../store/bundles/types'
+import {type BundleDocument} from '../../../store/release/types'
 import {releasesLocaleNamespace} from '../../i18n'
 import {Table, type TableProps} from '../components/Table/Table'
 import {DocumentActions} from './documentTable/DocumentActions'

@@ -4,7 +4,7 @@ import {LoadingBlock} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Translate, useTranslation} from '../../../i18n'
-import {type BundleDocument, useBundles} from '../../../store/bundles'
+import {type BundleDocument, useReleases} from '../../../store/release'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleasesRouterState} from '../../types/router'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
@@ -38,8 +38,8 @@ export const ReleaseDetail = () => {
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
 
   const releaseId = decodeURIComponent(releaseIdRaw || '')
-  const {data, loading, deletedBundles} = useBundles()
-  const deletedBundle = deletedBundles[releaseId] as BundleDocument | undefined
+  const {data, loading, deletedReleases} = useReleases()
+  const deletedBundle = deletedReleases[releaseId] as BundleDocument | undefined
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
 

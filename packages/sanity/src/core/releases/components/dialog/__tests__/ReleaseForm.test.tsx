@@ -3,18 +3,18 @@ import {type BundleDocument, type FormBundleDocument, useDateTimeFormat} from 's
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useBundles} from '../../../../store/bundles'
+import {useReleases} from '../../../../store/release'
 import {ReleaseForm} from '../ReleaseForm'
 
 vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
   useDateTimeFormat: vi.fn(),
 }))
 
-vi.mock('../../../../store/bundles', () => ({
-  useBundles: vi.fn(),
+vi.mock('../../../../store/release', () => ({
+  useReleases: vi.fn(),
 }))
 
-const mockUseBundleStore = useBundles as Mock<typeof useBundles>
+const mockUseReleases = useReleases as Mock<typeof useReleases>
 const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
 describe('ReleaseForm', () => {
@@ -51,12 +51,12 @@ describe('ReleaseForm', () => {
         },
         // Add more mock data if needed
       ]
-      mockUseBundleStore.mockReturnValue({
+      mockUseReleases.mockReturnValue({
         data: mockData,
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
-        deletedBundles: {},
+        deletedReleases: {},
       })
 
       mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
@@ -136,11 +136,11 @@ describe('ReleaseForm', () => {
         },
         // Add more mock data if needed
       ]
-      mockUseBundleStore.mockReturnValue({
+      mockUseReleases.mockReturnValue({
         data: mockData,
         loading: false,
         dispatch: vi.fn(),
-        deletedBundles: {} as Record<string, BundleDocument>,
+        deletedReleases: {} as Record<string, BundleDocument>,
       })
 
       mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})

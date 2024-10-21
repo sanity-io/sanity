@@ -12,9 +12,9 @@ interface BundleUpdatedAction {
   type: 'BUNDLE_UPDATED'
 }
 
-interface BundlesSetAction {
+interface ReleasesSetAction {
   payload: BundleDocument[] | null
-  type: 'BUNDLES_SET'
+  type: 'RELEASES_SET'
 }
 
 interface BundleReceivedAction {
@@ -30,31 +30,31 @@ interface LoadingStateChangedAction {
   type: 'LOADING_STATE_CHANGED'
 }
 
-export type BundlesReducerAction =
+export type ReleasesReducerAction =
   | BundleDeletedAction
   | BundleUpdatedAction
-  | BundlesSetAction
+  | ReleasesSetAction
   | BundleReceivedAction
   | LoadingStateChangedAction
 
-export interface BundlesReducerState {
-  bundles: Map<string, BundleDocument>
-  deletedBundles: Record<string, BundleDocument>
+export interface ReleasesReducerState {
+  releases: Map<string, BundleDocument>
+  deletedReleases: Record<string, BundleDocument>
   state: 'initialising' | 'loading' | 'loaded' | 'error'
   error?: Error
 }
 
-function createBundlesSet(bundles: BundleDocument[] | null) {
-  return (bundles ?? []).reduce((acc, bundle) => {
+function createReleasesSet(releases: BundleDocument[] | null) {
+  return (releases ?? []).reduce((acc, bundle) => {
     acc.set(bundle._id, bundle)
     return acc
   }, new Map<string, BundleDocument>())
 }
 
-export function bundlesReducer(
-  state: BundlesReducerState,
-  action: BundlesReducerAction,
-): BundlesReducerState {
+export function releasesReducer(
+  state: ReleasesReducerState,
+  action: ReleasesReducerAction,
+): ReleasesReducerState {
   switch (action.type) {
     case 'LOADING_STATE_CHANGED': {
       return {
@@ -64,59 +64,59 @@ export function bundlesReducer(
       }
     }
 
-    case 'BUNDLES_SET': {
+    case 'RELEASES_SET': {
       // Create an object with the BUNDLE id as key
-      const bundlesById = createBundlesSet(action.payload)
+      const releasesById = createReleasesSet(action.payload)
 
       return {
         ...state,
-        bundles: bundlesById,
+        releases: releasesById,
       }
     }
 
     case 'BUNDLE_RECEIVED': {
       const receivedBundle = action.payload as BundleDocument
-      const currentBundles = new Map(state.bundles)
-      currentBundles.set(receivedBundle._id, receivedBundle)
+      const currentReleases = new Map(state.releases)
+      currentReleases.set(receivedBundle._id, receivedBundle)
 
       return {
         ...state,
-        bundles: currentBundles,
+        releases: currentReleases,
       }
     }
 
     case 'BUNDLE_DELETED': {
-      const currentBundles = new Map(state.bundles)
+      const currentReleases = new Map(state.releases)
       const deletedBundleId = action.id
       const isDeletedByCurrentUser = action.currentUserId === action.deletedByUserId
-      const localDeletedBundle = currentBundles.get(deletedBundleId)
-      currentBundles.delete(deletedBundleId)
+      const localDeletedBundle = currentReleases.get(deletedBundleId)
+      currentReleases.delete(deletedBundleId)
 
       // only capture the deleted bundle if deleted by another user
-      const nextDeletedBundles =
+      const nextDeletedReleases =
         !isDeletedByCurrentUser && localDeletedBundle
           ? {
-              ...state.deletedBundles,
+              ...state.deletedReleases,
               [localDeletedBundle._id]: localDeletedBundle,
             }
-          : state.deletedBundles
+          : state.deletedReleases
 
       return {
         ...state,
-        bundles: currentBundles,
-        deletedBundles: nextDeletedBundles,
+        releases: currentReleases,
+        deletedReleases: nextDeletedReleases,
       }
     }
 
     case 'BUNDLE_UPDATED': {
       const updatedBundle = action.payload
       const id = updatedBundle._id as string
-      const currentBundles = new Map(state.bundles)
-      currentBundles.set(id, updatedBundle)
+      const currentReleases = new Map(state.releases)
+      currentReleases.set(id, updatedBundle)
 
       return {
         ...state,
-        bundles: currentBundles,
+        releases: currentReleases,
       }
     }
 

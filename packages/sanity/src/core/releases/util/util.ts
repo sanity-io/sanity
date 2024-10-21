@@ -1,5 +1,5 @@
 import {type VersionOriginTypes} from '../../store'
-import {type BundleDocument} from '../../store/bundles/types'
+import {type BundleDocument} from '../../store/release/types'
 import {
   getVersionFromId,
   isDraftId,

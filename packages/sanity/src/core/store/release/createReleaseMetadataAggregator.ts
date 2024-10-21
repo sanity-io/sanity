@@ -12,11 +12,11 @@ import {
 } from 'rxjs'
 import {type SanityClient} from 'sanity'
 
-import {type BundlesMetadata} from '../../releases/tool/useBundlesMetadata'
+import {type ReleasesMetadata} from './useReleasesMetadata'
 
-export type BundlesMetadataMap = Record<string, BundlesMetadata>
+export type ReleasesMetadataMap = Record<string, ReleasesMetadata>
 
-export type MetadataWrapper = {data: BundlesMetadataMap | null; error: null; loading: boolean}
+export type MetadataWrapper = {data: ReleasesMetadataMap | null; error: null; loading: boolean}
 
 const getFetchQuery = (bundleIds: string[]) => {
   // projection key must be string - cover the case that a bundle has a number as first char
@@ -29,7 +29,7 @@ const getFetchQuery = (bundleIds: string[]) => {
 
       const subquery = `${accSubquery}"${safeId}": *[_id in path("versions.${bundleId}.*")]{_updatedAt } | order(_updatedAt desc),`
 
-      // conforms to BundlesMetadata
+      // conforms to ReleasesMetadata
       const projection = `${accProjection}"${bundleId}": {
               "updatedAt": ${safeId}[0]._updatedAt,
               "documentCount": count(${safeId})
@@ -45,22 +45,22 @@ const getFetchQuery = (bundleIds: string[]) => {
  * @internal
  *
  * An initial fetch is made. This fetch is polled whenever a listener even is emitted
- * Only bundles that have been mutated are re-fetched
+ * Only releases that have been mutated are re-fetched
  *
  * @returns an Observable that accepts a list of bundle slugs and returns a stream of metadata
  */
-export const createBundlesMetadataAggregator = (client: SanityClient | null) => {
+export const createReleaseMetadataAggregator = (client: SanityClient | null) => {
   const aggregatorFetch$ = (
     bundleIds: string[],
     isInitialLoad: boolean = false,
   ): Observable<MetadataWrapper> => {
     if (!bundleIds?.length || !client) return of({data: null, error: null, loading: false})
 
-    const {subquery: queryAllDocumentsInBundles, projection: projectionToBundleMetadata} =
+    const {subquery: queryAllDocumentsInReleases, projection: projectionToBundleMetadata} =
       getFetchQuery(bundleIds)
 
     const fetchData$ = client.observable
-      .fetch<BundlesMetadataMap>(`{${queryAllDocumentsInBundles}}{${projectionToBundleMetadata}}`)
+      .fetch<ReleasesMetadataMap>(`{${queryAllDocumentsInReleases}}{${projectionToBundleMetadata}}`)
       .pipe(
         switchMap((response) => of({data: response, error: null, loading: false})),
         catchError((error) => {

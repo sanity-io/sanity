@@ -6,7 +6,7 @@ import {type BundleDocument} from 'sanity'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
-import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
+import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type DocumentInBundleResult} from '../../../tool/detail/useBundleDocuments'
@@ -24,7 +24,7 @@ export const ReleasePublishAllButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
-  const {publishBundle} = useBundleOperations()
+  const {publishBundle} = useReleaseOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
   const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(

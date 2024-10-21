@@ -6,7 +6,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
-import {type BundleDocument} from '../../store/bundles/types'
+import {type BundleDocument} from '../../store/release/types'
 
 const BadgeRoot = styled(Flex)<{
   $hue: ColorHueKey

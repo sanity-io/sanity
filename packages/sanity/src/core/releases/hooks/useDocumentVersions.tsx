@@ -6,8 +6,8 @@ import {
   type BundleDocument,
   getPublishedId,
   getVersionFromId,
-  useBundles,
   useDocumentPreviewStore,
+  useReleases,
 } from 'sanity'
 
 export interface DocumentPerspectiveProps {
@@ -36,7 +36,7 @@ const INITIAL_STATE: DocumentPerspectiveState = {
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
 
-  const {data: bundles} = useBundles()
+  const {data: bundles} = useReleases()
   const publishedId = getPublishedId(documentId)
 
   const documentPreviewStore = useDocumentPreviewStore()

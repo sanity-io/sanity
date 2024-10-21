@@ -6,8 +6,8 @@ import {styled} from 'styled-components'
 
 import {MenuButton, Tooltip} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
-import {type BundleDocument} from '../../store/bundles/types'
-import {useBundles} from '../../store/bundles/useBundles'
+import {type BundleDocument} from '../../store/release/types'
+import {useReleases} from '../../store/release/useReleases'
 import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/util'
@@ -35,7 +35,7 @@ interface BundleListProps {
  */
 export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): ReactElement {
   const {bundles, loading, actions, button, perspective} = props
-  const {deletedBundles} = useBundles()
+  const {deletedReleases} = useReleases()
   const {currentGlobalBundle, setPerspective} = usePerspective(perspective)
   const {t} = useTranslation()
 
@@ -44,8 +44,8 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
 
     return bundles
       .filter(({_id, archivedAt}) => !isDraftOrPublished(_id) && !archivedAt)
-      .sort(({_id: aId}, {_id: bId}) => Number(deletedBundles[aId]) - Number(deletedBundles[bId]))
-  }, [bundles, deletedBundles])
+      .sort(({_id: aId}, {_id: bId}) => Number(deletedReleases[aId]) - Number(deletedReleases[bId]))
+  }, [bundles, deletedReleases])
   const hasBundles = sortedBundlesToDisplay.length > 0
 
   const handleBundleChange = useCallback(
@@ -56,8 +56,8 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
   )
 
   const isBundleDeleted = useCallback(
-    (bundleId: string) => Boolean(deletedBundles[bundleId]),
-    [deletedBundles],
+    (bundleId: string) => Boolean(deletedReleases[bundleId]),
+    [deletedReleases],
   )
 
   return (

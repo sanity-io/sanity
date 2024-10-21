@@ -5,8 +5,8 @@ import {type FormEvent, useCallback, useState} from 'react'
 import {DEFAULT_RELEASE_TYPE, type FormBundleDocument, useTranslation} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
-import {type BundleDocument} from '../../../store/bundles/types'
-import {useBundleOperations} from '../../../store/bundles/useBundleOperations'
+import {type BundleDocument} from '../../../store/release/types'
+import {useReleaseOperations} from '../../../store/release/useReleaseOperations'
 import {
   CreatedRelease,
   type OriginInfo,
@@ -26,7 +26,7 @@ interface ReleaseDetailsDialogProps {
 export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Element {
   const {onCancel, onSubmit, bundle, origin} = props
   const toast = useToast()
-  const {createBundle, updateBundle} = useBundleOperations()
+  const {createBundle, updateBundle} = useReleaseOperations()
   const formAction = bundle ? 'edit' : 'create'
   const {t} = useTranslation()
   const telemetry = useTelemetry()

@@ -6,9 +6,9 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
-import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {releasesUsEnglishLocaleRelease} from '../../../i18n'
 import {ReleaseReview} from '../ReleaseReview'
-import {type DocumentInBundleResult} from '../useBundleDocuments'
+import {type DocumentInReleaseResult} from '../useReleaseDocuments'
 
 const BASE_DOCUMENTS_MOCKS = {
   doc1: {
@@ -31,7 +31,7 @@ const BASE_DOCUMENTS_MOCKS = {
   },
 } as const
 
-const MOCKED_DOCUMENTS: DocumentInBundleResult[] = [
+const MOCKED_DOCUMENTS: DocumentInReleaseResult[] = [
   {
     memoKey: 'key123',
     document: {
@@ -145,7 +145,7 @@ const mockedUseObserveDocument = useObserveDocument as Mock<typeof useObserveDoc
 
 async function createReleaseReviewWrapper() {
   const wrapper = await createTestProvider({
-    resources: [releasesUsEnglishLocaleBundle],
+    resources: [releasesUsEnglishLocaleRelease],
   })
   return ({children}: {children: ReactNode}) =>
     wrapper({
@@ -157,7 +157,7 @@ async function createReleaseReviewWrapper() {
     })
 }
 
-describe.todo('ReleaseReview', () => {
+describe.skip('ReleaseReview', () => {
   describe('when loading baseDocument', () => {
     beforeEach(async () => {
       mockedUseObserveDocument.mockReturnValue({

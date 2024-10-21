@@ -5,7 +5,7 @@ import {styled} from 'styled-components'
 
 import {useDateTimeFormat, useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
-import {type BundleDocument} from '../../store/bundles'
+import {type BundleDocument} from '../../store/release'
 import {PerspectiveBadge} from '../perspective/PerspectiveBadge'
 
 interface DocumentStatusProps {

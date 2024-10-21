@@ -1,9 +1,9 @@
 import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
-import {type BundleDocument, useBundles} from 'sanity'
+import {type BundleDocument, useReleases} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useBundleOperations} from '../../../../store/bundles/useBundleOperations'
+import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {usePerspective} from '../../../hooks/usePerspective'
 import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
 
@@ -11,12 +11,12 @@ import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
   useDateTimeFormat: vi.fn(),
 }))*/
 
-vi.mock('../../../../store/bundles', () => ({
-  useBundles: vi.fn(),
+vi.mock('../../../../store/release', () => ({
+  useReleases: vi.fn(),
 }))
 
-vi.mock('../../../../store/bundles/useBundleOperations', () => ({
-  useBundleOperations: vi.fn().mockReturnValue({
+vi.mock('../../../../store/release/useReleaseOperations', () => ({
+  useReleaseOperations: vi.fn().mockReturnValue({
     createBundle: vi.fn(),
     updateBundle: vi.fn(),
   }),
@@ -28,7 +28,7 @@ vi.mock('../../../hooks/usePerspective', () => ({
   }),
 }))
 
-const mockUseBundleStore = useBundles as Mock<typeof useBundles>
+const mockUseBundleStore = useReleases as Mock<typeof useReleases>
 //const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
 describe('ReleaseDetailsDialog', () => {
@@ -52,7 +52,7 @@ describe('ReleaseDetailsDialog', () => {
         loading: true,
         dispatch: vi.fn(),
         error: undefined,
-        deletedBundles: {},
+        deletedReleases: {},
       })
 
       //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
@@ -86,7 +86,7 @@ describe('ReleaseDetailsDialog', () => {
       const submitButton = screen.getByTestId('submit-release-button')
       fireEvent.click(submitButton)
 
-      await expect(useBundleOperations().createBundle).toHaveBeenCalledWith(
+      await expect(useReleaseOperations().createBundle).toHaveBeenCalledWith(
         expect.objectContaining({
           _id: expect.stringMatching(/r\w{8}/),
           ...value,
@@ -123,7 +123,7 @@ describe('ReleaseDetailsDialog', () => {
         loading: true,
         dispatch: vi.fn(),
         error: undefined,
-        deletedBundles: {},
+        deletedReleases: {},
       })
 
       //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
@@ -164,7 +164,7 @@ describe('ReleaseDetailsDialog', () => {
       fireEvent.click(screen.getByTestId('submit-release-button'))
 
       const {hue, icon, _id} = existingBundleValue
-      expect(useBundleOperations().updateBundle).toHaveBeenCalledWith({
+      expect(useReleaseOperations().updateBundle).toHaveBeenCalledWith({
         _id,
         _type: 'release',
         hue,
@@ -180,7 +180,7 @@ describe('ReleaseDetailsDialog', () => {
       fireEvent.click(screen.getByTestId('submit-release-button'))
 
       await waitFor(() => {
-        expect(useBundleOperations().updateBundle).toHaveBeenCalled()
+        expect(useReleaseOperations().updateBundle).toHaveBeenCalled()
       })
 
       expect(usePerspective().setPerspective).not.toHaveBeenCalled()

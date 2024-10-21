@@ -1,5 +1,5 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {type BundleDocument, LATEST, useBundles, usePerspective} from 'sanity'
+import {type BundleDocument, LATEST, usePerspective, useReleases} from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -15,8 +15,8 @@ vi.mock('../../../../../../core/releases/hooks/usePerspective', () => ({
   usePerspective: vi.fn(),
 }))
 
-vi.mock('../../../../../../core/store/bundles/useBundles', () => ({
-  useBundles: vi.fn(),
+vi.mock('../../../../../../core/store/release/useReleases', () => ({
+  useReleases: vi.fn(),
 }))
 
 vi.mock('../../../../../../core/store/_legacy/history/useTimelineSelector', () => ({
@@ -24,7 +24,7 @@ vi.mock('../../../../../../core/store/_legacy/history/useTimelineSelector', () =
 }))
 
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
-const mockUseBundles = useBundles as Mock<typeof useBundles>
+const mockUseReleases = useReleases as Mock<typeof useReleases>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 
 const renderTest = async () => {
@@ -38,9 +38,9 @@ describe('DeletedDocumentBanners', () => {
     mockUsePerspective.mockReturnValue({currentGlobalBundle: {_id: 'test'}} as ReturnType<
       typeof usePerspective
     >)
-    mockUseBundles.mockReturnValue({
+    mockUseReleases.mockReturnValue({
       data: [],
-      deletedBundles: {},
+      deletedReleases: {},
       dispatch: vi.fn(),
       loading: false,
     })
@@ -60,9 +60,9 @@ describe('DeletedDocumentBanners', () => {
     mockUsePerspective.mockReturnValue({currentGlobalBundle: mockBundleDocument} as ReturnType<
       typeof usePerspective
     >)
-    mockUseBundles.mockReturnValue({
+    mockUseReleases.mockReturnValue({
       data: [mockBundleDocument],
-      deletedBundles: {test: mockBundleDocument},
+      deletedReleases: {test: mockBundleDocument},
       dispatch: vi.fn(),
       loading: false,
     })
@@ -86,9 +86,9 @@ describe('DeletedDocumentBanners', () => {
       typeof usePerspective
     >)
 
-    mockUseBundles.mockReturnValue({
+    mockUseReleases.mockReturnValue({
       data: [mockBundleDocument],
-      deletedBundles: {test: mockBundleDocument},
+      deletedReleases: {test: mockBundleDocument},
       dispatch: vi.fn(),
       loading: false,
     })

@@ -5,20 +5,23 @@ import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useStat
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
-import {type BundleDocument, useBundles} from '../../../store'
+import {type BundleDocument, useReleases} from '../../../store'
+import {
+  type ReleasesMetadata,
+  useReleasesMetadata,
+} from '../../../store/release/useReleasesMetadata'
 import {ReleaseDetailsDialog} from '../../components/dialog/ReleaseDetailsDialog'
 import {releasesLocaleNamespace} from '../../i18n'
 import {containsBundles} from '../../types/bundle'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
-import {type BundlesMetadata, useBundlesMetadata} from '../useBundlesMetadata'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 
 type Mode = 'open' | 'archived'
 
 export interface TableBundle extends BundleDocument {
-  documentsMetadata?: BundlesMetadata
+  documentsMetadata?: ReleasesMetadata
   isDeleted?: boolean
 }
 
@@ -29,11 +32,11 @@ const getRowProps: TableProps<TableBundle, undefined>['rowProps'] = (datum) =>
   datum.isDeleted ? {tone: 'transparent'} : {}
 
 export function ReleasesOverview() {
-  const {data: bundles, loading: loadingBundles, deletedBundles} = useBundles()
+  const {data: bundles, loading: loadingBundles, deletedReleases} = useReleases()
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const bundleIds = useMemo(() => bundles?.map((bundle) => bundle._id) || [], [bundles])
-  const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useBundlesMetadata(bundleIds)
+  const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useReleasesMetadata(bundleIds)
   const loading = loadingBundles || (loadingBundlesMetadata && !bundlesMetadata)
   const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -45,7 +48,7 @@ export function ReleasesOverview() {
   const loadingOrHasBundles = loading || hasBundles
 
   const tableBundles = useMemo<TableBundle[]>(() => {
-    const deletedTableBundles = Object.values(deletedBundles).map((deletedBundle) => ({
+    const deletedTableBundles = Object.values(deletedReleases).map((deletedBundle) => ({
       ...deletedBundle,
       isDeleted: true,
     }))
@@ -59,7 +62,7 @@ export function ReleasesOverview() {
         documentsMetadata: bundlesMetadata[bundle._id] || {},
       })),
     ]
-  }, [bundles, bundlesMetadata, deletedBundles])
+  }, [bundles, bundlesMetadata, deletedReleases])
 
   const groupedBundles = useMemo(
     () =>
@@ -181,7 +184,7 @@ export function ReleasesOverview() {
               {!loading && !hasBundles && (
                 <Container style={{margin: 0}} width={0}>
                   <Stack space={5}>
-                    <Text data-testid="no-bundles-info-text" muted size={2}>
+                    <Text data-testid="no-releases-info-text" muted size={2}>
                       {t('overview.description')}
                     </Text>
                     <Box>{createReleaseButton}</Box>

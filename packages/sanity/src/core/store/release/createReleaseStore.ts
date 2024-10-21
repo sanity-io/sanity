@@ -21,11 +21,11 @@ import {
   timeout,
 } from 'rxjs'
 
-import {createBundlesMetadataAggregator} from './createBundlesMetadataAggregator'
-import {bundlesReducer, type BundlesReducerAction, type BundlesReducerState} from './reducer'
-import {type BundleDocument, type BundlesStore} from './types'
+import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
+import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
+import {type BundleDocument, type ReleasesStore} from './types'
 
-type ActionWrapper = {action: BundlesReducerAction}
+type ActionWrapper = {action: ReleasesReducerAction}
 type EventWrapper = {event: ListenEvent<BundleDocument>}
 type ResponseWrapper = {response: BundleDocument[]}
 
@@ -39,7 +39,7 @@ const QUERY_PROJECTION = `{
   ...,
 }`
 
-// Newest bundles first
+// Newest releases first
 const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 
 const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
@@ -48,26 +48,26 @@ const LISTEN_OPTIONS: ListenOptions = {
   events: ['welcome', 'mutation', 'reconnect'],
   includeResult: true,
   visibility: 'query',
-  tag: 'bundles.listen',
+  tag: 'releases.listen',
 }
 
-const INITIAL_STATE: BundlesReducerState = {
-  bundles: new Map(),
-  deletedBundles: {},
+const INITIAL_STATE: ReleasesReducerState = {
+  releases: new Map(),
+  deletedReleases: {},
   state: 'initialising',
 }
 
-const NOOP_BUNDLE_STORE: BundlesStore = {
+const NOOP_BUNDLE_STORE: ReleasesStore = {
   state$: EMPTY.pipe(startWith(INITIAL_STATE)),
   getMetadataStateForSlugs$: () => of({data: null, error: null, loading: false}),
   dispatch: () => undefined,
 }
 
-const LOADED_BUNDLE_STORE: BundlesStore = {
+const LOADED_BUNDLE_STORE: ReleasesStore = {
   state$: EMPTY.pipe(
     startWith({
-      bundles: new Map(),
-      deletedBundles: {},
+      releases: new Map(),
+      deletedReleases: {},
       state: 'loaded' as const,
     }),
   ),
@@ -76,19 +76,19 @@ const LOADED_BUNDLE_STORE: BundlesStore = {
 }
 
 /**
- * The bundles store is initialised lazily when first subscribed to. Upon subscription, it will
- * fetch a list of bundles and create a listener to keep the locally held state fresh.
+ * The releases store is initialised lazily when first subscribed to. Upon subscription, it will
+ * fetch a list of releases and create a listener to keep the locally held state fresh.
  *
  * The store is not disposed of when all subscriptions are closed. After it has been initialised,
  * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
  * given the latest state upon subscription.
  */
-export function createBundlesStore(context: {
+export function createReleaseStore(context: {
   addonClient: SanityClient | null
   studioClient: SanityClient | null
   addonClientReady: boolean
   currentUser: User | null
-}): BundlesStore {
+}): ReleasesStore {
   const {addonClient, studioClient, addonClientReady, currentUser} = context
 
   // While the comments dataset is initialising, this factory function will be called with an empty
@@ -105,10 +105,10 @@ export function createBundlesStore(context: {
     return NOOP_BUNDLE_STORE
   }
 
-  const dispatch$ = new Subject<BundlesReducerAction>()
+  const dispatch$ = new Subject<ReleasesReducerAction>()
   const fetchPending$ = new BehaviorSubject<boolean>(false)
 
-  function dispatch(action: BundlesReducerAction): void {
+  function dispatch(action: ReleasesReducerAction): void {
     dispatch$.next(action)
   }
 
@@ -125,7 +125,7 @@ export function createBundlesStore(context: {
     filter(() => !fetchPending$.value),
     tap(() => fetchPending$.next(true)),
     concatWith(
-      addonClient.observable.fetch<BundleDocument[]>(QUERY, {}, {tag: 'bundles.list'}).pipe(
+      addonClient.observable.fetch<BundleDocument[]>(QUERY, {}, {tag: 'releases.list'}).pipe(
         timeout(10_000), // 10s timeout
         retry({
           count: 2,
@@ -147,14 +147,14 @@ export function createBundlesStore(context: {
         },
       }),
     ),
-    switchMap<ActionWrapper | ResponseWrapper, Observable<BundlesReducerAction | undefined>>(
+    switchMap<ActionWrapper | ResponseWrapper, Observable<ReleasesReducerAction | undefined>>(
       (entry) => {
         if ('action' in entry) {
-          return of<BundlesReducerAction>(entry.action)
+          return of<ReleasesReducerAction>(entry.action)
         }
 
-        return of<BundlesReducerAction[]>(
-          {type: 'BUNDLES_SET', payload: entry.response},
+        return of<ReleasesReducerAction[]>(
+          {type: 'RELEASES_SET', payload: entry.response},
           {
             type: 'LOADING_STATE_CHANGED',
             payload: {
@@ -185,7 +185,7 @@ export function createBundlesStore(context: {
     skip(1),
     // Ignore events emitted while the list fetch is pending.
     filter(() => !fetchPending$.value),
-    switchMap<ActionWrapper | EventWrapper, Observable<BundlesReducerAction | undefined>>(
+    switchMap<ActionWrapper | EventWrapper, Observable<ReleasesReducerAction | undefined>>(
       (entry) => {
         if ('action' in entry) {
           return of(entry.action)
@@ -202,9 +202,9 @@ export function createBundlesStore(context: {
         // The reconnect event means that we are trying to reconnect to the realtime listener.
         // In this case we set loading to true to indicate that we're trying to
         // reconnect. Once a connection has been established, the welcome event
-        // will be received and we'll fetch all bundles again (above)
+        // will be received and we'll fetch all releases again (above)
         if (event.type === 'reconnect') {
-          return of<BundlesReducerAction>({
+          return of<ReleasesReducerAction>({
             type: 'LOADING_STATE_CHANGED',
             payload: {
               loading: true,
@@ -214,10 +214,10 @@ export function createBundlesStore(context: {
         }
 
         // Handle mutations (create, update, delete) from the realtime listener
-        // and update the bundles store accordingly
+        // and update the releases store accordingly
         if (event.type === 'mutation') {
           if (event.transition === 'disappear') {
-            return of<BundlesReducerAction>({
+            return of<ReleasesReducerAction>({
               type: 'BUNDLE_DELETED',
               id: event.documentId,
               deletedByUserId: event.identity,
@@ -229,7 +229,7 @@ export function createBundlesStore(context: {
             const nextBundle = event.result
 
             if (nextBundle) {
-              return of<BundlesReducerAction>({type: 'BUNDLE_RECEIVED', payload: nextBundle})
+              return of<ReleasesReducerAction>({type: 'BUNDLE_RECEIVED', payload: nextBundle})
             }
 
             return of(undefined)
@@ -239,7 +239,7 @@ export function createBundlesStore(context: {
             const updatedBundle = event.result
 
             if (updatedBundle) {
-              return of<BundlesReducerAction>({type: 'BUNDLE_UPDATED', payload: updatedBundle})
+              return of<ReleasesReducerAction>({type: 'BUNDLE_UPDATED', payload: updatedBundle})
             }
           }
         }
@@ -250,13 +250,13 @@ export function createBundlesStore(context: {
   )
 
   const state$ = merge(listFetch$, listener$, dispatch$).pipe(
-    filter((action): action is BundlesReducerAction => typeof action !== 'undefined'),
-    scan((state, action) => bundlesReducer(state, action), INITIAL_STATE),
+    filter((action): action is ReleasesReducerAction => typeof action !== 'undefined'),
+    scan((state, action) => releasesReducer(state, action), INITIAL_STATE),
     startWith(INITIAL_STATE),
     shareReplay(1),
   )
 
-  const getMetadataStateForSlugs$ = createBundlesMetadataAggregator(studioClient)
+  const getMetadataStateForSlugs$ = createReleaseMetadataAggregator(studioClient)
 
   return {
     state$,

@@ -3,8 +3,8 @@ import {
   defineConfig,
   type SanityClient,
   unstable_useValuePreview as useValuePreview,
-  useBundles,
   useDocumentVersions,
+  useReleases,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
@@ -41,11 +41,11 @@ vi.mock('sanity', async (importOriginal) => {
 
 vi.mock('sanity/router')
 
-vi.mock('../../../../../../../core/store/bundles/useBundles', () => ({
-  useBundles: vi.fn(),
+vi.mock('../../../../../../../core/store/release/useReleases', () => ({
+  useReleases: vi.fn(),
 }))
 
-const mockUseBundles = useBundles as Mock<typeof useBundles>
+const mockUseReleases = useReleases as Mock<typeof useReleases>
 const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof useDocumentVersions>
 
 describe('DocumentHeaderTitle', () => {
@@ -69,11 +69,11 @@ describe('DocumentHeaderTitle', () => {
     // @ts-ignore
     mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: vi.fn()})
     mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: undefined})
-    mockUseBundles.mockReturnValue({
+    mockUseReleases.mockReturnValue({
       data: [],
       loading: false,
       dispatch: vi.fn(),
-      deletedBundles: {},
+      deletedReleases: {},
     })
   })
 
