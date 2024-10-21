@@ -2,7 +2,7 @@ import {fireEvent, render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {act} from 'react'
 import {type BundleDocument, useBundles} from 'sanity'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {Button} from '../../../../ui-components'
@@ -42,6 +42,7 @@ describe('ReleasesMenu', () => {
       _updatedAt: '2024-07-02T11:37:51Z',
       _createdAt: '2024-07-02T11:37:51Z',
       authorId: '',
+      releaseType: 'asap',
     },
     {
       icon: 'drop',
@@ -53,6 +54,7 @@ describe('ReleasesMenu', () => {
       _rev: '6z08CvvPnPe5pWSKJ5zJiK',
       _updatedAt: '2024-07-02T11:37:06Z',
       authorId: '',
+      releaseType: 'asap',
     },
     {
       _createdAt: '2024-07-02T11:36:00Z',
@@ -65,6 +67,7 @@ describe('ReleasesMenu', () => {
       hue: 'red',
       _id: 'f6b2c2cc-1732-4465-bfb3-dd205b5d78e9',
       authorId: '',
+      releaseType: 'asap',
     },
   ]
 

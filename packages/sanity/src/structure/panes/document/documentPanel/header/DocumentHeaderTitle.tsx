@@ -14,9 +14,9 @@ const TitleContainer = styled(Text)`
 `
 
 export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(props: {
-  collapsed: boolean
+  collapsed?: boolean
 }): ReactElement {
-  const {collapsed} = props
+  const {collapsed = false} = props
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
   const subscribed = Boolean(documentValue)
 

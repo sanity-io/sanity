@@ -25,6 +25,7 @@ vi.mock('sanity/router', () => {
     }),
     route: {
       create: vi.fn(),
+      intents: vi.fn(),
     },
     IntentLink(props: IntentLinkProps & HTMLProps<HTMLAnchorElement>) {
       const {params = {}, intent, ...rest} = props
@@ -59,6 +60,7 @@ describe('DocumentPerspectiveMenu', () => {
     _type: 'release',
     hue: 'magenta',
     _createdAt: '2024-07-02T11:37:51Z',
+    releaseType: 'asap',
   }
 
   beforeEach(() => {
@@ -94,6 +96,7 @@ describe('DocumentPerspectiveMenu', () => {
           _createdAt: '',
           _updatedAt: '',
           _rev: '',
+          releaseType: 'asap',
         },
       ],
       displayed: {

@@ -30,6 +30,7 @@ const mockBundles = [
     icon: 'heart-filled',
     hue: 'magenta',
     _createdAt: '2024-07-02T11:37:51Z',
+    releaseType: 'asap',
   },
   {
     _id: 'winter-drop',
@@ -43,6 +44,7 @@ const mockBundles = [
 
     hue: 'purple',
     _createdAt: '2024-07-02T11:37:51Z',
+    releaseType: 'asap',
   },
 ] satisfies BundleDocument[]
 
