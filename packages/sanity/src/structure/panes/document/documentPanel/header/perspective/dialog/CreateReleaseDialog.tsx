@@ -60,7 +60,7 @@ export function CreateReleaseDialog(props: {
   const isVersion = isVersionId(documentId)
 
   const telemetry = useTelemetry()
-  const {createBundle} = useReleaseOperations()
+  const {createRelease} = useReleaseOperations()
 
   const publishedId = getPublishedId(documentId)
 
@@ -109,7 +109,7 @@ export function CreateReleaseDialog(props: {
     try {
       setIsSubmitting(true)
 
-      createBundle(value)
+      createRelease(value)
 
       handleAddVersion()
       telemetry.log(CreatedRelease, {origin: 'document-panel'})
@@ -123,7 +123,7 @@ export function CreateReleaseDialog(props: {
     } finally {
       setIsSubmitting(false)
     }
-  }, [createBundle, handleAddVersion, telemetry, toast, value])
+  }, [createRelease, handleAddVersion, telemetry, toast, value])
 
   return (
     <Dialog

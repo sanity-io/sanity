@@ -26,7 +26,7 @@ interface ReleaseDetailsDialogProps {
 export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Element {
   const {onCancel, onSubmit, bundle, origin} = props
   const toast = useToast()
-  const {createBundle, updateBundle} = useReleaseOperations()
+  const {createRelease, updateRelease} = useReleaseOperations()
   const formAction = bundle ? 'edit' : 'create'
   const {t} = useTranslation()
   const telemetry = useTelemetry()
@@ -50,9 +50,9 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
 
   const submit = useCallback(
     (formValue: FormBundleDocument) => {
-      return formAction === 'edit' ? updateBundle(formValue) : createBundle(formValue)
+      return formAction === 'edit' ? updateRelease(formValue) : createRelease(formValue)
     },
-    [createBundle, formAction, updateBundle],
+    [createRelease, formAction, updateRelease],
   )
 
   const handleOnSubmit = useCallback(

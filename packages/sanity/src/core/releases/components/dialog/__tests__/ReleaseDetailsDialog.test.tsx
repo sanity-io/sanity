@@ -17,8 +17,8 @@ vi.mock('../../../../store/release', () => ({
 
 vi.mock('../../../../store/release/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn().mockReturnValue({
-    createBundle: vi.fn(),
-    updateBundle: vi.fn(),
+    createRelease: vi.fn(),
+    updateRelease: vi.fn(),
   }),
 }))
 
@@ -71,7 +71,7 @@ describe('ReleaseDetailsDialog', () => {
       expect(onCancelMock).toHaveBeenCalled()
     })
 
-    it('should call createBundle, setPerspective, and onCreate when form is submitted with a valid slug', async () => {
+    it('should call createRelease, setPerspective, and onCreate when form is submitted with a valid slug', async () => {
       const value: Partial<BundleDocument> = {
         _type: 'release',
         title: 'Bundle 1',
@@ -86,7 +86,7 @@ describe('ReleaseDetailsDialog', () => {
       const submitButton = screen.getByTestId('submit-release-button')
       fireEvent.click(submitButton)
 
-      await expect(useReleaseOperations().createBundle).toHaveBeenCalledWith(
+      await expect(useReleaseOperations().createRelease).toHaveBeenCalledWith(
         expect.objectContaining({
           _id: expect.stringMatching(/r\w{8}/),
           ...value,
@@ -164,7 +164,7 @@ describe('ReleaseDetailsDialog', () => {
       fireEvent.click(screen.getByTestId('submit-release-button'))
 
       const {hue, icon, _id} = existingBundleValue
-      expect(useReleaseOperations().updateBundle).toHaveBeenCalledWith({
+      expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith({
         _id,
         _type: 'release',
         hue,
@@ -180,7 +180,7 @@ describe('ReleaseDetailsDialog', () => {
       fireEvent.click(screen.getByTestId('submit-release-button'))
 
       await waitFor(() => {
-        expect(useReleaseOperations().updateBundle).toHaveBeenCalled()
+        expect(useReleaseOperations().updateRelease).toHaveBeenCalled()
       })
 
       expect(usePerspective().setPerspective).not.toHaveBeenCalled()

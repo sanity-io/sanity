@@ -24,7 +24,7 @@ export const ReleasePublishAllButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
-  const {publishBundle} = useReleaseOperations()
+  const {publishRelease} = useReleaseOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
   const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
@@ -45,7 +45,7 @@ export const ReleasePublishAllButton = ({
 
     try {
       setPublishBundleStatus('publishing')
-      await publishBundle(
+      await publishRelease(
         bundle._id,
         bundleDocuments.map(({document}) => document),
         publishedDocumentsRevisions,
@@ -73,7 +73,7 @@ export const ReleasePublishAllButton = ({
     } finally {
       setPublishBundleStatus('idle')
     }
-  }, [bundle, bundleDocuments, publishBundle, publishedDocumentsRevisions, t, telemetry, toast])
+  }, [bundle, bundleDocuments, publishRelease, publishedDocumentsRevisions, t, telemetry, toast])
 
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null

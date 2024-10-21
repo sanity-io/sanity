@@ -15,7 +15,7 @@ vi.mock('sanity', () => ({
 
 vi.mock('../../../../../store/release/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn().mockReturnValue({
-    updateBundle: vi.fn(),
+    updateRelease: vi.fn(),
   }),
 }))
 
@@ -59,7 +59,7 @@ describe.skip('ReleaseMenuButton', () => {
       fireEvent.click(screen.getByTestId('archive-release'))
     })
 
-    expect(useReleaseOperations().updateBundle).toHaveBeenCalledWith({
+    expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith({
       ...activeRelease,
       archivedAt: expect.any(String),
     })
@@ -87,7 +87,7 @@ describe.skip('ReleaseMenuButton', () => {
       fireEvent.click(screen.getByTestId('archive-release'))
     })
 
-    expect(useReleaseOperations().updateBundle).toHaveBeenCalledWith({
+    expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith({
       ...archivedRelease,
       archivedAt: undefined,
     })

@@ -39,7 +39,7 @@ export function useReleaseOperations() {
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const currentUser = useCurrentUser()
 
-  const handleCreateBundle = useCallback(
+  const handleCreateRelease = useCallback(
     async (bundle: Partial<BundleDocument>) => {
       const addonClient = await getOrCreateAddonClient()
 
@@ -55,7 +55,7 @@ export function useReleaseOperations() {
     [currentUser?.id, getOrCreateAddonClient],
   )
 
-  const handleUpdateBundle = useCallback(
+  const handleUpdateRelease = useCallback(
     async (bundle: Partial<BundleDocument>) => {
       const addonClient = getAddonClient()
       if (!bundle._id) return null
@@ -125,8 +125,8 @@ export function useReleaseOperations() {
   )
 
   return {
-    createBundle: handleCreateBundle,
-    updateBundle: handleUpdateBundle,
-    publishBundle: handlePublishBundle,
+    createRelease: handleCreateRelease,
+    updateRelease: handleUpdateRelease,
+    publishRelease: handlePublishBundle,
   }
 }

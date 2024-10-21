@@ -277,7 +277,7 @@ describe.skip('after releases have loaded', () => {
         fireEvent.click(screen.getByText('Publish all'))
         fireEvent.click(screen.getByText('Publish'))
 
-        expect(useReleaseOperations().publishBundle).toHaveBeenCalledWith(
+        expect(useReleaseOperations().publishRelease).toHaveBeenCalledWith(
           'test-release-id',
           [
             {
