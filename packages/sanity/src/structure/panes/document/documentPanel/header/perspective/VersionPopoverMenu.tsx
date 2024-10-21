@@ -6,7 +6,6 @@ import {filter, firstValueFrom} from 'rxjs'
 import {
   type BundleDocument,
   getPublishedId,
-  getVersionFromId,
   getVersionId,
   isPublishedId,
   useDocumentOperation,
@@ -50,7 +49,7 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
 
   const publishedId = getPublishedId(documentId)
 
-  const releaseId = isVersion ? getVersionFromId(documentId) : documentId
+  const releaseId = isVersion ? fromRelease : documentId
 
   const {createVersion} = useDocumentOperation(publishedId, documentType, fromRelease)
 
