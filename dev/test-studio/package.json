@@ -32,7 +32,7 @@
     "@sanity/locale-sv-se": "^1.0.1",
     "@sanity/logos": "^2.1.2",
     "@sanity/migrate": "workspace:*",
-    "@sanity/preview-url-secret": "^1.6.1",
+    "@sanity/preview-url-secret": "^2.0.0",
     "@sanity/react-loader": "^1.8.3",
     "@sanity/tsdoc": "1.0.113",
     "@sanity/types": "workspace:*",
