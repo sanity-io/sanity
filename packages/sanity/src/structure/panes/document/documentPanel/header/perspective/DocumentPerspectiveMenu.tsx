@@ -10,7 +10,8 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {RELEASETYPE, versionDocumentExists} from '../../../../../../core/releases'
+import {versionDocumentExists} from '../../../../../../core/releases'
+import {getReleaseTone} from '../../../../../../core/releases/util/getReleaseTone'
 import {usePaneRouter} from '../../../../../components'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {VersionChip} from './VersionChip'
@@ -36,15 +37,13 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
       )) ||
     []
 
-  const asapReleases = documentVersions?.filter(
-    (release) => release.releaseType === RELEASETYPE.asap.name,
-  )
+  const asapReleases = documentVersions?.filter((release) => release.releaseType === 'asap')
 
   const scheduledReleases = documentVersions?.filter(
-    (release) => release.releaseType === RELEASETYPE.scheduled.name,
+    (release) => release.releaseType === 'scheduled',
   )
   const undecidedReleases = documentVersions?.filter(
-    (release) => release.releaseType === RELEASETYPE.undecided.name,
+    (release) => release.releaseType === 'undecided',
   )
 
   const handleBundleChange = useCallback(
@@ -136,7 +135,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             selected={release._id === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release._id)}
             text={release.title}
-            tone={RELEASETYPE[release.releaseType]?.tone}
+            tone={getReleaseTone(release)}
             icon={DotIcon}
             contextValues={{
               documentId: displayed?._id || '',
@@ -165,7 +164,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             selected={release._id === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release._id)}
             text={release.title}
-            tone={RELEASETYPE[release.releaseType]?.tone}
+            tone={getReleaseTone(release)}
             icon={DotIcon}
             contextValues={{
               documentId: displayed?._id || '',
@@ -187,7 +186,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             selected={release._id === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release._id)}
             text={release.title}
-            tone={RELEASETYPE[release.releaseType]?.tone}
+            tone={getReleaseTone(release)}
             icon={DotIcon}
             contextValues={{
               documentId: displayed?._id || '',

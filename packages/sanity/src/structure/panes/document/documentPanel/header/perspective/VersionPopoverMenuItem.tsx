@@ -1,10 +1,9 @@
 /* eslint-disable i18next/no-literal-string */
-import {DotIcon} from '@sanity/icons'
 import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
-import {type BundleDocument, RELEASETYPE, useDateTimeFormat} from 'sanity'
+import {type BundleDocument, useDateTimeFormat} from 'sanity'
 
-import {BadgeIcon} from './BadgeIcon'
+import {ReleaseAvatar} from '../../../../../../core/releases/tool/components/ReleaseAvatar'
 
 export const VersionPopoverMenuItem = memo(function VersionPopoverMenuItem(props: {
   release: BundleDocument
@@ -14,11 +13,10 @@ export const VersionPopoverMenuItem = memo(function VersionPopoverMenuItem(props
     dateStyle: 'medium',
     timeStyle: 'short',
   })
-  const tone = release.releaseType ? RELEASETYPE[release.releaseType].tone : 'default'
 
   return (
     <Flex gap={3}>
-      <BadgeIcon icon={DotIcon} tone={tone} />
+      <ReleaseAvatar padding={2} release={release} />
       <Stack flex={1} space={2}>
         <Text size={1} weight="medium">
           {release.title}

@@ -1,4 +1,4 @@
-import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type BundleDocument, getVersionId} from 'sanity'
 import {styled} from 'styled-components'
@@ -26,7 +26,7 @@ export const VersionChip = memo(function VersionChip(props: {
   tooltipContent: ReactNode
   onClick: () => void
   text: string
-  tone: 'default' | 'primary' | 'positive' | 'caution' | 'critical'
+  tone: BadgeTone
   icon: React.ComponentType
   contextValues: {
     documentId: string
