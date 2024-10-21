@@ -73,8 +73,8 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         text="Published"
         tone="positive"
         contextValues={{
-          documentId: editState?.published?._id || '',
-          menuReleaseId: editState?.published?._id || '',
+          documentId: editState?.published?._id || editState?.id || '',
+          menuReleaseId: editState?.published?._id || editState?.id || '',
           releases: filteredReleases,
           releasesLoading: loading,
           documentType,
@@ -114,8 +114,8 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         tone="caution"
         onClick={handleBundleChange('drafts')}
         contextValues={{
-          documentId: editState?.draft?._id || editState?.published?._id || '',
-          menuReleaseId: editState?.draft?._id || editState?.published?._id || '',
+          documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
+          menuReleaseId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
           releases: filteredReleases,
           releasesLoading: loading,
           documentType: documentType,
