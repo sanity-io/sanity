@@ -478,8 +478,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
-        specifier: ^1.6.1
-        version: 1.6.21(@sanity/client@6.22.2)
+        specifier: ^2.0.0
+        version: 2.0.0(@sanity/client@6.22.2(debug@4.3.7))
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.10.7(@sanity/client@6.22.2)(react@18.3.1)
@@ -4653,12 +4653,6 @@ packages:
     resolution: {integrity: sha512-V4HinfhMYxQoyXefJ2B8zJnwlf7A8mVzAzKk24B/iCg4pkVlMGc8bj0buu9Uieh4bNeHvEAHOIQv+Xd7tiLuNA==}
     peerDependencies:
       prettier: ^3.2.5
-
-  '@sanity/preview-url-secret@1.6.21':
-    resolution: {integrity: sha512-ZAIT4I5Nrsax+RBQVhSBY4PnnHgaI+eybSd5aHhjZi97+ziMTtTLnL1Hsg+ViLtPqJWwX0GiB0l8nSfGAt7+QA==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@sanity/client': ^6.21.3
 
   '@sanity/preview-url-secret@2.0.0':
     resolution: {integrity: sha512-JfStdSb8KT0RzePtGbUIZewNNHNNbvYHwsW4WzYEmgPTfgZnPAIMFYUFSHAKKFyKQ3tqzARRQm3uURpoSTyIkA==}
@@ -15279,11 +15273,6 @@ snapshots:
     dependencies:
       prettier: 3.3.3
       prettier-plugin-packagejson: 2.5.1(prettier@3.3.3)
-
-  '@sanity/preview-url-secret@1.6.21(@sanity/client@6.22.2)':
-    dependencies:
-      '@sanity/client': 6.22.2(debug@4.3.7)
-      '@sanity/uuid': 3.0.2
 
   '@sanity/preview-url-secret@2.0.0(@sanity/client@6.22.2(debug@4.3.7))':
     dependencies:
