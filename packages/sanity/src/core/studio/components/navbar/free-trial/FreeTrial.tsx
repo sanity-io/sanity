@@ -12,7 +12,7 @@ import {
 } from './__telemetry__/trialDialogEvents.telemetry'
 import {DialogContent} from './DialogContent'
 import {FreeTrialButtonSidebar, FreeTrialButtonTopbar} from './FreeTrialButton'
-import {useFreeTrialContext} from './FreeTrialContext'
+import {useFreeTrial} from './FreeTrialStore'
 import {PopoverContent} from './PopoverContent'
 
 interface FreeTrialProps {
@@ -20,7 +20,8 @@ interface FreeTrialProps {
 }
 
 export function FreeTrial({type}: FreeTrialProps) {
-  const {data, showDialog, showOnLoad, toggleShowContent} = useFreeTrialContext()
+  // const {data, showDialog, showOnLoad, toggleShowContent} = useFreeTrialContext()
+  const {data, showDialog, showOnLoad, toggleShowContent} = useFreeTrial()
   const scheme = useColorSchemeValue()
   const telemetry = useTelemetry()
 
