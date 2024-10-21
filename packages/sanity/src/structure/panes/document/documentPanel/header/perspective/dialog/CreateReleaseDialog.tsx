@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Flex, Text, useToast} from '@sanity/ui'
+import {type BadgeTone, Box, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
@@ -31,8 +31,10 @@ export function CreateReleaseDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
+  tone: BadgeTone
+  title: string
 }): JSX.Element {
-  const {onClose, documentId, documentType} = props
+  const {onClose, documentId, documentType, tone, title} = props
   const toast = useToast()
 
   const {setPerspective} = usePerspective()
@@ -66,8 +68,6 @@ export function CreateReleaseDialog(props: {
     documentType,
     getVersionFromId(documentId),
   )
-
-  const tone = 'default'
 
   const handleOnChange = useCallback((changedValue: FormBundleDocument) => {
     setValue(changedValue)
@@ -147,7 +147,7 @@ export function CreateReleaseDialog(props: {
       }}
     >
       <Box
-        paddingX={3}
+        paddingX={2}
         marginBottom={2}
         style={{borderBottom: '1px solid var(--card-border-color)'}}
       >
@@ -167,12 +167,12 @@ export function CreateReleaseDialog(props: {
           >
             <ReleaseAvatar padding={1} tone={tone} />
             {/* eslint-disable-next-line i18next/no-literal-string*/}
-            <Text size={1}>boop</Text>
+            <Text size={1}>{title}</Text>
           </Flex>
         </Flex>
       </Box>
 
-      <Box padding={3}>
+      <Box paddingX={5} paddingY={3}>
         <ReleaseForm onChange={handleOnChange} value={value} />
       </Box>
     </Dialog>

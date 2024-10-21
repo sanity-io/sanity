@@ -176,6 +176,8 @@ export const VersionChip = memo(function VersionChip(props: {
           onClose={() => setIsCreateReleaseDialogOpen(false)}
           documentId={isVersion ? getVersionId(documentId, menuReleaseId) : documentId}
           documentType={documentType}
+          tone={tone}
+          title={text}
         />
       )}
     </>
