@@ -237,6 +237,7 @@ export const CopyPasteProvider: React.FC<{
 
       const targetSchemaTypeTitle = targetSchemaType.title || targetSchemaType.name
       const transferValueOptions = {
+        targetDocumentSchemaType: targetDocumentSchemaType,
         sourceRootSchemaType: sourceSchemaType,
         sourcePath: [],
         sourceRootPath: clipboardItem.valuePath,

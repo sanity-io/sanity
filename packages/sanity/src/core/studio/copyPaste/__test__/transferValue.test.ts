@@ -23,6 +23,7 @@ const currentUser = {
   name: 'test',
   email: 'hello@example.com',
   role: '',
+
   roles: [],
 }
 
@@ -43,6 +44,7 @@ describe('transferValue', () => {
       sourceRootSchemaType: schema.get('author')!,
       sourcePath: [],
       sourceValue,
+      targetDocumentSchemaType: schema.get('editor')!,
       targetRootSchemaType: schema.get('editor')!,
       targetPath: ['bio'],
       targetRootValue: {},
@@ -62,6 +64,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('author')!,
         targetRootSchemaType: schema.get('author')!,
         targetPath: [],
         targetRootValue: {},
@@ -89,6 +92,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: [],
         targetRootValue: {},
@@ -117,6 +121,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['name'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['name'],
         targetRootValue: {},
@@ -132,6 +137,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['name'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['born'],
         targetRootValue: {},
@@ -147,6 +153,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['name'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['testNumberWithListObjects'],
         targetRootValue: {},
@@ -162,6 +169,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['name'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteStrings'],
         targetRootValue: {},
@@ -185,6 +193,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['bestFriend'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['bestAuthorFriend'],
         targetRootValue: {},
@@ -203,6 +212,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('referencesDocument')!,
         sourcePath: ['reference'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
         targetRootSchemaType: schema.get('referencesDocument')!,
         targetPath: ['referenceWithFilter'],
         targetRootValue: {},
@@ -230,6 +240,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('referencesDocument')!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
         targetRootSchemaType: schema.get('referencesDocument')!,
         targetPath: ['decadeFilteredBook', 'book'],
         targetRootValue,
@@ -262,6 +273,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('referencesDocument')!,
         sourcePath: ['reference'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
         targetRootSchemaType: schema.get('referencesDocument')!,
         targetPath: ['arrayOfReferences'],
         targetRootValue,
@@ -300,6 +312,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('referencesDocument')!,
         sourcePath: ['reference'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
         targetRootSchemaType: schema.get('referencesDocument')!,
         targetPath: ['arrayOfReferences'],
         targetRootValue,
@@ -336,6 +349,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['bestFriend'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['relatedEditor'],
         targetRootValue: {},
@@ -365,6 +379,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('referencesDocument')!,
         sourcePath: ['reference'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
         targetRootSchemaType: schema.get('referencesDocument')!,
         targetPath: ['referenceWithFilter'],
         targetRootValue,
@@ -403,6 +418,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('referencesDocument')!,
         sourcePath: ['reference'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
         targetRootSchemaType: schema.get('referencesDocument')!,
         targetPath: ['referenceWithFilter'],
         targetRootValue,
@@ -444,6 +460,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('referencesDocument')!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
         targetRootSchemaType: schema.get('referencesDocument')!,
         targetPath: [],
         targetRootValue,
@@ -483,6 +500,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('referencesDocument')!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
         targetRootSchemaType: schema.get('referencesDocument')!,
         targetPath: ['decadeFilteredBook', 'book'],
         targetRootValue,
@@ -517,6 +535,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['isVerified'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['isVerified'],
         targetRootValue: {},
@@ -531,6 +550,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('editor')!,
         sourcePath: ['isVerified'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteBooleans'],
         targetRootValue: {},
@@ -554,6 +574,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('editor')!,
         sourcePath: ['profile'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['profile'],
         targetRootValue: {},
@@ -576,6 +597,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('editor')!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: [],
         targetRootValue: {},
@@ -597,6 +619,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['favoriteNumbers'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteNumbers'],
         targetRootValue: {},
@@ -616,6 +639,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('editor')!,
         sourcePath: ['favoriteStrings'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteStrings'],
         targetRootValue: {},
@@ -718,6 +742,7 @@ describe('transferValue', () => {
         sourceRootSchemaType,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('pte_customMarkers')!,
         targetRootSchemaType: resolveSchemaTypeForPath(schema.get('pte_customMarkers')!, [
           'content',
         ])!,
@@ -757,6 +782,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('editor')!,
         sourcePath: ['arrayOfPredefinedOptions'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfPredefinedOptions'],
         targetRootValue: {},
@@ -791,6 +817,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('editor')!,
         sourcePath: ['arrayOfPredefinedOptions'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfPredefinedOptions'],
         targetRootValue: {},
@@ -814,6 +841,7 @@ describe('transferValue', () => {
         sourcePath: [],
         sourceRootPath: ['color'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfPredefinedOptions'],
         targetRootValue: {},
@@ -835,6 +863,7 @@ describe('transferValue', () => {
         sourcePath: [],
         sourceRootPath: ['myStringObject'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfPredefinedOptions'],
         targetRootValue: {},
@@ -859,6 +888,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('editor')!,
         sourcePath: ['arrayOfMultipleNestedTypes'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfMultipleNestedTypesWithoutColor'],
         targetRootValue: {},
@@ -882,6 +912,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('editor')!,
         sourcePath: ['arrayOfMultipleNestedTypes', {_key: '39fd2dd21625'}],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfMultipleNestedTypes', {_key: '39fd2dd21625'}, 'nestedArray'],
         targetRootValue: {},
@@ -904,6 +935,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('objects')!,
         targetRootSchemaType: schema.get('objects')!,
         targetPath: ['events', {_key: 'c9b6815500b1'}, 'what'],
         targetRootValue: {},
@@ -930,6 +962,7 @@ describe('transferValue', () => {
         sourceRootSchemaType,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfMultipleNestedTypes', {_key: '39fd2dd21625'}, 'nestedArray'],
         targetRootValue: {},
@@ -966,6 +999,7 @@ describe('transferValue', () => {
         sourceRootSchemaType,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['arrayOfMultipleNestedTypes', {_key: 'color-1'}, 'nestedArray'],
         targetRootValue: {},
@@ -1034,6 +1068,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('hotspotDocument')!,
         targetRootSchemaType: schema.get('hotspotDocument')!,
         targetPath: ['hotspots'],
         targetRootValue: {},
@@ -1076,6 +1111,7 @@ describe('transferValue', () => {
         sourceRootSchemaType,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
         targetRootSchemaType: resolveSchemaTypeForPath(schema.get('referencesDocument')!, [
           'arrayOfReferences',
         ])!,
@@ -1096,6 +1132,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['born'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['born'],
         targetRootValue: {},
@@ -1111,6 +1148,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['born'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['name'],
         targetRootValue: {},
@@ -1127,6 +1165,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['born'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['born'],
         targetRootValue: {},
@@ -1142,6 +1181,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['born'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['testNumberWithListObjects'],
         targetRootValue: {},
@@ -1157,6 +1197,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['born'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteStrings'],
         targetRootValue: {},
@@ -1173,6 +1214,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['born'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['favoriteNumbers'],
         targetRootValue: {},
@@ -1188,6 +1230,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['born'],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['testNumberWithListObjects'],
         targetRootValue: {},
@@ -1215,6 +1258,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: [],
         targetRootValue: {},
@@ -1247,6 +1291,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['nestedTest'],
         targetRootValue: {},
@@ -1273,6 +1318,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['profileImage'],
         targetRootValue: {},
@@ -1311,6 +1357,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['profileImagePNG'],
         targetRootValue: {},
@@ -1356,6 +1403,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['profileImageJpeg'],
         targetRootValue: {},
@@ -1383,6 +1431,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: resolveSchemaTypeForPath(schema.get('author')!, ['profileCV'])!,
         targetRootSchemaType: resolveSchemaTypeForPath(schema.get('author')!, ['profileCV'])!,
         targetPath: [],
         targetRootValue: {},
@@ -1408,6 +1457,9 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: resolveSchemaTypeForPath(schema.get('author')!, [
+          'profileImage',
+        ])!,
         targetRootSchemaType: resolveSchemaTypeForPath(schema.get('author')!, ['profileImage'])!,
         targetPath: [],
         targetRootValue: {},
@@ -1431,6 +1483,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
         targetRootSchemaType: schema.get('editor')!,
         targetPath: ['bestAuthorFriend'],
         targetRootValue: {},
@@ -1450,6 +1503,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schemaTypeAtPath!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('author')!,
         targetRootSchemaType: schema.get('author')!,
         targetPath: ['bestFriend'],
         targetRootValue: {},
@@ -1479,6 +1533,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: [],
         sourceValue,
+        targetDocumentSchemaType: schema.get('author')!,
         targetRootSchemaType: schema.get('author')!,
         targetPath: [],
         targetRootValue: {},
@@ -1537,6 +1592,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['name'],
         sourceValue,
+        targetDocumentSchemaType: targetSchema.get('author')!,
         targetRootSchemaType: targetSchema.get('author')!,
         targetPath: ['name'],
         targetRootValue: {},
@@ -1556,6 +1612,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['name'],
         sourceValue,
+        targetDocumentSchemaType: targetSchema.get('author')!,
         targetRootSchemaType: targetSchema.get('author')!,
         targetPath: ['name'],
         targetRootValue: {},
@@ -1573,6 +1630,7 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['name'],
         sourceValue,
+        targetDocumentSchemaType: targetSchema.get('author')!,
         targetRootSchemaType: targetSchema.get('author')!,
         targetPath: ['name'],
         targetRootValue: {},
@@ -1595,10 +1653,142 @@ describe('transferValue', () => {
         sourceRootSchemaType: schema.get('author')!,
         sourcePath: ['name'],
         sourceValue,
+        targetDocumentSchemaType: targetSchema.get('author')!,
         targetRootSchemaType: targetSchema.get('author')!,
         targetPath: ['name'],
         targetRootValue: {},
         targetRootPath: [],
+        currentUser: {...currentUser, name: 'not-sanity'},
+      })
+
+      expect(transferValueResult.errors).not.toEqual([])
+      expect(transferValueResult.errors[0].i18n.key).toEqual(
+        'copy-paste.on-paste.validation.read-only-target.description',
+      )
+    })
+    test('inherits readOnly from parent object', async () => {
+      const targetSchema = createSchema({
+        name: 'default',
+        types: [
+          {
+            name: 'author',
+            type: 'document',
+            fields: [
+              {
+                type: 'object',
+                name: 'fullName',
+                readOnly: true,
+                fields: [
+                  {type: 'string', name: 'name'},
+                  {type: 'string', name: 'lastName'},
+                  {
+                    type: 'object',
+                    name: 'nested',
+                    fields: [{type: 'string', name: 'nestedName'}],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const sourceValue = {
+        _type: 'author',
+        _id: 'xxx',
+        fullName: {
+          name: 'Foo',
+          lastName: 'Bar',
+          nested: {
+            nestedName: 'Baz',
+          },
+        },
+      }
+      const path = ['fullName', 'name']
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: path,
+        sourceValue,
+        targetDocumentSchemaType: targetSchema.get('author')!,
+        targetRootSchemaType: resolveSchemaTypeForPath(targetSchema.get('author')!, path)!,
+        targetPath: [],
+        targetRootValue: {},
+        targetRootPath: path,
+        currentUser: {...currentUser, name: 'not-sanity'},
+      })
+
+      expect(transferValueResult.errors).not.toEqual([])
+      expect(transferValueResult.errors[0].i18n.key).toEqual(
+        'copy-paste.on-paste.validation.read-only-target.description',
+      )
+
+      // Try in a deeper field
+      const deeperPath = ['fullName', 'nested', 'nestedName']
+      const transferValueResultNested = await transferValue({
+        sourceRootSchemaType: schema.get('author')!,
+        sourcePath: deeperPath,
+        sourceValue,
+        targetDocumentSchemaType: targetSchema.get('author')!,
+        targetRootSchemaType: resolveSchemaTypeForPath(targetSchema.get('author')!, deeperPath)!,
+        targetPath: [],
+        targetRootValue: {},
+        targetRootPath: deeperPath,
+        currentUser: {...currentUser, name: 'not-sanity'},
+      })
+
+      expect(transferValueResultNested.errors).not.toEqual([])
+      expect(transferValueResultNested.errors[0].i18n.key).toEqual(
+        'copy-paste.on-paste.validation.read-only-target.description',
+      )
+    })
+    test('inherits readOnly from parent array', async () => {
+      const targetSchema = createSchema({
+        name: 'default',
+        types: [
+          {
+            name: 'author',
+            type: 'document',
+            fields: [
+              {
+                type: 'array',
+                name: 'booksPublished',
+                readOnly: true,
+                of: [{type: 'book'}],
+              },
+            ],
+          },
+          {
+            name: 'book',
+            type: 'object',
+            fields: [{type: 'string', name: 'name'}],
+          },
+        ],
+      })
+
+      const sourceValue = {
+        _type: 'author',
+        _id: 'xxx',
+        booksPublished: [{name: 'Foo', _key: '1'}],
+      }
+      const targetRootValue = {
+        _type: 'author',
+        _id: 'xxx',
+        booksPublished: [{_key: '1'}],
+      }
+      const pastePath = ['booksPublished', {_key: '1'}]
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: targetSchema.get('author')!,
+        sourcePath: [],
+        sourceValue,
+        targetDocumentSchemaType: targetSchema.get('author')!,
+        targetRootSchemaType: resolveSchemaTypeForPath(
+          targetSchema.get('author')!,
+          pastePath,
+          targetRootValue,
+        )!,
+        targetPath: [],
+        targetRootValue: targetRootValue,
+        targetRootPath: pastePath,
         currentUser: {...currentUser, name: 'not-sanity'},
       })
 
