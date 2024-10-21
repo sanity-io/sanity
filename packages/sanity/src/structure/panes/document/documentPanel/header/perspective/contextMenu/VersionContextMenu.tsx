@@ -14,10 +14,17 @@ import {
   useTranslation,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
+import {styled} from 'styled-components'
 
 import {AddedVersion} from '../../../../../../../core/releases/__telemetry__/releases.telemetry'
 import {MenuGroup, MenuItem} from '../../../../../../../ui-components'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
+
+const ReleasesList = styled(Stack)`
+  max-width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+`
 
 export const VersionContextMenu = memo(function VersionContextMenu(props: {
   documentId: string
@@ -108,7 +115,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
         )}
         {releasesLoading && <Spinner />}
         <MenuGroup icon={CopyIcon} popover={{placement: 'right-start'}} text="Copy version to">
-          <Stack key={fromRelease} space={1}>
+          <ReleasesList key={fromRelease} space={1}>
             {optionsReleaseList.map((option) => {
               return (
                 <MenuItem
@@ -120,11 +127,10 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
                 />
               )
             })}
-
-            {optionsReleaseList.length > 1 && <MenuDivider />}
-            {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
-            <MenuItem onClick={onCreateRelease} text={'New release'} icon={AddIcon} />
-          </Stack>
+          </ReleasesList>{' '}
+          {optionsReleaseList.length > 1 && <MenuDivider />}
+          {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
+          <MenuItem onClick={onCreateRelease} text={'New release'} icon={AddIcon} />
         </MenuGroup>
         {!isPublished && (
           <>
