@@ -23,7 +23,7 @@ export interface Operation<ExtraArgs extends any[] = [], ErrorStrings extends st
 type GuardedOperation = Operation<any[], 'NOT_READY'>
 type Patch = any
 
-/** @internal */
+/** @beta */
 export type VersionOriginTypes = 'published' | 'draft' | 'version'
 
 /** @internal */
