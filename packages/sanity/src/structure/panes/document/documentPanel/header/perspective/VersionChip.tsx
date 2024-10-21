@@ -37,6 +37,7 @@ export const VersionChip = memo(function VersionChip(props: {
     menuReleaseId: string
     fromRelease: string
     isVersion: boolean
+    disabled?: boolean
   }
 }) {
   const {
@@ -55,6 +56,7 @@ export const VersionChip = memo(function VersionChip(props: {
       menuReleaseId,
       fromRelease,
       isVersion,
+      disabled: contextMenuDisabled = false,
     },
   } = props
 
@@ -151,6 +153,7 @@ export const VersionChip = memo(function VersionChip(props: {
             isVersion={isVersion}
             onDiscard={openDiscardDialog}
             onCreateRelease={openCreateReleaseDialog}
+            disabled={contextMenuDisabled}
           />
         }
         fallbackPlacements={[]}

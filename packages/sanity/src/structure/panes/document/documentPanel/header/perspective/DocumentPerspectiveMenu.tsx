@@ -82,6 +82,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           documentType,
           fromRelease: '',
           isVersion: false,
+          disabled: !editState?.published,
         }}
       />
       <VersionChip
@@ -123,6 +124,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           documentType: documentType,
           fromRelease: '',
           isVersion: false,
+          disabled: !editState?.draft,
         }}
       />
       {/* @todo update temporary text for tooltip */}

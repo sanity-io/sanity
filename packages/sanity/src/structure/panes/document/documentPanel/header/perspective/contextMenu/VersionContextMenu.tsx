@@ -35,6 +35,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   isVersion: boolean
   onDiscard: () => void
   onCreateRelease: () => void
+  disabled?: boolean
 }) {
   const {
     documentId,
@@ -45,6 +46,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     isVersion,
     onDiscard,
     onCreateRelease,
+    disabled,
   } = props
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
@@ -108,13 +110,19 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             target="_blank"
             rel="noopener noreferrer"
             style={{textDecoration: 'none'}}
+            disabled={disabled}
           >
             {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
             <MenuItem icon={CalendarIcon} text={`View release`} />
           </IntentLink>
         )}
         {releasesLoading && <Spinner />}
-        <MenuGroup icon={CopyIcon} popover={{placement: 'right-start'}} text="Copy version to">
+        <MenuGroup
+          icon={CopyIcon}
+          popover={{placement: 'right-start'}}
+          text="Copy version to"
+          disabled={disabled}
+        >
           <ReleasesList key={fromRelease} space={1}>
             {optionsReleaseList.map((option) => {
               return (
@@ -124,6 +132,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
                   onClick={() => handleAddVersion(option.value._id)}
                   text={option.value.title}
                   renderMenuItem={() => <VersionContextMenuItem release={option.value} />}
+                  disabled={disabled}
                 />
               )
             })}
@@ -139,6 +148,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
               icon={TrashIcon}
               onClick={onDiscard}
               text={t('release.action.discard-version')}
+              disabled={disabled}
             />
           </>
         )}
