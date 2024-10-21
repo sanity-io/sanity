@@ -2,7 +2,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {useBundlesStore} from '../_legacy/datastores'
-import {type bundlesReducerAction} from './reducer'
+import {type BundlesReducerAction} from './reducer'
 import {type BundleDocument} from './types'
 
 interface BundlesState {
@@ -10,7 +10,7 @@ interface BundlesState {
   deletedBundles: Record<string, BundleDocument>
   error?: Error
   loading: boolean
-  dispatch: React.Dispatch<bundlesReducerAction>
+  dispatch: React.Dispatch<BundlesReducerAction>
 }
 
 /**

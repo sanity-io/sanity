@@ -30,14 +30,14 @@ interface LoadingStateChangedAction {
   type: 'LOADING_STATE_CHANGED'
 }
 
-export type bundlesReducerAction =
+export type BundlesReducerAction =
   | BundleDeletedAction
   | BundleUpdatedAction
   | BundlesSetAction
   | BundleReceivedAction
   | LoadingStateChangedAction
 
-export interface bundlesReducerState {
+export interface BundlesReducerState {
   bundles: Map<string, BundleDocument>
   deletedBundles: Record<string, BundleDocument>
   state: 'initialising' | 'loading' | 'loaded' | 'error'
@@ -52,9 +52,9 @@ function createBundlesSet(bundles: BundleDocument[] | null) {
 }
 
 export function bundlesReducer(
-  state: bundlesReducerState,
-  action: bundlesReducerAction,
-): bundlesReducerState {
+  state: BundlesReducerState,
+  action: BundlesReducerAction,
+): BundlesReducerState {
   switch (action.type) {
     case 'LOADING_STATE_CHANGED': {
       return {

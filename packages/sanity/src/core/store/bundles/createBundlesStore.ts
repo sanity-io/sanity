@@ -22,10 +22,10 @@ import {
 } from 'rxjs'
 
 import {createBundlesMetadataAggregator} from './createBundlesMetadataAggregator'
-import {bundlesReducer, type bundlesReducerAction, type bundlesReducerState} from './reducer'
+import {bundlesReducer, type BundlesReducerAction, type BundlesReducerState} from './reducer'
 import {type BundleDocument, type BundlesStore} from './types'
 
-type ActionWrapper = {action: bundlesReducerAction}
+type ActionWrapper = {action: BundlesReducerAction}
 type EventWrapper = {event: ListenEvent<BundleDocument>}
 type ResponseWrapper = {response: BundleDocument[]}
 
@@ -51,7 +51,7 @@ const LISTEN_OPTIONS: ListenOptions = {
   tag: 'bundles.listen',
 }
 
-const INITIAL_STATE: bundlesReducerState = {
+const INITIAL_STATE: BundlesReducerState = {
   bundles: new Map(),
   deletedBundles: {},
   state: 'initialising',
@@ -105,10 +105,10 @@ export function createBundlesStore(context: {
     return NOOP_BUNDLE_STORE
   }
 
-  const dispatch$ = new Subject<bundlesReducerAction>()
+  const dispatch$ = new Subject<BundlesReducerAction>()
   const fetchPending$ = new BehaviorSubject<boolean>(false)
 
-  function dispatch(action: bundlesReducerAction): void {
+  function dispatch(action: BundlesReducerAction): void {
     dispatch$.next(action)
   }
 
@@ -147,13 +147,13 @@ export function createBundlesStore(context: {
         },
       }),
     ),
-    switchMap<ActionWrapper | ResponseWrapper, Observable<bundlesReducerAction | undefined>>(
+    switchMap<ActionWrapper | ResponseWrapper, Observable<BundlesReducerAction | undefined>>(
       (entry) => {
         if ('action' in entry) {
-          return of<bundlesReducerAction>(entry.action)
+          return of<BundlesReducerAction>(entry.action)
         }
 
-        return of<bundlesReducerAction[]>(
+        return of<BundlesReducerAction[]>(
           {type: 'BUNDLES_SET', payload: entry.response},
           {
             type: 'LOADING_STATE_CHANGED',
@@ -185,7 +185,7 @@ export function createBundlesStore(context: {
     skip(1),
     // Ignore events emitted while the list fetch is pending.
     filter(() => !fetchPending$.value),
-    switchMap<ActionWrapper | EventWrapper, Observable<bundlesReducerAction | undefined>>(
+    switchMap<ActionWrapper | EventWrapper, Observable<BundlesReducerAction | undefined>>(
       (entry) => {
         if ('action' in entry) {
           return of(entry.action)
@@ -204,7 +204,7 @@ export function createBundlesStore(context: {
         // reconnect. Once a connection has been established, the welcome event
         // will be received and we'll fetch all bundles again (above)
         if (event.type === 'reconnect') {
-          return of<bundlesReducerAction>({
+          return of<BundlesReducerAction>({
             type: 'LOADING_STATE_CHANGED',
             payload: {
               loading: true,
@@ -217,7 +217,7 @@ export function createBundlesStore(context: {
         // and update the bundles store accordingly
         if (event.type === 'mutation') {
           if (event.transition === 'disappear') {
-            return of<bundlesReducerAction>({
+            return of<BundlesReducerAction>({
               type: 'BUNDLE_DELETED',
               id: event.documentId,
               deletedByUserId: event.identity,
@@ -229,7 +229,7 @@ export function createBundlesStore(context: {
             const nextBundle = event.result
 
             if (nextBundle) {
-              return of<bundlesReducerAction>({type: 'BUNDLE_RECEIVED', payload: nextBundle})
+              return of<BundlesReducerAction>({type: 'BUNDLE_RECEIVED', payload: nextBundle})
             }
 
             return of(undefined)
@@ -239,7 +239,7 @@ export function createBundlesStore(context: {
             const updatedBundle = event.result
 
             if (updatedBundle) {
-              return of<bundlesReducerAction>({type: 'BUNDLE_UPDATED', payload: updatedBundle})
+              return of<BundlesReducerAction>({type: 'BUNDLE_UPDATED', payload: updatedBundle})
             }
           }
         }
@@ -250,7 +250,7 @@ export function createBundlesStore(context: {
   )
 
   const state$ = merge(listFetch$, listener$, dispatch$).pipe(
-    filter((action): action is bundlesReducerAction => typeof action !== 'undefined'),
+    filter((action): action is BundlesReducerAction => typeof action !== 'undefined'),
     scan((state, action) => bundlesReducer(state, action), INITIAL_STATE),
     startWith(INITIAL_STATE),
     shareReplay(1),
