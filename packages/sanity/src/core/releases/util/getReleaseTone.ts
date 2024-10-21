@@ -2,9 +2,10 @@ import {type BadgeTone} from '@sanity/ui'
 import {type BundleDocument} from 'sanity'
 
 export function getReleaseTone(release: Partial<BundleDocument>): BadgeTone {
-  if (release.publishedAt !== undefined) {
+  /* conflicts with the type scheduled, maybe confusion with published?
+ if (release.publishedAt !== undefined) {
     return 'positive'
-  }
+  }*/
 
   if (release.archived) {
     return 'default'
@@ -19,7 +20,7 @@ export function getReleaseTone(release: Partial<BundleDocument>): BadgeTone {
   }
 
   if (release.releaseType === 'scheduled') {
-    return 'prospect'
+    return 'primary'
   }
   return 'default'
 }
