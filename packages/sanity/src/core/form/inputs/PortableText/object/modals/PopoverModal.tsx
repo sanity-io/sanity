@@ -80,6 +80,13 @@ function Content(props: PopoverEditDialogProps) {
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
 
+  useEffect(() => {
+    // When rendered, focus on the first input element in the content
+    if (contentElement) {
+      contentElement.querySelector('input')?.focus()
+    }
+  }, [contentElement])
+
   return (
     <VirtualizerScrollInstanceProvider
       scrollElement={contentElement}
