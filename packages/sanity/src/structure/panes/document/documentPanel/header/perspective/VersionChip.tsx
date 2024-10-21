@@ -28,7 +28,6 @@ export const VersionChip = memo(function VersionChip(props: {
   onClick: () => void
   text: string
   tone: BadgeTone
-  icon: React.ComponentType
   contextValues: {
     documentId: string
     releases: BundleDocument[]
@@ -47,7 +46,6 @@ export const VersionChip = memo(function VersionChip(props: {
     onClick,
     text,
     tone,
-    icon,
     contextValues: {
       documentId,
       releases,

@@ -1,4 +1,3 @@
-import {DotIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {memo, useCallback} from 'react'
 import {
@@ -72,7 +71,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         selected={perspective === 'published'}
         // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
         text="Published"
-        icon={DotIcon}
         tone="positive"
         contextValues={{
           documentId: editState?.published?._id || '',
@@ -104,7 +102,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             )}
           </Text>
         }
-        icon={DotIcon}
         selected={
           (editState?.draft?._id === displayed?._id ||
             !editState?.draft ||
@@ -138,7 +135,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             onClick={handleBundleChange(release._id)}
             text={release.title}
             tone={getReleaseTone(release)}
-            icon={DotIcon}
             contextValues={{
               documentId: displayed?._id || '',
               menuReleaseId: release._id,
@@ -167,7 +163,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             onClick={handleBundleChange(release._id)}
             text={release.title}
             tone={getReleaseTone(release)}
-            icon={DotIcon}
             contextValues={{
               documentId: displayed?._id || '',
               menuReleaseId: release._id,
@@ -189,7 +184,6 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             onClick={handleBundleChange(release._id)}
             text={release.title}
             tone={getReleaseTone(release)}
-            icon={DotIcon}
             contextValues={{
               documentId: displayed?._id || '',
               menuReleaseId: release._id,
