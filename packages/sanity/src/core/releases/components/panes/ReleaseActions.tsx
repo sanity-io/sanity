@@ -9,7 +9,6 @@ import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
-  isVersionId,
   Translate,
   useClient,
   useDocumentOperation,
@@ -91,7 +90,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
 
     telemetry.log(AddedVersion, {
       schemaType: documentType,
-      documentOrigin: isVersionId(documentId) ? 'version' : 'draft',
+      documentOrigin: origin,
     })
   }, [
     documentId,

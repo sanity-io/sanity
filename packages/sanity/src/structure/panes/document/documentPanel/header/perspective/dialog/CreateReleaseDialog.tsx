@@ -92,14 +92,13 @@ export function CreateReleaseDialog(props: {
 
     telemetry.log(AddedVersion, {
       schemaType: documentType,
-      documentOrigin: isVersion ? 'version' : 'draft',
+      documentOrigin: origin,
     })
   }, [
     createVersion,
     documentId,
     documentStore.pair,
     documentType,
-    isVersion,
     newReleaseId,
     publishedId,
     setPerspective,

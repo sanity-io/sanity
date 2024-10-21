@@ -87,7 +87,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
 
       telemetry.log(AddedVersion, {
         schemaType: documentType,
-        documentOrigin: isVersion ? 'version' : 'draft',
+        documentOrigin: origin,
       })
     },
     [
