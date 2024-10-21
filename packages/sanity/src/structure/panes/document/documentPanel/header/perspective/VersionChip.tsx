@@ -3,6 +3,7 @@ import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, use
 import {type BundleDocument, getVersionId} from 'sanity'
 import {styled} from 'styled-components'
 
+import {ReleaseAvatar} from '../../../../../../core/releases/tool/components/ReleaseAvatar'
 import {Button, Popover, Tooltip} from '../../../../../../ui-components'
 import {CreateReleaseDialog} from './CreateReleaseDialog'
 import {DiscardVersionDialog} from './DiscardVersionDialog'
@@ -134,7 +135,7 @@ export const VersionChip = memo(function VersionChip(props: {
           style={{flex: 'none'}}
           text={text}
           tone={tone}
-          icon={icon}
+          icon={<ReleaseAvatar padding={1} tone={tone} />}
           onContextMenu={handleContextMenu}
         />
       </Tooltip>

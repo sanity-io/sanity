@@ -54,7 +54,7 @@ export function ReleaseDashboardDetails({release}: {release: BundleDocument}) {
             publishedAt ? (
               <Card padding={2} radius={2} tone="positive">
                 <Flex flex={1} gap={2}>
-                  <ReleaseAvatar padding={0} release={release} />
+                  <ReleaseAvatar padding={0} tone={getReleaseTone(release)} />
                   <Text muted size={1} weight="medium">
                     {t('dashboard.details.published-on', {
                       date: format(new Date(publishedAt), `MMM d, yyyy`),

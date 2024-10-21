@@ -10,6 +10,7 @@ import {Tooltip} from '../../../ui-components'
 import {usePerspective} from '../hooks/usePerspective'
 import {RELEASES_INTENT, RELEASES_TOOL_NAME} from '../plugin'
 import {ReleaseAvatar} from '../tool/components/ReleaseAvatar'
+import {getReleaseTone} from '../util/getReleaseTone'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
 export function ReleasesNav(): JSX.Element {
@@ -66,6 +67,8 @@ export function ReleasesNav(): JSX.Element {
       </IntentLink>
     )
 
+    const tone = currentGlobalBundle.releaseType ? getReleaseTone(currentGlobalBundle) : 'default'
+
     return (
       <Button
         as={releasesIntentLink}
@@ -78,7 +81,7 @@ export function ReleasesNav(): JSX.Element {
       >
         <Flex align="flex-start" gap={0}>
           <Box flex="none">
-            <ReleaseAvatar padding={2} release={currentGlobalBundle} />
+            <ReleaseAvatar padding={2} tone={tone} />
           </Box>
           <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
             <Text size={1} textOverflow="ellipsis" weight="medium">

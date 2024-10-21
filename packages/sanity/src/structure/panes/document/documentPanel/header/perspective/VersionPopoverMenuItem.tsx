@@ -4,6 +4,7 @@ import {memo} from 'react'
 import {type BundleDocument, useDateTimeFormat} from 'sanity'
 
 import {ReleaseAvatar} from '../../../../../../core/releases/tool/components/ReleaseAvatar'
+import {getReleaseTone} from '../../../../../../core/releases/util/getReleaseTone'
 
 export const VersionPopoverMenuItem = memo(function VersionPopoverMenuItem(props: {
   release: BundleDocument
@@ -16,7 +17,7 @@ export const VersionPopoverMenuItem = memo(function VersionPopoverMenuItem(props
 
   return (
     <Flex gap={3}>
-      <ReleaseAvatar padding={2} release={release} />
+      <ReleaseAvatar padding={2} tone={getReleaseTone(release)} />
       <Stack flex={1} space={2}>
         <Text size={1} weight="medium">
           {release.title}

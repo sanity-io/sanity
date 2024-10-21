@@ -1,4 +1,3 @@
-import {DotIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
@@ -23,10 +22,10 @@ import {
   CreatedRelease,
 } from '../../../../../../core/releases/__telemetry__/releases.telemetry'
 import {ReleaseForm} from '../../../../../../core/releases/components/dialog/ReleaseForm'
+import {ReleaseAvatar} from '../../../../../../core/releases/tool/components/ReleaseAvatar'
 import {createReleaseId} from '../../../../../../core/releases/util/createReleaseId'
 import {useBundleOperations} from '../../../../../../core/store/bundles/useBundleOperations'
 import {Dialog} from '../../../../../../ui-components'
-import {BadgeIcon} from './BadgeIcon'
 
 export function CreateReleaseDialog(props: {
   onClose: () => void
@@ -166,7 +165,7 @@ export function CreateReleaseDialog(props: {
             paddingRight={2}
             style={{borderRadius: 999, border: '1px solid var(--card-border-color)'}}
           >
-            <BadgeIcon icon={DotIcon} tone={tone} />
+            <ReleaseAvatar padding={1} tone={tone} />
             {/* eslint-disable-next-line i18next/no-literal-string*/}
             <Text size={1}>boop</Text>
           </Flex>
