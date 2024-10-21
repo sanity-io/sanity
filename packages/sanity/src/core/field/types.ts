@@ -25,40 +25,21 @@ import {
 } from '@sanity/types'
 import {type ComponentType} from 'react'
 
+import {type DocumentGroupEvent} from '../store/events/types'
 import {type FieldValueError} from './validation'
-
-/**
- * History timeline / chunking
- *
- *
- * @hidden
- * @beta
- */
-export type ChunkType =
-  | 'initial'
-  | 'create'
-  | 'editDraft'
-  | 'delete'
-  | 'publish'
-  | 'unpublish'
-  | 'discardDraft'
-  | 'editLive'
 
 /**
  * @hidden
  * @beta */
 export type Chunk = {
   index: number
-
   id: string
-  type: ChunkType
   start: number
   end: number
   startTimestamp: string
   endTimestamp: string
-  authors: Set<string>
-  draftState: 'present' | 'missing' | 'unknown'
-  publishedState: 'present' | 'missing' | 'unknown'
+
+  event: DocumentGroupEvent
 }
 
 /**
