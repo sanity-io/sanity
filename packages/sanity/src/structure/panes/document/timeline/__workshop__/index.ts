@@ -10,5 +10,10 @@ export default defineScope({
       title: 'Default',
       component: lazy(() => import('./DefaultStory')),
     },
+    {
+      name: 'timelineItem',
+      title: 'Timeline Item',
+      component: lazy(() => import('./TimelineItemStory')),
+    },
   ],
 })
