@@ -5,6 +5,7 @@ import {memo, useCallback} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   type BundleDocument,
+  getCreateVersionOrigin,
   getPublishedId,
   getVersionId,
   isPublishedId,
@@ -59,8 +60,9 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   const publishedId = getPublishedId(documentId)
 
   const releaseId = isVersion ? fromRelease : documentId
+  const operationVersion = isVersion ? fromRelease : '' // operations recognises publish and draft as empty
 
-  const {createVersion} = useDocumentOperation(publishedId, documentType, fromRelease)
+  const {createVersion} = useDocumentOperation(publishedId, documentType, operationVersion)
 
   const telemetry = useTelemetry()
   const documentStore = useDocumentStore()
@@ -75,8 +77,9 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
       )
 
       const docId = getVersionId(publishedId, targetRelease)
+      const origin = isVersion ? 'version' : getCreateVersionOrigin(fromRelease)
 
-      createVersion.execute(docId)
+      createVersion.execute(docId, origin)
 
       // only change if the version was created successfully
       await createVersionSuccess
@@ -92,6 +95,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
       documentId,
       documentStore.pair,
       documentType,
+      fromRelease,
       isVersion,
       publishedId,
       setPerspective,

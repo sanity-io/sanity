@@ -5,6 +5,7 @@ import {type ReactNode, useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  getCreateVersionOrigin,
   getPublishedId,
   getVersionFromId,
   getVersionId,
@@ -80,7 +81,9 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
         .pipe(filter((e) => e.op === 'createVersion' && e.type === 'success')),
     )
 
-    createVersion.execute(versionId)
+    const origin = getCreateVersionOrigin(documentId)
+
+    createVersion.execute(versionId, origin)
 
     // only change if the version was created successfully
     await createVersionSuccess

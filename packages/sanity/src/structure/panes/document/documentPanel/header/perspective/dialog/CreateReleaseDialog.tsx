@@ -5,6 +5,7 @@ import {filter, firstValueFrom} from 'rxjs'
 import {
   DEFAULT_RELEASE_TYPE,
   type FormBundleDocument,
+  getCreateVersionOrigin,
   getPublishedId,
   getVersionFromId,
   getVersionId,
@@ -83,7 +84,7 @@ export function CreateReleaseDialog(props: {
 
     const docId = getVersionId(publishedId, newReleaseId)
 
-    createVersion.execute(docId)
+    createVersion.execute(docId, getCreateVersionOrigin(documentId))
 
     // only change if the version was created successfully
     await createVersionSuccess

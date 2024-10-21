@@ -1,5 +1,12 @@
+import {type VersionOriginTypes} from '../../store'
 import {type BundleDocument} from '../../store/bundles/types'
-import {getVersionFromId, isVersionId, resolveBundlePerspective} from '../../util'
+import {
+  getVersionFromId,
+  isDraftId,
+  isPublishedId,
+  isVersionId,
+  resolveBundlePerspective,
+} from '../../util'
 
 /**
  * @beta
@@ -40,4 +47,15 @@ export function versionDocumentExists(
 
 export function isDraftOrPublished(versionName: string): boolean {
   return versionName === 'drafts' || versionName === 'published'
+}
+
+/**
+ * @beta
+ * @param documentId - The document id, e.g. `my-document-id` or `drafts.my-document-id` or `summer.my-document-id`
+ * @returns VersionOriginTypes - the origin from which this version is being created from
+ */
+export function getCreateVersionOrigin(documentId: string): VersionOriginTypes {
+  if (isDraftId(documentId)) return 'draft'
+  if (isPublishedId(documentId)) return 'published'
+  return 'version'
 }

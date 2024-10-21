@@ -14,7 +14,13 @@ import {discardChanges} from './discardChanges'
 import {duplicate} from './duplicate'
 import {patch} from './patch'
 import {restore} from './restore'
-import {type Operation, type OperationArgs, type OperationImpl, type OperationsAPI} from './types'
+import {
+  type Operation,
+  type OperationArgs,
+  type OperationImpl,
+  type OperationsAPI,
+  type VersionOriginTypes,
+} from './types'
 import {unpublish} from './unpublish'
 
 function createOperationGuard(opName: string): Operation<any[], 'NOT_READY'> {
@@ -70,7 +76,7 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     duplicate: wrap('duplicate', duplicate, args),
     restore: wrap('restore', restore, args),
     createVersion: wrap('createVersion', createVersion, args) as Operation<
-      [string],
+      [documentId: string, origin?: VersionOriginTypes],
       'NO_NEW_VERSION'
     >,
   }

@@ -78,7 +78,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           releases: filteredReleases,
           releasesLoading: loading,
           documentType,
-          fromRelease: '',
+          fromRelease: 'published',
           isVersion: false,
           disabled: !editState?.published,
         }}
@@ -119,7 +119,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           releases: filteredReleases,
           releasesLoading: loading,
           documentType: documentType,
-          fromRelease: '',
+          fromRelease: 'draft',
           isVersion: false,
           disabled: !editState?.draft,
         }}

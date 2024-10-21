@@ -14,6 +14,7 @@ import {
 } from '../buffered-doc'
 import {getPairListener, type ListenerEvent, type PairListenerOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
+import {type VersionOriginTypes} from './operations'
 import {actionsApiClient} from './utils/actionsApiClient'
 
 const isMutationEventForDocId =
@@ -27,7 +28,7 @@ const isMutationEventForDocId =
 /**
  * @hidden
  * @beta */
-export type WithVersion<T> = T & {version: 'published' | 'draft' | 'version'}
+export type WithVersion<T> = T & {version: VersionOriginTypes}
 
 /**
  * @hidden

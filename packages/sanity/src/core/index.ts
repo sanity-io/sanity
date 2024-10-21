@@ -23,6 +23,7 @@ export * from './presence'
 export * from './preview'
 export {
   DEFAULT_RELEASE_TYPE,
+  getCreateVersionOrigin,
   getDocumentIsInPerspective,
   LATEST,
   ReleaseActions,

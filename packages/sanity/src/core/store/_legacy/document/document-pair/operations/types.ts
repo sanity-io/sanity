@@ -24,6 +24,9 @@ type GuardedOperation = Operation<any[], 'NOT_READY'>
 type Patch = any
 
 /** @internal */
+export type VersionOriginTypes = 'published' | 'draft' | 'version'
+
+/** @internal */
 // Note: Changing this interface in a backwards incompatible manner will be a breaking change
 export interface OperationsAPI {
   commit: Operation | GuardedOperation
@@ -37,7 +40,9 @@ export interface OperationsAPI {
   unpublish: Operation<[], 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'> | GuardedOperation
   duplicate: Operation<[documentId: string], 'NOTHING_TO_DUPLICATE'> | GuardedOperation
   restore: Operation<[revision: string]> | GuardedOperation
-  createVersion: GuardedOperation | Operation<[documentId: string], 'NO_NEW_VERSION'>
+  createVersion:
+    | GuardedOperation
+    | Operation<[documentId: string, origin: VersionOriginTypes], 'NO_NEW_VERSION'>
 }
 
 /** @internal */
