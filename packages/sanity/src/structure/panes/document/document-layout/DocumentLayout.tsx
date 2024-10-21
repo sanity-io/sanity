@@ -61,23 +61,38 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 `
 
 export function DocumentLayout() {
-  const {
-    changesOpen,
-    documentId,
-    documentType,
-    fieldActions,
-    focusPath,
-    inspectOpen,
-    inspector,
-    inspectors,
-    onFocus,
-    onHistoryOpen,
-    onMenuAction,
-    onPathOpen,
-    paneKey,
-    schemaType,
-    value,
-  } = useDocumentPane()
+  // const {
+  //   changesOpen,
+  //   documentId,
+  //   documentType,
+  //   fieldActions,
+  //   focusPath,
+  //   inspectOpen,
+  //   inspector,
+  //   inspectors,
+  //   onFocus,
+  //   onHistoryOpen,
+  //   onMenuAction,
+  //   onPathOpen,
+  //   paneKey,
+  //   schemaType,
+  //   value,
+  // } = useDocumentPane()
+  const changesOpen = useDocumentPane((state) => state.changesOpen)
+  const inspectOpen = useDocumentPane((state) => state.inspectOpen)
+  const documentId = useDocumentPane((state) => state.documentId)
+  const documentType = useDocumentPane((state) => state.documentType)
+  const fieldActions = useDocumentPane((state) => state.fieldActions)
+  const focusPath = useDocumentPane((state) => state.focusPath)
+  const inspector = useDocumentPane((state) => state.inspector)
+  const inspectors = useDocumentPane((state) => state.inspectors)
+  const onFocus = useDocumentPane((state) => state.onFocus)
+  const onHistoryOpen = useDocumentPane((state) => state.onHistoryOpen)
+  const onMenuAction = useDocumentPane((state) => state.onMenuAction)
+  const onPathOpen = useDocumentPane((state) => state.onPathOpen)
+  const paneKey = useDocumentPane((state) => state.paneKey)
+  const schemaType = useDocumentPane((state) => state.schemaType)
+  const value = useDocumentPane((state) => state.value)
 
   const {features} = useStructureTool()
   const {t} = useTranslation(structureLocaleNamespace)
