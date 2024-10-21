@@ -2,6 +2,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useEffect} from 'react'
 import {useRouter} from 'sanity/router'
 import {create} from 'zustand'
+import {devtools} from 'zustand/middleware'
 
 import {useClient} from '../../../../hooks'
 import {SANITY_VERSION} from '../../../../version'
@@ -21,15 +22,33 @@ interface FreeTrialState {
 }
 
 // Zustand state management store
-const useFreeTrialStore = create<FreeTrialState>((set) => ({
-  data: null,
-  showDialog: false,
-  showOnLoad: false,
+const useFreeTrialStore = create<FreeTrialState>()(
+  devtools(
+    (set) => ({
+      data: null,
+      showDialog: false,
+      showOnLoad: false,
 
-  setData: (data) => set({data}),
-  setShowDialog: (show) => set({showDialog: show}),
-  setShowOnLoad: (show) => set({showOnLoad: show}),
-}))
+      setData: (data) => set({data}, undefined, 'setData'),
+      setShowDialog: (show) => set({showDialog: show}, undefined, 'setShowDialog'),
+      setShowOnLoad: (show) => set({showOnLoad: show}, undefined, 'setShowOnLoad'),
+    }),
+    {
+      name: 'Free Trial Store',
+      // Optional: customize devtools settings
+      enabled: true, // for real it should actually be -> process.env.NODE_ENV === 'development'
+      anonymousActionType: 'unknown', // Default type for actions without names
+      serialize: {
+        options: true, // Include options in the serialized state
+        replacer: (key, value) => {
+          // Optional: customize serialization
+          // Return undefined to exclude a property
+          return value
+        },
+      },
+    },
+  ),
+)
 
 // Custom hook that combines Zustand store with other hooks
 export const useFreeTrial = () => {
