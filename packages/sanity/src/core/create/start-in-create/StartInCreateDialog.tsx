@@ -12,8 +12,6 @@ import {getCreateLinkUrl} from '../useCreateDocumentUrl'
 import {useGlobalUserId} from '../useGlobalUserId'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 
-export const CREATE_LINK_TARGET = 'create'
-
 export interface StartInCreateDialogProps {
   createLinkId: string
   appId: string
@@ -53,7 +51,7 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
       return
     }
 
-    window?.open(createUrl, CREATE_LINK_TARGET)?.focus()
+    window?.open(createUrl, '_blank')?.focus()
     onLinkingStarted(autoConfirm || dontShowAgain)
     telemetry.startInCreateAccepted()
   }, [createUrl, onLinkingStarted, pushToast, t, dontShowAgain, autoConfirm, telemetry])
