@@ -13,7 +13,7 @@ import {
 } from 'sanity'
 import {usePaneRouter} from 'sanity/structure'
 
-import {Dialog} from '../../../../../../ui-components'
+import {Dialog} from '../../../../../../../ui-components'
 
 export function DiscardVersionDialog(props: {
   onClose: () => void

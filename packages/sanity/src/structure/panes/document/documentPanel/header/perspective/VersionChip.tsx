@@ -5,9 +5,9 @@ import {styled} from 'styled-components'
 
 import {ReleaseAvatar} from '../../../../../../core/releases/tool/components/ReleaseAvatar'
 import {Button, Popover, Tooltip} from '../../../../../../ui-components'
-import {CreateReleaseDialog} from './CreateReleaseDialog'
-import {DiscardVersionDialog} from './DiscardVersionDialog'
-import {VersionPopoverMenu} from './VersionPopoverMenu'
+import {VersionContextMenu} from './contextMenu/VersionContextMenu'
+import {CreateReleaseDialog} from './dialog/CreateReleaseDialog'
+import {DiscardVersionDialog} from './dialog/DiscardVersionDialog'
 
 const Chip = styled(Button)`
   border-radius: 9999px !important;
@@ -142,7 +142,7 @@ export const VersionChip = memo(function VersionChip(props: {
 
       <Popover
         content={
-          <VersionPopoverMenu
+          <VersionContextMenu
             documentId={documentId}
             releases={releases}
             releasesLoading={releasesLoading}

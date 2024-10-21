@@ -3,10 +3,10 @@ import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 import {type BundleDocument, useDateTimeFormat} from 'sanity'
 
-import {ReleaseAvatar} from '../../../../../../core/releases/tool/components/ReleaseAvatar'
-import {getReleaseTone} from '../../../../../../core/releases/util/getReleaseTone'
+import {ReleaseAvatar} from '../../../../../../../core/releases/tool/components/ReleaseAvatar'
+import {getReleaseTone} from '../../../../../../../core/releases/util/getReleaseTone'
 
-export const VersionPopoverMenuItem = memo(function VersionPopoverMenuItem(props: {
+export const VersionContextMenuItem = memo(function VersionContextMenuItem(props: {
   release: BundleDocument
 }) {
   const {release} = props

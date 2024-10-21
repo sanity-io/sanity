@@ -15,11 +15,11 @@ import {
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 
-import {AddedVersion} from '../../../../../../core/releases/__telemetry__/releases.telemetry'
-import {MenuGroup, MenuItem} from '../../../../../../ui-components'
-import {VersionPopoverMenuItem} from './VersionPopoverMenuItem'
+import {AddedVersion} from '../../../../../../../core/releases/__telemetry__/releases.telemetry'
+import {MenuGroup, MenuItem} from '../../../../../../../ui-components'
+import {VersionContextMenuItem} from './VersionContextMenuItem'
 
-export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
+export const VersionContextMenu = memo(function VersionContextMenu(props: {
   documentId: string
   releases: BundleDocument[]
   releasesLoading: boolean
@@ -116,7 +116,7 @@ export const VersionPopoverMenu = memo(function VersionPopoverMenu(props: {
                   key={option.value._id}
                   onClick={() => handleAddVersion(option.value._id)}
                   text={option.value.title}
-                  renderMenuItem={() => <VersionPopoverMenuItem release={option.value} />}
+                  renderMenuItem={() => <VersionContextMenuItem release={option.value} />}
                 />
               )
             })}

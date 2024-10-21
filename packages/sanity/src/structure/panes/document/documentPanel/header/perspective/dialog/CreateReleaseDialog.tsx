@@ -20,12 +20,12 @@ import {
 import {
   AddedVersion,
   CreatedRelease,
-} from '../../../../../../core/releases/__telemetry__/releases.telemetry'
-import {ReleaseForm} from '../../../../../../core/releases/components/dialog/ReleaseForm'
-import {ReleaseAvatar} from '../../../../../../core/releases/tool/components/ReleaseAvatar'
-import {createReleaseId} from '../../../../../../core/releases/util/createReleaseId'
-import {useBundleOperations} from '../../../../../../core/store/bundles/useBundleOperations'
-import {Dialog} from '../../../../../../ui-components'
+} from '../../../../../../../core/releases/__telemetry__/releases.telemetry'
+import {ReleaseForm} from '../../../../../../../core/releases/components/dialog/ReleaseForm'
+import {ReleaseAvatar} from '../../../../../../../core/releases/tool/components/ReleaseAvatar'
+import {createReleaseId} from '../../../../../../../core/releases/util/createReleaseId'
+import {useBundleOperations} from '../../../../../../../core/store/bundles/useBundleOperations'
+import {Dialog} from '../../../../../../../ui-components'
 
 export function CreateReleaseDialog(props: {
   onClose: () => void
