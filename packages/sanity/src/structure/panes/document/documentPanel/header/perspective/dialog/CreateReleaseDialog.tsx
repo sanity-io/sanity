@@ -3,6 +3,9 @@ import {type BadgeTone, Box, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
+  AddedVersion,
+  CreatedRelease,
+  createReleaseId,
   DEFAULT_RELEASE_TYPE,
   type FormBundleDocument,
   getCreateVersionOrigin,
@@ -12,20 +15,15 @@ import {
   isVersionId,
   LoadingBlock,
   Preview,
+  ReleaseAvatar,
+  ReleaseForm,
   useDocumentOperation,
   useDocumentStore,
   usePerspective,
+  useReleaseOperations,
   useSchema,
 } from 'sanity'
 
-import {
-  AddedVersion,
-  CreatedRelease,
-} from '../../../../../../../core/releases/__telemetry__/releases.telemetry'
-import {ReleaseForm} from '../../../../../../../core/releases/components/dialog/ReleaseForm'
-import {ReleaseAvatar} from '../../../../../../../core/releases/tool/components/ReleaseAvatar'
-import {createReleaseId} from '../../../../../../../core/releases/util/createReleaseId'
-import {useReleaseOperations} from '../../../../../../../core/store/release/useReleaseOperations'
 import {Dialog} from '../../../../../../../ui-components'
 
 export function CreateReleaseDialog(props: {

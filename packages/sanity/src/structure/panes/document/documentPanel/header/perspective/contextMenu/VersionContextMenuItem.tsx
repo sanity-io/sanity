@@ -1,10 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
-import {type BundleDocument, useDateTimeFormat} from 'sanity'
-
-import {ReleaseAvatar} from '../../../../../../../core/releases/tool/components/ReleaseAvatar'
-import {getReleaseTone} from '../../../../../../../core/releases/util/getReleaseTone'
+import {type BundleDocument, getReleaseTone, ReleaseAvatar, useDateTimeFormat} from 'sanity'
 
 export const VersionContextMenuItem = memo(function VersionContextMenuItem(props: {
   release: BundleDocument

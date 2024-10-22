@@ -29,6 +29,7 @@ export const DEFAULT_BUNDLE: BaseBundleDocument = {
   icon: 'cube',
 }
 
+/** @internal */
 export function ReleaseForm(props: {
   onChange: (params: FormBundleDocument) => void
   value: FormBundleDocument

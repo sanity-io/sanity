@@ -22,15 +22,22 @@ export * from './i18n'
 export * from './presence'
 export * from './preview'
 export {
+  AddedVersion,
+  CreatedRelease,
+  createReleaseId,
   DEFAULT_RELEASE_TYPE,
   getCreateVersionOrigin,
   getDocumentIsInPerspective,
+  getReleaseTone,
   LATEST,
   ReleaseActions,
+  ReleaseAvatar,
   ReleaseBadge,
+  ReleaseForm,
   ReleasesMenu,
   useDocumentVersions,
   usePerspective,
+  versionDocumentExists,
 } from './releases'
 export * from './scheduledPublishing'
 export * from './schema'

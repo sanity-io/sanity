@@ -4,6 +4,7 @@ import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
 import {memo, useCallback} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
+  AddedVersion,
   type BundleDocument,
   getCreateVersionOrigin,
   getPublishedId,
@@ -17,7 +18,6 @@ import {
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {AddedVersion} from '../../../../../../../core/releases/__telemetry__/releases.telemetry'
 import {MenuGroup, MenuItem} from '../../../../../../../ui-components'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 

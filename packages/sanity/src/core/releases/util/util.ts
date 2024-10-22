@@ -38,6 +38,7 @@ export function getDocumentIsInPerspective(
   return bundleId === bundlePerspective
 }
 
+/** @internal */
 export function versionDocumentExists(
   documentVersions: BundleDocument[] = [],
   bundleId: string,

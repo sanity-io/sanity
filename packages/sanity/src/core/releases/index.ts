@@ -1,4 +1,7 @@
+export * from './__telemetry__/releases.telemetry'
 export * from './components'
 export * from './hooks'
 export * from './util/const'
+export * from './util/createReleaseId'
+export * from './util/getReleaseTone'
 export * from './util/util'

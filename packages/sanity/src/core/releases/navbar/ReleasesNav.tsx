@@ -7,9 +7,9 @@ import {LATEST, ToolLink} from 'sanity'
 import {IntentLink, useRouterState} from 'sanity/router'
 
 import {Tooltip} from '../../../ui-components'
+import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {usePerspective} from '../hooks/usePerspective'
 import {RELEASES_INTENT, RELEASES_TOOL_NAME} from '../plugin'
-import {ReleaseAvatar} from '../tool/components/ReleaseAvatar'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 

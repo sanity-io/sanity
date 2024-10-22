@@ -14,9 +14,9 @@ import {format} from 'date-fns'
 import {useCallback} from 'react'
 import {type BundleDocument, usePerspective, useTranslation} from 'sanity'
 
+import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 
 export function ReleaseDashboardDetails({release}: {release: BundleDocument}) {

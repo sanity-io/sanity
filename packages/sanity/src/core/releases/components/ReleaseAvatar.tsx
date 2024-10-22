@@ -2,6 +2,7 @@ import {DotIcon} from '@sanity/icons'
 import {type BadgeTone, Box, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 
+/** @internal */
 export function ReleaseAvatar({
   fontSize = 1,
   padding = 3,

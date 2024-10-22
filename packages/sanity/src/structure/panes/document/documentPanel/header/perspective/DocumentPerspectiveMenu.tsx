@@ -1,18 +1,17 @@
 import {Text} from '@sanity/ui'
 import {memo, useCallback} from 'react'
 import {
+  getReleaseTone,
   getVersionFromId,
   isVersionId,
   useDateTimeFormat,
   usePerspective,
   useReleases,
   useTranslation,
+  versionDocumentExists,
 } from 'sanity'
+import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 
-import {versionDocumentExists} from '../../../../../../core/releases'
-import {getReleaseTone} from '../../../../../../core/releases/util/getReleaseTone'
-import {usePaneRouter} from '../../../../../components'
-import {useDocumentPane} from '../../../useDocumentPane'
 import {VersionChip} from './VersionChip'
 
 export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
