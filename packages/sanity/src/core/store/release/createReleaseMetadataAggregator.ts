@@ -82,7 +82,7 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
 
     return client.observable
       .listen(
-        `(${bundleIds.reduce(
+        `*[${bundleIds.reduce(
           (accQuery, bundleId, index) =>
             `${accQuery}${index === 0 ? '' : '||'} _id in path("versions.${bundleId}.*")`,
           '',
