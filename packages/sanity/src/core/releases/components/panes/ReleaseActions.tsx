@@ -52,6 +52,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
   const telemetry = useTelemetry()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
+  /** @todo remove this when task to tackle footer actions */
   const handleAddVersion = useCallback(async () => {
     if (!documentId) {
       toast.push({

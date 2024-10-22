@@ -37,6 +37,7 @@ export {
   ReleasesMenu,
   useDocumentVersions,
   usePerspective,
+  useVersionOperations,
   versionDocumentExists,
 } from './releases'
 export * from './scheduledPublishing'
