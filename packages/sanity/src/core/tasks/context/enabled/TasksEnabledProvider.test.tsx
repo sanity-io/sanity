@@ -68,12 +68,12 @@ describe('TasksEnabledProvider', () => {
   })
 
   it('should not show the plugin if useFeatureEnabled has an error', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({
+    useFeatureEnabledMock.mockReturnValue({
       enabled: false,
       isLoading: true,
       error: new Error('Something went wrong'),
     })
-    require('../../../studio').useWorkspace.mockReturnValue({tasks: {enabled: true}})
+    useWorkspaceMock.mockReturnValue({tasks: {enabled: true}})
 
     const value = renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})
 

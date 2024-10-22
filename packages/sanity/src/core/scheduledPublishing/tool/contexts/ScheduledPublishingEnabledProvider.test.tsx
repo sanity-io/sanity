@@ -86,12 +86,12 @@ describe('ScheduledPublishingEnabledProvider', () => {
   })
 
   it('should not show the plugin if useFeatureEnabled has an error', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({
+    useFeatureEnabledMock.mockReturnValue({
       enabled: false,
       isLoading: true,
       error: new Error('Something went wrong'),
     })
-    require('../../../studio').useWorkspace.mockReturnValue({scheduledPublishing: {enabled: true}})
+    useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: true}})
 
     const value = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
