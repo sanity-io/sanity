@@ -117,7 +117,7 @@ export const schemaTypes = [
         of: [
           {
             type: 'reference',
-            to: [{type: 'article'}],
+            to: [{type: 'create-test-article'}],
           },
         ],
       },
