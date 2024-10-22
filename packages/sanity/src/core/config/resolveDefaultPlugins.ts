@@ -1,5 +1,5 @@
 import {comments} from '../comments/plugin'
-import {createIntegration} from '../create/createIntegration'
+import {createIntegration} from '../create/createIntegrationPlugin'
 import {DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS} from '../scheduledPublishing/constants'
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduledPublishing/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'

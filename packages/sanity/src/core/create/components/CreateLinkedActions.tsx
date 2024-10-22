@@ -4,16 +4,16 @@ import {type ReactNode, useCallback, useState} from 'react'
 
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
+import {getCreateDocumentUrl} from '../createDocumentUrls'
 import {createLocaleNamespace} from '../i18n'
 import {type CreateLinkedActionsProps} from '../types'
-import {useCreateDocumentUrl} from '../useCreateDocumentUrl'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 import {CreateUnlinkConfirmDialog} from './CreateUnlinkConfirmDialog'
 
 export function CreateLinkedActions(props: CreateLinkedActionsProps) {
   const {metadata, panelPortalElementId, onDocumentChange, documentTitle} = props
   const {t} = useTranslation(createLocaleNamespace)
-  const href = useCreateDocumentUrl(metadata)
+  const href = getCreateDocumentUrl(metadata)
 
   const telemetry = useSanityCreateTelemetry()
 

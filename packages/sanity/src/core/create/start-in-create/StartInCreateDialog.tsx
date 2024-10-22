@@ -7,8 +7,8 @@ import {useTranslation} from '../../i18n'
 import {useWorkspace} from '../../studio'
 import {CreateLearnMoreButton} from '../components/CreateLearnMoreButton'
 import {CreateSvg} from '../components/media/CreateSvg'
+import {getCreateLinkUrl} from '../createDocumentUrls'
 import {createLocaleNamespace} from '../i18n'
-import {getCreateLinkUrl} from '../useCreateDocumentUrl'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 
 export interface StartInCreateDialogProps {
