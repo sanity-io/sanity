@@ -26,6 +26,7 @@ export {
   CreatedRelease,
   createReleaseId,
   DEFAULT_RELEASE_TYPE,
+  DiscardVersionDialog,
   getCreateVersionOrigin,
   getDocumentIsInPerspective,
   getReleaseTone,
@@ -37,6 +38,7 @@ export {
   ReleasesMenu,
   useDocumentVersions,
   usePerspective,
+  useVersionOperations,
   versionDocumentExists,
 } from './releases'
 export * from './scheduledPublishing'

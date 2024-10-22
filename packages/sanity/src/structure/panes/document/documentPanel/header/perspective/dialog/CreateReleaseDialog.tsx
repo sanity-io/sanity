@@ -1,26 +1,18 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type BadgeTone, Box, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {filter, firstValueFrom} from 'rxjs'
 import {
-  AddedVersion,
   CreatedRelease,
   createReleaseId,
   DEFAULT_RELEASE_TYPE,
   type FormReleaseDocument,
-  getCreateVersionOrigin,
-  getPublishedId,
-  getVersionFromId,
-  getVersionId,
   LoadingBlock,
   Preview,
   ReleaseAvatar,
   ReleaseForm,
-  useDocumentOperation,
-  useDocumentStore,
-  usePerspective,
   useReleaseOperations,
   useSchema,
+  useVersionOperations,
 } from 'sanity'
 
 import {Dialog} from '../../../../../../../ui-components'
@@ -35,11 +27,9 @@ export function CreateReleaseDialog(props: {
   const {onClose, documentId, documentType, tone, title} = props
   const toast = useToast()
 
-  const {setPerspective} = usePerspective()
   const schema = useSchema()
   const schemaType = schema.get(documentType)
 
-  const documentStore = useDocumentStore()
   const [newReleaseId] = useState(createReleaseId())
 
   const [value, setValue] = useState((): FormReleaseDocument => {
@@ -58,48 +48,15 @@ export function CreateReleaseDialog(props: {
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
 
-  const publishedId = getPublishedId(documentId)
-
-  const {createVersion} = useDocumentOperation(
-    publishedId,
-    documentType,
-    getVersionFromId(documentId),
-  )
-
   const handleOnChange = useCallback((changedValue: FormReleaseDocument) => {
     setValue(changedValue)
   }, [])
 
+  const {createVersion} = useVersionOperations(documentId, documentType)
+
   const handleAddVersion = useCallback(async () => {
-    // set up the listener before executing
-    const createVersionSuccess = firstValueFrom(
-      documentStore.pair
-        .operationEvents(getPublishedId(documentId), documentType)
-        .pipe(filter((e) => e.op === 'createVersion' && e.type === 'success')),
-    )
-
-    const docId = getVersionId(publishedId, newReleaseId)
-
-    createVersion.execute(docId, getCreateVersionOrigin(documentId))
-
-    // only change if the version was created successfully
-    await createVersionSuccess
-    setPerspective(newReleaseId)
-
-    telemetry.log(AddedVersion, {
-      schemaType: documentType,
-      documentOrigin: origin,
-    })
-  }, [
-    createVersion,
-    documentId,
-    documentStore.pair,
-    documentType,
-    newReleaseId,
-    publishedId,
-    setPerspective,
-    telemetry,
-  ])
+    createVersion(newReleaseId)
+  }, [createVersion, newReleaseId])
 
   const handleCreateRelease = useCallback(async () => {
     try {
