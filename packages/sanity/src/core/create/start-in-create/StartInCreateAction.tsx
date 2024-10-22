@@ -5,6 +5,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../config'
+import {START_IN_CREATE_ACTION_NAME} from '../../config/create/startInCreateSortedActions'
 import {useTranslation} from '../../i18n'
 import {useSchemaType} from '../../scheduledPublishing/hooks/useSchemaType'
 import {isStartInCreateAutoConfirmed, setStartInCreateAutoConfirm} from '../createStorage'
@@ -16,11 +17,6 @@ import {type CreateLinkedSanityDocument} from '../types'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 import {CreateLinkingDialog} from './CreateLinkingDialog'
 import {StartInCreateDialog} from './StartInCreateDialog'
-
-// The "Start in Create" action must be sorted first, so we need a sort key; the action string –
-// we also don't want this string in the config interfaces, so we need the cheeky cast to smuggle it through
-export const START_IN_CREATE_ACTION_NAME =
-  'startInCreate' as unknown as DocumentActionComponent['action']
 
 export function createStartInCreateAction(appIdCache: AppIdCache): DocumentActionComponent {
   const StartInCreateActionWrapper: DocumentActionComponent = function StartInCreateActionWrapper(

@@ -14,7 +14,6 @@ import {
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
-import {getStartInCreateSortedActions} from '../create/getStartInCreateSortedActions'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
@@ -48,6 +47,7 @@ import {
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
+import {getStartInCreateSortedActions} from './create/startInCreateSortedActions'
 import {createDefaultIcon} from './createDefaultIcon'
 import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
 import {resolveConfigProperty} from './resolveConfigProperty'
