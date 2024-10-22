@@ -23,7 +23,4 @@ export interface User {
   displayName?: string
   imageUrl?: string
   email?: string
-
-  /** global sanity user id */
-  sanityUserId?: string
 }

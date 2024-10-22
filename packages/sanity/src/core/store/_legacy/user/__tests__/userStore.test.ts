@@ -78,7 +78,7 @@ describe('userStore', () => {
       ])
     })
 
-    it('refetches current user if passed when constructing user store, as currentUser does not contain sanityUserId (global id)', async () => {
+    it('does not refetch current user if passed when constructing user store, normalizes', async () => {
       const currentUser: CurrentUser = {
         id: 'pl0l3sp3n',
         name: 'Espen',
@@ -86,7 +86,7 @@ describe('userStore', () => {
         role: 'admin',
         roles: [{name: 'admin', title: 'Administrator'}],
       }
-      await expect(getUserStore({currentUser}).getUsers([currentUser.id])).resolves.not.toEqual([
+      await expect(getUserStore({currentUser}).getUsers([currentUser.id])).resolves.toEqual([
         {
           id: currentUser.id,
           displayName: currentUser.name,

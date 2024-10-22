@@ -15,20 +15,15 @@ export function getCreateLinkUrl(args: {
   appId: string
   projectId: string
   workspaceName: string
-  globalUserId: string | undefined
 }): string | undefined {
-  const {docId, documentType, appId, projectId, workspaceName, globalUserId} = args
-
-  if (!globalUserId) {
-    return undefined
-  }
+  const {docId, documentType, appId, projectId, workspaceName} = args
   const params = new URLSearchParams()
   params.append('projectId', projectId)
   params.append('applicationId', appId)
   params.append('workspaceName', workspaceName)
   params.append('documentType', documentType)
   params.append('documentId', docId)
-  return `${getCreateBaseUrl()}/studio-import/${globalUserId}?${params.toString()}`
+  return `${getCreateBaseUrl()}/studio-import?${params.toString()}`
 }
 
 export function useCreateDocumentUrl(create: CreateLinkMetadata): string | undefined {

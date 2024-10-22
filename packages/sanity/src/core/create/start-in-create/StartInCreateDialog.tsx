@@ -9,7 +9,6 @@ import {CreateLearnMoreButton} from '../components/CreateLearnMoreButton'
 import {StartInCreateSvg} from '../components/media/StartInCreateSvg'
 import {createLocaleNamespace} from '../i18n'
 import {getCreateLinkUrl} from '../useCreateDocumentUrl'
-import {useGlobalUserId} from '../useGlobalUserId'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 
 export interface StartInCreateDialogProps {
@@ -30,7 +29,6 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
   const toggleDontShowAgain = useCallback(() => setDontShowAgain((current) => !current), [])
 
   const {push: pushToast} = useToast()
-  const globalUserId = useGlobalUserId()
   const workspace = useWorkspace()
 
   const createUrl = getCreateLinkUrl({
@@ -39,7 +37,6 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
     workspaceName: workspace.name,
     documentType: type,
     docId: createLinkId,
-    globalUserId: globalUserId,
   })
 
   const startLinking = useCallback(() => {
