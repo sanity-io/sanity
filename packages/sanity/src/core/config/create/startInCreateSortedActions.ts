@@ -12,7 +12,7 @@ export const START_IN_CREATE_ACTION_NAME =
 export function getStartInCreateSortedActions(
   actions: DocumentActionComponent[],
 ): DocumentActionComponent[] {
-  return actions.toSorted((a, b) => {
+  return [...actions].sort((a, b) => {
     if (a.action === START_IN_CREATE_ACTION_NAME) {
       return -1
     } else if (b.action === START_IN_CREATE_ACTION_NAME) {
