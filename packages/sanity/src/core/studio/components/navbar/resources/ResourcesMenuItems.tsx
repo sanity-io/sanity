@@ -99,7 +99,7 @@ function SubSection({subSection}: {subSection: Section}) {
           case 'internalAction': // TODO: Add support for internal actions (MVI-2)
             if (!item.type) return null
             if (item.type === 'studio-announcements-modal')
-              return <StudioAnnouncementsMenuItem text={item.title} />
+              return <StudioAnnouncementsMenuItem key={item._key} text={item.title} />
             return (
               item.type === 'show-welcome-modal' && <MenuItem key={item._key} text={item.title} />
             )
