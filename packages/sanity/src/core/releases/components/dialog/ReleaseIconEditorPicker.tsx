@@ -2,10 +2,10 @@ import {COLOR_HUES, type ColorHueKey} from '@sanity/color'
 import {icons, type IconSymbol, SearchIcon} from '@sanity/icons'
 import {Avatar, Box, Container, Flex, Stack, TextInput, useClickOutside} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, Popover, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store/release/types'
 import {ReleaseBadge} from '../ReleaseBadge'
 
@@ -18,8 +18,8 @@ const IconPickerFlex = styled(Flex)`
 `
 
 export interface ReleaseIconEditorPickerValue {
-  hue: ReleaseDocument['hue']
-  icon: ReleaseDocument['icon']
+  hue: ReleaseDocument['metadata']['hue']
+  icon: ReleaseDocument['metadata']['icon']
 }
 
 export function ReleaseIconEditorPicker(props: {

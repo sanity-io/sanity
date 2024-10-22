@@ -1,8 +1,12 @@
 import {Box} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {LoadingBlock, Preview, useSchema, useTranslation, useVersionOperations} from 'sanity'
 
 import {Dialog} from '../../../../ui-components'
+import {LoadingBlock} from '../../../components'
+import {useSchema} from '../../../hooks'
+import {useTranslation} from '../../../i18n'
+import {Preview} from '../../../preview'
+import {useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 
 /**

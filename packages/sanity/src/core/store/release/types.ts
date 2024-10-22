@@ -1,39 +1,71 @@
 import {type ColorHueKey} from '@sanity/color'
 import {type IconSymbol} from '@sanity/icons'
-import {type SanityDocument} from '@sanity/types'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type PartialExcept} from '../../util'
+import {type RELEASE_DOCUMENT_TYPE} from './constants'
 import {type MetadataWrapper} from './createReleaseMetadataAggregator'
 import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
 
 /** @internal */
-export type releaseType = 'asap' | 'scheduled' | 'undecided'
+export type ReleaseType = 'asap' | 'scheduled' | 'undecided'
 
 /**
- * @internal
+ *@internal
  */
-export interface ReleaseDocument
-  extends Pick<SanityDocument, '_id' | '_createdAt' | '_updatedAt' | '_rev' | '_version'> {
-  _type: 'release'
-  title: string
-  archived?: boolean
-  description?: string
-  hue: ColorHueKey
-  icon: IconSymbol
-  authorId: string
-  publishedAt?: string
-  publishedBy?: string
-  releaseType: releaseType
-  archivedAt?: string
-  archivedBy?: string
+export type ReleaseState = 'active' | 'archived' | 'published' | 'scheduled' | 'scheduling'
+/**
+ *@internal
+ */
+export type ReleaseFinalDocumentState = {
+  /** Document ID */
+  id: string
+  revisionId: string
 }
 
 /**
  * @internal
  */
-export type FormReleaseDocument = PartialExcept<ReleaseDocument, '_id' | '_type'>
+export interface ReleaseDocument {
+  /**
+   * typically
+   * _.releases.<name>
+   */
+  _id: string
+  _type: typeof RELEASE_DOCUMENT_TYPE
+  _createdAt: string
+  _updatedAt: string
+  name: string
+  createdBy: string
+  state: ReleaseState
+  finalDocumentStates?: ReleaseFinalDocumentState[]
+  publishAt?: string
+  metadata: {
+    title: string
+    description?: string
+    hue?: ColorHueKey
+    icon?: IconSymbol
+
+    intendedPublishAt?: string
+    // todo: the below properties should probably live at the system document
+    createdBy?: string
+    publishedBy?: string
+    releaseType: ReleaseType
+    archivedAt?: string
+    archivedBy?: string
+  }
+}
+
+/**
+ * @internal
+ */
+export type EditableReleaseDocument = Omit<
+  PartialExcept<ReleaseDocument, '_id'>,
+  'metadata' | '_type'
+> & {
+  metadata: Partial<ReleaseDocument['metadata']>
+}
 
 /**
  * @internal
@@ -45,7 +77,7 @@ export function isReleaseDocument(doc: unknown): doc is ReleaseDocument {
 /**
  * @internal
  */
-export interface ReleasesStore {
+export interface ReleaseStore {
   state$: Observable<ReleasesReducerState>
   getMetadataStateForSlugs$: (slugs: string[]) => Observable<MetadataWrapper>
   dispatch: Dispatch<ReleasesReducerAction>

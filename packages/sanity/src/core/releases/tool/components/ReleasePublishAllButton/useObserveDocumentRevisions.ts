@@ -1,12 +1,10 @@
+import {isSanityDocument, type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
-import {
-  getPublishedId,
-  isSanityDocument,
-  type SanityDocument,
-  useDocumentPreviewStore,
-} from 'sanity'
+
+import {useDocumentPreviewStore} from '../../../../store'
+import {getPublishedId} from '../../../../util'
 
 export const useObserveDocumentRevisions = (documents: SanityDocument[]) => {
   const previewStore = useDocumentPreviewStore()

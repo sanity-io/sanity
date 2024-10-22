@@ -42,7 +42,7 @@ export interface DocumentPaneContextValue {
   documentVersions: ReleaseDocument[] | null
   editState: EditStateFor | null
   /**
-   * Whether the document being edited exists in the checked-out bundle.
+   * Whether the document being edited exists in the checked-out release.
    */
   existsInBundle: boolean
   fieldActions: DocumentFieldAction[]

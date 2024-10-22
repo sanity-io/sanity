@@ -92,7 +92,7 @@ export function releasesReducer(
       const localDeletedBundle = currentReleases.get(deletedBundleId)
       currentReleases.delete(deletedBundleId)
 
-      // only capture the deleted bundle if deleted by another user
+      // only capture the deleted release if deleted by another user
       const nextDeletedReleases =
         !isDeletedByCurrentUser && localDeletedBundle
           ? {

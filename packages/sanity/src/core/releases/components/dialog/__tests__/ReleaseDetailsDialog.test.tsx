@@ -1,8 +1,8 @@
 import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
-import {type ReleaseDocument, useReleases} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {type ReleaseDocument, useReleases} from '../../../../store'
 import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {usePerspective} from '../../../hooks/usePerspective'
 import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
@@ -39,7 +39,7 @@ describe('ReleaseDetailsDialog', () => {
     vi.clearAllMocks()
   })
 
-  describe('when creating a new bundle', () => {
+  describe('when creating a new release', () => {
     const onCancelMock = vi.fn()
     const onSubmitMock = vi.fn()
 
@@ -73,45 +73,55 @@ describe('ReleaseDetailsDialog', () => {
 
     it('should call createRelease, setPerspective, and onCreate when form is submitted with a valid slug', async () => {
       const value: Partial<ReleaseDocument> = {
-        _type: 'release',
-        title: 'Bundle 1',
-        hue: 'gray',
-        icon: 'cube',
-        //publishAt: undefined,
+        metadata: {
+          title: 'Bundle 1',
+          hue: 'gray',
+          icon: 'cube',
+          releaseType: 'asap',
+        },
       }
 
       const titleInput = screen.getByTestId('release-form-title')
-      fireEvent.change(titleInput, {target: {value: value.title}})
+      fireEvent.change(titleInput, {target: {value: value.metadata?.title}})
 
       const submitButton = screen.getByTestId('submit-release-button')
       fireEvent.click(submitButton)
 
-      await expect(useReleaseOperations().createRelease).toHaveBeenCalledWith(
+      expect(useReleaseOperations().createRelease).toHaveBeenCalledWith(
         expect.objectContaining({
-          _id: expect.stringMatching(/r\w{8}/),
+          _id: expect.stringMatching(/system-tmp-releases\.r\w{8}$/),
           ...value,
         }),
       )
+      await Promise.resolve()
 
-      expect(usePerspective().setPerspective).toHaveBeenCalledWith(expect.stringMatching(/r\w{8}/))
+      expect(usePerspective().setPerspective).toHaveBeenCalledOnce()
+
+      expect(usePerspective().setPerspective).toHaveBeenCalledWith(
+        expect.stringMatching(/system-tmp-releases\.r\w{8}$/),
+      )
       expect(onSubmitMock).toHaveBeenCalled()
     })
   })
 
-  describe('when updating an existing bundle', () => {
+  describe('when updating an existing release', () => {
     const onCancelMock = vi.fn()
     const onSubmitMock = vi.fn()
     const existingBundleValue: ReleaseDocument = {
-      _id: 'existing-bundle',
-      _type: 'release',
-      _rev: '123',
+      _id: 'existing-release',
+      name: 'existing',
+      state: 'active',
+      _type: 'system-tmp.release',
       _createdAt: '2024-07-02T11:37:51Z',
       _updatedAt: '2024-07-12T10:39:32Z',
-      authorId: '123',
-      description: 'Existing bundle description',
-      hue: 'magenta',
-      icon: 'cube',
-      title: 'Existing bundle',
+      createdBy: '123',
+      metadata: {
+        description: 'Existing release description',
+        releaseType: 'asap',
+        hue: 'magenta',
+        icon: 'cube',
+        title: 'Existing release',
+      },
     }
 
     beforeEach(async () => {
@@ -133,7 +143,7 @@ describe('ReleaseDetailsDialog', () => {
         <ReleaseDetailsDialog
           onCancel={onCancelMock}
           onSubmit={onSubmitMock}
-          bundle={existingBundleValue}
+          release={existingBundleValue}
         />,
         {wrapper},
       )
@@ -145,7 +155,9 @@ describe('ReleaseDetailsDialog', () => {
     })
 
     it('should disable edit CTA when no title entered', () => {
-      expect(screen.getByTestId('release-form-title')).toHaveValue(existingBundleValue.title)
+      expect(screen.getByTestId('release-form-title')).toHaveValue(
+        existingBundleValue.metadata.title,
+      )
       fireEvent.change(screen.getByTestId('release-form-title'), {target: {value: ''}})
 
       expect(screen.getByTestId('submit-release-button')).toBeDisabled()
@@ -156,24 +168,28 @@ describe('ReleaseDetailsDialog', () => {
       expect(screen.getByTestId('submit-release-button')).toBeDisabled()
     })
 
-    it('should patch the bundle document when submitted', () => {
+    it('should patch the release document when submitted', () => {
       fireEvent.change(screen.getByTestId('release-form-title'), {target: {value: 'New title  '}})
       fireEvent.change(screen.getByTestId('release-form-description'), {
         target: {value: 'New description'},
       })
       fireEvent.click(screen.getByTestId('submit-release-button'))
 
-      const {hue, icon, _id} = existingBundleValue
+      const {
+        metadata: {hue, icon},
+        _id,
+      } = existingBundleValue
+
       expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith({
         _id,
-        _type: 'release',
-        hue,
-        icon,
-        title: 'New title',
-        description: 'New description',
-        publishedAt: undefined,
-        releaseType: 'asap',
-      })
+        metadata: {
+          hue,
+          icon,
+          title: 'New title',
+          description: 'New description',
+          releaseType: 'asap',
+        },
+      } satisfies Partial<ReleaseDocument>)
     })
 
     it('should not change the perspective', async () => {

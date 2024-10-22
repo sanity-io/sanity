@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -16,17 +16,20 @@ import {ReleasesOverview} from '../ReleasesOverview'
 vi.mock('sanity', () => {
   return {
     SANITY_VERSION: '0.0.0',
-    Translate: vi.fn(),
     useCurrentUser: vi.fn().mockReturnValue({user: {id: 'user-id'}}),
-    useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
   }
 })
+
+vi.mock('../../../../../i18n', () => ({
+  Translate: vi.fn(),
+  useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
+}))
 
 vi.mock('../../../../store/release/useReleasesMetadata', () => ({
   useReleasesMetadata: vi.fn(),
 }))
 
-vi.mock('../../../../store', async (importOriginal) => ({
+vi.mock('../../../../store/release/useReleases', async (importOriginal) => ({
   ...(await importOriginal()),
   useReleases: vi.fn(),
 }))
@@ -123,35 +126,48 @@ describe('ReleasesOverview', () => {
   })
 
   describe('when releases are loaded', () => {
+    const YESTERDAY = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    const NOW = new Date().toISOString()
     const releases = [
       {
-        title: 'Release 1',
         _id: 'b1abcdefg',
-        slug: 'release-1',
         // yesterday
-        _createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        _createdAt: YESTERDAY,
+        _updatedAt: YESTERDAY,
+        metadata: {
+          title: 'Release 1',
+        },
       },
       {
-        title: 'Release 2',
         _id: 'b2abcdefg',
-        slug: 'release-2',
         // now
-        _createdAt: new Date().toISOString(),
+        _createdAt: NOW,
+        _updatedAt: NOW,
+        metadata: {
+          title: 'Release 2',
+        },
       },
       {
-        title: 'Release 3',
         _id: 'b3abcdefg',
-        publishedAt: new Date().toISOString(),
-        slug: 'release-3',
-        _createdAt: new Date().toISOString(),
+        _createdAt: NOW,
+        _updatedAt: NOW,
+        state: 'published',
+        publishAt: NOW,
+        metadata: {
+          title: 'Release 3',
+        },
       },
       {
-        title: 'Release 4',
         _id: 'b4abcdefg',
-        archivedAt: new Date().toISOString(),
-        _createdAt: new Date().toISOString(),
+        _createdAt: NOW,
+        _updatedAt: NOW,
+        state: 'archived',
+        metadata: {
+          archivedAt: NOW,
+          title: 'Release 4',
+        },
       },
-    ] as ReleaseDocument[]
+    ] satisfies ReleaseDocument[]
 
     beforeEach(async () => {
       mockUseReleases.mockReturnValue({
@@ -160,10 +176,13 @@ describe('ReleasesOverview', () => {
         dispatch: vi.fn(),
         deletedReleases: {
           'deleted-release-id': {
-            title: 'Deleted Release',
             _id: 'deleted-release-id',
             _createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * 5).toISOString(),
-          } as ReleaseDocument,
+            _updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * 5).toISOString(),
+            metadata: {
+              title: 'Deleted Release',
+            },
+          } satisfies ReleaseDocument,
         },
       })
       mockUseReleasesMetadata.mockReturnValue({
@@ -183,7 +202,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return render(<ReleasesOverview />, {wrapper})
+      return act(() => render(<ReleasesOverview />, {wrapper}))
     })
 
     it('shows each open release', () => {
@@ -195,7 +214,7 @@ describe('ReleasesOverview', () => {
       const openReleases = [...releases].slice(0, 2).reverse()
       openReleases.forEach((release, index) => {
         // release title
-        within(releaseRows[index]).getByText(release.title)
+        within(releaseRows[index]).getByText(release.metadata.title)
         // document count
         within(releaseRows[index]).getByText('1')
         if (index === 0) {

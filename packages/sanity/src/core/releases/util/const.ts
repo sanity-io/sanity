@@ -6,9 +6,11 @@
 export const LATEST = {
   // this exists implicitly
   _id: 'drafts',
-  title: 'Latest',
-  icon: undefined,
-  hue: 'gray',
+  metadata: {
+    title: 'Latest',
+    icon: undefined,
+    hue: 'gray',
+  },
 } as const
 
 /**

@@ -1,11 +1,11 @@
 import {ChevronDownIcon, ChevronRightIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {AvatarStack, Box, Card, Flex} from '@sanity/ui'
-import {Translate, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
+import {Translate, useTranslation} from '../../../../i18n'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {Chip} from '../../components/Chip'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'

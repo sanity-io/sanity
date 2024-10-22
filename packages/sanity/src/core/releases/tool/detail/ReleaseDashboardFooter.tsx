@@ -1,6 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
-import {type ReleaseDocument} from 'sanity'
 
+import {type ReleaseDocument} from '../../../store'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {ReleasePublishAllButton} from '../components/ReleasePublishAllButton/ReleasePublishAllButton'
 import {ReleaseStatusItems} from './ReleaseStatusItems'
@@ -24,14 +24,14 @@ export function ReleaseDashboardFooter(props: {
 
         <Flex flex="none" gap={1}>
           {/* TODO: Replace this with the real actions. */}
-          {!isBundleDeleted && !release.publishedAt && (
+          {!isBundleDeleted && !release.publishAt && (
             <ReleasePublishAllButton
-              bundle={release}
-              bundleDocuments={documents}
+              release={release}
+              releaseDocuments={documents}
               disabled={!documents.length}
             />
           )}
-          <ReleaseMenuButton disabled={isBundleDeleted} bundle={release} />
+          <ReleaseMenuButton disabled={isBundleDeleted} release={release} />
         </Flex>
       </Flex>
     </Card>

@@ -2,12 +2,12 @@ import {diffInput, wrap} from '@sanity/diff'
 import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {useTranslation} from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {buildChangeList} from '../../../../field/diff/changes/buildChangeList'
 import {ChangeResolver} from '../../../../field/diff/components/ChangeResolver'
 import {type ObjectDiff} from '../../../../field/types'
+import {useTranslation} from '../../../../i18n'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {ChangesWrapper, FieldWrapper} from './DocumentDiff.styled'
 

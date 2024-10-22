@@ -52,10 +52,10 @@ describe('DeletedDocumentBanners', () => {
 
     await renderTest()
     expect(screen.queryByTestId('deleted-document-banner')).toBeNull()
-    expect(screen.queryByTestId('deleted-bundle-banner')).toBeNull()
+    expect(screen.queryByTestId('deleted-release-banner')).toBeNull()
   })
 
-  it('prefers to show bundle deleted banner when document was in a bundle', async () => {
+  it('prefers to show release deleted banner when document was in a release', async () => {
     const mockBundleDocument = {_id: 'test'} as ReleaseDocument
     mockUsePerspective.mockReturnValue({currentGlobalBundle: mockBundleDocument} as ReturnType<
       typeof usePerspective
@@ -74,17 +74,18 @@ describe('DeletedDocumentBanners', () => {
     await renderTest()
 
     const fallbackBanner = screen.queryByTestId('deleted-document-banner')
-    const bundleBanner = screen.queryByTestId('deleted-bundle-banner')
+    const bundleBanner = screen.queryByTestId('deleted-release-banner')
     expect(fallbackBanner).toBeNull()
     expect(bundleBanner).toBeInTheDocument()
   })
 
-  it('shows the fallback document deleted banner when document was not in a bundle', async () => {
+  it('shows the fallback document deleted banner when document was not in a release', async () => {
     const mockBundleDocument: ReleaseDocument = {_id: 'test'} as ReleaseDocument
 
-    mockUsePerspective.mockReturnValue({currentGlobalBundle: LATEST} as ReturnType<
-      typeof usePerspective
-    >)
+    mockUsePerspective.mockReturnValue({
+      currentGlobalBundle: LATEST,
+      setPerspective: vi.fn(),
+    } as ReturnType<typeof usePerspective>)
 
     mockUseReleases.mockReturnValue({
       data: [mockBundleDocument],
@@ -102,7 +103,7 @@ describe('DeletedDocumentBanners', () => {
     await renderTest()
 
     const fallbackBanner = screen.queryByTestId('deleted-document-banner')
-    const bundleBanner = screen.queryByTestId('deleted-bundle-banner')
+    const bundleBanner = screen.queryByTestId('deleted-release-banner')
 
     expect(bundleBanner).toBeNull()
     await waitFor(() => {

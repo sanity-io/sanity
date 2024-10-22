@@ -3,22 +3,16 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
-import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  getCreateVersionOrigin,
-  getPublishedId,
-  getVersionFromId,
-  getVersionId,
-  Translate,
-  useClient,
-  useDocumentOperation,
-  useDocumentStore,
-  useTranslation,
-} from 'sanity'
 
 import {Button} from '../../../../ui-components'
+import {useClient, useDocumentOperation} from '../../../hooks'
+import {Translate, useTranslation} from '../../../i18n'
+import {useDocumentStore} from '../../../store'
 import {type ReleaseDocument} from '../../../store/release/types'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {getPublishedId, getVersionFromId, getVersionId} from '../../../util'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
+import {getCreateVersionOrigin} from '../../util/util'
 
 interface ReleaseActionsProps {
   currentGlobalBundle: ReleaseDocument
@@ -28,17 +22,20 @@ interface ReleaseActionsProps {
    */
   documentId: string
   documentType: string
-  bundleId?: string
+  releaseId?: string
 }
 
 /**
  * @internal
  */
 export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
-  const {currentGlobalBundle, documentType, documentId, bundleId} = props
+  const {currentGlobalBundle, documentType, documentId, releaseId} = props
   const publishedId = getPublishedId(documentId)
 
-  const {_id: globalBundleId, title, archivedAt} = currentGlobalBundle
+  const {
+    _id: globalBundleId,
+    metadata: {title, archivedAt},
+  } = currentGlobalBundle
   const documentStore = useDocumentStore()
   const [creatingVersion, setCreatingVersion] = useState<boolean>(false)
   const [isInVersion, setIsInVersion] = useState<boolean>(
@@ -47,7 +44,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
   const [isDiscarding, setIsDiscarding] = useState<boolean>(false)
 
   const toast = useToast()
-  const {createVersion} = useDocumentOperation(publishedId, documentType, bundleId)
+  const {createVersion} = useDocumentOperation(publishedId, documentType, releaseId)
   const {t} = useTranslation()
   const telemetry = useTelemetry()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -61,11 +58,11 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
       })
       return
     }
-    // only add to version if there isn't already a version in that bundle of this doc
+    // only add to version if there isn't already a version in that release of this doc
     if (getVersionFromId(documentId) === globalBundleId) {
       toast.push({
         status: 'error',
-        title: `There's already a version of this document in the bundle ${title}`,
+        title: `There's already a version of this document in the release ${title}`,
       })
       return
     }
@@ -136,7 +133,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
 
   if (archivedAt) return null
 
-  const bundleActionButtonProps = isInVersion
+  const releaseActionButtonProps = isInVersion
     ? {
         text: t('release.action.discard-version', {title}),
         icon: TrashIcon,
@@ -152,7 +149,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
 
   return (
     <Button
-      {...bundleActionButtonProps}
+      {...releaseActionButtonProps}
       data-testid={`action-add-to-${globalBundleId}`}
       loading={creatingVersion || isDiscarding}
     />

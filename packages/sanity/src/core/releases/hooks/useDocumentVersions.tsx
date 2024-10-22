@@ -2,13 +2,9 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 import {catchError, scan} from 'rxjs/operators'
-import {
-  getPublishedId,
-  getVersionFromId,
-  type ReleaseDocument,
-  useDocumentPreviewStore,
-  useReleases,
-} from 'sanity'
+
+import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../store'
+import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
 
 export interface DocumentPerspectiveProps {
   documentId: string
@@ -28,7 +24,7 @@ const INITIAL_STATE: DocumentPerspectiveState = {
 
 /**
  * Fetches the document versions for a given document
- * @param props - document Id of the document (might include bundle slug)
+ * @param props - document Id of the document (might include release id)
  * @returns - data: document versions, loading, errors
  * @hidden
  * @beta
@@ -36,7 +32,7 @@ const INITIAL_STATE: DocumentPerspectiveState = {
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
 
-  const {data: bundles} = useReleases()
+  const {data: releases} = useReleases()
   const publishedId = getPublishedId(documentId)
 
   const documentPreviewStore = useDocumentPreviewStore()
@@ -47,8 +43,10 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
       .pipe(
         map(({documentIds}) => {
           return documentIds.flatMap((id) => {
-            // eslint-disable-next-line max-nested-callbacks
-            const matchingBundle = bundles?.find((bundle) => getVersionFromId(id) === bundle._id)
+            const matchingBundle = releases?.find(
+              // eslint-disable-next-line max-nested-callbacks
+              (release) => getVersionFromId(id) === release.name,
+            )
             return matchingBundle || []
           })
         }),
@@ -60,7 +58,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
           return {...state, ...result}
         }, INITIAL_STATE),
       )
-  }, [bundles, documentPreviewStore, publishedId])
+  }, [releases, documentPreviewStore, publishedId])
 
   return useObservable(observable, INITIAL_STATE)
 }

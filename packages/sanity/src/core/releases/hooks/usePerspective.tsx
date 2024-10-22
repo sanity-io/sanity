@@ -1,17 +1,20 @@
 import {useRouter} from 'sanity/router'
 
-import {useReleases} from '../../store/release'
+import {type ReleaseType, useReleases} from '../../store/release'
 import {type ReleaseDocument} from '../../store/release/types'
 import {LATEST} from '../util/const'
 
+export type CurrentPerspective = Omit<Partial<ReleaseDocument>, 'metadata'> & {
+  metadata: {title: string; releaseType?: ReleaseType}
+}
 /**
  * @internal
  */
 export interface PerspectiveValue {
-  /* Return the current global bundle */
-  currentGlobalBundle: Partial<ReleaseDocument>
+  /* Return the current global release */
+  currentGlobalBundle: CurrentPerspective
   /* Change the perspective in the studio based on the perspective name */
-  setPerspective: (bundleId: string) => void
+  setPerspective: (releaseId: string) => void
 }
 
 /**
@@ -21,23 +24,23 @@ export interface PerspectiveValue {
  */
 export function usePerspective(selectedPerspective?: string): PerspectiveValue {
   const router = useRouter()
-  const {data: bundles} = useReleases()
+  const {data: releases} = useReleases()
   const perspective = selectedPerspective ?? router.stickyParams.perspective
 
   // TODO: Should it be possible to set the perspective within a pane, rather than globally?
-  const setPerspective = (bundleId: string | undefined) => {
-    if (bundleId === 'drafts') {
+  const setPerspective = (releaseId: string | undefined) => {
+    if (releaseId === 'drafts') {
       router.navigateStickyParam('perspective', '')
-    } else if (bundleId === 'published') {
+    } else if (releaseId === 'published') {
       router.navigateStickyParam('perspective', 'published')
     } else {
-      router.navigateStickyParam('perspective', `bundle.${bundleId}`)
+      router.navigateStickyParam('perspective', `release.${releaseId}`)
     }
   }
 
   const selectedBundle =
-    perspective && bundles
-      ? bundles.find((bundle: ReleaseDocument) => `bundle.${bundle._id}` === perspective)
+    perspective && releases
+      ? releases.find((release: ReleaseDocument) => `release.${release._id}` === perspective)
       : LATEST
 
   // TODO: Improve naming; this may not be global.
@@ -45,12 +48,14 @@ export function usePerspective(selectedPerspective?: string): PerspectiveValue {
     perspective === 'published'
       ? {
           _id: 'published',
-          title: 'Published',
+          metadata: {
+            title: 'Published',
+          },
         }
       : selectedBundle || LATEST
 
   return {
     setPerspective,
-    currentGlobalBundle,
+    currentGlobalBundle: currentGlobalBundle,
   }
 }

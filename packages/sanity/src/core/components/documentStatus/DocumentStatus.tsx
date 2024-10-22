@@ -5,7 +5,7 @@ import {styled} from 'styled-components'
 
 import {useDateTimeFormat, useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
-import {type ReleaseDocument} from '../../store/release'
+import {type CurrentPerspective} from '../../releases'
 import {PerspectiveBadge} from '../perspective/PerspectiveBadge'
 
 interface DocumentStatusProps {
@@ -14,7 +14,7 @@ interface DocumentStatusProps {
   published?: PreviewValue | Partial<SanityDocument> | null
   version?: PreviewValue | Partial<SanityDocument> | null
   singleLine?: boolean
-  currentGlobalBundle?: Partial<ReleaseDocument>
+  currentGlobalBundle?: CurrentPerspective
 }
 
 const StyledText = styled(Text)`
@@ -72,7 +72,7 @@ export function DocumentStatus({
     ? versionDateAbsolute || draftDateAbsolute
     : versionUpdatedTimeAgo || draftUpdatedTimeAgo
 
-  const {title} = currentGlobalBundle || {}
+  const title = currentGlobalBundle?.metadata?.title
 
   const documentStatus = useMemo(() => {
     if (published && '_id' in published) {

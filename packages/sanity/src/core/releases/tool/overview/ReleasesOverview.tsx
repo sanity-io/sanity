@@ -5,7 +5,8 @@ import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useStat
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
-import {type ReleaseDocument, useReleases} from '../../../store'
+import {type ReleaseDocument} from '../../../store'
+import {useReleases} from '../../../store/release/useReleases'
 import {
   type ReleasesMetadata,
   useReleasesMetadata,
@@ -66,10 +67,10 @@ export function ReleasesOverview() {
     () =>
       tableReleases.reduce<{open: TableRelease[]; archived: TableRelease[]}>(
         (groups, tableRelease) => {
-          const isReleaseArchived =
-            tableRelease.archivedAt ||
-            (tableRelease.publishedAt && isBefore(new Date(tableRelease.publishedAt), new Date()))
-          const group = isReleaseArchived ? 'archived' : 'open'
+          const isReleaseArchived = tableRelease.state === 'archived'
+          const isReleasePastDue =
+            tableRelease.publishAt && isBefore(new Date(tableRelease.publishAt), new Date())
+          const group = isReleaseArchived || isReleasePastDue ? 'archived' : 'open'
 
           return {...groups, [group]: [...groups[group], tableRelease]}
         },
@@ -159,7 +160,9 @@ export function ReleasesOverview() {
   const applySearchTermToReleases = useCallback(
     (unfilteredData: TableRelease[], tableSearchTerm: string) => {
       return unfilteredData.filter((release) => {
-        return release.title.toLocaleLowerCase().includes(tableSearchTerm.toLocaleLowerCase())
+        return release.metadata.title
+          ?.toLocaleLowerCase()
+          ?.includes(tableSearchTerm.toLocaleLowerCase())
       })
     },
     [],
@@ -170,7 +173,7 @@ export function ReleasesOverview() {
 
     if (release.isDeleted) return null
 
-    return <ReleaseMenuButton bundle={release} />
+    return <ReleaseMenuButton release={release} />
   }, [])
 
   return (
@@ -182,7 +185,7 @@ export function ReleasesOverview() {
               <Heading as="h1" size={2} style={{margin: '1px 0'}}>
                 {t('overview.title')}
               </Heading>
-              {!loading && !hasReleases && (
+              {!loading && releases.length === 0 && (
                 <Container style={{margin: 0}} width={0}>
                   <Stack space={5}>
                     <Text data-testid="no-releases-info-text" muted size={2}>

@@ -1,15 +1,9 @@
 import {Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
-import {
-  getReleaseTone,
-  LATEST,
-  type ReleaseDocument,
-  Translate,
-  useTranslation,
-  useVersionOperations,
-} from 'sanity'
+import {getReleaseTone, LATEST, Translate, useTranslation, useVersionOperations} from 'sanity'
 import {structureLocaleNamespace} from 'sanity/structure'
 
+import {type CurrentPerspective} from '../../../../../core/releases'
 import {Button} from '../../../../../ui-components'
 import {Banner} from './Banner'
 
@@ -20,7 +14,7 @@ export function AddToReleaseBanner({
 }: {
   documentId: string
   documentType: string
-  currentRelease: Partial<ReleaseDocument>
+  currentRelease: CurrentPerspective
 }): JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -43,7 +37,7 @@ export function AddToReleaseBanner({
             <Translate
               i18nKey="banners.release.not-in-release"
               t={t}
-              values={{title: currentRelease.title}}
+              values={{title: currentRelease.metadata.title}}
               components={{
                 Label: ({children}) => {
                   return (

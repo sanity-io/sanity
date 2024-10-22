@@ -24,11 +24,11 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
-const renderTest = async ({bundle, disabled = false}: ReleaseMenuButtonProps) => {
+const renderTest = async ({release, disabled = false}: ReleaseMenuButtonProps) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  return render(<ReleaseMenuButton disabled={disabled} bundle={bundle} />, {wrapper})
+  return render(<ReleaseMenuButton disabled={disabled} release={release} />, {wrapper})
 }
 
 describe.skip('ReleaseMenuButton', () => {
@@ -43,7 +43,7 @@ describe.skip('ReleaseMenuButton', () => {
       timing: 'immediately',
       archivedAt: undefined,
       title: 'activeRelease',
-      authorId: 'author',
+      createdBy: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
       _rev: '',
@@ -51,7 +51,7 @@ describe.skip('ReleaseMenuButton', () => {
       icon: 'cube',
     }
 
-    await renderTest({bundle: activeRelease})
+    await renderTest({release: activeRelease})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
 
@@ -72,14 +72,14 @@ describe.skip('ReleaseMenuButton', () => {
       timing: 'immediately',
       archivedAt: new Date().toISOString(),
       title: 'activeRelease',
-      authorId: 'author',
+      createdBy: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
       _rev: '',
       hue: 'gray',
       icon: 'cube',
     }
-    await renderTest({bundle: archivedRelease})
+    await renderTest({release: archivedRelease})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
 
@@ -100,14 +100,14 @@ describe.skip('ReleaseMenuButton', () => {
       archivedAt: new Date().toISOString(),
       title: 'activeEmptyRelease',
       timing: 'immediately',
-      authorId: 'author',
+      createdBy: 'author',
       _createdAt: new Date().toISOString(),
       _updatedAt: new Date().toISOString(),
       _rev: '',
       hue: 'gray',
       icon: 'cube',
     }
-    await renderTest({bundle: disabledActionRelease, disabled: true})
+    await renderTest({release: disabledActionRelease, disabled: true})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
   })

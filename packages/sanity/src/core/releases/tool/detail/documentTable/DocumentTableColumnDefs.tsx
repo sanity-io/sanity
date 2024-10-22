@@ -1,8 +1,10 @@
 import {Badge, Box, Flex, Text} from '@sanity/ui'
+import {type TFunction} from 'i18next'
 import {memo} from 'react'
-import {type TFunction, UserAvatar, useSchema} from 'sanity'
 
+import {UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
+import {useSchema} from '../../../../hooks'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column} from '../../components/Table/types'

@@ -1,19 +1,20 @@
 import {CloseIcon} from '@sanity/icons'
 import {Card, Menu} from '@sanity/ui'
 import {memo, useState} from 'react'
-import {DiscardVersionDialog, useTranslation} from 'sanity'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
+import {useTranslation} from '../../../../i18n'
+import {DiscardVersionDialog} from '../../../components'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 
 export const DocumentActions = memo(
   function DocumentActions({
     document,
-    bundleTitle,
+    releaseTitle,
   }: {
     document: BundleDocumentRow
-    bundleTitle: string
+    releaseTitle: string
   }) {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false)
     const {t: coreT} = useTranslation()
@@ -46,5 +47,5 @@ export const DocumentActions = memo(
     )
   },
   (prev, next) =>
-    prev.document.memoKey === next.document.memoKey && prev.bundleTitle === next.bundleTitle,
+    prev.document.memoKey === next.document.memoKey && prev.releaseTitle === next.releaseTitle,
 )

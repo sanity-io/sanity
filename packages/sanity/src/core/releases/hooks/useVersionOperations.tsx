@@ -1,20 +1,15 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {filter, firstValueFrom} from 'rxjs'
-import {
-  AddedVersion,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  getCreateVersionOrigin,
-  getPublishedId,
-  getVersionFromId,
-  getVersionId,
-  Translate,
-  useClient,
-  useDocumentOperation,
-  useDocumentStore,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+
+import {useClient, useDocumentOperation} from '../../hooks'
+import {Translate, useTranslation} from '../../i18n'
+import {useDocumentStore} from '../../store'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
+import {AddedVersion} from '../__telemetry__/releases.telemetry'
+import {getCreateVersionOrigin} from '../util/util'
+import {usePerspective} from './usePerspective'
 
 /** @internal */
 export function useVersionOperations(

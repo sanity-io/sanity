@@ -3,13 +3,14 @@ import {CalendarIcon, CloseIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type PropsWithChildren, useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
-import {LATEST, ToolLink} from 'sanity'
 import {IntentLink, useRouterState} from 'sanity/router'
 
 import {Tooltip} from '../../../ui-components'
+import {ToolLink} from '../../studio'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {usePerspective} from '../hooks/usePerspective'
 import {RELEASES_INTENT, RELEASES_TOOL_NAME} from '../plugin'
+import {LATEST} from '../util/const'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
@@ -53,7 +54,7 @@ export function ReleasesNav(): JSX.Element {
           <Flex align="flex-start" gap={0}>
             <Stack flex={1} paddingY={2} paddingX={2} space={2}>
               <Text size={1} textOverflow="ellipsis" weight="medium">
-                {currentGlobalBundle.title}
+                {currentGlobalBundle.metadata?.title}
               </Text>
             </Stack>
           </Flex>
@@ -67,7 +68,9 @@ export function ReleasesNav(): JSX.Element {
       </IntentLink>
     )
 
-    const tone = currentGlobalBundle.releaseType ? getReleaseTone(currentGlobalBundle) : 'default'
+    const tone = currentGlobalBundle.metadata?.releaseType
+      ? getReleaseTone(currentGlobalBundle)
+      : 'default'
 
     return (
       <Button
@@ -85,7 +88,7 @@ export function ReleasesNav(): JSX.Element {
           </Box>
           <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
             <Text size={1} textOverflow="ellipsis" weight="medium">
-              {currentGlobalBundle.title}
+              {currentGlobalBundle.metadata?.title}
             </Text>
           </Stack>
         </Flex>

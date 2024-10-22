@@ -2,12 +2,13 @@ import {ErrorOutlineIcon} from '@sanity/icons'
 import {type PreviewValue} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
-import {DocumentPreviewPresence, useDocumentPresence} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
 import {Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
+import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
+import {useDocumentPresence} from '../../../store'
 import {getPublishedId} from '../../../util/draftUtils'
 import {releasesLocaleNamespace} from '../../i18n'
 
@@ -43,7 +44,7 @@ export function ReleaseDocumentPreview({
               id: getPublishedId(documentId),
               type: documentTypeName,
             }}
-            searchParams={[['perspective', `bundle.${releaseSlug}`]]}
+            searchParams={[['perspective', `release.${releaseSlug}`]]}
             ref={ref}
           />
         )

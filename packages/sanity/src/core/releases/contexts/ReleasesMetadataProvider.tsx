@@ -24,7 +24,7 @@ const DEFAULT_METADATA_STATE: MetadataWrapper = {
 const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) => {
   const [listenerBundleIds, setListenerBundleIds] = useState<string[]>([])
   const {getMetadataStateForSlugs$} = useReleasesStore()
-  const [bundlesMetadata, setBundlesMetadata] = useState<Record<string, ReleasesMetadata> | null>(
+  const [releasesMetadata, setBundlesMetadata] = useState<Record<string, ReleasesMetadata> | null>(
     null,
   )
 
@@ -49,21 +49,21 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
   const addBundleIdsToListener = useCallback((addBundleIds: (string | undefined)[]) => {
     setListenerBundleIds((prevSlugs) => [
       ...prevSlugs,
-      ...addBundleIds.filter((bundleId): bundleId is string => typeof bundleId === 'string'),
+      ...addBundleIds.filter((releaseId): releaseId is string => typeof releaseId === 'string'),
     ])
   }, [])
 
-  const removeBundleIdsFromListener = useCallback((bundleIds: string[]) => {
+  const removeBundleIdsFromListener = useCallback((releaseIds: string[]) => {
     setListenerBundleIds((prevSlugs) => {
       const {nextSlugs} = prevSlugs.reduce<{removedSlugs: string[]; nextSlugs: string[]}>(
         (acc, slug) => {
           const {removedSlugs, nextSlugs: accNextSlugs} = acc
           /**
-           * In cases where multiple consumers are listening to the same bundle id
-           * the bundle id will appear multiple times in listenerBundleIds array
+           * In cases where multiple consumers are listening to the same release id
+           * the release id will appear multiple times in listenerBundleIds array
            * removing should only remove 1 instance of the slug and retain all others
            */
-          if (bundleIds.includes(slug) && !removedSlugs.includes(slug)) {
+          if (releaseIds.includes(slug) && !removedSlugs.includes(slug)) {
             return {removedSlugs: [...removedSlugs, slug], nextSlugs: accNextSlugs}
           }
           return {removedSlugs, nextSlugs: [...accNextSlugs, slug]}
@@ -82,9 +82,9 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
     () => ({
       addBundleIdsToListener: addBundleIdsToListener,
       removeBundleIdsFromListener: removeBundleIdsFromListener,
-      state: {...observedResult, data: bundlesMetadata},
+      state: {...observedResult, data: releasesMetadata},
     }),
-    [addBundleIdsToListener, bundlesMetadata, observedResult, removeBundleIdsFromListener],
+    [addBundleIdsToListener, releasesMetadata, observedResult, removeBundleIdsFromListener],
   )
 
   return (
