@@ -1,4 +1,4 @@
-import {type BundleDocument} from './types'
+import {type ReleaseDocument} from './types'
 
 interface BundleDeletedAction {
   id: string
@@ -8,17 +8,17 @@ interface BundleDeletedAction {
 }
 
 interface BundleUpdatedAction {
-  payload: BundleDocument
+  payload: ReleaseDocument
   type: 'BUNDLE_UPDATED'
 }
 
 interface ReleasesSetAction {
-  payload: BundleDocument[] | null
+  payload: ReleaseDocument[] | null
   type: 'RELEASES_SET'
 }
 
 interface BundleReceivedAction {
-  payload: BundleDocument
+  payload: ReleaseDocument
   type: 'BUNDLE_RECEIVED'
 }
 
@@ -38,17 +38,17 @@ export type ReleasesReducerAction =
   | LoadingStateChangedAction
 
 export interface ReleasesReducerState {
-  releases: Map<string, BundleDocument>
-  deletedReleases: Record<string, BundleDocument>
+  releases: Map<string, ReleaseDocument>
+  deletedReleases: Record<string, ReleaseDocument>
   state: 'initialising' | 'loading' | 'loaded' | 'error'
   error?: Error
 }
 
-function createReleasesSet(releases: BundleDocument[] | null) {
+function createReleasesSet(releases: ReleaseDocument[] | null) {
   return (releases ?? []).reduce((acc, bundle) => {
     acc.set(bundle._id, bundle)
     return acc
-  }, new Map<string, BundleDocument>())
+  }, new Map<string, ReleaseDocument>())
 }
 
 export function releasesReducer(
@@ -75,7 +75,7 @@ export function releasesReducer(
     }
 
     case 'BUNDLE_RECEIVED': {
-      const receivedBundle = action.payload as BundleDocument
+      const receivedBundle = action.payload as ReleaseDocument
       const currentReleases = new Map(state.releases)
       currentReleases.set(receivedBundle._id, receivedBundle)
 

@@ -5,7 +5,7 @@ import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useStat
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
-import {type BundleDocument, useReleases} from '../../../store'
+import {type ReleaseDocument, useReleases} from '../../../store'
 import {
   type ReleasesMetadata,
   useReleasesMetadata,
@@ -20,7 +20,7 @@ import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 
 type Mode = 'open' | 'archived'
 
-export interface TableBundle extends BundleDocument {
+export interface TableBundle extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
   isDeleted?: boolean
 }

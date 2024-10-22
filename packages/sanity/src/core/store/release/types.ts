@@ -14,7 +14,7 @@ export type releaseType = 'asap' | 'scheduled' | 'undecided'
 /**
  * @internal
  */
-export interface BundleDocument
+export interface ReleaseDocument
   extends Pick<SanityDocument, '_id' | '_createdAt' | '_updatedAt' | '_rev' | '_version'> {
   _type: 'release'
   title: string
@@ -33,12 +33,12 @@ export interface BundleDocument
 /**
  * @internal
  */
-export type FormBundleDocument = PartialExcept<BundleDocument, '_id' | '_type'>
+export type FormReleaseDocument = PartialExcept<ReleaseDocument, '_id' | '_type'>
 
 /**
  * @internal
  */
-export function isBundleDocument(doc: unknown): doc is BundleDocument {
+export function isReleaseDocument(doc: unknown): doc is ReleaseDocument {
   return typeof doc === 'object' && doc !== null && '_type' in doc && doc._type === 'release'
 }
 

@@ -5,7 +5,7 @@ import {useState} from 'react'
 
 import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {type BundleDocument} from '../../../../store/release/types'
+import {type ReleaseDocument} from '../../../../store/release/types'
 import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {ArchivedRelease, UnarchivedRelease} from '../../../__telemetry__/releases.telemetry'
 import {ReleaseDetailsDialog} from '../../../components/dialog/ReleaseDetailsDialog'
@@ -13,7 +13,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 
 export type ReleaseMenuButtonProps = {
   disabled?: boolean
-  bundle?: BundleDocument
+  bundle?: ReleaseDocument
 }
 
 export const ReleaseMenuButton = ({disabled, bundle}: ReleaseMenuButtonProps) => {

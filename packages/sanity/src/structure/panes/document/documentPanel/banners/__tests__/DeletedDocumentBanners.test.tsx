@@ -1,5 +1,5 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {type BundleDocument, LATEST, usePerspective, useReleases} from 'sanity'
+import {LATEST, type ReleaseDocument, usePerspective, useReleases} from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -56,7 +56,7 @@ describe('DeletedDocumentBanners', () => {
   })
 
   it('prefers to show bundle deleted banner when document was in a bundle', async () => {
-    const mockBundleDocument = {_id: 'test'} as BundleDocument
+    const mockBundleDocument = {_id: 'test'} as ReleaseDocument
     mockUsePerspective.mockReturnValue({currentGlobalBundle: mockBundleDocument} as ReturnType<
       typeof usePerspective
     >)
@@ -80,7 +80,7 @@ describe('DeletedDocumentBanners', () => {
   })
 
   it('shows the fallback document deleted banner when document was not in a bundle', async () => {
-    const mockBundleDocument: BundleDocument = {_id: 'test'} as BundleDocument
+    const mockBundleDocument: ReleaseDocument = {_id: 'test'} as ReleaseDocument
 
     mockUsePerspective.mockReturnValue({currentGlobalBundle: LATEST} as ReturnType<
       typeof usePerspective

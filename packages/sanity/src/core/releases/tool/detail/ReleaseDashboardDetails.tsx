@@ -12,14 +12,14 @@ import {
 } from '@sanity/ui'
 import {format} from 'date-fns'
 import {useCallback} from 'react'
-import {type BundleDocument, usePerspective, useTranslation} from 'sanity'
+import {type ReleaseDocument, usePerspective, useTranslation} from 'sanity'
 
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 
-export function ReleaseDashboardDetails({release}: {release: BundleDocument}) {
+export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const {archived, _id, publishedAt} = release
   const {t} = useTranslation(releasesLocaleNamespace)
 

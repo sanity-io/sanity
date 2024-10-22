@@ -8,7 +8,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
-import {type BundleDocument, useTranslation} from 'sanity'
+import {type ReleaseDocument, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {releasesLocaleNamespace} from '../../i18n'
@@ -16,7 +16,7 @@ import {type ReleaseInspector} from './ReleaseDetail'
 
 export function ReleaseDashboardHeader(props: {
   inspector: ReleaseInspector | undefined
-  release: BundleDocument
+  release: ReleaseDocument
   setInspector: Dispatch<SetStateAction<ReleaseInspector | undefined>>
 }) {
   const {inspector, release, setInspector} = props

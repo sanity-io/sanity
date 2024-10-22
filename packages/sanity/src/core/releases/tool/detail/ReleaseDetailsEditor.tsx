@@ -1,13 +1,13 @@
 import {Box, Heading, Text} from '@sanity/ui'
-import {type BundleDocument} from 'sanity'
+import {type ReleaseDocument} from 'sanity'
 
 // TODO: This is not a working example, it's just a placeholder. A proper editor should be implemented.
 export function ReleaseDetailsEditor({
   description,
   title,
 }: {
-  description: BundleDocument['description']
-  title: BundleDocument['title']
+  description: ReleaseDocument['description']
+  title: ReleaseDocument['title']
 }) {
   return (
     <>

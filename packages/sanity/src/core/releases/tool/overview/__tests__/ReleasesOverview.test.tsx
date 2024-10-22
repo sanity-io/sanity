@@ -5,7 +5,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useReleases} from '../../../../store'
-import {type BundleDocument} from '../../../../store/release/types'
+import {type ReleaseDocument} from '../../../../store/release/types'
 import {
   type ReleasesMetadata,
   useReleasesMetadata,
@@ -151,7 +151,7 @@ describe('ReleasesOverview', () => {
         archivedAt: new Date().toISOString(),
         _createdAt: new Date().toISOString(),
       },
-    ] as BundleDocument[]
+    ] as ReleaseDocument[]
 
     beforeEach(async () => {
       mockUseReleases.mockReturnValue({
@@ -163,7 +163,7 @@ describe('ReleasesOverview', () => {
             title: 'Deleted Release',
             _id: 'deleted-release-id',
             _createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * 5).toISOString(),
-          } as BundleDocument,
+          } as ReleaseDocument,
         },
       })
       mockUseReleasesMetadata.mockReturnValue({

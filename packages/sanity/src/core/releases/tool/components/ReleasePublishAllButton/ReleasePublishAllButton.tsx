@@ -2,7 +2,7 @@ import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {type BundleDocument} from 'sanity'
+import {type ReleaseDocument} from 'sanity'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
@@ -13,7 +13,7 @@ import {type DocumentInBundleResult} from '../../../tool/detail/useBundleDocumen
 import {useObserveDocumentRevisions} from './useObserveDocumentRevisions'
 
 interface ReleasePublishAllButtonProps {
-  bundle: BundleDocument
+  bundle: ReleaseDocument
   bundleDocuments: DocumentInBundleResult[]
   disabled?: boolean
 }

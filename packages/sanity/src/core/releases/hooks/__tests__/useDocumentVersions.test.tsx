@@ -3,7 +3,7 @@ import {of} from 'rxjs'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
-import {type BundleDocument} from '../../../store'
+import {type ReleaseDocument} from '../../../store'
 import {type PublishedId} from '../../../util/draftUtils'
 import {useDocumentVersions} from '../useDocumentVersions'
 
@@ -46,13 +46,13 @@ const mockBundles = [
     _createdAt: '2024-07-02T11:37:51Z',
     releaseType: 'asap',
   },
-] satisfies BundleDocument[]
+] satisfies ReleaseDocument[]
 
 async function setupMocks({
   bundles,
   versionIds,
 }: {
-  bundles: BundleDocument[]
+  bundles: ReleaseDocument[]
   versionIds: string[]
 }) {
   const sanityModule = await import('sanity')

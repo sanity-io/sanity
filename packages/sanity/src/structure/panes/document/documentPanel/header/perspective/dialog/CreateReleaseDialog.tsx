@@ -7,7 +7,7 @@ import {
   CreatedRelease,
   createReleaseId,
   DEFAULT_RELEASE_TYPE,
-  type FormBundleDocument,
+  type FormReleaseDocument,
   getCreateVersionOrigin,
   getPublishedId,
   getVersionFromId,
@@ -43,7 +43,7 @@ export function CreateReleaseDialog(props: {
   const documentStore = useDocumentStore()
   const [newReleaseId] = useState(createReleaseId())
 
-  const [value, setValue] = useState((): FormBundleDocument => {
+  const [value, setValue] = useState((): FormReleaseDocument => {
     return {
       _id: newReleaseId,
       _type: 'release',
@@ -68,7 +68,7 @@ export function CreateReleaseDialog(props: {
     getVersionFromId(documentId),
   )
 
-  const handleOnChange = useCallback((changedValue: FormBundleDocument) => {
+  const handleOnChange = useCallback((changedValue: FormReleaseDocument) => {
     setValue(changedValue)
   }, [])
 

@@ -1,7 +1,7 @@
 import {useRouter} from 'sanity/router'
 
 import {useReleases} from '../../store/release'
-import {type BundleDocument} from '../../store/release/types'
+import {type ReleaseDocument} from '../../store/release/types'
 import {LATEST} from '../util/const'
 
 /**
@@ -9,7 +9,7 @@ import {LATEST} from '../util/const'
  */
 export interface PerspectiveValue {
   /* Return the current global bundle */
-  currentGlobalBundle: Partial<BundleDocument>
+  currentGlobalBundle: Partial<ReleaseDocument>
   /* Change the perspective in the studio based on the perspective name */
   setPerspective: (bundleId: string) => void
 }
@@ -37,7 +37,7 @@ export function usePerspective(selectedPerspective?: string): PerspectiveValue {
 
   const selectedBundle =
     perspective && bundles
-      ? bundles.find((bundle: BundleDocument) => `bundle.${bundle._id}` === perspective)
+      ? bundles.find((bundle: ReleaseDocument) => `bundle.${bundle._id}` === perspective)
       : LATEST
 
   // TODO: Improve naming; this may not be global.

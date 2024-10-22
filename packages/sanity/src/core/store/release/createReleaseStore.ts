@@ -23,11 +23,11 @@ import {
 
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
-import {type BundleDocument, type ReleasesStore} from './types'
+import {type ReleaseDocument, type ReleasesStore} from './types'
 
 type ActionWrapper = {action: ReleasesReducerAction}
-type EventWrapper = {event: ListenEvent<BundleDocument>}
-type ResponseWrapper = {response: BundleDocument[]}
+type EventWrapper = {event: ListenEvent<ReleaseDocument>}
+type ResponseWrapper = {response: ReleaseDocument[]}
 
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'
@@ -125,7 +125,7 @@ export function createReleaseStore(context: {
     filter(() => !fetchPending$.value),
     tap(() => fetchPending$.next(true)),
     concatWith(
-      addonClient.observable.fetch<BundleDocument[]>(QUERY, {}, {tag: 'releases.list'}).pipe(
+      addonClient.observable.fetch<ReleaseDocument[]>(QUERY, {}, {tag: 'releases.list'}).pipe(
         timeout(10_000), // 10s timeout
         retry({
           count: 2,
@@ -167,7 +167,7 @@ export function createReleaseStore(context: {
     ),
   )
 
-  const listener$ = addonClient.observable.listen<BundleDocument>(QUERY, {}, LISTEN_OPTIONS).pipe(
+  const listener$ = addonClient.observable.listen<ReleaseDocument>(QUERY, {}, LISTEN_OPTIONS).pipe(
     map((event) => ({event})),
     catchError((error) =>
       of<ActionWrapper>({

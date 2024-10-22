@@ -1,5 +1,5 @@
 import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
-import {type BundleDocument, useReleases} from 'sanity'
+import {type ReleaseDocument, useReleases} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -72,7 +72,7 @@ describe('ReleaseDetailsDialog', () => {
     })
 
     it('should call createRelease, setPerspective, and onCreate when form is submitted with a valid slug', async () => {
-      const value: Partial<BundleDocument> = {
+      const value: Partial<ReleaseDocument> = {
         _type: 'release',
         title: 'Bundle 1',
         hue: 'gray',
@@ -101,7 +101,7 @@ describe('ReleaseDetailsDialog', () => {
   describe('when updating an existing bundle', () => {
     const onCancelMock = vi.fn()
     const onSubmitMock = vi.fn()
-    const existingBundleValue: BundleDocument = {
+    const existingBundleValue: ReleaseDocument = {
       _id: 'existing-bundle',
       _type: 'release',
       _rev: '123',

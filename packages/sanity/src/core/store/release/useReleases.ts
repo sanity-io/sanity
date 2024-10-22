@@ -3,11 +3,11 @@ import {useObservable} from 'react-rx'
 
 import {useReleasesStore} from '../_legacy/datastores'
 import {type ReleasesReducerAction} from './reducer'
-import {type BundleDocument} from './types'
+import {type ReleaseDocument} from './types'
 
 interface ReleasesState {
-  data: BundleDocument[] | null
-  deletedReleases: Record<string, BundleDocument>
+  data: ReleaseDocument[] | null
+  deletedReleases: Record<string, ReleaseDocument>
   error?: Error
   loading: boolean
   dispatch: React.Dispatch<ReleasesReducerAction>

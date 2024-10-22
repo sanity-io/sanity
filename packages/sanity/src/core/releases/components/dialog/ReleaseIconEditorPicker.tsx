@@ -6,7 +6,7 @@ import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, Popover, TooltipDelayGroupProvider} from '../../../../ui-components'
-import {type BundleDocument} from '../../../store/release/types'
+import {type ReleaseDocument} from '../../../store/release/types'
 import {ReleaseBadge} from '../ReleaseBadge'
 
 const StyledStack = styled(Stack)`
@@ -18,8 +18,8 @@ const IconPickerFlex = styled(Flex)`
 `
 
 export interface ReleaseIconEditorPickerValue {
-  hue: BundleDocument['hue']
-  icon: BundleDocument['icon']
+  hue: ReleaseDocument['hue']
+  icon: ReleaseDocument['icon']
 }
 
 export function ReleaseIconEditorPicker(props: {

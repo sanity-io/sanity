@@ -3,9 +3,9 @@ import {type IconSymbol} from '@sanity/icons'
 import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {
-  type FormBundleDocument,
   FormFieldHeaderText,
   type FormNodeValidation,
+  type FormReleaseDocument,
   useDateTimeFormat,
   useTranslation,
 } from 'sanity'
@@ -14,10 +14,10 @@ import {Button} from '../../../../ui-components'
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
-import {type BundleDocument, type releaseType} from '../../../store/release/types'
+import {type ReleaseDocument, type releaseType} from '../../../store/release/types'
 import {ReleaseIconEditorPicker, type ReleaseIconEditorPickerValue} from './ReleaseIconEditorPicker'
 
-interface BaseBundleDocument extends Partial<BundleDocument> {
+interface BaseBundleDocument extends Partial<ReleaseDocument> {
   hue: ColorHueKey
   icon: IconSymbol
 }
@@ -31,8 +31,8 @@ export const DEFAULT_BUNDLE: BaseBundleDocument = {
 
 /** @internal */
 export function ReleaseForm(props: {
-  onChange: (params: FormBundleDocument) => void
-  value: FormBundleDocument
+  onChange: (params: FormReleaseDocument) => void
+  value: FormReleaseDocument
 }): JSX.Element {
   const {onChange, value} = props
   const {title, description, icon, hue, publishedAt, releaseType} = value

@@ -5,11 +5,11 @@ import {memo, useCallback} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   AddedVersion,
-  type BundleDocument,
   getCreateVersionOrigin,
   getPublishedId,
   getVersionId,
   isPublishedId,
+  type ReleaseDocument,
   useDocumentOperation,
   useDocumentStore,
   usePerspective,
@@ -29,7 +29,7 @@ const ReleasesList = styled(Stack)`
 
 export const VersionContextMenu = memo(function VersionContextMenu(props: {
   documentId: string
-  releases: BundleDocument[]
+  releases: ReleaseDocument[]
   releasesLoading: boolean
   documentType: string
   fromRelease: string

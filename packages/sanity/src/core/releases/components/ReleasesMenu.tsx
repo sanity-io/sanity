@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 
 import {MenuButton, Tooltip} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
-import {type BundleDocument} from '../../store/release/types'
+import {type ReleaseDocument} from '../../store/release/types'
 import {useReleases} from '../../store/release/useReleases'
 import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
@@ -24,7 +24,7 @@ const StyledBox = styled(Box)`
 
 interface BundleListProps {
   button: ReactElement
-  bundles: BundleDocument[] | null
+  bundles: ReleaseDocument[] | null
   loading: boolean
   actions?: ReactElement
   perspective?: string

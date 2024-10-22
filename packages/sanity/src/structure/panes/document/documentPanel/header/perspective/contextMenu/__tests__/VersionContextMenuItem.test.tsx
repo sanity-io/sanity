@@ -1,11 +1,11 @@
 import {render, screen} from '@testing-library/react'
-import {type BundleDocument, type releaseType} from 'sanity'
+import {type ReleaseDocument, type releaseType} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
 import {VersionContextMenuItem} from '../VersionContextMenuItem'
 
-const mockRelease: BundleDocument = {
+const mockRelease: ReleaseDocument = {
   _id: '1',
   _type: 'release',
   title: 'Test Release',

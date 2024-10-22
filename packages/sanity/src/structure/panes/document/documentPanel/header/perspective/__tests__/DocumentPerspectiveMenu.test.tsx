@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {type HTMLProps} from 'react'
-import {type BundleDocument, usePerspective} from 'sanity'
+import {type ReleaseDocument, usePerspective} from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
@@ -49,7 +49,7 @@ const mockUseDocumentPane = useDocumentPane as MockedFunction<
 const mockUsePerspective = usePerspective as Mock
 
 describe('DocumentPerspectiveMenu', () => {
-  const mockCurrent: BundleDocument = {
+  const mockCurrent: ReleaseDocument = {
     description: 'What a spring drop, allergies galore 🌸',
     _updatedAt: '2024-07-12T10:39:32Z',
     _rev: 'HdJONGqRccLIid3oECLjYZ',

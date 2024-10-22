@@ -1,5 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
-import {type BundleDocument} from 'sanity'
+import {type ReleaseDocument} from 'sanity'
 
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {ReleasePublishAllButton} from '../components/ReleasePublishAllButton/ReleasePublishAllButton'
@@ -8,7 +8,7 @@ import {type DocumentInBundleResult} from './useBundleDocuments'
 
 export function ReleaseDashboardFooter(props: {
   documents: DocumentInBundleResult[]
-  release: BundleDocument
+  release: ReleaseDocument
   isBundleDeleted: boolean
 }) {
   const {documents, release, isBundleDeleted} = props

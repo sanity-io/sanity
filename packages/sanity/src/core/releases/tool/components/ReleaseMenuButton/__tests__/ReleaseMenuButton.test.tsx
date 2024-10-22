@@ -3,7 +3,7 @@ import {act} from 'react'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {type BundleDocument} from '../../../../../store'
+import {type ReleaseDocument} from '../../../../../store'
 import {useReleaseOperations} from '../../../../../store/release/useReleaseOperations'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
@@ -37,7 +37,7 @@ describe.skip('ReleaseMenuButton', () => {
   })
 
   test('will archive an unarchived release', async () => {
-    const activeRelease: BundleDocument = {
+    const activeRelease: ReleaseDocument = {
       _id: 'activeRelease',
       _type: 'release',
       timing: 'immediately',
@@ -66,7 +66,7 @@ describe.skip('ReleaseMenuButton', () => {
   })
 
   test('will unarchive an archived release', async () => {
-    const archivedRelease: BundleDocument = {
+    const archivedRelease: ReleaseDocument = {
       _id: 'activeRelease',
       _type: 'release',
       timing: 'immediately',
@@ -94,7 +94,7 @@ describe.skip('ReleaseMenuButton', () => {
   })
 
   test('will be disabled', async () => {
-    const disabledActionRelease: BundleDocument = {
+    const disabledActionRelease: ReleaseDocument = {
       _id: 'activeEmptyRelease',
       _type: 'release',
       archivedAt: new Date().toISOString(),

@@ -1,7 +1,7 @@
 import {type RefObject, useCallback, useMemo} from 'react'
 
 import {useTranslation} from '../../../i18n'
-import {type BundleDocument} from '../../../store/release/types'
+import {type ReleaseDocument} from '../../../store/release/types'
 import {releasesLocaleNamespace} from '../../i18n'
 import {Table, type TableProps} from '../components/Table/Table'
 import {DocumentActions} from './documentTable/DocumentActions'
@@ -20,7 +20,7 @@ export interface ReleaseSummaryProps {
   documents: DocumentInBundleResult[]
   documentsHistory: Record<string, DocumentHistory>
   scrollContainerRef: RefObject<HTMLDivElement>
-  release: BundleDocument
+  release: ReleaseDocument
 }
 
 const getRowProps: TableProps<DocumentWithHistory, undefined>['rowProps'] = (datum) =>

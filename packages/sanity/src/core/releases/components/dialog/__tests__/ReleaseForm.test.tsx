@@ -1,5 +1,5 @@
 import {fireEvent, render, screen} from '@testing-library/react'
-import {type BundleDocument, type FormBundleDocument, useDateTimeFormat} from 'sanity'
+import {type FormReleaseDocument, type ReleaseDocument, useDateTimeFormat} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -20,7 +20,7 @@ const mockUseDateTimeFormat = useDateTimeFormat as Mock
 describe('ReleaseForm', () => {
   const onChangeMock = vi.fn()
   const onErrorMock = vi.fn()
-  const valueMock: FormBundleDocument = {
+  const valueMock: FormReleaseDocument = {
     _id: 'very-random',
     _type: 'release',
     title: '',
@@ -36,7 +36,7 @@ describe('ReleaseForm', () => {
       onErrorMock.mockClear()
 
       // Mock the data returned by useBundles hook
-      const mockData: BundleDocument[] = [
+      const mockData: ReleaseDocument[] = [
         {
           description: 'What a spring drop, allergies galore 🌸',
           _updatedAt: '2024-07-12T10:39:32Z',
@@ -110,18 +110,18 @@ describe('ReleaseForm', () => {
   })
 
   describe('when updating an existing bundle', () => {
-    const existingBundleValue: BundleDocument = {
+    const existingBundleValue: ReleaseDocument = {
       title: 'Summer Drop',
       description: 'Summer time',
       icon: 'heart-filled',
       hue: 'magenta',
-    } as BundleDocument
+    } as ReleaseDocument
     beforeEach(async () => {
       onChangeMock.mockClear()
       onErrorMock.mockClear()
 
       // Mock the data returned by useBundles hook
-      const mockData: BundleDocument[] = [
+      const mockData: ReleaseDocument[] = [
         {
           description: 'What a spring drop, allergies galore 🌸',
           _updatedAt: '2024-07-12T10:39:32Z',
@@ -140,7 +140,7 @@ describe('ReleaseForm', () => {
         data: mockData,
         loading: false,
         dispatch: vi.fn(),
-        deletedReleases: {} as Record<string, BundleDocument>,
+        deletedReleases: {} as Record<string, ReleaseDocument>,
       })
 
       mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})

@@ -1,5 +1,5 @@
 import {type VersionOriginTypes} from '../../store'
-import {type BundleDocument} from '../../store/release/types'
+import {type ReleaseDocument} from '../../store/release/types'
 import {
   getVersionFromId,
   isDraftId,
@@ -40,7 +40,7 @@ export function getDocumentIsInPerspective(
 
 /** @internal */
 export function versionDocumentExists(
-  documentVersions: BundleDocument[] = [],
+  documentVersions: ReleaseDocument[] = [],
   bundleId: string,
 ): boolean {
   return documentVersions.some((version) => version._id === bundleId)

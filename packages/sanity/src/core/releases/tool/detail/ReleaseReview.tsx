@@ -5,7 +5,7 @@ import {type RefObject, useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {type BundleDocument} from '../../../store/release/types'
+import {type ReleaseDocument} from '../../../store/release/types'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
 import {DocumentDiffContainer} from './review/DocumentDiffContainer'
@@ -36,7 +36,7 @@ export function ReleaseReview({
   scrollContainerRef,
 }: {
   documents: DocumentInBundleResult[]
-  release: BundleDocument
+  release: ReleaseDocument
   documentsHistory: Record<string, DocumentHistory>
   scrollContainerRef: RefObject<HTMLDivElement>
 }) {

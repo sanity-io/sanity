@@ -2,7 +2,7 @@ import {DocumentRemoveIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {
-  type BundleDocument,
+  type ReleaseDocument,
   Translate,
   useDocumentOperation,
   usePerspective,
@@ -87,7 +87,7 @@ function DeletedDocumentBanner() {
   )
 }
 
-const DeletedBundleBanner = ({deletedBundle}: {deletedBundle: BundleDocument}) => {
+const DeletedBundleBanner = ({deletedBundle}: {deletedBundle: ReleaseDocument}) => {
   const {t} = useTranslation()
 
   const {title: deletedBundleTitle} = deletedBundle

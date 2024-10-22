@@ -5,7 +5,7 @@ import {styled} from 'styled-components'
 
 import {useDateTimeFormat, useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
-import {type BundleDocument} from '../../store/release'
+import {type ReleaseDocument} from '../../store/release'
 import {PerspectiveBadge} from '../perspective/PerspectiveBadge'
 
 interface DocumentStatusProps {
@@ -14,7 +14,7 @@ interface DocumentStatusProps {
   published?: PreviewValue | Partial<SanityDocument> | null
   version?: PreviewValue | Partial<SanityDocument> | null
   singleLine?: boolean
-  currentGlobalBundle?: Partial<BundleDocument>
+  currentGlobalBundle?: Partial<ReleaseDocument>
 }
 
 const StyledText = styled(Text)`

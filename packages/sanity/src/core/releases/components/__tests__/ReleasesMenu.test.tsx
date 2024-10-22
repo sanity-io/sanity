@@ -1,7 +1,7 @@
 import {fireEvent, render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {act} from 'react'
-import {type BundleDocument, useReleases} from 'sanity'
+import {type ReleaseDocument, useReleases} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -30,7 +30,7 @@ const mockUseReleases = useReleases as Mock<typeof useReleases>
 describe('ReleasesMenu', () => {
   const mockUsePerspective = usePerspective as Mock
   const ButtonTest = <Button text="Button Test" />
-  const mockReleases: BundleDocument[] = [
+  const mockReleases: ReleaseDocument[] = [
     {
       hue: 'magenta',
       _id: 'spring-drop',
@@ -224,7 +224,7 @@ describe('ReleasesMenu', () => {
           _id: 'mock-deleted-bundle',
           _type: 'release',
           title: 'Mock Deleted Bundle',
-        } as BundleDocument,
+        } as ReleaseDocument,
       },
     })
     const wrapper = await createTestProvider()
@@ -249,7 +249,7 @@ describe('ReleasesMenu', () => {
           _id: 'mock-deleted-bundle',
           _type: 'release',
           title: 'Mock Deleted Bundle',
-        } as BundleDocument,
+        } as ReleaseDocument,
       },
     })
     const wrapper = await createTestProvider()
@@ -262,7 +262,7 @@ describe('ReleasesMenu', () => {
             _id: 'mock-deleted-bundle',
             _type: 'release',
             title: 'Mock Deleted Bundle',
-          } as BundleDocument,
+          } as ReleaseDocument,
         ]}
         loading={false}
       />,

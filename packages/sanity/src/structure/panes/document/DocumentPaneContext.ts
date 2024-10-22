@@ -6,7 +6,6 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {
-  type BundleDocument,
   type DocumentActionComponent,
   type DocumentBadgeComponent,
   type DocumentFieldAction,
@@ -16,6 +15,7 @@ import {
   type EditStateFor,
   type PatchEvent,
   type PermissionCheckResult,
+  type ReleaseDocument,
   type StateTree,
   type TimelineStore,
 } from 'sanity'
@@ -39,7 +39,7 @@ export interface DocumentPaneContextValue {
   documentId: string
   documentIdRaw: string
   documentType: string
-  documentVersions: BundleDocument[] | null
+  documentVersions: ReleaseDocument[] | null
   editState: EditStateFor | null
   /**
    * Whether the document being edited exists in the checked-out bundle.

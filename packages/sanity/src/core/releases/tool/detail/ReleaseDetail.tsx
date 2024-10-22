@@ -4,7 +4,7 @@ import {LoadingBlock} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Translate, useTranslation} from '../../../i18n'
-import {type BundleDocument, useReleases} from '../../../store/release'
+import {type ReleaseDocument, useReleases} from '../../../store/release'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleasesRouterState} from '../../types/router'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
@@ -39,7 +39,7 @@ export const ReleaseDetail = () => {
 
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading, deletedReleases} = useReleases()
-  const deletedBundle = deletedReleases[releaseId] as BundleDocument | undefined
+  const deletedBundle = deletedReleases[releaseId] as ReleaseDocument | undefined
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
 
@@ -120,7 +120,7 @@ export const ReleaseDetail = () => {
     )
   }
 
-  const bundleInDetail = (bundle || deletedBundle) as BundleDocument
+  const bundleInDetail = (bundle || deletedBundle) as ReleaseDocument
   if (bundleInDetail) {
     return (
       <Flex direction="column" flex={1} height="fill">

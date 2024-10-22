@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {type BundleDocument, RelativeTime, UserAvatar, useTranslation} from 'sanity'
+import {RelativeTime, type ReleaseDocument, UserAvatar, useTranslation} from 'sanity'
 
 import {releasesLocaleNamespace} from '../../i18n'
 import {StatusItem} from '../components/StatusItem'
@@ -14,7 +14,7 @@ function getLastEdit(): LastEdit | null {
   return null
 }
 
-export function ReleaseStatusItems({release}: {release: BundleDocument}) {
+export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
   const lastEdit = getLastEdit()

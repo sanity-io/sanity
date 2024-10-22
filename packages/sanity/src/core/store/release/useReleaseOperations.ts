@@ -7,7 +7,7 @@ import {getPublishedId, useCurrentUser} from 'sanity'
 import {useClient} from '../../hooks'
 import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {type BundleDocument} from './types'
+import {type ReleaseDocument} from './types'
 
 const useGuardedAddonClient = () => {
   const {client: addOnClient, createAddonDataset} = useAddonDataset()
@@ -41,7 +41,7 @@ export function useReleaseOperations() {
   const currentUser = useCurrentUser()
 
   const handleCreateRelease = useCallback(
-    async (bundle: Partial<BundleDocument>) => {
+    async (bundle: Partial<ReleaseDocument>) => {
       const addonClient = await getOrCreateAddonClient()
 
       const document = {
@@ -49,7 +49,7 @@ export function useReleaseOperations() {
         _type: 'release',
         authorId: currentUser?.id,
         _id: bundle._id ?? uuid(),
-      } as BundleDocument
+      } as ReleaseDocument
       const res = await addonClient.createIfNotExists(document)
       return res
     },
@@ -57,14 +57,14 @@ export function useReleaseOperations() {
   )
 
   const handleUpdateRelease = useCallback(
-    async (bundle: Partial<BundleDocument>) => {
+    async (bundle: Partial<ReleaseDocument>) => {
       const addonClient = getAddonClient()
       if (!bundle._id) return null
 
       const document = {
         ...bundle,
         _type: 'release',
-      } as BundleDocument
+      } as ReleaseDocument
       const unsetKeys = Object.entries(bundle)
         .filter(([_, value]) => value === undefined)
         .map(([key]) => key)

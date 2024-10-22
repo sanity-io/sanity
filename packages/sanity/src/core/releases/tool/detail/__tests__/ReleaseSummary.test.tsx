@@ -1,5 +1,5 @@
 import {fireEvent, render, screen, within} from '@testing-library/react'
-import {type BundleDocument, defineType} from 'sanity'
+import {defineType, type ReleaseDocument} from 'sanity'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -134,7 +134,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
             description: 'Release description',
             _createdAt: timeNow.toISOString(),
             authorId: 'author-id',
-          } as BundleDocument
+          } as ReleaseDocument
         }
         {...props}
       />

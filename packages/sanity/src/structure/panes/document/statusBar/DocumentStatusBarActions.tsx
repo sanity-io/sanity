@@ -7,7 +7,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
   Hotkeys,
-  isBundleDocument,
+  isReleaseDocument,
   LATEST,
   ReleaseActions,
   usePerspective,
@@ -84,7 +84,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                 />
               ) : (
                 <>
-                  {isBundleDocument(currentGlobalBundle) && formState?.value?._id ? (
+                  {isReleaseDocument(currentGlobalBundle) && formState?.value?._id ? (
                     <ReleaseActions
                       currentGlobalBundle={currentGlobalBundle}
                       documentId={formState.value._id as string}

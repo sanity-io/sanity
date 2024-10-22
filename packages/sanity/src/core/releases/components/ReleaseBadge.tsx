@@ -6,7 +6,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
-import {type BundleDocument} from '../../store/release/types'
+import {type ReleaseDocument} from '../../store/release/types'
 
 const BadgeRoot = styled(Flex)<{
   $hue: ColorHueKey
@@ -29,7 +29,7 @@ const BadgeRoot = styled(Flex)<{
  */
 export function ReleaseBadge(
   props: Partial<
-    BundleDocument & {
+    ReleaseDocument & {
       icon: IconSymbol
       hue: ColorHueKey
       openButton: boolean

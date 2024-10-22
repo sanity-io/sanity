@@ -1,8 +1,8 @@
 import {type BadgeTone} from '@sanity/ui'
-import {type BundleDocument} from 'sanity'
+import {type ReleaseDocument} from 'sanity'
 
 /** @beta */
-export function getReleaseTone(release: Partial<BundleDocument>): BadgeTone {
+export function getReleaseTone(release: Partial<ReleaseDocument>): BadgeTone {
   /* conflicts with the type scheduled, maybe confusion with published?
  if (release.publishedAt !== undefined) {
     return 'positive'

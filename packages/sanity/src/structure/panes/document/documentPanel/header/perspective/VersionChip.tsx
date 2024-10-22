@@ -1,6 +1,6 @@
 import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
-import {type BundleDocument, getVersionId} from 'sanity'
+import {getVersionId, type ReleaseDocument} from 'sanity'
 import {styled} from 'styled-components'
 
 import {ReleaseAvatar} from '../../../../../../core/releases/components/ReleaseAvatar'
@@ -30,7 +30,7 @@ export const VersionChip = memo(function VersionChip(props: {
   tone: BadgeTone
   contextValues: {
     documentId: string
-    releases: BundleDocument[]
+    releases: ReleaseDocument[]
     releasesLoading: boolean
     documentType: string
     menuReleaseId: string

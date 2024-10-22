@@ -2,10 +2,10 @@ import {ArrowRightIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
-import {DEFAULT_RELEASE_TYPE, type FormBundleDocument, useTranslation} from 'sanity'
+import {DEFAULT_RELEASE_TYPE, type FormReleaseDocument, useTranslation} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
-import {type BundleDocument} from '../../../store/release/types'
+import {type ReleaseDocument} from '../../../store/release/types'
 import {useReleaseOperations} from '../../../store/release/useReleaseOperations'
 import {
   CreatedRelease,
@@ -19,7 +19,7 @@ import {ReleaseForm} from './ReleaseForm'
 interface ReleaseDetailsDialogProps {
   onCancel: () => void
   onSubmit: () => void
-  bundle?: BundleDocument
+  bundle?: ReleaseDocument
   origin?: OriginInfo['origin']
 }
 
@@ -31,7 +31,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
   const {t} = useTranslation()
   const telemetry = useTelemetry()
 
-  const [value, setValue] = useState((): FormBundleDocument => {
+  const [value, setValue] = useState((): FormReleaseDocument => {
     return {
       _id: bundle?._id || createReleaseId(),
       _type: 'release',
@@ -49,7 +49,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
   const {setPerspective} = usePerspective()
 
   const submit = useCallback(
-    (formValue: FormBundleDocument) => {
+    (formValue: FormReleaseDocument) => {
       return formAction === 'edit' ? updateRelease(formValue) : createRelease(formValue)
     },
     [createRelease, formAction, updateRelease],
@@ -84,7 +84,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
     [value, submit, formAction, setPerspective, telemetry, origin, toast, onSubmit],
   )
 
-  const handleOnChange = useCallback((changedValue: FormBundleDocument) => {
+  const handleOnChange = useCallback((changedValue: FormReleaseDocument) => {
     setValue(changedValue)
   }, [])
 

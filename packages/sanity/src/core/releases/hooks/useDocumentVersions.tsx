@@ -3,9 +3,9 @@ import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 import {catchError, scan} from 'rxjs/operators'
 import {
-  type BundleDocument,
   getPublishedId,
   getVersionFromId,
+  type ReleaseDocument,
   useDocumentPreviewStore,
   useReleases,
 } from 'sanity'
@@ -15,7 +15,7 @@ export interface DocumentPerspectiveProps {
 }
 
 export interface DocumentPerspectiveState {
-  data: BundleDocument[]
+  data: ReleaseDocument[]
   error?: unknown
   loading: boolean
 }
