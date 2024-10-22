@@ -1,20 +1,7 @@
 import {AddIcon, CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
-import {memo, useCallback} from 'react'
-import {filter, firstValueFrom} from 'rxjs'
-import {
-  AddedVersion,
-  getCreateVersionOrigin,
-  getPublishedId,
-  getVersionId,
-  isPublishedId,
-  type ReleaseDocument,
-  useDocumentOperation,
-  useDocumentStore,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+import {memo} from 'react'
+import {isPublishedId, type ReleaseDocument, useTranslation} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -31,77 +18,31 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   documentId: string
   releases: ReleaseDocument[]
   releasesLoading: boolean
-  documentType: string
   fromRelease: string
   isVersion: boolean
   onDiscard: () => void
   onCreateRelease: () => void
+  onCreateVersion: (targetId: string) => void
   disabled?: boolean
 }) {
   const {
     documentId,
     releases,
     releasesLoading,
-    documentType,
     fromRelease,
     isVersion,
     onDiscard,
     onCreateRelease,
+    onCreateVersion,
     disabled,
   } = props
   const {t} = useTranslation()
-  const {setPerspective} = usePerspective()
   const isPublished = isPublishedId(documentId) && !isVersion
 
   const optionsReleaseList = releases.map((release) => ({
     value: release,
   }))
-
-  const publishedId = getPublishedId(documentId)
-
   const releaseId = isVersion ? fromRelease : documentId
-  const operationVersion = isVersion ? fromRelease : '' // operations recognises publish and draft as empty
-
-  const {createVersion} = useDocumentOperation(publishedId, documentType, operationVersion)
-
-  const telemetry = useTelemetry()
-  const documentStore = useDocumentStore()
-
-  const handleAddVersion = useCallback(
-    async (targetRelease: string) => {
-      // set up the listener before executing
-      const createVersionSuccess = firstValueFrom(
-        documentStore.pair
-          .operationEvents(getPublishedId(documentId), documentType)
-          .pipe(filter((e) => e.op === 'createVersion' && e.type === 'success')),
-      )
-
-      const docId = getVersionId(publishedId, targetRelease)
-      const origin = isVersion ? 'version' : getCreateVersionOrigin(fromRelease)
-
-      createVersion.execute(docId, origin)
-
-      // only change if the version was created successfully
-      await createVersionSuccess
-      setPerspective(targetRelease)
-
-      telemetry.log(AddedVersion, {
-        schemaType: documentType,
-        documentOrigin: origin,
-      })
-    },
-    [
-      createVersion,
-      documentId,
-      documentStore.pair,
-      documentType,
-      fromRelease,
-      isVersion,
-      publishedId,
-      setPerspective,
-      telemetry,
-    ],
-  )
 
   return (
     <>
@@ -131,7 +72,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
                 <MenuItem
                   as="a"
                   key={option.value._id}
-                  onClick={() => handleAddVersion(option.value._id)}
+                  onClick={() => onCreateVersion(option.value._id)}
                   text={option.value.title}
                   renderMenuItem={() => <VersionContextMenuItem release={option.value} />}
                   disabled={disabled}

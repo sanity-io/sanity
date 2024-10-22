@@ -1,6 +1,17 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
-import {getVersionId, type ReleaseDocument} from 'sanity'
+import {filter, firstValueFrom} from 'rxjs'
+import {
+  AddedVersion,
+  getCreateVersionOrigin,
+  getPublishedId,
+  getVersionId,
+  type ReleaseDocument,
+  useDocumentOperation,
+  useDocumentStore,
+  usePerspective,
+} from 'sanity'
 import {styled} from 'styled-components'
 
 import {ReleaseAvatar} from '../../../../../../core/releases/components/ReleaseAvatar'
@@ -64,6 +75,16 @@ export const VersionChip = memo(function VersionChip(props: {
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+  const {setPerspective} = usePerspective()
+
+  const publishedId = getPublishedId(documentId)
+
+  const operationVersion = isVersion ? fromRelease : '' // operations recognises publish and draft as empty
+
+  const {createVersion} = useDocumentOperation(publishedId, documentType, operationVersion)
+
+  const telemetry = useTelemetry()
+  const documentStore = useDocumentStore()
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -100,6 +121,44 @@ export const VersionChip = memo(function VersionChip(props: {
   const openCreateReleaseDialog = useCallback(() => {
     setIsCreateReleaseDialogOpen(true)
   }, [setIsCreateReleaseDialogOpen])
+
+  const handleAddVersion = useCallback(
+    async (targetRelease: string) => {
+      // set up the listener before executing
+      const createVersionSuccess = firstValueFrom(
+        documentStore.pair
+          .operationEvents(getPublishedId(documentId), documentType)
+          .pipe(filter((e) => e.op === 'createVersion' && e.type === 'success')),
+      )
+
+      const docId = getVersionId(publishedId, targetRelease)
+      const origin = isVersion ? 'version' : getCreateVersionOrigin(fromRelease)
+
+      createVersion.execute(docId, origin)
+
+      // only change if the version was created successfully
+      await createVersionSuccess
+      setPerspective(targetRelease)
+
+      telemetry.log(AddedVersion, {
+        schemaType: documentType,
+        documentOrigin: origin,
+      })
+      close()
+    },
+    [
+      createVersion,
+      documentId,
+      documentStore.pair,
+      documentType,
+      fromRelease,
+      isVersion,
+      publishedId,
+      setPerspective,
+      telemetry,
+      close,
+    ],
+  )
 
   const referenceElement = useMemo(() => {
     if (!contextMenuPoint) {
@@ -146,12 +205,15 @@ export const VersionChip = memo(function VersionChip(props: {
             documentId={documentId}
             releases={releases}
             releasesLoading={releasesLoading}
-            documentType={documentType}
             fromRelease={fromRelease}
             isVersion={isVersion}
             onDiscard={openDiscardDialog}
             onCreateRelease={openCreateReleaseDialog}
             disabled={contextMenuDisabled}
+            onCreateVersion={(targetId: string) => {
+              handleAddVersion(targetId)
+              close()
+            }}
           />
         }
         fallbackPlacements={[]}

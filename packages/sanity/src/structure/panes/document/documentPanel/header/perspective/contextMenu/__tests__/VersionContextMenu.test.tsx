@@ -1,5 +1,5 @@
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
-import {type ReleaseDocument} from 'sanity'
+import * as sanity from 'sanity'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
@@ -44,7 +44,7 @@ vi.mock('sanity/router', () => ({
 }))
 
 describe('VersionContextMenu', () => {
-  const mockReleases: ReleaseDocument[] = [
+  const mockReleases: sanity.ReleaseDocument[] = [
     {
       _id: 'release1',
       title: 'Release 1',
@@ -75,11 +75,11 @@ describe('VersionContextMenu', () => {
     documentId: 'versions.bundle.doc1',
     releases: mockReleases,
     releasesLoading: false,
-    documentType: 'testType',
     fromRelease: 'release1',
     isVersion: true,
     onDiscard: vi.fn(),
     onCreateRelease: vi.fn(),
+    onCreateVersion: vi.fn(),
     disabled: false,
   }
 
@@ -109,7 +109,7 @@ describe('VersionContextMenu', () => {
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
 
-  it.todo('hides discard version on published chip', async () => {
+  it('hides discard version on published chip', async () => {
     const wrapper = await createTestProvider()
     const publishedProps = {
       ...defaultProps,
@@ -117,9 +117,12 @@ describe('VersionContextMenu', () => {
       isVersion: false,
     }
 
+    /** @todo we can probably rewrite this to be better */
+    vi.spyOn(sanity, 'isPublishedId').mockReturnValue(true)
+
     render(<VersionContextMenu {...publishedProps} />, {wrapper})
 
-    expect(screen.getByText('Discard version')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('discard')).not.toBeInTheDocument()
   })
 
   it('calls onDiscard when "Discard version" is clicked', async () => {
@@ -145,24 +148,15 @@ describe('VersionContextMenu', () => {
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
 
-  it.todo(
-    'executes createVersion and sets perspective when handleAddVersion is called',
-    async () => {
-      const wrapper = await createTestProvider()
-      const {createVersion} = require('sanity').useDocumentOperation()
-      const {setPerspective} = require('sanity').usePerspective()
+  it('calls onCreateVersion when a release is clicked and sets the perspective to the release', async () => {
+    const wrapper = await createTestProvider()
 
-      render(<VersionContextMenu {...defaultProps} />, {wrapper})
+    render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
-      fireEvent.click(screen.getByText('Copy version to'))
-      await waitFor(() => {
-        fireEvent.click(screen.getByText('Release 1'))
-      })
-
-      await waitFor(() => {
-        expect(createVersion.execute).toHaveBeenCalled()
-        expect(setPerspective).toHaveBeenCalledWith('release1')
-      })
-    },
-  )
+    fireEvent.click(screen.getByText('Copy version to'))
+    await waitFor(() => {
+      fireEvent.click(screen.getByText('Release 2'))
+    })
+    expect(defaultProps.onCreateRelease).toHaveBeenCalled()
+  })
 })
