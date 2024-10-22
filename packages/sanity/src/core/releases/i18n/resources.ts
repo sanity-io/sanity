@@ -141,18 +141,18 @@ const releasesLocaleStrings = {
 
   /** Header for the document table in the release tool - contributors */
   'table-header.contributors': 'Contributors',
-  /** Header for the document table in the release tool - created */
-  'table-header.created': 'Created',
   /** Header for the document table in the release tool - type */
   'table-header.type': 'Type',
+  /** Header for the document table in the release tool - release title */
+  'table-header.title': 'Release',
   /** Header for the document table in the release tool - action */
   'table-header.action': 'Action',
   /** Header for the document table in the release tool - title */
   'table-header.documents': 'Documents',
   /** Header for the document table in the release tool - edited */
   'table-header.edited': 'Edited',
-  /** Header for the document table in the release tool - published */
-  'table-header.published': 'Published',
+  /** Header for the document table in the release tool - time */
+  'table-header.time': 'Time',
   /** Text for toast when release failed to publish */
   'toast.error': "Failed to publish the '<strong>{{title}}</strong>'",
   /** Text for toast when release has been published */

@@ -5,7 +5,7 @@ import {type CalendarLabels} from './calendar/types'
 
 export const DatePicker = forwardRef(function DatePicker(
   props: Omit<ComponentProps<'div'>, 'onChange'> & {
-    value?: Date
+    value?: Date | null
     onChange: (nextDate: Date) => void
     selectTime?: boolean
     timeStep?: number
@@ -13,7 +13,7 @@ export const DatePicker = forwardRef(function DatePicker(
   },
   ref: ForwardedRef<HTMLDivElement>,
 ) {
-  const {value = new Date(), onChange, calendarLabels, ...rest} = props
+  const {value, onChange, calendarLabels, ...rest} = props
   const [focusedDate, setFocusedDay] = useState<Date>()
 
   const handleSelect = useCallback(
@@ -31,7 +31,7 @@ export const DatePicker = forwardRef(function DatePicker(
       ref={ref}
       selectedDate={value}
       onSelect={handleSelect}
-      focusedDate={focusedDate || value}
+      focusedDate={null}
       onFocusedDateChange={setFocusedDay}
     />
   )

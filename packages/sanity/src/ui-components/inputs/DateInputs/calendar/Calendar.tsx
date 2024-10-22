@@ -11,10 +11,13 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from 'react'
 
+import {TOOL_HEADER_HEIGHT} from '../../../../core/scheduledPublishing/constants'
 import {Button} from '../../../button'
+import {TooltipDelayGroupProvider} from '../../../tooltipDelayGroupProvider'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
 import {features} from './features'
@@ -41,7 +44,7 @@ type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
 // the calendar grid between re-renders
 const PRESERVE_FOCUS_ELEMENT = (
   <span
-    data-preserve-focus
+    // data-preserve-focus
     style={{overflow: 'hidden', position: 'absolute', outline: 'none'}}
     tabIndex={-1}
   />
@@ -83,7 +86,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const moveFocusedDate = useCallback(
-    (by: number) => setFocusedDate(addMonths(focusedDate, by)),
+    (by: number) => setFocusedDate(addMonths(focusedDate || new Date(), by)),
     [focusedDate, setFocusedDate],
   )
 
@@ -94,7 +97,8 @@ export const Calendar = forwardRef(function Calendar(
 
   const handleDateChange = useCallback(
     (date: Date) => {
-      onSelect(setMinutes(setHours(date, selectedDate.getHours()), selectedDate.getMinutes()))
+      const useTheDate = selectedDate || new Date()
+      onSelect(setMinutes(setHours(date, useTheDate.getHours()), useTheDate.getMinutes()))
     },
     [onSelect, selectedDate],
   )
@@ -187,6 +191,75 @@ export const Calendar = forwardRef(function Calendar(
     [handleDateChange],
   )
 
+  const monthPicker = useMemo(() => {
+    return (
+      <Flex
+        align="center"
+        paddingLeft={4}
+        style={{
+          borderBottom: '1px solid var(--card-border-color)',
+          minHeight: `${TOOL_HEADER_HEIGHT}px`,
+          position: 'sticky',
+          top: 0,
+        }}
+      >
+        <Flex align="center" flex={1} justify="space-between">
+          <Text weight="medium" size={1}>
+            {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
+            {(focusedDate || new Date())?.getFullYear()}
+          </Text>
+          <Flex paddingRight={3} gap={2}>
+            <TooltipDelayGroupProvider>
+              <Button
+                icon={ChevronLeftIcon}
+                mode="bleed"
+                onClick={() => moveFocusedDate(-1)}
+                tooltipProps={{content: 'Previous month'}}
+              />
+              <Button
+                icon={ChevronRightIcon}
+                mode="bleed"
+                onClick={() => moveFocusedDate(1)}
+                tooltipProps={{content: 'Next month'}}
+              />
+            </TooltipDelayGroupProvider>
+          </Flex>
+        </Flex>
+      </Flex>
+    )
+
+    return (
+      <Flex>
+        <Box flex={1}>
+          <CalendarMonthSelect
+            onChange={handleFocusedMonthChange}
+            monthNames={labels.monthNames}
+            value={focusedDate?.getMonth()}
+          />
+        </Box>
+        <Box marginLeft={2}>
+          <CalendarYearSelect
+            moveFocusedDate={moveFocusedDate}
+            labels={{
+              goToNextYear: labels.goToNextYear,
+              goToPreviousYear: labels.goToPreviousYear,
+            }}
+            onChange={setFocusedDateYear}
+            value={focusedDate.getFullYear()}
+          />
+        </Box>
+      </Flex>
+    )
+  }, [
+    focusedDate,
+    handleFocusedMonthChange,
+    labels.goToNextYear,
+    labels.goToPreviousYear,
+    labels.monthNames,
+    moveFocusedDate,
+    setFocusedDateYear,
+  ])
+
   const handleNowClick = useCallback(() => onSelect(new Date()), [onSelect])
 
   return (
@@ -203,26 +276,7 @@ export const Calendar = forwardRef(function Calendar(
         )}
 
         {/* Select month and year */}
-        <Flex>
-          <Box flex={1}>
-            <CalendarMonthSelect
-              onChange={handleFocusedMonthChange}
-              monthNames={labels.monthNames}
-              value={focusedDate?.getMonth()}
-            />
-          </Box>
-          <Box marginLeft={2}>
-            <CalendarYearSelect
-              moveFocusedDate={moveFocusedDate}
-              labels={{
-                goToNextYear: labels.goToNextYear,
-                goToPreviousYear: labels.goToPreviousYear,
-              }}
-              onChange={setFocusedDateYear}
-              value={focusedDate.getFullYear()}
-            />
-          </Box>
-        </Flex>
+        {monthPicker}
 
         {/* Selected month (grid of days) */}
         <Box
@@ -234,7 +288,7 @@ export const Calendar = forwardRef(function Calendar(
         >
           <CalendarMonth
             weekDayNames={labels.weekDayNamesShort}
-            date={focusedDate}
+            date={focusedDate || new Date()}
             focused={focusedDate}
             onSelect={handleDateChange}
             selected={selectedDate}

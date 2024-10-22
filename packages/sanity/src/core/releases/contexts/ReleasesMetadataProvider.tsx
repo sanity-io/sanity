@@ -11,8 +11,8 @@ import {type ReleasesMetadata} from '../../store/release/useReleasesMetadata'
  */
 export interface ReleasesMetadataContextValue {
   state: MetadataWrapper
-  addBundleIdsToListener: (slugs: string[]) => void
-  removeBundleIdsFromListener: (slugs: string[]) => void
+  addReleaseIdsToListener: (slugs: string[]) => void
+  removeReleaseIdsFromListener: (slugs: string[]) => void
 }
 
 const DEFAULT_METADATA_STATE: MetadataWrapper = {
@@ -21,16 +21,16 @@ const DEFAULT_METADATA_STATE: MetadataWrapper = {
   loading: false,
 }
 
-const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) => {
-  const [listenerBundleIds, setListenerBundleIds] = useState<string[]>([])
+const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) => {
+  const [listenerReleaseIds, setListenerReleaseIds] = useState<string[]>([])
   const {getMetadataStateForSlugs$} = useReleasesStore()
-  const [bundlesMetadata, setBundlesMetadata] = useState<Record<string, ReleasesMetadata> | null>(
+  const [releasesMetadata, setReleasesMetadata] = useState<Record<string, ReleasesMetadata> | null>(
     null,
   )
 
   const memoObservable = useMemo(
-    () => getMetadataStateForSlugs$(listenerBundleIds),
-    [getMetadataStateForSlugs$, listenerBundleIds],
+    () => getMetadataStateForSlugs$(listenerReleaseIds),
+    [getMetadataStateForSlugs$, listenerReleaseIds],
   )
 
   const observedResult = useObservable(memoObservable) || DEFAULT_METADATA_STATE
@@ -38,32 +38,32 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
   // patch metadata in local state
   useEffect(
     () =>
-      setBundlesMetadata((prevBundleMetadata) => {
-        if (!observedResult.data) return prevBundleMetadata
+      setReleasesMetadata((prevReleaseMetadata) => {
+        if (!observedResult.data) return prevReleaseMetadata
 
-        return {...(prevBundleMetadata || {}), ...observedResult.data}
+        return {...(prevReleaseMetadata || {}), ...observedResult.data}
       }),
     [observedResult.data],
   )
 
-  const addBundleIdsToListener = useCallback((addBundleIds: (string | undefined)[]) => {
-    setListenerBundleIds((prevSlugs) => [
+  const addReleaseIdsToListener = useCallback((addReleaseIds: (string | undefined)[]) => {
+    setListenerReleaseIds((prevSlugs) => [
       ...prevSlugs,
-      ...addBundleIds.filter((bundleId): bundleId is string => typeof bundleId === 'string'),
+      ...addReleaseIds.filter((releaseId): releaseId is string => typeof releaseId === 'string'),
     ])
   }, [])
 
-  const removeBundleIdsFromListener = useCallback((bundleIds: string[]) => {
-    setListenerBundleIds((prevSlugs) => {
+  const removeReleaseIdsFromListener = useCallback((releaseIds: string[]) => {
+    setListenerReleaseIds((prevSlugs) => {
       const {nextSlugs} = prevSlugs.reduce<{removedSlugs: string[]; nextSlugs: string[]}>(
         (acc, slug) => {
           const {removedSlugs, nextSlugs: accNextSlugs} = acc
           /**
-           * In cases where multiple consumers are listening to the same bundle id
-           * the bundle id will appear multiple times in listenerBundleIds array
+           * In cases where multiple consumers are listening to the same release id
+           * the release id will appear multiple times in listenerReleaseIds array
            * removing should only remove 1 instance of the slug and retain all others
            */
-          if (bundleIds.includes(slug) && !removedSlugs.includes(slug)) {
+          if (releaseIds.includes(slug) && !removedSlugs.includes(slug)) {
             return {removedSlugs: [...removedSlugs, slug], nextSlugs: accNextSlugs}
           }
           return {removedSlugs, nextSlugs: [...accNextSlugs, slug]}
@@ -75,16 +75,16 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
   }, [])
 
   const context = useMemo<{
-    addBundleIdsToListener: (slugs: string[]) => void
-    removeBundleIdsFromListener: (slugs: string[]) => void
+    addReleaseIdsToListener: (slugs: string[]) => void
+    removeReleaseIdsFromListener: (slugs: string[]) => void
     state: MetadataWrapper
   }>(
     () => ({
-      addBundleIdsToListener: addBundleIdsToListener,
-      removeBundleIdsFromListener: removeBundleIdsFromListener,
-      state: {...observedResult, data: bundlesMetadata},
+      addReleaseIdsToListener: addReleaseIdsToListener,
+      removeReleaseIdsFromListener: removeReleaseIdsFromListener,
+      state: {...observedResult, data: releasesMetadata},
     }),
-    [addBundleIdsToListener, bundlesMetadata, observedResult, removeBundleIdsFromListener],
+    [addReleaseIdsToListener, releasesMetadata, observedResult, removeReleaseIdsFromListener],
   )
 
   return (
@@ -92,22 +92,22 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
   )
 }
 
-export const BundlesMetadataProvider = ({children}: {children: React.ReactNode}) => {
+export const ReleasesMetadataProvider = ({children}: {children: React.ReactNode}) => {
   const context = useContext(ReleasesMetadataContext)
 
   // Avoid mounting the provider if it's already provided by a parent
   if (context) return children
-  return <BundlesMetadataProviderInner>{children}</BundlesMetadataProviderInner>
+  return <ReleasesMetadataProviderInner>{children}</ReleasesMetadataProviderInner>
 }
 
-export const useBundlesMetadataProvider = (): ReleasesMetadataContextValue => {
+export const useReleasesMetadataProvider = (): ReleasesMetadataContextValue => {
   const contextValue = useContext(ReleasesMetadataContext)
 
   return (
     contextValue || {
       state: DEFAULT_METADATA_STATE,
-      addBundleIdsToListener: () => null,
-      removeBundleIdsFromListener: () => null,
+      addReleaseIdsToListener: () => null,
+      removeReleaseIdsFromListener: () => null,
     }
   )
 }

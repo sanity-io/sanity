@@ -1,6 +1,6 @@
 import {type LayoutProps} from '../../config'
 import {AddonDatasetProvider} from '../../studio'
-import {BundlesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
+import {ReleasesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 
 export function ReleasesStudioLayout(props: LayoutProps) {
   // TODO: Replace for useReleasesEnabled
@@ -12,7 +12,7 @@ export function ReleasesStudioLayout(props: LayoutProps) {
 
   return (
     <AddonDatasetProvider>
-      <BundlesMetadataProvider>{props.renderDefault(props)}</BundlesMetadataProvider>
+      <ReleasesMetadataProvider>{props.renderDefault(props)}</ReleasesMetadataProvider>
     </AddonDatasetProvider>
   )
 }

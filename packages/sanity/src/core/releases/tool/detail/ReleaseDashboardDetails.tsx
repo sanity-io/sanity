@@ -37,6 +37,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
     <Container width={3}>
       <Stack padding={3} paddingY={[4, 4, 5, 6]} space={[3, 3, 4, 5]}>
         <Flex gap={1}>
+          {/* make the pin a component that can be reused */}
           <Button
             disabled={publishedAt !== undefined || archived}
             icon={_id === currentGlobalBundle._id ? PinFilledIcon : PinIcon}

@@ -51,6 +51,7 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   }) => ReactNode
   rowProps?: (datum: TableData) => Partial<TableRowProps>
   scrollContainerRef: MutableRefObject<HTMLDivElement | null>
+  hideTableInlinePadding?: boolean
 }
 
 const CustomCard = styled(Card)`
@@ -103,6 +104,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   loading = false,
   rowProps = () => ({}),
   scrollContainerRef,
+  hideTableInlinePadding = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
@@ -242,6 +244,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
     return <LoadingBlock fill data-testid="table-loading" />
   }
 
+  const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
+
   return (
     <div ref={virtualizerContainerRef}>
       <div
@@ -252,7 +256,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
             'paddingBottom': '110px',
             'width': '100%',
             'position': 'relative',
-            '--maxInlineSize': rem(theme.sanity.v2?.container[3] ?? 0),
+            '--maxInlineSize': rem(maxInlineSize),
             '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
           } as CSSProperties
         }

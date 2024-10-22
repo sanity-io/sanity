@@ -18,21 +18,23 @@ export type ReleasesMetadataMap = Record<string, ReleasesMetadata>
 
 export type MetadataWrapper = {data: ReleasesMetadataMap | null; error: null; loading: boolean}
 
-const getFetchQuery = (bundleIds: string[]) => {
+const getFetchQuery = (releaseIds: string[]) => {
   // projection key must be string - cover the case that a bundle has a number as first char
-  const getSafeKey = (id: string) => `bundle_${id.replaceAll('-', '_')}`
+  const getSafeKey = (id: string) => `release_${id.replaceAll('-', '_')}`
 
-  return bundleIds.reduce(
-    ({subquery: accSubquery, projection: accProjection}, bundleId) => {
+  return releaseIds.reduce(
+    ({subquery: accSubquery, projection: accProjection}, releaseId) => {
       // get a version of the id that is safe to use as key in objects
-      const safeId = getSafeKey(bundleId)
+      const safeId = getSafeKey(releaseId)
 
-      const subquery = `${accSubquery}"${safeId}": *[_id in path("versions.${bundleId}.*")]{_updatedAt } | order(_updatedAt desc),`
+      const subquery = `${accSubquery}"${safeId}": *[_id in path("versions.${releaseId}.*")]{_updatedAt, "docId": string::split(_id, ".")[2] } | order(_updatedAt desc),`
+      // "${safeId}_existingCount": count(*[_id in *[_id in path("versions.${releaseId}.*")]{"publishedVersionId": string::split(_id, ".")[2] }[].publishedVersionId]),`
 
       // conforms to ReleasesMetadata
-      const projection = `${accProjection}"${bundleId}": {
+      const projection = `${accProjection}"${releaseId}": {
               "updatedAt": ${safeId}[0]._updatedAt,
-              "documentCount": count(${safeId})
+              "documentIds": ${safeId}[].docId,
+              "documentCount": count(${safeId}),
             },`
 
       return {subquery, projection}
@@ -51,18 +53,41 @@ const getFetchQuery = (bundleIds: string[]) => {
  */
 export const createReleaseMetadataAggregator = (client: SanityClient | null) => {
   const aggregatorFetch$ = (
-    bundleIds: string[],
+    releaseIds: string[],
     isInitialLoad: boolean = false,
   ): Observable<MetadataWrapper> => {
-    if (!bundleIds?.length || !client) return of({data: null, error: null, loading: false})
+    if (!releaseIds?.length || !client) return of({data: null, error: null, loading: false})
 
     const {subquery: queryAllDocumentsInReleases, projection: projectionToBundleMetadata} =
-      getFetchQuery(bundleIds)
+      getFetchQuery(releaseIds)
 
     const fetchData$ = client.observable
       .fetch<ReleasesMetadataMap>(`{${queryAllDocumentsInReleases}}{${projectionToBundleMetadata}}`)
       .pipe(
-        switchMap((response) => of({data: response, error: null, loading: false})),
+        switchMap((firstResp) => {
+          const nextQuery = Object.entries(firstResp).reduce((agg, cur) => {
+            if (cur[1].documentIds.length === 0) return agg
+
+            return `${agg}"${cur[0]}_existing_count": count(*[_id in [${cur[1].documentIds.map((el) => `"${el}"`).toString()}]]{_id}),`
+          }, ``)
+          return client.observable.fetch(`{${nextQuery}}`).pipe(
+            switchMap((secondResp) =>
+              of({
+                data: Object.entries(firstResp).reduce((acc, el) => {
+                  return {
+                    ...acc,
+                    [el[0]]: {
+                      ...el[1],
+                      existingDocumentCount: secondResp[`${el[0]}_existing_count`] || 0,
+                    },
+                  }
+                }, {}),
+                error: null,
+                loading: false,
+              }),
+            ),
+          )
+        }),
         catchError((error) => {
           console.error('Failed to fetch bundle metadata', error)
           return of({data: null, error, loading: false})
@@ -77,14 +102,14 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
     )
   }
 
-  const aggregatorListener$ = (bundleIds: string[]) => {
-    if (!bundleIds?.length || !client) return EMPTY
+  const aggregatorListener$ = (releaseIds: string[]) => {
+    if (!releaseIds?.length || !client) return EMPTY
 
     return client.observable
       .listen(
-        `(${bundleIds.reduce(
-          (accQuery, bundleId, index) =>
-            `${accQuery}${index === 0 ? '' : '||'} _id in path("versions.${bundleId}.*")`,
+        `*[(${releaseIds.reduce(
+          (accQuery, releaseId, index) =>
+            `${accQuery}${index === 0 ? '' : ' ||'} _id in path("versions.${releaseId}.*")`,
           '',
         )})]`,
         {},
@@ -98,19 +123,19 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
         bufferTime(1_000),
         filter((entriesArray) => entriesArray.length > 0),
         switchMap((entriesArray) => {
-          const mutatedBundleIds = entriesArray.reduce<string[]>((accBundleIds, event) => {
+          const mutatedReleaseIds = entriesArray.reduce<string[]>((accReleaseIds, event) => {
             if ('type' in event && event.type === 'mutation') {
-              const bundleId = event.documentId.split('.')[0]
+              const releaseId = event.documentId.split('.')[1]
               // de-dup mutated bundle slugs
-              if (accBundleIds.includes(bundleId)) return accBundleIds
+              if (accReleaseIds.includes(releaseId)) return accReleaseIds
 
-              return [...accBundleIds, bundleId]
+              return [...accReleaseIds, releaseId]
             }
-            return accBundleIds
+            return accReleaseIds
           }, [])
 
-          if (mutatedBundleIds.length) {
-            return aggregatorFetch$(mutatedBundleIds)
+          if (mutatedReleaseIds.length) {
+            return aggregatorFetch$(mutatedReleaseIds)
           }
 
           return EMPTY
@@ -118,6 +143,6 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
       )
   }
 
-  return (bundleIds: string[]) =>
-    merge(aggregatorFetch$(bundleIds, true), aggregatorListener$(bundleIds))
+  return (releaseIds: string[]) =>
+    merge(aggregatorFetch$(releaseIds, true), aggregatorListener$(releaseIds))
 }

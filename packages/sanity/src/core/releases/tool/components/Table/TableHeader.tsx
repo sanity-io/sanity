@@ -57,7 +57,7 @@ const TableHeaderSearch = ({
  */
 export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
   return (
-    <Card as="thead" borderTop borderBottom>
+    <Card as="thead" borderBottom>
       <Flex
         as="tr"
         style={{
