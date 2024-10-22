@@ -26,7 +26,7 @@ export interface CreateLinkedActionsProps {
   metadata: CreateLinkMetadata
   panelPortalElementId: string
   onDocumentChange: (patchEvent: PatchEvent) => void
-  documentTitle: string
+  documentTitle?: string
 }
 
 /** @internal */

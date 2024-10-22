@@ -51,7 +51,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
         metadata={createLinkMetadata}
         panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
         onDocumentChange={onDocumentChange}
-        documentTitle={title ?? ''}
+        documentTitle={title}
       />
     )
   } else if (showingRevision) {

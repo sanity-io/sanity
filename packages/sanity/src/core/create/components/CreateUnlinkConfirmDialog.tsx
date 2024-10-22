@@ -10,7 +10,7 @@ import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 export interface CreateUnlinkConfirmDialogProps {
   onClose: () => void
   onDocumentChange: (patchEvent: PatchEvent) => void
-  documentTitle: string
+  documentTitle?: string
 }
 
 export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps) {
