@@ -7,7 +7,9 @@ import {Translate, useTranslation} from '../../i18n'
 import {createLocaleNamespace} from '../i18n'
 import {type CreateLinkedDocumentBannerProps} from '../types'
 import {CreateLearnMoreButton} from './CreateLearnMoreButton'
-import {CreateInfoSvg} from './media/CreateInfoSvg'
+import {CreateSvg} from './media/CreateSvg'
+
+const POPOVER_RADIUS = 3
 
 export function CreateLinkedDocumentBanner(props: CreateLinkedDocumentBannerProps) {
   const {metadata} = props
@@ -27,30 +29,26 @@ export function CreateLinkedDocumentBanner(props: CreateLinkedDocumentBannerProp
   }
 
   const popoverContent = (
-    <Stack space={0} ref={popoverRef}>
-      <CreateInfoSvg />
-      <Stack space={4} padding={4}>
-        <Flex gap={2} align="center">
+    <Card overflow="hidden" radius={POPOVER_RADIUS} ref={popoverRef}>
+      <CreateSvg />
+      <Stack space={3} paddingX={4} paddingY={3}>
+        <Flex gap={1} align="center">
           <Text size={1} weight="semibold">
             {t('create-link-info-popover.eyebrow-title')}
           </Text>
-          <Badge size={1}>{t('create-link-info-popover.eyebrow-badge')}</Badge>
+          <Badge fontSize={1}>{t('create-link-info-popover.eyebrow-badge')}</Badge>
         </Flex>
-        <Box>
-          <Heading>{t('create-link-info-popover.header')}</Heading>
-        </Box>
-        <Box>
+        <Stack space={4}>
+          <Heading size={2}>{t('create-link-info-popover.header')}</Heading>
           <Text size={1}>
             <Translate t={t} i18nKey={'create-link-info-popover.text'} />
           </Text>
-        </Box>
-        <Flex flex={1} justify="flex-end">
-          <Box>
+          <Flex flex={1} justify="flex-end">
             <CreateLearnMoreButton />
-          </Box>
-        </Flex>
+          </Flex>
+        </Stack>
       </Stack>
-    </Stack>
+    </Card>
   )
 
   return (
@@ -67,7 +65,7 @@ export function CreateLinkedDocumentBanner(props: CreateLinkedDocumentBannerProp
         <Popover
           content={popoverContent}
           open={infoOpen}
-          radius={3}
+          radius={POPOVER_RADIUS}
           style={{width: 320}}
           tone="default"
           placement="bottom-start"
