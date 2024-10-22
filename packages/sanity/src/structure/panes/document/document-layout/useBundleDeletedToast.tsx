@@ -15,8 +15,10 @@ export const useBundleDeletedToast = () => {
     const hasCheckedOutBundleBeenDeleted = Boolean(deletedReleases[currentGlobalBundleId])
 
     if (hasCheckedOutBundleBeenDeleted) {
-      const {title: deletedBundleTitle, _id: deletedBundleId} =
-        deletedReleases[currentGlobalBundleId]
+      const {
+        metadata: {title: deletedBundleTitle},
+        _id: deletedBundleId,
+      } = deletedReleases[currentGlobalBundleId]
 
       toast.push({
         id: `bundle-deleted-toast-${deletedBundleId}`,

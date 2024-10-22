@@ -20,7 +20,7 @@ export function ReleaseDashboardHeader(props: {
   setInspector: Dispatch<SetStateAction<ReleaseInspector | undefined>>
 }) {
   const {inspector, release, setInspector} = props
-  const {title} = release
+  const title = release.metadata.title
   const {t} = useTranslation(releasesLocaleNamespace)
   const router = useRouter()
   const handleNavigateToReleasesList = useCallback(() => {

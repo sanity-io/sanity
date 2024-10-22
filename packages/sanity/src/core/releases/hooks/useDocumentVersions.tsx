@@ -28,7 +28,7 @@ const INITIAL_STATE: DocumentPerspectiveState = {
 
 /**
  * Fetches the document versions for a given document
- * @param props - document Id of the document (might include bundle slug)
+ * @param props - document Id of the document (might include release slug)
  * @returns - data: document versions, loading, errors
  * @hidden
  * @beta

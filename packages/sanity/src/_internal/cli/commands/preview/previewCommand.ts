@@ -37,7 +37,7 @@ const previewCommand: CliCommandDefinition = {
 
 async function getPreviewAction() {
   // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
-  // NOTE: this `if` statement is not included in the output bundle
+  // NOTE: this `if` statement is not included in the output release
   if (__DEV__) {
     // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
     const mod: typeof import('../../actions/preview/previewAction') = require('../../actions/preview/previewAction.ts')

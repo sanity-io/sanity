@@ -141,7 +141,7 @@ describe('ReleasesOverview', () => {
       {
         title: 'Release 3',
         _id: 'b3abcdefg',
-        publishedAt: new Date().toISOString(),
+        publishAt: new Date().toISOString(),
         slug: 'release-3',
         _createdAt: new Date().toISOString(),
       },

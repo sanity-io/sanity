@@ -7,7 +7,7 @@ import {
   CreatedRelease,
   createReleaseId,
   DEFAULT_RELEASE_TYPE,
-  type FormReleaseDocument,
+  type EditableReleaseDocument,
   getCreateVersionOrigin,
   getPublishedId,
   getVersionFromId,
@@ -43,15 +43,17 @@ export function CreateReleaseDialog(props: {
   const documentStore = useDocumentStore()
   const [newReleaseId] = useState(createReleaseId())
 
-  const [value, setValue] = useState((): FormReleaseDocument => {
+  const [value, setValue] = useState((): EditableReleaseDocument => {
     return {
       _id: newReleaseId,
-      _type: 'release',
-      title: '',
-      description: '',
-      hue: 'gray',
-      icon: 'cube',
-      releaseType: DEFAULT_RELEASE_TYPE,
+      _type: 'system.release',
+      metadata: {
+        title: '',
+        description: '',
+        hue: 'gray',
+        icon: 'cube',
+        releaseType: DEFAULT_RELEASE_TYPE,
+      },
     } as const
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -68,7 +70,7 @@ export function CreateReleaseDialog(props: {
     getVersionFromId(documentId),
   )
 
-  const handleOnChange = useCallback((changedValue: FormReleaseDocument) => {
+  const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
     setValue(changedValue)
   }, [])
 

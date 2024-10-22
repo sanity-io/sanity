@@ -70,15 +70,15 @@ test.each([
 })
 
 describe('getVersionFromId', () => {
-  it('should return the bundle slug', () => {
+  it('should return the release slug', () => {
     expect(getVersionFromId('versions.summer.my-document-id')).toBe('summer')
   })
 
-  it('should return the undefined if no bundle slug is found and document is a draft', () => {
+  it('should return the undefined if no release slug is found and document is a draft', () => {
     expect(getVersionFromId('drafts.my-document-id')).toBe(undefined)
   })
 
-  it('should return the undefined if no bundle slug is found and document is published', () => {
+  it('should return the undefined if no release slug is found and document is published', () => {
     expect(getVersionFromId('my-document-id')).toBe(undefined)
   })
 })

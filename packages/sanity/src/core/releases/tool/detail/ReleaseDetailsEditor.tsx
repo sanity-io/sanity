@@ -6,8 +6,8 @@ export function ReleaseDetailsEditor({
   description,
   title,
 }: {
-  description: ReleaseDocument['description']
-  title: ReleaseDocument['title']
+  description: ReleaseDocument['metadata']['description']
+  title: ReleaseDocument['metadata']['title']
 }) {
   return (
     <>

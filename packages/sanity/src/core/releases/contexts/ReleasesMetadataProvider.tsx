@@ -59,8 +59,8 @@ const BundlesMetadataProviderInner = ({children}: {children: React.ReactNode}) =
         (acc, slug) => {
           const {removedSlugs, nextSlugs: accNextSlugs} = acc
           /**
-           * In cases where multiple consumers are listening to the same bundle id
-           * the bundle id will appear multiple times in listenerBundleIds array
+           * In cases where multiple consumers are listening to the same release id
+           * the release id will appear multiple times in listenerBundleIds array
            * removing should only remove 1 instance of the slug and retain all others
            */
           if (bundleIds.includes(slug) && !removedSlugs.includes(slug)) {

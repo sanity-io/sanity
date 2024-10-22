@@ -30,7 +30,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         if (version === 'v2') {
           const builtHtml = await readFile(path.join(studioPath, 'out/index.html'), 'utf8')
           const builtJs = await readFile(
-            path.join(studioPath, 'out/static/js/app.bundle.js'),
+            path.join(studioPath, 'out/static/js/app.release.js'),
             'utf8',
           )
           const builtCss = await readFile(path.join(studioPath, 'out/static/css/main.css'), 'utf8')

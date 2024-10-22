@@ -9,7 +9,7 @@ const createBundleId = customAlphabet(
 )
 
 /**
- * Create a unique release id. This is used as the bundle id for documents included in the release.
+ * Create a unique release id. This is used as the release id for documents included in the release.
  * @internal
  */
 export function createReleaseId() {

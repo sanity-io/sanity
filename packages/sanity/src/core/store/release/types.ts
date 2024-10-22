@@ -1,6 +1,5 @@
 import {type ColorHueKey} from '@sanity/color'
 import {type IconSymbol} from '@sanity/icons'
-import {type SanityDocument} from '@sanity/types'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
@@ -11,29 +10,57 @@ import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
 /** @internal */
 export type releaseType = 'asap' | 'scheduled' | 'undecided'
 
-/**
- * @internal
- */
-export interface ReleaseDocument
-  extends Pick<SanityDocument, '_id' | '_createdAt' | '_updatedAt' | '_rev' | '_version'> {
-  _type: 'release'
-  title: string
-  archived?: boolean
-  description?: string
-  hue: ColorHueKey
-  icon: IconSymbol
-  authorId: string
-  publishedAt?: string
-  publishedBy?: string
-  releaseType: releaseType
-  archivedAt?: string
-  archivedBy?: string
+export type ReleaseState = 'active' | 'archived' | 'published' | 'scheduled' | 'scheduling'
+
+export type ReleaseFinalDocumentState = {
+  /** Document ID */
+  id: string
+  revisionId: string
+  publishedRevisionId: string
 }
 
 /**
  * @internal
  */
-export type FormReleaseDocument = PartialExcept<ReleaseDocument, '_id' | '_type'>
+export interface ReleaseDocument {
+  /**
+   * typically
+   * _.releases.<name>
+   */
+  _id: string
+  _type: 'system.release'
+  _createdAt: string
+  _updatedAt: string
+  name: string
+  createdBy: string
+  state: ReleaseState
+  finalDocumentStates: ReleaseFinalDocumentState[]
+  publishAt: string
+  metadata: {
+    title: string
+    description?: string
+    hue: ColorHueKey
+    icon: IconSymbol
+
+    intendedPublishAt?: string
+    // todo: the below properties should probably live at the system document
+    createdBy?: string
+    publishedBy?: string
+    releaseType: releaseType
+    archivedAt?: string
+    archivedBy?: string
+  }
+}
+
+/**
+ * @internal
+ */
+export type EditableReleaseDocument = Omit<
+  PartialExcept<ReleaseDocument, '_id' | '_type'>,
+  'metadata'
+> & {
+  metadata: Partial<ReleaseDocument['metadata']>
+}
 
 /**
  * @internal

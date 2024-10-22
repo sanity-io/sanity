@@ -1,15 +1,15 @@
 /**
- * If the provided perspective has the `bundle.` prefix, returns it with this
+ * If the provided perspective has the `release.` prefix, returns it with this
  * prefix removed.
  *
  * @internal
  */
 export function resolveBundlePerspective(perspective?: string): string | undefined {
-  return perspective?.split(/^bundle./).at(1)
+  return perspective?.split(/^release./).at(1)
 }
 
 /**
- * Given a system perspective, or a bundle name prefixed with `bundle.`, returns
+ * Given a system perspective, or a release name prefixed with `release.`, returns
  * an object with either `perspective` or `bundlePerspective` properties that
  * may be submitted directly to Content Lake APIs.
  *

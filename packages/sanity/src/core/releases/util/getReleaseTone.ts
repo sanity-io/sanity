@@ -8,19 +8,19 @@ export function getReleaseTone(release: Partial<ReleaseDocument>): BadgeTone {
     return 'positive'
   }*/
 
-  if (release.archived) {
+  if (release.state === 'archived') {
     return 'default'
   }
 
-  if (release.releaseType === 'asap') {
+  if (release?.metadata?.releaseType === 'asap') {
     return 'critical'
   }
 
-  if (release.releaseType === 'undecided') {
+  if (release?.metadata?.releaseType === 'undecided') {
     return 'explore'
   }
 
-  if (release.releaseType === 'scheduled') {
+  if (release?.metadata?.releaseType === 'scheduled') {
     return 'primary'
   }
   return 'default'

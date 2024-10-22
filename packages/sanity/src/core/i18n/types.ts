@@ -73,7 +73,7 @@ export interface LocalePluginOptions {
 }
 
 /**
- * A locale resource bundle where the locale is inherited from the parent locale definition.
+ * A locale resource release where the locale is inherited from the parent locale definition.
  *
  * @public
  */
@@ -118,7 +118,7 @@ export interface LocaleResourceBundle {
 }
 
 /**
- * A locale resource bundle where the resources are static, eg not lazy loaded.
+ * A locale resource release where the resources are static, eg not lazy loaded.
  *
  * @public
  */

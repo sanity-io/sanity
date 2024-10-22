@@ -20,7 +20,8 @@ import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
-  const {archived, _id, publishedAt} = release
+  const {state, _id, publishAt} = release
+
   const {t} = useTranslation(releasesLocaleNamespace)
 
   const {currentGlobalBundle, setPerspective} = usePerspective()
@@ -38,7 +39,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
       <Stack padding={3} paddingY={[4, 4, 5, 6]} space={[3, 3, 4, 5]}>
         <Flex gap={1}>
           <Button
-            disabled={publishedAt !== undefined || archived}
+            disabled={publishAt !== undefined || state === 'archived'}
             icon={_id === currentGlobalBundle._id ? PinFilledIcon : PinIcon}
             mode="bleed"
             onClick={handlePinRelease}
@@ -51,13 +52,13 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
           />
 
           {
-            publishedAt ? (
+            publishAt ? (
               <Card padding={2} radius={2} tone="positive">
                 <Flex flex={1} gap={2}>
                   <ReleaseAvatar padding={0} tone={getReleaseTone(release)} />
                   <Text muted size={1} weight="medium">
                     {t('dashboard.details.published-on', {
-                      date: format(new Date(publishedAt), `MMM d, yyyy`),
+                      date: format(new Date(publishAt), `MMM d, yyyy`),
                     })}
                   </Text>
                 </Flex>
@@ -69,7 +70,10 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
         </Flex>
 
         <Box padding={2}>
-          <ReleaseDetailsEditor description={release.description} title={release.title} />
+          <ReleaseDetailsEditor
+            description={release.metadata.description}
+            title={release.metadata.title}
+          />
         </Box>
       </Stack>
     </Container>

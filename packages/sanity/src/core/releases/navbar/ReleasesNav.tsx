@@ -53,7 +53,7 @@ export function ReleasesNav(): JSX.Element {
           <Flex align="flex-start" gap={0}>
             <Stack flex={1} paddingY={2} paddingX={2} space={2}>
               <Text size={1} textOverflow="ellipsis" weight="medium">
-                {currentGlobalBundle.title}
+                {currentGlobalBundle.metadata?.title}
               </Text>
             </Stack>
           </Flex>
@@ -67,7 +67,9 @@ export function ReleasesNav(): JSX.Element {
       </IntentLink>
     )
 
-    const tone = currentGlobalBundle.releaseType ? getReleaseTone(currentGlobalBundle) : 'default'
+    const tone = currentGlobalBundle.metadata?.releaseType
+      ? getReleaseTone(currentGlobalBundle)
+      : 'default'
 
     return (
       <Button
@@ -85,7 +87,7 @@ export function ReleasesNav(): JSX.Element {
           </Box>
           <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
             <Text size={1} textOverflow="ellipsis" weight="medium">
-              {currentGlobalBundle.title}
+              {currentGlobalBundle.metadata?.title}
             </Text>
           </Stack>
         </Flex>

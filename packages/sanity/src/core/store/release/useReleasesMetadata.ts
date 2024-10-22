@@ -4,11 +4,11 @@ import {useBundlesMetadataProvider} from '../../releases/contexts/ReleasesMetada
 
 export interface ReleasesMetadata {
   /**
-   * The number of documents with the bundle version as a prefix
+   * The number of documents with the release version as a prefix
    */
   documentCount: number
   /**
-   * The last time a document in the bundle was edited
+   * The last time a document in the release was edited
    */
   updatedAt: string | null
 }
@@ -43,7 +43,7 @@ export const useReleasesMetadata = (releaseIds: string[]) => {
   return {
     error: state.error,
     // loading is only for initial load
-    // changing listened to bundle slugs will not cause a re-load
+    // changing listened to release slugs will not cause a re-load
     loading,
     data: responseData,
   }

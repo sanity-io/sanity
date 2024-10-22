@@ -1,11 +1,9 @@
-import {type ColorHueKey} from '@sanity/color'
-import {type IconSymbol} from '@sanity/icons'
 import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {
+  type EditableReleaseDocument,
   FormFieldHeaderText,
   type FormNodeValidation,
-  type FormReleaseDocument,
   useDateTimeFormat,
   useTranslation,
 } from 'sanity'
@@ -14,28 +12,24 @@ import {Button} from '../../../../ui-components'
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
-import {type ReleaseDocument, type releaseType} from '../../../store/release/types'
+import {type releaseType} from '../../../store/release/types'
 import {ReleaseIconEditorPicker, type ReleaseIconEditorPickerValue} from './ReleaseIconEditorPicker'
 
-interface BaseBundleDocument extends Partial<ReleaseDocument> {
-  hue: ColorHueKey
-  icon: IconSymbol
-}
-
-export const DEFAULT_BUNDLE: BaseBundleDocument = {
+const DEFAULT_METADATA = {
   title: '',
   description: '',
   hue: 'gray',
   icon: 'cube',
-}
+} as const
 
 /** @internal */
 export function ReleaseForm(props: {
-  onChange: (params: FormReleaseDocument) => void
-  value: FormReleaseDocument
+  onChange: (params: EditableReleaseDocument) => void
+  value: EditableReleaseDocument
 }): JSX.Element {
   const {onChange, value} = props
-  const {title, description, icon, hue, publishedAt, releaseType} = value
+  const {title, description, icon, hue, releaseType} = value.metadata || {}
+  const publishAt = value.publishAt
   // derive the action from whether the initial value prop has a slug
   // only editing existing bundles will provide a value.slug
   const {t} = useTranslation()
@@ -51,23 +45,23 @@ export function ReleaseForm(props: {
   const {t: coreT} = useTranslation()
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
   const [inputValue, setInputValue] = useState<string | undefined>(
-    publishedAt ? dateFormatter.format(new Date(publishedAt)) : undefined,
+    publishAt ? dateFormatter.format(new Date(publishAt)) : undefined,
   )
 
   const iconValue: ReleaseIconEditorPickerValue = useMemo(
     () => ({
-      icon: icon ?? DEFAULT_BUNDLE.icon,
-      hue: hue ?? DEFAULT_BUNDLE.hue,
+      icon: icon ?? DEFAULT_METADATA.icon,
+      hue: hue ?? DEFAULT_METADATA.hue,
     }),
     [icon, hue],
   )
 
-  const handleBundleTitleChange = useCallback(
+  const handleReleaseTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const pickedTitle = event.target.value
       onChange({
         ...value,
-        title: pickedTitle,
+        metadata: {...value.metadata, title: pickedTitle},
       })
     },
     [onChange, value],
@@ -78,7 +72,7 @@ export function ReleaseForm(props: {
       const {value: descriptionValue} = event.target
 
       if (typeof descriptionValue !== 'undefined') {
-        onChange({...value, description: descriptionValue})
+        onChange({...value, metadata: {...value.metadata, description: descriptionValue}})
       }
     },
     [onChange, value],
@@ -87,14 +81,17 @@ export function ReleaseForm(props: {
   const handleBundlePublishAtChange = useCallback(
     (date: Date | null) => {
       setInputValue(date ? dateFormatter.format(date) : undefined)
-      onChange({...value, publishedAt: date?.toDateString()})
+      onChange({...value, metadata: {...value.metadata, intendedPublishAt: date?.toDateString()}})
     },
     [dateFormatter, onChange, value],
   )
 
   const handleIconValueChange = useCallback(
     (pickedIcon: ReleaseIconEditorPickerValue) => {
-      onChange({...value, icon: pickedIcon.icon, hue: pickedIcon.hue})
+      onChange({
+        ...value,
+        metadata: {...value.metadata, icon: pickedIcon.icon, hue: pickedIcon.hue},
+      })
     },
     [onChange, value],
   )
@@ -102,7 +99,7 @@ export function ReleaseForm(props: {
   const handleButtonReleaseTypeChange = useCallback(
     (pickedReleaseType: releaseType) => {
       setButtonReleaseType(pickedReleaseType)
-      onChange({...value, releaseType: pickedReleaseType})
+      onChange({...value, metadata: {...value.metadata, releaseType: pickedReleaseType}})
     },
     [onChange, value],
   )
@@ -140,7 +137,7 @@ export function ReleaseForm(props: {
             selectTime
             onChange={handleBundlePublishAtChange}
             calendarLabels={calendarLabels}
-            value={value.publishedAt ? new Date(value.publishedAt) : undefined}
+            value={publishAt ? new Date(publishAt) : undefined}
             inputValue={inputValue || ''}
             constrainSize={false}
           />
@@ -151,7 +148,7 @@ export function ReleaseForm(props: {
         <FormFieldHeaderText title={t('release.form.title')} validation={titleErrors} />
         <TextInput
           data-testid="release-form-title"
-          onChange={handleBundleTitleChange}
+          onChange={handleReleaseTitleChange}
           customValidity={titleErrors.length > 0 ? 'error' : undefined}
           value={title}
         />

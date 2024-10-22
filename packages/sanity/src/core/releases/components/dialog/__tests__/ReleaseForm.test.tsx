@@ -1,5 +1,5 @@
 import {fireEvent, render, screen} from '@testing-library/react'
-import {type FormReleaseDocument, type ReleaseDocument, useDateTimeFormat} from 'sanity'
+import {type EditableReleaseDocument, type ReleaseDocument, useDateTimeFormat} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -20,7 +20,7 @@ const mockUseDateTimeFormat = useDateTimeFormat as Mock
 describe('ReleaseForm', () => {
   const onChangeMock = vi.fn()
   const onErrorMock = vi.fn()
-  const valueMock: FormReleaseDocument = {
+  const valueMock: EditableReleaseDocument = {
     _id: 'very-random',
     _type: 'release',
     title: '',
@@ -30,7 +30,7 @@ describe('ReleaseForm', () => {
     //publishAt: undefined,
   }
 
-  describe('when creating a new bundle', () => {
+  describe('when creating a new release', () => {
     beforeEach(async () => {
       onChangeMock.mockClear()
       onErrorMock.mockClear()
@@ -41,7 +41,7 @@ describe('ReleaseForm', () => {
           description: 'What a spring drop, allergies galore 🌸',
           _updatedAt: '2024-07-12T10:39:32Z',
           _rev: 'HdJONGqRccLIid3oECLjYZ',
-          authorId: 'pzAhBTkNX',
+          createdBy: 'pzAhBTkNX',
           title: 'Spring Drop',
           icon: 'heart-filled',
           _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
@@ -109,7 +109,7 @@ describe('ReleaseForm', () => {
   })*/
   })
 
-  describe('when updating an existing bundle', () => {
+  describe('when updating an existing release', () => {
     const existingBundleValue: ReleaseDocument = {
       title: 'Summer Drop',
       description: 'Summer time',
@@ -126,7 +126,7 @@ describe('ReleaseForm', () => {
           description: 'What a spring drop, allergies galore 🌸',
           _updatedAt: '2024-07-12T10:39:32Z',
           _rev: 'HdJONGqRccLIid3oECLjYZ',
-          authorId: 'pzAhBTkNX',
+          createdBy: 'pzAhBTkNX',
           title: 'Spring Drop',
           icon: 'heart-filled',
           _id: 'db76c50e',
@@ -155,13 +155,13 @@ describe('ReleaseForm', () => {
       const titleInput = screen.getByTestId('release-form-title')
       expect(titleInput).toHaveValue(existingBundleValue.title)
       // the slug of this title already exists,
-      // but the slug for the existing edited bundle will not be changed
+      // but the slug for the existing edited release will not be changed
       fireEvent.change(titleInput, {target: {value: 'Spring Drop'}})
 
       expect(screen.queryByTestId('input-validation-icon-error')).not.toBeInTheDocument()
     })
 
-    it('should populate the form with the existing bundle values', () => {
+    it('should populate the form with the existing release values', () => {
       expect(screen.getByTestId('release-form-title')).toHaveValue(existingBundleValue.title)
       expect(screen.getByTestId('release-form-description')).toHaveValue(
         existingBundleValue.description,

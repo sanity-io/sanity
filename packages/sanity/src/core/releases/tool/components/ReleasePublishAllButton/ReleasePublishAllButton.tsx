@@ -13,13 +13,13 @@ import {type DocumentInBundleResult} from '../../../tool/detail/useBundleDocumen
 import {useObserveDocumentRevisions} from './useObserveDocumentRevisions'
 
 interface ReleasePublishAllButtonProps {
-  bundle: ReleaseDocument
+  release: ReleaseDocument
   bundleDocuments: DocumentInBundleResult[]
   disabled?: boolean
 }
 
 export const ReleasePublishAllButton = ({
-  bundle,
+  release,
   bundleDocuments,
   disabled,
 }: ReleasePublishAllButtonProps) => {
@@ -41,12 +41,12 @@ export const ReleasePublishAllButton = ({
   const isPublishButtonDisabled = disabled || isValidatingDocuments || hasDocumentValidationErrors
 
   const handleConfirmPublishAll = useCallback(async () => {
-    if (!bundle || !publishedDocumentsRevisions) return
+    if (!release || !publishedDocumentsRevisions) return
 
     try {
       setPublishBundleStatus('publishing')
       await publishRelease(
-        bundle._id,
+        release._id,
         bundleDocuments.map(({document}) => document),
         publishedDocumentsRevisions,
       )
@@ -56,7 +56,7 @@ export const ReleasePublishAllButton = ({
         status: 'success',
         title: (
           <Text muted size={1}>
-            <Translate t={t} i18nKey="toast.published" values={{title: bundle.title}} />
+            <Translate t={t} i18nKey="toast.published" values={{title: release.metadata.title}} />
           </Text>
         ),
       })
@@ -65,7 +65,7 @@ export const ReleasePublishAllButton = ({
         status: 'error',
         title: (
           <Text muted size={1}>
-            <Translate t={t} i18nKey="toast.error" values={{title: bundle.title}} />
+            <Translate t={t} i18nKey="toast.error" values={{title: release.metadata.title}} />
           </Text>
         ),
       })
@@ -73,7 +73,7 @@ export const ReleasePublishAllButton = ({
     } finally {
       setPublishBundleStatus('idle')
     }
-  }, [bundle, bundleDocuments, publishRelease, publishedDocumentsRevisions, t, telemetry, toast])
+  }, [release, bundleDocuments, publishRelease, publishedDocumentsRevisions, t, telemetry, toast])
 
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null
@@ -99,7 +99,7 @@ export const ReleasePublishAllButton = ({
               t={t}
               i18nKey="publish-dialog.confirm-publish-description"
               values={{
-                title: bundle.title,
+                title: release.metadata.title,
                 bundleDocumentsLength: bundleDocuments.length,
                 count: bundleDocuments.length,
               }}
@@ -108,7 +108,13 @@ export const ReleasePublishAllButton = ({
         </Text>
       </Dialog>
     )
-  }, [bundle.title, bundleDocuments.length, handleConfirmPublishAll, publishBundleStatus, t])
+  }, [
+    release.metadata.title,
+    bundleDocuments.length,
+    handleConfirmPublishAll,
+    publishBundleStatus,
+    t,
+  ])
 
   const publishTooltipContent = useMemo(() => {
     if (!hasDocumentValidationErrors && !isValidatingDocuments) return null

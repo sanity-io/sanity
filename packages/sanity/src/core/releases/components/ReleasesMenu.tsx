@@ -43,12 +43,12 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
     if (!bundles) return []
 
     return bundles
-      .filter(({_id, archivedAt}) => !isDraftOrPublished(_id) && !archivedAt)
+      .filter(({_id, state}) => !isDraftOrPublished(_id) && state !== 'archived')
       .sort(({_id: aId}, {_id: bId}) => Number(deletedReleases[aId]) - Number(deletedReleases[bId]))
   }, [bundles, deletedReleases])
   const hasBundles = sortedBundlesToDisplay.length > 0
 
-  const handleBundleChange = useCallback(
+  const handleReleaseChange = useCallback(
     (bundleId: string) => () => {
       setPerspective(bundleId)
     },
@@ -79,7 +79,7 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
                       <CheckmarkIcon data-testid="latest-checkmark-icon" />
                     ) : undefined
                   }
-                  onClick={handleBundleChange('drafts')}
+                  onClick={handleReleaseChange('drafts')}
                   pressed={false}
                   text={LATEST.title}
                   data-testid="latest-menu-item"
@@ -88,38 +88,38 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
                   <>
                     <MenuDivider />
                     <StyledBox data-testid="bundles-list">
-                      {sortedBundlesToDisplay.map((bundle) => (
+                      {sortedBundlesToDisplay.map((release) => (
                         <MenuItem
-                          key={bundle._id}
-                          onClick={handleBundleChange(bundle._id)}
+                          key={release._id}
+                          onClick={handleReleaseChange(release._id)}
                           padding={1}
                           pressed={false}
-                          disabled={isBundleDeleted(bundle._id)}
-                          data-testid={`bundle-${bundle._id}`}
+                          disabled={isBundleDeleted(release._id)}
+                          data-testid={`bundle-${release._id}`}
                         >
                           <Tooltip
-                            disabled={!isBundleDeleted(bundle._id)}
+                            disabled={!isBundleDeleted(release._id)}
                             content={t('release.deleted-tooltip')}
                             placement="bottom-start"
                           >
                             <Flex>
                               <ReleaseBadge
-                                hue={bundle.hue}
-                                icon={bundle.icon}
+                                hue={release.metadata.hue}
+                                icon={release.metadata.icon}
                                 padding={2}
-                                isDisabled={isBundleDeleted(bundle._id)}
+                                isDisabled={isBundleDeleted(release._id)}
                               />
 
                               <Box flex={1} padding={2} style={{minWidth: 100}}>
                                 <Text size={1} weight="medium">
-                                  {bundle.title}
+                                  {release.metadata.title}
                                 </Text>
                               </Box>
 
                               {/*<Box padding={2}>
                                 <Text muted size={1}>
-                                  {bundle.publishAt ? (
-                                    <RelativeTime time={bundle.publishAt as Date} useTemporalPhrase />
+                                  {release.publishAt ? (
+                                    <RelativeTime time={release.publishAt as Date} useTemporalPhrase />
                                   ) : (
                                     'No target date'
                                   )}
@@ -130,9 +130,9 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
                                 <Text size={1}>
                                   <CheckmarkIcon
                                     style={{
-                                      opacity: currentGlobalBundle._id === bundle._id ? 1 : 0,
+                                      opacity: currentGlobalBundle._id === release._id ? 1 : 0,
                                     }}
-                                    data-testid={`${bundle._id}-checkmark-icon`}
+                                    data-testid={`${release._id}-checkmark-icon`}
                                   />
                                 </Text>
                               </Box>

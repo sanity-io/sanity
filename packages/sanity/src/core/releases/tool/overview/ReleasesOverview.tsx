@@ -68,8 +68,8 @@ export function ReleasesOverview() {
     () =>
       tableBundles.reduce<{open: TableBundle[]; archived: TableBundle[]}>((groups, bundle) => {
         const isBundleArchived =
-          bundle.archivedAt ||
-          (bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date()))
+          bundle.state === 'archived' ||
+          (bundle.publishAt && isBefore(new Date(bundle.publishAt), new Date()))
         const group = isBundleArchived ? 'archived' : 'open'
 
         return {...groups, [group]: [...groups[group], bundle]}
@@ -158,7 +158,9 @@ export function ReleasesOverview() {
   const applySearchTermToBundles = useCallback(
     (unfilteredData: TableBundle[], tableSearchTerm: string) => {
       return unfilteredData.filter((bundle) => {
-        return bundle.title.toLocaleLowerCase().includes(tableSearchTerm.toLocaleLowerCase())
+        return bundle.metadata.title
+          .toLocaleLowerCase()
+          .includes(tableSearchTerm.toLocaleLowerCase())
       })
     },
     [],
@@ -169,7 +171,7 @@ export function ReleasesOverview() {
 
     if (bundle.isDeleted) return null
 
-    return <ReleaseMenuButton bundle={bundle} />
+    return <ReleaseMenuButton release={bundle} />
   }, [])
 
   return (

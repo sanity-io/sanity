@@ -20,7 +20,7 @@ vi.mock('../../../store/bundles/useBundles', () => ({
   useBundles: vi.fn().mockReturnValue({
     deletedBundles: {},
     loading: false,
-    data: [{_id: 'a-bundle', title: 'Test Bundle'}],
+    data: [{_id: 'a-release', title: 'Test Bundle'}],
   }),
 }))
 
@@ -66,7 +66,7 @@ describe('ReleasesNav', () => {
 
   it('should have clear button to unset perspective when a perspective is chosen', async () => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: {_id: 'a-bundle', title: 'Test Bundle'},
+      currentGlobalBundle: {_id: 'a-release', title: 'Test Bundle'},
       setPerspective: mockSetPerspective,
     })
 
@@ -79,7 +79,7 @@ describe('ReleasesNav', () => {
 
   it('should list the title of the chosen perspective', async () => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: {_id: 'a-bundle', title: 'Test Bundle'},
+      currentGlobalBundle: {_id: 'a-release', title: 'Test Bundle'},
       setPerspective: mockSetPerspective,
     })
 
@@ -90,7 +90,7 @@ describe('ReleasesNav', () => {
 
   it('should show release avatar for chosen perspective', async () => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: {_id: 'a-bundle', title: 'Test Bundle', releaseType: 'asap'},
+      currentGlobalBundle: {_id: 'a-release', title: 'Test Bundle', releaseType: 'asap'},
       setPerspective: mockSetPerspective,
     })
 

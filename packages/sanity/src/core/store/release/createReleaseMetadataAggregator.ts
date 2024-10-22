@@ -19,7 +19,7 @@ export type ReleasesMetadataMap = Record<string, ReleasesMetadata>
 export type MetadataWrapper = {data: ReleasesMetadataMap | null; error: null; loading: boolean}
 
 const getFetchQuery = (bundleIds: string[]) => {
-  // projection key must be string - cover the case that a bundle has a number as first char
+  // projection key must be string - cover the case that a release has a number as first char
   const getSafeKey = (id: string) => `bundle_${id.replaceAll('-', '_')}`
 
   return bundleIds.reduce(
@@ -47,7 +47,7 @@ const getFetchQuery = (bundleIds: string[]) => {
  * An initial fetch is made. This fetch is polled whenever a listener even is emitted
  * Only releases that have been mutated are re-fetched
  *
- * @returns an Observable that accepts a list of bundle slugs and returns a stream of metadata
+ * @returns an Observable that accepts a list of release slugs and returns a stream of metadata
  */
 export const createReleaseMetadataAggregator = (client: SanityClient | null) => {
   const aggregatorFetch$ = (
@@ -64,7 +64,7 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
       .pipe(
         switchMap((response) => of({data: response, error: null, loading: false})),
         catchError((error) => {
-          console.error('Failed to fetch bundle metadata', error)
+          console.error('Failed to fetch release metadata', error)
           return of({data: null, error, loading: false})
         }),
       )
@@ -88,11 +88,16 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
           '',
         )})]`,
         {},
-        {includeResult: true, visibility: 'query', events: ['mutation'], tag: 'bundle-docs.listen'},
+        {
+          includeResult: true,
+          visibility: 'query',
+          events: ['mutation'],
+          tag: 'release-docs.listen',
+        },
       )
       .pipe(
         catchError((error) => {
-          console.error('Failed to listen for bundle metadata', error)
+          console.error('Failed to listen for release metadata', error)
           return EMPTY
         }),
         bufferTime(1_000),
@@ -101,7 +106,7 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
           const mutatedBundleIds = entriesArray.reduce<string[]>((accBundleIds, event) => {
             if ('type' in event && event.type === 'mutation') {
               const bundleId = event.documentId.split('.')[0]
-              // de-dup mutated bundle slugs
+              // de-dup mutated release slugs
               if (accBundleIds.includes(bundleId)) return accBundleIds
 
               return [...accBundleIds, bundleId]

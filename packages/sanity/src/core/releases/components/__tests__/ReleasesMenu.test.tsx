@@ -41,7 +41,7 @@ describe('ReleasesMenu', () => {
       title: 'Spring Drop',
       _updatedAt: '2024-07-02T11:37:51Z',
       _createdAt: '2024-07-02T11:37:51Z',
-      authorId: '',
+      createdBy: '',
       releaseType: 'asap',
     },
     {
@@ -53,7 +53,7 @@ describe('ReleasesMenu', () => {
       _createdAt: '2024-07-02T11:37:06Z',
       _rev: '6z08CvvPnPe5pWSKJ5zJiK',
       _updatedAt: '2024-07-02T11:37:06Z',
-      authorId: '',
+      createdBy: '',
       releaseType: 'asap',
     },
     {
@@ -66,7 +66,7 @@ describe('ReleasesMenu', () => {
       _type: 'release',
       hue: 'red',
       _id: 'f6b2c2cc-1732-4465-bfb3-dd205b5d78e9',
-      authorId: '',
+      createdBy: '',
       releaseType: 'asap',
     },
   ]
@@ -91,7 +91,7 @@ describe('ReleasesMenu', () => {
     })
   })
 
-  it('should render latest bundle menu item when bundles are null', async () => {
+  it('should render latest release menu item when bundles are null', async () => {
     const wrapper = await createTestProvider()
     render(<ReleasesMenu button={ButtonTest} bundles={null} loading={false} />, {
       wrapper,
@@ -105,7 +105,7 @@ describe('ReleasesMenu', () => {
     })
   })
 
-  it('should render latest bundle menu item when bundles are archived', async () => {
+  it('should render latest release menu item when bundles are archived', async () => {
     const wrapper = await createTestProvider()
     const archivedBundles = mockReleases.map((bundle) => ({
       ...bundle,
@@ -123,7 +123,7 @@ describe('ReleasesMenu', () => {
     })
   })
 
-  it('should render latest bundle menu item as selected when currentGlobalBundle is LATEST', async () => {
+  it('should render latest release menu item as selected when currentGlobalBundle is LATEST', async () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: LATEST,
       setPerspective: vi.fn(),
@@ -142,7 +142,7 @@ describe('ReleasesMenu', () => {
     })
   })
 
-  it('should render bundle as selected when currentGlobalBundle is that bundle', async () => {
+  it('should render release as selected when currentGlobalBundle is that release', async () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: mockReleases[0],
       setPerspective: vi.fn(),
@@ -161,7 +161,7 @@ describe('ReleasesMenu', () => {
     })
   })
 
-  it('should render bundle menu items when bundles are provided', async () => {
+  it('should render release menu items when bundles are provided', async () => {
     const wrapper = await createTestProvider()
     render(<ReleasesMenu button={ButtonTest} bundles={mockReleases} loading={false} />, {
       wrapper,
@@ -176,7 +176,7 @@ describe('ReleasesMenu', () => {
     })
   })
 
-  it('should call setPerspective when a bundle menu item is clicked', async () => {
+  it('should call setPerspective when a release menu item is clicked', async () => {
     const setPerspective = vi.fn()
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: LATEST,
@@ -191,7 +191,7 @@ describe('ReleasesMenu', () => {
     fireEvent.click(screen.getByRole('button', {name: 'Button Test'}))
 
     act(() => {
-      userEvent.click(screen.getByTestId('bundle-spring-drop'))
+      userEvent.click(screen.getByTestId('release-spring-drop'))
       expect(setPerspective).toHaveBeenCalledWith('spring-drop')
     })
   })
@@ -274,7 +274,7 @@ describe('ReleasesMenu', () => {
     fireEvent.click(screen.getByRole('button', {name: 'Button Test'}))
 
     const allMenuBundles = within(screen.getByTestId('bundles-list')).getAllByRole('menuitem')
-    // deleted should be at the end of the bundle list
+    // deleted should be at the end of the release list
     const [deletedBundle] = allMenuBundles.reverse()
 
     within(deletedBundle).getByText('Mock Deleted Bundle')

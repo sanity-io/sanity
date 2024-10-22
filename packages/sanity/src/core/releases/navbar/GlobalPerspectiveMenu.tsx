@@ -22,7 +22,7 @@ const StyledBox = styled(Box)`
 `
 
 export function GlobalPerspectiveMenu(): JSX.Element {
-  const {deletedReleases, loading, data: bundles} = useReleases()
+  const {deletedReleases, loading, data: releases} = useReleases()
   const {currentGlobalBundle, setPerspective} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
@@ -30,12 +30,12 @@ export function GlobalPerspectiveMenu(): JSX.Element {
   const {t} = useTranslation()
 
   const sortedBundlesToDisplay = useMemo(() => {
-    if (!bundles) return []
+    if (!releases) return []
 
-    return [...(bundles || []), ...Object.values(deletedReleases)].filter(
-      ({_id, archivedAt}) => !isDraftOrPublished(_id) && !archivedAt,
+    return [...(releases || []), ...Object.values(deletedReleases)].filter(
+      ({_id, state}) => !isDraftOrPublished(_id) && state !== 'archived',
     )
-  }, [bundles, deletedReleases])
+  }, [releases, deletedReleases])
   const hasBundles = sortedBundlesToDisplay.length > 0
 
   const handleBundleChange = useCallback(
@@ -50,7 +50,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     [deletedReleases],
   )
 
-  /* create new bundle */
+  /* create new release */
   const handleCreateBundleClick = useCallback(() => {
     setCreateBundleDialogOpen(true)
   }, [])
@@ -102,7 +102,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
                     <Flex>
                       <Box flex={1} padding={2} style={{minWidth: 100}}>
                         <Text size={1} weight="medium">
-                          {bundle.title}
+                          {bundle.metadata.title}
                         </Text>
                       </Box>
                       <Box padding={2}>

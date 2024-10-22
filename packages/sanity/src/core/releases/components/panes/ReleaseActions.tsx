@@ -38,7 +38,10 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
   const {currentGlobalBundle, documentType, documentId, bundleId} = props
   const publishedId = getPublishedId(documentId)
 
-  const {_id: globalBundleId, title, archivedAt} = currentGlobalBundle
+  const {
+    _id: globalBundleId,
+    metadata: {title, archivedAt},
+  } = currentGlobalBundle
   const documentStore = useDocumentStore()
   const [creatingVersion, setCreatingVersion] = useState<boolean>(false)
   const [isInVersion, setIsInVersion] = useState<boolean>(
@@ -60,7 +63,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
       })
       return
     }
-    // only add to version if there isn't already a version in that bundle of this doc
+    // only add to version if there isn't already a version in that release of this doc
     if (getVersionFromId(documentId) === globalBundleId) {
       toast.push({
         status: 'error',

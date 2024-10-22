@@ -45,7 +45,7 @@ export const ReleaseDetail = () => {
 
   const documentIds = results.map((result) => result.document?._id)
   const history = useReleaseHistory(documentIds, releaseId)
-  const bundle = data?.find((storeBundle) => storeBundle._id === releaseId)
+  const release = data?.find((storeBundle) => storeBundle._id === releaseId)
 
   const navigateToReview = useCallback(() => {
     router.navigate({
@@ -64,10 +64,10 @@ export const ReleaseDetail = () => {
   // review screen will not be available once published
   // so redirect to summary screen
   useEffect(() => {
-    if (activeView === 'review' && bundle?.publishedAt) {
+    if (activeView === 'review' && release?.publishAt) {
       navigateToSummary()
     }
-  }, [activeView, bundle?.publishedAt, navigateToSummary])
+  }, [activeView, release?.publishAt, navigateToSummary])
 
   const scrollContainerRef = useRef(null)
 
@@ -78,7 +78,11 @@ export const ReleaseDetail = () => {
           <Container width={0}>
             <Stack paddingY={4} space={1}>
               <Heading>
-                <Translate t={t} i18nKey="deleted-release" values={{title: deletedBundle.title}} />
+                <Translate
+                  t={t}
+                  i18nKey="deleted-release"
+                  values={{title: deletedBundle.metadata.title}}
+                />
               </Heading>
             </Stack>
           </Container>
@@ -88,13 +92,13 @@ export const ReleaseDetail = () => {
     if (documentsLoading) {
       return <LoadingBlock title={t('document-loading')} />
     }
-    if (!bundle) return null
+    if (!release) return null
 
     if (activeView === 'summary') {
       return (
         <ReleaseSummary
           documents={results}
-          release={bundle}
+          release={release}
           documentsHistory={history.documentsHistory}
           scrollContainerRef={scrollContainerRef}
         />
@@ -105,22 +109,26 @@ export const ReleaseDetail = () => {
       return (
         <ReleaseReview
           documents={results}
-          release={bundle}
+          release={release}
           documentsHistory={history.documentsHistory}
           scrollContainerRef={scrollContainerRef}
         />
       )
     }
     return null
-  }, [activeView, bundle, deletedBundle, documentsLoading, history.documentsHistory, results, t])
+  }, [activeView, release, deletedBundle, documentsLoading, history.documentsHistory, results, t])
 
   if (loading) {
     return (
-      <LoadingBlock title={t('loading-release')} fill data-testid="bundle-documents-table-loader" />
+      <LoadingBlock
+        title={t('loading-release')}
+        fill
+        data-testid="release-documents-table-loader"
+      />
     )
   }
 
-  const bundleInDetail = (bundle || deletedBundle) as ReleaseDocument
+  const bundleInDetail = (release || deletedBundle) as ReleaseDocument
   if (bundleInDetail) {
     return (
       <Flex direction="column" flex={1} height="fill">

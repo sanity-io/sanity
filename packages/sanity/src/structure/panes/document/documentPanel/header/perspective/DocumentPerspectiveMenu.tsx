@@ -22,7 +22,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
     dateStyle: 'medium',
     timeStyle: 'short',
   })
-  const {data: bundles, loading} = useReleases()
+  const {data: releases, loading} = useReleases()
 
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()
 
@@ -30,18 +30,19 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   // remove the archived releases
   const filteredReleases =
     (documentVersions &&
-      bundles?.filter(
-        (bundle) => !versionDocumentExists(documentVersions, bundle._id) && !bundle.archivedAt,
+      releases?.filter(
+        (release) =>
+          !versionDocumentExists(documentVersions, release._id) && release.state !== 'archived',
       )) ||
     []
 
-  const asapReleases = documentVersions?.filter((release) => release.releaseType === 'asap')
-
-  const scheduledReleases = documentVersions?.filter(
-    (release) => release.releaseType === 'scheduled',
+  const asapReleases = documentVersions?.filter(
+    (release) => release.metadata.releaseType === 'asap',
   )
+
+  const scheduledReleases = documentVersions?.filter((release) => release.state === 'scheduled')
   const undecidedReleases = documentVersions?.filter(
-    (release) => release.releaseType === 'undecided',
+    (release) => release.metadata.releaseType === 'undecided',
   )
 
   const handleBundleChange = useCallback(
@@ -132,7 +133,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             tooltipContent={<Text size={1}>ASAP</Text>}
             selected={release._id === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release._id)}
-            text={release.title}
+            text={release.metadata.title}
             tone={getReleaseTone(release)}
             contextValues={{
               documentId: displayed?._id || '',
@@ -153,14 +154,14 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             // eslint-disable-next-line i18next/no-literal-string
             tooltipContent={
               <Text size={1}>
-                {release.publishedAt
-                  ? `Intended for ${dateTimeFormat.format(new Date(release.publishedAt))}`
+                {release.metadata.intendedPublishAt
+                  ? `Intended for ${dateTimeFormat.format(new Date(release.metadata.intendedPublishAt))}`
                   : 'Unknown date'}
               </Text>
             }
             selected={release._id === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release._id)}
-            text={release.title}
+            text={release.metadata.title}
             tone={getReleaseTone(release)}
             contextValues={{
               documentId: displayed?._id || '',
@@ -181,7 +182,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             tooltipContent={'Undecided'}
             selected={release._id === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release._id)}
-            text={release.title}
+            text={release.metadata.title}
             tone={getReleaseTone(release)}
             contextValues={{
               documentId: displayed?._id || '',

@@ -18,8 +18,8 @@ const IconPickerFlex = styled(Flex)`
 `
 
 export interface ReleaseIconEditorPickerValue {
-  hue: ReleaseDocument['hue']
-  icon: ReleaseDocument['icon']
+  hue: ReleaseDocument['metadata']['hue']
+  icon: ReleaseDocument['metadata']['icon']
 }
 
 export function ReleaseIconEditorPicker(props: {

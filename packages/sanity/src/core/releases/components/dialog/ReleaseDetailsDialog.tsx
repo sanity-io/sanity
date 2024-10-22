@@ -2,7 +2,7 @@ import {ArrowRightIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
-import {DEFAULT_RELEASE_TYPE, type FormReleaseDocument, useTranslation} from 'sanity'
+import {DEFAULT_RELEASE_TYPE, type EditableReleaseDocument, useTranslation} from 'sanity'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {type ReleaseDocument} from '../../../store/release/types'
@@ -19,28 +19,30 @@ import {ReleaseForm} from './ReleaseForm'
 interface ReleaseDetailsDialogProps {
   onCancel: () => void
   onSubmit: () => void
-  bundle?: ReleaseDocument
+  release?: ReleaseDocument
   origin?: OriginInfo['origin']
 }
 
 export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Element {
-  const {onCancel, onSubmit, bundle, origin} = props
+  const {onCancel, onSubmit, release, origin} = props
   const toast = useToast()
   const {createRelease, updateRelease} = useReleaseOperations()
-  const formAction = bundle ? 'edit' : 'create'
+  const formAction = release ? 'edit' : 'create'
   const {t} = useTranslation()
   const telemetry = useTelemetry()
 
-  const [value, setValue] = useState((): FormReleaseDocument => {
+  const [value, setValue] = useState((): EditableReleaseDocument => {
     return {
-      _id: bundle?._id || createReleaseId(),
-      _type: 'release',
-      title: bundle?.title,
-      description: bundle?.description,
-      hue: bundle?.hue || 'gray',
-      icon: bundle?.icon || 'cube',
-      publishedAt: bundle?.publishedAt,
-      releaseType: bundle?.releaseType || DEFAULT_RELEASE_TYPE,
+      _id: release?._id || createReleaseId(),
+      _type: 'system.release',
+      metadata: {
+        title: release?.metadata.title,
+        description: release?.metadata.description,
+        hue: release?.metadata.hue || 'gray',
+        icon: release?.metadata.icon || 'cube',
+        intendedPublishAt: release?.metadata?.intendedPublishAt,
+        releaseType: release?.metadata.releaseType || DEFAULT_RELEASE_TYPE,
+      },
     } as const
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -49,7 +51,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
   const {setPerspective} = usePerspective()
 
   const submit = useCallback(
-    (formValue: FormReleaseDocument) => {
+    (formValue: EditableReleaseDocument) => {
       return formAction === 'edit' ? updateRelease(formValue) : createRelease(formValue)
     },
     [createRelease, formAction, updateRelease],
@@ -61,7 +63,10 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
         event.preventDefault()
         setIsSubmitting(true)
 
-        const submitValue = {...value, title: value.title?.trim()}
+        const submitValue = {
+          ...value,
+          metadata: {...value.metadata, title: value.metadata?.title?.trim()},
+        }
         await submit(submitValue)
         if (formAction === 'create') {
           setPerspective(value._id)
@@ -84,7 +89,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
     [value, submit, formAction, setPerspective, telemetry, origin, toast, onSubmit],
   )
 
-  const handleOnChange = useCallback((changedValue: FormReleaseDocument) => {
+  const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
     setValue(changedValue)
   }, [])
 
@@ -100,7 +105,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
         <Flex justify="flex-end" paddingTop={5}>
           <Button
             size="large"
-            disabled={!value.title?.trim() || isSubmitting}
+            disabled={!value.metadata?.title?.trim() || isSubmitting}
             iconRight={ArrowRightIcon}
             type="submit"
             text={dialogTitle}

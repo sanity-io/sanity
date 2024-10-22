@@ -52,7 +52,7 @@ export const PreviewCard = forwardRef(function PreviewCard(
 
 /**
  *  This is a workaround for a circular import issue.
- * Calling `styled(PreviewCard)` at program load time triggered a build error with the commonjs bundle because it tried
+ * Calling `styled(PreviewCard)` at program load time triggered a build error with the commonjs release because it tried
  * to access the PreviewCard variable/symbol before it was initialized.
  * The workaround is to colocate the styled component with the component itself.
  * @internal

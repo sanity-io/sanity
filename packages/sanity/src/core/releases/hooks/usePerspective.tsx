@@ -8,7 +8,7 @@ import {LATEST} from '../util/const'
  * @internal
  */
 export interface PerspectiveValue {
-  /* Return the current global bundle */
+  /* Return the current global release */
   currentGlobalBundle: Partial<ReleaseDocument>
   /* Change the perspective in the studio based on the perspective name */
   setPerspective: (bundleId: string) => void

@@ -15,7 +15,7 @@ const mimeTypes: Record<string, string | undefined> = {
  * Fallback favicons plugin for Sanity.
  *
  * If a favicon is not found in the static folder, this plugin will serve the default
- * Sanity favicons from the npm bundle. If a custom `favicon.ico` is found in the static
+ * Sanity favicons from the npm release. If a custom `favicon.ico` is found in the static
  * folder, it will also be served for a root `/favicon.ico` request.
  *
  * @param options - Options for the plugin

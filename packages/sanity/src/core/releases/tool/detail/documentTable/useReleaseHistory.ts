@@ -11,7 +11,7 @@ export type DocumentHistory = {
   editors: string[]
 }
 
-// TODO: Update this to contemplate the _revision change on any of the internal bundle documents, and fetch only the history of that document if changes.
+// TODO: Update this to contemplate the _revision change on any of the internal release documents, and fetch only the history of that document if changes.
 export function useReleaseHistory(
   bundleDocumentsIds: string[],
   releaseId: string,

@@ -2,12 +2,11 @@ import {type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 import {omit} from 'lodash'
 import {useCallback} from 'react'
-import {getPublishedId, useCurrentUser} from 'sanity'
+import {type EditableReleaseDocument, getPublishedId, useCurrentUser} from 'sanity'
 
 import {useClient} from '../../hooks'
 import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {type ReleaseDocument} from './types'
 
 const useGuardedAddonClient = () => {
   const {client: addOnClient, createAddonDataset} = useAddonDataset()
@@ -41,15 +40,15 @@ export function useReleaseOperations() {
   const currentUser = useCurrentUser()
 
   const handleCreateRelease = useCallback(
-    async (bundle: Partial<ReleaseDocument>) => {
+    async (release: EditableReleaseDocument) => {
       const addonClient = await getOrCreateAddonClient()
 
       const document = {
-        ...bundle,
-        _type: 'release',
+        ...release,
+        _type: 'system.release',
         authorId: currentUser?.id,
-        _id: bundle._id ?? uuid(),
-      } as ReleaseDocument
+        _id: release._id ?? `_.release.${uuid()}`,
+      }
       const res = await addonClient.createIfNotExists(document)
       return res
     },
@@ -57,19 +56,19 @@ export function useReleaseOperations() {
   )
 
   const handleUpdateRelease = useCallback(
-    async (bundle: Partial<ReleaseDocument>) => {
+    async (release: EditableReleaseDocument) => {
       const addonClient = getAddonClient()
-      if (!bundle._id) return null
+      if (!release._id) return null
 
       const document = {
-        ...bundle,
-        _type: 'release',
-      } as ReleaseDocument
-      const unsetKeys = Object.entries(bundle)
+        ...release,
+        _type: 'system.release',
+      }
+      const unsetKeys = Object.entries(release)
         .filter(([_, value]) => value === undefined)
         .map(([key]) => key)
 
-      let clientOperation = addonClient.patch(bundle._id).set(document)
+      let clientOperation = addonClient.patch(release._id).set(document)
       if (unsetKeys.length) {
         clientOperation = clientOperation.unset(unsetKeys)
       }
@@ -97,7 +96,7 @@ export function useReleaseOperations() {
           ...versionDocument,
           _id: publishedDocumentId,
         }
-        // verify that local bundle document matches remote latest revision
+        // verify that local release document matches remote latest revision
         transaction.patch(bundleDocument._id, {
           unset: ['_revision_lock_pseudo_field_'],
           ifRevisionID: bundleDocument._rev,
@@ -109,7 +108,7 @@ export function useReleaseOperations() {
             unset: ['_revision_lock_pseudo_field_'],
             ifRevisionID: publishedDocumentRevisionId,
           })
-          // update the published document with the bundle version
+          // update the published document with the release version
           transaction.createOrReplace(publishedDocument)
         } else {
           // if published document doesn't exist, do not override

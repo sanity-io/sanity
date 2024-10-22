@@ -2,24 +2,26 @@ import {describe, expect, it} from 'vitest'
 
 import {getDocumentIsInPerspective} from './util'
 
-// * - document: `summer.my-document-id`, perspective: `bundle.summer` : **true**
-// * - document: `my-document-id`, perspective: `bundle.summer` : **false**
-// * - document: `summer.my-document-id`perspective: `bundle.winter` : **false**
+// * - document: `summer.my-document-id`, perspective: `release.summer` : **true**
+// * - document: `my-document-id`, perspective: `release.summer` : **false**
+// * - document: `summer.my-document-id`perspective: `release.winter` : **false**
 // * - document: `summer.my-document-id`, perspective: `undefined` : **false**
 // * - document: `my-document-id`, perspective: `undefined` : **true**
 // * - document: `drafts.my-document-id`, perspective: `undefined` : **true**
 
 describe('getDocumentIsInPerspective', () => {
   it('should return true if document is in the current perspective', () => {
-    expect(getDocumentIsInPerspective('versions.summer.my-document-id', 'bundle.summer')).toBe(true)
+    expect(getDocumentIsInPerspective('versions.summer.my-document-id', 'release.summer')).toBe(
+      true,
+    )
   })
 
   it('should return false if document is not a version  document a perspective is provided', () => {
-    expect(getDocumentIsInPerspective('my-document-id', 'bundle.summer')).toBe(false)
+    expect(getDocumentIsInPerspective('my-document-id', 'release.summer')).toBe(false)
   })
 
   it('should return false if document is not in the current perspective', () => {
-    expect(getDocumentIsInPerspective('versions.summer.my-document-id', 'bundle.winter')).toBe(
+    expect(getDocumentIsInPerspective('versions.summer.my-document-id', 'release.winter')).toBe(
       false,
     )
   })
@@ -37,7 +39,10 @@ describe('getDocumentIsInPerspective', () => {
 
   it('should handle complex document ids correctly', () => {
     expect(
-      getDocumentIsInPerspective('versions.complex-summer.my-document-id', 'bundle.complex-summer'),
+      getDocumentIsInPerspective(
+        'versions.complex-summer.my-document-id',
+        'release.complex-summer',
+      ),
     ).toBe(true)
   })
 })

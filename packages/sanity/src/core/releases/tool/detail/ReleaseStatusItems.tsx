@@ -21,9 +21,9 @@ export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
   return (
     <Flex flex={1} gap={1}>
       {/* Created */}
-      {!release.archivedAt && !release.publishedAt && !lastEdit && (
+      {!release.metadata.archivedAt && !release.publishAt && !lastEdit && (
         <StatusItem
-          avatar={<UserAvatar size={0} user={release.authorId} />}
+          avatar={<UserAvatar size={0} user={release.createdBy} />}
           text={
             <>
               {t('footer.status.created')} <RelativeTime time={release._createdAt} />
@@ -33,9 +33,11 @@ export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
       )}
 
       {/* Edited */}
-      {lastEdit && !release.publishedAt && !release.archived && (
+      {lastEdit && !release.publishAt && release.state === 'archived' && (
         <StatusItem
-          avatar={release.publishedBy ? <UserAvatar size={0} user={lastEdit.author} /> : null}
+          avatar={
+            release.metadata.publishedBy ? <UserAvatar size={0} user={lastEdit.author} /> : null
+          }
           text={
             <>
               {t('footer.status.edited')} <RelativeTime time={lastEdit.date} />
@@ -45,24 +47,32 @@ export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
       )}
 
       {/* Published */}
-      {release.publishedAt && (
+      {release.publishAt && (
         <StatusItem
-          avatar={release.publishedBy ? <UserAvatar size={0} user={release.publishedBy} /> : null}
+          avatar={
+            release.metadata.publishedBy ? (
+              <UserAvatar size={0} user={release.metadata.publishedBy} />
+            ) : null
+          }
           text={
             <>
-              {t('footer.status.published')} <RelativeTime time={release.publishedAt} />
+              {t('footer.status.published')} <RelativeTime time={release.publishAt} />
             </>
           }
         />
       )}
 
       {/* Archived */}
-      {release.archived && release.archivedAt && (
+      {release.state === 'archived' && release.metadata.archivedAt && (
         <StatusItem
-          avatar={release.archivedBy ? <UserAvatar size={0} user={release.archivedBy} /> : null}
+          avatar={
+            release.metadata.archivedBy ? (
+              <UserAvatar size={0} user={release.metadata.archivedBy} />
+            ) : null
+          }
           text={
             <>
-              {t('footer.status.archived')} <RelativeTime time={release.archivedAt} />`
+              {t('footer.status.archived')} <RelativeTime time={release.metadata.archivedAt} />`
             </>
           }
         />

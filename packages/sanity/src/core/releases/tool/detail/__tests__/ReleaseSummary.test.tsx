@@ -133,7 +133,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
             title: 'Release title',
             description: 'Release description',
             _createdAt: timeNow.toISOString(),
-            authorId: 'author-id',
+            createdBy: 'author-id',
           } as ReleaseDocument
         }
         {...props}

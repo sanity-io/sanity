@@ -36,8 +36,8 @@ jobs:
           paths:
             - .pnpm-store
       - run:
-          name: Build bundle
-          command: pnpm run build:bundle
+          name: Build release
+          command: pnpm run build:release
       - run:
           name: Copy to bucket
-          command: npm run bundle:upload
+          command: npm run release:upload

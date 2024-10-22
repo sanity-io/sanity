@@ -23,7 +23,7 @@ export const defaultConfig: UserConfig = {
     rollupOptions: {
       // self-externals are required here in order to ensure that the presentation
       // tool and future transitive dependencies that require sanity do not
-      // re-include sanity in their bundle
+      // re-include sanity in their release
       external: ['react', 'react-dom', 'styled-components', 'sanity', '@sanity/vision'].flatMap(
         (dependency) => [
           dependency,

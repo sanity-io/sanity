@@ -39,7 +39,7 @@ describe('ReleaseDetailsDialog', () => {
     vi.clearAllMocks()
   })
 
-  describe('when creating a new bundle', () => {
+  describe('when creating a new release', () => {
     const onCancelMock = vi.fn()
     const onSubmitMock = vi.fn()
 
@@ -98,20 +98,20 @@ describe('ReleaseDetailsDialog', () => {
     })
   })
 
-  describe('when updating an existing bundle', () => {
+  describe('when updating an existing release', () => {
     const onCancelMock = vi.fn()
     const onSubmitMock = vi.fn()
     const existingBundleValue: ReleaseDocument = {
-      _id: 'existing-bundle',
+      _id: 'existing-release',
       _type: 'release',
       _rev: '123',
       _createdAt: '2024-07-02T11:37:51Z',
       _updatedAt: '2024-07-12T10:39:32Z',
-      authorId: '123',
-      description: 'Existing bundle description',
+      createdBy: '123',
+      description: 'Existing release description',
       hue: 'magenta',
       icon: 'cube',
-      title: 'Existing bundle',
+      title: 'Existing release',
     }
 
     beforeEach(async () => {
@@ -133,7 +133,7 @@ describe('ReleaseDetailsDialog', () => {
         <ReleaseDetailsDialog
           onCancel={onCancelMock}
           onSubmit={onSubmitMock}
-          bundle={existingBundleValue}
+          release={existingBundleValue}
         />,
         {wrapper},
       )
@@ -156,7 +156,7 @@ describe('ReleaseDetailsDialog', () => {
       expect(screen.getByTestId('submit-release-button')).toBeDisabled()
     })
 
-    it('should patch the bundle document when submitted', () => {
+    it('should patch the release document when submitted', () => {
       fireEvent.change(screen.getByTestId('release-form-title'), {target: {value: 'New title  '}})
       fireEvent.change(screen.getByTestId('release-form-description'), {
         target: {value: 'New description'},

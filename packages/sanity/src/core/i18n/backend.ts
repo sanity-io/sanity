@@ -76,7 +76,7 @@ export function createSanityI18nBackend(options: SanityI18nBackendOptions): Back
  * @hidden
  */
 async function loadBundles(bundles: LocaleResourceBundle[]): Promise<LocaleResourceRecord> {
-  // Resolve resources in parallell to avoid waiting for each bundle as we extend
+  // Resolve resources in parallell to avoid waiting for each release as we extend
   // Note: we may want a queue for this if people do very dynamic loading strategies
   const resolved = await Promise.all(
     bundles.map(async (bundle) => ({
@@ -103,7 +103,7 @@ async function loadBundles(bundles: LocaleResourceBundle[]): Promise<LocaleResou
 }
 
 /**
- * Loads the resources of a bundle, calling any function and unwrapping any default module exports.
+ * Loads the resources of a release, calling any function and unwrapping any default module exports.
  *
  * @param bundle - Bundle to load resources for
  * @returns Record of resources

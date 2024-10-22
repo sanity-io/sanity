@@ -72,7 +72,7 @@ export function DocumentStatus({
     ? versionDateAbsolute || draftDateAbsolute
     : versionUpdatedTimeAgo || draftUpdatedTimeAgo
 
-  const {title} = currentGlobalBundle || {}
+  const title = currentGlobalBundle?.metadata?.title
 
   const documentStatus = useMemo(() => {
     if (published && '_id' in published) {

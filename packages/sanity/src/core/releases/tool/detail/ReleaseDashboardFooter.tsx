@@ -24,14 +24,14 @@ export function ReleaseDashboardFooter(props: {
 
         <Flex flex="none" gap={1}>
           {/* TODO: Replace this with the real actions. */}
-          {!isBundleDeleted && !release.publishedAt && (
+          {!isBundleDeleted && !release.publishAt && (
             <ReleasePublishAllButton
-              bundle={release}
+              release={release}
               bundleDocuments={documents}
               disabled={!documents.length}
             />
           )}
-          <ReleaseMenuButton disabled={isBundleDeleted} bundle={release} />
+          <ReleaseMenuButton disabled={isBundleDeleted} release={release} />
         </Flex>
       </Flex>
     </Card>

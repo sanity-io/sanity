@@ -17,19 +17,19 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
       <ReleaseAvatar padding={2} tone={getReleaseTone(release)} />
       <Stack flex={1} space={2}>
         <Text size={1} weight="medium">
-          {release.title}
+          {release.metadata.title}
         </Text>
         <Text muted size={1}>
-          {release.releaseType === 'asap' && <>ASAP</>}
-          {release.releaseType === 'scheduled' &&
-            (release.publishedAt ? (
-              <>{dateTimeFormat.format(new Date(release.publishedAt))}</>
+          {release.metadata.releaseType === 'asap' && <>ASAP</>}
+          {release.metadata.releaseType === 'scheduled' &&
+            (release.publishAt ? (
+              <>{dateTimeFormat.format(new Date(release.publishAt))}</>
             ) : (
               /** @todo add date when it's scheduled and not just with a date */
               // eslint-disable-next-line i18next/no-literal-string
               <>No Date</>
             ))}
-          {release.releaseType === 'undecided' && <>Undecided</>}
+          {release.metadata.releaseType === 'undecided' && <>Undecided</>}
         </Text>
       </Stack>
     </Flex>

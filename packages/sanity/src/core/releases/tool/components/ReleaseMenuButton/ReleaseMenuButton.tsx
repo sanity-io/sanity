@@ -13,16 +13,16 @@ import {releasesLocaleNamespace} from '../../../i18n'
 
 export type ReleaseMenuButtonProps = {
   disabled?: boolean
-  bundle?: ReleaseDocument
+  release?: ReleaseDocument
 }
 
-export const ReleaseMenuButton = ({disabled, bundle}: ReleaseMenuButtonProps) => {
+export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) => {
   const {updateRelease} = useReleaseOperations()
-  const isBundleArchived = !!bundle?.archivedAt
+  const isBundleArchived = !!release?.metadata.archivedAt
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<'edit'>()
 
-  const bundleMenuDisabled = !bundle || disabled
+  const bundleMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
 
@@ -33,8 +33,11 @@ export const ReleaseMenuButton = ({disabled, bundle}: ReleaseMenuButtonProps) =>
 
     setIsPerformingOperation(true)
     await updateRelease({
-      ...bundle,
-      archivedAt: isBundleArchived ? undefined : new Date().toISOString(),
+      ...release,
+      metadata: {
+        ...release.metadata,
+        archivedAt: isBundleArchived ? undefined : new Date().toISOString(),
+      },
     })
 
     if (isBundleArchived) {
@@ -88,7 +91,7 @@ export const ReleaseMenuButton = ({disabled, bundle}: ReleaseMenuButtonProps) =>
         <ReleaseDetailsDialog
           onCancel={resetSelectedAction}
           onSubmit={resetSelectedAction}
-          bundle={bundle}
+          release={release}
         />
       )}
     </>

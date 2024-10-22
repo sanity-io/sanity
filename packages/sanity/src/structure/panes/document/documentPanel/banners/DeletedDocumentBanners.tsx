@@ -90,8 +90,6 @@ function DeletedDocumentBanner() {
 const DeletedBundleBanner = ({deletedBundle}: {deletedBundle: ReleaseDocument}) => {
   const {t} = useTranslation()
 
-  const {title: deletedBundleTitle} = deletedBundle
-
   return (
     <Banner
       tone="caution"
@@ -99,12 +97,12 @@ const DeletedBundleBanner = ({deletedBundle}: {deletedBundle: ReleaseDocument}) 
         <Text size={1} weight="medium">
           <Translate
             t={t}
-            i18nKey="banners.deleted-bundle-banner.text"
-            values={{title: deletedBundleTitle}}
+            i18nKey="banners.deleted-release-banner.text"
+            values={{title: deletedBundle.metadata.title}}
           />
         </Text>
       }
-      data-testid="deleted-bundle-banner"
+      data-testid="deleted-release-banner"
       icon={DocumentRemoveIcon}
     />
   )

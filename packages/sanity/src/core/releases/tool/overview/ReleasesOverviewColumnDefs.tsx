@@ -11,37 +11,37 @@ import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {type TableBundle} from './ReleasesOverview'
 
-const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}) => {
+const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: release}) => {
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
 
-  const cardProps: TableRowProps = bundle.isDeleted
+  const cardProps: TableRowProps = release.isDeleted
     ? {tone: 'transparent'}
     : {
         as: 'a',
-        // navigate to bundle detail
-        onClick: () => router.navigate({releaseId: bundle._id}),
+        // navigate to release detail
+        onClick: () => router.navigate({releaseId: release._id}),
       }
 
   return (
     <Box {...cellProps} flex={1} padding={1}>
       <Tooltip
-        disabled={!bundle.isDeleted}
+        disabled={!release.isDeleted}
         content={
           <Text size={1}>
-            <Translate t={t} i18nKey="deleted-release" values={{title: bundle.title}} />
+            <Translate t={t} i18nKey="deleted-release" values={{title: release.metadata.title}} />
           </Text>
         }
       >
         <Card {...cardProps} padding={2} radius={2}>
           <Flex align="center" gap={2}>
             <Box flex="none">
-              <ReleaseBadge hue={bundle.hue} icon={bundle.icon} />
+              <ReleaseBadge hue={release.metadata.hue} icon={release.metadata.icon} />
             </Box>
             <Stack flex={1} space={2}>
               <Flex align="center" gap={2}>
                 <Text size={1} weight="medium">
-                  {bundle.title}
+                  {release.metadata.title}
                 </Text>
               </Flex>
             </Stack>
@@ -100,11 +100,11 @@ export const releasesOverviewColumnDefs: (
           <Headers.SortHeaderButton text={t('table-header.created')} {...props} />
         </Flex>
       ),
-      cell: ({cellProps, datum: bundle}) => (
+      cell: ({cellProps, datum: release}) => (
         <Flex {...cellProps} align="center" gap={2} paddingX={2} paddingY={3} sizing="border">
-          {!!bundle.authorId && <UserAvatar size={0} user={bundle.authorId} />}
+          {!!release.createdBy && <UserAvatar size={0} user={release.createdBy} />}
           <Text muted size={1}>
-            <RelativeTime time={bundle._createdAt} useTemporalPhrase minimal />
+            <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
           </Text>
         </Flex>
       ),
@@ -146,9 +146,9 @@ export const releasesOverviewColumnDefs: (
       ),
       cell: ({cellProps, datum: bundle}) => (
         <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-          {!!bundle.publishedAt && (
+          {!!bundle.publishAt && (
             <Text muted size={1}>
-              <RelativeTime time={bundle.publishedAt} useTemporalPhrase minimal />
+              <RelativeTime time={bundle.createdBy} useTemporalPhrase minimal />
             </Text>
           )}
         </Flex>

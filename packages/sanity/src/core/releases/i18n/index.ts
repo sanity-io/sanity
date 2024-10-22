@@ -8,7 +8,7 @@ import {type LocaleResourceBundle} from '../../i18n'
 export const releasesLocaleNamespace = 'releases' as const
 
 /**
- * The default locale bundle for the releases tool, which is US English.
+ * The default locale release for the releases tool, which is US English.
  *
  * @internal
  */

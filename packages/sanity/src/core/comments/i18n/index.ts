@@ -8,7 +8,7 @@ import {type LocaleResourceBundle} from '../../i18n'
 export const commentsLocaleNamespace = 'comments' as const
 
 /**
- * The default locale bundle for the comments plugin, which is US English.
+ * The default locale release for the comments plugin, which is US English.
  *
  * @internal
  */

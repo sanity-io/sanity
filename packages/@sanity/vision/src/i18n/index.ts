@@ -8,7 +8,7 @@ import {defineLocaleResourceBundle} from 'sanity'
 export const visionLocaleNamespace = 'vision' as const
 
 /**
- * The default locale bundle for the vision tool, which is US English.
+ * The default locale release for the vision tool, which is US English.
  *
  * @internal
  */

@@ -25,7 +25,7 @@ const mockBundles = [
     _type: 'release',
     _updatedAt: '2024-07-12T10:39:32Z',
     _rev: 'HdJONGqRccLIid3oECLjYZ',
-    authorId: 'pzAhBTkNX',
+    createdBy: 'pzAhBTkNX',
     title: 'Spring Drop',
     icon: 'heart-filled',
     hue: 'magenta',
@@ -38,7 +38,7 @@ const mockBundles = [
     description: 'What a winter drop',
     _updatedAt: '2024-07-12T10:39:32Z',
     _rev: 'HdJONGqRccLIid3oECLjYZ',
-    authorId: 'pzAhBTkNX',
+    createdBy: 'pzAhBTkNX',
     title: 'Winter Drop',
     icon: 'heart-filled',
 
