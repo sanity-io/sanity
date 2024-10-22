@@ -11,12 +11,12 @@ import {
 /**
  * @beta
  * @param documentId - The document id, e.g. `my-document-id` or `drafts.my-document-id` or `summer.my-document-id`
- * @param perspective - The current perspective, e.g. `release.summer` or undefined, it can be obtained from `useRouter().stickyParams.perspective`
+ * @param perspective - The current perspective, e.g. `bundle.summer` or undefined, it can be obtained from `useRouter().stickyParams.perspective`
  * @returns boolean - `true` if the document is in the current perspective.
  * e.g:
- * - document: `summer.my-document-id`, perspective: `release.summer` : **true**
- * - document: `my-document-id`, perspective: `release.summer` : **false**
- * - document: `summer.my-document-id`perspective: `release.winter` : **false**
+ * - document: `summer.my-document-id`, perspective: `bundle.summer` : **true**
+ * - document: `my-document-id`, perspective: `bundle.summer` : **false**
+ * - document: `summer.my-document-id`perspective: `bundle.winter` : **false**
  * - document: `summer.my-document-id`, perspective: `undefined` : **false**
  * - document: `my-document-id`, perspective: `undefined` : **true**
  * - document: `drafts.my-document-id`, perspective: `undefined` : **true**
@@ -32,7 +32,7 @@ export function getDocumentIsInPerspective(
   const bundlePerspective = resolveBundlePerspective(perspective)
 
   if (typeof bundlePerspective === 'undefined') return false
-  // perspective is `release.${bundleId}`
+  // perspective is `bundle.${bundleId}`
 
   if (bundleId === 'Published') return false
   return bundleId === bundlePerspective

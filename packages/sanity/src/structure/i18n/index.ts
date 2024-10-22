@@ -8,7 +8,7 @@ import {defineLocaleResourceBundle} from 'sanity'
 export const structureLocaleNamespace = 'structure' as const
 
 /**
- * The default locale release for the structure tool, which is US English.
+ * The default locale bundle for the structure tool, which is US English.
  *
  * @internal
  */

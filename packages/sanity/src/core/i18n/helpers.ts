@@ -6,10 +6,10 @@ import {
 } from './types'
 
 /**
- * Defines a resource release for a given locale and namespace.
+ * Defines a resource bundle for a given locale and namespace.
  *
- * @param bundle - The release of resources to define
- * @returns The release that was passed, as-is (this is an "identity function")
+ * @param bundle - The bundle of resources to define
+ * @returns The bundle that was passed, as-is (this is an "identity function")
  * @public
  */
 export function defineLocaleResourceBundle(bundle: LocaleResourceBundle): LocaleResourceBundle {
@@ -28,10 +28,10 @@ export function defineLocale(locale: LocaleDefinition): LocaleDefinition {
 }
 
 /**
- * Checks whether or not the given resource release has static resources, eg is not lazy loaded.
+ * Checks whether or not the given resource bundle has static resources, eg is not lazy loaded.
  *
  * @param bundle - Bundle to check
- * @returns `true` if the release has static resources, `false` otherwise
+ * @returns `true` if the bundle has static resources, `false` otherwise
  * @internal
  * @hidden
  */

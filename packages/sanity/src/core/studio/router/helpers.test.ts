@@ -20,7 +20,7 @@ describe('resolveIntentState', () => {
         id: 'p-bay-area-san-francisco-2022-08-17-2022-08-17',
         type: 'playlist',
       },
-      _searchParams: [['perspective', 'release.pedro-summer']],
+      _searchParams: [['perspective', 'bundle.pedro-summer']],
     }
 
     const resolved = resolveIntentState([testTool], null, state)
@@ -29,7 +29,7 @@ describe('resolveIntentState', () => {
       isNotFound: false,
       state: {
         // searchParams are persisted in the router state
-        _searchParams: [['perspective', 'release.pedro-summer']],
+        _searchParams: [['perspective', 'bundle.pedro-summer']],
         tool: 'test',
         test: {},
       },

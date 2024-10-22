@@ -101,7 +101,7 @@ export default async function buildSanityStudio(
   const envVarKeys = getSanityEnvVars()
   if (envVarKeys.length > 0) {
     output.print(
-      '\nIncluding the following environment variables as part of the JavaScript release:',
+      '\nIncluding the following environment variables as part of the JavaScript bundle:',
     )
     envVarKeys.forEach((key) => output.print(`- ${key}`))
     output.print('')

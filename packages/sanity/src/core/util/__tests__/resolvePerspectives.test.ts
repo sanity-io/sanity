@@ -3,11 +3,11 @@ import {describe, expect, it} from 'vitest'
 import {resolveBundlePerspective, resolvePerspectiveOptions} from '../resolvePerspective'
 
 describe('resolveBundlePerspective', () => {
-  it('returns the perspective with the `release.` prefix removed', () => {
-    expect(resolveBundlePerspective('release.x')).toBe('x')
+  it('returns the perspective with the `bundle.` prefix removed', () => {
+    expect(resolveBundlePerspective('bundle.x')).toBe('x')
   })
 
-  it('returns `undefined` if the provided perspective has no `release.` prefix', () => {
+  it('returns `undefined` if the provided perspective has no `bundle.` prefix', () => {
     expect(resolveBundlePerspective('x')).toBeUndefined()
   })
 
@@ -17,9 +17,9 @@ describe('resolveBundlePerspective', () => {
 })
 
 describe('resolvePerspectiveOptions', () => {
-  it('includes the `bundlePerspective` property if a release is provided', () => {
-    expect(resolvePerspectiveOptions('release.x')).toHaveProperty('bundlePerspective')
-    expect(resolvePerspectiveOptions('release.x')).not.toHaveProperty('perspective')
+  it('includes the `bundlePerspective` property if a bundle is provided', () => {
+    expect(resolvePerspectiveOptions('bundle.x')).toHaveProperty('bundlePerspective')
+    expect(resolvePerspectiveOptions('bundle.x')).not.toHaveProperty('perspective')
   })
 
   it('includes the `perspective` property if a system perspective is provided', () => {
@@ -28,7 +28,7 @@ describe('resolvePerspectiveOptions', () => {
   })
 
   it(`removes the bundle prefix if it exists`, () => {
-    expect(resolvePerspectiveOptions('release.x').bundlePerspective).toEqual('x')
+    expect(resolvePerspectiveOptions('bundle.x').bundlePerspective).toEqual('x')
     expect(resolvePerspectiveOptions('x').perspective).toEqual('x')
   })
 
@@ -46,7 +46,7 @@ describe('resolvePerspectiveOptions', () => {
       return perspectives
     })
 
-    resolvePerspectiveOptions('release.x', (perspectives) => {
+    resolvePerspectiveOptions('bundle.x', (perspectives) => {
       expect(perspectives).toEqual(['x'])
       return perspectives
     })
@@ -60,7 +60,7 @@ describe('resolvePerspectiveOptions', () => {
       return perspectives
     })
 
-    resolvePerspectiveOptions('release.x', (perspectives, isSystemPerspective) => {
+    resolvePerspectiveOptions('bundle.x', (perspectives, isSystemPerspective) => {
       expect(isSystemPerspective).toBe(false)
       return perspectives
     })

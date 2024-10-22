@@ -16,7 +16,7 @@ Examples
 const buildCommand: CliCommandDefinition = {
   name: 'build',
   signature: '[OUTPUT_DIR]',
-  description: 'Builds the Sanity Studio configuration into a static release',
+  description: 'Builds the Sanity Studio configuration into a static bundle',
   action: async (
     args: CliCommandArguments<BuildSanityStudioCommandFlags>,
     context: CliCommandContext,
@@ -31,7 +31,7 @@ const buildCommand: CliCommandDefinition = {
 
 async function getBuildAction() {
   // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
-  // NOTE: this `if` statement is not included in the output release
+  // NOTE: this `if` statement is not included in the output bundle
   if (__DEV__) {
     // eslint-disable-next-line import/extensions
     const mod: typeof import('../../actions/build/buildAction') = require('../../actions/build/buildAction.ts')

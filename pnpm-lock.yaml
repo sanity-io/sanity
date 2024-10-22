@@ -6,7 +6,7 @@ settings:
 
 overrides:
   '@npmcli/arborist': ^7.5.4
-  '@sanity/client': 6.22.1-release-perspective
+  '@sanity/client': 6.22.1-bundle-perspective
   '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz
   '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz
   '@sanity/ui@2': file:registry/sanity-ui-2.8.9.tgz
@@ -40,8 +40,8 @@ importers:
         specifier: workspace:*
         version: link:packages/@repo/tsconfig
       '@sanity/client':
-        specifier: 6.22.1-release-perspective
-        version: 6.22.1-release-perspective(debug@4.3.7)
+        specifier: 6.22.1-bundle-perspective
+        version: 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/eslint-config-i18n':
         specifier: 1.0.0
         version: 1.0.0(eslint@8.57.0)(typescript@5.6.2)
@@ -442,8 +442,8 @@ importers:
         specifier: 3.61.0
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
-        specifier: 6.22.1-release-perspective
-        version: 6.22.1-release-perspective(debug@4.3.7)
+        specifier: 6.22.1-bundle-perspective
+        version: 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.6
@@ -479,10 +479,10 @@ importers:
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.21(@sanity/client@6.22.1-release-perspective(debug@4.3.7))
+        version: 1.6.21(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.10.7(@sanity/client@6.22.1-release-perspective)(react@18.3.1)
+        version: 1.10.7(@sanity/client@6.22.1-bundle-perspective)(react@18.3.1)
       '@sanity/tsdoc':
         specifier: 1.0.105
         version: 1.0.105(@types/babel__core@7.20.5)(@types/node@22.5.4)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)
@@ -506,7 +506,7 @@ importers:
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
         specifier: 2.1.10
-        version: 2.1.10(@sanity/client@6.22.1-release-perspective)(next@15.0.0-rc.0(@babel/core@7.25.2)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 2.1.10(@sanity/client@6.22.1-bundle-perspective)(next@15.0.0-rc.0(@babel/core@7.25.2)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -774,8 +774,8 @@ importers:
         specifier: ^7.23.5
         version: 7.25.3
       '@sanity/client':
-        specifier: 6.22.1-release-perspective
-        version: 6.22.1-release-perspective(debug@4.3.7)
+        specifier: 6.22.1-bundle-perspective
+        version: 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/codegen':
         specifier: 3.61.0
         version: link:../codegen
@@ -1080,8 +1080,8 @@ importers:
   packages/@sanity/migrate:
     dependencies:
       '@sanity/client':
-        specifier: 6.22.1-release-perspective
-        version: 6.22.1-release-perspective(debug@4.3.7)
+        specifier: 6.22.1-bundle-perspective
+        version: 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/mutate':
         specifier: ^0.10.0
         version: 0.10.0(debug@4.3.7)
@@ -1221,8 +1221,8 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: 6.22.1-release-perspective
-        version: 6.22.1-release-perspective(debug@4.3.7)
+        specifier: 6.22.1-bundle-perspective
+        version: 6.22.1-bundle-perspective(debug@4.3.7)
       '@types/react':
         specifier: ^18.3.5
         version: 18.3.5
@@ -1252,8 +1252,8 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: 6.22.1-release-perspective
-        version: 6.22.1-release-perspective(debug@4.3.7)
+        specifier: 6.22.1-bundle-perspective
+        version: 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/types':
         specifier: 3.61.0
         version: link:../types
@@ -1353,8 +1353,8 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: 6.22.1-release-perspective
-        version: 6.22.1-release-perspective(debug@4.3.7)
+        specifier: 6.22.1-bundle-perspective
+        version: 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/codegen':
         specifier: workspace:*
         version: link:../codegen
@@ -1443,8 +1443,8 @@ importers:
         specifier: 3.61.0
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: 6.22.1-release-perspective
-        version: 6.22.1-release-perspective(debug@4.3.7)
+        specifier: 6.22.1-bundle-perspective
+        version: 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.6
@@ -1483,7 +1483,7 @@ importers:
         version: link:../@sanity/mutator
       '@sanity/presentation':
         specifier: 1.16.5
-        version: 1.16.5(@sanity/client@6.22.1-release-perspective(debug@4.3.7))(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 1.16.5(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
         specifier: 3.61.0
         version: link:../@sanity/schema
@@ -1924,8 +1924,8 @@ importers:
   perf/efps:
     devDependencies:
       '@sanity/client':
-        specifier: 6.22.1-release-perspective
-        version: 6.22.1-release-perspective(debug@4.3.7)
+        specifier: 6.22.1-bundle-perspective
+        version: 6.22.1-bundle-perspective(debug@4.3.7)
       '@swc-node/register':
         specifier: ^1.10.9
         version: 1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.6.2)
@@ -2002,8 +2002,8 @@ importers:
         specifier: 1.44.1
         version: 1.44.1
       '@sanity/client':
-        specifier: 6.22.1-release-perspective
-        version: 6.22.1-release-perspective(debug@4.3.7)
+        specifier: 6.22.1-bundle-perspective
+        version: 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/uuid':
         specifier: ^3.0.1
         version: 3.0.2
@@ -4513,7 +4513,7 @@ packages:
     resolution: {integrity: sha512-DrNadkbr2KlsZbUNir4cCkEHe1kICpDIOpY+W4nQJNVqb/WCVFQuaVrjulESSSFG7DRKT7sdPJOax4PC/MgIRg==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': 6.22.1-release-perspective
+      '@sanity/client': 6.22.1-bundle-perspective
 
   '@sanity/diff-match-patch@3.1.1':
     resolution: {integrity: sha512-dSZqGeYjHKGIkqAzGqLcG92LZyJGX+nYbs/FWawhBbTBDWi21kvQ0hsL3DJThuFVWtZMWTQijN3z6Cnd44Pf2g==}
@@ -4627,7 +4627,7 @@ packages:
     resolution: {integrity: sha512-Srs/22A/eaUZ9skeiYnd7J5lUP8gYX6tqfxtQfYJN6M97iOO1TN5a6r2GE8leatX17gY5VLVdFsZAqtFPTf8YA==}
     engines: {node: '>=16.14'}
     peerDependencies:
-      '@sanity/client': 6.22.1-release-perspective
+      '@sanity/client': 6.22.1-bundle-perspective
 
   '@sanity/prettier-config@1.0.2':
     resolution: {integrity: sha512-V4HinfhMYxQoyXefJ2B8zJnwlf7A8mVzAzKk24B/iCg4pkVlMGc8bj0buu9Uieh4bNeHvEAHOIQv+Xd7tiLuNA==}
@@ -4638,13 +4638,13 @@ packages:
     resolution: {integrity: sha512-ZAIT4I5Nrsax+RBQVhSBY4PnnHgaI+eybSd5aHhjZi97+ziMTtTLnL1Hsg+ViLtPqJWwX0GiB0l8nSfGAt7+QA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': 6.22.1-release-perspective
+      '@sanity/client': 6.22.1-bundle-perspective
 
   '@sanity/react-loader@1.10.7':
     resolution: {integrity: sha512-YrVIuOHtVnQHW3Xzf9phxvy+HQD3v3VAw2me/Bkhi4csDpemTl7QZS8LlQw7bmXWKFLw1xCwrMO2g4YRk89eRw==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': 6.22.1-release-perspective
+      '@sanity/client': 6.22.1-bundle-perspective
       react: ^18.3 || >=19.0.0-rc
 
   '@sanity/telemetry@0.7.9':
@@ -4703,7 +4703,7 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
-      '@sanity/client': 6.22.1-release-perspective
+      '@sanity/client': 6.22.1-bundle-perspective
       '@sveltejs/kit': '>= 2'
       next: '>= 13 || >=14.3.0-canary.0 <14.3.0 || >=15.0.0-rc'
       react: ^18.3 || >=19.0.0-rc
@@ -14856,7 +14856,7 @@ snapshots:
 
   '@sanity/core-loader@1.6.23(@sanity/client@6.22.1-bundle-perspective)':
     dependencies:
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
 
   '@sanity/diff-match-patch@3.1.1': {}
 
@@ -14918,7 +14918,7 @@ snapshots:
 
   '@sanity/export@3.41.0':
     dependencies:
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/util': 3.37.2(debug@4.3.7)
       archiver: 7.0.1
       debug: 4.3.7(supports-color@9.4.0)
@@ -15042,7 +15042,7 @@ snapshots:
 
   '@sanity/mutate@0.10.0(debug@4.3.7)':
     dependencies:
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/diff-match-patch': 3.1.1
       hotscript: 1.0.13
       mendoza: 3.0.7
@@ -15164,9 +15164,9 @@ snapshots:
 
   '@sanity/presentation@1.16.5(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
-      '@sanity/preview-url-secret': 1.6.21(@sanity/client@6.22.1-release-perspective(debug@4.3.7))
+      '@sanity/preview-url-secret': 1.6.21(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))
       '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -15192,13 +15192,13 @@ snapshots:
 
   '@sanity/preview-url-secret@1.6.21(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))':
     dependencies:
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/uuid': 3.0.2
 
   '@sanity/react-loader@1.10.7(@sanity/client@6.22.1-bundle-perspective)(react@18.3.1)':
     dependencies:
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
-      '@sanity/core-loader': 1.6.23(@sanity/client@6.22.1-release-perspective)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/core-loader': 1.6.23(@sanity/client@6.22.1-bundle-perspective)
       react: 18.3.1
 
   '@sanity/telemetry@0.7.9(react@18.3.1)':
@@ -15218,7 +15218,7 @@ snapshots:
   '@sanity/test@0.0.1-alpha.1':
     dependencies:
       '@playwright/test': 1.44.1
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/uuid': 3.0.2
       cac: 6.7.14
     transitivePeerDependencies:
@@ -15232,7 +15232,7 @@ snapshots:
       '@microsoft/tsdoc-config': 0.17.0
       '@portabletext/react': 3.1.0(react@18.3.1)
       '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/color': 3.0.6
       '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
       '@sanity/pkg-utils': 6.11.2(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.7)(typescript@5.6.2)
@@ -15285,7 +15285,7 @@ snapshots:
       '@microsoft/tsdoc-config': 0.17.0
       '@portabletext/react': 3.1.0(react@19.0.0-rc-f994737d14-20240522)
       '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/color': 3.0.6
       '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@19.0.0-rc-f994737d14-20240522)
       '@sanity/pkg-utils': 6.11.2(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.7)(typescript@5.6.2)
@@ -15338,7 +15338,7 @@ snapshots:
       '@microsoft/tsdoc-config': 0.17.0
       '@portabletext/react': 3.1.0(react@18.3.1)
       '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/color': 3.0.6
       '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
       '@sanity/pkg-utils': 6.11.2(@types/babel__core@7.20.5)(@types/node@22.5.4)(typescript@5.6.2)
@@ -15385,7 +15385,7 @@ snapshots:
 
   '@sanity/types@3.37.2(debug@4.3.7)':
     dependencies:
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       '@types/react': 18.3.5
     transitivePeerDependencies:
       - debug
@@ -15510,7 +15510,7 @@ snapshots:
 
   '@sanity/util@3.37.2(debug@4.3.7)':
     dependencies:
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       '@sanity/types': 3.37.2(debug@4.3.7)
       get-random-values-esm: 1.0.2
       moment: 2.30.1
@@ -15525,14 +15525,14 @@ snapshots:
 
   '@sanity/visual-editing@2.1.10(@sanity/client@6.22.1-bundle-perspective)(next@15.0.0-rc.0(@babel/core@7.25.2)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@sanity/preview-url-secret': 1.6.21(@sanity/client@6.22.1-release-perspective(debug@4.3.7))
+      '@sanity/preview-url-secret': 1.6.21(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))
       '@vercel/stega': 0.1.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       scroll-into-view-if-needed: 3.1.0
       valibot: 0.31.1
     optionalDependencies:
-      '@sanity/client': 6.22.1-release-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
       next: 15.0.0-rc.0(@babel/core@7.25.2)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   '@sentry-internal/browser-utils@8.25.0':

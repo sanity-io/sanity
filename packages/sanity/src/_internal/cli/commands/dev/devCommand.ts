@@ -41,7 +41,7 @@ export async function getDevAction(): Promise<
   ) => Promise<void>
 > {
   // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
-  // NOTE: this `if` statement is not included in the output release
+  // NOTE: this `if` statement is not included in the output bundle
   if (__DEV__) {
     // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
     const mod: typeof import('../../actions/dev/devAction') = require('../../actions/dev/devAction.ts')

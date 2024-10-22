@@ -43,7 +43,7 @@ export interface EditStateFor {
   liveEditSchemaType: boolean
   ready: boolean
   /**
-   * When editing a version, the slug of the release the document belongs to.
+   * When editing a version, the slug of the bundle the document belongs to.
    */
   bundleId?: string
 }

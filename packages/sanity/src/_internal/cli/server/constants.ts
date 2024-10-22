@@ -4,7 +4,7 @@
  * the existing timestamp in the sanity-cdn URLs with a new runtime timestamp,
  * and injects the modified import map back into the HTML.
  *
- * This will be injected into the HTML of the user's release.
+ * This will be injected into the HTML of the user's bundle.
  *
  * Note that this is in a separate constants file to prevent "Cannot access
  * before initialization" errors.

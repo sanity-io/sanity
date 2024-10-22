@@ -8,7 +8,7 @@ import {type LocaleResourceBundle} from '../../i18n'
 export const tasksLocaleNamespace = 'tasks' as const
 
 /**
- * The default locale release for the task tool, which is US English.
+ * The default locale bundle for the task tool, which is US English.
  *
  * @internal
  */

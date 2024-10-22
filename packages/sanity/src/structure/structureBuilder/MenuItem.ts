@@ -288,7 +288,7 @@ export function getOrderingMenuItem(
     .group('sorting')
     .title(
       context.i18n.t('default-menu-item.fallback-title', {
-        // note this lives in the `studio` release because that one is loaded by default
+        // note this lives in the `studio` bundle because that one is loaded by default
         ns: 'studio',
         replace: {title}, // replaces the `{{title}}` option
       }),
