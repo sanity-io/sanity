@@ -1,5 +1,15 @@
 import {InfoOutlineIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Badge, Box, Card, Flex, Heading, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {
+  Badge,
+  Box,
+  Card,
+  Flex,
+  Heading,
+  Stack,
+  Text,
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 import {useCallback, useRef, useState} from 'react'
 
 import {Button, Popover} from '../../../ui-components'
@@ -22,6 +32,17 @@ export function CreateLinkedDocumentBanner(props: CreateLinkedDocumentBannerProp
   useClickOutsideEvent(
     () => setInfoOpen(false),
     () => [popoverRef.current, infoButtonRef.current],
+  )
+
+  useGlobalKeyDown(
+    useCallback(
+      (event: KeyboardEvent) => {
+        if (event.key === 'Escape' && infoOpen) {
+          setInfoOpen(false)
+        }
+      },
+      [infoOpen],
+    ),
   )
 
   if (metadata?.ejected !== false) {
