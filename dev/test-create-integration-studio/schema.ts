@@ -12,7 +12,7 @@ export const seoGroup: FieldGroupDefinition = {
 export const schemaTypes = [
   defineType({
     title: 'Documentation Article',
-    name: 'article',
+    name: 'create-test-article',
     type: 'document',
     groups: [mainGroup, seoGroup],
     fieldsets: [{name: 'switches', title: 'Article settings', options: {columns: 2}}],
