@@ -24,15 +24,9 @@ vi.mock('sanity', async (importOriginal) => ({
   useDateTimeFormat: vi.fn(() => ({
     format: (date: Date) => date.toLocaleString(),
   })),
-  SANITY_VERSION: 'test',
-}))
-
-vi.mock('../../../../../../../core/releases/tool/components/ReleaseAvatar', () => ({
   ReleaseAvatar: () => <div data-testid="release-avatar" />,
-}))
-
-vi.mock('../../../../../../../core/releases/util/getReleaseTone', () => ({
-  getReleaseTone: () => 'default',
+  getReleaseTone: vi.fn(),
+  SANITY_VERSION: 'test',
 }))
 
 describe('VersionContextMenuItem', () => {
@@ -82,6 +76,6 @@ describe('VersionContextMenuItem', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenuItem release={mockRelease} />, {wrapper})
-    expect(screen.getByTestId('release-avatar-primary')).toBeInTheDocument()
+    expect(screen.getByTestId('release-avatar')).toBeInTheDocument()
   })
 })
