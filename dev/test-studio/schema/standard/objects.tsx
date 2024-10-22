@@ -59,7 +59,10 @@ export default defineType({
       )
     },
   },
-  fieldsets: [{name: 'recursive', title: 'Recursive', options: {collapsible: true}}],
+  fieldsets: [
+    {name: 'recursive', title: 'Recursive', options: {collapsible: true}},
+    {name: 'readOnly', title: 'Read only', options: {collapsible: true}},
+  ],
   fields: [
     {
       type: 'object',
@@ -226,6 +229,91 @@ export default defineType({
               type: 'array',
               of: [{type: 'string'}],
               validation: (Rule) => Rule.min(1),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'readOnlyObject',
+      title: 'Read only object',
+      type: 'object',
+      fieldset: 'readOnly',
+      readOnly: true,
+      fields: [
+        {
+          name: 'selfDefinedReadOnlyField',
+          title: 'Read only field',
+          description: 'ReadOnly defined in field',
+          type: 'string',
+          readOnly: true,
+        },
+        {
+          name: 'inheritedReadOnlyField',
+          title: 'Read only field',
+          description: 'ReadOnly inherited from object',
+          type: 'string',
+        },
+      ],
+    },
+    {
+      name: 'sections',
+      title: 'Sections',
+      type: 'array',
+      fieldset: 'readOnly',
+      of: [
+        {
+          type: 'object',
+          name: 'blocks',
+          fields: [
+            {
+              type: 'array',
+              name: 'blocks',
+              title: 'Grid',
+              of: [{type: 'playlistTrack'}],
+            },
+          ],
+        },
+        {
+          type: 'object',
+          name: 'textBlocks',
+          fields: [
+            {
+              type: 'text',
+              name: 'text',
+              title: 'Text',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'sectionsReadOnly',
+      title: 'Sections (read only)',
+      type: 'array',
+      readOnly: true,
+      fieldset: 'readOnly',
+      of: [
+        {
+          type: 'object',
+          name: 'blocks',
+          fields: [
+            {
+              type: 'array',
+              name: 'blocks',
+              title: 'Grid',
+              of: [{type: 'playlistTrack'}],
+            },
+          ],
+        },
+        {
+          type: 'object',
+          name: 'textBlocks',
+          fields: [
+            {
+              type: 'text',
+              name: 'text',
+              title: 'Text',
             },
           ],
         },
