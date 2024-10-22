@@ -12,7 +12,6 @@ import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
-  isVersionId,
   LoadingBlock,
   Preview,
   ReleaseAvatar,
@@ -55,7 +54,6 @@ export function CreateReleaseDialog(props: {
     } as const
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const isVersion = isVersionId(documentId)
 
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
@@ -164,7 +162,6 @@ export function CreateReleaseDialog(props: {
             style={{borderRadius: 999, border: '1px solid var(--card-border-color)'}}
           >
             <ReleaseAvatar padding={1} tone={tone} />
-            {/* eslint-disable-next-line i18next/no-literal-string*/}
             <Text size={1}>{title}</Text>
           </Flex>
         </Flex>
