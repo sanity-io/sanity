@@ -36,7 +36,7 @@ export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps)
           <Translate
             t={t}
             i18nKey="unlink-from-create-dialog.first-paragraph"
-            values={{title: documentTitle}}
+            values={{title: documentTitle || t('unlink-from-create-dialog.document.untitled.text')}}
           />
         </Text>
 
