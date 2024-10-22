@@ -62,12 +62,14 @@ const createLocaleStrings = defineLocalesResources('comments', {
   'unlink-from-create-dialog.header': 'Unlink from Sanity Create?',
   /** Unlink from Create dialog – first informational paragraph */
   'unlink-from-create-dialog.first-paragraph':
-    'You’re unlinking <strong>“{{title}}”</strong> from Sanity Create so it can be edited here.',
+    'You’re unlinking “<strong>{{title}}</strong>” from Sanity Create so it can be edited here.',
   /** Unlink from Create dialog – second informational paragraph */
   'unlink-from-create-dialog.second-paragraph':
     'You’ll keep all of your current changes, but future edits made in Create will no longer be automatically transferred here.',
   /** Unlink from Create dialog: Cancel button text */
   'unlink-from-create-dialog.cancel.text': 'Cancel',
+  /** Unlink from Create dialog: Document title used if no other title can be determined */
+  'unlink-from-create-dialog.document.untitled.text': 'Untitled',
   /** Unlink from Create dialog: Unlink button text */
   'unlink-from-create-dialog.unlink.text': 'Unlink now',
 })
