@@ -15,7 +15,19 @@ vi.mock('sanity', async (importOriginal) => ({
     currentGlobalBundle: {},
     setPerspective: vi.fn(),
   }),
-  useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
+  Translate: vi.fn(),
+  /**
+   * @todo
+   * is there no better way of mocking this??  */
+  useTranslation: vi.fn().mockReturnValue({
+    t: vi.fn().mockImplementation((key: string) => {
+      const translations: Record<string, string> = {
+        'release.chip.published': 'Published',
+        'release.chip.draft': 'Draft',
+      }
+      return translations[key]
+    }),
+  }),
 }))
 
 vi.mock('sanity/router', () => {
@@ -78,7 +90,6 @@ describe('DocumentPerspectiveMenu', () => {
   it('should render "Published" and "Draft" chips when it has no other version', async () => {
     const wrapper = await createTestProvider()
     render(<DocumentPerspectiveMenu />, {wrapper})
-
     expect(screen.getByRole('button', {name: 'Published'})).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Draft'})).toBeInTheDocument()
   })

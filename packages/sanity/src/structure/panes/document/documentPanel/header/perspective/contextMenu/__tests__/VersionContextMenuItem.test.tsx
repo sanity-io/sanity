@@ -27,6 +27,20 @@ vi.mock('sanity', async (importOriginal) => ({
   ReleaseAvatar: () => <div data-testid="release-avatar" />,
   getReleaseTone: vi.fn(),
   SANITY_VERSION: 'test',
+
+  /**
+   * @todo
+   * is there no better way of mocking this?? */
+  useTranslation: vi.fn().mockReturnValue({
+    t: vi.fn().mockImplementation((key: string) => {
+      const translations: Record<string, string> = {
+        'release.chip.tooltip.unknown-date': 'Unknown date',
+        'release.type.asap': 'ASAP',
+        'release.type.undecided': 'Undecided',
+      }
+      return translations[key]
+    }),
+  }),
 }))
 
 describe('VersionContextMenuItem', () => {
@@ -64,12 +78,12 @@ describe('VersionContextMenuItem', () => {
     expect(screen.getByText('Undecided')).toBeInTheDocument()
   })
 
-  it('renders "No Date" for scheduled release without date', async () => {
+  it('renders "Unknown date" for scheduled release without date', async () => {
     const noDateRelease = {...mockRelease, publishedAt: undefined}
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenuItem release={noDateRelease} />, {wrapper})
-    expect(screen.getByText('No Date')).toBeInTheDocument()
+    expect(screen.getByText('Unknown date')).toBeInTheDocument()
   })
 
   it('renders ReleaseAvatar component', async () => {

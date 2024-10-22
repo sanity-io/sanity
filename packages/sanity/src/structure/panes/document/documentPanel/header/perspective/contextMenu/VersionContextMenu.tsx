@@ -103,7 +103,6 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     ],
   )
 
-  /** @todo update literal */
   return (
     <>
       <Menu>
@@ -116,15 +115,14 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             style={{textDecoration: 'none'}}
             disabled={disabled}
           >
-            {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
-            <MenuItem icon={CalendarIcon} text={`View release`} />
+            <MenuItem icon={CalendarIcon} text={t('release.action.view-release')} />
           </IntentLink>
         )}
         {releasesLoading && <Spinner />}
         <MenuGroup
           icon={CopyIcon}
           popover={{placement: 'right-start'}}
-          text="Copy version to"
+          text={t('release.action.copy-to')}
           disabled={disabled}
         >
           <ReleasesList key={fromRelease} space={1}>
@@ -142,8 +140,11 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             })}
           </ReleasesList>{' '}
           {optionsReleaseList.length > 1 && <MenuDivider />}
-          {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
-          <MenuItem onClick={onCreateRelease} text={'New release'} icon={AddIcon} />
+          <MenuItem
+            onClick={onCreateRelease}
+            text={t('release.action.new-release')}
+            icon={AddIcon}
+          />
         </MenuGroup>
         {!isPublished && (
           <>

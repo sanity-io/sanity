@@ -1142,6 +1142,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.add-to-release': 'Add to {{title}}',
   /** Action message for when document is already in release  */
   'release.action.already-in-release': 'Already in release {{title}}',
+  /** Action message for when you click to view all versions you can copy the current document to */
+  'release.action.copy-to': 'Copy version to',
   /** Action message for creating releases */
   'release.action.create': 'Create release',
   /** Action message for when document is already in release  */
@@ -1151,6 +1153,28 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Description for toast when version deletion is successfully discarded */
   'release.action.discard-version.success':
     '<strong>{{title}}</strong> version was successfully discarded',
+  /** Action message for when a new release is created off an existing version, draft or published document */
+  'release.action.new-release': 'New Release',
+  /** Action message for when the view release is pressed */
+  'release.action.view-release': 'View release',
+  /** Label for Draft chip in document header */
+  'release.chip.draft': 'Draft',
+  /** Label for Published chip in document header */
+  'release.chip.published': 'Published',
+  /** Label for tooltip in chip with the created date */
+  'release.chip.tooltip.created-date': 'Created {{date}}',
+  /** Label for tooltip in chip with the lasted edited date */
+  'release.chip.tooltip.edited-date': 'Edited {{date}}',
+  /** Label for tooltip in chip when document is intended for a future release */
+  'release.chip.tooltip.intended-for-date': 'Intended for {{date}}',
+  /** Label for tooltip in chip when there is no recent draft edits */
+  'release.chip.tooltip.no-edits': 'No edits',
+  /** Label for tooltip in chip when document isn't published */
+  'release.chip.tooltip.not-published': 'Not published',
+  /** Label for tooltip in chip with the published date */
+  'release.chip.tooltip.published-date': 'Published {{date}}',
+  /** Label for tooltip in scheduled chip without a known date */
+  'release.chip.tooltip.unknown-date': 'Unknown date',
   /** Label for tooltip on deleted release */
   'release.deleted-tooltip': 'This release has been deleted',
   /** Title for creating releases dialog */
@@ -1165,14 +1189,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.form.search-icon-tooltip': 'Select release icon',
   /** Label for the title form field when creating releases */
   'release.form.title': 'Title',
-  /** Label for the release type 'as soon as possible' */
-  'release.form.type.asap': 'ASAP',
-  /** Label for the release type 'at time', meaning it's a release with a scheduled date */
-  'release.form.type.scheduled': 'At time',
-  /** Label for the release type 'undecided' */
-  'release.form.type.undecided': 'Undecided',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'Releases',
+  /** Label for the release type 'as soon as possible' */
+  'release.type.asap': 'ASAP',
+  /** Label for the release type 'at time', meaning it's a release with a scheduled date */
+  'release.type.scheduled': 'At time',
+  /** Label for the release type 'undecided' */
+  'release.type.undecided': 'Undecided',
   /** Tooltip for the dropdown to show all versions of document */
   'release.version-list.tooltip': 'See all document versions',
 

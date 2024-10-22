@@ -4,6 +4,7 @@ import {
   getReleaseTone,
   getVersionFromId,
   isVersionId,
+  Translate,
   useDateTimeFormat,
   usePerspective,
   useReleases,
@@ -16,7 +17,7 @@ import {VersionChip} from './VersionChip'
 
 export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   const {perspective} = usePaneRouter()
-  const {t} = useTranslation() // @todo add and update translations
+  const {t} = useTranslation()
   const {setPerspective} = usePerspective(perspective)
   const dateTimeFormat = useDateTimeFormat({
     dateStyle: 'medium',
@@ -57,19 +58,20 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         tooltipContent={
           <Text size={1}>
             {editState?.published && editState?.published?._updatedAt ? (
-              // eslint-disable-next-line i18next/no-literal-string
-              <>Published {dateTimeFormat.format(new Date(editState?.published._updatedAt))}</>
+              <Translate
+                t={t}
+                i18nKey="release.chip.tooltip.published-date"
+                values={{date: dateTimeFormat.format(new Date(editState?.published._updatedAt))}}
+              />
             ) : (
-              // eslint-disable-next-line i18next/no-literal-string
-              <>Not published</>
+              <>{t('release.chip.tooltip.not-published')}</>
             )}
           </Text>
         }
         disabled={!editState?.published}
         onClick={handleBundleChange('published')}
         selected={perspective === 'published'}
-        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-        text="Published"
+        text={t('release.chip.published')}
         tone="positive"
         contextValues={{
           documentId: editState?.published?._id || editState?.id || '',
@@ -87,17 +89,22 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           <Text size={1}>
             {editState?.draft ? (
               <>
-                {editState?.draft.updatedAt ? (
-                  // eslint-disable-next-line i18next/no-literal-string
-                  <>Edited {dateTimeFormat.format(new Date(editState?.draft._updatedAt))}</>
+                {editState?.draft._updatedAt ? (
+                  <Translate
+                    t={t}
+                    i18nKey="release.chip.tooltip.edited-date"
+                    values={{date: dateTimeFormat.format(new Date(editState?.draft._updatedAt))}}
+                  />
                 ) : (
-                  // eslint-disable-next-line i18next/no-literal-string
-                  <>Created {dateTimeFormat.format(new Date(editState?.draft._createdAt))}</>
+                  <Translate
+                    t={t}
+                    i18nKey="release.chip.tooltip.created-date"
+                    values={{date: dateTimeFormat.format(new Date(editState?.draft._createdAt))}}
+                  />
                 )}
               </>
             ) : (
-              // eslint-disable-next-line i18next/no-literal-string
-              <>No edits</>
+              <>{t('release.chip.tooltip.no-edits')}</>
             )}
           </Text>
         }
@@ -108,8 +115,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           !isVersionId(displayed?._id || '') &&
           perspective !== 'published'
         }
-        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-        text="Draft"
+        text={t('release.chip.draft')}
         tone="caution"
         onClick={handleBundleChange('drafts')}
         contextValues={{
@@ -123,13 +129,12 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           disabled: !editState?.draft,
         }}
       />
-      {/* @todo update temporary text for tooltip */}
+
       {displayed &&
         asapReleases?.map((release) => (
           <VersionChip
             key={release._id}
-            // eslint-disable-next-line i18next/no-literal-string
-            tooltipContent={<Text size={1}>ASAP</Text>}
+            tooltipContent={<Text size={1}>{t('release.type.asap')}</Text>}
             selected={release._id === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release._id)}
             text={release.title}
@@ -145,17 +150,22 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
             }}
           />
         ))}
-      {/* @todo missing check if release is scheduled or only has a date version.scheduled ? */}
+      {/** @todo missing check if release is scheduled or only has a date version.scheduled ? */}
       {displayed &&
         scheduledReleases?.map((release) => (
           <VersionChip
             key={release._id}
-            // eslint-disable-next-line i18next/no-literal-string
             tooltipContent={
               <Text size={1}>
-                {release.publishedAt
-                  ? `Intended for ${dateTimeFormat.format(new Date(release.publishedAt))}`
-                  : 'Unknown date'}
+                {release.publishedAt ? (
+                  <Translate
+                    t={t}
+                    i18nKey="release.chip.tooltip.intended-for-date"
+                    values={{date: dateTimeFormat.format(new Date(release.publishedAt))}}
+                  />
+                ) : (
+                  t('release.chip.tooltip.unknown-date')
+                )}
               </Text>
             }
             selected={release._id === getVersionFromId(displayed?._id || '')}
@@ -177,8 +187,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
         undecidedReleases?.map((release) => (
           <VersionChip
             key={release._id}
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-            tooltipContent={'Undecided'}
+            tooltipContent={t('release.type.undecided')}
             selected={release._id === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release._id)}
             text={release.title}

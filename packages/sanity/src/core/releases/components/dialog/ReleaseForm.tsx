@@ -119,19 +119,19 @@ export function ReleaseForm(props: {
             mode="bleed"
             onClick={() => handleButtonReleaseTypeChange('asap')}
             selected={buttonReleaseType === 'asap'}
-            text={t('release.form.type.asap')}
+            text={t('release.type.asap')}
           />
           <Button
             mode="bleed"
             onClick={() => handleButtonReleaseTypeChange('scheduled')}
             selected={buttonReleaseType === 'scheduled'}
-            text={t('release.form.type.scheduled')}
+            text={t('release.type.scheduled')}
           />
           <Button
             mode="bleed"
             onClick={() => handleButtonReleaseTypeChange('undecided')}
             selected={buttonReleaseType === 'undecided'}
-            text={t('release.form.type.undecided')}
+            text={t('release.type.undecided')}
           />
         </Flex>
 

@@ -1,12 +1,19 @@
 /* eslint-disable i18next/no-literal-string */
 import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
-import {getReleaseTone, ReleaseAvatar, type ReleaseDocument, useDateTimeFormat} from 'sanity'
+import {
+  getReleaseTone,
+  ReleaseAvatar,
+  type ReleaseDocument,
+  useDateTimeFormat,
+  useTranslation,
+} from 'sanity'
 
 export const VersionContextMenuItem = memo(function VersionContextMenuItem(props: {
   release: ReleaseDocument
 }) {
   const {release} = props
+  const {t} = useTranslation()
   const dateTimeFormat = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -20,16 +27,15 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
           {release.title}
         </Text>
         <Text muted size={1}>
-          {release.releaseType === 'asap' && <>ASAP</>}
+          {release.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.releaseType === 'scheduled' &&
             (release.publishedAt ? (
               <>{dateTimeFormat.format(new Date(release.publishedAt))}</>
             ) : (
               /** @todo add date when it's scheduled and not just with a date */
-              // eslint-disable-next-line i18next/no-literal-string
-              <>No Date</>
+              <>{t('release.chip.tooltip.unknown-date')}</>
             ))}
-          {release.releaseType === 'undecided' && <>Undecided</>}
+          {release.releaseType === 'undecided' && <>{t('release.type.undecided')}</>}
         </Text>
       </Stack>
     </Flex>

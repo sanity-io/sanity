@@ -26,6 +26,9 @@ vi.mock('sanity', async (importOriginal) => {
       t: vi.fn().mockImplementation((key: string) => {
         const translations: Record<string, string> = {
           'release.action.discard-version': 'Discard version',
+          'release.action.copy-to': 'Copy version to',
+          'release.action.new-release': 'New release',
+          'release.action.view-release': 'View release',
         }
         return translations[key]
       }),
