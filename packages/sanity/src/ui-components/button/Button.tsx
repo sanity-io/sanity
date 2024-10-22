@@ -27,6 +27,7 @@ type BaseButtonProps = Pick<
   | 'width'
 > & {
   size?: 'default' | 'large'
+  round?: boolean
 }
 
 type ButtonWithText = {
@@ -71,6 +72,7 @@ export const Button = forwardRef(function Button(
     paddingY,
     tone = 'default',
     tooltipProps,
+    round = false,
     ...rest
   }: ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title'>,
   ref: ForwardedRef<HTMLButtonElement>,
@@ -91,7 +93,15 @@ export const Button = forwardRef(function Button(
 
   return (
     <ConditionalWrapper condition={!!tooltipProps} wrapper={renderWrapper}>
-      <UIButton {...rest} {...sizeProps} paddingY={paddingY} ref={ref} mode={mode} tone={tone} />
+      <UIButton
+        {...rest}
+        {...sizeProps}
+        {...(round ? {radius: 'full'} : {})}
+        paddingY={paddingY}
+        ref={ref}
+        mode={mode}
+        tone={tone}
+      />
     </ConditionalWrapper>
   )
 })

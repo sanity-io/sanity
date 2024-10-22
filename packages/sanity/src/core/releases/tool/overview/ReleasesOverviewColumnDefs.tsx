@@ -1,81 +1,101 @@
 import {PinFilledIcon, PinIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {format} from 'date-fns'
 import {useCallback} from 'react'
-import {type TFunction, Translate, usePerspective, useTranslation} from 'sanity'
+import {ReleaseAvatar, type TFunction, Translate, usePerspective, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {Tooltip} from '../../../../ui-components'
+import {Button, Tooltip} from '../../../../ui-components'
 import {RelativeTime} from '../../../components'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {type TableRowProps} from '../components/Table/Table'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ReleaseDocumentsCounter} from './ReleaseDocumentsCounter'
-import {type TableBundle} from './ReleasesOverview'
+import {type TableRelease} from './ReleasesOverview'
 
-const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}) => {
+const ReleaseTime = ({release}: {release: TableRelease}) => {
+  const {t: tCore} = useTranslation()
+  const {publishedAt, releaseType} = release
+
+  const getTimeString = () => {
+    if (releaseType === 'asap') {
+      return tCore('release.type.asap')
+    }
+    if (releaseType === 'undecided') {
+      return tCore('release.type.undecided')
+    }
+
+    return publishedAt ? format(new Date(publishedAt), 'PPpp') : null
+  }
+
+  return (
+    <Text muted size={1}>
+      {getTimeString()}
+    </Text>
+  )
+}
+
+const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: release}) => {
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {currentGlobalBundle, setPerspective} = usePerspective()
-  const {archived, _id, publishedAt} = bundle
+  const {currentGlobalBundle: currentGlobalRelease, setPerspective} = usePerspective()
+  const {archived, _id, publishedAt} = release
 
   const handlePinRelease = useCallback(() => {
-    if (_id === currentGlobalBundle._id) {
+    if (_id === currentGlobalRelease._id) {
       setPerspective('drafts')
     } else {
       setPerspective(_id)
     }
-  }, [_id, currentGlobalBundle._id, setPerspective])
+  }, [_id, currentGlobalRelease._id, setPerspective])
 
-  const cardProps: TableRowProps = bundle.isDeleted
+  const cardProps: TableRowProps = release.isDeleted
     ? {tone: 'transparent'}
     : {
         as: 'a',
-        // navigate to bundle detail
-        onClick: () => router.navigate({releaseId: bundle._id}),
+        // navigate to release detail
+        onClick: () => router.navigate({releaseId: release._id}),
         tone: 'inherit',
       }
 
-  const isReleasePinned = _id === currentGlobalBundle._id
+  const isReleasePinned = _id === currentGlobalRelease._id
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
 
   return (
     <Box {...cellProps} marginLeft={3} flex={1} padding={1}>
       <Tooltip
-        disabled={!bundle.isDeleted}
+        disabled={!release.isDeleted}
         content={
           <Text size={1}>
-            <Translate t={t} i18nKey="deleted-release" values={{title: bundle.title}} />
+            <Translate t={t} i18nKey="deleted-release" values={{title: release.title}} />
           </Text>
         }
       >
         <Flex align="center" gap={4}>
-          <Tooltip
+          <Button
+            tooltipProps={{
+              disabled: archived || publishedAt !== undefined,
+              content: t('dashboard.details.pin-release'),
+            }}
             disabled={archived || publishedAt !== undefined}
-            content={t('dashboard.details.pin-release')}
-          >
-            <Button
-              disabled={archived || publishedAt !== undefined}
-              icon={pinButtonIcon}
-              mode="bleed"
-              onClick={handlePinRelease}
-              padding={2}
-              radius="full"
-              selected={_id === currentGlobalBundle._id}
-              space={2}
-            />
-          </Tooltip>
+            icon={pinButtonIcon}
+            mode="bleed"
+            onClick={handlePinRelease}
+            padding={2}
+            round
+            selected={_id === currentGlobalRelease._id}
+          />
           <Card {...cardProps} padding={2} radius={2} flex={1}>
             <Flex align="center" gap={2}>
               <Box flex="none">
-                <ReleaseAvatar tone={getReleaseTone(bundle)} />
+                <ReleaseAvatar tone={getReleaseTone(release)} />
               </Box>
               <Stack flex={1} space={2}>
                 <Flex align="center" gap={2}>
                   <Text size={1} weight="medium">
-                    {bundle.title}
+                    {release.title}
                   </Text>
                 </Flex>
               </Stack>
@@ -89,7 +109,7 @@ const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}
 
 export const releasesOverviewColumnDefs: (
   t: TFunction<'releases', undefined>,
-) => Column<TableBundle>[] = (t) => {
+) => Column<TableRelease>[] = (t) => {
   return [
     {
       id: 'title',
@@ -122,13 +142,9 @@ export const releasesOverviewColumnDefs: (
           <Headers.SortHeaderButton text={t('table-header.time')} {...props} />
         </Flex>
       ),
-      cell: ({cellProps, datum: bundle}) => (
+      cell: ({cellProps, datum: release}) => (
         <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-          {!!bundle.publishedAt && (
-            <Text muted size={1}>
-              <RelativeTime time={bundle.publishedAt} useTemporalPhrase minimal />
-            </Text>
-          )}
+          {!!release.publishedAt && <ReleaseTime release={release} />}
         </Flex>
       ),
     },

@@ -1,5 +1,5 @@
 import {AddIcon, ChevronDownIcon, CloseIcon, EarthGlobeIcon} from '@sanity/icons'
-import {Box, type ButtonMode, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, type ButtonMode, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {endOfDay, format, isBefore, isSameDay, startOfDay} from 'date-fns'
 import {zonedTimeToUtc} from 'date-fns-tz'
 import {
@@ -35,7 +35,7 @@ import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 
 type Mode = 'open' | 'archived'
 
-export interface TableBundle extends ReleaseDocument {
+export interface TableRelease extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
   isDeleted?: boolean
 }
@@ -45,6 +45,7 @@ const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishedAt', direct
 
 export function ReleasesOverview() {
   const {data: bundles, loading: loadingBundles, deletedReleases} = useReleases()
+  // const bundles = []
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(undefined)
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
@@ -58,7 +59,7 @@ export function ReleasesOverview() {
   const {currentGlobalBundle} = usePerspective()
 
   const getRowProps = useCallback(
-    (datum: TableBundle): Partial<TableRowProps> =>
+    (datum: TableRelease): Partial<TableRowProps> =>
       datum.isDeleted
         ? {tone: 'transparent'}
         : {tone: currentGlobalBundle._id === datum._id ? getReleaseTone(datum) : 'default'},
@@ -70,7 +71,7 @@ export function ReleasesOverview() {
   const hasBundles = bundles && containsBundles(bundles)
   const loadingOrHasBundles = loading || hasBundles
 
-  const tableBundles = useMemo<TableBundle[]>(() => {
+  const tableBundles = useMemo<TableRelease[]>(() => {
     const deletedTableBundles = Object.values(deletedReleases).map((deletedBundle) => ({
       ...deletedBundle,
       isDeleted: true,
@@ -89,7 +90,7 @@ export function ReleasesOverview() {
 
   const groupedBundles = useMemo(
     () =>
-      tableBundles.reduce<{open: TableBundle[]; archived: TableBundle[]}>((groups, bundle) => {
+      tableBundles.reduce<{open: TableRelease[]; archived: TableRelease[]}>((groups, bundle) => {
         const isBundleArchived =
           bundle.archivedAt ||
           (bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date()))
@@ -202,8 +203,8 @@ export function ReleasesOverview() {
     )
   }
 
-  const renderRowActions = useCallback(({datum}: {datum: TableBundle | unknown}) => {
-    const bundle = datum as TableBundle
+  const renderRowActions = useCallback(({datum}: {datum: TableRelease | unknown}) => {
+    const bundle = datum as TableRelease
 
     if (bundle.isDeleted) return null
 
@@ -232,15 +233,17 @@ export function ReleasesOverview() {
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
       <Flex flex={1}>
-        <Flex flex="none">
-          <Card borderRight flex="none">
-            <DatePicker
-              value={releaseFilterDate || null}
-              onChange={handleSelectFilterDate}
-              calendarLabels={calendarLabels}
-            />
-          </Card>
-        </Flex>
+        {(loading || hasBundles) && (
+          <Flex flex="none">
+            <Card borderRight flex="none" disabled>
+              <DatePicker
+                value={releaseFilterDate || null}
+                onChange={handleSelectFilterDate}
+                calendarLabels={calendarLabels}
+              />
+            </Card>
+          </Flex>
+        )}
         <Flex direction={'column'} flex={1}>
           <Card flex="none" padding={3}>
             <Flex align="flex-start" flex={1} gap={3}>
@@ -265,9 +268,19 @@ export function ReleasesOverview() {
               </Flex>
             </Flex>
           </Card>
+          {!loading && !hasBundles && (
+            <Container style={{margin: 0}} width={0}>
+              <Stack space={5}>
+                <Text data-testid="no-releases-info-text" muted size={2}>
+                  {t('overview.description')}
+                </Text>
+                <Box>{createReleaseButton}</Box>
+              </Stack>
+            </Container>
+          )}
           {(hasBundles || loadingTableData) && (
             <Box ref={scrollContainerRef} marginTop={3} overflow={'auto'}>
-              <Table<TableBundle>
+              <Table<TableRelease>
                 // for resetting filter and sort on table when filer changed
                 key={releaseFilterDate ? 'by_date' : bundleGroupMode}
                 defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}

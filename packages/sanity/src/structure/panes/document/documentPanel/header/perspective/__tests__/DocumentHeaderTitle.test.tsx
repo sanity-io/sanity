@@ -36,6 +36,7 @@ vi.mock('sanity', async (importOriginal) => {
     ...(await importOriginal()),
     unstable_useValuePreview: vi.fn(),
     useDocumentVersions: vi.fn(),
+    useDateTimeFormat: vi.fn().mockReturnValue({format: vi.fn()}),
   }
 })
 
