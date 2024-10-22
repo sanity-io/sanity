@@ -1,12 +1,12 @@
 import {LaunchIcon} from '@sanity/icons'
-import {Box, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useId, useState} from 'react'
 
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {useWorkspace} from '../../studio'
 import {CreateLearnMoreButton} from '../components/CreateLearnMoreButton'
-import {StartInCreateSvg} from '../components/media/StartInCreateSvg'
+import {CreateSvg} from '../components/media/CreateSvg'
 import {createLocaleNamespace} from '../i18n'
 import {getCreateLinkUrl} from '../useCreateDocumentUrl'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
@@ -61,33 +61,27 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
 
   return (
     <Stack space={4}>
-      <Box>
-        <StartInCreateSvg />
-      </Box>
-      <Box>
-        <Text weight="semibold">{t('start-in-create-dialog.lede')}</Text>
-      </Box>
-      <Box>
-        <Text>{t('start-in-create-dialog.details')}</Text>
-      </Box>
+      <CreateSvg />
+      <Text size={1} weight="semibold">
+        {t('start-in-create-dialog.lede')}
+      </Text>
+      <Text muted size={1}>
+        {t('start-in-create-dialog.details')}
+      </Text>
       <Flex gap={2} align="center">
         <Checkbox id={checkboxId} checked={dontShowAgain} onChange={toggleDontShowAgain} />
-        <Text as="label" htmlFor={checkboxId}>
+        <Text as="label" htmlFor={checkboxId} muted size={1}>
           {t('start-in-create-dialog.dont-remind-me-checkbox')}
         </Text>
       </Flex>
       <Flex justify="flex-end" gap={2}>
-        <Box>
-          <CreateLearnMoreButton />
-        </Box>
-        <Box>
-          <Button
-            text={t('start-in-create-dialog.cta.continue')}
-            tone="primary"
-            iconRight={LaunchIcon}
-            onClick={startLinking}
-          />
-        </Box>
+        <CreateLearnMoreButton />
+        <Button
+          text={t('start-in-create-dialog.cta.continue')}
+          tone="primary"
+          iconRight={LaunchIcon}
+          onClick={startLinking}
+        />
       </Flex>
     </Stack>
   )

@@ -32,7 +32,7 @@ export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps)
   return (
     <Dialog id={id} header={t('unlink-from-create-dialog.header')} onClose={onClose}>
       <Stack space={5}>
-        <Text>
+        <Text size={1}>
           <Translate
             t={t}
             i18nKey="unlink-from-create-dialog.first-paragraph"
@@ -40,7 +40,7 @@ export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps)
           />
         </Text>
 
-        <Text>{t('unlink-from-create-dialog.second-paragraph')}</Text>
+        <Text size={1}>{t('unlink-from-create-dialog.second-paragraph')}</Text>
 
         <Flex flex={1} justify="flex-end" gap={2}>
           <Button
