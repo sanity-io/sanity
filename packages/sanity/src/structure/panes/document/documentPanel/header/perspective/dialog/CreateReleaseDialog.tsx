@@ -46,7 +46,6 @@ export function CreateReleaseDialog(props: {
   const [value, setValue] = useState((): EditableReleaseDocument => {
     return {
       _id: newReleaseId,
-      _type: 'system.release',
       metadata: {
         title: '',
         description: '',

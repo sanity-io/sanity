@@ -1,5 +1,7 @@
 import {customAlphabet} from 'nanoid'
 
+import {RELEASE_DOCUMENTS_PATH} from '../../store/release/constants'
+
 /**
  * ~24 years (or 7.54e+8 seconds) needed, in order to have a 1% probability of at least one collision if 10 ID's are generated every hour.
  */
@@ -13,5 +15,5 @@ const createBundleId = customAlphabet(
  * @internal
  */
 export function createReleaseId() {
-  return `r${createBundleId()}`
+  return `${RELEASE_DOCUMENTS_PATH}.r${createBundleId()}`
 }

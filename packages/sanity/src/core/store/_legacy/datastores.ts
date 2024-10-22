@@ -6,11 +6,11 @@ import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
-import {useAddonDataset, useSource, useWorkspace} from '../../studio'
+import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
 import {createReleaseStore} from '../release/createReleaseStore'
-import {type ReleasesStore} from '../release/types'
+import {type ReleaseStore} from '../release/types'
 import {useCurrentUser} from '../user'
 import {
   type ConnectionStatusStore,
@@ -293,32 +293,29 @@ export function useKeyValueStore(): KeyValueStore {
 }
 
 /** @internal */
-export function useReleasesStore(): ReleasesStore {
+export function useReleasesStore(): ReleaseStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
   const currentUser = useCurrentUser()
-  const addonDataset = useAddonDataset()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   return useMemo(() => {
-    const bundlesStore =
-      resourceCache.get<ReleasesStore>({
-        dependencies: [workspace, addonDataset, currentUser],
-        namespace: 'BundlesStore',
+    const releaseStore =
+      resourceCache.get<ReleaseStore>({
+        dependencies: [workspace, currentUser],
+        namespace: 'ReleasesStore',
       }) ||
       createReleaseStore({
-        addonClient: addonDataset.client,
-        addonClientReady: addonDataset.ready,
-        studioClient,
+        client: studioClient,
         currentUser,
       })
 
     resourceCache.set({
-      dependencies: [workspace, addonDataset, currentUser],
-      namespace: 'BundlesStore',
-      value: bundlesStore,
+      dependencies: [workspace, currentUser],
+      namespace: 'ReleasesStore',
+      value: releaseStore,
     })
 
-    return bundlesStore
-  }, [resourceCache, workspace, addonDataset, studioClient, currentUser])
+    return releaseStore
+  }, [resourceCache, workspace, studioClient, currentUser])
 }

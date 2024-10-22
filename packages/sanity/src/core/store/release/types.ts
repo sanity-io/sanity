@@ -4,6 +4,7 @@ import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type PartialExcept} from '../../util'
+import {type RELEASE_DOCUMENT_TYPE} from './constants'
 import {type MetadataWrapper} from './createReleaseMetadataAggregator'
 import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
 
@@ -28,7 +29,7 @@ export interface ReleaseDocument {
    * _.releases.<name>
    */
   _id: string
-  _type: 'system.release'
+  _type: typeof RELEASE_DOCUMENT_TYPE
   _createdAt: string
   _updatedAt: string
   name: string
@@ -56,8 +57,8 @@ export interface ReleaseDocument {
  * @internal
  */
 export type EditableReleaseDocument = Omit<
-  PartialExcept<ReleaseDocument, '_id' | '_type'>,
-  'metadata'
+  PartialExcept<ReleaseDocument, '_id'>,
+  'metadata' | '_type'
 > & {
   metadata: Partial<ReleaseDocument['metadata']>
 }
@@ -72,7 +73,7 @@ export function isReleaseDocument(doc: unknown): doc is ReleaseDocument {
 /**
  * @internal
  */
-export interface ReleasesStore {
+export interface ReleaseStore {
   state$: Observable<ReleasesReducerState>
   getMetadataStateForSlugs$: (slugs: string[]) => Observable<MetadataWrapper>
   dispatch: Dispatch<ReleasesReducerAction>

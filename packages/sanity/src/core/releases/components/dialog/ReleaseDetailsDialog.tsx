@@ -34,7 +34,6 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
   const [value, setValue] = useState((): EditableReleaseDocument => {
     return {
       _id: release?._id || createReleaseId(),
-      _type: 'system.release',
       metadata: {
         title: release?.metadata.title,
         description: release?.metadata.description,

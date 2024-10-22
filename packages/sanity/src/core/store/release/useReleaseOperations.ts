@@ -1,81 +1,50 @@
 import {type SanityDocument} from '@sanity/client'
-import {uuid} from '@sanity/uuid'
 import {omit} from 'lodash'
 import {useCallback} from 'react'
 import {type EditableReleaseDocument, getPublishedId, useCurrentUser} from 'sanity'
 
 import {useClient} from '../../hooks'
-import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-
-const useGuardedAddonClient = () => {
-  const {client: addOnClient, createAddonDataset} = useAddonDataset()
-
-  function getAddonClient() {
-    if (!addOnClient) {
-      throw new Error('Addon client is not available')
-    }
-
-    return addOnClient
-  }
-  async function getOrCreateAddonClient() {
-    if (!addOnClient) {
-      const client = await createAddonDataset()
-      if (!client) {
-        throw new Error('There was an error creating the addon client')
-      }
-      return client
-    }
-    return addOnClient
-  }
-
-  return {getAddonClient, getOrCreateAddonClient}
-}
+import {RELEASE_DOCUMENT_TYPE} from './constants'
 
 // WIP - Raw implementation for initial testing purposes
 /** @internal */
 export function useReleaseOperations() {
-  const {getAddonClient, getOrCreateAddonClient} = useGuardedAddonClient()
-  const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const currentUser = useCurrentUser()
 
   const handleCreateRelease = useCallback(
     async (release: EditableReleaseDocument) => {
-      const addonClient = await getOrCreateAddonClient()
-
       const document = {
         ...release,
-        _type: 'system.release',
+        _type: RELEASE_DOCUMENT_TYPE,
         authorId: currentUser?.id,
-        _id: release._id ?? `_.release.${uuid()}`,
       }
-      const res = await addonClient.createIfNotExists(document)
-      return res
+      await client.createIfNotExists(document)
     },
-    [currentUser?.id, getOrCreateAddonClient],
+    [client, currentUser?.id],
   )
 
   const handleUpdateRelease = useCallback(
     async (release: EditableReleaseDocument) => {
-      const addonClient = getAddonClient()
       if (!release._id) return null
 
       const document = {
         ...release,
-        _type: 'system.release',
+        _type: RELEASE_DOCUMENT_TYPE,
       }
       const unsetKeys = Object.entries(release)
         .filter(([_, value]) => value === undefined)
         .map(([key]) => key)
 
-      let clientOperation = addonClient.patch(release._id).set(document)
+      let clientOperation = client.patch(release._id).set(document)
       if (unsetKeys.length) {
         clientOperation = clientOperation.unset(unsetKeys)
       }
 
       return clientOperation.commit()
     },
-    [getAddonClient],
+    [client],
   )
 
   const handlePublishBundle = useCallback(
@@ -84,9 +53,7 @@ export function useReleaseOperations() {
       bundleDocuments: SanityDocument[],
       publishedDocumentsRevisions: Record<string, string>,
     ) => {
-      const addonClient = getAddonClient()
-
-      const transaction = studioClient.transaction()
+      const transaction = client.transaction()
       bundleDocuments.forEach((bundleDocument) => {
         const publishedDocumentId = getPublishedId(bundleDocument._id)
         const versionDocument = omit(bundleDocument, ['_version']) as SanityDocument
@@ -119,9 +86,9 @@ export function useReleaseOperations() {
 
       await transaction.commit()
       const publishedAt = new Date().toISOString()
-      return await addonClient.patch(bundleId).set({publishedAt, archivedAt: publishedAt}).commit()
+      return await client.patch(bundleId).set({publishedAt, archivedAt: publishedAt}).commit()
     },
-    [getAddonClient, studioClient],
+    [client],
   )
 
   return {
