@@ -35,7 +35,7 @@ const createLocaleStrings = defineLocalesResources('comments', {
     'You should continue editing in Create. Content will show up in this document as it is mapped into it.',
   /** Info on when the "Linking in progress" dialog will close */
   'linking-in-progress-dialog.auto-close':
-    'This dialog will close once content start flowing from Create.',
+    'This dialog will close once Sanity Create starts syncing. If you are unable to continue in Sanity Create, please make a new document in the Studio.',
 
   /** Text for the document pane banner informing users that the document is linked to Sanity Create */
   'studio-create-link-banner.text': 'This document is linked to Sanity Create',
