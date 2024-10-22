@@ -73,7 +73,7 @@ export function CreateLinkedDocumentBanner(props: CreateLinkedDocumentBannerProp
   )
 
   return (
-    <Card border padding={3} tone="transparent">
+    <Card borderBottom padding={3} tone="transparent">
       <Flex gap={2} align="center">
         <Text size={0} weight="medium">
           <ReadOnlyIcon />
