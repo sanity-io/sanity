@@ -81,8 +81,8 @@ export default function Tool() {
       <Container width={1} paddingTop={4}>
         <Box paddingTop={4} paddingX={4}>
           <ErrorCallout
-            description="You do not have permission to edit schedules."
-            title="Insufficient permissions"
+            description="Something went wrong loading permissions, please try again."
+            title="Permissions check failed"
           />
         </Box>
       </Container>
