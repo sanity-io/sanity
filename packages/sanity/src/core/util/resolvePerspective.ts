@@ -5,7 +5,7 @@
  * @internal
  */
 export function resolveBundlePerspective(perspective?: string): string | undefined {
-  return perspective?.split(/^release./).at(1)
+  return perspective?.split(/^bundle./).at(1)
 }
 
 /**
