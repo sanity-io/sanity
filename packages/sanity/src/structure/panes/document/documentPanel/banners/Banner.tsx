@@ -16,13 +16,14 @@ interface BannerProps {
   content: ReactNode
   icon?: ComponentType
   tone?: CardTone
+  paddingY?: number
 }
 
 export function Banner(props: BannerProps) {
-  const {action, content, icon: Icon, tone = 'transparent', ...rest} = props
+  const {action, content, icon: Icon, tone = 'transparent', paddingY = 2, ...rest} = props
 
   return (
-    <Card borderBottom paddingX={4} paddingY={2} tone={tone} {...rest}>
+    <Card borderBottom paddingX={4} paddingY={paddingY} tone={tone} {...rest}>
       <Flex align="center" gap={3}>
         {Icon && (
           <Text size={0}>

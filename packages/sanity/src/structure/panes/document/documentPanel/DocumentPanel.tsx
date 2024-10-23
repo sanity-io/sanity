@@ -1,6 +1,6 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {createElement, useEffect, useMemo, useRef, useState} from 'react'
-import {ScrollContainer, VirtualizerScrollInstanceProvider} from 'sanity'
+import {ScrollContainer, usePerspective, VirtualizerScrollInstanceProvider} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
@@ -15,6 +15,7 @@ import {
   PermissionCheckBanner,
   ReferenceChangedBanner,
 } from './banners'
+import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {FormView} from './documentViews'
 
@@ -59,6 +60,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
+    existsInBundle,
+    documentType,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -129,8 +132,22 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
+  const {currentGlobalBundle} = usePerspective()
+
+  const currentPerspectiveIsRelease =
+    currentGlobalBundle._id !== 'published' && currentGlobalBundle._id !== 'drafts'
 
   const banners = useMemo(() => {
+    if (!existsInBundle && currentPerspectiveIsRelease) {
+      return (
+        <AddToReleaseBanner
+          documentId={documentId}
+          documentType={documentType}
+          currentRelease={currentGlobalBundle}
+        />
+      )
+    }
+
     if (activeView.type === 'form' && isLiveEdit && ready) {
       return (
         <DraftLiveEditBanner
@@ -156,8 +173,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     )
   }, [
     activeView.type,
+    currentGlobalBundle,
+    currentPerspectiveIsRelease,
     displayed,
     documentId,
+    documentType,
+    existsInBundle,
     isLiveEdit,
     isPermissionsLoading,
     permissions?.granted,
