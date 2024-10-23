@@ -135,8 +135,8 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
           <LoadingPane paneKey="intent-resolver" />
         )}
       </StyledPaneLayout>
-      <StructureTitle resolvedPanes={resolvedPanes} />
       <div data-portal="" ref={setPortalElement} />
+      <StructureTitle resolvedPanes={resolvedPanes} />
     </PortalProvider>
   )
 })

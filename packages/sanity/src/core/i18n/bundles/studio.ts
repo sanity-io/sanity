@@ -125,6 +125,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text shown in usage dialog for an image asset when there are zero, one or more documents using the *unnamed* image **/
   'asset-source.usage-list.documents-using-image_unnamed_zero': 'No documents are using this image',
 
+  /** Label when a release has been deleted by a different user */
+  'banners.deleted-bundle-banner.text':
+    "The '<strong>{{title}}</strong>' release has been deleted.",
+
   /** Action message for navigating to next month */
   'calendar.action.go-to-next-month': 'Go to next month',
   /** Action message for navigating to next year */
@@ -359,6 +363,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-status.not-published': 'Not published',
   /** Label to show in the document footer indicating the published date of the document */
   'document-status.published': 'Published {{date}}',
+  /** Label to show in the document footer indicating the revision from date of the document */
+  'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
@@ -1131,6 +1137,68 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /* Relative time, just now */
   'relative-time.just-now': 'just now',
+
+  /** Action message to add document to release */
+  'release.action.add-to-release': 'Add to {{title}}',
+  /** Action message for when document is already in release  */
+  'release.action.already-in-release': 'Already in release {{title}}',
+  /** Action message for when you click to view all versions you can copy the current document to */
+  'release.action.copy-to': 'Copy version to',
+  /** Action message for creating releases */
+  'release.action.create': 'Create release',
+  /** Action message for when document is already in release  */
+  'release.action.discard-version': 'Discard version',
+  /** Description for toast when version discarding failed */
+  'release.action.discard-version.failure': 'Failed to discard version',
+  /** Description for toast when version deletion is successfully discarded */
+  'release.action.discard-version.success':
+    '<strong>{{title}}</strong> version was successfully discarded',
+  /** Action message for when a new release is created off an existing version, draft or published document */
+  'release.action.new-release': 'New Release',
+  /** Action message for when the view release is pressed */
+  'release.action.view-release': 'View release',
+  /** Label for Draft chip in document header */
+  'release.chip.draft': 'Draft',
+  /** Label for Published chip in document header */
+  'release.chip.published': 'Published',
+  /** Label for tooltip in chip with the created date */
+  'release.chip.tooltip.created-date': 'Created {{date}}',
+  /** Label for tooltip in chip with the lasted edited date */
+  'release.chip.tooltip.edited-date': 'Edited {{date}}',
+  /** Label for tooltip in chip when document is intended for a future release */
+  'release.chip.tooltip.intended-for-date': 'Intended for {{date}}',
+  /** Label for tooltip in chip when there is no recent draft edits */
+  'release.chip.tooltip.no-edits': 'No edits',
+  /** Label for tooltip in chip when document isn't published */
+  'release.chip.tooltip.not-published': 'Not published',
+  /** Label for tooltip in chip with the published date */
+  'release.chip.tooltip.published-date': 'Published {{date}}',
+  /** Label for tooltip in scheduled chip without a known date */
+  'release.chip.tooltip.unknown-date': 'Unknown date',
+  /** Label for tooltip on deleted release */
+  'release.deleted-tooltip': 'This release has been deleted',
+  /** Title for creating releases dialog */
+  'release.dialog.create.title': 'Create release',
+  /** Title for editing releases dialog */
+  'release.dialog.edit.title': 'Edit release',
+  /** Label for the description form field when creating releases */
+  'release.form.description': 'Description',
+  /** Placeholder for the icon and colour picker */
+  'release.form.search-icon': 'Search icons',
+  /** Tooltip label for the icon display */
+  'release.form.search-icon-tooltip': 'Select release icon',
+  /** Label for the title form field when creating releases */
+  'release.form.title': 'Title',
+  /** Tooltip for releases navigation in navbar */
+  'release.navbar.tooltip': 'Releases',
+  /** Label for the release type 'as soon as possible' */
+  'release.type.asap': 'ASAP',
+  /** Label for the release type 'at time', meaning it's a release with a scheduled date */
+  'release.type.scheduled': 'At time',
+  /** Label for the release type 'undecided' */
+  'release.type.undecided': 'Undecided',
+  /** Tooltip for the dropdown to show all versions of document */
+  'release.version-list.tooltip': 'See all document versions',
 
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',

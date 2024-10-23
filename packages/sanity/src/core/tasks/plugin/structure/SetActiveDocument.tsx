@@ -1,6 +1,6 @@
 import {useEffect} from 'react'
 
-import {getPublishedId} from '../../../util'
+import {getPublishedId, isVersionId} from '../../../util'
 import {type ActiveDocument, useIsLastPane, useTasks, useTasksEnabled} from '../../context'
 
 function SetActiveDocumentInner(document: ActiveDocument) {
@@ -11,7 +11,8 @@ function SetActiveDocumentInner(document: ActiveDocument) {
   useEffect(() => {
     if (documentId && isLast && documentType) {
       setActiveDocument?.({
-        documentId: getPublishedId(documentId),
+        // Use the version id if it's a version document.
+        documentId: isVersionId(documentId) ? documentId : getPublishedId(documentId),
         documentType,
       })
     }

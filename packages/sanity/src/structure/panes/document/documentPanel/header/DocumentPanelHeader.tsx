@@ -1,5 +1,5 @@
-import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Flex} from '@sanity/ui'
+import {ArrowLeftIcon, CloseIcon, RestoreIcon, SplitVerticalIcon} from '@sanity/icons'
+import {Flex, Text} from '@sanity/ui'
 import {
   createElement,
   type ForwardedRef,
@@ -10,14 +10,9 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {
-  type DocumentActionDescription,
-  useFieldActions,
-  useTimelineSelector,
-  useTranslation,
-} from 'sanity'
+import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {
   PaneContextMenuButton,
   PaneHeader,
@@ -33,7 +28,6 @@ import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {isRestoreAction} from '../../statusBar/DocumentStatusBarActions'
-import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -57,10 +51,11 @@ export const DocumentPanelHeader = memo(
       onPaneSplit,
       menuItemGroups,
       schemaType,
-      timelineStore,
       connectionState,
       views,
       unstable_languageFilter,
+      onHistoryOpen,
+      inspector,
     } = useDocumentPane()
     const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
@@ -84,12 +79,11 @@ export const DocumentPanelHeader = memo(
     const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
     const showTabs = views.length > 1
 
-    // Subscribe to external timeline state changes
-    const rev = useTimelineSelector(timelineStore, (state) => state.revTime)
-
     const {collapsed, isLast} = usePane()
     // Prevent focus if this is the last (non-collapsed) pane.
     const tabIndex = isLast && !collapsed ? -1 : 0
+
+    const documentPaneHeaderTitle = <DocumentHeaderTitle collapsed={collapsed} />
 
     // there are three kinds of buttons possible:
     //
@@ -132,13 +126,17 @@ export const DocumentPanelHeader = memo(
       [contextMenuNodes, referenceElement],
     )
 
+    const handleHistoryOpen = useCallback(() => {
+      onHistoryOpen()
+    }, [onHistoryOpen])
+
     return (
       <TooltipDelayGroupProvider>
         <PaneHeader
           border
           ref={ref}
           loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
-          title={<DocumentHeaderTitle />}
+          title={documentPaneHeaderTitle}
           tabs={showTabs && <DocumentHeaderTabs />}
           tabIndex={tabIndex}
           backButton={
@@ -152,7 +150,6 @@ export const DocumentPanelHeader = memo(
               />
             )
           }
-          subActions={<TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />}
           actions={
             <Flex align="center" gap={1}>
               {unstable_languageFilter.length > 0 && (
@@ -170,14 +167,29 @@ export const DocumentPanelHeader = memo(
               {menuButtonNodes.map((item) => (
                 <PaneHeaderActionButton key={item.key} node={item} />
               ))}
+
+              {/* todo update translation */}
+              {/*eslint-disable-next-line i18next/no-literal-string*/}
+              <Tooltip content={<Text size={1}>History</Text>} placement="bottom" portal>
+                <Button
+                  icon={RestoreIcon}
+                  mode="bleed"
+                  onClick={handleHistoryOpen}
+                  padding={2}
+                  selected={inspector?.name === 'sanity/structure/history'}
+                  tooltipProps={{content: t('buttons.history.tooltip')}}
+                />
+              </Tooltip>
               {editState && (
-                <RenderActionCollectionState
-                  actions={actions}
-                  actionProps={editState}
-                  group="paneActions"
-                >
-                  {renderPaneActions}
-                </RenderActionCollectionState>
+                <>
+                  <RenderActionCollectionState
+                    actions={actions}
+                    actionProps={editState}
+                    group="paneActions"
+                  >
+                    {renderPaneActions}
+                  </RenderActionCollectionState>
+                </>
               )}
 
               {showSplitPaneButton && (

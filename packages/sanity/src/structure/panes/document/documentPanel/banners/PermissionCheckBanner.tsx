@@ -12,13 +12,12 @@ import {AskToEditDialogOpened} from '../../../../components/requestPermissionDia
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
-interface InsufficientPermissionBannerProps {
+interface PermissionCheckBannerProps {
+  granted: boolean
   requiredPermission: 'update' | 'create'
 }
 
-export function InsufficientPermissionBanner({
-  requiredPermission,
-}: InsufficientPermissionBannerProps) {
+export function PermissionCheckBanner({granted, requiredPermission}: PermissionCheckBannerProps) {
   const currentUser = useCurrentUser()
 
   const {
@@ -38,6 +37,8 @@ export function InsufficientPermissionBanner({
   const listFormat = useListFormat({style: 'short'})
   const {t} = useTranslation(structureLocaleNamespace)
   const telemetry = useTelemetry()
+
+  if (granted) return null
 
   const roleTitles = currentUserRoles.map((role) => role.title)
   const roles = listFormat

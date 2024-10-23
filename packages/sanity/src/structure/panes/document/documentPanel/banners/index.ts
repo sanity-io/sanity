@@ -1,4 +1,4 @@
-export * from './DeletedDocumentBanner'
+export * from './DeletedDocumentBanners'
 export * from './DeprecatedDocumentTypeBanner'
-export * from './InsufficientPermissionBanner'
+export * from './PermissionCheckBanner'
 export * from './ReferenceChangedBanner'

@@ -274,7 +274,7 @@ export class TimelineController {
 
   private async fetchMoreTransactions() {
     const publishedId = this.timeline.publishedId
-    const draftId = this.timeline.draftId
+    const versionId = this.timeline.versionId
     const clientConfig = this.client.config()
     const limit = TRANSLOG_ENTRY_LIMIT
 
@@ -285,7 +285,7 @@ export class TimelineController {
     }
 
     const transactionsUrl = this.client.getUrl(
-      `/data/history/${clientConfig.dataset}/transactions/${publishedId},${draftId}?${queryParams}`,
+      `/data/history/${clientConfig.dataset}/transactions/${publishedId},${versionId}?${queryParams}`,
     )
     const stream = await getJsonStream(transactionsUrl, clientConfig.token)
     const reader = stream.getReader()

@@ -75,9 +75,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.restore.disabled.cannot-restore-initial': "You can't restore to the initial version",
 
   /** Label for the "Restore" document action */
-  'action.restore.label': 'Restore',
+  'action.restore.label': 'Revert to revision',
   /** Default tooltip for the action */
-  'action.restore.tooltip': 'Restore to this version',
+  'action.restore.tooltip': 'Restore to this revision',
 
   /** Tooltip when action is disabled because the document is not already published */
   'action.unpublish.disabled.not-published': 'This document is not published',
@@ -128,6 +128,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the reference change banner if the reason is that the reference has been deleted */
   'banners.reference-changed-banner.reason-removed.text':
     'This reference has been removed since you opened it.',
+  /** The text that appears for the action button to add the current document to the global release */
+  'banners.release.action.add-to-release': 'Add to release',
+  /** The text for the banner that appears when a document is not in the current global release */
+  'banners.release.not-in-release': 'Not in the <Label>{{title}}</Label> release.',
 
   /** Browser/tab title when creating a new document of a given type */
   'browser-document-title.new-document': 'New {{schemaType}}',
@@ -361,6 +365,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-operation-results.operation-success': 'Successfully performed {{op}} on document',
   /** The text when copy URL operation succeeded  */
   'panes.document-operation-results.operation-success_copy-url': 'Document URL copied to clipboard',
+  /**  */
+  'panes.document-operation-results.operation-success_createVersion':
+    '<Strong>{{title}}</Strong> was added to the release',
   /** The text when a delete operation succeeded  */
   'panes.document-operation-results.operation-success_delete':
     'The document was successfully deleted',

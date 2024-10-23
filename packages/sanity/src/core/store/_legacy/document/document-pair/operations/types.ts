@@ -23,6 +23,9 @@ export interface Operation<ExtraArgs extends any[] = [], ErrorStrings extends st
 type GuardedOperation = Operation<any[], 'NOT_READY'>
 type Patch = any
 
+/** @beta */
+export type VersionOriginTypes = 'published' | 'draft' | 'version'
+
 /** @internal */
 // Note: Changing this interface in a backwards incompatible manner will be a breaking change
 export interface OperationsAPI {
@@ -37,6 +40,9 @@ export interface OperationsAPI {
   unpublish: Operation<[], 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'> | GuardedOperation
   duplicate: Operation<[documentId: string], 'NOTHING_TO_DUPLICATE'> | GuardedOperation
   restore: Operation<[revision: string]> | GuardedOperation
+  createVersion:
+    | GuardedOperation
+    | Operation<[documentId: string, origin: VersionOriginTypes], 'NO_NEW_VERSION'>
 }
 
 /** @internal */
@@ -46,8 +52,13 @@ export interface OperationArgs {
   schema: Schema
   typeName: string
   idPair: IdPair
-  snapshots: {draft: null | SanityDocument; published: null | SanityDocument}
+  snapshots: {
+    draft: null | SanityDocument
+    published: null | SanityDocument
+    version?: null | SanityDocument
+  }
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
+  version?: DocumentVersionSnapshots
   serverActionsEnabled: boolean
 }

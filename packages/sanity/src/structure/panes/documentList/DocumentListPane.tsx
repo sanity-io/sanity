@@ -10,6 +10,7 @@ import {
   useTranslation,
   useUnique,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 import {keyframes, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../i18n'
@@ -74,6 +75,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
 
+  const perspective = useRouter().stickyParams.perspective
+
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -103,6 +106,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     useDocumentList({
       apiVersion,
       filter,
+      perspective,
       params,
       searchQuery: searchQuery?.trim(),
       sortOrder,

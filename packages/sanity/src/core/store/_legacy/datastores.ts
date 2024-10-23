@@ -9,6 +9,8 @@ import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../previ
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
+import {createReleaseStore} from '../release/createReleaseStore'
+import {type ReleaseStore} from '../release/types'
 import {useCurrentUser} from '../user'
 import {
   type ConnectionStatusStore,
@@ -288,4 +290,32 @@ export function useKeyValueStore(): KeyValueStore {
 
     return keyValueStore
   }, [client, resourceCache, workspace])
+}
+
+/** @internal */
+export function useReleasesStore(): ReleaseStore {
+  const resourceCache = useResourceCache()
+  const workspace = useWorkspace()
+  const currentUser = useCurrentUser()
+  const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+
+  return useMemo(() => {
+    const releaseStore =
+      resourceCache.get<ReleaseStore>({
+        dependencies: [workspace, currentUser],
+        namespace: 'ReleasesStore',
+      }) ||
+      createReleaseStore({
+        client: studioClient,
+        currentUser,
+      })
+
+    resourceCache.set({
+      dependencies: [workspace, currentUser],
+      namespace: 'ReleasesStore',
+      value: releaseStore,
+    })
+
+    return releaseStore
+  }, [resourceCache, workspace, studioClient, currentUser])
 }

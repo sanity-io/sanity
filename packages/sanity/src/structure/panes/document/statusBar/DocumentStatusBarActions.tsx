@@ -1,15 +1,21 @@
+/* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
+  type DocumentActionProps,
   Hotkeys,
+  isReleaseDocument,
+  LATEST,
+  ReleaseActions,
+  usePerspective,
   useTimelineSelector,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState} from '../../../components'
+import {RenderActionCollectionState, usePaneRouter} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
@@ -19,13 +25,16 @@ interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
   showMenu: boolean
   states: DocumentActionDescription[]
+  actionProps?: Omit<DocumentActionProps, 'onComplete'> | null
 }
 
 const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInner(
   props: DocumentStatusBarActionsInnerProps,
 ) {
-  const {disabled, showMenu, states} = props
-  const {__internal_tasks} = useDocumentPane()
+  const {disabled, showMenu, states, actionProps} = props
+  const {__internal_tasks, documentType, formState} = useDocumentPane()
+
+  const paneRouter = usePaneRouter()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
@@ -50,6 +59,11 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     )
   }, [firstActionState])
 
+  /* Version / Bundling handling */
+
+  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
+  const {currentGlobalBundle} = usePerspective(paneRouter.perspective)
+
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
@@ -57,22 +71,44 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              <Button
-                data-testid={`action-${firstActionState.label}`}
-                disabled={disabled || Boolean(firstActionState.disabled)}
-                icon={firstActionState.icon}
-                // eslint-disable-next-line react/jsx-handler-names
-                onClick={firstActionState.onHandle}
-                ref={setButtonElement}
-                size="large"
-                text={firstActionState.label}
-                tone={firstActionState.tone || 'primary'}
-              />
+              {currentGlobalBundle._id === LATEST._id ? (
+                <Button
+                  data-testid={`action-${firstActionState.label}`}
+                  disabled={disabled || Boolean(firstActionState.disabled)}
+                  icon={firstActionState.icon}
+                  // eslint-disable-next-line react/jsx-handler-names
+                  onClick={firstActionState.onHandle}
+                  ref={setButtonElement}
+                  text={firstActionState.label}
+                  tone={firstActionState.tone || 'primary'}
+                />
+              ) : (
+                <>
+                  {isReleaseDocument(currentGlobalBundle) && formState?.value?._id ? (
+                    <ReleaseActions
+                      currentGlobalBundle={currentGlobalBundle}
+                      documentId={formState.value._id as string}
+                      documentType={documentType}
+                      {...actionProps}
+                      key={formState.value._id as string}
+                    />
+                  ) : (
+                    <div>
+                      {/* eslint-disable-next-line i18next/no-literal-string */}
+                      <Text>Not a bundle</Text>
+                    </div>
+                  )}
+                </>
+              )}
             </Stack>
           </Tooltip>
         </LayerProvider>
       )}
-      {showMenu && menuActionStates.length > 0 && (
+      {/**
+       * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
+       * SPECIFICALLY FOR ISDRAFT
+       */}
+      {showMenu && menuActionStates.length > 0 && currentGlobalBundle._id === LATEST._id && (
         <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
@@ -109,9 +145,10 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
         states={states}
         // Use document ID as key to make sure that the actions state is reset when the document changes
         key={documentId}
+        actionProps={editState}
       />
     ),
-    [actions.length, connectionState, documentId],
+    [actions.length, connectionState, documentId, editState],
   )
 
   if (actions.length === 0 || !editState) {

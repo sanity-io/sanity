@@ -21,6 +21,27 @@ export * from './hooks'
 export * from './i18n'
 export * from './presence'
 export * from './preview'
+export {
+  AddedVersion,
+  CreatedRelease,
+  createReleaseId,
+  type CurrentPerspective,
+  DEFAULT_RELEASE_TYPE,
+  DiscardVersionDialog,
+  getCreateVersionOrigin,
+  getDocumentIsInPerspective,
+  getReleaseTone,
+  LATEST,
+  ReleaseActions,
+  ReleaseAvatar,
+  ReleaseBadge,
+  ReleaseForm,
+  ReleasesMenu,
+  useDocumentVersions,
+  usePerspective,
+  useVersionOperations,
+  versionDocumentExists,
+} from './releases'
 export * from './scheduledPublishing'
 export * from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'

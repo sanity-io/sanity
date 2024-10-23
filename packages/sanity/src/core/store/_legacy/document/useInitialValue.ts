@@ -3,7 +3,7 @@ import {useEffect, useMemo, useState} from 'react'
 
 import {useDataset, useProjectId, useSchema} from '../../../hooks'
 import {useSource} from '../../../studio'
-import {useUnique} from '../../../util'
+import {getVersionId, useUnique} from '../../../util'
 import {useCurrentUser} from '../../user'
 import {useDocumentStore} from '../datastores'
 import {type InitialValueState} from './initialValue/types'
@@ -16,16 +16,20 @@ export function useInitialValue(props: {
   documentType: string
   templateName?: string
   templateParams?: Record<string, unknown>
+  version?: string
 }): InitialValueState {
-  const {documentId, documentType, templateName, templateParams: templateParamsRaw} = props
+  const {documentId, documentType, templateName, templateParams: templateParamsRaw, version} = props
   const templateParams = useUnique(templateParamsRaw)
   const documentStore = useDocumentStore()
   const context = useInitialValueResolverContext()
 
-  const defaultValue: SanityDocumentLike = useMemo(
-    () => ({_id: documentId, _type: documentType}),
-    [documentId, documentType],
-  )
+  const defaultValue: SanityDocumentLike = useMemo(() => {
+    const base: SanityDocumentLike = {_id: documentId, _type: documentType}
+    if (version) {
+      base._id = getVersionId(documentId, version)
+    }
+    return base
+  }, [documentId, documentType, version])
 
   const [state, setState] = useState<InitialValueState>({
     loading: false,

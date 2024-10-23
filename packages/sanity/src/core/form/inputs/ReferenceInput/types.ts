@@ -24,6 +24,7 @@ export interface ReferenceInfo {
   preview: {
     draft: PreviewDocumentValue | undefined
     published: PreviewDocumentValue | undefined
+    version: PreviewDocumentValue | undefined
   }
 }
 
@@ -82,4 +83,5 @@ export interface ReferenceInputProps<Value = Reference>
 
   onEditReference: (event: EditReferenceEvent) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
+  version?: string
 }

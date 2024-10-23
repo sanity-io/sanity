@@ -27,12 +27,14 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   published,
   liveEdit,
   onComplete,
+  bundleId,
 }) => {
-  const {discardChanges} = useDocumentOperation(id, type)
+  const {discardChanges} = useDocumentOperation(id, type, bundleId)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
+    version: bundleId,
     permission: 'discardDraft',
   })
   const currentUser = useCurrentUser()

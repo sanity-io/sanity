@@ -28,10 +28,11 @@ interface Options {
   path: Path
   schemaType: ReferenceSchemaType
   value?: Reference
+  version?: string
 }
 
 export function useReferenceInput(options: Options) {
-  const {path, schemaType} = options
+  const {path, schemaType, version} = options
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
@@ -113,8 +114,8 @@ export function useReferenceInput(options: Options) {
   }, [disableNew, initialValueTemplateItems, schemaType.to])
 
   const getReferenceInfo = useCallback(
-    (id: string) => adapter.getReferenceInfo(documentPreviewStore, id, schemaType),
-    [documentPreviewStore, schemaType],
+    (id: string) => adapter.getReferenceInfo(documentPreviewStore, id, schemaType, {version}),
+    [documentPreviewStore, schemaType, version],
   )
 
   return {

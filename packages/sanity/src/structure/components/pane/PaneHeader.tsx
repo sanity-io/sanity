@@ -63,37 +63,35 @@ export const PaneHeader = forwardRef(function PaneHeader(
       >
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
-            <Layout
-              gap={1}
-              onClick={handleLayoutClick}
-              padding={3}
-              paddingBottom={collapsed ? 3 : 2}
-              sizing="border"
-              style={layoutStyle}
-            >
+            <Layout gap={1} onClick={handleLayoutClick} sizing="border" style={layoutStyle}>
               {backButton && <Box flex="none">{backButton}</Box>}
 
               <TitleCard
                 __unstable_focusRing
                 flex={1}
-                forwardedAs="button"
                 onClick={handleTitleClick}
                 paddingLeft={backButton ? 1 : 2}
                 padding={2}
                 tabIndex={tabIndex}
               >
-                {loading && <TitleTextSkeleton animated radius={1} size={1} />}
+                {loading && (
+                  <Box padding={3}>
+                    <TitleTextSkeleton animated radius={1} size={1} />
+                  </Box>
+                )}
                 {!loading && (
                   <TitleText size={1} textOverflow="ellipsis" weight="semibold">
-                    {title}
+                    <Box flex={1} overflow="auto" padding={2}>
+                      {title}
+                    </Box>
                   </TitleText>
                 )}
               </TitleCard>
 
               {actions && (
-                <Flex align="center" hidden={collapsed}>
+                <Box hidden={collapsed} padding={3}>
                   <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
-                </Flex>
+                </Box>
               )}
             </Layout>
 

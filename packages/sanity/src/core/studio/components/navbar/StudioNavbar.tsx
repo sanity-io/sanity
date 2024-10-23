@@ -12,13 +12,15 @@ import {
 } from '@sanity/ui'
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
-import {type RouterState, useRouterState} from 'sanity/router'
+import {type RouterState, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../releases'
+import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
@@ -68,6 +70,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   } = props
 
   const {name, tools} = useWorkspace()
+  const router = useRouter()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
@@ -82,6 +85,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchFullscreenPortalEl,
     searchOpen,
   } = useContext(NavbarContext)
+
+  const {currentGlobalBundle} = usePerspective()
 
   const ToolMenu = useToolMenuComponent()
 
@@ -158,12 +163,18 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     setDrawerOpen(true)
   }, [])
 
+  const perspective = useMemo(() => router.stickyParams.perspective, [router.stickyParams])
+
   const actionNodes = useMemo(() => {
     if (!shouldRender.tools) return null
 
     return actions
       ?.filter((v) => v.location === 'topbar')
       ?.map((action) => {
+        const {render: ActionComponent} = action
+
+        if (ActionComponent) return <ActionComponent key={action.name} />
+
         return (
           <Button
             iconRight={action?.icon}
@@ -181,6 +192,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
+          tone={getReleaseTone(currentGlobalBundle)}
           borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"
@@ -237,46 +249,41 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             {/** Right flex */}
             <TooltipDelayGroupProvider>
               <Flex align="center" gap={1} justify="flex-end">
-                <Flex gap={1}>
-                  {/* Search */}
-                  <LayerProvider>
-                    <SearchProvider fullscreen={shouldRender.searchFullscreen}>
-                      <BoundaryElementProvider element={document.body}>
-                        {shouldRender.searchFullscreen ? (
-                          <PortalProvider element={searchFullscreenPortalEl}>
-                            <SearchDialog
-                              onClose={handleCloseSearchFullscreen}
-                              onOpen={handleOpenSearchFullscreen}
-                              open={searchFullscreenOpen}
-                            />
-                          </PortalProvider>
-                        ) : (
-                          <SearchPopover
-                            onClose={handleCloseSearch}
-                            onOpen={handleOpenSearch}
-                            open={searchOpen}
+                {/* Search */}
+                <LayerProvider>
+                  <SearchProvider fullscreen={shouldRender.searchFullscreen}>
+                    <BoundaryElementProvider element={document.body}>
+                      {shouldRender.searchFullscreen ? (
+                        <PortalProvider element={searchFullscreenPortalEl}>
+                          <SearchDialog
+                            onClose={handleCloseSearchFullscreen}
+                            onOpen={handleOpenSearchFullscreen}
+                            open={searchFullscreenOpen}
                           />
-                        )}
-                      </BoundaryElementProvider>
-                    </SearchProvider>
-                  </LayerProvider>
+                        </PortalProvider>
+                      ) : (
+                        <SearchPopover
+                          onClose={handleCloseSearch}
+                          onOpen={handleOpenSearch}
+                          open={searchOpen}
+                        />
+                      )}
+                    </BoundaryElementProvider>
+                  </SearchProvider>
+                </LayerProvider>
 
-                  {shouldRender.tools && <FreeTrial type="topbar" />}
-                  {shouldRender.configIssues && <ConfigIssuesButton />}
-                  {shouldRender.resources && <ResourcesButton />}
+                {shouldRender.tools && <FreeTrial type="topbar" />}
+                {shouldRender.configIssues && <ConfigIssuesButton />}
+                {shouldRender.resources && <ResourcesButton />}
 
-                  <PresenceMenu />
+                <PresenceMenu />
 
-                  {/* Search button (mobile) */}
-                  {shouldRender.searchFullscreen && (
-                    <SearchButton
-                      onClick={handleOpenSearchFullscreen}
-                      ref={setSearchOpenButtonEl}
-                    />
-                  )}
+                {/* Search button (mobile) */}
+                {shouldRender.searchFullscreen && (
+                  <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
+                )}
 
-                  {actionNodes}
-                </Flex>
+                {actionNodes}
 
                 {shouldRender.tools && (
                   <Box flex="none" marginLeft={1}>

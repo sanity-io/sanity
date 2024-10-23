@@ -10,6 +10,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {
   createHookFromObservableFactory,
   getDraftId,
+  getIdPair,
   getPublishedId,
   type PartialExcept,
 } from '../../../util'
@@ -42,7 +43,7 @@ function getPairPermissions({
   draft,
   published,
   liveEdit,
-}: PairPermissionsOptions): Array<[string, Observable<PermissionCheckResult>]> {
+}: PairPermissionsOptions): Array<[string, Observable<PermissionCheckResult>] | null> {
   // this was introduced because we ran into a bug where a user with publish
   // access was marked as not allowed to duplicate a document unless it had a
   // draft variant. this would happen in non-live edit cases where the document
@@ -168,6 +169,7 @@ export interface DocumentPairPermissionsOptions {
   grantsStore: GrantsStore
   id: string
   type: string
+  version?: string
   permission: DocumentPermission
   serverActionsEnabled: Observable<boolean>
   pairListenerOptions?: PairListenerOptions
@@ -188,6 +190,7 @@ export function getDocumentPairPermissions({
   permission,
   type,
   serverActionsEnabled,
+  version,
   pairListenerOptions,
 }: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
@@ -203,7 +206,7 @@ export function getDocumentPairPermissions({
 
   return snapshotPair(
     client,
-    {draftId: getDraftId(id), publishedId: getPublishedId(id)},
+    getIdPair(id, {version}),
     type,
     serverActionsEnabled,
     pairListenerOptions,
@@ -220,9 +223,9 @@ export function getDocumentPairPermissions({
         draft,
         published,
         liveEdit,
-      }).map(([label, permissionCheck$]) =>
-        permissionCheck$.pipe(
-          map(({granted, reason}) => ({
+      }).map(([label, observable]: any) =>
+        observable.pipe(
+          map(({granted, reason}: any) => ({
             granted,
             reason: granted ? '' : `not allowed to ${label}: ${reason}`,
             label,
@@ -234,7 +237,7 @@ export function getDocumentPairPermissions({
       if (!pairPermissions.length) return of({granted: true, reason: ''})
 
       return combineLatest(pairPermissions).pipe(
-        map((permissionResults) => {
+        map((permissionResults: any[]) => {
           const granted = permissionResults.every((permissionResult) => permissionResult.granted)
           const reason = granted
             ? ''
@@ -282,6 +285,7 @@ export const useDocumentPairPermissionsFromHookFactory = createHookFromObservabl
 export function useDocumentPairPermissions({
   id,
   type,
+  version,
   permission,
   client: overrideClient,
   schema: overrideSchema,
@@ -319,6 +323,7 @@ export function useDocumentPairPermissions({
         type,
         serverActionsEnabled,
         pairListenerOptions,
+        version,
       }),
       [
         client,
@@ -329,6 +334,7 @@ export function useDocumentPairPermissions({
         type,
         serverActionsEnabled,
         pairListenerOptions,
+        version,
       ],
     ),
   )

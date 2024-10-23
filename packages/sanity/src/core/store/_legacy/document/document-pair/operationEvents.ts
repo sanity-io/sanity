@@ -26,6 +26,7 @@ import {consistencyStatus} from './consistencyStatus'
 import {operationArgs} from './operationArgs'
 import {type OperationArgs, type OperationsAPI} from './operations'
 import {commit} from './operations/commit'
+import {createVersion} from './operations/createVersion'
 import {del} from './operations/delete'
 import {discardChanges} from './operations/discardChanges'
 import {duplicate} from './operations/duplicate'
@@ -61,6 +62,7 @@ const operationImpls = {
   unpublish,
   duplicate,
   restore,
+  createVersion,
 } as const
 
 //as we add server operations one by one, we can add them here

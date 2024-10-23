@@ -135,6 +135,8 @@ export function createSearchQuery(
     ...createConstraints(terms, specs),
     filter ? `(${filter})` : '',
     searchTerms.filter ? `(${searchTerms.filter})` : '',
+    // Versions are collated server-side using the `bundlePerspective` option. Therefore, they must
+    // not be fetched individually.
     '!(_id in path("versions.**"))',
   ].filter(Boolean)
 
@@ -147,7 +149,7 @@ export function createSearchQuery(
   // Default to `_id asc` (GROQ default) if no search sort is provided
   const sortOrder = toOrderClause(searchOpts?.sort || [{field: '_id', direction: 'asc'}])
 
-  const projectionFields = ['_type', '_id']
+  const projectionFields = ['_type', '_id', '_version']
   const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
   const finalProjection = projectionFields.join(', ') + (selection ? `, ${selection}` : '')
 
@@ -187,7 +189,11 @@ export function createSearchQuery(
       __limit: limit,
       ...(params || {}),
     },
-    options: {tag},
+    options: {
+      tag,
+      perspective: searchOpts.perspective,
+      bundlePerspective: searchOpts.bundlePerspective,
+    },
     searchSpec: specs,
     terms,
   }
