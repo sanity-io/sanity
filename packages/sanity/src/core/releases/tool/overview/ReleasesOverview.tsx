@@ -120,7 +120,7 @@ export function ReleasesOverview() {
       isDeleted: true,
     }))
 
-    if (!releasesMetadata) return deletedTableReleases
+    if (!hasReleases || !releasesMetadata) return deletedTableReleases
 
     return [
       ...deletedTableReleases,
@@ -129,7 +129,7 @@ export function ReleasesOverview() {
         documentsMetadata: releasesMetadata[release._id] || {},
       })),
     ]
-  }, [releases, releasesMetadata, deletedReleases])
+  }, [deletedReleases, hasReleases, releasesMetadata, releases])
 
   const groupedReleases = useMemo(
     () =>
