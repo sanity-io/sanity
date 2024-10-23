@@ -305,7 +305,8 @@ export default async function initSanity(
   }
 
   let initNext = false
-  if (detectedFramework?.slug === 'nextjs') {
+  const isNextJs = detectedFramework?.slug === 'nextjs'
+  if (isNextJs) {
     initNext = await prompt.single({
       type: 'confirm',
       message:
@@ -334,21 +335,25 @@ export default async function initSanity(
   // Ensure we are using the output path provided by user
   outputPath = answers.outputPath
 
-  const packageJson = readPackageJson(`${outputPath}/package.json`)
-  const reactVersion = packageJson.dependencies?.react
-  const isUsingReact19 = semver.coerce(reactVersion)?.major === 19
-  const isUsingNextJs15 =
-    detectedFramework?.slug === 'nextjs' &&
-    semver.coerce(detectedFramework?.detectedVersion)?.major === 15
+  if (isNextJs) {
+    const packageJson = readPackageJson(`${outputPath}/package.json`)
+    const reactVersion = packageJson?.dependencies?.react
 
-  if (isUsingNextJs15 && isUsingReact19) {
-    warn('╭────────────────────────────────────────────────────────────╮')
-    warn('│                                                            │')
-    warn('│ It looks like you are using Next.js 15 and React 19        │')
-    warn('│ Please read our compatibility guide.                       │')
-    warn('│ https://www.sanity.io/help/react-19                        │')
-    warn('│                                                            │')
-    warn('╰────────────────────────────────────────────────────────────╯')
+    if (reactVersion) {
+      const isUsingReact19 = semver.coerce(reactVersion)?.major === 19
+      const isUsingNextJs15 =
+        isNextJs && semver.coerce(detectedFramework?.detectedVersion)?.major === 15
+
+      if (isUsingNextJs15 && isUsingReact19) {
+        warn('╭────────────────────────────────────────────────────────────╮')
+        warn('│                                                            │')
+        warn('│ It looks like you are using Next.js 15 and React 19        │')
+        warn('│ Please read our compatibility guide.                       │')
+        warn('│ https://www.sanity.io/help/react-19                        │')
+        warn('│                                                            │')
+        warn('╰────────────────────────────────────────────────────────────╯')
+      }
+    }
   }
 
   if (initNext) {
