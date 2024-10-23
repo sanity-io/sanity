@@ -110,7 +110,7 @@ export function ReleaseIconEditorPicker(props: {
                       key={key}
                       mode="bleed"
                       onClick={handleIconChange(key as IconSymbol)}
-                      data-testId={`icon-button-${key}`}
+                      data-testid={`icon-button-${key}`}
                     />
                   ))}
               </TooltipDelayGroupProvider>
