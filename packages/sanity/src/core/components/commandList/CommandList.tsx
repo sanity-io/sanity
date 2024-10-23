@@ -4,6 +4,8 @@ import {throttle} from 'lodash'
 import {
   cloneElement,
   forwardRef,
+  Fragment,
+  isValidElement,
   type ReactElement,
   useCallback,
   useEffect,
@@ -612,9 +614,14 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
               virtualIndex,
             }) as ReactElement
 
-            const clonedItem = cloneElement(itemToRender, {
-              tabIndex: -1,
-            })
+            const clonedItem = cloneElement(
+              itemToRender,
+              isValidElement(itemToRender) && itemToRender.type == Fragment
+                ? {}
+                : {
+                    tabIndex: -1,
+                  },
+            )
 
             const activeAriaAttributes =
               typeof activeIndex === 'number' && !disabled
@@ -655,3 +662,4 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     </VirtualListBox>
   )
 })
+CommandList.displayName = 'ForwardRef(CommandList)'
