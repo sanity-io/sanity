@@ -12,7 +12,6 @@ import {
 } from '../../../store/release/useReleasesMetadata'
 import {ReleaseDetailsDialog} from '../../components/dialog/ReleaseDetailsDialog'
 import {releasesLocaleNamespace} from '../../i18n'
-import {containsBundles} from '../../types/bundle'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
@@ -30,22 +29,21 @@ const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: '_createdAt', directi
 
 const getRowProps: TableProps<TableBundle, undefined>['rowProps'] = (datum) =>
   datum.isDeleted ? {tone: 'transparent'} : {}
-
 export function ReleasesOverview() {
-  const {data: bundles, loading: loadingBundles, deletedReleases} = useReleases()
+  const {data: releases, loading: loadingReleases, deletedReleases} = useReleases()
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
-  const bundleIds = useMemo(() => bundles?.map((bundle) => bundle._id) || [], [bundles])
+  const bundleIds = useMemo(() => releases.map((bundle) => bundle._id), [releases])
   const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useReleasesMetadata(bundleIds)
-  const loading = loadingBundles || (loadingBundlesMetadata && !bundlesMetadata)
+  const loading = loadingReleases || (loadingBundlesMetadata && !bundlesMetadata)
   const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
-  const hasBundles = bundles && containsBundles(bundles)
-  const loadingOrHasBundles = loading || hasBundles
+  const hasReleases = releases.length > 0
+  const loadingOrHasBundles = loading || hasReleases
 
   const tableBundles = useMemo<TableBundle[]>(() => {
     const deletedTableBundles = Object.values(deletedReleases).map((deletedBundle) => ({
@@ -53,16 +51,16 @@ export function ReleasesOverview() {
       isDeleted: true,
     }))
 
-    if (!bundles || !bundlesMetadata) return deletedTableBundles
+    if (!bundlesMetadata) return deletedTableBundles
 
     return [
       ...deletedTableBundles,
-      ...bundles.map((bundle) => ({
+      ...releases.map((bundle) => ({
         ...bundle,
         documentsMetadata: bundlesMetadata[bundle._id] || {},
       })),
     ]
-  }, [bundles, bundlesMetadata, deletedReleases])
+  }, [releases, bundlesMetadata, deletedReleases])
 
   const groupedBundles = useMemo(
     () =>
@@ -77,7 +75,7 @@ export function ReleasesOverview() {
     [tableBundles],
   )
 
-  // switch to open mode if on archived mode and there are no archived bundles
+  // switch to open mode if on archived mode and there are no archived releases
   useEffect(() => {
     if (bundleGroupMode === 'archived' && !groupedBundles.archived.length) {
       setBundleGroupMode('open')
@@ -93,7 +91,7 @@ export function ReleasesOverview() {
 
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
-      disabled: loading || !hasBundles,
+      disabled: loading || !hasReleases,
       mode: 'bleed' as ButtonMode,
       padding: 2,
     }
@@ -126,7 +124,7 @@ export function ReleasesOverview() {
     bundleGroupMode,
     groupedBundles.archived.length,
     handleBundleGroupModeChange,
-    hasBundles,
+    hasReleases,
     loading,
     t,
   ])
@@ -181,7 +179,7 @@ export function ReleasesOverview() {
               <Heading as="h1" size={2} style={{margin: '1px 0'}}>
                 {t('overview.title')}
               </Heading>
-              {!loading && !hasBundles && (
+              {!loading && !hasReleases && (
                 <Container style={{margin: 0}} width={0}>
                   <Stack space={5}>
                     <Text data-testid="no-releases-info-text" muted size={2}>
@@ -197,7 +195,7 @@ export function ReleasesOverview() {
           {loadingOrHasBundles && createReleaseButton}
         </Flex>
       </Container>
-      {(hasBundles || loadingTableData) && (
+      {(hasReleases || loadingTableData) && (
         <Table<TableBundle>
           // for resetting filter and sort on table when mode changed
           key={bundleGroupMode}
