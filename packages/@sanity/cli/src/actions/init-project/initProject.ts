@@ -4,6 +4,7 @@ import path from 'node:path'
 
 import {type DatasetAclMode, type SanityProject} from '@sanity/client'
 import {type Framework} from '@vercel/frameworks'
+import {type detectFrameworkRecord} from '@vercel/fs-detectors'
 import dotenv from 'dotenv'
 import execa, {type CommonOptions} from 'execa'
 import {deburr, noop} from 'lodash'
@@ -112,7 +113,9 @@ export interface ProjectOrganization {
 // eslint-disable-next-line max-statements, complexity
 export default async function initSanity(
   args: CliCommandArguments<InitFlags>,
-  context: CliCommandContext & {detectedFramework: Framework | null},
+  context: CliCommandContext & {
+    detectedFramework: Awaited<ReturnType<typeof detectFrameworkRecord>>
+  },
 ): Promise<void> {
   const {
     output,
@@ -336,7 +339,6 @@ export default async function initSanity(
   const isUsingReact19 = semver.coerce(reactVersion)?.major === 19
   if (
     detectedFramework?.slug === 'nextjs' &&
-    // @ts-expect-error - Detected version is not typed into Framework interface
     detectedFramework?.detectedVersion?.startsWith('15') &&
     isUsingReact19
   ) {
