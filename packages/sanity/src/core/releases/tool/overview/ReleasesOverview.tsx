@@ -99,7 +99,7 @@ export function ReleasesOverview() {
   const loadingTableData = loading || (!releasesMetadata && Boolean(releaseIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {timeZone: uTx} = useTimeZone()
+  const {timeZone} = useTimeZone()
   const {currentGlobalBundle} = usePerspective()
 
   const getRowProps = useCallback(
@@ -310,7 +310,7 @@ export function ReleasesOverview() {
                   iconRight={ChevronDownIcon}
                   mode="bleed"
                   padding={2}
-                  text={`${uTx.abbreviation} (${uTx.namePretty})`}
+                  text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
                 />
                 {loadingOrHasReleases && createReleaseButton}
               </Flex>
