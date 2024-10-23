@@ -26,6 +26,7 @@ export {
   CreatedRelease,
   createReleaseId,
   DEFAULT_RELEASE_TYPE,
+  DiscardVersionDialog,
   getCreateVersionOrigin,
   getDocumentIsInPerspective,
   getReleaseTone,

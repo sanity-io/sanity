@@ -1,13 +1,17 @@
 import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
-import {getVersionId, type ReleaseDocument, useVersionOperations} from 'sanity'
+import {
+  DiscardVersionDialog,
+  getVersionId,
+  ReleaseAvatar,
+  type ReleaseDocument,
+  useVersionOperations,
+} from 'sanity'
 import {styled} from 'styled-components'
 
-import {ReleaseAvatar} from '../../../../../../core/releases/components/ReleaseAvatar'
 import {Button, Popover, Tooltip} from '../../../../../../ui-components'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CreateReleaseDialog} from './dialog/CreateReleaseDialog'
-import {DiscardVersionDialog} from './dialog/DiscardVersionDialog'
 
 const Chip = styled(Button)`
   border-radius: 9999px !important;
@@ -163,10 +167,7 @@ export const VersionChip = memo(function VersionChip(props: {
             onDiscard={openDiscardDialog}
             onCreateRelease={openCreateReleaseDialog}
             disabled={contextMenuDisabled}
-            onCreateVersion={(targetId: string) => {
-              handleAddVersion(targetId)
-              close()
-            }}
+            onCreateVersion={handleAddVersion}
           />
         }
         fallbackPlacements={[]}
@@ -189,6 +190,7 @@ export const VersionChip = memo(function VersionChip(props: {
       {isCreateReleaseDialogOpen && (
         <CreateReleaseDialog
           onClose={() => setIsCreateReleaseDialogOpen(false)}
+          onCreateVersion={handleAddVersion}
           documentId={isVersion ? getVersionId(documentId, menuReleaseId) : documentId}
           documentType={documentType}
           tone={tone}

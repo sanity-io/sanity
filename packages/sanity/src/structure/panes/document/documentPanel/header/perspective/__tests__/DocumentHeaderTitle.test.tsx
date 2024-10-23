@@ -56,7 +56,7 @@ describe('DocumentHeaderTitle', () => {
   const defaultProps = {
     connectionState: 'connected',
     schemaType: {title: 'Test Schema', name: 'testSchema'},
-    editState: {draft: {title: 'Test Value'}},
+    editState: {draft: {title: 'Test Value', _createdAt: new Date()}},
   }
 
   const defaultValue = {

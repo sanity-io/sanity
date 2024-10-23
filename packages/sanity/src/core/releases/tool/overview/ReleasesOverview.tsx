@@ -29,7 +29,6 @@ import {
 } from '../../../store/release/useReleasesMetadata'
 import {ReleaseDetailsDialog} from '../../components/dialog/ReleaseDetailsDialog'
 import {releasesLocaleNamespace} from '../../i18n'
-import {containsBundles} from '../../types/bundle'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'
@@ -47,7 +46,7 @@ export interface TableRelease extends ReleaseDocument {
 }
 
 const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
-  const {data: bundles} = useReleases()
+  const {data: releases} = useReleases()
   const {date} = props
   const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
   const localStart = startOfDay(date) // Get start of the day in local time
@@ -57,13 +56,13 @@ const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
   const startOfDayUTC = zonedTimeToUtc(localStart, timeZone)
   const endOfDayUTC = zonedTimeToUtc(localEnd, timeZone)
 
-  const dayHasReleases = bundles?.some((bundle) => {
-    if (!bundle.publishedAt) return false
+  const dayHasReleases = releases?.some((release) => {
+    if (!release.publishedAt) return false
 
-    const publishDateUTC = new Date(bundle.publishedAt)
+    const publishDateUTC = new Date(release.publishedAt)
 
     return (
-      bundle.releaseType === 'scheduled' &&
+      release.releaseType === 'scheduled' &&
       publishDateUTC >= startOfDayUTC &&
       publishDateUTC <= endOfDayUTC
     )
@@ -72,7 +71,7 @@ const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
   return <CalendarDay {...props} dateStyles={dayHasReleases ? {fontWeight: 700} : {}} />
 }
 
-const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
+const EMPTY_RELEASE_GROUPS = {open: [], archived: []}
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishedAt', direction: 'asc'}
 
 const getInitialFilterDate = (router: RouterContextValue) => () => {
@@ -84,18 +83,17 @@ const getInitialFilterDate = (router: RouterContextValue) => () => {
 }
 
 export function ReleasesOverview() {
-  const {data: bundles, loading: loadingBundles, deletedReleases} = useReleases()
-  // const bundles = []
-  const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
+  const {data: releases, loading: loadingReleases, deletedReleases} = useReleases()
+  const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>('open')
   const router = useRouter()
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
   )
-  const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
-  const bundleIds = useMemo(() => bundles?.map((bundle) => bundle._id) || [], [bundles])
-  const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useReleasesMetadata(bundleIds)
-  const loading = loadingBundles || (loadingBundlesMetadata && !bundlesMetadata)
-  const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleIds.length))
+  const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+  const releaseIds = useMemo(() => releases.map((release) => release._id), [releases])
+  const {data: releasesMetadata, loading: loadingReleasesMetadata} = useReleasesMetadata(releaseIds)
+  const loading = loadingReleases || (loadingReleasesMetadata && !releasesMetadata)
+  const loadingTableData = loading || (!releasesMetadata && Boolean(releaseIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {timeZone: uTx} = useTimeZone()
@@ -111,52 +109,52 @@ export function ReleasesOverview() {
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
-  const hasBundles = bundles && containsBundles(bundles)
-  const loadingOrHasBundles = loading || hasBundles
+  const hasReleases = releases.length > 0
+  const loadingOrHasReleases = loading || hasReleases
 
-  const tableBundles = useMemo<TableRelease[]>(() => {
-    const deletedTableBundles = Object.values(deletedReleases).map((deletedBundle) => ({
-      ...deletedBundle,
+  const tableReleases = useMemo<TableRelease[]>(() => {
+    const deletedTableReleases = Object.values(deletedReleases).map((deletedRelease) => ({
+      ...deletedRelease,
       isDeleted: true,
     }))
 
-    if (!bundles || !bundlesMetadata) return deletedTableBundles
+    if (!releasesMetadata) return deletedTableReleases
 
     return [
-      ...deletedTableBundles,
-      ...bundles.map((bundle) => ({
-        ...bundle,
-        documentsMetadata: bundlesMetadata[bundle._id] || {},
+      ...deletedTableReleases,
+      ...releases.map((release) => ({
+        ...release,
+        documentsMetadata: releasesMetadata[release._id] || {},
       })),
     ]
-  }, [bundles, bundlesMetadata, deletedReleases])
+  }, [releases, releasesMetadata, deletedReleases])
 
-  const groupedBundles = useMemo(
+  const groupedReleases = useMemo(
     () =>
-      tableBundles.reduce<{open: TableRelease[]; archived: TableRelease[]}>((groups, bundle) => {
-        const isBundleArchived =
-          bundle.archivedAt ||
-          (bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date()))
-        const group = isBundleArchived ? 'archived' : 'open'
+      tableReleases.reduce<{open: TableRelease[]; archived: TableRelease[]}>((groups, release) => {
+        const isReleaseArchived =
+          release.archivedAt ||
+          (release.publishedAt && isBefore(new Date(release.publishedAt), new Date()))
+        const group = isReleaseArchived ? 'archived' : 'open'
 
         return {
           ...groups,
-          [group]: [...groups[group], {...bundle, publishAt: '2024-10-24T23:10:31Z'}],
+          [group]: [...groups[group], {...release, publishAt: '2024-10-24T23:10:31Z'}],
         }
-      }, EMPTY_BUNDLE_GROUPS) || EMPTY_BUNDLE_GROUPS,
-    [tableBundles],
+      }, EMPTY_RELEASE_GROUPS) || EMPTY_RELEASE_GROUPS,
+    [tableReleases],
   )
 
-  // switch to open mode if on archived mode and there are no archived bundles
+  // switch to open mode if on archived mode and there are no archived releases
   useEffect(() => {
-    if (bundleGroupMode === 'archived' && !groupedBundles.archived.length) {
-      setBundleGroupMode('open')
+    if (releaseGroupMode === 'archived' && !groupedReleases.archived.length) {
+      setReleaseGroupMode('open')
     }
-  }, [bundleGroupMode, groupedBundles.archived.length])
+  }, [releaseGroupMode, groupedReleases.archived.length])
 
-  const handleBundleGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
+  const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
-      setBundleGroupMode(groupMode as Mode)
+      setReleaseGroupMode(groupMode as Mode)
     },
     [],
   )
@@ -194,7 +192,7 @@ export function ReleasesOverview() {
 
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
-      disabled: loading || !hasBundles,
+      disabled: loading || !hasReleases,
       mode: 'bleed' as ButtonMode,
       padding: 2,
     }
@@ -202,32 +200,32 @@ export function ReleasesOverview() {
       <Fragment>
         <Button
           {...groupModeButtonBaseProps}
-          onClick={handleBundleGroupModeChange}
-          selected={bundleGroupMode === 'open'}
+          onClick={handleReleaseGroupModeChange}
+          selected={releaseGroupMode === 'open'}
           text={t('action.open')}
           value="open"
         />
         {/* StudioButton supports tooltip when button is disabled */}
         <StudioButton
           {...groupModeButtonBaseProps}
-          disabled={groupModeButtonBaseProps.disabled || !groupedBundles.archived.length}
+          disabled={groupModeButtonBaseProps.disabled || !groupedReleases.archived.length}
           tooltipProps={{
-            disabled: groupedBundles.archived.length !== 0,
+            disabled: groupedReleases.archived.length !== 0,
             content: t('no-archived-release'),
             placement: 'bottom',
           }}
-          onClick={handleBundleGroupModeChange}
-          selected={bundleGroupMode === 'archived'}
+          onClick={handleReleaseGroupModeChange}
+          selected={releaseGroupMode === 'archived'}
           text={t('action.archived')}
           value="archived"
         />
       </Fragment>
     )
   }, [
-    bundleGroupMode,
-    groupedBundles.archived.length,
-    handleBundleGroupModeChange,
-    hasBundles,
+    releaseGroupMode,
+    groupedReleases.archived.length,
+    handleReleaseGroupModeChange,
+    hasReleases,
     loading,
     t,
   ])
@@ -236,36 +234,36 @@ export function ReleasesOverview() {
     () => (
       <Button
         icon={AddIcon}
-        disabled={isCreateBundleDialogOpen}
-        onClick={() => setIsCreateBundleDialogOpen(true)}
+        disabled={isCreateReleaseDialogOpen}
+        onClick={() => setIsCreateReleaseDialogOpen(true)}
         text={tCore('release.action.create-new')}
       />
     ),
-    [isCreateBundleDialogOpen, tCore],
+    [isCreateReleaseDialogOpen, tCore],
   )
 
-  const renderCreateBundleDialog = () => {
-    if (!isCreateBundleDialogOpen) return null
+  const renderCreateReleaseDialog = () => {
+    if (!isCreateReleaseDialogOpen) return null
 
     return (
       <ReleaseDetailsDialog
-        onCancel={() => setIsCreateBundleDialogOpen(false)}
-        onSubmit={() => setIsCreateBundleDialogOpen(false)}
+        onCancel={() => setIsCreateReleaseDialogOpen(false)}
+        onSubmit={() => setIsCreateReleaseDialogOpen(false)}
         origin="release-plugin"
       />
     )
   }
 
   const renderRowActions = useCallback(({datum}: {datum: TableRelease | unknown}) => {
-    const bundle = datum as TableRelease
+    const release = datum as TableRelease
 
-    if (bundle.isDeleted) return null
+    if (release.isDeleted) return null
 
-    return <ReleaseMenuButton bundle={bundle} />
+    return <ReleaseMenuButton bundle={release} />
   }, [])
 
   const filteredReleases = useMemo(() => {
-    if (!releaseFilterDate) return groupedBundles[bundleGroupMode]
+    if (!releaseFilterDate) return groupedReleases[releaseGroupMode]
 
     const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
     const localStart = startOfDay(new Date(releaseFilterDate)) // Get start of the day in local time
@@ -275,18 +273,18 @@ export function ReleasesOverview() {
     const startOfDayUTC = zonedTimeToUtc(localStart, timeZone)
     const endOfDayUTC = zonedTimeToUtc(localEnd, timeZone)
 
-    return tableBundles.filter((bundle) => {
-      if (!bundle.publishedAt || bundle.releaseType !== 'scheduled') return false
+    return tableReleases.filter((release) => {
+      if (!release.publishedAt || release.releaseType !== 'scheduled') return false
 
-      const publishDateUTC = new Date(bundle.publishedAt)
+      const publishDateUTC = new Date(release.publishedAt)
       return publishDateUTC >= startOfDayUTC && publishDateUTC <= endOfDayUTC
     })
-  }, [bundleGroupMode, groupedBundles, releaseFilterDate, tableBundles])
+  }, [releaseGroupMode, groupedReleases, releaseFilterDate, tableReleases])
 
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
       <Flex flex={1}>
-        {(loading || hasBundles) && (
+        {(loading || hasReleases) && (
           <Flex flex="none">
             <Card borderRight flex="none" disabled>
               <CalendarFilter
@@ -306,7 +304,7 @@ export function ReleasesOverview() {
                 </Text>
               </Stack>
               <Flex flex={1} gap={1}>
-                {loadingOrHasBundles &&
+                {loadingOrHasReleases &&
                   (releaseFilterDate ? currentFilterDate : currentArchivedPicker)}
               </Flex>
               <Flex flex="none" gap={2}>
@@ -317,11 +315,11 @@ export function ReleasesOverview() {
                   padding={2}
                   text={`${uTx.abbreviation} (${uTx.namePretty})`}
                 />
-                {loadingOrHasBundles && createReleaseButton}
+                {loadingOrHasReleases && createReleaseButton}
               </Flex>
             </Flex>
           </Card>
-          {!loading && !hasBundles && (
+          {!loading && !hasReleases && (
             <Container style={{margin: 0}} width={0}>
               <Stack space={5}>
                 <Text data-testid="no-releases-info-text" muted size={2}>
@@ -331,11 +329,11 @@ export function ReleasesOverview() {
               </Stack>
             </Container>
           )}
-          {(hasBundles || loadingTableData) && (
+          {(hasReleases || loadingTableData) && (
             <Box ref={scrollContainerRef} marginTop={3} overflow={'auto'}>
               <Table<TableRelease>
                 // for resetting filter and sort on table when filer changed
-                key={releaseFilterDate ? 'by_date' : bundleGroupMode}
+                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
                 defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
                 loading={loadingTableData}
                 data={filteredReleases}
@@ -350,7 +348,7 @@ export function ReleasesOverview() {
               />
             </Box>
           )}
-          {renderCreateBundleDialog()}
+          {renderCreateReleaseDialog()}
         </Flex>
       </Flex>
     </Flex>

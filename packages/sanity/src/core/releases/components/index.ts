@@ -1,3 +1,4 @@
+export * from './dialog/DiscardVersionDialog'
 export * from './dialog/ReleaseForm'
 export * from './panes/ReleaseActions'
 export * from './ReleaseAvatar'

@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 import {

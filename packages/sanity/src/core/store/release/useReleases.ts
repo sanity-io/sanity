@@ -6,7 +6,7 @@ import {type ReleasesReducerAction} from './reducer'
 import {type ReleaseDocument} from './types'
 
 interface ReleasesState {
-  data: ReleaseDocument[] | null
+  data: ReleaseDocument[]
   deletedReleases: Record<string, ReleaseDocument>
   error?: Error
   loading: boolean

@@ -1,8 +1,8 @@
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {useReleasesStore} from 'sanity'
 import {ReleasesMetadataContext} from 'sanity/_singletons'
 
+import {useReleasesStore} from '../../store'
 import {type MetadataWrapper} from '../../store/release/createReleaseMetadataAggregator'
 import {type ReleasesMetadata} from '../../store/release/useReleasesMetadata'
 

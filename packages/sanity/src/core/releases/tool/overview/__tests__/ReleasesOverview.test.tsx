@@ -46,7 +46,7 @@ describe('ReleasesOverview', () => {
   describe('when loading releases', () => {
     beforeEach(async () => {
       mockUseReleases.mockReturnValue({
-        data: null,
+        data: [],
         loading: true,
         dispatch: vi.fn(),
         deletedReleases: {},
