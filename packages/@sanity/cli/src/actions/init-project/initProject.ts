@@ -341,8 +341,7 @@ export default async function initSanity(
 
     if (reactVersion) {
       const isUsingReact19 = semver.coerce(reactVersion)?.major === 19
-      const isUsingNextJs15 =
-        isNextJs && semver.coerce(detectedFramework?.detectedVersion)?.major === 15
+      const isUsingNextJs15 = semver.coerce(detectedFramework?.detectedVersion)?.major === 15
 
       if (isUsingNextJs15 && isUsingReact19) {
         warn('╭────────────────────────────────────────────────────────────╮')
