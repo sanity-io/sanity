@@ -337,11 +337,11 @@ export default async function initSanity(
   const packageJson = readPackageJson(`${outputPath}/package.json`)
   const reactVersion = packageJson.dependencies?.react
   const isUsingReact19 = semver.coerce(reactVersion)?.major === 19
-  if (
+  const isUsingNextJs15 =
     detectedFramework?.slug === 'nextjs' &&
-    detectedFramework?.detectedVersion?.startsWith('15') &&
-    isUsingReact19
-  ) {
+    semver.coerce(detectedFramework?.detectedVersion)?.major === 15
+
+  if (isUsingNextJs15 && isUsingReact19) {
     warn('╭────────────────────────────────────────────────────────────╮')
     warn('│                                                            │')
     warn('│ It looks like you are using Next.js 15 and React 19        │')
