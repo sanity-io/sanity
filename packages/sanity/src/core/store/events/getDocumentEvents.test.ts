@@ -1,5 +1,5 @@
-import {describe, expect, it} from '@jest/globals'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
 
 import {getDocumentEvents} from './getDocumentEvents'
 import {
