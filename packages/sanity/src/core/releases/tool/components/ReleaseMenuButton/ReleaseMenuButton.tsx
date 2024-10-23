@@ -85,6 +85,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
           fallbackPlacements: ['top-end'],
           placement: 'bottom',
           portal: true,
+          tone: 'default',
         }}
       />
       {selectedAction === 'edit' && (

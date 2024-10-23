@@ -18,21 +18,20 @@ export type ReleasesMetadataMap = Record<string, ReleasesMetadata>
 
 export type MetadataWrapper = {data: ReleasesMetadataMap | null; error: null; loading: boolean}
 
-const getFetchQuery = (bundleIds: string[]) => {
-  // projection key must be string - cover the case that a release has a number as first char
-  const getSafeKey = (id: string) => `bundle_${id.replaceAll('-', '_')}`
+const getFetchQuery = (releaseIds: string[]) => {
+  // projection key must be string - cover the case that a bundle has a number as first char
+  const getSafeKey = (id: string) => `release_${id.replaceAll('-', '_')}`
 
-  return bundleIds.reduce(
-    ({subquery: accSubquery, projection: accProjection}, bundleId) => {
+  return releaseIds.reduce(
+    ({subquery: accSubquery, projection: accProjection}, releaseId) => {
       // get a version of the id that is safe to use as key in objects
-      const safeId = getSafeKey(bundleId)
+      const safeId = getSafeKey(releaseId)
 
-      const subquery = `${accSubquery}"${safeId}": *[_id in path("versions.${bundleId}.*")]{_updatedAt } | order(_updatedAt desc),`
+      const subquery = `${accSubquery}"${safeId}": *[_id in path("versions.${releaseId}.*")]{_updatedAt, "docId": string::split(_id, ".")[2] } | order(_updatedAt desc),`
 
-      // conforms to ReleasesMetadata
-      const projection = `${accProjection}"${bundleId}": {
+      const projection = `${accProjection}"${releaseId}": {
               "updatedAt": ${safeId}[0]._updatedAt,
-              "documentCount": count(${safeId})
+              "documentIds": ${safeId}[].docId,
             },`
 
       return {subquery, projection}
@@ -51,18 +50,67 @@ const getFetchQuery = (bundleIds: string[]) => {
  */
 export const createReleaseMetadataAggregator = (client: SanityClient | null) => {
   const aggregatorFetch$ = (
-    bundleIds: string[],
+    releaseIds: string[],
     isInitialLoad: boolean = false,
   ): Observable<MetadataWrapper> => {
-    if (!bundleIds?.length || !client) return of({data: null, error: null, loading: false})
+    if (!releaseIds?.length || !client) return of({data: null, error: null, loading: false})
 
     const {subquery: queryAllDocumentsInReleases, projection: projectionToBundleMetadata} =
-      getFetchQuery(bundleIds)
+      getFetchQuery(releaseIds)
 
     const fetchData$ = client.observable
-      .fetch<ReleasesMetadataMap>(`{${queryAllDocumentsInReleases}}{${projectionToBundleMetadata}}`)
+      .fetch<
+        Record<
+          string,
+          Omit<ReleasesMetadata, 'existingDocumentCount'> & {
+            documentIds: string[]
+          }
+        >
+      >(`{${queryAllDocumentsInReleases}}{${projectionToBundleMetadata}}`)
       .pipe(
-        switchMap((response) => of({data: response, error: null, loading: false})),
+        switchMap((releaseDocumentIdResponse) => {
+          const getCountKey = (id: string) => `${id}_existing_count`
+          const documentCountQuery = Object.entries(releaseDocumentIdResponse).reduce(
+            (query, releaseMetadata) => {
+              const [releaseId, metadata] = releaseMetadata
+              if (!metadata.documentIds || metadata.documentIds.length === 0) return query
+
+              const documentIds = metadata.documentIds
+                .map((documentId) => `"${documentId}"`)
+                .toString()
+
+              return `${query}"${getCountKey(releaseId)}": count(*[_id in [${documentIds}]]{_id}),`
+            },
+            ``,
+          )
+
+          return client.observable
+            .fetch<Record<string, number | undefined>>(`{${documentCountQuery}}`)
+            .pipe(
+              switchMap((releaseDocumentCountResponse) =>
+                of({
+                  data: Object.entries(releaseDocumentIdResponse).reduce(
+                    (existingReleaseMetadata, releaseMetadata) => {
+                      const [releaseId, metadata] = releaseMetadata
+
+                      return {
+                        ...existingReleaseMetadata,
+                        [releaseId]: {
+                          ...metadata,
+                          documentCount: metadata.documentIds?.length || 0,
+                          existingDocumentCount:
+                            releaseDocumentCountResponse[`${getCountKey(releaseId)}`] || 0,
+                        },
+                      }
+                    },
+                    {},
+                  ),
+                  error: null,
+                  loading: false,
+                }),
+              ),
+            )
+        }),
         catchError((error) => {
           console.error('Failed to fetch release metadata', error)
           return of({data: null, error, loading: false})
@@ -77,14 +125,14 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
     )
   }
 
-  const aggregatorListener$ = (bundleIds: string[]) => {
-    if (!bundleIds?.length || !client) return EMPTY
+  const aggregatorListener$ = (releaseIds: string[]) => {
+    if (!releaseIds?.length || !client) return EMPTY
 
     return client.observable
       .listen(
-        `*[${bundleIds.reduce(
-          (accQuery, bundleId, index) =>
-            `${accQuery}${index === 0 ? '' : '||'} _id in path("versions.${bundleId}.*")`,
+        `*[(${releaseIds.reduce(
+          (accQuery, releaseId, index) =>
+            `${accQuery}${index === 0 ? '' : ' ||'} _id in path("versions.${releaseId}.*")`,
           '',
         )})]`,
         {},
@@ -103,19 +151,19 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
         bufferTime(1_000),
         filter((entriesArray) => entriesArray.length > 0),
         switchMap((entriesArray) => {
-          const mutatedBundleIds = entriesArray.reduce<string[]>((accBundleIds, event) => {
+          const mutatedReleaseIds = entriesArray.reduce<string[]>((accReleaseIds, event) => {
             if ('type' in event && event.type === 'mutation') {
-              const bundleId = event.documentId.split('.')[0]
-              // de-dup mutated release slugs
-              if (accBundleIds.includes(bundleId)) return accBundleIds
+              const releaseId = event.documentId.split('.')[1]
+              // de-dup mutated bundle slugs
+              if (accReleaseIds.includes(releaseId)) return accReleaseIds
 
-              return [...accBundleIds, bundleId]
+              return [...accReleaseIds, releaseId]
             }
-            return accBundleIds
+            return accReleaseIds
           }, [])
 
-          if (mutatedBundleIds.length) {
-            return aggregatorFetch$(mutatedBundleIds)
+          if (mutatedReleaseIds.length) {
+            return aggregatorFetch$(mutatedReleaseIds)
           }
 
           return EMPTY
@@ -123,6 +171,6 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
       )
   }
 
-  return (bundleIds: string[]) =>
-    merge(aggregatorFetch$(bundleIds, true), aggregatorListener$(bundleIds))
+  return (releaseIds: string[]) =>
+    merge(aggregatorFetch$(releaseIds, true), aggregatorListener$(releaseIds))
 }

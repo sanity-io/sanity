@@ -1,3 +1,4 @@
+import {Card} from '@sanity/ui'
 import {type RefObject, useCallback, useMemo} from 'react'
 
 import {useTranslation} from '../../../i18n'
@@ -66,7 +67,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   return (
-    <>
+    <Card borderTop ref={scrollContainerRef}>
       <Table<DocumentWithHistory>
         data={aggregatedData}
         emptyState={t('summary.no-documents')}
@@ -78,6 +79,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         rowProps={getRowProps}
         scrollContainerRef={scrollContainerRef}
       />
-    </>
+    </Card>
   )
 }

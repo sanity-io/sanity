@@ -59,6 +59,14 @@ const releasesLocaleStrings = {
   'discard-version-dialog.header': 'Are you sure you want to discard the document version?',
   /** Title for dialog for discarding a version of a document */
   'discard-version-dialog.title': 'Discard version',
+  /** Label for the count of added documents in to a release */
+  'document-count.added': '{{count}} added documents',
+  /** Label for the count of added documents in to a release when only 1 document added*/
+  'document-count.added-singular': '{{count}} added document',
+  /** Label for the count of changed documents in a release */
+  'document-count.changed': '{{count}} changed documents',
+  /** Label for the count of changed documents in a release when only 1 document changed */
+  'document-count.changed-singular': '{{count}} changed document',
   /** Text for when documents of a release are loading */
   'document-loading': 'Loading documents',
   /** Label for when documents in release have validation warnings */
@@ -141,18 +149,18 @@ const releasesLocaleStrings = {
 
   /** Header for the document table in the release tool - contributors */
   'table-header.contributors': 'Contributors',
-  /** Header for the document table in the release tool - created */
-  'table-header.created': 'Created',
   /** Header for the document table in the release tool - type */
   'table-header.type': 'Type',
+  /** Header for the document table in the release tool - release title */
+  'table-header.title': 'Release',
   /** Header for the document table in the release tool - action */
   'table-header.action': 'Action',
   /** Header for the document table in the release tool - title */
   'table-header.documents': 'Documents',
   /** Header for the document table in the release tool - edited */
   'table-header.edited': 'Edited',
-  /** Header for the document table in the release tool - published */
-  'table-header.published': 'Published',
+  /** Header for the document table in the release tool - time */
+  'table-header.time': 'Time',
   /** Text for toast when release failed to publish */
   'toast.error': "Failed to publish the '<strong>{{title}}</strong>'",
   /** Text for toast when release has been published */

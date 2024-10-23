@@ -1,38 +1,97 @@
-import {AddIcon} from '@sanity/icons'
-import {Box, type ButtonMode, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {isBefore} from 'date-fns'
-import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {AddIcon, ChevronDownIcon, CloseIcon, EarthGlobeIcon} from '@sanity/icons'
+import {Box, type ButtonMode, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {endOfDay, format, isSameDay, startOfDay} from 'date-fns'
+import {zonedTimeToUtc} from 'date-fns-tz'
+import {
+  Fragment,
+  type MouseEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {usePerspective} from 'sanity'
+import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
+import {CalendarDay} from '../../../../ui-components/inputs/DateFilters/calender/CalendarDay'
+import {
+  CalendarFilter,
+  type CalendarProps,
+} from '../../../../ui-components/inputs/DateFilters/calender/CalendarFilter'
 import {useTranslation} from '../../../i18n'
-import {type ReleaseDocument} from '../../../store'
-import {useReleases} from '../../../store/release/useReleases'
+import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
+import {type ReleaseDocument, useReleases} from '../../../store'
 import {
   type ReleasesMetadata,
   useReleasesMetadata,
 } from '../../../store/release/useReleasesMetadata'
 import {ReleaseDetailsDialog} from '../../components/dialog/ReleaseDetailsDialog'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
-import {Table, type TableProps} from '../components/Table/Table'
+import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 
 type Mode = 'open' | 'archived'
+
+const DATE_SEARCH_PARAM_KEY = 'date'
+const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
 
 export interface TableRelease extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
   isDeleted?: boolean
 }
 
-const EMPTY_RELEASE_GROUPS = {open: [], archived: []}
-const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: '_createdAt', direction: 'desc'}
+// TODO: use the selected timezone rather than client
+const getTimezoneAdjustedDateTimeRange = (date: Date) => {
+  const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
 
-const getRowProps: TableProps<TableRelease, undefined>['rowProps'] = (datum) =>
-  datum.isDeleted ? {tone: 'transparent'} : {}
+  return [startOfDay(date), endOfDay(date)].map((time) => zonedTimeToUtc(time, timeZone))
+}
+
+const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
+  const {data: releases} = useReleases()
+  const {date} = props
+
+  const [startOfDayUTC, endOfDayUTC] = getTimezoneAdjustedDateTimeRange(date)
+
+  const dayHasReleases = releases?.some((release) => {
+    const releasePublishAt = release.publishAt || release.metadata.intendedPublishAt
+    if (!releasePublishAt) return false
+
+    const publishDateUTC = new Date(releasePublishAt)
+
+    return (
+      release.metadata.releaseType === 'scheduled' &&
+      publishDateUTC >= startOfDayUTC &&
+      publishDateUTC <= endOfDayUTC
+    )
+  })
+
+  return <CalendarDay {...props} dateStyles={dayHasReleases ? {fontWeight: 700} : {}} />
+}
+
+const EMPTY_RELEASE_GROUPS = {open: [], archived: []}
+const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishedAt', direction: 'asc'}
+
+const getInitialFilterDate = (router: RouterContextValue) => () => {
+  const activeFilterDate = new URLSearchParams(router.state._searchParams).get(
+    DATE_SEARCH_PARAM_KEY,
+  )
+
+  return activeFilterDate ? new Date(activeFilterDate) : undefined
+}
+
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases, deletedReleases} = useReleases()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>('open')
+  const router = useRouter()
+  const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
+    getInitialFilterDate(router),
+  )
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
   const releaseIds = useMemo(() => releases.map((release) => release._id), [releases])
   const {data: releasesMetadata, loading: loadingReleasesMetadata} = useReleasesMetadata(releaseIds)
@@ -40,6 +99,16 @@ export function ReleasesOverview() {
   const loadingTableData = loading || (!releasesMetadata && Boolean(releaseIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
+  const {timeZone} = useTimeZone()
+  const {currentGlobalBundle} = usePerspective()
+
+  const getRowProps = useCallback(
+    (datum: TableRelease): Partial<TableRowProps> =>
+      datum.isDeleted
+        ? {tone: 'transparent'}
+        : {tone: currentGlobalBundle._id === datum._id ? getReleaseTone(datum) : 'default'},
+    [currentGlobalBundle._id],
+  )
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
@@ -49,6 +118,7 @@ export function ReleasesOverview() {
   const tableReleases = useMemo<TableRelease[]>(() => {
     const deletedTableReleases = Object.values(deletedReleases).map((deletedRelease) => ({
       ...deletedRelease,
+      publishAt: deletedRelease.publishAt || deletedRelease.metadata.intendedPublishAt,
       isDeleted: true,
     }))
 
@@ -58,6 +128,7 @@ export function ReleasesOverview() {
       ...deletedTableReleases,
       ...releases.map((release) => ({
         ...release,
+        publishAt: release.publishAt || release.metadata.intendedPublishAt,
         documentsMetadata: releasesMetadata[release._id] || {},
       })),
     ]
@@ -65,17 +136,15 @@ export function ReleasesOverview() {
 
   const groupedReleases = useMemo(
     () =>
-      tableReleases.reduce<{open: TableRelease[]; archived: TableRelease[]}>(
-        (groups, tableRelease) => {
-          const isReleaseArchived = tableRelease.state === 'archived'
-          const isReleasePastDue =
-            tableRelease.publishAt && isBefore(new Date(tableRelease.publishAt), new Date())
-          const group = isReleaseArchived || isReleasePastDue ? 'archived' : 'open'
+      tableReleases.reduce<{open: TableRelease[]; archived: TableRelease[]}>((groups, release) => {
+        const isReleaseArchived = release.state === 'archived' || release.state === 'published'
+        const group = isReleaseArchived ? 'archived' : 'open'
 
-          return {...groups, [group]: [...groups[group], tableRelease]}
-        },
-        EMPTY_RELEASE_GROUPS,
-      ) || EMPTY_RELEASE_GROUPS,
+        return {
+          ...groups,
+          [group]: [...groups[group], release],
+        }
+      }, EMPTY_RELEASE_GROUPS) || EMPTY_RELEASE_GROUPS,
     [tableReleases],
   )
 
@@ -86,12 +155,43 @@ export function ReleasesOverview() {
     }
   }, [releaseGroupMode, groupedReleases.archived.length])
 
-  const handleReleaseModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
+  const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
       setReleaseGroupMode(groupMode as Mode)
     },
     [],
   )
+
+  const handleSelectFilterDate = useCallback((date?: Date) => {
+    setReleaseFilterDate((prevFilterDate) =>
+      prevFilterDate && date && isSameDay(prevFilterDate, date) ? undefined : date,
+    )
+  }, [])
+
+  const clearFilterDate = useCallback(() => setReleaseFilterDate(undefined), [])
+
+  const currentFilterDate = useMemo(() => {
+    if (!releaseFilterDate) return null
+
+    return (
+      <Button
+        iconRight={CloseIcon}
+        mode="bleed"
+        onClick={clearFilterDate}
+        padding={2}
+        selected
+        text={format(releaseFilterDate, 'PPP')}
+      />
+    )
+  }, [releaseFilterDate, clearFilterDate])
+
+  useEffect(() => {
+    router.navigate({
+      _searchParams: releaseFilterDate
+        ? [[DATE_SEARCH_PARAM_KEY, format(releaseFilterDate, DATE_SEARCH_PARAM_VALUE_FORMAT)]]
+        : [],
+    })
+  }, [releaseFilterDate, router])
 
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
@@ -100,10 +200,10 @@ export function ReleasesOverview() {
       padding: 2,
     }
     return (
-      <Flex flex="none" gap={1}>
+      <Fragment>
         <Button
           {...groupModeButtonBaseProps}
-          onClick={handleReleaseModeChange}
+          onClick={handleReleaseGroupModeChange}
           selected={releaseGroupMode === 'open'}
           text={t('action.open')}
           value="open"
@@ -117,17 +217,17 @@ export function ReleasesOverview() {
             content: t('no-archived-release'),
             placement: 'bottom',
           }}
-          onClick={handleReleaseModeChange}
+          onClick={handleReleaseGroupModeChange}
           selected={releaseGroupMode === 'archived'}
           text={t('action.archived')}
           value="archived"
         />
-      </Flex>
+      </Fragment>
     )
   }, [
     releaseGroupMode,
     groupedReleases.archived.length,
-    handleReleaseModeChange,
+    handleReleaseGroupModeChange,
     hasReleases,
     loading,
     t,
@@ -139,7 +239,7 @@ export function ReleasesOverview() {
         icon={AddIcon}
         disabled={isCreateReleaseDialogOpen}
         onClick={() => setIsCreateReleaseDialogOpen(true)}
-        text={tCore('release.action.create')}
+        text={tCore('release.action.create-new')}
       />
     ),
     [isCreateReleaseDialogOpen, tCore],
@@ -157,17 +257,6 @@ export function ReleasesOverview() {
     )
   }
 
-  const applySearchTermToReleases = useCallback(
-    (unfilteredData: TableRelease[], tableSearchTerm: string) => {
-      return unfilteredData.filter((release) => {
-        return release.metadata.title
-          ?.toLocaleLowerCase()
-          ?.includes(tableSearchTerm.toLocaleLowerCase())
-      })
-    },
-    [],
-  )
-
   const renderRowActions = useCallback(({datum}: {datum: TableRelease | unknown}) => {
     const release = datum as TableRelease
 
@@ -176,49 +265,89 @@ export function ReleasesOverview() {
     return <ReleaseMenuButton release={release} />
   }, [])
 
+  const filteredReleases = useMemo(() => {
+    if (!releaseFilterDate) return groupedReleases[releaseGroupMode]
+
+    const [startOfDayUTC, endOfDayUTC] = getTimezoneAdjustedDateTimeRange(releaseFilterDate)
+
+    return tableReleases.filter((release) => {
+      if (!release.publishAt || release.metadata.releaseType !== 'scheduled') return false
+
+      const publishDateUTC = new Date(release.publishAt)
+      return publishDateUTC >= startOfDayUTC && publishDateUTC <= endOfDayUTC
+    })
+  }, [releaseGroupMode, groupedReleases, releaseFilterDate, tableReleases])
+
   return (
-    <Flex paddingX={4} height="fill" direction="column" ref={scrollContainerRef} overflow={'auto'}>
-      <Container width={3} paddingY={6}>
-        <Flex align="flex-start" gap={2} paddingBottom={2}>
-          <Flex align="flex-start" flex={1} gap={4}>
-            <Stack paddingY={1} space={4}>
-              <Heading as="h1" size={2} style={{margin: '1px 0'}}>
-                {t('overview.title')}
-              </Heading>
-              {!loading && releases.length === 0 && (
-                <Container style={{margin: 0}} width={0}>
-                  <Stack space={5}>
-                    <Text data-testid="no-releases-info-text" muted size={2}>
-                      {t('overview.description')}
-                    </Text>
-                    <Box>{createReleaseButton}</Box>
-                  </Stack>
-                </Container>
-              )}
-            </Stack>
-            {loadingOrHasReleases && currentArchivedPicker}
+    <Flex direction="row" flex={1} style={{height: '100%'}}>
+      <Flex flex={1}>
+        {(loading || hasReleases) && (
+          <Flex flex="none">
+            <Card borderRight flex="none" disabled>
+              <CalendarFilter
+                renderCalendarDay={ReleaseCalendarDay}
+                selectedDate={releaseFilterDate}
+                onSelect={handleSelectFilterDate}
+              />
+            </Card>
           </Flex>
-          {loadingOrHasReleases && createReleaseButton}
+        )}
+        <Flex direction={'column'} flex={1} style={{position: 'relative'}}>
+          <Card flex="none" padding={3}>
+            <Flex align="flex-start" flex={1} gap={3}>
+              <Stack padding={2} space={4}>
+                <Text as="h1" size={1} weight="semibold">
+                  {t('overview.title')}
+                </Text>
+              </Stack>
+              <Flex flex={1} gap={1}>
+                {loadingOrHasReleases &&
+                  (releaseFilterDate ? currentFilterDate : currentArchivedPicker)}
+              </Flex>
+              <Flex flex="none" gap={2}>
+                <Button
+                  icon={EarthGlobeIcon}
+                  iconRight={ChevronDownIcon}
+                  mode="bleed"
+                  padding={2}
+                  text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
+                />
+                {loadingOrHasReleases && createReleaseButton}
+              </Flex>
+            </Flex>
+          </Card>
+          {!loading && !hasReleases && (
+            <Container style={{margin: 0}} width={0}>
+              <Stack space={5}>
+                <Text data-testid="no-releases-info-text" muted size={2}>
+                  {t('overview.description')}
+                </Text>
+                <Box>{createReleaseButton}</Box>
+              </Stack>
+            </Container>
+          )}
+          {(hasReleases || loadingTableData) && (
+            <Box ref={scrollContainerRef} marginTop={3} overflow={'auto'}>
+              <Table<TableRelease>
+                // for resetting filter and sort on table when filer changed
+                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+                defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
+                loading={loadingTableData}
+                data={filteredReleases}
+                columnDefs={releasesOverviewColumnDefs(t)}
+                emptyState={t('no-releases')}
+                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                rowId="_id"
+                rowActions={renderRowActions}
+                rowProps={getRowProps}
+                scrollContainerRef={scrollContainerRef}
+                hideTableInlinePadding
+              />
+            </Box>
+          )}
+          {renderCreateReleaseDialog()}
         </Flex>
-      </Container>
-      {(hasReleases || loadingTableData) && (
-        <Table<TableRelease>
-          // for resetting filter and sort on table when mode changed
-          key={releaseGroupMode}
-          defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
-          loading={loadingTableData}
-          data={groupedReleases[releaseGroupMode]}
-          columnDefs={releasesOverviewColumnDefs(t)}
-          searchFilter={applySearchTermToReleases}
-          emptyState={t('no-releases')}
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          rowId="_id"
-          rowActions={renderRowActions}
-          rowProps={getRowProps}
-          scrollContainerRef={scrollContainerRef}
-        />
-      )}
-      {renderCreateReleaseDialog()}
+      </Flex>
     </Flex>
   )
 }

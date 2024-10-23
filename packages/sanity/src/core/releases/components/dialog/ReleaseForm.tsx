@@ -3,6 +3,7 @@ import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
+import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {FormFieldHeaderText} from '../../../form'
@@ -132,6 +133,7 @@ export function ReleaseForm(props: {
         {buttonReleaseType === 'scheduled' && (
           <DateTimeInput
             selectTime
+            monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
             onChange={handleBundlePublishAtChange}
             calendarLabels={calendarLabels}
             value={publishAt ? new Date(publishAt) : undefined}

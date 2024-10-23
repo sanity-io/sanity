@@ -1,0 +1,110 @@
+import {AddIcon, EditIcon} from '@sanity/icons'
+import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
+import {type ThemeColorStateToneKey} from '@sanity/ui/theme'
+import {type CSSProperties} from 'react'
+import {Translate, useTranslation} from 'sanity'
+
+import {Tooltip} from '../../../../ui-components'
+import {type ReleasesMetadata} from '../../../store/release/useReleasesMetadata'
+import {releasesLocaleNamespace} from '../../i18n'
+
+type Props = {
+  releaseDocumentMetadata: ReleasesMetadata
+}
+
+type Tone = ThemeColorStateToneKey
+
+const ColorIcon = ({
+  tone,
+  symbol: Symbol,
+}: {
+  tone: Tone
+  symbol: React.FC<React.SVGProps<SVGSVGElement>>
+}) => {
+  return (
+    <Symbol
+      style={
+        {
+          '--card-icon-color': `var(--card-badge-${tone}-icon-color)`,
+        } as CSSProperties
+      }
+    />
+  )
+}
+
+interface CategoryChange {
+  type: 'added' | 'changed'
+  tone: Tone
+  count: number
+}
+
+const CHANGE_ICON_MAP: Record<CategoryChange['type'], React.FC> = {
+  added: AddIcon,
+  changed: EditIcon,
+}
+
+export const ReleaseDocumentsCounter = ({releaseDocumentMetadata}: Props) => {
+  const {documentCount, existingDocumentCount: changedExistingDocumentCount} =
+    releaseDocumentMetadata
+  const newDocumentCount = documentCount - changedExistingDocumentCount
+
+  const {t} = useTranslation(releasesLocaleNamespace)
+
+  const documentCountGroups: CategoryChange[] = [
+    {type: 'added', tone: 'primary', count: newDocumentCount},
+    {type: 'changed', tone: 'caution', count: changedExistingDocumentCount},
+  ]
+
+  return (
+    <Tooltip
+      content={
+        <Stack space={1}>
+          {documentCountGroups.map(
+            ({type, tone, count}) =>
+              count > 0 && (
+                <Flex key={type} gap={3} padding={2}>
+                  <Box flex="none">
+                    <Text size={1}>
+                      <ColorIcon symbol={CHANGE_ICON_MAP[type]} tone={tone} />
+                    </Text>
+                  </Box>
+                  <Box flex={1}>
+                    <Text size={1}>
+                      <Translate
+                        t={t}
+                        i18nKey={
+                          newDocumentCount > 1
+                            ? `document-count.${type}`
+                            : `document-count.${type}-singular`
+                        }
+                        values={{count}}
+                      />
+                    </Text>
+                  </Box>
+                </Flex>
+              ),
+          )}
+        </Stack>
+      }
+      portal
+    >
+      <Flex gap={1}>
+        {documentCountGroups.map(
+          ({type, tone, count}) =>
+            count > 0 && (
+              <Badge
+                key={type}
+                tone={tone}
+                style={{
+                  minWidth: 9,
+                  textAlign: 'center',
+                }}
+              >
+                {count}
+              </Badge>
+            ),
+        )}
+      </Flex>
+    </Tooltip>
+  )
+}

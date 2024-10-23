@@ -1144,8 +1144,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.already-in-release': 'Already in release {{title}}',
   /** Action message for when you click to view all versions you can copy the current document to */
   'release.action.copy-to': 'Copy version to',
-  /** Action message for creating releases */
-  'release.action.create': 'Create release',
+  /** Action message for creating new releases */
+  'release.action.create-new': 'New release',
   /** Action message for when document is already in release  */
   'release.action.discard-version': 'Discard version',
   /** Description for toast when version discarding failed */

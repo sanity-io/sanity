@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 
-import {useBundlesMetadataProvider} from '../../releases/contexts/ReleasesMetadataProvider'
+import {useReleasesMetadataProvider} from '../../releases/contexts/ReleasesMetadataProvider'
 
 export interface ReleasesMetadata {
   /**
@@ -8,13 +8,22 @@ export interface ReleasesMetadata {
    */
   documentCount: number
   /**
+   * The number of subset documents with the release version as a prefix
+   * that are already published
+   */
+  existingDocumentCount: number
+  /**
    * The last time a document in the release was edited
    */
   updatedAt: string | null
 }
 
 export const useReleasesMetadata = (releaseIds: string[]) => {
-  const {addBundleIdsToListener, removeBundleIdsFromListener, state} = useBundlesMetadataProvider()
+  const {
+    addReleaseIdsToListener: addBundleIdsToListener,
+    removeReleaseIdsFromListener: removeBundleIdsFromListener,
+    state,
+  } = useReleasesMetadataProvider()
   const [responseData, setResponseData] = useState<Record<string, ReleasesMetadata> | null>(null)
 
   useEffect(() => {
@@ -33,7 +42,7 @@ export const useReleasesMetadata = (releaseIds: string[]) => {
 
     if (hasUpdatedMetadata) {
       const nextResponseData = Object.fromEntries(
-        releaseIds.map((bundleId) => [bundleId, data[bundleId]]),
+        releaseIds.map((releaseId) => [releaseId, data[releaseId]]),
       )
 
       setResponseData(nextResponseData)
@@ -43,7 +52,7 @@ export const useReleasesMetadata = (releaseIds: string[]) => {
   return {
     error: state.error,
     // loading is only for initial load
-    // changing listened to release slugs will not cause a re-load
+    // changing listened to release IDs will not cause a re-load
     loading,
     data: responseData,
   }

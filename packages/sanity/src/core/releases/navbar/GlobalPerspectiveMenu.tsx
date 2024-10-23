@@ -128,7 +128,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
           <MenuItem
             icon={AddIcon}
             onClick={handleCreateBundleClick}
-            text={t('release.action.create')}
+            text={t('release.action.create-new')}
           />
         </>
       </>

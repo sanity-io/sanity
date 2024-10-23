@@ -1,20 +1,59 @@
+import {PinFilledIcon, PinIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {format} from 'date-fns'
 import {type TFunction} from 'i18next'
+import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Tooltip} from '../../../../ui-components'
-import {RelativeTime, UserAvatar} from '../../../components'
+import {Button, Tooltip} from '../../../../ui-components'
+import {RelativeTime} from '../../../components'
 import {Translate, useTranslation} from '../../../i18n'
-import {ReleaseBadge} from '../../components/ReleaseBadge'
+import {ReleaseAvatar} from '../../components/ReleaseAvatar'
+import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getReleaseTone} from '../../util/getReleaseTone'
 import {type TableRowProps} from '../components/Table/Table'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
+import {ReleaseDocumentsCounter} from './ReleaseDocumentsCounter'
 import {type TableRelease} from './ReleasesOverview'
+
+const ReleaseTime = ({release}: {release: TableRelease}) => {
+  const {t: tCore} = useTranslation()
+  const {publishAt, metadata} = release
+
+  const getTimeString = () => {
+    if (metadata.releaseType === 'asap') {
+      return tCore('release.type.asap')
+    }
+    if (metadata.releaseType === 'undecided') {
+      return tCore('release.type.undecided')
+    }
+
+    return publishAt ? format(new Date(publishAt), 'PPpp') : null
+  }
+
+  return (
+    <Text muted size={1}>
+      {getTimeString()}
+    </Text>
+  )
+}
 
 const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: release}) => {
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {currentGlobalBundle: currentGlobalRelease, setPerspective} = usePerspective()
+  const {state, _id, publishAt} = release
+  const isArchived = state === 'archived'
+
+  const handlePinRelease = useCallback(() => {
+    if (_id === currentGlobalRelease._id) {
+      setPerspective('drafts')
+    } else {
+      setPerspective(_id)
+    }
+  }, [_id, currentGlobalRelease._id, setPerspective])
 
   const cardProps: TableRowProps = release.isDeleted
     ? {tone: 'transparent'}
@@ -22,36 +61,51 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
         as: 'a',
         // navigate to release detail
         onClick: () => router.navigate({releaseId: release._id}),
+        tone: 'inherit',
       }
 
+  const isReleasePinned = _id === currentGlobalRelease._id
+  const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
+
   return (
-    <Box {...cellProps} flex={1} padding={1}>
+    <Box {...cellProps} marginLeft={3} flex={1} padding={1}>
       <Tooltip
         disabled={!release.isDeleted}
         content={
           <Text size={1}>
-            <Translate
-              t={t}
-              i18nKey="deleted-release"
-              values={{title: release.metadata.title || 'Untitled'}}
-            />
+            <Translate t={t} i18nKey="deleted-release" values={{title: release.metadata.title}} />
           </Text>
         }
       >
-        <Card {...cardProps} padding={2} radius={2}>
-          <Flex align="center" gap={2}>
-            <Box flex="none">
-              <ReleaseBadge hue={release.metadata.hue} icon={release.metadata.icon} />
-            </Box>
-            <Stack flex={1} space={2}>
-              <Flex align="center" gap={2}>
-                <Text size={1} weight="medium">
-                  {release.metadata.title}
-                </Text>
-              </Flex>
-            </Stack>
-          </Flex>
-        </Card>
+        <Flex align="center" gap={4}>
+          <Button
+            tooltipProps={{
+              disabled: isArchived || release.state === 'published',
+              content: t('dashboard.details.pin-release'),
+            }}
+            disabled={isArchived || release.state === 'published'}
+            icon={pinButtonIcon}
+            mode="bleed"
+            onClick={handlePinRelease}
+            padding={2}
+            round
+            selected={_id === currentGlobalRelease._id}
+          />
+          <Card {...cardProps} padding={2} radius={2} flex={1}>
+            <Flex align="center" gap={2}>
+              <Box flex="none">
+                <ReleaseAvatar tone={getReleaseTone(release)} />
+              </Box>
+              <Stack flex={1} space={2}>
+                <Flex align="center" gap={2}>
+                  <Text size={1} weight="medium">
+                    {release.metadata.title}
+                  </Text>
+                </Flex>
+              </Stack>
+            </Flex>
+          </Card>
+        </Flex>
       </Tooltip>
     </Box>
   )
@@ -62,55 +116,39 @@ export const releasesOverviewColumnDefs: (
 ) => Column<TableRelease>[] = (t) => {
   return [
     {
-      id: 'search',
+      id: 'title',
       sorting: false,
       width: null,
-      header: (props) => (
-        <Headers.TableHeaderSearch
-          {...props}
-          placeholder={t('overview.search-releases-placeholder')}
-        />
-      ),
-      cell: ReleaseNameCell,
-    },
-    {
-      id: 'documentCount',
-      sorting: false,
-      width: 90,
       header: ({headerProps}) => (
-        <Flex {...headerProps} paddingY={3} sizing="border">
+        <Flex {...headerProps} flex={1} marginLeft={3} paddingY={3} sizing="border">
           <Box padding={2}>
             <Text muted size={1} weight="medium">
-              {t('table-header.documents')}
+              {t('table-header.title')}
             </Text>
           </Box>
         </Flex>
       ),
-      cell: ({datum: {isDeleted, documentsMetadata}, cellProps}) => (
-        <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-          {!isDeleted && (
-            <Text muted size={1}>
-              {documentsMetadata?.documentCount || 0}
-            </Text>
-          )}
-        </Flex>
-      ),
+      cell: ReleaseNameCell,
     },
     {
-      id: '_createdAt',
+      id: 'publishAt',
       sorting: true,
-      width: 120,
+      width: 100,
       header: (props) => (
-        <Flex {...props.headerProps} paddingY={3} sizing="border">
-          <Headers.SortHeaderButton text={t('table-header.created')} {...props} />
+        <Flex
+          {...props.headerProps}
+          align="center"
+          gap={1}
+          paddingX={1}
+          paddingY={0}
+          sizing="border"
+        >
+          <Headers.SortHeaderButton text={t('table-header.time')} {...props} />
         </Flex>
       ),
       cell: ({cellProps, datum: release}) => (
-        <Flex {...cellProps} align="center" gap={2} paddingX={2} paddingY={3} sizing="border">
-          {!!release.createdBy && <UserAvatar size={0} user={release.createdBy} />}
-          <Text muted size={1}>
-            <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
-          </Text>
+        <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+          <ReleaseTime release={release} />
         </Flex>
       ),
     },
@@ -134,27 +172,18 @@ export const releasesOverviewColumnDefs: (
       ),
     },
     {
-      id: 'publishedAt',
-      sorting: true,
-      width: 100,
-      header: (props) => (
-        <Flex
-          {...props.headerProps}
-          align="center"
-          gap={1}
-          paddingX={1}
-          paddingY={0}
-          sizing="border"
-        >
-          <Headers.SortHeaderButton text={t('table-header.published')} {...props} />
+      id: 'documentCount',
+      sorting: false,
+      width: 90,
+      header: ({headerProps}) => (
+        <Flex {...headerProps} paddingY={3} sizing="border">
+          <Box padding={2} />
         </Flex>
       ),
-      cell: ({cellProps, datum: release}) => (
+      cell: ({datum: {isDeleted, documentsMetadata}, cellProps}) => (
         <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-          {!!release.publishAt && (
-            <Text muted size={1}>
-              <RelativeTime time={release.publishAt} useTemporalPhrase minimal />
-            </Text>
+          {!isDeleted && documentsMetadata && (
+            <ReleaseDocumentsCounter releaseDocumentMetadata={documentsMetadata} />
           )}
         </Flex>
       ),

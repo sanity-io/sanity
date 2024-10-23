@@ -1,6 +1,6 @@
 import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useState} from 'react'
 
-import {Calendar} from './calendar/Calendar'
+import {Calendar, type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 
 export const DatePicker = forwardRef(function DatePicker(
@@ -10,6 +10,7 @@ export const DatePicker = forwardRef(function DatePicker(
     selectTime?: boolean
     timeStep?: number
     calendarLabels: CalendarLabels
+    monthPickerVariant?: CalendarProps['monthPickerVariant']
   },
   ref: ForwardedRef<HTMLDivElement>,
 ) {
