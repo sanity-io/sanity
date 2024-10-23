@@ -9,6 +9,7 @@ import execa, {type CommonOptions} from 'execa'
 import {deburr, noop} from 'lodash'
 import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
+import semver from 'semver'
 import {evaluate, patch} from 'silver-fleece'
 import which from 'which'
 
@@ -55,6 +56,7 @@ import {
   promptForNextTemplate,
   promptForStudioPath,
 } from './prompts/nextjs'
+import {readPackageJson} from './readPackageJson'
 import {reconfigureV2Project} from './reconfigureV2Project'
 import templates from './templates'
 import {
@@ -128,6 +130,8 @@ export default async function initSanity(
   const cliFlags = args.extOptions
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
+  const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
+
   const intendedPlan = cliFlags['project-plan']
   const intendedCoupon = cliFlags.coupon
   const reconfigure = cliFlags.reconfigure
@@ -326,6 +330,24 @@ export default async function initSanity(
 
   // Ensure we are using the output path provided by user
   outputPath = answers.outputPath
+
+  const packageJson = readPackageJson(`${outputPath}/package.json`)
+  const reactVersion = packageJson.dependencies?.react
+  const isUsingReact19 = semver.coerce(reactVersion)?.major === 19
+  if (
+    detectedFramework?.slug === 'nextjs' &&
+    // @ts-expect-error - Detected version is not typed into Framework interface
+    detectedFramework?.detectedVersion?.startsWith('15') &&
+    isUsingReact19
+  ) {
+    warn('╭────────────────────────────────────────────────────────────╮')
+    warn('│                                                            │')
+    warn('│ It looks like you are using Next.js 15 and React 19        │')
+    warn('│ Please read our compatibility guide.                       │')
+    warn('│ https://www.sanity.io/help/react-19                        │')
+    warn('│                                                            │')
+    warn('╰────────────────────────────────────────────────────────────╯')
+  }
 
   if (initNext) {
     const useTypeScript = unattended ? true : await promptForTypeScript(prompt)
