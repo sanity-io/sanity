@@ -25,7 +25,12 @@ import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
 
-type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
+export const MONTH_PICKER_VARIANT = {
+  select: 'select',
+  carousel: 'carousel',
+} as const
+
+export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
   selectedDate?: Date
   timeStep?: number
@@ -33,6 +38,7 @@ type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   focusedDate: Date
   onFocusedDateChange: (index: Date) => void
   labels: CalendarLabels
+  monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -67,6 +73,7 @@ export const Calendar = forwardRef(function Calendar(
     timeStep = 1,
     onSelect,
     labels,
+    monthPickerVariant = 'select',
     ...restProps
   } = props
 
@@ -192,41 +199,43 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const monthPicker = useMemo(() => {
-    return (
-      <Flex
-        align="center"
-        paddingLeft={4}
-        style={{
-          borderBottom: '1px solid var(--card-border-color)',
-          minHeight: `${TOOL_HEADER_HEIGHT}px`,
-          position: 'sticky',
-          top: 0,
-        }}
-      >
-        <Flex align="center" flex={1} justify="space-between">
-          <Text weight="medium" size={1}>
-            {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
-            {(focusedDate || new Date())?.getFullYear()}
-          </Text>
-          <Flex paddingRight={3} gap={2}>
-            <TooltipDelayGroupProvider>
-              <Button
-                icon={ChevronLeftIcon}
-                mode="bleed"
-                onClick={() => moveFocusedDate(-1)}
-                tooltipProps={{content: 'Previous month'}}
-              />
-              <Button
-                icon={ChevronRightIcon}
-                mode="bleed"
-                onClick={() => moveFocusedDate(1)}
-                tooltipProps={{content: 'Next month'}}
-              />
-            </TooltipDelayGroupProvider>
+    if (monthPickerVariant === 'carousel') {
+      return (
+        <Flex
+          align="center"
+          paddingLeft={4}
+          style={{
+            borderBottom: '1px solid var(--card-border-color)',
+            minHeight: `${TOOL_HEADER_HEIGHT}px`,
+            position: 'sticky',
+            top: 0,
+          }}
+        >
+          <Flex align="center" flex={1} justify="space-between">
+            <Text weight="medium" size={1}>
+              {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
+              {(focusedDate || new Date())?.getFullYear()}
+            </Text>
+            <Flex paddingRight={3} gap={2}>
+              <TooltipDelayGroupProvider>
+                <Button
+                  icon={ChevronLeftIcon}
+                  mode="bleed"
+                  onClick={() => moveFocusedDate(-1)}
+                  tooltipProps={{content: 'Previous month'}}
+                />
+                <Button
+                  icon={ChevronRightIcon}
+                  mode="bleed"
+                  onClick={() => moveFocusedDate(1)}
+                  tooltipProps={{content: 'Next month'}}
+                />
+              </TooltipDelayGroupProvider>
+            </Flex>
           </Flex>
         </Flex>
-      </Flex>
-    )
+      )
+    }
 
     return (
       <Flex>
@@ -256,6 +265,7 @@ export const Calendar = forwardRef(function Calendar(
     labels.goToNextYear,
     labels.goToPreviousYear,
     labels.monthNames,
+    monthPickerVariant,
     moveFocusedDate,
     setFocusedDateYear,
   ])

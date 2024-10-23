@@ -14,6 +14,7 @@ import FocusLock from 'react-focus-lock'
 
 import {Button} from '../../button'
 import {Popover} from '../../popover'
+import {type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'
@@ -31,6 +32,7 @@ export interface DateTimeInputProps {
   value?: Date
   calendarLabels: CalendarLabels
   constrainSize?: boolean
+  monthPickerVariant?: CalendarProps['monthPickerVariant']
 }
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
@@ -46,6 +48,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     timeStep,
     calendarLabels,
     constrainSize = true,
+    monthPickerVariant,
     ...rest
   } = props
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -112,6 +115,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                 <Box overflow="auto">
                   <FocusLock onDeactivation={handleDeactivation}>
                     <DatePicker
+                      monthPickerVariant={monthPickerVariant}
                       calendarLabels={calendarLabels}
                       selectTime={selectTime}
                       timeStep={timeStep}

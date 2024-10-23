@@ -12,11 +12,14 @@ import {
   useState,
 } from 'react'
 import {usePerspective} from 'sanity'
+import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
-import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
-import {DatePicker} from '../../../../ui-components/inputs/DateInputs/DatePicker'
-import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
+import {CalendarDay} from '../../../../ui-components/inputs/DateFilters/calender/CalendarDay'
+import {
+  CalendarFilter,
+  type CalendarProps,
+} from '../../../../ui-components/inputs/DateFilters/calender/CalendarFilter'
 import {useTranslation} from '../../../i18n'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {type ReleaseDocument, useReleases} from '../../../store'
@@ -35,19 +38,59 @@ import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 
 type Mode = 'open' | 'archived'
 
+const DATE_SEARCH_PARAM_KEY = 'date'
+const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
+
 export interface TableRelease extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
   isDeleted?: boolean
 }
 
+const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
+  const {data: bundles} = useReleases()
+  const {date} = props
+  const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
+  const localStart = startOfDay(date) // Get start of the day in local time
+  const localEnd = endOfDay(date) // Get end of the day in local time
+
+  // Step 2: Convert local times to UTC
+  const startOfDayUTC = zonedTimeToUtc(localStart, timeZone)
+  const endOfDayUTC = zonedTimeToUtc(localEnd, timeZone)
+
+  const dayHasReleases = bundles?.some((bundle) => {
+    if (!bundle.publishedAt) return false
+
+    const publishDateUTC = new Date(bundle.publishedAt)
+
+    return (
+      bundle.releaseType === 'scheduled' &&
+      publishDateUTC >= startOfDayUTC &&
+      publishDateUTC <= endOfDayUTC
+    )
+  })
+
+  return <CalendarDay {...props} dateStyles={dayHasReleases ? {fontWeight: 700} : {}} />
+}
+
 const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishedAt', direction: 'asc'}
+
+const getInitialFilterDate = (router: RouterContextValue) => () => {
+  const activeFilterDate = new URLSearchParams(router.state._searchParams).get(
+    DATE_SEARCH_PARAM_KEY,
+  )
+
+  return activeFilterDate ? new Date(activeFilterDate) : undefined
+}
 
 export function ReleasesOverview() {
   const {data: bundles, loading: loadingBundles, deletedReleases} = useReleases()
   // const bundles = []
   const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
-  const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(undefined)
+  const router = useRouter()
+  const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
+    getInitialFilterDate(router),
+  )
   const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
   const bundleIds = useMemo(() => bundles?.map((bundle) => bundle._id) || [], [bundles])
   const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useReleasesMetadata(bundleIds)
@@ -118,6 +161,14 @@ export function ReleasesOverview() {
     [],
   )
 
+  const handleSelectFilterDate = useCallback((date?: Date) => {
+    setReleaseFilterDate((prevFilterDate) =>
+      prevFilterDate && date && isSameDay(prevFilterDate, date) ? undefined : date,
+    )
+  }, [])
+
+  const clearFilterDate = useCallback(() => setReleaseFilterDate(undefined), [])
+
   const currentFilterDate = useMemo(() => {
     if (!releaseFilterDate) return null
 
@@ -125,19 +176,21 @@ export function ReleasesOverview() {
       <Button
         iconRight={CloseIcon}
         mode="bleed"
-        onClick={() => setReleaseFilterDate(undefined)}
+        onClick={clearFilterDate}
         padding={2}
         selected
         text={format(releaseFilterDate, 'PPP')}
       />
     )
-  }, [releaseFilterDate])
+  }, [releaseFilterDate, clearFilterDate])
 
-  const handleSelectFilterDate = useCallback((date: Date) => {
-    setReleaseFilterDate((prevFilterDate) =>
-      prevFilterDate && isSameDay(prevFilterDate, date) ? undefined : date,
-    )
-  }, [])
+  useEffect(() => {
+    router.navigate({
+      _searchParams: releaseFilterDate
+        ? [[DATE_SEARCH_PARAM_KEY, format(releaseFilterDate, DATE_SEARCH_PARAM_VALUE_FORMAT)]]
+        : [],
+    })
+  }, [releaseFilterDate, router])
 
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
@@ -211,8 +264,6 @@ export function ReleasesOverview() {
     return <ReleaseMenuButton bundle={bundle} />
   }, [])
 
-  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(tCore), [tCore])
-
   const filteredReleases = useMemo(() => {
     if (!releaseFilterDate) return groupedBundles[bundleGroupMode]
 
@@ -224,11 +275,13 @@ export function ReleasesOverview() {
     const startOfDayUTC = zonedTimeToUtc(localStart, timeZone)
     const endOfDayUTC = zonedTimeToUtc(localEnd, timeZone)
 
-    return groupedBundles.open.filter((bundle) => {
-      const publishDateUTC = new Date(bundle.publishAt)
+    return tableBundles.filter((bundle) => {
+      if (!bundle.publishedAt || bundle.releaseType !== 'scheduled') return false
+
+      const publishDateUTC = new Date(bundle.publishedAt)
       return publishDateUTC >= startOfDayUTC && publishDateUTC <= endOfDayUTC
     })
-  }, [bundleGroupMode, groupedBundles, releaseFilterDate])
+  }, [bundleGroupMode, groupedBundles, releaseFilterDate, tableBundles])
 
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
@@ -236,15 +289,15 @@ export function ReleasesOverview() {
         {(loading || hasBundles) && (
           <Flex flex="none">
             <Card borderRight flex="none" disabled>
-              <DatePicker
-                value={releaseFilterDate || null}
-                onChange={handleSelectFilterDate}
-                calendarLabels={calendarLabels}
+              <CalendarFilter
+                renderCalendarDay={ReleaseCalendarDay}
+                selectedDate={releaseFilterDate}
+                onSelect={handleSelectFilterDate}
               />
             </Card>
           </Flex>
         )}
-        <Flex direction={'column'} flex={1}>
+        <Flex direction={'column'} flex={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
             <Flex align="flex-start" flex={1} gap={3}>
               <Stack padding={2} space={4}>

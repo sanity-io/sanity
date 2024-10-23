@@ -11,6 +11,7 @@ import {
 } from 'sanity'
 
 import {Button} from '../../../../ui-components'
+import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
@@ -138,6 +139,7 @@ export function ReleaseForm(props: {
         {buttonReleaseType === 'scheduled' && (
           <DateTimeInput
             selectTime
+            monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
             onChange={handleBundlePublishAtChange}
             calendarLabels={calendarLabels}
             value={value.publishedAt ? new Date(value.publishedAt) : undefined}

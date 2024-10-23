@@ -28,13 +28,10 @@ const getFetchQuery = (releaseIds: string[]) => {
       const safeId = getSafeKey(releaseId)
 
       const subquery = `${accSubquery}"${safeId}": *[_id in path("versions.${releaseId}.*")]{_updatedAt, "docId": string::split(_id, ".")[2] } | order(_updatedAt desc),`
-      // "${safeId}_existingCount": count(*[_id in *[_id in path("versions.${releaseId}.*")]{"publishedVersionId": string::split(_id, ".")[2] }[].publishedVersionId]),`
 
-      // conforms to ReleasesMetadata
       const projection = `${accProjection}"${releaseId}": {
               "updatedAt": ${safeId}[0]._updatedAt,
               "documentIds": ${safeId}[].docId,
-              "documentCount": count(${safeId}),
             },`
 
       return {subquery, projection}
@@ -62,31 +59,57 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
       getFetchQuery(releaseIds)
 
     const fetchData$ = client.observable
-      .fetch<ReleasesMetadataMap>(`{${queryAllDocumentsInReleases}}{${projectionToBundleMetadata}}`)
+      .fetch<
+        Record<
+          string,
+          Omit<ReleasesMetadata, 'existingDocumentCount'> & {
+            documentIds: string[]
+          }
+        >
+      >(`{${queryAllDocumentsInReleases}}{${projectionToBundleMetadata}}`)
       .pipe(
-        switchMap((firstResp) => {
-          const nextQuery = Object.entries(firstResp).reduce((agg, cur) => {
-            if (cur[1].documentIds.length === 0) return agg
+        switchMap((releaseDocumentIdResponse) => {
+          const getCountKey = (id: string) => `${id}_existing_count`
+          const documentCountQuery = Object.entries(releaseDocumentIdResponse).reduce(
+            (query, releaseMetadata) => {
+              const [releaseId, metadata] = releaseMetadata
+              if (metadata.documentIds.length === 0) return query
 
-            return `${agg}"${cur[0]}_existing_count": count(*[_id in [${cur[1].documentIds.map((el) => `"${el}"`).toString()}]]{_id}),`
-          }, ``)
-          return client.observable.fetch(`{${nextQuery}}`).pipe(
-            switchMap((secondResp) =>
-              of({
-                data: Object.entries(firstResp).reduce((acc, el) => {
-                  return {
-                    ...acc,
-                    [el[0]]: {
-                      ...el[1],
-                      existingDocumentCount: secondResp[`${el[0]}_existing_count`] || 0,
-                    },
-                  }
-                }, {}),
-                error: null,
-                loading: false,
-              }),
-            ),
+              const documentIds = metadata.documentIds
+                .map((documentId) => `"${documentId}"`)
+                .toString()
+
+              return `${query}"${getCountKey(releaseId)}": count(*[_id in [${documentIds}]]{_id}),`
+            },
+            ``,
           )
+
+          return client.observable
+            .fetch<Record<string, number | undefined>>(`{${documentCountQuery}}`)
+            .pipe(
+              switchMap((releaseDocumentCountResponse) =>
+                of({
+                  data: Object.entries(releaseDocumentIdResponse).reduce(
+                    (existingReleaseMetadata, releaseMetadata) => {
+                      const [releaseId, metadata] = releaseMetadata
+
+                      return {
+                        ...existingReleaseMetadata,
+                        [releaseId]: {
+                          ...metadata,
+                          documentCount: metadata.documentIds.length,
+                          existingDocumentCount:
+                            releaseDocumentCountResponse[`${getCountKey(releaseId)}`] || 0,
+                        },
+                      }
+                    },
+                    {},
+                  ),
+                  error: null,
+                  loading: false,
+                }),
+              ),
+            )
         }),
         catchError((error) => {
           console.error('Failed to fetch bundle metadata', error)

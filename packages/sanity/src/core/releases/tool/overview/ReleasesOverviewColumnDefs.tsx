@@ -178,7 +178,9 @@ export const releasesOverviewColumnDefs: (
       ),
       cell: ({datum: {isDeleted, documentsMetadata}, cellProps}) => (
         <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-          {!isDeleted && <ReleaseDocumentsCounter releaseDocumentMetadata={documentsMetadata} />}
+          {!isDeleted && documentsMetadata && (
+            <ReleaseDocumentsCounter releaseDocumentMetadata={documentsMetadata} />
+          )}
         </Flex>
       ),
     },
