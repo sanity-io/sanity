@@ -45,16 +45,18 @@ export interface TableRelease extends ReleaseDocument {
   isDeleted?: boolean
 }
 
+// TODO: use the selected timezone rather than client
+const getTimezoneAdjustedDateTimeRange = (date: Date) => {
+  const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
+
+  return [startOfDay(date), endOfDay(date)].map((time) => zonedTimeToUtc(time, timeZone))
+}
+
 const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
   const {data: releases} = useReleases()
   const {date} = props
-  const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
-  const localStart = startOfDay(date) // Get start of the day in local time
-  const localEnd = endOfDay(date) // Get end of the day in local time
 
-  // Step 2: Convert local times to UTC
-  const startOfDayUTC = zonedTimeToUtc(localStart, timeZone)
-  const endOfDayUTC = zonedTimeToUtc(localEnd, timeZone)
+  const [startOfDayUTC, endOfDayUTC] = getTimezoneAdjustedDateTimeRange(date)
 
   const dayHasReleases = releases?.some((release) => {
     if (!release.publishedAt) return false
@@ -139,7 +141,7 @@ export function ReleasesOverview() {
 
         return {
           ...groups,
-          [group]: [...groups[group], {...release, publishAt: '2024-10-24T23:10:31Z'}],
+          [group]: [...groups[group], release],
         }
       }, EMPTY_RELEASE_GROUPS) || EMPTY_RELEASE_GROUPS,
     [tableReleases],
@@ -265,13 +267,7 @@ export function ReleasesOverview() {
   const filteredReleases = useMemo(() => {
     if (!releaseFilterDate) return groupedReleases[releaseGroupMode]
 
-    const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
-    const localStart = startOfDay(new Date(releaseFilterDate)) // Get start of the day in local time
-    const localEnd = endOfDay(new Date(releaseFilterDate)) // Get end of the day in local time
-
-    // Step 2: Convert local times to UTC
-    const startOfDayUTC = zonedTimeToUtc(localStart, timeZone)
-    const endOfDayUTC = zonedTimeToUtc(localEnd, timeZone)
+    const [startOfDayUTC, endOfDayUTC] = getTimezoneAdjustedDateTimeRange(releaseFilterDate)
 
     return tableReleases.filter((release) => {
       if (!release.publishedAt || release.releaseType !== 'scheduled') return false
