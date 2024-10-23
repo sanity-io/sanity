@@ -1,5 +1,5 @@
 /**
- * If the provided perspective has the `release.` prefix, returns it with this
+ * If the provided perspective has the `bundle.` prefix, returns it with this
  * prefix removed.
  *
  * @internal
