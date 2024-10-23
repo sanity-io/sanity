@@ -9,7 +9,6 @@ describe('createDocumentUrls', () => {
       const metadata: CreateLinkMetadata = {
         _id: 'id',
         dataset: 'dataset',
-        userId: 'userId',
         ejected: false,
       }
       expect(getCreateDocumentUrl(metadata)).toEqual('https://www.sanity.io/app/create/dataset/id')
@@ -19,7 +18,6 @@ describe('createDocumentUrls', () => {
       const metadata: CreateLinkMetadata = {
         _id: 'id',
         dataset: 'dataset',
-        userId: 'userId',
         ejected: false,
         host: 'https://www.sanity.work',
       }

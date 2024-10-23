@@ -8,8 +8,6 @@ export interface CreateLinkMetadata {
   _id: string
   /** Create user dataset ID */
   dataset: string
-  /** Project user ID who built this document from Create. This is not the Create global user ID, but the Create project user id. */
-  userId: string
   /**  If false, document should be put in a limited read-only state. */
   ejected: boolean
   /**  set if Create document originates non-default origin */
