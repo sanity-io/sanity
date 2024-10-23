@@ -1,11 +1,12 @@
 import {act, fireEvent, render, screen, within} from '@testing-library/react'
 import {type ReactNode} from 'react'
-import {ColorSchemeProvider, UserColorManagerProvider} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
+import {ColorSchemeProvider} from '../../../../studio'
+import {UserColorManagerProvider} from '../../../../user-color'
 import {releasesUsEnglishLocaleRelease} from '../../../i18n'
 import {ReleaseReview} from '../ReleaseReview'
 import {type DocumentInReleaseResult} from '../useReleaseDocuments'

@@ -108,7 +108,7 @@ const releasesLocaleStrings = {
     "The '<strong>{{title}}</strong>' release and its document will be published.",
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'publish-dialog.confirm-publish-description_other':
-    "The '<strong>{{title}}</strong>' release and its {{bundleDocumentsLength}} documents will be published.",
+    "The '<strong>{{title}}</strong>' release and its {{releaseDocumentsLength}} documents will be published.",
   /** Label for when documents are being validated */
   'publish-dialog.validation.loading': 'Validating documents...',
   /** Label for when documents in release have validation errors */

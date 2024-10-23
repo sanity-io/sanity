@@ -1,5 +1,5 @@
 import {render, screen} from '@testing-library/react'
-import {type ReleaseDocument, type releaseType} from 'sanity'
+import {type ReleaseDocument, type ReleaseType} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
@@ -7,16 +7,19 @@ import {VersionContextMenuItem} from '../VersionContextMenuItem'
 
 const mockRelease: ReleaseDocument = {
   _id: '1',
-  _type: 'release',
-  title: 'Test Release',
-  releaseType: 'scheduled',
-  publishedAt: '2023-10-01T10:00:00Z',
-  hue: 'gray',
-  icon: 'string',
-  authorId: '',
+  _type: 'system-tmp.release',
+  createdBy: '',
   _createdAt: '',
   _updatedAt: '',
-  _rev: '',
+  state: 'active',
+  name: '1',
+  metadata: {
+    title: 'Test Release',
+    releaseType: 'scheduled',
+    intendedPublishAt: '2023-10-01T10:00:00Z',
+    hue: 'gray',
+    icon: 'string',
+  },
 }
 
 vi.mock('sanity', async (importOriginal) => ({
@@ -56,14 +59,17 @@ describe('VersionContextMenuItem', () => {
 
   it('renders release type as scheduled with date', async () => {
     const wrapper = await createTestProvider()
-    const scheduledRelease = {...mockRelease, releaseType: 'scheduled' as releaseType}
+    const scheduledRelease = {...mockRelease, releaseType: 'scheduled' as ReleaseType}
 
     render(<VersionContextMenuItem release={scheduledRelease} />, {wrapper})
     expect(screen.getByText('10/1/2023, 3:00:00 AM')).toBeInTheDocument()
   })
 
   it('renders release type as ASAP', async () => {
-    const asapRelease = {...mockRelease, releaseType: 'asap' as releaseType}
+    const asapRelease: ReleaseDocument = {
+      ...mockRelease,
+      metadata: {...mockRelease.metadata, releaseType: 'asap'},
+    }
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenuItem release={asapRelease} />, {wrapper})
@@ -71,15 +77,21 @@ describe('VersionContextMenuItem', () => {
   })
 
   it('renders release type as undecided', async () => {
-    const undecidedRelease = {...mockRelease, releaseType: 'undecided' as releaseType}
+    const asapRelease: ReleaseDocument = {
+      ...mockRelease,
+      metadata: {...mockRelease.metadata, releaseType: 'undecided'},
+    }
     const wrapper = await createTestProvider()
 
-    render(<VersionContextMenuItem release={undecidedRelease} />, {wrapper})
+    render(<VersionContextMenuItem release={asapRelease} />, {wrapper})
     expect(screen.getByText('Undecided')).toBeInTheDocument()
   })
 
   it('renders "Unknown date" for scheduled release without date', async () => {
-    const noDateRelease = {...mockRelease, publishedAt: undefined}
+    const noDateRelease: ReleaseDocument = {
+      ...mockRelease,
+      metadata: {...mockRelease.metadata, releaseType: 'scheduled', intendedPublishAt: undefined},
+    }
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenuItem release={noDateRelease} />, {wrapper})

@@ -1,12 +1,15 @@
 import {PinFilledIcon, PinIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
+import {type TFunction} from 'i18next'
 import {useCallback} from 'react'
-import {ReleaseAvatar, type TFunction, Translate, usePerspective, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RelativeTime} from '../../../components'
+import {Translate, useTranslation} from '../../../i18n'
+import {ReleaseAvatar} from '../../components/ReleaseAvatar'
+import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {type TableRowProps} from '../components/Table/Table'
@@ -17,17 +20,17 @@ import {type TableRelease} from './ReleasesOverview'
 
 const ReleaseTime = ({release}: {release: TableRelease}) => {
   const {t: tCore} = useTranslation()
-  const {publishedAt, releaseType} = release
+  const {publishAt, metadata} = release
 
   const getTimeString = () => {
-    if (releaseType === 'asap') {
+    if (metadata.releaseType === 'asap') {
       return tCore('release.type.asap')
     }
-    if (releaseType === 'undecided') {
+    if (metadata.releaseType === 'undecided') {
       return tCore('release.type.undecided')
     }
 
-    return publishedAt ? format(new Date(publishedAt), 'PPpp') : null
+    return publishAt ? format(new Date(publishAt), 'PPpp') : null
   }
 
   return (
@@ -41,7 +44,8 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {currentGlobalBundle: currentGlobalRelease, setPerspective} = usePerspective()
-  const {archived, _id, publishedAt} = release
+  const {state, _id, publishAt} = release
+  const isArchived = state === 'archived'
 
   const handlePinRelease = useCallback(() => {
     if (_id === currentGlobalRelease._id) {
@@ -69,17 +73,17 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
         disabled={!release.isDeleted}
         content={
           <Text size={1}>
-            <Translate t={t} i18nKey="deleted-release" values={{title: release.title}} />
+            <Translate t={t} i18nKey="deleted-release" values={{title: release.metadata.title}} />
           </Text>
         }
       >
         <Flex align="center" gap={4}>
           <Button
             tooltipProps={{
-              disabled: archived || publishedAt !== undefined,
+              disabled: isArchived || release.state === 'published',
               content: t('dashboard.details.pin-release'),
             }}
-            disabled={archived || publishedAt !== undefined}
+            disabled={isArchived || release.state === 'published'}
             icon={pinButtonIcon}
             mode="bleed"
             onClick={handlePinRelease}
@@ -95,7 +99,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
               <Stack flex={1} space={2}>
                 <Flex align="center" gap={2}>
                   <Text size={1} weight="medium">
-                    {release.title}
+                    {release.metadata.title}
                   </Text>
                 </Flex>
               </Stack>
@@ -127,7 +131,7 @@ export const releasesOverviewColumnDefs: (
       cell: ReleaseNameCell,
     },
     {
-      id: 'publishedAt',
+      id: 'publishAt',
       sorting: true,
       width: 100,
       header: (props) => (
@@ -144,7 +148,7 @@ export const releasesOverviewColumnDefs: (
       ),
       cell: ({cellProps, datum: release}) => (
         <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-          {!!release.publishedAt && <ReleaseTime release={release} />}
+          <ReleaseTime release={release} />
         </Flex>
       ),
     },

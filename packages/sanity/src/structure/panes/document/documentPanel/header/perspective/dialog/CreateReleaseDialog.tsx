@@ -5,7 +5,7 @@ import {
   CreatedRelease,
   createReleaseId,
   DEFAULT_RELEASE_TYPE,
-  type FormReleaseDocument,
+  type EditableReleaseDocument,
   LoadingBlock,
   Preview,
   ReleaseAvatar,
@@ -32,15 +32,16 @@ export function CreateReleaseDialog(props: {
 
   const [newReleaseId] = useState(createReleaseId())
 
-  const [value, setValue] = useState((): FormReleaseDocument => {
+  const [value, setValue] = useState((): EditableReleaseDocument => {
     return {
       _id: newReleaseId,
-      _type: 'release',
-      title: '',
-      description: '',
-      hue: 'gray',
-      icon: 'cube',
-      releaseType: DEFAULT_RELEASE_TYPE,
+      metadata: {
+        title: '',
+        description: '',
+        hue: 'gray',
+        icon: 'cube',
+        releaseType: DEFAULT_RELEASE_TYPE,
+      },
     } as const
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -48,7 +49,7 @@ export function CreateReleaseDialog(props: {
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
 
-  const handleOnChange = useCallback((changedValue: FormReleaseDocument) => {
+  const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
     setValue(changedValue)
   }, [])
 

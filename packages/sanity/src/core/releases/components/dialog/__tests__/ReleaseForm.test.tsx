@@ -1,9 +1,14 @@
 import {fireEvent, render, screen} from '@testing-library/react'
-import {type FormReleaseDocument, type ReleaseDocument, useDateTimeFormat} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useReleases} from '../../../../store/release'
+import {useDateTimeFormat} from '../../../../hooks'
+import {
+  type EditableReleaseDocument,
+  type ReleaseDocument,
+  useReleases,
+} from '../../../../store/release'
+import {RELEASE_DOCUMENT_TYPE} from '../../../../store/release/constants'
 import {ReleaseForm} from '../ReleaseForm'
 
 vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
@@ -20,17 +25,17 @@ const mockUseDateTimeFormat = useDateTimeFormat as Mock
 describe('ReleaseForm', () => {
   const onChangeMock = vi.fn()
   const onErrorMock = vi.fn()
-  const valueMock: FormReleaseDocument = {
+  const valueMock: EditableReleaseDocument = {
     _id: 'very-random',
-    _type: 'release',
-    title: '',
-    description: '',
-    icon: 'cube',
-    hue: 'gray',
-    //publishAt: undefined,
+    metadata: {
+      title: '',
+      description: '',
+      icon: 'cube',
+      hue: 'gray',
+    },
   }
 
-  describe('when creating a new bundle', () => {
+  describe('when creating a new release', () => {
     beforeEach(async () => {
       onChangeMock.mockClear()
       onErrorMock.mockClear()
@@ -38,16 +43,21 @@ describe('ReleaseForm', () => {
       // Mock the data returned by useBundles hook
       const mockData: ReleaseDocument[] = [
         {
-          description: 'What a spring drop, allergies galore 🌸',
-          _updatedAt: '2024-07-12T10:39:32Z',
-          _rev: 'HdJONGqRccLIid3oECLjYZ',
-          authorId: 'pzAhBTkNX',
-          title: 'Spring Drop',
-          icon: 'heart-filled',
           _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
-          _type: 'release',
-          hue: 'magenta',
+          _type: RELEASE_DOCUMENT_TYPE,
           _createdAt: '2024-07-02T11:37:51Z',
+          _updatedAt: '2024-07-12T10:39:32Z',
+          name: 'spring-drop',
+          createdBy: 'unknown',
+          state: 'active',
+          metadata: {
+            releaseType: 'asap',
+            title: 'Spring Drop',
+            description: 'What a spring drop, allergies galore 🌸',
+            createdBy: 'pzAhBTkNX',
+            icon: 'heart-filled',
+            hue: 'magenta',
+          },
         },
         // Add more mock data if needed
       ]
@@ -77,14 +87,20 @@ describe('ReleaseForm', () => {
       const titleInput = screen.getByTestId('release-form-title')
       fireEvent.change(titleInput, {target: {value: 'Bundle 1'}})
 
-      expect(onChangeMock).toHaveBeenCalledWith({...valueMock, title: 'Bundle 1'})
+      expect(onChangeMock).toHaveBeenCalledWith({
+        ...valueMock,
+        metadata: {...valueMock.metadata, title: 'Bundle 1'},
+      })
     })
 
     it('should call onChange when description textarea value changes', () => {
       const descriptionTextarea = screen.getByTestId('release-form-description')
       fireEvent.change(descriptionTextarea, {target: {value: 'New Description'}})
 
-      expect(onChangeMock).toHaveBeenCalledWith({...valueMock, description: 'New Description'})
+      expect(onChangeMock).toHaveBeenCalledWith({
+        ...valueMock,
+        metadata: {...valueMock.metadata, description: 'New Description'},
+      })
     })
 
     /*it('should call onChange when publishAt input value changes', () => {
@@ -109,13 +125,23 @@ describe('ReleaseForm', () => {
   })*/
   })
 
-  describe('when updating an existing bundle', () => {
+  describe('when updating an existing release', () => {
     const existingBundleValue: ReleaseDocument = {
-      title: 'Summer Drop',
-      description: 'Summer time',
-      icon: 'heart-filled',
-      hue: 'magenta',
-    } as ReleaseDocument
+      _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
+      _type: RELEASE_DOCUMENT_TYPE,
+      _createdAt: '2024-07-02T11:37:51Z',
+      _updatedAt: '2024-07-12T10:39:32Z',
+      name: 'spring-drop',
+      createdBy: 'unknown',
+      state: 'active',
+      metadata: {
+        title: 'Summer Drop',
+        description: 'Summer time',
+        icon: 'heart-filled',
+        hue: 'magenta',
+        releaseType: 'asap',
+      },
+    }
     beforeEach(async () => {
       onChangeMock.mockClear()
       onErrorMock.mockClear()
@@ -123,16 +149,21 @@ describe('ReleaseForm', () => {
       // Mock the data returned by useBundles hook
       const mockData: ReleaseDocument[] = [
         {
-          description: 'What a spring drop, allergies galore 🌸',
-          _updatedAt: '2024-07-12T10:39:32Z',
-          _rev: 'HdJONGqRccLIid3oECLjYZ',
-          authorId: 'pzAhBTkNX',
-          title: 'Spring Drop',
-          icon: 'heart-filled',
-          _id: 'db76c50e',
-          _type: 'release',
-          hue: 'magenta',
+          _id: 'db76c50e-358b-445c-a57c-8344c588a5d5',
+          _type: RELEASE_DOCUMENT_TYPE,
           _createdAt: '2024-07-02T11:37:51Z',
+          _updatedAt: '2024-07-12T10:39:32Z',
+          name: 'spring-drop',
+          createdBy: 'unknown',
+          state: 'active',
+          metadata: {
+            releaseType: 'asap',
+            title: 'Spring Drop',
+            description: 'What a spring drop, allergies galore 🌸',
+            createdBy: 'pzAhBTkNX',
+            icon: 'heart-filled',
+            hue: 'magenta',
+          },
         },
         // Add more mock data if needed
       ]
@@ -153,18 +184,20 @@ describe('ReleaseForm', () => {
 
     it('should allow for any title to be used', async () => {
       const titleInput = screen.getByTestId('release-form-title')
-      expect(titleInput).toHaveValue(existingBundleValue.title)
+      expect(titleInput).toHaveValue(existingBundleValue.metadata.title)
       // the slug of this title already exists,
-      // but the slug for the existing edited bundle will not be changed
+      // but the slug for the existing edited release will not be changed
       fireEvent.change(titleInput, {target: {value: 'Spring Drop'}})
 
       expect(screen.queryByTestId('input-validation-icon-error')).not.toBeInTheDocument()
     })
 
-    it('should populate the form with the existing bundle values', () => {
-      expect(screen.getByTestId('release-form-title')).toHaveValue(existingBundleValue.title)
+    it('should populate the form with the existing release values', () => {
+      expect(screen.getByTestId('release-form-title')).toHaveValue(
+        existingBundleValue.metadata.title,
+      )
       expect(screen.getByTestId('release-form-description')).toHaveValue(
-        existingBundleValue.description,
+        existingBundleValue.metadata.description,
       )
       screen.getByTestId('release-badge-color-magenta')
       screen.getByTestId('release-badge-icon-heart-filled')

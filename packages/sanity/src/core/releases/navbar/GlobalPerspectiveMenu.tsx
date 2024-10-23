@@ -22,7 +22,7 @@ const StyledBox = styled(Box)`
 `
 
 export function GlobalPerspectiveMenu(): JSX.Element {
-  const {deletedReleases, loading, data: bundles} = useReleases()
+  const {deletedReleases, loading, data: releases} = useReleases()
   const {currentGlobalBundle, setPerspective} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
@@ -30,27 +30,27 @@ export function GlobalPerspectiveMenu(): JSX.Element {
   const {t} = useTranslation()
 
   const sortedBundlesToDisplay = useMemo(() => {
-    if (!bundles) return []
+    if (!releases) return []
 
-    return [...(bundles || []), ...Object.values(deletedReleases)].filter(
-      ({_id, archivedAt}) => !isDraftOrPublished(_id) && !archivedAt,
+    return [...(releases || []), ...Object.values(deletedReleases)].filter(
+      ({_id, state}) => !isDraftOrPublished(_id) && state !== 'archived',
     )
-  }, [bundles, deletedReleases])
+  }, [releases, deletedReleases])
   const hasBundles = sortedBundlesToDisplay.length > 0
 
   const handleBundleChange = useCallback(
-    (bundleId: string) => () => {
-      setPerspective(bundleId)
+    (releaseId: string) => () => {
+      setPerspective(releaseId)
     },
     [setPerspective],
   )
 
   const isBundleDeleted = useCallback(
-    (bundleId: string) => Boolean(deletedReleases[bundleId]),
+    (releaseId: string) => Boolean(deletedReleases[releaseId]),
     [deletedReleases],
   )
 
-  /* create new bundle */
+  /* create new release */
   const handleCreateBundleClick = useCallback(() => {
     setCreateBundleDialogOpen(true)
   }, [])
@@ -78,21 +78,21 @@ export function GlobalPerspectiveMenu(): JSX.Element {
           }
           onClick={handleBundleChange(LATEST._id)}
           pressed={false}
-          text={LATEST.title}
+          text={LATEST.metadata.title}
           data-testid="latest-menu-item"
         />
         {hasBundles && (
           <>
             <MenuDivider />
-            <StyledBox data-testid="bundles-list">
-              {sortedBundlesToDisplay.map(({_id, ...bundle}) => (
+            <StyledBox data-testid="releases-list">
+              {sortedBundlesToDisplay.map(({_id, ...release}) => (
                 <MenuItem
                   key={_id}
                   onClick={handleBundleChange(_id)}
                   padding={1}
                   pressed={false}
                   disabled={isBundleDeleted(_id)}
-                  data-testid={`bundle-${_id}`}
+                  data-testid={`release-${_id}`}
                 >
                   <Tooltip
                     disabled={!isBundleDeleted(_id)}
@@ -102,7 +102,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
                     <Flex>
                       <Box flex={1} padding={2} style={{minWidth: 100}}>
                         <Text size={1} weight="medium">
-                          {bundle.title}
+                          {release.metadata.title}
                         </Text>
                       </Box>
                       <Box padding={2}>

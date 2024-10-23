@@ -46,9 +46,9 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       ({datum}) => {
         const document = datum as BundleDocumentRow
 
-        return <DocumentActions document={document} bundleTitle={release.title} />
+        return <DocumentActions document={document} releaseTitle={release.metadata.title} />
       },
-      [release.title],
+      [release.metadata.title],
     )
 
   const documentTableColumnDefs = useMemo(

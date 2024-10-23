@@ -1,11 +1,11 @@
 /**
- * If the provided perspective has the `bundle.` prefix, returns it with this
+ * If the provided perspective has the `release.` prefix, returns it with this
  * prefix removed.
  *
  * @internal
  */
 export function resolveBundlePerspective(perspective?: string): string | undefined {
-  return perspective?.split(/^bundle./).at(1)
+  return perspective?.split(/^release./).at(1)
 }
 
 /**

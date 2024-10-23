@@ -24,7 +24,7 @@ const StyledBox = styled(Box)`
 
 interface BundleListProps {
   button: ReactElement
-  bundles: ReleaseDocument[] | null
+  releases: ReleaseDocument[] | null
   loading: boolean
   actions?: ReactElement
   perspective?: string
@@ -34,29 +34,29 @@ interface BundleListProps {
  * @internal
  */
 export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): ReactElement {
-  const {bundles, loading, actions, button, perspective} = props
+  const {releases, loading, actions, button, perspective} = props
   const {deletedReleases} = useReleases()
   const {currentGlobalBundle, setPerspective} = usePerspective(perspective)
   const {t} = useTranslation()
 
   const sortedBundlesToDisplay = useMemo(() => {
-    if (!bundles) return []
+    if (!releases) return []
 
-    return bundles
-      .filter(({_id, archivedAt}) => !isDraftOrPublished(_id) && !archivedAt)
+    return releases
+      .filter(({_id, state}) => !isDraftOrPublished(_id) && state !== 'archived')
       .sort(({_id: aId}, {_id: bId}) => Number(deletedReleases[aId]) - Number(deletedReleases[bId]))
-  }, [bundles, deletedReleases])
+  }, [releases, deletedReleases])
   const hasBundles = sortedBundlesToDisplay.length > 0
 
-  const handleBundleChange = useCallback(
-    (bundleId: string) => () => {
-      setPerspective(bundleId)
+  const handleReleaseChange = useCallback(
+    (releaseId: string) => () => {
+      setPerspective(releaseId)
     },
     [setPerspective],
   )
 
   const isBundleDeleted = useCallback(
-    (bundleId: string) => Boolean(deletedReleases[bundleId]),
+    (releaseId: string) => Boolean(deletedReleases[releaseId]),
     [deletedReleases],
   )
 
@@ -79,47 +79,47 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
                       <CheckmarkIcon data-testid="latest-checkmark-icon" />
                     ) : undefined
                   }
-                  onClick={handleBundleChange('drafts')}
+                  onClick={handleReleaseChange('drafts')}
                   pressed={false}
-                  text={LATEST.title}
+                  text={LATEST.metadata.title}
                   data-testid="latest-menu-item"
                 />
                 {hasBundles && (
                   <>
                     <MenuDivider />
-                    <StyledBox data-testid="bundles-list">
-                      {sortedBundlesToDisplay.map((bundle) => (
+                    <StyledBox data-testid="releases-list">
+                      {sortedBundlesToDisplay.map((release) => (
                         <MenuItem
-                          key={bundle._id}
-                          onClick={handleBundleChange(bundle._id)}
+                          key={release._id}
+                          onClick={handleReleaseChange(release._id)}
                           padding={1}
                           pressed={false}
-                          disabled={isBundleDeleted(bundle._id)}
-                          data-testid={`bundle-${bundle._id}`}
+                          disabled={isBundleDeleted(release._id)}
+                          data-testid={`release-${release._id}`}
                         >
                           <Tooltip
-                            disabled={!isBundleDeleted(bundle._id)}
+                            disabled={!isBundleDeleted(release._id)}
                             content={t('release.deleted-tooltip')}
                             placement="bottom-start"
                           >
                             <Flex>
                               <ReleaseBadge
-                                hue={bundle.hue}
-                                icon={bundle.icon}
+                                hue={release.metadata.hue}
+                                icon={release.metadata.icon}
                                 padding={2}
-                                isDisabled={isBundleDeleted(bundle._id)}
+                                isDisabled={isBundleDeleted(release._id)}
                               />
 
                               <Box flex={1} padding={2} style={{minWidth: 100}}>
                                 <Text size={1} weight="medium">
-                                  {bundle.title}
+                                  {release.metadata.title}
                                 </Text>
                               </Box>
 
                               {/*<Box padding={2}>
                                 <Text muted size={1}>
-                                  {bundle.publishAt ? (
-                                    <RelativeTime time={bundle.publishAt as Date} useTemporalPhrase />
+                                  {release.publishAt ? (
+                                    <RelativeTime time={release.publishAt as Date} useTemporalPhrase />
                                   ) : (
                                     'No target date'
                                   )}
@@ -130,9 +130,9 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
                                 <Text size={1}>
                                   <CheckmarkIcon
                                     style={{
-                                      opacity: currentGlobalBundle._id === bundle._id ? 1 : 0,
+                                      opacity: currentGlobalBundle._id === release._id ? 1 : 0,
                                     }}
-                                    data-testid={`${bundle._id}-checkmark-icon`}
+                                    data-testid={`${release._id}-checkmark-icon`}
                                   />
                                 </Text>
                               </Box>

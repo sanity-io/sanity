@@ -4,7 +4,6 @@ import {
   BehaviorSubject,
   catchError,
   concatWith,
-  EMPTY,
   filter,
   map,
   merge,
@@ -14,16 +13,17 @@ import {
   scan,
   shareReplay,
   skip,
-  startWith,
   Subject,
   switchMap,
   tap,
   timeout,
 } from 'rxjs'
+import {startWith} from 'rxjs/operators'
 
+import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
-import {type ReleaseDocument, type ReleasesStore} from './types'
+import {type ReleaseDocument, type ReleaseStore} from './types'
 
 type ActionWrapper = {action: ReleasesReducerAction}
 type EventWrapper = {event: ListenEvent<ReleaseDocument>}
@@ -32,7 +32,9 @@ type ResponseWrapper = {response: ReleaseDocument[]}
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'
 
-const QUERY_FILTERS = [`_type == "release"`]
+const QUERY_FILTERS = [
+  `_type == "${RELEASE_DOCUMENT_TYPE}" && (_id in path("${RELEASE_DOCUMENTS_PATH}.**"))`,
+]
 
 // TODO: Extend the projection with the fields needed
 const QUERY_PROJECTION = `{
@@ -54,25 +56,7 @@ const LISTEN_OPTIONS: ListenOptions = {
 const INITIAL_STATE: ReleasesReducerState = {
   releases: new Map(),
   deletedReleases: {},
-  state: 'initialising',
-}
-
-const NOOP_BUNDLE_STORE: ReleasesStore = {
-  state$: EMPTY.pipe(startWith(INITIAL_STATE)),
-  getMetadataStateForSlugs$: () => of({data: null, error: null, loading: false}),
-  dispatch: () => undefined,
-}
-
-const LOADED_BUNDLE_STORE: ReleasesStore = {
-  state$: EMPTY.pipe(
-    startWith({
-      releases: new Map(),
-      deletedReleases: {},
-      state: 'loaded' as const,
-    }),
-  ),
-  getMetadataStateForSlugs$: () => of({data: null, error: null, loading: false}),
-  dispatch: () => undefined,
+  state: 'loaded' as const,
 }
 
 /**
@@ -84,26 +68,10 @@ const LOADED_BUNDLE_STORE: ReleasesStore = {
  * given the latest state upon subscription.
  */
 export function createReleaseStore(context: {
-  addonClient: SanityClient | null
-  studioClient: SanityClient | null
-  addonClientReady: boolean
+  client: SanityClient
   currentUser: User | null
-}): ReleasesStore {
-  const {addonClient, studioClient, addonClientReady, currentUser} = context
-
-  // While the comments dataset is initialising, this factory function will be called with an empty
-  // `client` value. Return a noop store while the client is unavailable.
-  //
-  // TODO: While the comments dataset is initialising, it incorrectly emits an empty object for the
-  // client instead of `null`, as the types suggest. Once this is fixed, we can remove the object
-  // keys length check.
-  if (!addonClient || Object.keys(addonClient).length === 0) {
-    if (addonClientReady) {
-      // addon client has been fetched but it doesn't exists, nothing to load.
-      return LOADED_BUNDLE_STORE
-    }
-    return NOOP_BUNDLE_STORE
-  }
+}): ReleaseStore {
+  const {client, currentUser} = context
 
   const dispatch$ = new Subject<ReleasesReducerAction>()
   const fetchPending$ = new BehaviorSubject<boolean>(false)
@@ -125,7 +93,7 @@ export function createReleaseStore(context: {
     filter(() => !fetchPending$.value),
     tap(() => fetchPending$.next(true)),
     concatWith(
-      addonClient.observable.fetch<ReleaseDocument[]>(QUERY, {}, {tag: 'releases.list'}).pipe(
+      client.observable.fetch<ReleaseDocument[]>(QUERY, {}, {tag: 'releases.list'}).pipe(
         timeout(10_000), // 10s timeout
         retry({
           count: 2,
@@ -167,7 +135,7 @@ export function createReleaseStore(context: {
     ),
   )
 
-  const listener$ = addonClient.observable.listen<ReleaseDocument>(QUERY, {}, LISTEN_OPTIONS).pipe(
+  const listener$ = client.observable.listen<ReleaseDocument>(QUERY, {}, LISTEN_OPTIONS).pipe(
     map((event) => ({event})),
     catchError((error) =>
       of<ActionWrapper>({
@@ -256,7 +224,7 @@ export function createReleaseStore(context: {
     shareReplay(1),
   )
 
-  const getMetadataStateForSlugs$ = createReleaseMetadataAggregator(studioClient)
+  const getMetadataStateForSlugs$ = createReleaseMetadataAggregator(client)
 
   return {
     state$,

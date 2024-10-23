@@ -1,9 +1,9 @@
 import {fireEvent, render, screen} from '@testing-library/react'
-import {LATEST} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {usePerspective} from '../../hooks/usePerspective'
+import {LATEST} from '../../util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
 vi.mock('../../hooks/usePerspective', () => ({
@@ -16,11 +16,11 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouterState: vi.fn().mockReturnValue(undefined),
 }))
 
-vi.mock('../../../store/bundles/useBundles', () => ({
+vi.mock('../../../store/releases/useBundles', () => ({
   useBundles: vi.fn().mockReturnValue({
     deletedBundles: {},
     loading: false,
-    data: [{_id: 'a-bundle', title: 'Test Bundle'}],
+    data: [{_id: 'a-release', title: 'Test Bundle'}],
   }),
 }))
 
@@ -66,7 +66,7 @@ describe('ReleasesNav', () => {
 
   it('should have clear button to unset perspective when a perspective is chosen', async () => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: {_id: 'a-bundle', title: 'Test Bundle'},
+      currentGlobalBundle: {_id: 'a-release', metadata: {title: 'Test Release'}},
       setPerspective: mockSetPerspective,
     })
 
@@ -79,7 +79,12 @@ describe('ReleasesNav', () => {
 
   it('should list the title of the chosen perspective', async () => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: {_id: 'a-bundle', title: 'Test Bundle'},
+      currentGlobalBundle: {
+        _id: 'a-release',
+        metadata: {
+          title: 'Test Bundle',
+        },
+      },
       setPerspective: mockSetPerspective,
     })
 
@@ -90,7 +95,10 @@ describe('ReleasesNav', () => {
 
   it('should show release avatar for chosen perspective', async () => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: {_id: 'a-bundle', title: 'Test Bundle', releaseType: 'asap'},
+      currentGlobalBundle: {
+        _id: 'a-release',
+        metadata: {title: 'Test Bundle', releaseType: 'asap'},
+      },
       setPerspective: mockSetPerspective,
     })
 

@@ -1,10 +1,11 @@
+import {defineType} from '@sanity/types'
 import {fireEvent, render, screen, within} from '@testing-library/react'
-import {defineType, type ReleaseDocument} from 'sanity'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {type ReleaseDocument} from '../../../../store'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
@@ -133,7 +134,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
             title: 'Release title',
             description: 'Release description',
             _createdAt: timeNow.toISOString(),
-            authorId: 'author-id',
+            createdBy: 'author-id',
           } as ReleaseDocument
         }
         {...props}

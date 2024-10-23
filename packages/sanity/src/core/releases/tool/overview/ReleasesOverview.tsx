@@ -1,6 +1,6 @@
 import {AddIcon, ChevronDownIcon, CloseIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, type ButtonMode, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {endOfDay, format, isBefore, isSameDay, startOfDay} from 'date-fns'
+import {endOfDay, format, isSameDay, startOfDay} from 'date-fns'
 import {zonedTimeToUtc} from 'date-fns-tz'
 import {
   Fragment,
@@ -59,12 +59,13 @@ const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
   const [startOfDayUTC, endOfDayUTC] = getTimezoneAdjustedDateTimeRange(date)
 
   const dayHasReleases = releases?.some((release) => {
-    if (!release.publishedAt) return false
+    const releasePublishAt = release.publishAt || release.metadata.intendedPublishAt
+    if (!releasePublishAt) return false
 
-    const publishDateUTC = new Date(release.publishedAt)
+    const publishDateUTC = new Date(releasePublishAt)
 
     return (
-      release.releaseType === 'scheduled' &&
+      release.metadata.releaseType === 'scheduled' &&
       publishDateUTC >= startOfDayUTC &&
       publishDateUTC <= endOfDayUTC
     )
@@ -117,6 +118,7 @@ export function ReleasesOverview() {
   const tableReleases = useMemo<TableRelease[]>(() => {
     const deletedTableReleases = Object.values(deletedReleases).map((deletedRelease) => ({
       ...deletedRelease,
+      publishAt: deletedRelease.publishAt || deletedRelease.metadata.intendedPublishAt,
       isDeleted: true,
     }))
 
@@ -126,6 +128,7 @@ export function ReleasesOverview() {
       ...deletedTableReleases,
       ...releases.map((release) => ({
         ...release,
+        publishAt: release.publishAt || release.metadata.intendedPublishAt,
         documentsMetadata: releasesMetadata[release._id] || {},
       })),
     ]
@@ -134,9 +137,7 @@ export function ReleasesOverview() {
   const groupedReleases = useMemo(
     () =>
       tableReleases.reduce<{open: TableRelease[]; archived: TableRelease[]}>((groups, release) => {
-        const isReleaseArchived =
-          release.archivedAt ||
-          (release.publishedAt && isBefore(new Date(release.publishedAt), new Date()))
+        const isReleaseArchived = release.state === 'archived' || release.state === 'published'
         const group = isReleaseArchived ? 'archived' : 'open'
 
         return {
@@ -261,7 +262,7 @@ export function ReleasesOverview() {
 
     if (release.isDeleted) return null
 
-    return <ReleaseMenuButton bundle={release} />
+    return <ReleaseMenuButton release={release} />
   }, [])
 
   const filteredReleases = useMemo(() => {
@@ -270,9 +271,9 @@ export function ReleasesOverview() {
     const [startOfDayUTC, endOfDayUTC] = getTimezoneAdjustedDateTimeRange(releaseFilterDate)
 
     return tableReleases.filter((release) => {
-      if (!release.publishedAt || release.releaseType !== 'scheduled') return false
+      if (!release.publishAt || release.metadata.releaseType !== 'scheduled') return false
 
-      const publishDateUTC = new Date(release.publishedAt)
+      const publishDateUTC = new Date(release.publishAt)
       return publishDateUTC >= startOfDayUTC && publishDateUTC <= endOfDayUTC
     })
   }, [releaseGroupMode, groupedReleases, releaseFilterDate, tableReleases])

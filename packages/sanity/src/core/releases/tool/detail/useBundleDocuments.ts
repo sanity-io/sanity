@@ -5,9 +5,9 @@ import {useObservable} from 'react-rx'
 import {combineLatest} from 'rxjs'
 import {filter, map, startWith, switchAll} from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
-import {getPreviewValueWithFallback, prepareForPreview} from 'sanity'
 
 import {useSchema} from '../../../hooks'
+import {getPreviewValueWithFallback, prepareForPreview} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store'
 import {useSource} from '../../../studio'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
@@ -23,11 +23,11 @@ export interface DocumentInBundleResult {
   previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
 }
 
-export function useBundleDocuments(bundle: string): {
+export function useBundleDocuments(release: string): {
   loading: boolean
   results: DocumentInBundleResult[]
 } {
-  const groqFilter = `_id in path("versions.${bundle}.*")`
+  const groqFilter = `_id in path("versions.${release}.*")`
   const documentPreviewStore = useDocumentPreviewStore()
   const {getClient, i18n} = useSource()
   const schema = useSchema()
@@ -69,7 +69,7 @@ export function useBundleDocuments(bundle: string): {
                   getPreviewValueWithFallback({
                     value: document,
                     version: version.snapshot,
-                    perspective: `bundle.${bundle}`,
+                    perspective: `release.${release}`,
                   }),
                   schemaType,
                 ),
@@ -91,7 +91,7 @@ export function useBundleDocuments(bundle: string): {
       }),
       map((results) => ({loading: false, results})),
     )
-  }, [documentPreviewStore, getClient, groqFilter, i18n, schema, bundle])
+  }, [documentPreviewStore, getClient, groqFilter, i18n, schema, release])
 
   return useObservable(observable, {loading: true, results: []})
 }
