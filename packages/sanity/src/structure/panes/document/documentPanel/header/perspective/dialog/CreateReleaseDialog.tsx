@@ -12,7 +12,6 @@ import {
   ReleaseForm,
   useReleaseOperations,
   useSchema,
-  useVersionOperations,
 } from 'sanity'
 
 import {Dialog} from '../../../../../../../ui-components'
@@ -23,8 +22,9 @@ export function CreateReleaseDialog(props: {
   documentType: string
   tone: BadgeTone
   title: string
+  onCreateVersion: (releaseId: string) => void
 }): JSX.Element {
-  const {onClose, documentId, documentType, tone, title} = props
+  const {onClose, documentId, documentType, tone, title, onCreateVersion} = props
   const toast = useToast()
 
   const schema = useSchema()
@@ -52,11 +52,9 @@ export function CreateReleaseDialog(props: {
     setValue(changedValue)
   }, [])
 
-  const {createVersion} = useVersionOperations(documentId, documentType)
-
   const handleAddVersion = useCallback(async () => {
-    createVersion(newReleaseId)
-  }, [createVersion, newReleaseId])
+    onCreateVersion(newReleaseId)
+  }, [onCreateVersion, newReleaseId])
 
   const handleCreateRelease = useCallback(async () => {
     try {

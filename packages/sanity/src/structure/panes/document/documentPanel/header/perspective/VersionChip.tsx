@@ -167,10 +167,7 @@ export const VersionChip = memo(function VersionChip(props: {
             onDiscard={openDiscardDialog}
             onCreateRelease={openCreateReleaseDialog}
             disabled={contextMenuDisabled}
-            onCreateVersion={(targetId: string) => {
-              handleAddVersion(targetId)
-              close()
-            }}
+            onCreateVersion={handleAddVersion}
           />
         }
         fallbackPlacements={[]}
@@ -193,6 +190,7 @@ export const VersionChip = memo(function VersionChip(props: {
       {isCreateReleaseDialogOpen && (
         <CreateReleaseDialog
           onClose={() => setIsCreateReleaseDialogOpen(false)}
+          onCreateVersion={handleAddVersion}
           documentId={isVersion ? getVersionId(documentId, menuReleaseId) : documentId}
           documentType={documentType}
           tone={tone}
