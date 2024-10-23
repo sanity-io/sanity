@@ -162,7 +162,9 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
                   <Translate
                     t={t}
                     i18nKey="release.chip.tooltip.intended-for-date"
-                    values={{date: dateTimeFormat.format(new Date(release.metadata.intendedPublishAt))}}
+                    values={{
+                      date: dateTimeFormat.format(new Date(release.metadata.intendedPublishAt)),
+                    }}
                   />
                 ) : (
                   t('release.chip.tooltip.unknown-date')

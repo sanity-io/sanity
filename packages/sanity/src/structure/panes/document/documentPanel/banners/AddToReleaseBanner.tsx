@@ -1,9 +1,15 @@
 import {Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
-import {getReleaseTone, LATEST, Translate, useTranslation, useVersionOperations} from 'sanity'
+import {
+  type CurrentPerspective,
+  getReleaseTone,
+  LATEST,
+  Translate,
+  useTranslation,
+  useVersionOperations,
+} from 'sanity'
 import {structureLocaleNamespace} from 'sanity/structure'
 
-import {type CurrentPerspective} from '../../../../../core/releases'
 import {Button} from '../../../../../ui-components'
 import {Banner} from './Banner'
 

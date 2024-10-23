@@ -4,6 +4,9 @@ import {type ReleaseType, useReleases} from '../../store/release'
 import {type ReleaseDocument} from '../../store/release/types'
 import {LATEST} from '../util/const'
 
+/**
+ * @internal
+ */
 export type CurrentPerspective = Omit<Partial<ReleaseDocument>, 'metadata'> & {
   metadata: {title: string; releaseType?: ReleaseType}
 }
