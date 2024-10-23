@@ -19,72 +19,75 @@ import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 
 type Mode = 'open' | 'archived'
 
-export interface TableBundle extends ReleaseDocument {
+export interface TableRelease extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
   isDeleted?: boolean
 }
 
-const EMPTY_BUNDLE_GROUPS = {open: [], archived: []}
+const EMPTY_RELEASE_GROUPS = {open: [], archived: []}
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: '_createdAt', direction: 'desc'}
 
-const getRowProps: TableProps<TableBundle, undefined>['rowProps'] = (datum) =>
+const getRowProps: TableProps<TableRelease, undefined>['rowProps'] = (datum) =>
   datum.isDeleted ? {tone: 'transparent'} : {}
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases, deletedReleases} = useReleases()
-  const [bundleGroupMode, setBundleGroupMode] = useState<Mode>('open')
-  const [isCreateBundleDialogOpen, setIsCreateBundleDialogOpen] = useState(false)
-  const bundleIds = useMemo(() => releases.map((bundle) => bundle._id), [releases])
-  const {data: bundlesMetadata, loading: loadingBundlesMetadata} = useReleasesMetadata(bundleIds)
-  const loading = loadingReleases || (loadingBundlesMetadata && !bundlesMetadata)
-  const loadingTableData = loading || (!bundlesMetadata && Boolean(bundleIds.length))
+  const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>('open')
+  const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+  const releaseIds = useMemo(() => releases.map((release) => release._id), [releases])
+  const {data: releasesMetadata, loading: loadingReleasesMetadata} = useReleasesMetadata(releaseIds)
+  const loading = loadingReleases || (loadingReleasesMetadata && !releasesMetadata)
+  const loadingTableData = loading || (!releasesMetadata && Boolean(releaseIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
   const hasReleases = releases.length > 0
-  const loadingOrHasBundles = loading || hasReleases
+  const loadingOrHasReleases = loading || hasReleases
 
-  const tableBundles = useMemo<TableBundle[]>(() => {
-    const deletedTableBundles = Object.values(deletedReleases).map((deletedBundle) => ({
-      ...deletedBundle,
+  const tableReleases = useMemo<TableRelease[]>(() => {
+    const deletedTableReleases = Object.values(deletedReleases).map((deletedRelease) => ({
+      ...deletedRelease,
       isDeleted: true,
     }))
 
-    if (!bundlesMetadata) return deletedTableBundles
+    if (!hasReleases || !releasesMetadata) return deletedTableReleases
 
     return [
-      ...deletedTableBundles,
-      ...releases.map((bundle) => ({
-        ...bundle,
-        documentsMetadata: bundlesMetadata[bundle._id] || {},
+      ...deletedTableReleases,
+      ...releases.map((release) => ({
+        ...release,
+        documentsMetadata: releasesMetadata[release._id] || {},
       })),
     ]
-  }, [releases, bundlesMetadata, deletedReleases])
+  }, [deletedReleases, hasReleases, releasesMetadata, releases])
 
-  const groupedBundles = useMemo(
+  const groupedReleases = useMemo(
     () =>
-      tableBundles.reduce<{open: TableBundle[]; archived: TableBundle[]}>((groups, bundle) => {
-        const isBundleArchived =
-          bundle.archivedAt ||
-          (bundle.publishedAt && isBefore(new Date(bundle.publishedAt), new Date()))
-        const group = isBundleArchived ? 'archived' : 'open'
+      tableReleases.reduce<{open: TableRelease[]; archived: TableRelease[]}>(
+        (groups, tableRelease) => {
+          const isReleaseArchived =
+            tableRelease.archivedAt ||
+            (tableRelease.publishedAt && isBefore(new Date(tableRelease.publishedAt), new Date()))
+          const group = isReleaseArchived ? 'archived' : 'open'
 
-        return {...groups, [group]: [...groups[group], bundle]}
-      }, EMPTY_BUNDLE_GROUPS) || EMPTY_BUNDLE_GROUPS,
-    [tableBundles],
+          return {...groups, [group]: [...groups[group], tableRelease]}
+        },
+        EMPTY_RELEASE_GROUPS,
+      ) || EMPTY_RELEASE_GROUPS,
+    [tableReleases],
   )
 
   // switch to open mode if on archived mode and there are no archived releases
   useEffect(() => {
-    if (bundleGroupMode === 'archived' && !groupedBundles.archived.length) {
-      setBundleGroupMode('open')
+    if (releaseGroupMode === 'archived' && !groupedReleases.archived.length) {
+      setReleaseGroupMode('open')
     }
-  }, [bundleGroupMode, groupedBundles.archived.length])
+  }, [releaseGroupMode, groupedReleases.archived.length])
 
-  const handleBundleGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
+  const handleReleaseModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
-      setBundleGroupMode(groupMode as Mode)
+      setReleaseGroupMode(groupMode as Mode)
     },
     [],
   )
@@ -99,31 +102,31 @@ export function ReleasesOverview() {
       <Flex flex="none" gap={1}>
         <Button
           {...groupModeButtonBaseProps}
-          onClick={handleBundleGroupModeChange}
-          selected={bundleGroupMode === 'open'}
+          onClick={handleReleaseModeChange}
+          selected={releaseGroupMode === 'open'}
           text={t('action.open')}
           value="open"
         />
         {/* StudioButton supports tooltip when button is disabled */}
         <StudioButton
           {...groupModeButtonBaseProps}
-          disabled={groupModeButtonBaseProps.disabled || !groupedBundles.archived.length}
+          disabled={groupModeButtonBaseProps.disabled || !groupedReleases.archived.length}
           tooltipProps={{
-            disabled: groupedBundles.archived.length !== 0,
+            disabled: groupedReleases.archived.length !== 0,
             content: t('no-archived-release'),
             placement: 'bottom',
           }}
-          onClick={handleBundleGroupModeChange}
-          selected={bundleGroupMode === 'archived'}
+          onClick={handleReleaseModeChange}
+          selected={releaseGroupMode === 'archived'}
           text={t('action.archived')}
           value="archived"
         />
       </Flex>
     )
   }, [
-    bundleGroupMode,
-    groupedBundles.archived.length,
-    handleBundleGroupModeChange,
+    releaseGroupMode,
+    groupedReleases.archived.length,
+    handleReleaseModeChange,
     hasReleases,
     loading,
     t,
@@ -133,41 +136,41 @@ export function ReleasesOverview() {
     () => (
       <Button
         icon={AddIcon}
-        disabled={isCreateBundleDialogOpen}
-        onClick={() => setIsCreateBundleDialogOpen(true)}
+        disabled={isCreateReleaseDialogOpen}
+        onClick={() => setIsCreateReleaseDialogOpen(true)}
         text={tCore('release.action.create')}
       />
     ),
-    [isCreateBundleDialogOpen, tCore],
+    [isCreateReleaseDialogOpen, tCore],
   )
 
-  const renderCreateBundleDialog = () => {
-    if (!isCreateBundleDialogOpen) return null
+  const renderCreateReleaseDialog = () => {
+    if (!isCreateReleaseDialogOpen) return null
 
     return (
       <ReleaseDetailsDialog
-        onCancel={() => setIsCreateBundleDialogOpen(false)}
-        onSubmit={() => setIsCreateBundleDialogOpen(false)}
+        onCancel={() => setIsCreateReleaseDialogOpen(false)}
+        onSubmit={() => setIsCreateReleaseDialogOpen(false)}
         origin="release-plugin"
       />
     )
   }
 
-  const applySearchTermToBundles = useCallback(
-    (unfilteredData: TableBundle[], tableSearchTerm: string) => {
-      return unfilteredData.filter((bundle) => {
-        return bundle.title.toLocaleLowerCase().includes(tableSearchTerm.toLocaleLowerCase())
+  const applySearchTermToReleases = useCallback(
+    (unfilteredData: TableRelease[], tableSearchTerm: string) => {
+      return unfilteredData.filter((release) => {
+        return release.title.toLocaleLowerCase().includes(tableSearchTerm.toLocaleLowerCase())
       })
     },
     [],
   )
 
-  const renderRowActions = useCallback(({datum}: {datum: TableBundle | unknown}) => {
-    const bundle = datum as TableBundle
+  const renderRowActions = useCallback(({datum}: {datum: TableRelease | unknown}) => {
+    const release = datum as TableRelease
 
-    if (bundle.isDeleted) return null
+    if (release.isDeleted) return null
 
-    return <ReleaseMenuButton bundle={bundle} />
+    return <ReleaseMenuButton bundle={release} />
   }, [])
 
   return (
@@ -190,20 +193,20 @@ export function ReleasesOverview() {
                 </Container>
               )}
             </Stack>
-            {loadingOrHasBundles && currentArchivedPicker}
+            {loadingOrHasReleases && currentArchivedPicker}
           </Flex>
-          {loadingOrHasBundles && createReleaseButton}
+          {loadingOrHasReleases && createReleaseButton}
         </Flex>
       </Container>
       {(hasReleases || loadingTableData) && (
-        <Table<TableBundle>
+        <Table<TableRelease>
           // for resetting filter and sort on table when mode changed
-          key={bundleGroupMode}
+          key={releaseGroupMode}
           defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
           loading={loadingTableData}
-          data={groupedBundles[bundleGroupMode]}
+          data={groupedReleases[releaseGroupMode]}
           columnDefs={releasesOverviewColumnDefs(t)}
-          searchFilter={applySearchTermToBundles}
+          searchFilter={applySearchTermToReleases}
           emptyState={t('no-releases')}
           // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
           rowId="_id"
@@ -212,7 +215,7 @@ export function ReleasesOverview() {
           scrollContainerRef={scrollContainerRef}
         />
       )}
-      {renderCreateBundleDialog()}
+      {renderCreateReleaseDialog()}
     </Flex>
   )
 }

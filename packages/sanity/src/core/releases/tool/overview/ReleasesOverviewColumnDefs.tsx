@@ -9,9 +9,9 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {type TableRowProps} from '../components/Table/Table'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
-import {type TableBundle} from './ReleasesOverview'
+import {type TableRelease} from './ReleasesOverview'
 
-const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}) => {
+const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: bundle}) => {
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -54,7 +54,7 @@ const ReleaseNameCell: Column<TableBundle>['cell'] = ({cellProps, datum: bundle}
 
 export const releasesOverviewColumnDefs: (
   t: TFunction<'releases', undefined>,
-) => Column<TableBundle>[] = (t) => {
+) => Column<TableRelease>[] = (t) => {
   return [
     {
       id: 'search',
