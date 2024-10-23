@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import {type PackageJson} from '@sanity/cli'
+import {type PackageJson} from '../../types'
 
 /**
  * Read the `package.json` file at the given path
