@@ -19,22 +19,16 @@ vi.mock('sanity', async (importOriginal) => {
     useDateTimeFormat: vi.fn(),
     ReleaseAvatar: () => <div>ReleaseAvatar</div>,
     getReleaseTone: vi.fn(),
-    /**
-     * @todo
-     * is there no better way of mocking this?? */
-    useTranslation: vi.fn().mockReturnValue({
-      t: vi.fn().mockImplementation((key: string) => {
-        const translations: Record<string, string> = {
-          'release.action.discard-version': 'Discard version',
-          'release.action.copy-to': 'Copy version to',
-          'release.action.new-release': 'New release',
-          'release.action.view-release': 'View release',
-        }
-        return translations[key]
-      }),
-    }),
   }
 })
+
+/**
+ * @todo change this once improvements have been done to test mocking
+ * there is currently some limitations with importing translations
+ * in order to make sure that the translations work on tests,
+ * you need to mock it from the relative path vs doing it in the main mock
+ */
+vi.mock('../../../../../../../core/i18n/hooks/useTranslation')
 
 vi.mock('sanity/router', () => ({
   IntentLink: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
@@ -91,7 +85,7 @@ describe('VersionContextMenu', () => {
     expect(screen.getByText('Copy version to')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Copy version to'))
     await waitFor(() => {
-      expect(screen.getByText('New release')).toBeInTheDocument()
+      expect(screen.getByText('New Release')).toBeInTheDocument()
       expect(screen.getByText('Release 1')).toBeInTheDocument()
       expect(screen.getByText('Release 2')).toBeInTheDocument()
     })
@@ -104,7 +98,7 @@ describe('VersionContextMenu', () => {
 
     fireEvent.click(screen.getByText('Copy version to'))
     await waitFor(() => {
-      fireEvent.click(screen.getByText('New release'))
+      fireEvent.click(screen.getByText('New Release'))
     })
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
@@ -143,7 +137,7 @@ describe('VersionContextMenu', () => {
 
     fireEvent.click(screen.getByText('Copy version to'))
     await waitFor(() => {
-      fireEvent.click(screen.getByText('New release'))
+      fireEvent.click(screen.getByText('New Release'))
     })
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
