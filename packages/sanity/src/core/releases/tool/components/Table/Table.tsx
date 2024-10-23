@@ -16,7 +16,6 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components'
@@ -54,17 +53,6 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   hideTableInlinePadding?: boolean
 }
 
-const CustomCard = styled(Card)`
-  display: flex;
-  max-width: 1200px;
-  margin: 0 auto;
-  ::before {
-    content: '';
-    display: block;
-    border: 1px solid red;
-    position: absolute;
-  }
-`
 const ITEM_HEIGHT = 59
 
 /**
