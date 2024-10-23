@@ -10,11 +10,10 @@ export const CreateLearnMoreButton = forwardRef(function CreateLearnMoreButton(
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const {t} = useTranslation(createLocaleNamespace)
-  // TODO - add tracking suffix to url
   return (
     <Button
       as={'a'}
-      href={'https://www.sanity.io/docs/create'}
+      href={'https://www.sanity.io/docs/create?ref=studio'}
       target="_blank"
       ref={ref}
       text={t('start-in-create-dialog.cta.learn-more')}
