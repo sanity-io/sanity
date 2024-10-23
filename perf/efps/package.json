@@ -15,7 +15,7 @@
     "test": "npm start"
   },
   "devDependencies": {
-    "@sanity/client": "^6.22.1",
+    "@sanity/client": "^6.22.2",
     "@swc-node/register": "^1.10.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

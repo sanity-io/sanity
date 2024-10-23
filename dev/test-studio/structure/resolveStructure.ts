@@ -411,6 +411,17 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
 
       S.divider(),
 
+      S.listItem()
+        .title('Default ordering test')
+        .id('default-ordering')
+        .child(() =>
+          S.documentTypeList('species')
+            .defaultOrdering([{field: 'species', direction: 'asc'}])
+            .title('Species')
+            .id('default-ordering-list')
+            .filter('_type == $type'),
+        ),
+
       ...S.documentTypeListItems()
         .filter((listItem) => {
           const id = listItem.getId()
