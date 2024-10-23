@@ -3,12 +3,12 @@ import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, use
 import {
   DiscardVersionDialog,
   getVersionId,
+  ReleaseAvatar,
   type ReleaseDocument,
   useVersionOperations,
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {ReleaseAvatar} from '../../../../../../core/releases/components/ReleaseAvatar'
 import {Button, Popover, Tooltip} from '../../../../../../ui-components'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CreateReleaseDialog} from './dialog/CreateReleaseDialog'
