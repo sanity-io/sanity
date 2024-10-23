@@ -14,12 +14,11 @@ import {
 } from 'react'
 import {useTranslation} from 'sanity'
 
-import {TOOL_HEADER_HEIGHT} from '../../../../core/scheduledPublishing/constants'
 import useTimeZone from '../../../../core/scheduledPublishing/hooks/useTimeZone'
 import {Button, TooltipDelayGroupProvider} from '../../..'
+import {ARROW_KEYS, DEFAULT_MONTH_NAMES} from '../../DateInputs/calendar/constants'
 import {type CalendarDayProps} from './CalendarDay'
 import {CalendarMonth} from './CalendarMonth'
-import {ARROW_KEYS, MONTH_NAMES} from './constants'
 
 export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   focusedDate?: Date
@@ -171,14 +170,14 @@ export const CalendarFilter = forwardRef(function Calendar(
         paddingLeft={4}
         style={{
           borderBottom: '1px solid var(--card-border-color)',
-          minHeight: `${TOOL_HEADER_HEIGHT}px`,
+          minHeight: `55px`,
           position: 'sticky',
           top: 0,
         }}
       >
         <Flex align="center" flex={1} justify="space-between">
           <Text weight="medium" size={1}>
-            {MONTH_NAMES[focusedDate?.getMonth()]} {focusedDate?.getFullYear()}
+            {DEFAULT_MONTH_NAMES[focusedDate?.getMonth()]} {focusedDate?.getFullYear()}
           </Text>
           <Flex paddingRight={3} gap={2}>
             <TooltipDelayGroupProvider>

@@ -2,10 +2,10 @@ import {Box, Card, Grid, Label} from '@sanity/ui'
 import {isSameDay, isSameMonth} from 'date-fns'
 
 import useTimeZone from '../../../../core/scheduledPublishing/hooks/useTimeZone'
+import {DEFAULT_WEEK_DAY_NAMES} from '../../DateInputs/calendar/constants'
+import {useWeeksOfMonth} from '../../DateInputs/calendar/utils'
 import {CalendarDay as DefaultCalendarDay} from './CalendarDay'
 import {type CalendarProps} from './CalendarFilter'
-import {WEEK_DAY_NAMES} from './constants'
-import {getWeeksOfMonth} from './utils'
 
 interface CalendarMonthProps {
   date: Date
@@ -17,11 +17,13 @@ interface CalendarMonthProps {
 }
 
 export function CalendarMonth(props: CalendarMonthProps) {
+  const {date, renderCalendarDay, hidden} = props
   const {getCurrentZoneDate} = useTimeZone()
-  const CalendarDay = props.renderCalendarDay || DefaultCalendarDay
+  const CalendarDay = renderCalendarDay || DefaultCalendarDay
+  const weeksOfMonth = useWeeksOfMonth(date)
 
   return (
-    <Box aria-hidden={props.hidden || false} data-ui="CalendarMonth">
+    <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
       <Grid
         style={{
           gridGap: '1px',
@@ -29,33 +31,24 @@ export function CalendarMonth(props: CalendarMonthProps) {
         }}
       >
         {/* Header */}
-        {WEEK_DAY_NAMES.map((weekday) => {
-          // Convert day name string into date.
-          // `eee` assumes days are in the format 'Mon', 'Tues' etc.
-          // const date = parse(weekday, 'eee', new Date())
-          return (
-            <Card
-              key={weekday}
-              paddingY={3}
-              // tone={isWeekend(date) ? 'transparent' : 'default'}
-            >
-              <Label size={1} style={{textAlign: 'center'}}>
-                {weekday.slice(0, 1)}
-              </Label>
-            </Card>
-          )
-        })}
+        {DEFAULT_WEEK_DAY_NAMES.map((weekday) => (
+          <Card key={weekday} paddingY={3}>
+            <Label size={1} style={{textAlign: 'center'}}>
+              {weekday.slice(0, 1)}
+            </Label>
+          </Card>
+        ))}
 
-        {getWeeksOfMonth(props.date).map((week, weekIdx) =>
-          week.days.map((date, dayIdx) => {
-            const focused = props.focused && isSameDay(date, props.focused)
-            const selected = props.selected && isSameDay(date, props.selected)
-            const isToday = isSameDay(date, getCurrentZoneDate())
-            const isCurrentMonth = isSameMonth(date, props.focused || props.date)
+        {weeksOfMonth.map((week, weekIdx) =>
+          week.days.map((dayDate, dayIdx) => {
+            const focused = props.focused && isSameDay(dayDate, props.focused)
+            const selected = props.selected && isSameDay(dayDate, props.selected)
+            const isToday = isSameDay(dayDate, getCurrentZoneDate())
+            const isCurrentMonth = isSameMonth(dayDate, props.focused || date)
 
             return (
               <CalendarDay
-                date={date}
+                date={dayDate}
                 focused={focused}
                 isCurrentMonth={isCurrentMonth}
                 isToday={isToday}

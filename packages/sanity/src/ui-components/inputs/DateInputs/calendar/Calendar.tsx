@@ -15,7 +15,6 @@ import {
   useRef,
 } from 'react'
 
-import {TOOL_HEADER_HEIGHT} from '../../../../core/scheduledPublishing/constants'
 import {Button} from '../../../button'
 import {TooltipDelayGroupProvider} from '../../../tooltipDelayGroupProvider'
 import {CalendarMonth} from './CalendarMonth'
@@ -206,7 +205,7 @@ export const Calendar = forwardRef(function Calendar(
           paddingLeft={4}
           style={{
             borderBottom: '1px solid var(--card-border-color)',
-            minHeight: `${TOOL_HEADER_HEIGHT}px`,
+            minHeight: `55px`,
             position: 'sticky',
             top: 0,
           }}
