@@ -13,9 +13,8 @@ import {
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleasesOverview} from '../ReleasesOverview'
 
-vi.mock('sanity', async (importOriginal) => {
+vi.mock('sanity', () => {
   return {
-    // ...(await importOriginal()),
     SANITY_VERSION: '0.0.0',
     Translate: vi.fn(),
     useCurrentUser: vi.fn().mockReturnValue({user: {id: 'user-id'}}),

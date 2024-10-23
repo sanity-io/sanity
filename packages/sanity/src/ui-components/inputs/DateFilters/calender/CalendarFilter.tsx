@@ -116,7 +116,6 @@ export const CalendarFilter = forwardRef(function Calendar(
         focusCurrentWeekDay()
         return
       }
-
       if (event.key === 'ArrowUp') {
         onFocusedDateChange(zoneDateToUtc(addDays(focusedDate, -7)))
       }

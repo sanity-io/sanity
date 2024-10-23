@@ -49,7 +49,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
 // the calendar grid between re-renders
 const PRESERVE_FOCUS_ELEMENT = (
   <span
-    // data-preserve-focus
+    data-preserve-focus
     style={{overflow: 'hidden', position: 'absolute', outline: 'none'}}
     tabIndex={-1}
   />
@@ -92,7 +92,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const moveFocusedDate = useCallback(
-    (by: number) => setFocusedDate(addMonths(focusedDate || new Date(), by)),
+    (by: number) => setFocusedDate(addMonths(focusedDate, by)),
     [focusedDate, setFocusedDate],
   )
 
@@ -103,8 +103,7 @@ export const Calendar = forwardRef(function Calendar(
 
   const handleDateChange = useCallback(
     (date: Date) => {
-      const useTheDate = selectedDate || new Date()
-      onSelect(setMinutes(setHours(date, useTheDate.getHours()), useTheDate.getMinutes()))
+      onSelect(setMinutes(setHours(date, selectedDate.getHours()), selectedDate.getMinutes()))
     },
     [onSelect, selectedDate],
   )
@@ -297,7 +296,7 @@ export const Calendar = forwardRef(function Calendar(
         >
           <CalendarMonth
             weekDayNames={labels.weekDayNamesShort}
-            date={focusedDate || new Date()}
+            date={focusedDate}
             focused={focusedDate}
             onSelect={handleDateChange}
             selected={selectedDate}
