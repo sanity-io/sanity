@@ -41,7 +41,9 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
     (release) => release.metadata.releaseType === 'asap',
   )
 
-  const scheduledReleases = documentVersions?.filter((release) => release.state === 'scheduled')
+  const scheduledReleases = documentVersions?.filter(
+    (release) => release.metadata.releaseType === 'scheduled',
+  )
   const undecidedReleases = documentVersions?.filter(
     (release) => release.metadata.releaseType === 'undecided',
   )
