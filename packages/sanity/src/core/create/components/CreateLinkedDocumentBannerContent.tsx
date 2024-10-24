@@ -96,9 +96,8 @@ export function CreateLinkedDocumentBannerContent(props: CreateLinkedDocumentBan
           icon={InfoOutlineIcon}
           mode="bleed"
           onClick={toggleOpen}
-          tooltipProps={{
-            content: t('create-link-info.tooltip'),
-          }}
+          style={{marginBottom: '-1em', marginTop: '-1em'}}
+          tooltipProps={{content: t('create-link-info.tooltip')}}
         />
       </Popover>
     </Flex>
