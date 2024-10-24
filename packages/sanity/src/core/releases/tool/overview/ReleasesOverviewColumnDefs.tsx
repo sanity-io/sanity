@@ -11,6 +11,7 @@ import {Translate, useTranslation} from '../../../i18n'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {type TableRowProps} from '../components/Table/Table'
 import {Headers} from '../components/Table/TableHeader'
@@ -60,7 +61,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
     : {
         as: 'a',
         // navigate to release detail
-        onClick: () => router.navigate({releaseId: release._id}),
+        onClick: () => router.navigate({releaseId: getBundleIdFromReleaseId(release._id)}),
         tone: 'inherit',
       }
 

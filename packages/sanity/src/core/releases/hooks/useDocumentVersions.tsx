@@ -4,7 +4,8 @@ import {map, of} from 'rxjs'
 import {catchError, scan} from 'rxjs/operators'
 
 import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../store'
-import {getPublishedId, getReleasefromId, getVersionFromId} from '../../util/draftUtils'
+import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
+import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 
 export interface DocumentPerspectiveProps {
   documentId: string
@@ -45,7 +46,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
           return documentIds.flatMap((id) => {
             const matchingBundle = releases?.find(
               // eslint-disable-next-line max-nested-callbacks
-              (release) => getVersionFromId(id) === getReleasefromId(release._id),
+              (release) => getVersionFromId(id) === getBundleIdFromReleaseId(release._id),
             )
             return matchingBundle || []
           })

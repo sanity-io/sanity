@@ -3,6 +3,7 @@ import {useRouter} from 'sanity/router'
 import {type ReleaseType, useReleases} from '../../store/release'
 import {type ReleaseDocument} from '../../store/release/types'
 import {LATEST} from '../util/const'
+import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 
 /**
  * @internal
@@ -37,13 +38,16 @@ export function usePerspective(selectedPerspective?: string): PerspectiveValue {
     } else if (releaseId === 'published') {
       router.navigateStickyParam('perspective', 'published')
     } else {
-      router.navigateStickyParam('perspective', `release.${releaseId}`)
+      router.navigateStickyParam('perspective', `bundle.${releaseId}`)
     }
   }
 
   const selectedBundle =
     perspective && releases
-      ? releases.find((release: ReleaseDocument) => `release.${release._id}` === perspective)
+      ? releases.find(
+          (release: ReleaseDocument) =>
+            `bundle.${getBundleIdFromReleaseId(release._id)}` === perspective,
+        )
       : LATEST
 
   // TODO: Improve naming; this may not be global.

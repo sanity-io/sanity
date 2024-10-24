@@ -18,6 +18,7 @@ import {type ReleaseDocument} from '../../../store'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {usePerspective} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 
@@ -32,7 +33,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
     if (_id === currentGlobalBundle._id) {
       setPerspective('drafts')
     } else {
-      setPerspective(_id)
+      setPerspective(getBundleIdFromReleaseId(_id))
     }
   }, [_id, currentGlobalBundle._id, setPerspective])
 

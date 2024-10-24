@@ -19,12 +19,10 @@ export const DRAFTS_FOLDER = 'drafts'
 export const VERSION_FOLDER = 'versions'
 
 /** @internal */
-export const RELEASE_FOLDER = 'system-tmp-releases'
 
 const PATH_SEPARATOR = '.'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
 const VERSION_PREFIX = `${VERSION_FOLDER}${PATH_SEPARATOR}`
-const RELEASE_PREFIX = `${RELEASE_FOLDER}${PATH_SEPARATOR}`
 
 /**
  *
@@ -129,14 +127,6 @@ export function getVersionFromId(id: string): string | undefined {
   const [_versionPrefix, versionId, ..._publishedId] = id.split(PATH_SEPARATOR)
 
   return versionId
-}
-
-/**
- * @internal
- * Given a releaseId, give the release id without the system prefix
- */
-export function getReleasefromId(releaseId: string): string {
-  return releaseId.replace(RELEASE_PREFIX, '')
 }
 
 /** @internal */
