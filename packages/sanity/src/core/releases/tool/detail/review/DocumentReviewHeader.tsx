@@ -16,7 +16,7 @@ export function DocumentReviewHeader({
   document,
   isLoading,
   history,
-  releaseSlug,
+  releaseId,
   validation,
   isExpanded,
   toggleIsExpanded,
@@ -24,7 +24,7 @@ export function DocumentReviewHeader({
   document: SanityDocument
   previewValues: PreviewValue
   isLoading: boolean
-  releaseSlug: string
+  releaseId: string
   validation?: DocumentValidationStatus
   isExpanded: boolean
   toggleIsExpanded: () => void
@@ -52,7 +52,7 @@ export function DocumentReviewHeader({
           <ReleaseDocumentPreview
             documentId={document._id}
             documentTypeName={document._type}
-            releaseSlug={releaseSlug}
+            releaseId={releaseId}
             previewValues={previewValues}
             isLoading={isLoading}
             hasValidationError={validation?.hasError}
