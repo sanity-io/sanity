@@ -165,6 +165,12 @@ export const client = createClient({
 })
 `
 
+const live = `import { defineLive } from "next-sanity";
+import { client } from './client'
+
+export const { sanityFetch, SanityLive } = defineLive({ client });
+`
+
 const imageTS = `import createImageUrlBuilder from '@sanity/image-url'
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
@@ -201,6 +207,7 @@ export const sanityFolder = (
     'env.': useTypeScript ? envTS : envJS,
     'lib': {
       'client.': client,
+      'live.': live,
       'image.': useTypeScript ? imageTS : imageJS,
     },
   }
