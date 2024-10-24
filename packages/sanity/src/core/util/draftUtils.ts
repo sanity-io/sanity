@@ -18,8 +18,6 @@ export const DRAFTS_FOLDER = 'drafts'
 /** @internal */
 export const VERSION_FOLDER = 'versions'
 
-/** @internal */
-
 const PATH_SEPARATOR = '.'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
 const VERSION_PREFIX = `${VERSION_FOLDER}${PATH_SEPARATOR}`
@@ -132,8 +130,8 @@ export function getVersionFromId(id: string): string | undefined {
 /** @internal */
 export function getPublishedId(id: string): PublishedId {
   if (isVersionId(id)) {
-    // make sure to only remove the versions prefix, release prefix and the bundle name
-    return id.split(PATH_SEPARATOR).slice(3).join(PATH_SEPARATOR) as PublishedId as PublishedId
+    // make sure to only remove the versions prefix and the bundle name
+    return id.split(PATH_SEPARATOR).slice(2).join(PATH_SEPARATOR) as PublishedId as PublishedId
   }
 
   if (isDraftId(id)) {

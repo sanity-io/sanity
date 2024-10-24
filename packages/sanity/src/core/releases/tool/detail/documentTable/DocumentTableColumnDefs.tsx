@@ -14,23 +14,23 @@ import {type DocumentInBundleResult} from '../useBundleDocuments'
 const MemoReleaseDocumentPreview = memo(
   function MemoReleaseDocumentPreview({
     item,
-    releaseSlug,
+    releaseId,
   }: {
     item: DocumentInBundleResult
-    releaseSlug: string
+    releaseId: string
   }) {
     return (
       <ReleaseDocumentPreview
         documentId={item.document._id}
         documentTypeName={item.document._type}
-        releaseSlug={releaseSlug}
+        releaseId={releaseId}
         previewValues={item.previewValues.values}
         isLoading={item.previewValues.isLoading}
         hasValidationError={item.validation?.hasError}
       />
     )
   },
-  (prev, next) => prev.item.memoKey === next.item.memoKey && prev.releaseSlug === next.releaseSlug,
+  (prev, next) => prev.item.memoKey === next.item.memoKey && prev.releaseId === next.releaseId,
 )
 
 const MemoDocumentType = memo(
@@ -45,7 +45,7 @@ const MemoDocumentType = memo(
 export const getDocumentTableColumnDefs: (
   releaseId: string,
   t: TFunction<'releases', undefined>,
-) => Column<BundleDocumentRow>[] = (releaseSlug, t) => [
+) => Column<BundleDocumentRow>[] = (releaseId, t) => [
   {
     id: 'action',
     width: 100,
@@ -96,7 +96,7 @@ export const getDocumentTableColumnDefs: (
     ),
     cell: ({cellProps, datum}) => (
       <Box {...cellProps} flex={1} padding={1}>
-        <MemoReleaseDocumentPreview item={datum} releaseSlug={releaseSlug} />
+        <MemoReleaseDocumentPreview item={datum} releaseId={releaseId} />
       </Box>
     ),
   },

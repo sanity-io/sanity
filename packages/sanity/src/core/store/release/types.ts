@@ -4,7 +4,7 @@ import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type PartialExcept} from '../../util'
-import {type RELEASE_DOCUMENT_TYPE} from './constants'
+import {RELEASE_DOCUMENT_TYPE} from './constants'
 import {type MetadataWrapper} from './createReleaseMetadataAggregator'
 import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
 
@@ -71,7 +71,9 @@ export type EditableReleaseDocument = Omit<
  * @internal
  */
 export function isReleaseDocument(doc: unknown): doc is ReleaseDocument {
-  return typeof doc === 'object' && doc !== null && '_type' in doc && doc._type === 'release'
+  return (
+    typeof doc === 'object' && doc !== null && '_type' in doc && doc._type === RELEASE_DOCUMENT_TYPE
+  )
 }
 
 /**
