@@ -18,9 +18,13 @@ export const DRAFTS_FOLDER = 'drafts'
 /** @internal */
 export const VERSION_FOLDER = 'versions'
 
+/** @internal */
+export const RELEASE_FOLDER = 'system-tmp-releases'
+
 const PATH_SEPARATOR = '.'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
 const VERSION_PREFIX = `${VERSION_FOLDER}${PATH_SEPARATOR}`
+const RELEASE_PREFIX = `${RELEASE_FOLDER}${PATH_SEPARATOR}`
 
 /**
  *
@@ -103,7 +107,7 @@ export function getDraftId(id: string): DraftId {
 /**  @internal */
 export function getVersionId(id: string, bundle: string): string {
   if (isVersionId(id)) {
-    const [_versionPrefix, versionId, ...publishedId] = id.split(PATH_SEPARATOR)
+    const [_versionPrefix, _releasePrefix, versionId, ...publishedId] = id.split(PATH_SEPARATOR)
     if (versionId === bundle) return id
     return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
   }
@@ -122,16 +126,24 @@ export function getVersionId(id: string, bundle: string): string {
  */
 export function getVersionFromId(id: string): string | undefined {
   if (!isVersionId(id)) return undefined
-  const [_versionPrefix, versionId, ..._publishedId] = id.split(PATH_SEPARATOR)
+  const [_versionPrefix, _releasePrefix, versionId, ..._publishedId] = id.split(PATH_SEPARATOR)
 
   return versionId
+}
+
+/**
+ * @internal
+ * Given a releaseId, give the release id without the system prefix
+ */
+export function getReleasefromId(releaseId: string): string {
+  return releaseId.replace(RELEASE_PREFIX, '')
 }
 
 /** @internal */
 export function getPublishedId(id: string): PublishedId {
   if (isVersionId(id)) {
-    // make sure to only remove the versions prefix and the bundle name
-    return id.split(PATH_SEPARATOR).slice(2).join(PATH_SEPARATOR) as PublishedId as PublishedId
+    // make sure to only remove the versions prefix, release prefix and the bundle name
+    return id.split(PATH_SEPARATOR).slice(3).join(PATH_SEPARATOR) as PublishedId as PublishedId
   }
 
   if (isDraftId(id)) {
