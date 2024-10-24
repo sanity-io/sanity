@@ -36,7 +36,7 @@ interface BundleListProps {
 export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): ReactElement {
   const {releases, loading, actions, button, perspective} = props
   const {deletedReleases} = useReleases()
-  const {currentGlobalBundle, setPerspective} = usePerspective(perspective)
+  const {currentGlobalBundle, setPerspectiveFromRelease} = usePerspective(perspective)
   const {t} = useTranslation()
 
   const sortedBundlesToDisplay = useMemo(() => {
@@ -50,9 +50,9 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
 
   const handleReleaseChange = useCallback(
     (releaseId: string) => () => {
-      setPerspective(releaseId)
+      setPerspectiveFromRelease(releaseId)
     },
-    [setPerspective],
+    [setPerspectiveFromRelease],
   )
 
   const isBundleDeleted = useCallback(

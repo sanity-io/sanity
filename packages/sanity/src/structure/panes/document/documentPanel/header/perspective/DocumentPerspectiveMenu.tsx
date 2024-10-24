@@ -26,7 +26,16 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
   })
   const {data: releases, loading} = useReleases()
 
-  const {documentVersions, editState, displayed, documentType} = useDocumentPane()
+  const {
+    documentVersions: documentPaneVersions,
+    editState,
+    displayed,
+    documentType,
+  } = useDocumentPane()
+  const documentVersions = documentPaneVersions?.map((documentPaneVersion) => ({
+    ...documentPaneVersion,
+    perspectiveId: getBundleIdFromReleaseId(documentPaneVersion._id),
+  }))
 
   // remove the versions that the document already has
   // remove the archived releases
@@ -139,8 +148,8 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           <VersionChip
             key={release._id}
             tooltipContent={<Text size={1}>{t('release.type.asap')}</Text>}
-            selected={release._id === getVersionFromId(displayed?._id || '')}
-            onClick={handleBundleChange(release._id)}
+            selected={release.perspectiveId === getVersionFromId(displayed?._id || '')}
+            onClick={handleBundleChange(release.perspectiveId)}
             text={release.metadata.title}
             tone={getReleaseTone(release)}
             contextValues={{
@@ -174,8 +183,8 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
                 )}
               </Text>
             }
-            selected={release._id === getVersionFromId(displayed?._id || '')}
-            onClick={handleBundleChange(release._id)}
+            selected={release.perspectiveId === getVersionFromId(displayed?._id || '')}
+            onClick={handleBundleChange(release.perspectiveId)}
             text={release.metadata.title}
             tone={getReleaseTone(release)}
             contextValues={{
@@ -194,8 +203,8 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
           <VersionChip
             key={release._id}
             tooltipContent={t('release.type.undecided')}
-            selected={release._id === getVersionFromId(displayed?._id || '')}
-            onClick={handleBundleChange(release._id)}
+            selected={release.perspectiveId === getVersionFromId(displayed?._id || '')}
+            onClick={handleBundleChange(release.perspectiveId)}
             text={release.metadata.title}
             tone={getReleaseTone(release)}
             contextValues={{

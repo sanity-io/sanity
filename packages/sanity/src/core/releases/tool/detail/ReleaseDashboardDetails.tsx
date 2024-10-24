@@ -18,7 +18,6 @@ import {type ReleaseDocument} from '../../../store'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {usePerspective} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
-import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 
@@ -27,15 +26,15 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
-  const {currentGlobalBundle, setPerspective} = usePerspective()
+  const {currentGlobalBundle, setPerspective, setPerspectiveFromRelease} = usePerspective()
 
   const handlePinRelease = useCallback(() => {
     if (_id === currentGlobalBundle._id) {
       setPerspective('drafts')
     } else {
-      setPerspective(getBundleIdFromReleaseId(_id))
+      setPerspectiveFromRelease(_id)
     }
-  }, [_id, currentGlobalBundle._id, setPerspective])
+  }, [_id, currentGlobalBundle._id, setPerspective, setPerspectiveFromRelease])
 
   return (
     <Container width={3}>

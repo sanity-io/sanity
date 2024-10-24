@@ -14,7 +14,7 @@ import {ReleasesMenu} from '../ReleasesMenu'
 vi.mock('../../hooks/usePerspective', () => ({
   usePerspective: vi.fn().mockReturnValue({
     currentGlobalBundle: {},
-    setPerspective: vi.fn(),
+    setPerspectiveFromRelease: vi.fn(),
   }),
 }))
 
@@ -141,7 +141,7 @@ describe('ReleasesMenu', () => {
   it('should render latest release menu item as selected when currentGlobalBundle is LATEST', async () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: LATEST,
-      setPerspective: vi.fn(),
+      setPerspectiveFromRelease: vi.fn(),
     })
 
     const wrapper = await createTestProvider()
@@ -160,7 +160,7 @@ describe('ReleasesMenu', () => {
   it('should render release as selected when currentGlobalBundle is that release', async () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: mockReleases[0],
-      setPerspective: vi.fn(),
+      setPerspectiveFromRelease: vi.fn(),
     })
 
     const wrapper = await createTestProvider()
@@ -192,10 +192,10 @@ describe('ReleasesMenu', () => {
   })
 
   it('should call setPerspective when a release menu item is clicked', async () => {
-    const setPerspective = vi.fn()
+    const setPerspectiveFromRelease = vi.fn()
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: LATEST,
-      setPerspective,
+      setPerspectiveFromRelease,
     })
 
     const wrapper = await createTestProvider()
@@ -207,7 +207,7 @@ describe('ReleasesMenu', () => {
 
     act(() => {
       userEvent.click(screen.getByTestId('release-spring-drop'))
-      expect(setPerspective).toHaveBeenCalledWith('spring-drop')
+      expect(setPerspectiveFromRelease).toHaveBeenCalledWith('spring-drop')
     })
   })
 

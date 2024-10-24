@@ -10,7 +10,6 @@ import {useReleases} from '../../store/release/useReleases'
 import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
-import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 import {isDraftOrPublished} from '../util/util'
 
 const StyledMenu = styled(Menu)`
@@ -24,7 +23,7 @@ const StyledBox = styled(Box)`
 
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {deletedReleases, loading, data: releases} = useReleases()
-  const {currentGlobalBundle, setPerspective} = usePerspective()
+  const {currentGlobalBundle, setPerspectiveFromRelease, setPerspective} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
@@ -41,9 +40,9 @@ export function GlobalPerspectiveMenu(): JSX.Element {
 
   const handleBundleChange = useCallback(
     (releaseId: string) => () => {
-      setPerspective(getBundleIdFromReleaseId(releaseId))
+      setPerspectiveFromRelease(releaseId)
     },
-    [setPerspective],
+    [setPerspectiveFromRelease],
   )
 
   const isBundleDeleted = useCallback(
@@ -77,7 +76,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
               <CheckmarkIcon data-testid="latest-checkmark-icon" />
             ) : undefined
           }
-          onClick={handleBundleChange(LATEST._id)}
+          onClick={() => setPerspective(LATEST._id)}
           pressed={false}
           text={LATEST.metadata.title}
           data-testid="latest-menu-item"
@@ -137,6 +136,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
   }, [
     currentGlobalBundle._id,
     handleBundleChange,
+    setPerspective,
     handleCreateBundleClick,
     hasBundles,
     isBundleDeleted,
