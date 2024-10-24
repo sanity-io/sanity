@@ -2,6 +2,7 @@ import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {
   DiscardVersionDialog,
+  getBundleIdFromReleaseId,
   getVersionId,
   ReleaseAvatar,
   type ReleaseDocument,
@@ -111,7 +112,7 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
-      createVersion(targetRelease)
+      createVersion(getBundleIdFromReleaseId(targetRelease))
       close()
     },
     [createVersion, close],
