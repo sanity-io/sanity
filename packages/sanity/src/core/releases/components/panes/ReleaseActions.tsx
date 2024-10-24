@@ -31,18 +31,16 @@ interface ReleaseActionsProps {
 export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
   const {currentGlobalBundle, documentType, documentId, releaseId} = props
   const publishedId = getPublishedId(documentId)
-
   const {
-    _id: globalBundleId,
+    _id: releaseDocumentId,
     metadata: {title, archivedAt},
   } = currentGlobalBundle
   const documentStore = useDocumentStore()
   const [creatingVersion, setCreatingVersion] = useState<boolean>(false)
   const [isInVersion, setIsInVersion] = useState<boolean>(
-    () => getVersionFromId(documentId) === globalBundleId,
+    () => getVersionFromId(documentId) === releaseDocumentId,
   )
   const [isDiscarding, setIsDiscarding] = useState<boolean>(false)
-
   const toast = useToast()
   const {createVersion} = useDocumentOperation(publishedId, documentType, releaseId)
   const {t} = useTranslation()
@@ -59,7 +57,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
       return
     }
     // only add to version if there isn't already a version in that release of this doc
-    if (getVersionFromId(documentId) === globalBundleId) {
+    if (getVersionFromId(documentId) === releaseDocumentId) {
       toast.push({
         status: 'error',
         title: `There's already a version of this document in the release ${title}`,
@@ -67,7 +65,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
       return
     }
 
-    const versionId = getVersionId(documentId, globalBundleId)
+    const versionId = getVersionId(documentId, releaseDocumentId)
 
     setCreatingVersion(true)
 
@@ -92,7 +90,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
     })
   }, [
     documentId,
-    globalBundleId,
+    releaseDocumentId,
     documentStore.pair,
     documentType,
     createVersion,
@@ -150,7 +148,7 @@ export function ReleaseActions(props: ReleaseActionsProps): ReactNode {
   return (
     <Button
       {...releaseActionButtonProps}
-      data-testid={`action-add-to-${globalBundleId}`}
+      data-testid={`action-add-to-${releaseDocumentId}`}
       loading={creatingVersion || isDiscarding}
     />
   )

@@ -11,11 +11,12 @@ import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPre
 import {useDocumentPresence} from '../../../store'
 import {getPublishedId} from '../../../util/draftUtils'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
 
 interface ReleaseDocumentPreviewProps {
   documentId: string
   documentTypeName: string
-  releaseSlug: string
+  releaseId: string
   previewValues: PreviewValue
   isLoading: boolean
   hasValidationError?: boolean
@@ -24,7 +25,7 @@ interface ReleaseDocumentPreviewProps {
 export function ReleaseDocumentPreview({
   documentId,
   documentTypeName,
-  releaseSlug,
+  releaseId,
   previewValues,
   isLoading,
   hasValidationError,
@@ -44,12 +45,12 @@ export function ReleaseDocumentPreview({
               id: getPublishedId(documentId),
               type: documentTypeName,
             }}
-            searchParams={[['perspective', `release.${releaseSlug}`]]}
+            searchParams={[['perspective', `bundle.${getBundleIdFromReleaseId(releaseId)}`]]}
             ref={ref}
           />
         )
       }),
-    [documentId, documentTypeName, releaseSlug],
+    [documentId, documentTypeName, releaseId],
   )
 
   const previewPresence = useMemo(
