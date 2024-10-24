@@ -51,7 +51,7 @@ export const getDocumentTableColumnDefs: (
     width: 100,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('table-header.action')} {...props} />
+        <Headers.BasicHeader text={t('table-header.action')} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (

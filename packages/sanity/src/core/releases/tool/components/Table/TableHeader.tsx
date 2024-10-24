@@ -1,9 +1,17 @@
 import {ArrowDownIcon, ArrowUpIcon, SearchIcon} from '@sanity/icons'
-import {Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTableContext} from './TableProvider'
 import {type HeaderProps, type TableHeaderProps} from './types'
+
+const BasicHeader = ({text}: {text: string}) => (
+  <Box padding={2}>
+    <Text muted size={1} weight="medium">
+      {text}
+    </Text>
+  </Box>
+)
 
 const SortHeaderButton = ({
   header,
@@ -87,4 +95,5 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
 export const Headers = {
   SortHeaderButton,
   TableHeaderSearch,
+  BasicHeader,
 }
