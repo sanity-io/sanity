@@ -25,6 +25,7 @@ import {operatorDefinitions} from '../studio/components/navbar/search/definition
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
+  createFallbackOriginReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
@@ -42,9 +43,11 @@ import {
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
+  startInCreateEnabledReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
+import {getStartInCreateSortedActions} from './create/startInCreateSortedActions'
 import {createDefaultIcon} from './createDefaultIcon'
 import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
 import {resolveConfigProperty} from './resolveConfigProperty'
@@ -495,14 +498,16 @@ function resolveSource({
       config,
     }),
     document: {
-      actions: (partialContext) =>
-        resolveConfigProperty({
+      actions: (partialContext) => {
+        const actions = resolveConfigProperty({
           config,
           context: {...context, ...partialContext},
           initialValue: initialDocumentActions,
           propertyName: 'document.actions',
           reducer: documentActionsReducer,
-        }),
+        })
+        return getStartInCreateSortedActions(actions)
+      },
       badges: (partialContext) =>
         resolveConfigProperty({
           config,
@@ -647,6 +652,10 @@ function resolveSource({
       treeArrayEditing: {
         // This beta feature is no longer available.
         enabled: false,
+      },
+      create: {
+        startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: false}),
+        fallbackStudioOrigin: createFallbackOriginReducer(config),
       },
     },
   }
