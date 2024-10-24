@@ -98,7 +98,7 @@ describe('DocumentPerspectiveMenu', () => {
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [
         {
-          _id: 'spring-drop',
+          _id: 'system-tmp-releases.spring-drop',
           _type: 'system-tmp.release',
           createdBy: '',
           state: 'active',

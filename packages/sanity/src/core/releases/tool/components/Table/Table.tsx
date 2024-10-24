@@ -231,7 +231,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
   }, [emptyState])
 
   const headers = useMemo(
-    () => amalgamatedColumnDefs.map(({cell, ...header}) => ({...header, id: String(header.id)})),
+    () =>
+      amalgamatedColumnDefs.map(({cell, sortTransform, ...header}) => ({
+        ...header,
+        id: String(header.id),
+      })),
     [amalgamatedColumnDefs],
   )
 
