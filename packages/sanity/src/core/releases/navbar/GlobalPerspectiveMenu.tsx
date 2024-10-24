@@ -23,7 +23,7 @@ const StyledBox = styled(Box)`
 
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {deletedReleases, loading, data: releases} = useReleases()
-  const {currentGlobalBundle, setPerspectiveFromRelease} = usePerspective()
+  const {currentGlobalBundle, setPerspectiveFromRelease, setPerspective} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
@@ -76,7 +76,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
               <CheckmarkIcon data-testid="latest-checkmark-icon" />
             ) : undefined
           }
-          onClick={handleBundleChange(LATEST._id)}
+          onClick={() => setPerspective(LATEST._id)}
           pressed={false}
           text={LATEST.metadata.title}
           data-testid="latest-menu-item"
@@ -136,6 +136,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
   }, [
     currentGlobalBundle._id,
     handleBundleChange,
+    setPerspective,
     handleCreateBundleClick,
     hasBundles,
     isBundleDeleted,
