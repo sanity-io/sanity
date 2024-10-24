@@ -3,7 +3,7 @@ import {SanityCreateConfigContext} from 'sanity/_singletons'
 
 import {useSource} from '../../studio'
 import {CreateLinkedActions} from '../components/CreateLinkedActions'
-import {CreateLinkedDocumentBanner} from '../components/CreateLinkedDocumentBanner'
+import {CreateLinkedDocumentBannerContent} from '../components/CreateLinkedDocumentBannerContent'
 import {type SanityCreateConfigContextValue} from './useSanityCreateConfig'
 
 interface SanityCreateConfigProviderProps {
@@ -21,7 +21,7 @@ export function SanityCreateConfigProvider(props: SanityCreateConfigProviderProp
       ...beta?.create,
       startInCreateEnabled: !!beta?.create?.startInCreateEnabled,
       components: {
-        documentLinkedBanner: CreateLinkedDocumentBanner,
+        documentLinkedBannerContent: CreateLinkedDocumentBannerContent,
         documentLinkedActions: CreateLinkedActions,
       },
     }

@@ -28,6 +28,6 @@ export interface CreateLinkedActionsProps {
 }
 
 /** @internal */
-export interface CreateLinkedDocumentBannerProps {
+export interface CreateLinkedDocumentBannerContentProps {
   metadata: CreateLinkMetadata
 }

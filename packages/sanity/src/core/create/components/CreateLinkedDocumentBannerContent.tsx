@@ -15,13 +15,13 @@ import {useCallback, useRef, useState} from 'react'
 import {Button, Popover} from '../../../ui-components'
 import {Translate, useTranslation} from '../../i18n'
 import {createLocaleNamespace} from '../i18n'
-import {type CreateLinkedDocumentBannerProps} from '../types'
+import {type CreateLinkedDocumentBannerContentProps} from '../types'
 import {CreateLearnMoreButton} from './CreateLearnMoreButton'
 import {CreateSvg} from './media/CreateSvg'
 
 const POPOVER_RADIUS = 3
 
-export function CreateLinkedDocumentBanner(props: CreateLinkedDocumentBannerProps) {
+export function CreateLinkedDocumentBannerContent(props: CreateLinkedDocumentBannerContentProps) {
   const {metadata} = props
   const [infoOpen, setInfoOpen] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -73,36 +73,34 @@ export function CreateLinkedDocumentBanner(props: CreateLinkedDocumentBannerProp
   )
 
   return (
-    <Card borderBottom padding={3} tone="transparent">
-      <Flex gap={2} align="center">
-        <Text size={0} weight="medium">
-          <ReadOnlyIcon />
+    <Flex gap={2} align="center">
+      <Text size={0} weight="medium">
+        <ReadOnlyIcon />
+      </Text>
+      <Box>
+        <Text size={1} weight="medium">
+          {t('studio-create-link-banner.text')}
         </Text>
-        <Box>
-          <Text size={1} weight="medium">
-            {t('studio-create-link-banner.text')}
-          </Text>
-        </Box>
-        <Popover
-          content={popoverContent}
-          open={infoOpen}
-          radius={POPOVER_RADIUS}
-          style={{width: 320}}
-          tone="default"
-          placement="bottom-start"
-          fallbackPlacements={['bottom', 'bottom-end', 'right-start', 'right', 'right-end']}
-        >
-          <Button
-            ref={infoButtonRef}
-            icon={InfoOutlineIcon}
-            mode="bleed"
-            onClick={toggleOpen}
-            tooltipProps={{
-              content: t('create-link-info.tooltip'),
-            }}
-          />
-        </Popover>
-      </Flex>
-    </Card>
+      </Box>
+      <Popover
+        content={popoverContent}
+        open={infoOpen}
+        radius={POPOVER_RADIUS}
+        style={{width: 320}}
+        tone="default"
+        placement="bottom-start"
+        fallbackPlacements={['bottom', 'bottom-end', 'right-start', 'right', 'right-end']}
+      >
+        <Button
+          ref={infoButtonRef}
+          icon={InfoOutlineIcon}
+          mode="bleed"
+          onClick={toggleOpen}
+          tooltipProps={{
+            content: t('create-link-info.tooltip'),
+          }}
+        />
+      </Popover>
+    </Flex>
   )
 }

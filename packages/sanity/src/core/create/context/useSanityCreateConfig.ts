@@ -1,7 +1,7 @@
 import {type ComponentType, useContext} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
-import {type CreateLinkedActionsProps, type CreateLinkedDocumentBannerProps} from '../types'
+import {type CreateLinkedActionsProps, type CreateLinkedDocumentBannerContentProps} from '../types'
 
 /**
  * @internal
@@ -15,7 +15,7 @@ export interface SanityCreateConfigContextValue {
   fallbackStudioOrigin?: string
 
   components?: {
-    documentLinkedBanner?: ComponentType<CreateLinkedDocumentBannerProps>
+    documentLinkedBannerContent?: ComponentType<CreateLinkedDocumentBannerContentProps>
     documentLinkedActions?: ComponentType<CreateLinkedActionsProps>
   }
 }

@@ -37,6 +37,7 @@ import {
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {DocumentOperationResults} from '../DocumentOperationResults'
 import {DocumentPanel} from '../documentPanel'
+import {Banner} from '../documentPanel/banners/Banner'
 import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentActionShortcuts} from '../keyboardShortcuts'
 import {getMenuItems} from '../menuItems'
@@ -90,7 +91,7 @@ export function DocumentLayout() {
   const previewUrl = usePreviewUrl(value)
 
   const createLinkMetadata = getSanityCreateLinkMetadata(value)
-  const CreateLinkedBanner = useSanityCreateConfig().components?.documentLinkedBanner
+  const CreateLinkedBannerContent = useSanityCreateConfig().components?.documentLinkedBannerContent
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
@@ -211,11 +212,17 @@ export function DocumentLayout() {
         >
           <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
 
-          {createLinkMetadata && isSanityCreateLinked(createLinkMetadata) && CreateLinkedBanner && (
-            <ShowWhenPaneOpen>
-              <CreateLinkedBanner metadata={createLinkMetadata} />
-            </ShowWhenPaneOpen>
-          )}
+          {createLinkMetadata &&
+            isSanityCreateLinked(createLinkMetadata) &&
+            CreateLinkedBannerContent && (
+              <ShowWhenPaneOpen>
+                <Banner
+                  tone="transparent"
+                  data-test-id="sanity-create-read-only-banner"
+                  content={<CreateLinkedBannerContent metadata={createLinkMetadata} />}
+                />
+              </ShowWhenPaneOpen>
+            )}
 
           <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
             <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
