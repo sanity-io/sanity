@@ -36,19 +36,7 @@ const VirtualList = () => {
   }, [scheduleState, sortBy, containerRef])
 
   return (
-    <Box
-      paddingBottom={6}
-      paddingTop={1}
-      paddingX={4}
-      ref={containerRef}
-      style={{
-        position: 'relative',
-        overflowX: 'hidden',
-        overflowY: 'auto',
-        height: '100%',
-        boxSizing: 'border-box',
-      }}
-    >
+    <Box paddingBottom={6} paddingTop={1} paddingX={4} ref={containerRef} overflow="hidden">
       <Box
         style={{
           height: `${totalSize}px`,
