@@ -77,7 +77,7 @@ export function PaneItem(props: PaneItemProps) {
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const {ChildLink} = usePaneRouter()
-  const perspective = useRouter().stickyParams.perspective
+  const {perspective} = useRouter().perspectiveState
   const documentPresence = useDocumentPresence(id)
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const [clicked, setClicked] = useState<boolean>(false)

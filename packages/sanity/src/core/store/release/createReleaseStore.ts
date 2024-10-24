@@ -57,6 +57,7 @@ const INITIAL_STATE: ReleasesReducerState = {
   releases: new Map(),
   deletedReleases: {},
   state: 'loaded' as const,
+  releaseStack: [],
 }
 
 /**
@@ -70,6 +71,7 @@ const INITIAL_STATE: ReleasesReducerState = {
 export function createReleaseStore(context: {
   client: SanityClient
   currentUser: User | null
+  perspective?: string
 }): ReleaseStore {
   const {client, currentUser} = context
 
@@ -219,7 +221,7 @@ export function createReleaseStore(context: {
 
   const state$ = merge(listFetch$, listener$, dispatch$).pipe(
     filter((action): action is ReleasesReducerAction => typeof action !== 'undefined'),
-    scan((state, action) => releasesReducer(state, action), INITIAL_STATE),
+    scan((state, action) => releasesReducer(state, action, context.perspective), INITIAL_STATE),
     startWith(INITIAL_STATE),
     shareReplay(1),
   )

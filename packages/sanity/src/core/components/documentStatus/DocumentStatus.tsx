@@ -5,6 +5,7 @@ import {styled} from 'styled-components'
 
 import {useDateTimeFormat, useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
+import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
 import {type CurrentPerspective} from '../../releases'
 import {PerspectiveBadge} from '../perspective/PerspectiveBadge'
 
@@ -13,6 +14,8 @@ interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
   version?: PreviewValue | Partial<SanityDocument> | null
+  // eslint-disable-next-line
+  versions?: VersionsRecord
   singleLine?: boolean
   currentGlobalBundle?: CurrentPerspective
 }
