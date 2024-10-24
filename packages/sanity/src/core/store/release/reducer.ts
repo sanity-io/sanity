@@ -1,4 +1,4 @@
-import {DRAFTS_FOLDER, resolveBundlePerspective} from 'sanity'
+import {DRAFTS_FOLDER, getBundleIdFromReleaseId, resolveBundlePerspective} from 'sanity'
 
 import {type ReleaseDocument} from './types'
 
@@ -165,7 +165,7 @@ function getReleaseStack({
 
   const stack = [...releases.values()]
     .toSorted(sortReleases(resolveBundlePerspective(perspective)))
-    .map(({_id}) => _id)
+    .map(({_id}) => getBundleIdFromReleaseId(_id))
     .concat(DRAFTS_FOLDER)
 
   return stack
