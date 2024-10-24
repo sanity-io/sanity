@@ -10,6 +10,7 @@ import {
   DocumentStatus,
   DocumentStatusIndicator,
   type GeneralPreviewLayoutKey,
+  getBundleIdFromReleaseId,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   isRecord,
@@ -50,7 +51,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const previewStateObservable = useMemo(
     () =>
       getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {
-        bundleIds: (releases.data ?? []).map((release) => release._id),
+        bundleIds: (releases.data ?? []).map((release) => getBundleIdFromReleaseId(release._id)),
         bundleStack: releases.stack,
       }),
     [props.documentPreviewStore, schemaType, value._id, title, releases.data, releases.stack],
