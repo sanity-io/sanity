@@ -67,7 +67,7 @@ export function ReleasesNav(): JSX.Element {
       <IntentLink
         {...intentProps}
         intent={RELEASES_INTENT}
-        params={{id: getBundleIdFromReleaseId(currentGlobalBundle._id)}}
+        params={{id: getBundleIdFromReleaseId(currentGlobalBundle._id!)}}
       >
         {children}
       </IntentLink>
