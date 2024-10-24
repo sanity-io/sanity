@@ -61,7 +61,6 @@ export const Timeline = ({
             isSelected={activeIndex === selectedIndex}
             onSelect={onSelect}
             timestamp={chunk.endTimestamp}
-            type={chunk.type}
           />
           {activeIndex === filteredChunks.length - 1 && hasMoreChunks && <LoadingBlock />}
         </Box>
