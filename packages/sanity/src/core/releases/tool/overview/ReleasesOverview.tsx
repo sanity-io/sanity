@@ -75,7 +75,7 @@ const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
 }
 
 const EMPTY_RELEASE_GROUPS = {open: [], archived: []}
-const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishedAt', direction: 'asc'}
+const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
 
 const getInitialFilterDate = (router: RouterContextValue) => () => {
   const activeFilterDate = new URLSearchParams(router.state._searchParams).get(

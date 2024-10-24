@@ -100,19 +100,28 @@ const TableInner = <TableData, AdditionalRowTableData>({
     const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
     if (!sort) return filteredResult
 
+    const sortColumn = columnDefs.find((column) => column.id === sort.column)
     return [...filteredResult].sort((a, b) => {
       // TODO: Update this tos support sorting not only by date but also by string
-      const parseDate = (dateString: unknown) =>
-        typeof dateString === 'string' ? Date.parse(dateString) : 0
+      const parseDate = (datum: TableData) => {
+        const transformedSortValue = sortColumn?.sortTransform?.(
+          datum as RowDatum<TableData, AdditionalRowTableData>,
+        )
+        if (transformedSortValue !== undefined) return transformedSortValue
 
-      const aDate = parseDate(get(a, sort.column))
-      const bDate = parseDate(get(b, sort.column))
+        const sortValue = get(datum, sort.column)
+
+        return typeof sortValue === 'string' ? Date.parse(sortValue) : 0
+      }
+
+      const aDate = parseDate(a)
+      const bDate = parseDate(b)
 
       const order = aDate - bDate
       if (sort.direction === 'asc') return order
       return -order
     })
-  }, [data, searchFilter, searchTerm, sort])
+  }, [columnDefs, data, searchFilter, searchTerm, sort])
 
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
@@ -222,7 +231,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
   }, [emptyState])
 
   const headers = useMemo(
-    () => amalgamatedColumnDefs.map(({cell, ...header}) => ({...header, id: String(header.id)})),
+    () =>
+      amalgamatedColumnDefs.map(({cell, sortTransform, ...header}) => ({
+        ...header,
+        id: String(header.id),
+      })),
     [amalgamatedColumnDefs],
   )
 
