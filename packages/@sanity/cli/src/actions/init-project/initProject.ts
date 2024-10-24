@@ -4,11 +4,13 @@ import path from 'node:path'
 
 import {type DatasetAclMode, type SanityProject} from '@sanity/client'
 import {type Framework} from '@vercel/frameworks'
+import {type detectFrameworkRecord} from '@vercel/fs-detectors'
 import dotenv from 'dotenv'
 import execa, {type CommonOptions} from 'execa'
 import {deburr, noop} from 'lodash'
 import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
+import semver from 'semver'
 import {evaluate, patch} from 'silver-fleece'
 import which from 'which'
 
@@ -55,6 +57,7 @@ import {
   promptForNextTemplate,
   promptForStudioPath,
 } from './prompts/nextjs'
+import {readPackageJson} from './readPackageJson'
 import {reconfigureV2Project} from './reconfigureV2Project'
 import templates from './templates'
 import {
@@ -110,7 +113,9 @@ export interface ProjectOrganization {
 // eslint-disable-next-line max-statements, complexity
 export default async function initSanity(
   args: CliCommandArguments<InitFlags>,
-  context: CliCommandContext & {detectedFramework: Framework | null},
+  context: CliCommandContext & {
+    detectedFramework: Awaited<ReturnType<typeof detectFrameworkRecord>>
+  },
 ): Promise<void> {
   const {
     output,
@@ -128,6 +133,8 @@ export default async function initSanity(
   const cliFlags = args.extOptions
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
+  const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
+
   const intendedPlan = cliFlags['project-plan']
   const intendedCoupon = cliFlags.coupon
   const reconfigure = cliFlags.reconfigure
@@ -298,7 +305,8 @@ export default async function initSanity(
   }
 
   let initNext = false
-  if (detectedFramework?.slug === 'nextjs') {
+  const isNextJs = detectedFramework?.slug === 'nextjs'
+  if (isNextJs) {
     initNext = await prompt.single({
       type: 'confirm',
       message:
@@ -326,6 +334,26 @@ export default async function initSanity(
 
   // Ensure we are using the output path provided by user
   outputPath = answers.outputPath
+
+  if (isNextJs) {
+    const packageJson = readPackageJson(`${outputPath}/package.json`)
+    const reactVersion = packageJson?.dependencies?.react
+
+    if (reactVersion) {
+      const isUsingReact19 = semver.coerce(reactVersion)?.major === 19
+      const isUsingNextJs15 = semver.coerce(detectedFramework?.detectedVersion)?.major === 15
+
+      if (isUsingNextJs15 && isUsingReact19) {
+        warn('╭────────────────────────────────────────────────────────────╮')
+        warn('│                                                            │')
+        warn('│ It looks like you are using Next.js 15 and React 19        │')
+        warn('│ Please read our compatibility guide.                       │')
+        warn('│ https://www.sanity.io/help/react-19                        │')
+        warn('│                                                            │')
+        warn('╰────────────────────────────────────────────────────────────╯')
+      }
+    }
+  }
 
   if (initNext) {
     const useTypeScript = unattended ? true : await promptForTypeScript(prompt)
