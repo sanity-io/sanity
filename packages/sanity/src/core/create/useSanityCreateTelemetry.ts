@@ -2,38 +2,47 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
 
 import {
-  CreateUnlinkAccepted,
-  CreateUnlinkClicked,
-  EditInCreateClicked,
-  StartInCreateAccepted,
-  StartInCreateClicked,
+  CreateDocumentLinkAccepted,
+  CreateDocumentLinkCtaClicked,
+  CreateDocumentOpened,
+  CreateDocumentUnlinkApproved,
+  CreateDocumentUnlinkCtaClicked,
 } from './__telemetry__/create.telemetry'
 
 interface SanityCreateTelemetryHookValue {
-  startInCreateClicked: () => void
-  startInCreateAccepted: () => void
-  unlinkClicked: () => void
-  unlinkAccepted: () => void
-  editInCreateClicked: () => void
+  linkCtaClicked: () => void
+  linkAccepted: () => void
+  unlinkCtaClicked: () => void
+  unlinkApproved: () => void
+  documentOpened: () => void
 }
 
 /** @internal */
 export function useSanityCreateTelemetry(): SanityCreateTelemetryHookValue {
   const telemetry = useTelemetry()
 
-  const startInCreateClicked = useCallback(() => telemetry.log(StartInCreateClicked), [telemetry])
-  const startInCreateAccepted = useCallback(() => telemetry.log(StartInCreateAccepted), [telemetry])
-  const unlinkClicked = useCallback(() => telemetry.log(CreateUnlinkClicked), [telemetry])
-  const unlinkAccepted = useCallback(() => telemetry.log(CreateUnlinkAccepted), [telemetry])
-  const editInCreateClicked = useCallback(() => telemetry.log(EditInCreateClicked), [telemetry])
+  const startInCreateClicked = useCallback(
+    () => telemetry.log(CreateDocumentLinkCtaClicked),
+    [telemetry],
+  )
+  const startInCreateAccepted = useCallback(
+    () => telemetry.log(CreateDocumentLinkAccepted),
+    [telemetry],
+  )
+  const unlinkClicked = useCallback(
+    () => telemetry.log(CreateDocumentUnlinkCtaClicked),
+    [telemetry],
+  )
+  const unlinkAccepted = useCallback(() => telemetry.log(CreateDocumentUnlinkApproved), [telemetry])
+  const editInCreateClicked = useCallback(() => telemetry.log(CreateDocumentOpened), [telemetry])
 
   return useMemo(
     (): SanityCreateTelemetryHookValue => ({
-      startInCreateClicked,
-      startInCreateAccepted,
-      unlinkClicked,
-      unlinkAccepted,
-      editInCreateClicked,
+      linkCtaClicked: startInCreateClicked,
+      linkAccepted: startInCreateAccepted,
+      unlinkCtaClicked: unlinkClicked,
+      unlinkApproved: unlinkAccepted,
+      documentOpened: editInCreateClicked,
     }),
     [
       startInCreateClicked,

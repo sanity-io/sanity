@@ -17,13 +17,13 @@ export function CreateLinkedActions(props: CreateLinkedActionsProps) {
 
   const telemetry = useSanityCreateTelemetry()
 
-  const onEditInCreateClicked = useCallback(() => telemetry.editInCreateClicked(), [telemetry])
+  const onEditInCreateClicked = useCallback(() => telemetry.documentOpened(), [telemetry])
 
   const [unlinkConfirm, setUnlinkConfirm] = useState(false)
 
   const confirmUnlink = useCallback(() => {
     setUnlinkConfirm(true)
-    telemetry.unlinkClicked()
+    telemetry.unlinkCtaClicked()
   }, [telemetry])
 
   const cancelUnlink = useCallback(() => setUnlinkConfirm(false), [])

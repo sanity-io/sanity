@@ -83,7 +83,7 @@ export function StartInCreateAction(
         },
     onHandle: () => {
       if (!isDialogOpen) {
-        telemetry.startInCreateClicked()
+        telemetry.linkCtaClicked()
       }
       setDialogOpen(true)
     },

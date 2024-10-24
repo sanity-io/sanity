@@ -23,7 +23,7 @@ export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps)
   const unlink = useCallback(() => {
     setUnlinking(true)
     onDocumentChange(PatchEvent.from(unset(['_create'])))
-    telemetry.unlinkAccepted()
+    telemetry.unlinkApproved()
     // on not calling onClose:
     // when this mutation propagates down the render tree again, this dialog will me unmounted;
     // the code-path leading here will no longer be rendered

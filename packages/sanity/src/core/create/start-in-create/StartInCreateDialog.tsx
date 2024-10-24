@@ -50,7 +50,7 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
 
     window?.open(createUrl, '_blank')?.focus()
     onLinkingStarted(autoConfirm || dontShowAgain)
-    telemetry.startInCreateAccepted()
+    telemetry.linkAccepted()
   }, [createUrl, onLinkingStarted, pushToast, t, dontShowAgain, autoConfirm, telemetry])
 
   useEffect(() => {
