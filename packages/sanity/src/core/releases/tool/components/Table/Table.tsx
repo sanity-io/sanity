@@ -100,8 +100,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
     const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
     if (!sort) return filteredResult
 
+    const sortColumn = columnDefs.find((column) => column.id === sort.column)
     return [...filteredResult].sort((a, b) => {
-      const sortColumn = columnDefs.find((column) => column.id === sort.column)
       // TODO: Update this tos support sorting not only by date but also by string
       const parseDate = (datum: TableData) => {
         const transformedSortValue = sortColumn?.sortTransform?.(
