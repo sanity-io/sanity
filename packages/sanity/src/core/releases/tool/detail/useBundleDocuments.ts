@@ -91,7 +91,7 @@ export function useBundleDocuments(release: string): {
                   getPreviewValueWithFallback({
                     value: document,
                     version: version.snapshot,
-                    perspective: `release.${release}`,
+                    perspective: `bundle.${release}`,
                   }),
                   schemaType,
                 ),
