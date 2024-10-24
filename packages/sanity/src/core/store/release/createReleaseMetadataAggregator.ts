@@ -68,7 +68,11 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
             documentIds: string[]
           }
         >
-      >(`{${queryAllDocumentsInReleases}}{${projectionToBundleMetadata}}`)
+      >(
+        `{${queryAllDocumentsInReleases}}{${projectionToBundleMetadata}}`,
+        {},
+        {tag: 'release-docs.fetch'},
+      )
       .pipe(
         switchMap((releaseDocumentIdResponse) => {
           const getCountKey = (id: string) => `${id}_existing_count`
@@ -87,7 +91,9 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
           )
 
           return client.observable
-            .fetch<Record<string, number | undefined>>(`{${documentCountQuery}}`)
+            .fetch<
+              Record<string, number | undefined>
+            >(`{${documentCountQuery}}`, {}, {tag: 'release-docs.count'})
             .pipe(
               switchMap((releaseDocumentCountResponse) =>
                 of({

@@ -122,11 +122,7 @@ export const releasesOverviewColumnDefs: (
       width: null,
       header: ({headerProps}) => (
         <Flex {...headerProps} flex={1} marginLeft={3} paddingY={3} sizing="border">
-          <Box padding={2}>
-            <Text muted size={1} weight="medium">
-              {t('table-header.title')}
-            </Text>
-          </Box>
+          <Headers.BasicHeader text={t('table-header.title')} />
         </Flex>
       ),
       cell: ReleaseNameCell,
@@ -190,7 +186,7 @@ export const releasesOverviewColumnDefs: (
       width: 100,
       header: ({headerProps}) => (
         <Flex {...headerProps} paddingY={3} sizing="border">
-          <Box padding={2} />
+          <Headers.BasicHeader text={''} />
         </Flex>
       ),
       cell: ({datum: {isDeleted, documentsMetadata}, cellProps}) => (

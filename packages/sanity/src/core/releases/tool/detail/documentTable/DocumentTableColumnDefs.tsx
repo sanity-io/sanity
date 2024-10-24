@@ -51,20 +51,19 @@ export const getDocumentTableColumnDefs: (
     width: 100,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('table-header.action')} {...props} />
+        <Headers.BasicHeader text={t('table-header.action')} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
         <Box paddingX={2}>
-          {/* TODO: Determine if the document was added or not, check for the existance of the document in it's non version type. */}
-          {datum.isAdded ? (
-            <Badge radius={2} tone={'positive'}>
-              {t('table-body.action.add')}
-            </Badge>
-          ) : (
+          {datum.document.publishedDocumentExists ? (
             <Badge radius={2} tone={'caution'}>
               {t('table-body.action.change')}
+            </Badge>
+          ) : (
+            <Badge radius={2} tone={'positive'}>
+              {t('table-body.action.add')}
             </Badge>
           )}
         </Box>
