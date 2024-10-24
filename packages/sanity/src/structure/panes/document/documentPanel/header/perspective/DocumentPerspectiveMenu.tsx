@@ -1,6 +1,7 @@
 import {Text} from '@sanity/ui'
 import {memo, useCallback} from 'react'
 import {
+  getBundleIdFromReleaseId,
   getReleaseTone,
   getVersionFromId,
   isVersionId,
@@ -148,7 +149,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
               releases: filteredReleases,
               releasesLoading: loading,
               documentType: documentType,
-              fromRelease: release._id,
+              fromRelease: getBundleIdFromReleaseId(release._id),
               isVersion: true,
             }}
           />
@@ -183,7 +184,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
               releases: filteredReleases,
               releasesLoading: loading,
               documentType: documentType,
-              fromRelease: release._id,
+              fromRelease: getBundleIdFromReleaseId(release._id),
               isVersion: true,
             }}
           />
@@ -203,7 +204,7 @@ export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
               releases: filteredReleases,
               releasesLoading: loading,
               documentType: documentType,
-              fromRelease: release._id,
+              fromRelease: getBundleIdFromReleaseId(release._id),
               isVersion: true,
             }}
           />

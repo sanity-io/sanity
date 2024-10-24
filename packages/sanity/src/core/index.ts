@@ -28,6 +28,7 @@ export {
   type CurrentPerspective,
   DEFAULT_RELEASE_TYPE,
   DiscardVersionDialog,
+  getBundleIdFromReleaseId,
   getCreateVersionOrigin,
   getDocumentIsInPerspective,
   getReleaseTone,
