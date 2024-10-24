@@ -13,16 +13,11 @@ import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   isRecord,
-  resolveBundlePerspective,
   SanityDefaultPreview,
+  useReleases,
 } from 'sanity'
-import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components'
-
-const Root = styled.div<{$isInPerspective: boolean}>`
-  opacity: ${(props) => (props.$isInPerspective ? 1 : 0.5)};
-`
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -50,47 +45,60 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       ? value.title
       : null
 
+  const releases = useReleases()
+
   const previewStateObservable = useMemo(
     () =>
-      getPreviewStateObservable(
-        props.documentPreviewStore,
-        schemaType,
-        value._id,
-        title,
-        resolveBundlePerspective(perspective),
-      ),
-    [props.documentPreviewStore, schemaType, title, value._id, perspective],
+      getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {
+        bundleIds: (releases.data ?? []).map((release) => release._id),
+        bundleStack: releases.stack,
+      }),
+    [props.documentPreviewStore, schemaType, value._id, title, releases.data, releases.stack],
   )
 
-  const {draft, published, version, isLoading} = useObservable(previewStateObservable, {
+  const {
+    draft,
+    published,
+    version,
+    versions,
+    isLoading: previewIsLoading,
+  } = useObservable(previewStateObservable, {
     draft: null,
     isLoading: true,
     published: null,
     version: null,
+    versions: {},
     perspective,
   })
+
+  const isLoading = previewIsLoading || releases.loading
 
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatusIndicator draft={draft} published={published} version={version} />
+        <DocumentStatusIndicator
+          draft={draft}
+          published={published}
+          version={version}
+          versions={versions}
+        />
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = <DocumentStatus draft={draft} published={published} version={version} />
+  const tooltip = (
+    <DocumentStatus draft={draft} published={published} version={version} versions={versions} />
+  )
 
   return (
-    <Root $isInPerspective={!perspective || Boolean(version)}>
-      <SanityDefaultPreview
-        {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
-        isPlaceholder={isLoading}
-        icon={icon}
-        layout={layout}
-        status={status}
-        tooltip={tooltip}
-      />
-    </Root>
+    <SanityDefaultPreview
+      {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
+      isPlaceholder={isLoading}
+      icon={icon}
+      layout={layout}
+      status={status}
+      tooltip={tooltip}
+    />
   )
 }

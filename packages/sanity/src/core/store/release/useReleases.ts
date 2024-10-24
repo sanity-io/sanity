@@ -7,10 +7,17 @@ import {type ReleaseDocument} from './types'
 
 interface ReleasesState {
   data: ReleaseDocument[]
+  releases: Map<string, ReleaseDocument>
   deletedReleases: Record<string, ReleaseDocument>
   error?: Error
   loading: boolean
   dispatch: React.Dispatch<ReleasesReducerAction>
+
+  /**
+   * An array of release ids ordered chronologically to represent the state of documents at the
+   * given point in time.
+   */
+  stack: string[]
 }
 
 /**
@@ -24,9 +31,11 @@ export function useReleases(): ReleasesState {
 
   return {
     data: releasesAsArray,
+    releases: state.releases,
     deletedReleases: deletedReleases,
     dispatch,
     error,
     loading: ['loading', 'initialising'].includes(state.state),
+    stack: state.releaseStack,
   }
 }

@@ -1,13 +1,11 @@
 import {isEqual} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
-import {DRAFTS_FOLDER} from 'sanity'
 import {SearchContext} from 'sanity/_singletons'
-import {useRouter} from 'sanity/router'
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
 import {type SearchTerms} from '../../../../../../search'
-import {useCurrentUser} from '../../../../../../store'
+import {useCurrentUser, useReleases} from '../../../../../../store'
 import {resolvePerspectiveOptions} from '../../../../../../util/resolvePerspective'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
@@ -33,7 +31,7 @@ interface SearchProviderProps {
 export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
-  const perspective = useRouter().stickyParams.perspective
+  const releases = useReleases()
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const {
@@ -143,9 +141,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
-          ...resolvePerspectiveOptions(perspective, (perspectives, isSystemPerspective) =>
-            isSystemPerspective ? perspectives : perspectives.concat(DRAFTS_FOLDER),
-          ),
+          ...resolvePerspectiveOptions(releases.stack),
         },
         terms: {
           ...terms,
@@ -171,7 +167,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     searchState.terms,
     terms,
     cursor,
-    perspective,
+    releases.stack,
   ])
 
   /**

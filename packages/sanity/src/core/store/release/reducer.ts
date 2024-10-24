@@ -1,3 +1,5 @@
+import {DRAFTS_FOLDER, resolveBundlePerspective} from 'sanity'
+
 import {type ReleaseDocument} from './types'
 
 interface BundleDeletedAction {
@@ -42,6 +44,12 @@ export interface ReleasesReducerState {
   deletedReleases: Record<string, ReleaseDocument>
   state: 'initialising' | 'loading' | 'loaded' | 'error'
   error?: Error
+
+  /**
+   * An array of release ids ordered chronologically to represent the state of documents at the
+   * given point in time.
+   */
+  releaseStack: string[]
 }
 
 function createReleasesSet(releases: ReleaseDocument[] | null) {
@@ -54,6 +62,7 @@ function createReleasesSet(releases: ReleaseDocument[] | null) {
 export function releasesReducer(
   state: ReleasesReducerState,
   action: ReleasesReducerAction,
+  perspective?: string,
 ): ReleasesReducerState {
   switch (action.type) {
     case 'LOADING_STATE_CHANGED': {
@@ -71,6 +80,10 @@ export function releasesReducer(
       return {
         ...state,
         releases: releasesById,
+        releaseStack: getReleaseStack({
+          releases: releasesById,
+          perspective,
+        }),
       }
     }
 
@@ -82,6 +95,10 @@ export function releasesReducer(
       return {
         ...state,
         releases: currentReleases,
+        releaseStack: getReleaseStack({
+          releases: currentReleases,
+          perspective,
+        }),
       }
     }
 
@@ -105,6 +122,7 @@ export function releasesReducer(
         ...state,
         releases: currentReleases,
         deletedReleases: nextDeletedReleases,
+        releaseStack: [...state.releaseStack].filter((id) => id !== deletedBundleId),
       }
     }
 
@@ -117,10 +135,49 @@ export function releasesReducer(
       return {
         ...state,
         releases: currentReleases,
+        releaseStack: getReleaseStack({
+          releases: currentReleases,
+          perspective,
+        }),
       }
     }
 
     default:
       return state
+  }
+}
+
+function getReleaseStack({
+  releases,
+  perspective,
+}: {
+  releases?: Map<string, ReleaseDocument>
+  perspective?: string
+}): string[] {
+  if (typeof releases === 'undefined') {
+    return []
+  }
+
+  // TODO: Handle system perspectives.
+  if (!perspective?.startsWith('bundle.')) {
+    return []
+  }
+
+  const stack = [...releases.values()]
+    .toSorted(sortReleases(resolveBundlePerspective(perspective)))
+    .map(({_id}) => _id)
+    .concat(DRAFTS_FOLDER)
+
+  return stack
+}
+
+// TODO: Implement complete layering heuristics.
+function sortReleases(perspective?: string): (a: ReleaseDocument, b: ReleaseDocument) => number {
+  return function (a, b) {
+    // Ensure the current release takes highest precedence.
+    if (a._id === perspective) {
+      return -1
+    }
+    return 0
   }
 }

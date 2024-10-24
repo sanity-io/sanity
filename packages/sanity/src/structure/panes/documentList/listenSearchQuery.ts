@@ -18,7 +18,6 @@ import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {
   createSearch,
   createSWR,
-  DRAFTS_FOLDER,
   getSearchableTypes,
   resolvePerspectiveOptions,
   type SanityDocumentLike,
@@ -37,7 +36,7 @@ interface ListenQueryOptions {
   schema: Schema
   searchQuery: string
   sort: SortOrder
-  perspective?: string
+  perspective?: string[]
   staticTypeNames?: string[] | null
   maxFieldDepth?: number
   enableLegacySearch?: boolean
@@ -152,9 +151,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               limit,
               skipSortByScore: true,
               sort: sortBy,
-              ...resolvePerspectiveOptions(perspective, (perspectives, isSystemPerspective) =>
-                isSystemPerspective ? perspectives : perspectives.concat(DRAFTS_FOLDER),
-              ),
+              ...resolvePerspectiveOptions(perspective),
             }
 
             return search(searchTerms, searchOptions).pipe(

@@ -6,11 +6,11 @@ import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
   type GeneralPreviewLayoutKey,
   useI18nText,
+  useReleases,
   useSchema,
   useTranslation,
   useUnique,
 } from 'sanity'
-import {useRouter} from 'sanity/router'
 import {keyframes, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../i18n'
@@ -74,9 +74,7 @@ const DelayedSubtleSpinnerIcon = styled(SpinnerIcon)`
 export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
-
-  const perspective = useRouter().stickyParams.perspective
-
+  const releases = useReleases()
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -102,15 +100,24 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const sortOrder = useUnique(sortWithOrderingFn)
 
-  const {error, isLoadingFullList, isLoading, items, fromCache, onLoadFullList, onRetry} =
-    useDocumentList({
-      apiVersion,
-      filter,
-      perspective,
-      params,
-      searchQuery: searchQuery?.trim(),
-      sortOrder,
-    })
+  const {
+    error,
+    isLoadingFullList,
+    isLoading: documentListIsLoading,
+    items,
+    fromCache,
+    onLoadFullList,
+    onRetry,
+  } = useDocumentList({
+    apiVersion,
+    filter,
+    perspective: releases.stack,
+    params,
+    searchQuery: searchQuery?.trim(),
+    sortOrder,
+  })
+
+  const isLoading = documentListIsLoading || releases.loading
 
   const handleQueryChange = useObservableEvent(
     (event$: Observable<React.ChangeEvent<HTMLInputElement>>) => {

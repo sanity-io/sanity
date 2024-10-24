@@ -3,6 +3,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
 import {of} from 'rxjs'
+import {useRouter} from 'sanity/router'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
@@ -298,24 +299,27 @@ export function useReleasesStore(): ReleaseStore {
   const workspace = useWorkspace()
   const currentUser = useCurrentUser()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const router = useRouter()
 
+  // TODO: Include hidden layers state.
   return useMemo(() => {
     const releaseStore =
       resourceCache.get<ReleaseStore>({
-        dependencies: [workspace, currentUser],
+        dependencies: [workspace, currentUser, router.perspectiveState],
         namespace: 'ReleasesStore',
       }) ||
       createReleaseStore({
         client: studioClient,
         currentUser,
+        perspective: router.perspectiveState.perspective,
       })
 
     resourceCache.set({
-      dependencies: [workspace, currentUser],
+      dependencies: [workspace, currentUser, router.perspectiveState],
       namespace: 'ReleasesStore',
       value: releaseStore,
     })
 
     return releaseStore
-  }, [resourceCache, workspace, studioClient, currentUser])
+  }, [resourceCache, workspace, studioClient, currentUser, router.perspectiveState])
 }

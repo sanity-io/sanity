@@ -4,10 +4,14 @@ import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
+import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
+
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
   version?: PreviewValue | Partial<SanityDocument> | null
+  // eslint-disable-next-line
+  versions?: VersionsRecord
 }
 
 const Root = styled(Text)`
