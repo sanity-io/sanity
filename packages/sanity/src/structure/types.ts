@@ -8,6 +8,7 @@ import {
   type I18nTextRecord,
   type InitialValueTemplateItem,
   type LocaleSource,
+  type Tool,
 } from 'sanity'
 
 import {
@@ -147,6 +148,27 @@ export interface StructureToolOptions {
    * The title that will be displayed for the tool. Defaults to Structure
    */
   title?: string
+  /**
+   * Determines whether the tool can handle the given intent.
+   * By default, the Structure tool can handle create and edit intents for all document types.
+   * This function can be used to override this behavior; for example you could have multiple
+   * Structure tools in the same workspace, each handling intents for different document types.
+   *
+   * @example
+   * ```ts
+   * // This Structure Tool only wants to handle intents for "author" documents
+   * structureTool({
+   *   title: 'Authors',
+   *   name: 'authors',
+   *   canHandleIntent: (intent, params) => {
+   *     if (params.type !== 'author') return false
+   *
+   *     return canHandleIntent(intent, params)
+   *   },
+   * })
+   * ```
+   */
+  canHandleIntent?: Tool['canHandleIntent']
 }
 
 /**
