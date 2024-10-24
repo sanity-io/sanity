@@ -1,4 +1,4 @@
-import {PinFilledIcon, PinIcon} from '@sanity/icons'
+import {LockIcon, PinFilledIcon, PinIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {type TFunction} from 'i18next'
@@ -52,7 +52,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
     if (_id === currentGlobalRelease._id) {
       setPerspective('drafts')
     } else {
-      setPerspective(_id)
+      setPerspective(getBundleIdFromReleaseId(_id))
     }
   }, [_id, currentGlobalRelease._id, setPerspective])
 
@@ -134,7 +134,12 @@ export const releasesOverviewColumnDefs: (
     {
       id: 'publishAt',
       sorting: true,
-      width: 100,
+      sortTransform: ({metadata, publishAt}) => {
+        if (metadata.releaseType === 'undecided') return Infinity
+        if (metadata.releaseType === 'asap' || !publishAt) return new Date().getTime()
+        return new Date(publishAt).getTime()
+      },
+      width: 250,
       header: (props) => (
         <Flex
           {...props.headerProps}
@@ -148,15 +153,20 @@ export const releasesOverviewColumnDefs: (
         </Flex>
       ),
       cell: ({cellProps, datum: release}) => (
-        <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+        <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
           <ReleaseTime release={release} />
+          {release.state === 'scheduled' && (
+            <Text size={1}>
+              <LockIcon />
+            </Text>
+          )}
         </Flex>
       ),
     },
     {
       id: 'documentsMetadata.updatedAt',
       sorting: true,
-      width: 100,
+      width: 150,
       header: (props) => (
         <Flex {...props.headerProps} paddingY={3} sizing="border">
           <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
@@ -164,18 +174,20 @@ export const releasesOverviewColumnDefs: (
       ),
       cell: ({datum: {documentsMetadata}, cellProps}) => (
         <Flex {...cellProps} align="center" gap={2} paddingX={2} paddingY={3} sizing="border">
-          {!!documentsMetadata?.updatedAt && (
-            <Text muted size={1}>
+          <Text muted size={1}>
+            {documentsMetadata?.updatedAt ? (
               <RelativeTime time={documentsMetadata.updatedAt} useTemporalPhrase minimal />
-            </Text>
-          )}
+            ) : (
+              '-'
+            )}
+          </Text>
         </Flex>
       ),
     },
     {
       id: 'documentCount',
       sorting: false,
-      width: 90,
+      width: 100,
       header: ({headerProps}) => (
         <Flex {...headerProps} paddingY={3} sizing="border">
           <Box padding={2} />

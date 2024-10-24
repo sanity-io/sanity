@@ -14,6 +14,7 @@ export interface Column<TableData = unknown> {
   id: keyof TableData | string
   width: number | null
   sorting?: boolean
+  sortTransform?: (value: TableData) => number
 }
 
 export interface TableHeaderProps {

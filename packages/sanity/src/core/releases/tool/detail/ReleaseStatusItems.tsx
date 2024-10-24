@@ -28,7 +28,8 @@ export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
           avatar={<UserAvatar size={0} user={release.createdBy} />}
           text={
             <>
-              {t('footer.status.created')} <RelativeTime time={release._createdAt} />
+              {t('footer.status.edited')}{' '}
+              <RelativeTime time={release._updatedAt} useTemporalPhrase minimal />
             </>
           }
         />

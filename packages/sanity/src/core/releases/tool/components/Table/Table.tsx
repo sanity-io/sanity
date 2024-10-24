@@ -101,18 +101,27 @@ const TableInner = <TableData, AdditionalRowTableData>({
     if (!sort) return filteredResult
 
     return [...filteredResult].sort((a, b) => {
+      const sortColumn = columnDefs.find((column) => column.id === sort.column)
       // TODO: Update this tos support sorting not only by date but also by string
-      const parseDate = (dateString: unknown) =>
-        typeof dateString === 'string' ? Date.parse(dateString) : 0
+      const parseDate = (datum: TableData) => {
+        const transformedSortValue = sortColumn?.sortTransform?.(
+          datum as RowDatum<TableData, AdditionalRowTableData>,
+        )
+        if (transformedSortValue !== undefined) return transformedSortValue
 
-      const aDate = parseDate(get(a, sort.column))
-      const bDate = parseDate(get(b, sort.column))
+        const sortValue = get(datum, sort.column)
+
+        return typeof sortValue === 'string' ? Date.parse(sortValue) : 0
+      }
+
+      const aDate = parseDate(a)
+      const bDate = parseDate(b)
 
       const order = aDate - bDate
       if (sort.direction === 'asc') return order
       return -order
     })
-  }, [data, searchFilter, searchTerm, sort])
+  }, [columnDefs, data, searchFilter, searchTerm, sort])
 
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
