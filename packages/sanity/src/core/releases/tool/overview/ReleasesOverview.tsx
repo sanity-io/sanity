@@ -106,7 +106,9 @@ export function ReleasesOverview() {
     (datum: TableRelease): Partial<TableRowProps> =>
       datum.isDeleted
         ? {tone: 'transparent'}
-        : {tone: currentGlobalBundle._id === datum._id ? getReleaseTone(datum) : 'default'},
+        : {
+            tone: currentGlobalBundle._id === datum._id ? getReleaseTone(datum) : 'default',
+          },
     [currentGlobalBundle._id],
   )
 

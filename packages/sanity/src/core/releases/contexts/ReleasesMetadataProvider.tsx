@@ -29,7 +29,7 @@ const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) 
   )
 
   const memoObservable = useMemo(
-    () => getMetadataStateForSlugs$(listenerReleaseIds.map((slug) => slug.split('.')[1])),
+    () => getMetadataStateForSlugs$(listenerReleaseIds.map((slug) => slug)),
     [getMetadataStateForSlugs$, listenerReleaseIds],
   )
 
