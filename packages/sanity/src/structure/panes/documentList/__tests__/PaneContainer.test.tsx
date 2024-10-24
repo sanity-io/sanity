@@ -30,7 +30,12 @@ vi.mock('sanity', async (importOriginal) => ({
 }))
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
-  useRouter: vi.fn().mockReturnValue({stickyParams: {}, state: {}, navigate: vi.fn()}),
+  useRouter: vi.fn().mockReturnValue({
+    stickyParams: {},
+    state: {},
+    navigate: vi.fn(),
+    perspectiveState: {},
+  }),
 }))
 
 const mockUseSearchState = useSearchState as Mock
