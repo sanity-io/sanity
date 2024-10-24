@@ -15,11 +15,11 @@ import {usePerspective} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
-import {CalendarDay} from '../../../../ui-components/inputs/DateFilters/calender/CalendarDay'
+import {CalendarDay} from '../../../../ui-components/inputs/DateFilters/calendar/CalendarDay'
 import {
   CalendarFilter,
   type CalendarProps,
-} from '../../../../ui-components/inputs/DateFilters/calender/CalendarFilter'
+} from '../../../../ui-components/inputs/DateFilters/calendar/CalendarFilter'
 import {useTranslation} from '../../../i18n'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {type ReleaseDocument, useReleases} from '../../../store'

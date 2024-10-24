@@ -29,7 +29,7 @@ export function useVersionOperations(
     documentType,
     getVersionFromId(documentId),
   )
-  const {setPerspective} = usePerspective()
+  const {setPerspectiveFromRelease, setPerspective} = usePerspective()
   const toast = useToast()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {t} = useTranslation()
@@ -50,7 +50,7 @@ export function useVersionOperations(
 
     // only change if the version was created successfully
     await createVersionSuccess
-    setPerspective(getBundleIdFromReleaseId(releaseId))
+    setPerspectiveFromRelease(releaseId)
 
     telemetry.log(AddedVersion, {
       schemaType: documentType,

@@ -44,17 +44,21 @@ const ReleaseTime = ({release}: {release: TableRelease}) => {
 const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: release}) => {
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {currentGlobalBundle: currentGlobalRelease, setPerspective} = usePerspective()
-  const {state, _id, publishAt} = release
+  const {
+    currentGlobalBundle: currentGlobalRelease,
+    setPerspective,
+    setPerspectiveFromRelease,
+  } = usePerspective()
+  const {state, _id} = release
   const isArchived = state === 'archived'
 
   const handlePinRelease = useCallback(() => {
     if (_id === currentGlobalRelease._id) {
       setPerspective('drafts')
     } else {
-      setPerspective(getBundleIdFromReleaseId(_id))
+      setPerspectiveFromRelease(_id)
     }
-  }, [_id, currentGlobalRelease._id, setPerspective])
+  }, [_id, currentGlobalRelease._id, setPerspective, setPerspectiveFromRelease])
 
   const cardProps: TableRowProps = release.isDeleted
     ? {tone: 'transparent'}

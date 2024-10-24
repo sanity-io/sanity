@@ -19,6 +19,8 @@ export interface PerspectiveValue {
   currentGlobalBundle: CurrentPerspective
   /* Change the perspective in the studio based on the perspective name */
   setPerspective: (releaseId: string) => void
+  /* change the perspective in the studio based on a release ID */
+  setPerspectiveFromRelease: (releaseId: string) => void
 }
 
 /**
@@ -61,8 +63,12 @@ export function usePerspective(selectedPerspective?: string): PerspectiveValue {
         }
       : selectedBundle || LATEST
 
+  const setPerspectiveFromRelease = (releaseId: string) =>
+    setPerspective(getBundleIdFromReleaseId(releaseId))
+
   return {
     setPerspective,
+    setPerspectiveFromRelease,
     currentGlobalBundle: currentGlobalBundle,
   }
 }
