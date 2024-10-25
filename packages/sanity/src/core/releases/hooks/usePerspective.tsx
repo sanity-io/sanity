@@ -30,18 +30,21 @@ export interface PerspectiveValue {
  */
 export function usePerspective(selectedPerspective?: string): PerspectiveValue {
   const router = useRouter()
-  const {data: releases} = useReleases()
+  const {data: releases, dispatch} = useReleases()
   const perspective = selectedPerspective ?? router.stickyParams.perspective
 
   // TODO: Should it be possible to set the perspective within a pane, rather than globally?
   const setPerspective = (releaseId: string | undefined) => {
-    if (releaseId === 'drafts') {
-      router.navigateStickyParam('perspective', '')
-    } else if (releaseId === 'published') {
-      router.navigateStickyParam('perspective', 'published')
-    } else {
-      router.navigateStickyParam('perspective', `bundle.${releaseId}`)
+    let perspectiveParam = ''
+
+    if (releaseId === 'published') {
+      perspectiveParam = 'published'
+    } else if (releaseId !== 'drafts') {
+      perspectiveParam = `bundle.${releaseId}`
     }
+
+    router.navigateStickyParam('perspective', perspectiveParam)
+    dispatch({type: 'PERSPECTIVE_SET', payload: perspectiveParam})
   }
 
   const selectedBundle =

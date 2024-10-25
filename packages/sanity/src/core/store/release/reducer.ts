@@ -32,12 +32,18 @@ interface LoadingStateChangedAction {
   type: 'LOADING_STATE_CHANGED'
 }
 
+interface PerspectiveSetAction {
+  payload: string
+  type: 'PERSPECTIVE_SET'
+}
+
 export type ReleasesReducerAction =
   | BundleDeletedAction
   | BundleUpdatedAction
   | ReleasesSetAction
   | BundleReceivedAction
   | LoadingStateChangedAction
+  | PerspectiveSetAction
 
 export interface ReleasesReducerState {
   releases: Map<string, ReleaseDocument>
@@ -65,6 +71,15 @@ export function releasesReducer(
   perspective?: string,
 ): ReleasesReducerState {
   switch (action.type) {
+    case 'PERSPECTIVE_SET': {
+      return {
+        ...state,
+        releaseStack: getReleaseStack({
+          releases: state.releases,
+          perspective: action.payload,
+        }),
+      }
+    }
     case 'LOADING_STATE_CHANGED': {
       return {
         ...state,
