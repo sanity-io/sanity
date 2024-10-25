@@ -23,13 +23,13 @@ export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
   return (
     <Flex flex={1} gap={1}>
       {/* Created */}
-      {!release.metadata.archivedAt && !release.publishAt && !lastEdit && (
+      {release.state !== 'archived' && !release.publishAt && !lastEdit && (
         <StatusItem
           avatar={<UserAvatar size={0} user={release.createdBy} />}
           text={
             <>
-              {t('footer.status.edited')}{' '}
-              <RelativeTime time={release._updatedAt} useTemporalPhrase minimal />
+              {t('footer.status.created')}{' '}
+              <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
             </>
           }
         />
@@ -43,7 +43,8 @@ export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
           }
           text={
             <>
-              {t('footer.status.edited')} <RelativeTime time={lastEdit.date} />
+              {t('footer.status.edited')}{' '}
+              <RelativeTime time={lastEdit.date} minimal useTemporalPhrase />
             </>
           }
         />
@@ -59,7 +60,8 @@ export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
           }
           text={
             <>
-              {t('footer.status.published')} <RelativeTime time={release.publishAt} />
+              {t('footer.status.published')}{' '}
+              <RelativeTime time={release.publishAt} minimal useTemporalPhrase />
             </>
           }
         />
