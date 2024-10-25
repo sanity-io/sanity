@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
-import {type InitialValueResolverContext} from '@sanity/types'
-import {firstValueFrom} from 'rxjs'
-import {describe, expect, it} from 'vitest'
+import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {firstValueFrom, Observable} from 'rxjs'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createSchema} from '../../../../schema'
@@ -10,6 +10,7 @@ import {defaultTemplatesForSchema, prepareTemplates} from '../../../../templates
 import {requiresApproval} from '../debug/exampleGrants'
 import {createGrantsStore} from '../grantsStore'
 import {getTemplatePermissions} from '../templatePermissions'
+import {type PermissionCheckResult} from '../types'
 
 const schema = createSchema({
   name: 'test',
@@ -43,6 +44,24 @@ const templates = prepareTemplates(schema, [
   },
 ])
 
+// Mock the getDocumentValuePermissions function
+vi.mock('../documentValuePermissions', () => ({
+  getDocumentValuePermissions: ({
+    document,
+  }: {
+    document: Record<string, unknown>
+  }): Observable<PermissionCheckResult> => {
+    return new Observable((subscriber) => {
+      // Return different permissions based on the document's locked status
+      subscriber.next({
+        granted: !document.locked,
+        reason: document.locked ? 'No matching grants found' : 'Matching grant',
+      })
+      subscriber.complete()
+    })
+  },
+}))
+
 describe('getTemplatePermissions', () => {
   it('takes in a list of `InitialValueTemplateItem`s and returns an observable of `TemplatePermissionsResult` in a record', async () => {
     const client = createMockSanityClient({requests: {'/acl': requiresApproval}})
@@ -50,6 +69,14 @@ describe('getTemplatePermissions', () => {
       client: client as unknown as SanityClient,
       userId: null,
     })
+
+    const context: InitialValueResolverContext = {
+      projectId: 'test-project',
+      dataset: 'test-dataset',
+      schema: schema as Schema,
+      currentUser: null,
+      getClient: () => client as unknown as SanityClient,
+    }
 
     const permissions = firstValueFrom(
       getTemplatePermissions({
@@ -62,15 +89,17 @@ describe('getTemplatePermissions', () => {
             templateId: 'author-developer-locked',
             type: 'initialValueTemplateItem',
             schemaType: 'author',
+            parameters: {},
           },
           {
             id: 'author-developer-unlocked',
             templateId: 'author-developer-unlocked',
             type: 'initialValueTemplateItem',
             schemaType: 'author',
+            parameters: {},
           },
         ],
-        context: {} as InitialValueResolverContext,
+        context,
       }),
     )
 
@@ -79,6 +108,7 @@ describe('getTemplatePermissions', () => {
         description: undefined,
         granted: false,
         icon: undefined,
+        i18n: undefined,
         schemaType: 'author',
         id: 'author-developer-locked',
         reason: 'No matching grants found',
@@ -93,11 +123,13 @@ describe('getTemplatePermissions', () => {
         templateId: 'author-developer-locked',
         title: 'Developer',
         type: 'initialValueTemplateItem',
+        parameters: {},
       },
       {
         description: undefined,
         granted: true,
         icon: undefined,
+        i18n: undefined,
         schemaType: 'author',
         id: 'author-developer-unlocked',
         reason: 'Matching grant',
@@ -112,6 +144,7 @@ describe('getTemplatePermissions', () => {
         templateId: 'author-developer-unlocked',
         title: 'Developer',
         type: 'initialValueTemplateItem',
+        parameters: {},
       },
     ])
   })
