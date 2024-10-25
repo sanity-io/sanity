@@ -209,10 +209,10 @@ export function ReleasesOverview() {
     })
   }, [releaseFilterDate, router])
 
-  const hasMounter = useRef(false)
+  const hasMounted = useRef(false)
 
   useEffect(() => {
-    hasMounter.current = true
+    hasMounted.current = true
   }, [])
 
   const currentArchivedPicker = useMemo(() => {
@@ -220,11 +220,11 @@ export function ReleasesOverview() {
       disabled: loading || !hasReleases,
       mode: 'bleed' as ButtonMode,
       padding: 2,
-      ...(hasMounter.current
+      ...(hasMounted.current
         ? {
             initial: {opacity: 0},
             animate: {opacity: 1},
-            transition: {duration: 0.35, ease: 'easeInOut'},
+            transition: {duration: 0.4, ease: 'easeInOut'},
           }
         : {}),
     }
