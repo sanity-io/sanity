@@ -55,7 +55,6 @@ const LISTEN_OPTIONS: ListenOptions = {
 
 const INITIAL_STATE: ReleasesReducerState = {
   releases: new Map(),
-  deletedReleases: {},
   state: 'loaded' as const,
   releaseStack: [],
 }

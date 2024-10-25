@@ -18,7 +18,7 @@ export type ReleaseMenuButtonProps = {
 
 export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) => {
   const {updateRelease} = useReleaseOperations()
-  const isBundleArchived = !!release?.metadata.archivedAt
+  const isBundleArchived = release?.state === 'archived'
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<'edit'>()
 
@@ -34,6 +34,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
     setIsPerformingOperation(true)
     await updateRelease({
       ...release,
+      state: isBundleArchived ? 'active' : 'archived',
       metadata: {
         ...release.metadata,
         archivedAt: isBundleArchived ? undefined : new Date().toISOString(),

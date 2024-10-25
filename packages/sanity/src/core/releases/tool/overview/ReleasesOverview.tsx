@@ -115,7 +115,7 @@ const getInitialFilterDate = (router: RouterContextValue) => () => {
 }
 
 export function ReleasesOverview() {
-  const {data: releases, loading: loadingReleases, deletedReleases} = useReleases()
+  const {data: releases, loading: loadingReleases} = useReleases()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>('open')
   const router = useRouter()
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
@@ -147,23 +147,16 @@ export function ReleasesOverview() {
   const loadingOrHasReleases = loading || hasReleases
 
   const tableReleases = useMemo<TableRelease[]>(() => {
-    const deletedTableReleases = Object.values(deletedReleases).map((deletedRelease) => ({
-      ...deletedRelease,
-      publishAt: deletedRelease.publishAt || deletedRelease.metadata.intendedPublishAt,
-      isDeleted: true,
-    }))
-
-    if (!hasReleases || !releasesMetadata) return deletedTableReleases
+    if (!hasReleases || !releasesMetadata) return []
 
     return [
-      ...deletedTableReleases,
       ...releases.map((release) => ({
         ...release,
         publishAt: release.publishAt || release.metadata.intendedPublishAt,
         documentsMetadata: releasesMetadata[release._id] || {},
       })),
     ]
-  }, [deletedReleases, hasReleases, releasesMetadata, releases])
+  }, [hasReleases, releasesMetadata, releases])
 
   const groupedReleases = useMemo(
     () =>

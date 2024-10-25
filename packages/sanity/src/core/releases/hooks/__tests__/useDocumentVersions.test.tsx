@@ -73,7 +73,6 @@ async function setupMocks({
     data: releases,
     loading: false,
     dispatch: vi.fn(),
-    deletedReleases: {},
     stack: [],
   })
 

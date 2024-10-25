@@ -23,7 +23,7 @@ vi.mock('../../util/util', () => ({
 }))
 
 vi.mock('../../../store/release/useReleases', () => ({
-  useReleases: vi.fn().mockReturnValue({deletedReleases: {}}),
+  useReleases: vi.fn().mockReturnValue({}),
 }))
 
 const mockUseReleases = useReleases as Mock<typeof useReleases>
@@ -234,20 +234,20 @@ describe('ReleasesMenu', () => {
     })
   })
 
-  it('should not show deleted releases when not included in the list', async () => {
+  it('should not show archived releases when not included in the list', async () => {
     mockUseReleases.mockReturnValue({
       dispatch: vi.fn(),
       loading: false,
-      data: [],
-      deletedReleases: {
-        'mock-deleted-release': {
+      data: [
+        {
           _id: 'mock-deleted-release',
           _type: 'system-tmp.release',
+          state: 'archived',
           metadata: {
-            title: 'Mock Deleted Bundle',
+            title: 'Mock Archived Bundle',
           },
         } as ReleaseDocument,
-      },
+      ],
     })
     const wrapper = await createTestProvider()
     render(<ReleasesMenu button={ButtonTest} releases={mockReleases} loading={false} />, {
@@ -257,53 +257,7 @@ describe('ReleasesMenu', () => {
     fireEvent.click(screen.getByRole('button', {name: 'Button Test'}))
 
     expect(
-      within(screen.getByTestId('releases-list')).queryByText('Mock Deleted Bundle'),
+      within(screen.getByTestId('releases-list')).queryByText('Mock Archived Bundle'),
     ).not.toBeInTheDocument()
-  })
-
-  it('should show deleted releases that are included in the list', async () => {
-    mockUseReleases.mockReturnValue({
-      dispatch: vi.fn(),
-      loading: false,
-      data: [],
-      deletedReleases: {
-        'mock-deleted-release': {
-          _id: 'mock-deleted-release',
-          _type: 'system-tmp.release',
-          metadata: {
-            title: 'Mock Deleted Bundle',
-          },
-        } as ReleaseDocument,
-      },
-    })
-    const wrapper = await createTestProvider()
-    render(
-      <ReleasesMenu
-        button={ButtonTest}
-        releases={[
-          ...mockReleases,
-          {
-            _id: 'mock-deleted-release',
-            _type: 'system-tmp.release',
-            metadata: {
-              title: 'Mock Deleted Bundle',
-            },
-          } as ReleaseDocument,
-        ]}
-        loading={false}
-      />,
-      {
-        wrapper,
-      },
-    )
-
-    fireEvent.click(screen.getByRole('button', {name: 'Button Test'}))
-
-    const allMenuBundles = within(screen.getByTestId('releases-list')).getAllByRole('menuitem')
-    // deleted should be at the end of the release list
-    const [deletedBundle] = allMenuBundles.reverse()
-
-    within(deletedBundle).getByText('Mock Deleted Bundle')
-    expect(deletedBundle).toBeDisabled()
   })
 })

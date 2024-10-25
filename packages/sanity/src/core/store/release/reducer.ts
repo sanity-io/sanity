@@ -47,7 +47,6 @@ export type ReleasesReducerAction =
 
 export interface ReleasesReducerState {
   releases: Map<string, ReleaseDocument>
-  deletedReleases: Record<string, ReleaseDocument>
   state: 'initialising' | 'loading' | 'loaded' | 'error'
   error?: Error
 
@@ -114,30 +113,6 @@ export function releasesReducer(
           releases: currentReleases,
           perspective,
         }),
-      }
-    }
-
-    case 'BUNDLE_DELETED': {
-      const currentReleases = new Map(state.releases)
-      const deletedBundleId = action.id
-      const isDeletedByCurrentUser = action.currentUserId === action.deletedByUserId
-      const localDeletedBundle = currentReleases.get(deletedBundleId)
-      currentReleases.delete(deletedBundleId)
-
-      // only capture the deleted release if deleted by another user
-      const nextDeletedReleases =
-        !isDeletedByCurrentUser && localDeletedBundle
-          ? {
-              ...state.deletedReleases,
-              [localDeletedBundle._id]: localDeletedBundle,
-            }
-          : state.deletedReleases
-
-      return {
-        ...state,
-        releases: currentReleases,
-        deletedReleases: nextDeletedReleases,
-        releaseStack: [...state.releaseStack].filter((id) => id !== deletedBundleId),
       }
     }
 

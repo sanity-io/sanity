@@ -52,7 +52,7 @@ describe('ReleaseDetailsDialog', () => {
         loading: true,
         dispatch: vi.fn(),
         error: undefined,
-        deletedReleases: {},
+        stack: [],
       })
 
       //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
@@ -133,7 +133,7 @@ describe('ReleaseDetailsDialog', () => {
         loading: true,
         dispatch: vi.fn(),
         error: undefined,
-        deletedReleases: {},
+        stack: [],
       })
 
       //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})

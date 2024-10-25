@@ -9,9 +9,8 @@ import {type DocumentInBundleResult} from './useBundleDocuments'
 export function ReleaseDashboardFooter(props: {
   documents: DocumentInBundleResult[]
   release: ReleaseDocument
-  isBundleDeleted: boolean
 }) {
-  const {documents, release, isBundleDeleted} = props
+  const {documents, release} = props
 
   return (
     <Card flex="none">
@@ -24,14 +23,14 @@ export function ReleaseDashboardFooter(props: {
 
         <Flex flex="none" gap={1}>
           {/* TODO: Replace this with the real actions. */}
-          {!isBundleDeleted && !release.publishAt && (
+          {!release.publishAt && (
             <ReleasePublishAllButton
               release={release}
               releaseDocuments={documents}
               disabled={!documents.length}
             />
           )}
-          <ReleaseMenuButton disabled={isBundleDeleted} release={release} />
+          <ReleaseMenuButton release={release} />
         </Flex>
       </Flex>
     </Card>

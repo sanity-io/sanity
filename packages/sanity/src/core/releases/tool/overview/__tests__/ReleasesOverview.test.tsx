@@ -52,7 +52,7 @@ describe.todo('ReleasesOverview', () => {
         data: [],
         loading: true,
         dispatch: vi.fn(),
-        deletedReleases: {},
+        stack: [],
       })
       mockUseReleasesMetadata.mockReturnValue({
         loading: true,
@@ -92,7 +92,7 @@ describe.todo('ReleasesOverview', () => {
         data: [],
         loading: false,
         dispatch: vi.fn(),
-        deletedReleases: {},
+        stack: [],
       })
       mockUseReleasesMetadata.mockReturnValue({
         loading: false,
@@ -177,16 +177,7 @@ describe.todo('ReleasesOverview', () => {
         data: releases,
         loading: false,
         dispatch: vi.fn(),
-        deletedReleases: {
-          'deleted-release-id': {
-            _id: 'deleted-release-id',
-            _createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * 5).toISOString(),
-            _updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * 5).toISOString(),
-            metadata: {
-              title: 'Deleted Release',
-            },
-          } satisfies ReleaseDocument,
-        },
+        stack: [],
       })
       mockUseReleasesMetadata.mockReturnValue({
         loading: false,
