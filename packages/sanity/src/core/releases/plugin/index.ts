@@ -4,6 +4,7 @@ import {definePlugin} from '../../config'
 import {releasesUsEnglishLocaleBundle} from '../i18n'
 import {ReleasesStudioNavbar} from '../navbar/ReleasesStudioNavbar'
 import {ReleasesTool} from '../tool/ReleasesTool'
+import resolveDocumentActions from './documentActions'
 import {ReleasesStudioLayout} from './ReleasesStudioLayout'
 
 /**
@@ -52,5 +53,8 @@ export const releases = definePlugin({
   ],
   i18n: {
     bundles: [releasesUsEnglishLocaleBundle],
+  },
+  document: {
+    actions: (actions, context) => resolveDocumentActions(actions, context),
   },
 })

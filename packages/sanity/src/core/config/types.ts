@@ -520,9 +520,22 @@ export interface ResolveProductionUrlContext extends ConfigContext {
  * @hidden
  * @beta
  */
+
+export type DocumentActionsPerspective = 'published' | 'draft' | 'revision' | 'version'
+
+/**
+ * @hidden
+ * @beta
+ */
 export interface DocumentActionsContext extends ConfigContext {
   documentId?: string
   schemaType: string
+  /** bundleId of the open document, it's undefined if it's published or the draft */
+  bundleId?: string
+  /** the perspective (version) of the open document */
+  perspective?: DocumentActionsPerspective
+  /** the revision id of the open document */
+  revisionDisplay?: string
 }
 
 /**

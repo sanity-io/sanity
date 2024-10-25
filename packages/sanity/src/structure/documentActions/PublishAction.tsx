@@ -56,7 +56,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish} = useDocumentOperation(id, type, bundleId)
   const validationStatus = useValidationStatus(id, type, bundleId)
   const syncState = useSyncState(id, type, {version: bundleId})
-  const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
+  const {changesOpen, onHistoryOpen, documentId, documentType, displayed} = useDocumentPane()
 
   const editState = useEditState(documentId, documentType, 'default', bundleId)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -85,6 +85,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
       : ''
 
   const hasDraft = Boolean(draft)
+
+  /** detect if the displayed document is published, if it is the publish action should be disabled */
+  const isDisplayedPublished = displayed?._id === documentId
 
   const doPublish = useCallback(() => {
     publish.execute()
@@ -188,7 +191,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
         publishState === 'publishing' ||
         publishState === 'published' ||
         hasValidationErrors ||
-        publish.disabled,
+        publish.disabled ||
+        isDisplayedPublished,
     )
 
     return {
@@ -218,6 +222,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
     editState?.transactionSyncLock?.enabled,
     handle,
     hasValidationErrors,
+    isDisplayedPublished,
     isPermissionsLoading,
     liveEdit,
     permissions?.granted,

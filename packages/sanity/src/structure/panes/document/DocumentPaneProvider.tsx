@@ -13,6 +13,7 @@ import {omit, throttle} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 import {
+  type DocumentActionsPerspective,
   type DocumentFieldAction,
   type DocumentInspector,
   type DocumentPresence,
@@ -154,10 +155,43 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const [isDeleting, setIsDeleting] = useState(false)
 
+  const getDocumentPerspective = useCallback(() => {
+    let version: DocumentActionsPerspective
+    switch (true) {
+      // bundle Perspective will always be undefined in published and draft but not on version
+      case typeof bundlePerspective !== 'undefined':
+        version = 'version'
+        break
+      case Boolean(params):
+        version = 'revision'
+        break
+      case perspective === 'published':
+        version = 'published'
+        break
+      default:
+        version = 'draft'
+    }
+
+    return version
+  }, [bundlePerspective, params, perspective])
+
+  const actionsPerspective = useMemo(() => getDocumentPerspective(), [getDocumentPerspective])
+
+  const documentActionsProps = useMemo(
+    () => ({
+      schemaType: documentType,
+      documentId,
+      perspective: actionsPerspective,
+      _rev: value._rev,
+      ...(bundlePerspective && {bundleId: bundlePerspective}),
+    }),
+    [actionsPerspective, bundlePerspective, documentId, documentType, value._rev],
+  )
+
   // Resolve document actions
   const actions = useMemo(
-    () => documentActions({schemaType: documentType, documentId}),
-    [documentActions, documentId, documentType],
+    () => documentActions(documentActionsProps),
+    [documentActions, documentActionsProps],
   )
 
   // Resolve document badges

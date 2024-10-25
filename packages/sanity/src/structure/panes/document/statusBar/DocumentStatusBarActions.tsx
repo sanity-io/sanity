@@ -5,17 +5,12 @@ import {memo, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
-  type DocumentActionProps,
   Hotkeys,
-  isReleaseDocument,
-  LATEST,
-  ReleaseActions,
-  usePerspective,
   useTimelineSelector,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState, usePaneRouter} from '../../../components'
+import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
@@ -25,16 +20,14 @@ interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
   showMenu: boolean
   states: DocumentActionDescription[]
-  actionProps?: Omit<DocumentActionProps, 'onComplete'> | null
 }
 
 const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInner(
   props: DocumentStatusBarActionsInnerProps,
 ) {
-  const {disabled, showMenu, states, actionProps} = props
-  const {__internal_tasks, documentType, formState} = useDocumentPane()
+  const {disabled, showMenu, states} = props
+  const {__internal_tasks, existsInBundle} = useDocumentPane()
 
-  const paneRouter = usePaneRouter()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
@@ -59,11 +52,11 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     )
   }, [firstActionState])
 
+  const sideMenuItems = useMemo(() => {
+    return existsInBundle ? [firstActionState] : menuActionStates
+  }, [existsInBundle, firstActionState, menuActionStates])
+
   /* Version / Bundling handling */
-
-  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {currentGlobalBundle} = usePerspective(paneRouter.perspective)
-
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
@@ -71,7 +64,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              {currentGlobalBundle._id === LATEST._id ? (
+              {!existsInBundle && (
                 <Button
                   data-testid={`action-${firstActionState.label}`}
                   disabled={disabled || Boolean(firstActionState.disabled)}
@@ -82,34 +75,14 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                   text={firstActionState.label}
                   tone={firstActionState.tone || 'primary'}
                 />
-              ) : (
-                <>
-                  {isReleaseDocument(currentGlobalBundle) && formState?.value?._id ? (
-                    <ReleaseActions
-                      currentGlobalBundle={currentGlobalBundle}
-                      documentId={formState.value._id as string}
-                      documentType={documentType}
-                      {...actionProps}
-                      key={formState.value._id as string}
-                    />
-                  ) : (
-                    <div>
-                      {/* eslint-disable-next-line i18next/no-literal-string */}
-                      <Text>Not a bundle</Text>
-                    </div>
-                  )}
-                </>
               )}
             </Stack>
           </Tooltip>
         </LayerProvider>
       )}
-      {/**
-       * TODO DO WE STILL NEED THIS OR CAN WE MOVE THIS TO THE PLUGIN?
-       * SPECIFICALLY FOR ISDRAFT
-       */}
-      {showMenu && menuActionStates.length > 0 && currentGlobalBundle._id === LATEST._id && (
-        <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
+      {/* if it's in version we always only want to show the items on the side menu and not on the main action */}
+      {((showMenu && menuActionStates.length > 0) || existsInBundle) && (
+        <ActionMenuButton actionStates={sideMenuItems} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
         <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
@@ -119,7 +92,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 })
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {actions: allActions, connectionState, documentId, editState} = useDocumentPane()
+  const {actions: allActions, connectionState, documentId, editState, displayed} = useDocumentPane()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   // const handleMenuClose = useCallback(() => setMenuOpen(false), [])
@@ -145,10 +118,9 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
         states={states}
         // Use document ID as key to make sure that the actions state is reset when the document changes
         key={documentId}
-        actionProps={editState}
       />
     ),
-    [actions.length, connectionState, documentId, editState],
+    [actions.length, connectionState, documentId],
   )
 
   if (actions.length === 0 || !editState) {
