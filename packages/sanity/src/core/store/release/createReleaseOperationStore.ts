@@ -7,12 +7,12 @@ import {RELEASE_DOCUMENT_TYPE} from './constants'
 
 export interface ReleaseOperationsStore {
   publishRelease: (
-    bundleId: string,
-    bundleDocuments: SanityDocument[],
+    releaseId: string,
+    releaseDocuments: SanityDocument[],
     publishedDocumentsRevisions: Record<string, string>,
   ) => Promise<void>
-  updateRelease: (bundle: EditableReleaseDocument) => Promise<void>
-  createRelease: (bundle: EditableReleaseDocument) => Promise<void>
+  updateRelease: (release: EditableReleaseDocument) => Promise<void>
+  createRelease: (release: EditableReleaseDocument) => Promise<void>
 }
 
 export function createReleaseOperationsStore(options: {
