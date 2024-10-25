@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentPerspectiveMenu} from './perspective/DocumentPerspectiveMenu'
+import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
 const TitleContainer = styled(Text)`
   max-width: 100%;
@@ -69,7 +69,7 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(props: {
           </TitleContainer>
         </>
       ) : (
-        <DocumentPerspectiveMenu />
+        <DocumentPerspectiveList />
       )}
     </Flex>
   )

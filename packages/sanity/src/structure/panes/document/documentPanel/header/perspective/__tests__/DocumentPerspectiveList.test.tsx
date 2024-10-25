@@ -7,7 +7,7 @@ import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} fr
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
-import {DocumentPerspectiveMenu} from '../DocumentPerspectiveMenu'
+import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -61,19 +61,22 @@ const mockUseDocumentPane = useDocumentPane as MockedFunction<
 
 const mockUsePerspective = usePerspective as Mock
 
-describe('DocumentPerspectiveMenu', () => {
+describe('DocumentPerspectiveList', () => {
   const mockCurrent: ReleaseDocument = {
-    description: 'What a spring drop, allergies galore 🌸',
     _updatedAt: '2024-07-12T10:39:32Z',
-    _rev: 'HdJONGqRccLIid3oECLjYZ',
     createdBy: 'pzAhBTkNX',
-    title: 'Spring Drop',
-    icon: 'heart-filled',
     _id: 'spring-drop',
-    _type: 'release',
-    hue: 'magenta',
+    _type: 'system-tmp.release',
+    metadata: {
+      description: 'What a spring drop, allergies galore 🌸',
+      hue: 'magenta',
+      releaseType: 'asap',
+      title: 'Spring Drop',
+      icon: 'heart-filled',
+    },
     _createdAt: '2024-07-02T11:37:51Z',
-    releaseType: 'asap',
+    name: 'spring-drop',
+    state: 'scheduled',
   }
 
   beforeEach(() => {
@@ -90,7 +93,7 @@ describe('DocumentPerspectiveMenu', () => {
 
   it('should render "Published" and "Draft" chips when it has no other version', async () => {
     const wrapper = await createTestProvider()
-    render(<DocumentPerspectiveMenu />, {wrapper})
+    render(<DocumentPerspectiveList />, {wrapper})
     expect(screen.getByRole('button', {name: 'Published'})).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Draft'})).toBeInTheDocument()
   })
@@ -120,7 +123,7 @@ describe('DocumentPerspectiveMenu', () => {
     })
 
     const wrapper = await createTestProvider()
-    render(<DocumentPerspectiveMenu />, {wrapper})
+    render(<DocumentPerspectiveList />, {wrapper})
 
     expect(screen.getByRole('button', {name: 'Spring Drop'})).toBeInTheDocument()
   })

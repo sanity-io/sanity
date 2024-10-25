@@ -16,7 +16,7 @@ import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 
 import {VersionChip} from './VersionChip'
 
-export const DocumentPerspectiveMenu = memo(function DocumentPerspectiveMenu() {
+export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {perspective} = usePaneRouter()
   const {t} = useTranslation()
   const {setPerspective} = usePerspective(perspective)
