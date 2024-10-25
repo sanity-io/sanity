@@ -2,15 +2,8 @@ import {AddIcon, ChevronDownIcon, CloseIcon, EarthGlobeIcon} from '@sanity/icons
 import {Box, type ButtonMode, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {endOfDay, format, isSameDay, startOfDay} from 'date-fns'
 import {zonedTimeToUtc} from 'date-fns-tz'
-import {
-  Fragment,
-  type MouseEventHandler,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {AnimatePresence, motion} from 'framer-motion'
+import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {usePerspective} from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
@@ -36,6 +29,42 @@ import {type TableSort} from '../components/Table/TableProvider'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 
 type Mode = 'open' | 'archived'
+
+const MotionButton = motion(Button)
+const MotionStudioButton = motion(StudioButton)
+
+const DateFilterButton = ({filterDate, onClear}: {filterDate: Date; onClear: () => void}) => {
+  const [isExiting, setIsExiting] = useState(false)
+
+  const handleOnExitComplete = useMemo(
+    () => () => {
+      setIsExiting(false)
+      onClear()
+    },
+    [onClear],
+  )
+
+  if (!filterDate) return null
+
+  return (
+    <AnimatePresence onExitComplete={handleOnExitComplete}>
+      {!isExiting && (
+        <MotionButton
+          initial={{width: 0, opacity: 0}}
+          animate={{width: 'auto', opacity: 1}}
+          exit={{width: 0, opacity: 0}}
+          transition={{duration: 0.35, ease: 'easeInOut'}}
+          iconRight={CloseIcon}
+          mode="bleed"
+          onClick={() => setIsExiting(true)}
+          padding={2}
+          selected
+          text={format(filterDate, 'PPP')}
+        />
+      )}
+    </AnimatePresence>
+  )
+}
 
 const DATE_SEARCH_PARAM_KEY = 'date'
 const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
@@ -172,21 +201,6 @@ export function ReleasesOverview() {
 
   const clearFilterDate = useCallback(() => setReleaseFilterDate(undefined), [])
 
-  const currentFilterDate = useMemo(() => {
-    if (!releaseFilterDate) return null
-
-    return (
-      <Button
-        iconRight={CloseIcon}
-        mode="bleed"
-        onClick={clearFilterDate}
-        padding={2}
-        selected
-        text={format(releaseFilterDate, 'PPP')}
-      />
-    )
-  }, [releaseFilterDate, clearFilterDate])
-
   useEffect(() => {
     router.navigate({
       _searchParams: releaseFilterDate
@@ -195,15 +209,28 @@ export function ReleasesOverview() {
     })
   }, [releaseFilterDate, router])
 
+  const hasMounter = useRef(false)
+
+  useEffect(() => {
+    hasMounter.current = true
+  }, [])
+
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
       disabled: loading || !hasReleases,
       mode: 'bleed' as ButtonMode,
       padding: 2,
+      ...(hasMounter.current
+        ? {
+            initial: {opacity: 0},
+            animate: {opacity: 1},
+            transition: {duration: 0.35, ease: 'easeInOut'},
+          }
+        : {}),
     }
     return (
-      <Fragment>
-        <Button
+      <AnimatePresence>
+        <MotionButton
           {...groupModeButtonBaseProps}
           onClick={handleReleaseGroupModeChange}
           selected={releaseGroupMode === 'open'}
@@ -211,7 +238,7 @@ export function ReleasesOverview() {
           value="open"
         />
         {/* StudioButton supports tooltip when button is disabled */}
-        <StudioButton
+        <MotionStudioButton
           {...groupModeButtonBaseProps}
           disabled={groupModeButtonBaseProps.disabled || !groupedReleases.archived.length}
           tooltipProps={{
@@ -224,7 +251,7 @@ export function ReleasesOverview() {
           text={t('action.archived')}
           value="archived"
         />
-      </Fragment>
+      </AnimatePresence>
     )
   }, [
     releaseGroupMode,
@@ -304,7 +331,11 @@ export function ReleasesOverview() {
               </Stack>
               <Flex flex={1} gap={1}>
                 {loadingOrHasReleases &&
-                  (releaseFilterDate ? currentFilterDate : currentArchivedPicker)}
+                  (releaseFilterDate ? (
+                    <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
+                  ) : (
+                    currentArchivedPicker
+                  ))}
               </Flex>
               <Flex flex="none" gap={2}>
                 <Button

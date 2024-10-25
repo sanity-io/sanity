@@ -1,9 +1,13 @@
-import {ArrowDownIcon, ArrowUpIcon, SearchIcon} from '@sanity/icons'
+import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {motion} from 'framer-motion'
+import {useMemo} from 'react'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTableContext} from './TableProvider'
 import {type HeaderProps, type TableHeaderProps} from './types'
+
+const MotionIcon = motion(ArrowUpIcon)
 
 const BasicHeader = ({text}: {text: string}) => (
   <Box padding={2}>
@@ -21,7 +25,16 @@ const SortHeaderButton = ({
     text: string
   }) => {
   const {sort, setSortColumn} = useTableContext()
-  const sortIcon = sort?.direction === 'asc' ? ArrowUpIcon : ArrowDownIcon
+  const sortIcon = useMemo(
+    () => (
+      <MotionIcon
+        initial={false}
+        animate={{rotate: sort?.direction === 'asc' ? 0 : 180}}
+        transition={{duration: 0.25, ease: 'easeInOut'}}
+      />
+    ),
+    [sort?.direction],
+  )
 
   return (
     <Button
