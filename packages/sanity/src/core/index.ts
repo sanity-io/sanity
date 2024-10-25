@@ -33,7 +33,6 @@ export {
   getDocumentIsInPerspective,
   getReleaseTone,
   LATEST,
-  ReleaseActions,
   ReleaseAvatar,
   ReleaseBadge,
   ReleaseForm,

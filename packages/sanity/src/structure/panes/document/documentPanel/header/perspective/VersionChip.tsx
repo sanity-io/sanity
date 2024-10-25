@@ -2,6 +2,7 @@ import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {
   DiscardVersionDialog,
+  getBundleIdFromReleaseId,
   getVersionId,
   ReleaseAvatar,
   type ReleaseDocument,
@@ -182,7 +183,11 @@ export const VersionChip = memo(function VersionChip(props: {
       {isDiscardDialogOpen && (
         <DiscardVersionDialog
           onClose={() => setIsDiscardDialogOpen(false)}
-          documentId={isVersion ? getVersionId(documentId, menuReleaseId) : documentId}
+          documentId={
+            isVersion
+              ? getVersionId(documentId, getBundleIdFromReleaseId(menuReleaseId))
+              : documentId
+          }
           documentType={documentType}
         />
       )}
@@ -191,7 +196,11 @@ export const VersionChip = memo(function VersionChip(props: {
         <CreateReleaseDialog
           onClose={() => setIsCreateReleaseDialogOpen(false)}
           onCreateVersion={handleAddVersion}
-          documentId={isVersion ? getVersionId(documentId, menuReleaseId) : documentId}
+          documentId={
+            isVersion
+              ? getVersionId(documentId, getBundleIdFromReleaseId(menuReleaseId))
+              : documentId
+          }
           documentType={documentType}
           tone={tone}
           title={text}

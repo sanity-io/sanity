@@ -63,7 +63,10 @@ export function useVersionOperations(
       /** @todo eventually change this from using document operations */
       await client.delete(documentId)
 
-      if (currentGlobalBundle._id === getVersionFromId(documentId)) {
+      if (
+        currentGlobalBundle._id &&
+        getBundleIdFromReleaseId(currentGlobalBundle._id) === getVersionFromId(documentId)
+      ) {
         setPerspective('drafts')
       }
 
