@@ -232,6 +232,7 @@ export function ReleasesOverview() {
       <AnimatePresence>
         <MotionButton
           {...groupModeButtonBaseProps}
+          key="open-group"
           onClick={handleReleaseGroupModeChange}
           selected={releaseGroupMode === 'open'}
           text={t('action.open')}
@@ -240,6 +241,7 @@ export function ReleasesOverview() {
         {/* StudioButton supports tooltip when button is disabled */}
         <MotionStudioButton
           {...groupModeButtonBaseProps}
+          key="archived-group"
           disabled={groupModeButtonBaseProps.disabled || !groupedReleases.archived.length}
           tooltipProps={{
             disabled: groupedReleases.archived.length !== 0,

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useEffect, useMemo, useRef} from 'react'
+import {useCallback, useMemo} from 'react'
 import {of} from 'rxjs'
 import {useRouter} from 'sanity/router'
 
@@ -300,31 +300,28 @@ export function useReleasesStore(): ReleaseStore {
   const currentUser = useCurrentUser()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const router = useRouter()
-  const perspectiveStateRef = useRef(router.perspectiveState)
-
-  useEffect(() => {
-    perspectiveStateRef.current = router.perspectiveState
-  }, [router.perspectiveState])
 
   // TODO: Include hidden layers state.
   return useMemo(() => {
     const releaseStore =
       resourceCache.get<ReleaseStore>({
-        dependencies: [workspace, currentUser, perspectiveStateRef.current],
+        dependencies: [workspace, currentUser],
         namespace: 'ReleasesStore',
       }) ||
       createReleaseStore({
         client: studioClient,
         currentUser,
-        perspective: perspectiveStateRef.current.perspective,
+        perspective: router.perspectiveState.perspective,
       })
 
     resourceCache.set({
-      dependencies: [workspace, currentUser, perspectiveStateRef.current],
+      dependencies: [workspace, currentUser],
       namespace: 'ReleasesStore',
       value: releaseStore,
     })
 
     return releaseStore
+    /* eslint-disable-next-line react-hooks/exhaustive-deps 
+    -- router.persistenceState only used for initial perspective, not for updates */
   }, [resourceCache, workspace, studioClient, currentUser])
 }

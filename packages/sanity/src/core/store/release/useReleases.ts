@@ -7,7 +7,7 @@ import {type ReleaseDocument} from './types'
 
 interface ReleasesState {
   data: ReleaseDocument[]
-  releases: Map<string, ReleaseDocument>
+  // releases: Map<string, ReleaseDocument>
   deletedReleases: Record<string, ReleaseDocument>
   error?: Error
   loading: boolean
@@ -31,7 +31,7 @@ export function useReleases(): ReleasesState {
 
   return {
     data: releasesAsArray,
-    releases: state.releases,
+    // releases: state.releases,
     deletedReleases: deletedReleases,
     dispatch,
     error,
