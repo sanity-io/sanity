@@ -8,8 +8,6 @@ export const LATEST = {
   _id: 'drafts',
   metadata: {
     title: 'Latest',
-    icon: undefined,
-    hue: 'gray',
   },
 } as const
 

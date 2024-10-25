@@ -5,12 +5,14 @@ import {type ReleaseState, type ReleaseType} from '../../store'
 /** @internal */
 export function getReleaseTone(release: {
   state?: ReleaseState
+  _id?: string
   metadata: {title: string; releaseType?: ReleaseType}
 }): BadgeTone {
   /* conflicts with the type scheduled, maybe confusion with published?
  if (release.publishedAt !== undefined) {
     return 'positive'
   }*/
+  if (release._id === 'published') return 'positive'
 
   if (release.state === 'archived') {
     return 'default'
