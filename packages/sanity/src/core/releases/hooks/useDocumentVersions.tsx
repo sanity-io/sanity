@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
-import {catchError, scan} from 'rxjs/operators'
+import {catchError} from 'rxjs/operators'
 
 import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../store'
 import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
@@ -15,12 +15,6 @@ export interface DocumentPerspectiveState {
   data: ReleaseDocument[]
   error?: unknown
   loading: boolean
-}
-
-const INITIAL_STATE: DocumentPerspectiveState = {
-  loading: true,
-  error: null,
-  data: [],
 }
 
 /**
@@ -42,24 +36,36 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
     return documentPreviewStore
       .unstable_observeDocumentIdSet(`sanity::versionOf("${publishedId}")`)
       .pipe(
-        map(({documentIds}) => {
-          return documentIds.flatMap((id) => {
-            const matchingBundle = releases?.find(
-              // eslint-disable-next-line max-nested-callbacks
-              (release) => getVersionFromId(id) === getBundleIdFromReleaseId(release._id),
-            )
-            return matchingBundle || []
-          })
-        }),
-        map((data) => ({data})),
+        map((data) => ({
+          documentIds: data.documentIds,
+          loading: false,
+          error: null,
+        })),
         catchError((error) => {
-          return of({error})
+          return of({error, documentIds: [] as string[], loading: false})
         }),
-        scan((state, result) => {
-          return {...state, ...result}
-        }, INITIAL_STATE),
       )
-  }, [releases, documentPreviewStore, publishedId])
+  }, [documentPreviewStore, publishedId])
 
-  return useObservable(observable, INITIAL_STATE)
+  const result = useObservable(observable, {
+    documentIds: [] as string[],
+    error: null,
+    loading: true,
+  })
+  const filterData = useMemo(
+    () =>
+      result.documentIds.flatMap((docId) => {
+        const matchingBundle = releases?.find(
+          // eslint-disable-next-line max-nested-callbacks
+          (release) => getVersionFromId(docId) === getBundleIdFromReleaseId(release._id),
+        )
+        return matchingBundle || []
+      }),
+    [releases, result.documentIds],
+  )
+
+  return useMemo(
+    () => ({data: filterData, loading: result.loading, error: result.error}),
+    [filterData, result],
+  )
 }
