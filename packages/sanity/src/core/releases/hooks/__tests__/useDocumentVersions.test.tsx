@@ -1,8 +1,9 @@
-import {renderHook} from '@testing-library/react'
-import {of} from 'rxjs'
+import {renderHook, waitFor} from '@testing-library/react'
+import {delay, of} from 'rxjs'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
+import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
 import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../../store'
 import {RELEASE_DOCUMENTS_PATH} from '../../../store/release/constants'
 import {getPublishedId, type PublishedId} from '../../../util/draftUtils'
@@ -73,6 +74,7 @@ async function setupMocks({
     loading: false,
     dispatch: vi.fn(),
     deletedReleases: {},
+    stack: [],
   })
 
   mockedGetPublishedId.mockReturnValue('document-1' as PublishedId)
@@ -80,13 +82,19 @@ async function setupMocks({
   mockDocumentPreviewStore.mockReturnValue({
     unstable_observeDocumentIdSet: vi
       .fn<DocumentPreviewStore['unstable_observeDocumentIdSet']>()
-      .mockReturnValue(of({status: 'connected', documentIds: versionIds})),
+      .mockImplementation(() =>
+        of({status: 'connected', documentIds: versionIds} as DocumentIdSetObserverState).pipe(
+          // simulate async initial emission
+          delay(0),
+        ),
+      ),
   } as unknown as DocumentPreviewStore)
 }
 
 describe('useDocumentVersions', () => {
   it('should return initial state', async () => {
     await setupMocks({releases: mockReleases, versionIds: []})
+
     const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
     expect(result.current.loading).toBe(true)
     expect(result.current.error).toBe(null)
@@ -105,6 +113,8 @@ describe('useDocumentVersions', () => {
       versionIds: ['versions.spring-drop.document-1'],
     })
     const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
-    expect(result.current.data).toEqual([mockReleases[0]])
+    await waitFor(() => {
+      expect(result.current.data).toEqual([mockReleases[0]])
+    })
   })
 })
