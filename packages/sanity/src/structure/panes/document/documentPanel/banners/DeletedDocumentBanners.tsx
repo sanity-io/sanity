@@ -1,12 +1,11 @@
 import {DocumentRemoveIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback} from 'react'
 import {
   type ReleaseDocument,
   Translate,
   useDocumentOperation,
   usePerspective,
-  useReleases,
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
@@ -16,36 +15,13 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
-const useIsLocaleBundleDeleted = () => {
-  const {currentGlobalBundle} = usePerspective()
-  const {data: bundles, deletedReleases} = useReleases()
-  const {_id: currentGlobalBundleId} = currentGlobalBundle
-  const [checkedOutBundleId, setCheckedOutBundleId] = useState<string | undefined>(
-    currentGlobalBundleId,
-  )
-
-  useEffect(() => {
-    /**
-     * only named versions other than default (drafts and published) are considered checked-out
-     */
-    if (currentGlobalBundleId !== 'drafts') {
-      setCheckedOutBundleId(currentGlobalBundleId)
-    }
-  }, [currentGlobalBundleId, setCheckedOutBundleId])
-
-  if (!checkedOutBundleId || !Object.keys(deletedReleases).length || !bundles?.length) {
-    return null
-  }
-  return deletedReleases[checkedOutBundleId]
-}
-
 export function DeletedDocumentBanners() {
   const {isDeleted, isDeleting} = useDocumentPane()
-  const deletedCheckedOutBundle = useIsLocaleBundleDeleted()
+  const {currentGlobalBundle} = usePerspective()
 
-  if (deletedCheckedOutBundle)
-    return <DeletedBundleBanner deletedBundle={deletedCheckedOutBundle} />
-
+  if (currentGlobalBundle.state === 'archived') {
+    return <ArchivedReleaseBanner release={currentGlobalBundle as ReleaseDocument} />
+  }
   if (isDeleted && !isDeleting) return <DeletedDocumentBanner />
 }
 
@@ -87,7 +63,7 @@ function DeletedDocumentBanner() {
   )
 }
 
-const DeletedBundleBanner = ({deletedBundle}: {deletedBundle: ReleaseDocument}) => {
+const ArchivedReleaseBanner = ({release}: {release: ReleaseDocument}) => {
   const {t} = useTranslation()
 
   return (
@@ -98,7 +74,7 @@ const DeletedBundleBanner = ({deletedBundle}: {deletedBundle: ReleaseDocument}) 
           <Translate
             t={t}
             i18nKey="banners.deleted-release-banner.text"
-            values={{title: deletedBundle.metadata?.title}}
+            values={{title: release.metadata?.title}}
           />
         </Text>
       }

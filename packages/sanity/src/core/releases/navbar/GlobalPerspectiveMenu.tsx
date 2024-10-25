@@ -10,7 +10,6 @@ import {useReleases} from '../../store/release/useReleases'
 import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
-import {isDraftOrPublished} from '../util/util'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -22,32 +21,26 @@ const StyledBox = styled(Box)`
 `
 
 export function GlobalPerspectiveMenu(): JSX.Element {
-  const {deletedReleases, loading, data: releases} = useReleases()
+  const {loading, data: releases} = useReleases()
   const {currentGlobalBundle, setPerspectiveFromRelease, setPerspective} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
   const {t} = useTranslation()
 
-  const sortedBundlesToDisplay = useMemo(() => {
+  const filteredReleases = useMemo(() => {
     if (!releases) return []
 
-    return [...(releases || []), ...Object.values(deletedReleases)].filter(
-      ({_id, state}) => !isDraftOrPublished(_id) && state !== 'archived',
-    )
-  }, [releases, deletedReleases])
-  const hasBundles = sortedBundlesToDisplay.length > 0
+    return releases.filter(({_id, state}) => state !== 'archived')
+  }, [releases])
+
+  const hasBundles = filteredReleases.length > 0
 
   const handleBundleChange = useCallback(
     (releaseId: string) => () => {
       setPerspectiveFromRelease(releaseId)
     },
     [setPerspectiveFromRelease],
-  )
-
-  const isBundleDeleted = useCallback(
-    (releaseId: string) => Boolean(deletedReleases[releaseId]),
-    [deletedReleases],
   )
 
   /* create new release */
@@ -85,20 +78,15 @@ export function GlobalPerspectiveMenu(): JSX.Element {
           <>
             <MenuDivider />
             <StyledBox data-testid="releases-list">
-              {sortedBundlesToDisplay.map(({_id, ...release}) => (
+              {filteredReleases.map(({_id, ...release}) => (
                 <MenuItem
                   key={_id}
                   onClick={handleBundleChange(_id)}
                   padding={1}
                   pressed={false}
-                  disabled={isBundleDeleted(_id)}
                   data-testid={`release-${_id}`}
                 >
-                  <Tooltip
-                    disabled={!isBundleDeleted(_id)}
-                    content={t('release.deleted-tooltip')}
-                    placement="bottom-start"
-                  >
+                  <Tooltip content={t('release.deleted-tooltip')} placement="bottom-start">
                     <Flex>
                       <Box flex={1} padding={2} style={{minWidth: 100}}>
                         <Text size={1} weight="medium">
@@ -139,9 +127,8 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     setPerspective,
     handleCreateBundleClick,
     hasBundles,
-    isBundleDeleted,
     loading,
-    sortedBundlesToDisplay,
+    filteredReleases,
     t,
   ])
 

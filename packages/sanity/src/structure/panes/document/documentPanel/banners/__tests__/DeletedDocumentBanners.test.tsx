@@ -56,15 +56,15 @@ describe('DeletedDocumentBanners', () => {
   })
 
   it('prefers to show release deleted banner when document was in a release', async () => {
-    const mockBundleDocument = {_id: 'test'} as ReleaseDocument
-    mockUsePerspective.mockReturnValue({currentGlobalBundle: mockBundleDocument} as ReturnType<
+    const mockReleaseDocument = {_id: 'test', state: 'archived'} as ReleaseDocument
+    mockUsePerspective.mockReturnValue({currentGlobalBundle: mockReleaseDocument} as ReturnType<
       typeof usePerspective
     >)
     mockUseReleases.mockReturnValue({
-      data: [mockBundleDocument],
-      deletedReleases: {test: mockBundleDocument},
+      data: [mockReleaseDocument],
       dispatch: vi.fn(),
       loading: false,
+      stack: [],
     })
     mockUseDocumentPane.mockReturnValue({
       isDeleted: true,
@@ -80,7 +80,7 @@ describe('DeletedDocumentBanners', () => {
   })
 
   it('shows the fallback document deleted banner when document was not in a release', async () => {
-    const mockBundleDocument: ReleaseDocument = {_id: 'test'} as ReleaseDocument
+    const mockBundleDocument: ReleaseDocument = {_id: 'test', state: 'archived'} as ReleaseDocument
 
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: LATEST,
@@ -89,9 +89,9 @@ describe('DeletedDocumentBanners', () => {
 
     mockUseReleases.mockReturnValue({
       data: [mockBundleDocument],
-      deletedReleases: {test: mockBundleDocument},
       dispatch: vi.fn(),
       loading: false,
+      stack: [],
     })
 
     mockUseDocumentPane.mockReturnValue({

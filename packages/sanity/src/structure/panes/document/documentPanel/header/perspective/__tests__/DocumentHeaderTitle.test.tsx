@@ -74,7 +74,7 @@ describe('DocumentHeaderTitle', () => {
       data: [],
       loading: false,
       dispatch: vi.fn(),
-      deletedReleases: {},
+      stack: [],
     })
   })
 

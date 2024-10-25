@@ -66,7 +66,7 @@ describe('ReleaseForm', () => {
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
-        deletedReleases: {},
+        stack: [],
       })
 
       mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
@@ -171,7 +171,7 @@ describe('ReleaseForm', () => {
         data: mockData,
         loading: false,
         dispatch: vi.fn(),
-        deletedReleases: {} as Record<string, ReleaseDocument>,
+        stack: [],
       })
 
       mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
