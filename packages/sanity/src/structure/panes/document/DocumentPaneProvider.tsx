@@ -20,6 +20,7 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  isSanityCreateLinkedDocument,
   type OnPathFocusPayload,
   type PatchEvent,
   setAtPath,
@@ -511,6 +512,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permission: requiredPermission,
   })
 
+  const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
 
   const readOnly = useMemo(() => {
@@ -533,7 +535,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isLocked ||
       isDeleting ||
       isDeleted ||
-      isLiveEditAndDraft
+      isLiveEditAndDraft ||
+      isCreateLinked
     )
   }, [
     isPermissionsLoading,
@@ -548,6 +551,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     revTime,
     isDeleting,
     isDeleted,
+    isCreateLinked,
   ])
 
   const formState = useFormState({
