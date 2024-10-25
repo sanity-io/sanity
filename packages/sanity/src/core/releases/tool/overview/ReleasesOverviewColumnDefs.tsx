@@ -136,7 +136,7 @@ export const releasesOverviewColumnDefs: (
       sorting: true,
       sortTransform: ({metadata, publishAt}) => {
         if (metadata.releaseType === 'undecided') return Infinity
-        if (metadata.releaseType === 'asap' || !publishAt) return new Date().getTime()
+        if (metadata.releaseType === 'asap' || !publishAt) return 0
         return new Date(publishAt).getTime()
       },
       width: 250,
