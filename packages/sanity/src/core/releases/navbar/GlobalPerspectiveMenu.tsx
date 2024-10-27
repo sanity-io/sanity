@@ -1,25 +1,39 @@
-import {AddIcon, CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
+import {AddIcon, ChevronDownIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- MenuItem requires props, only supported by @sanity/ui
-import {Box, Button, Flex, Menu, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
+import {Box, Button, Flex, Label, Menu, MenuDivider, MenuItem, Spinner} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
+import {type ReleaseDocument} from 'sanity'
 import {styled} from 'styled-components'
 
-import {MenuButton, Tooltip} from '../../../ui-components'
+import {MenuButton} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {useReleases} from '../../store/release/useReleases'
 import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../hooks'
-import {isDraftOrPublished} from '../util/util'
 import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
 
 const StyledMenu = styled(Menu)`
-  min-width: 200px;
   max-width: 320px;
 `
 
 const StyledBox = styled(Box)`
   overflow: auto;
-  max-height: 200px;
+  max-height: 75vh;
+`
+
+const LabelBox = styled(Box)`
+  position: relative;
+
+  &[data-within-range]:before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: -4px;
+    width: 5px;
+    background-color: var(--card-border-color);
+  }
 `
 
 interface LayerRange {
@@ -30,34 +44,36 @@ interface LayerRange {
   neverOffset: number
 }
 
+function getRangePosition(
+  range: LayerRange,
+  index: number,
+): 'first' | 'within' | 'last' | undefined {
+  if (range.firstIndex === range.lastIndex) {
+    return undefined
+  }
+
+  if (index === range.firstIndex) {
+    return 'first'
+  }
+
+  if (index === range.lastIndex) {
+    return 'last'
+  }
+
+  if (index > range.firstIndex && index < range.lastIndex) {
+    return 'within'
+  }
+
+  return undefined
+}
+
 export function GlobalPerspectiveMenu(): JSX.Element {
-  const {deletedReleases, loading, data: releases} = useReleases()
+  const {loading, data: releases} = useReleases()
   const {currentGlobalBundle, setPerspectiveFromRelease, setPerspective} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
   const {t} = useTranslation()
-
-  const sortedBundlesToDisplay = useMemo(() => {
-    if (!releases) return []
-
-    return [...(releases || []), ...Object.values(deletedReleases)].filter(
-      ({_id, state}) => !isDraftOrPublished(_id) && state !== 'archived',
-    )
-  }, [releases, deletedReleases])
-  const hasBundles = sortedBundlesToDisplay.length > 0
-
-  const handleBundleChange = useCallback(
-    (releaseId: string) => () => {
-      setPerspectiveFromRelease(releaseId)
-    },
-    [setPerspectiveFromRelease],
-  )
-
-  const isBundleDeleted = useCallback(
-    (releaseId: string) => Boolean(deletedReleases[releaseId]),
-    [deletedReleases],
-  )
 
   /* create new release */
   const handleCreateBundleClick = useCallback(() => {
@@ -68,66 +84,79 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     setCreateBundleDialogOpen(false)
   }, [])
 
+  const unarchivedReleases = releases.filter((release) => release.state !== 'archived')
+
+  const releaseTypeReleases = {
+    asap: unarchivedReleases.filter(({metadata}) => metadata.releaseType === 'asap'),
+    scheduled: unarchivedReleases.filter(({metadata}) => metadata.releaseType === 'scheduled'),
+    undecided: unarchivedReleases.filter(({metadata}) => metadata.releaseType === 'undecided'),
+  }
+
   const range: LayerRange = useMemo(() => {
     let firstIndex = -1
     let lastIndex = 0
 
-    if (!release.published.hidden) {
-      firstIndex = 0
-    }
+    // if (!releases.published.hidden) {
+    firstIndex = 0
+    // }
 
-    if (current.id === 'published') {
+    if (currentGlobalBundle._id === 'published') {
       lastIndex = 0
     }
 
     const immediatelyOffset = 2
-    const futureOffset = immediatelyOffset + items.immediately.length
-    const neverOffset = futureOffset + items.future.length
+    const futureOffset = immediatelyOffset + releaseTypeReleases.asap.length
+    const neverOffset = futureOffset + releaseTypeReleases.scheduled.length
 
-    for (const item of items.immediately) {
-      const index = immediatelyOffset + items.immediately.indexOf(item)
+    for (const item of releaseTypeReleases.asap) {
+      const index = immediatelyOffset + releaseTypeReleases.asap.indexOf(item)
 
       if (firstIndex === -1) {
-        if (!item.hidden) {
-          firstIndex = index
-        }
+        // if (!item.hidden) {
+        firstIndex = index
+        // }
       }
 
-      if (item.name === current.id) {
+      if (item._id === currentGlobalBundle._id) {
         lastIndex = index
       }
     }
 
-    for (const item of items.future) {
-      const index = futureOffset + items.future.indexOf(item)
+    for (const item of releaseTypeReleases.scheduled) {
+      const index = futureOffset + releaseTypeReleases.scheduled.indexOf(item)
 
       if (firstIndex === -1) {
-        if (!item.hidden) {
-          firstIndex = index
-        }
+        // if (!item.hidden) {
+        firstIndex = index
+        // }
       }
 
-      if (item.name === current.id) {
+      if (item._id === currentGlobalBundle._id) {
         lastIndex = index
       }
     }
 
-    for (const item of items.never) {
-      const index = neverOffset + items.never.indexOf(item)
+    for (const item of releaseTypeReleases.undecided) {
+      const index = neverOffset + releaseTypeReleases.undecided.indexOf(item)
 
       if (firstIndex === -1) {
-        if (!item.hidden) {
-          firstIndex = index
-        }
+        // if (!item.hidden) {
+        firstIndex = index
+        // }
       }
 
-      if (item.name === current.id) {
+      if (item._id === currentGlobalBundle._id) {
         lastIndex = index
       }
     }
 
     return {firstIndex, lastIndex, immediatelyOffset, futureOffset, neverOffset}
-  }, [current, items])
+  }, [
+    currentGlobalBundle._id,
+    releaseTypeReleases.asap,
+    releaseTypeReleases.scheduled,
+    releaseTypeReleases.undecided,
+  ])
 
   const releasesList = useMemo(() => {
     if (loading) {
@@ -142,70 +171,110 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       <>
         <GlobalPerspectiveMenuItem
           rangePosition={getRangePosition(range, 0)}
-          item={{_id: 'published'}}
+          release={{_id: 'published', metadata: {title: 'Published'}} as ReleaseDocument}
           toggleable
         />
-        {hasBundles && (
-          <>
-            <MenuDivider />
-            <StyledBox data-testid="releases-list">
-              {sortedBundlesToDisplay.map(({_id, ...release}) => (
-                <MenuItem
-                  key={_id}
-                  onClick={handleBundleChange(_id)}
-                  padding={1}
-                  pressed={false}
-                  disabled={isBundleDeleted(_id)}
-                  data-testid={`release-${_id}`}
-                >
-                  <Tooltip
-                    disabled={!isBundleDeleted(_id)}
-                    content={t('release.deleted-tooltip')}
-                    placement="bottom-start"
-                  >
-                    <Flex>
-                      <Box flex={1} padding={2} style={{minWidth: 100}}>
-                        <Text size={1} weight="medium">
-                          {release.metadata.title}
-                        </Text>
-                      </Box>
-                      <Box padding={2}>
-                        <Text size={1}>
-                          <CheckmarkIcon
-                            style={{
-                              opacity: currentGlobalBundle._id === _id ? 1 : 0,
-                            }}
-                            data-testid={`${_id}-checkmark-icon`}
-                          />
-                        </Text>
-                      </Box>
-                    </Flex>
-                  </Tooltip>
-                </MenuItem>
+        <StyledBox>
+          {releaseTypeReleases.asap.length > 0 && (
+            <>
+              <LabelBox
+                data-within-range={
+                  range.firstIndex < range.immediatelyOffset &&
+                  range.lastIndex >= range.immediatelyOffset
+                    ? ''
+                    : undefined
+                }
+                paddingX={2}
+                paddingTop={4}
+                paddingBottom={1}
+                style={{paddingLeft: 33}}
+              >
+                <Label muted size={1}>
+                  ASAP
+                </Label>
+              </LabelBox>
+              {releaseTypeReleases.asap.map((item, index) => (
+                <GlobalPerspectiveMenuItem
+                  release={item}
+                  key={item.name}
+                  rangePosition={getRangePosition(range, range.immediatelyOffset + index)}
+                  toggleable={range.immediatelyOffset < range.lastIndex}
+                />
               ))}
-            </StyledBox>
-          </>
-        )}
+            </>
+          )}
+          {releaseTypeReleases.scheduled.length > 0 && (
+            <>
+              <LabelBox
+                data-within-range={
+                  range.firstIndex < range.futureOffset && range.lastIndex >= range.futureOffset
+                    ? ''
+                    : undefined
+                }
+                paddingX={2}
+                paddingTop={4}
+                paddingBottom={1}
+                style={{paddingLeft: 33}}
+              >
+                <Label muted size={1}>
+                  Scheduled
+                </Label>
+              </LabelBox>
+              {releaseTypeReleases.scheduled.map((item, index) => (
+                <GlobalPerspectiveMenuItem
+                  release={item}
+                  key={item.name}
+                  rangePosition={getRangePosition(range, range.futureOffset + index)}
+                  toggleable={range.futureOffset < range.lastIndex}
+                />
+              ))}
+            </>
+          )}
 
-        <>
-          <MenuDivider />
-          <MenuItem
-            icon={AddIcon}
-            onClick={handleCreateBundleClick}
-            text={t('release.action.create-new')}
-          />
-        </>
+          {releaseTypeReleases.undecided.length > 0 && (
+            <>
+              <LabelBox
+                data-within-range={
+                  range.firstIndex < range.neverOffset && range.lastIndex >= range.neverOffset
+                    ? ''
+                    : undefined
+                }
+                paddingX={2}
+                paddingTop={4}
+                paddingBottom={1}
+                style={{paddingLeft: 33}}
+              >
+                <Label muted size={1}>
+                  Undecided
+                </Label>
+              </LabelBox>
+              {releaseTypeReleases.undecided.map((item, index) => (
+                <GlobalPerspectiveMenuItem
+                  release={item}
+                  key={item.name}
+                  rangePosition={getRangePosition(range, range.neverOffset + index)}
+                  toggleable={range.neverOffset < range.lastIndex}
+                />
+              ))}
+            </>
+          )}
+        </StyledBox>
+
+        <MenuDivider />
+        <MenuItem
+          icon={AddIcon}
+          onClick={handleCreateBundleClick}
+          text={t('release.action.create-new')}
+        />
       </>
     )
   }, [
-    currentGlobalBundle._id,
-    handleBundleChange,
-    setPerspective,
-    handleCreateBundleClick,
-    hasBundles,
-    isBundleDeleted,
     loading,
-    sortedBundlesToDisplay,
+    range,
+    releaseTypeReleases.asap,
+    releaseTypeReleases.scheduled,
+    releaseTypeReleases.undecided,
+    handleCreateBundleClick,
     t,
   ])
 

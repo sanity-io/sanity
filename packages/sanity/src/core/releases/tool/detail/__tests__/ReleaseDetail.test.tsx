@@ -10,7 +10,7 @@ import {ReleaseDetail} from '../ReleaseDetail'
 import {useBundleDocuments} from '../useBundleDocuments'
 
 vi.mock('../../../../store/release', () => ({
-  useReleases: vi.fn().mockReturnValue({data: [], loading: false, deletedReleases: {}}),
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
 }))
 
 vi.mock('../../../../store/release/useReleaseOperations', () => ({
@@ -95,7 +95,7 @@ describe.skip('ReleaseDetail', () => {
         data: [],
         loading: true,
         dispatch: vi.fn(),
-        deletedReleases: {},
+        stack: [],
       })
       await renderTest()
     })
@@ -132,7 +132,7 @@ describe.skip('ReleaseDetail', () => {
         ],
         loading: false,
         dispatch: vi.fn(),
-        deletedReleases: {},
+        stack: [],
       })
       await renderTest()
     })
@@ -173,7 +173,7 @@ describe.skip('after releases have loaded', () => {
         ],
         loading: false,
         dispatch: vi.fn(),
-        deletedReleases: {},
+        stack: [],
       })
     })
 
@@ -358,7 +358,7 @@ describe.skip('after releases have loaded', () => {
         ],
         loading: false,
         dispatch: vi.fn(),
-        deletedReleases: {},
+        stack: [],
       })
 
       await renderTest()
@@ -386,21 +386,7 @@ describe.skip('after releases have loaded', () => {
         data: [],
         loading: false,
         dispatch: vi.fn(),
-        deletedReleases: {
-          'test-release-id': {
-            title: 'Test release',
-            publishAt: undefined,
-            archivedAt: undefined,
-            _id: 'test-release-id',
-            _createdAt: new Date().toISOString(),
-            _type: 'release',
-            hue: 'blue',
-            icon: 'string',
-            createdBy: 'author-id',
-            _updatedAt: new Date().toISOString(),
-            _rev: 'abc',
-          },
-        },
+        stack: [],
       })
       await renderTest()
     })
@@ -422,7 +408,7 @@ describe.skip('after releases have loaded', () => {
         data: [],
         loading: false,
         dispatch: vi.fn(),
-        deletedReleases: {},
+        stack: [],
       })
       await renderTest()
     })

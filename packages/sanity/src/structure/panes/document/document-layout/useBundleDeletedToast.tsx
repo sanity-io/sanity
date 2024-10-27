@@ -4,21 +4,18 @@ import {Translate, usePerspective, useReleases, useTranslation} from 'sanity'
 
 export const useBundleDeletedToast = () => {
   const {currentGlobalBundle} = usePerspective()
-  const {data: bundles, deletedReleases} = useReleases()
+  const {data: bundles} = useReleases()
   const toast = useToast()
   const {t} = useTranslation()
-  const {_id: currentGlobalBundleId} = currentGlobalBundle
 
   useEffect(() => {
-    if (!currentGlobalBundleId || !Object.keys(deletedReleases).length || !bundles?.length) return
+    const hasCheckedOutBundleBeenArchived = currentGlobalBundle.state === 'archived'
 
-    const hasCheckedOutBundleBeenDeleted = Boolean(deletedReleases[currentGlobalBundleId])
-
-    if (hasCheckedOutBundleBeenDeleted) {
+    if (hasCheckedOutBundleBeenArchived) {
       const {
         metadata: {title: deletedBundleTitle},
         _id: deletedBundleId,
-      } = deletedReleases[currentGlobalBundleId]
+      } = currentGlobalBundle
 
       toast.push({
         id: `bundle-deleted-toast-${deletedBundleId}`,
@@ -35,5 +32,5 @@ export const useBundleDeletedToast = () => {
         duration: 10000,
       })
     }
-  }, [bundles?.length, currentGlobalBundleId, deletedReleases, toast, t])
+  }, [bundles?.length, toast, t, currentGlobalBundle])
 }

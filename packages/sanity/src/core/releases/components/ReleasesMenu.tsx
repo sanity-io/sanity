@@ -7,10 +7,8 @@ import {styled} from 'styled-components'
 import {MenuButton, Tooltip} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {type ReleaseDocument} from '../../store/release/types'
-import {useReleases} from '../../store/release/useReleases'
 import {usePerspective} from '../hooks'
 import {LATEST} from '../util/const'
-import {isDraftOrPublished} from '../util/util'
 import {ReleaseBadge} from './ReleaseBadge'
 
 const StyledMenu = styled(Menu)`
@@ -35,17 +33,14 @@ interface BundleListProps {
  */
 export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): ReactElement {
   const {releases, loading, actions, button, perspective} = props
-  const {deletedReleases} = useReleases()
   const {currentGlobalBundle, setPerspectiveFromRelease} = usePerspective(perspective)
   const {t} = useTranslation()
 
   const sortedBundlesToDisplay = useMemo(() => {
     if (!releases) return []
 
-    return releases
-      .filter(({_id, state}) => !isDraftOrPublished(_id) && state !== 'archived')
-      .sort(({_id: aId}, {_id: bId}) => Number(deletedReleases[aId]) - Number(deletedReleases[bId]))
-  }, [releases, deletedReleases])
+    return releases.filter(({state}) => state !== 'archived')
+  }, [releases])
   const hasBundles = sortedBundlesToDisplay.length > 0
 
   const handleReleaseChange = useCallback(
@@ -53,11 +48,6 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
       setPerspectiveFromRelease(releaseId)
     },
     [setPerspectiveFromRelease],
-  )
-
-  const isBundleDeleted = useCallback(
-    (releaseId: string) => Boolean(deletedReleases[releaseId]),
-    [deletedReleases],
   )
 
   return (
@@ -94,20 +84,14 @@ export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): 
                           onClick={handleReleaseChange(release._id)}
                           padding={1}
                           pressed={false}
-                          disabled={isBundleDeleted(release._id)}
                           data-testid={`release-${release._id}`}
                         >
-                          <Tooltip
-                            disabled={!isBundleDeleted(release._id)}
-                            content={t('release.deleted-tooltip')}
-                            placement="bottom-start"
-                          >
+                          <Tooltip content={t('release.deleted-tooltip')} placement="bottom-start">
                             <Flex>
                               <ReleaseBadge
                                 hue={release.metadata.hue}
                                 icon={release.metadata.icon}
                                 padding={2}
-                                isDisabled={isBundleDeleted(release._id)}
                               />
 
                               <Box flex={1} padding={2} style={{minWidth: 100}}>

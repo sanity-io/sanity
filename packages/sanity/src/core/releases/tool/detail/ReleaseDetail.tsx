@@ -3,8 +3,8 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 
 import {LoadingBlock} from '../../../components'
-import {Translate, useTranslation} from '../../../i18n'
-import {type ReleaseDocument, useReleases} from '../../../store/release'
+import {useTranslation} from '../../../i18n'
+import {useReleases} from '../../../store/release'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleasesRouterState} from '../../types/router'
 import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
@@ -39,14 +39,13 @@ export const ReleaseDetail = () => {
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
 
   const releaseId = decodeURIComponent(releaseIdRaw || '')
-  const {data, loading, deletedReleases} = useReleases()
-  const deletedBundle = deletedReleases[releaseId] as ReleaseDocument | undefined
+  const {data, loading} = useReleases()
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
 
   const documentIds = results.map((result) => result.document?._id)
   const history = useReleaseHistory(documentIds, releaseId)
-  const release = data?.find(
+  const releaseInDetail = data?.find(
     (storeBundle) => getBundleIdFromReleaseId(storeBundle._id) === releaseId,
   )
 
@@ -67,41 +66,24 @@ export const ReleaseDetail = () => {
   // review screen will not be available once published
   // so redirect to summary screen
   useEffect(() => {
-    if (activeView === 'review' && release?.publishAt) {
+    if (activeView === 'review' && releaseInDetail?.publishAt) {
       navigateToSummary()
     }
-  }, [activeView, release?.publishAt, navigateToSummary])
+  }, [activeView, releaseInDetail?.publishAt, navigateToSummary])
 
   const scrollContainerRef = useRef(null)
 
   const detailContent = useMemo(() => {
-    if (deletedBundle) {
-      return (
-        <Card flex={1} tone="critical">
-          <Container width={0}>
-            <Stack paddingY={4} space={1}>
-              <Heading>
-                <Translate
-                  t={t}
-                  i18nKey="deleted-release"
-                  values={{title: deletedBundle.metadata.title}}
-                />
-              </Heading>
-            </Stack>
-          </Container>
-        </Card>
-      )
-    }
     if (documentsLoading) {
       return <LoadingBlock title={t('document-loading')} />
     }
-    if (!release) return null
+    if (!releaseInDetail) return null
 
     if (activeView === 'summary') {
       return (
         <ReleaseSummary
           documents={results}
-          release={release}
+          release={releaseInDetail}
           documentsHistory={history.documentsHistory}
           scrollContainerRef={scrollContainerRef}
         />
@@ -112,14 +94,14 @@ export const ReleaseDetail = () => {
       return (
         <ReleaseReview
           documents={results}
-          release={release}
+          release={releaseInDetail}
           documentsHistory={history.documentsHistory}
           scrollContainerRef={scrollContainerRef}
         />
       )
     }
     return null
-  }, [activeView, release, deletedBundle, documentsLoading, history.documentsHistory, results, t])
+  }, [activeView, releaseInDetail, documentsLoading, history.documentsHistory, results, t])
 
   if (loading) {
     return (
@@ -131,7 +113,6 @@ export const ReleaseDetail = () => {
     )
   }
 
-  const releaseInDetail = (release || deletedBundle) as ReleaseDocument
   if (releaseInDetail) {
     return (
       <Flex direction="column" flex={1} height="fill">
@@ -151,11 +132,7 @@ export const ReleaseDetail = () => {
               {detailContent}
             </Card>
 
-            <ReleaseDashboardFooter
-              documents={results}
-              release={releaseInDetail}
-              isBundleDeleted={!!deletedBundle}
-            />
+            <ReleaseDashboardFooter documents={results} release={releaseInDetail} />
           </Flex>
 
           {inspector === 'activity' && (
