@@ -9,17 +9,26 @@ import {useTranslation} from '../../i18n'
 import {useReleases} from '../../store/release/useReleases'
 import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../hooks'
-import {LATEST} from '../util/const'
 import {isDraftOrPublished} from '../util/util'
+import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
+  max-width: 320px;
 `
 
 const StyledBox = styled(Box)`
   overflow: auto;
   max-height: 200px;
 `
+
+interface LayerRange {
+  firstIndex: number
+  lastIndex: number
+  immediatelyOffset: number
+  futureOffset: number
+  neverOffset: number
+}
 
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {deletedReleases, loading, data: releases} = useReleases()
@@ -59,6 +68,67 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     setCreateBundleDialogOpen(false)
   }, [])
 
+  const range: LayerRange = useMemo(() => {
+    let firstIndex = -1
+    let lastIndex = 0
+
+    if (!release.published.hidden) {
+      firstIndex = 0
+    }
+
+    if (current.id === 'published') {
+      lastIndex = 0
+    }
+
+    const immediatelyOffset = 2
+    const futureOffset = immediatelyOffset + items.immediately.length
+    const neverOffset = futureOffset + items.future.length
+
+    for (const item of items.immediately) {
+      const index = immediatelyOffset + items.immediately.indexOf(item)
+
+      if (firstIndex === -1) {
+        if (!item.hidden) {
+          firstIndex = index
+        }
+      }
+
+      if (item.name === current.id) {
+        lastIndex = index
+      }
+    }
+
+    for (const item of items.future) {
+      const index = futureOffset + items.future.indexOf(item)
+
+      if (firstIndex === -1) {
+        if (!item.hidden) {
+          firstIndex = index
+        }
+      }
+
+      if (item.name === current.id) {
+        lastIndex = index
+      }
+    }
+
+    for (const item of items.never) {
+      const index = neverOffset + items.never.indexOf(item)
+
+      if (firstIndex === -1) {
+        if (!item.hidden) {
+          firstIndex = index
+        }
+      }
+
+      if (item.name === current.id) {
+        lastIndex = index
+      }
+    }
+
+    return {firstIndex, lastIndex, immediatelyOffset, futureOffset, neverOffset}
+  }, [current, items])
+
   const releasesList = useMemo(() => {
     if (loading) {
       return (
@@ -70,16 +140,10 @@ export function GlobalPerspectiveMenu(): JSX.Element {
 
     return (
       <>
-        <MenuItem
-          iconRight={
-            currentGlobalBundle._id === LATEST._id ? (
-              <CheckmarkIcon data-testid="latest-checkmark-icon" />
-            ) : undefined
-          }
-          onClick={() => setPerspective(LATEST._id)}
-          pressed={false}
-          text={LATEST.metadata.title}
-          data-testid="latest-menu-item"
+        <GlobalPerspectiveMenuItem
+          rangePosition={getRangePosition(range, 0)}
+          item={{_id: 'published'}}
+          toggleable
         />
         {hasBundles && (
           <>

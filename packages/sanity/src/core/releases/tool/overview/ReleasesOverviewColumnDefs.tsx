@@ -73,7 +73,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
 
   return (
-    <Box {...cellProps} marginLeft={3} flex={1} padding={1}>
+    <Box {...cellProps} style={{minWidth: '50%'}} marginLeft={3} flex={1} padding={1}>
       <Tooltip
         disabled={!release.isDeleted}
         content={
@@ -125,7 +125,14 @@ export const releasesOverviewColumnDefs: (
       sorting: false,
       width: null,
       header: ({headerProps}) => (
-        <Flex {...headerProps} flex={1} marginLeft={3} paddingY={3} sizing="border">
+        <Flex
+          {...headerProps}
+          style={{minWidth: '50%'}}
+          flex={1}
+          marginLeft={3}
+          paddingY={3}
+          sizing="border"
+        >
           <Headers.BasicHeader text={t('table-header.title')} />
         </Flex>
       ),
