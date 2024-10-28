@@ -1,6 +1,7 @@
 import {AddIcon, ChevronDownIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- MenuItem requires props, only supported by @sanity/ui
 import {Box, Button, Flex, Label, Menu, MenuDivider, MenuItem, Spinner} from '@sanity/ui'
+import {compareDesc} from 'date-fns'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {type ReleaseDocument} from 'sanity'
 import {styled} from 'styled-components'
@@ -10,6 +11,7 @@ import {useTranslation} from '../../i18n'
 import {useReleases} from '../../store/release/useReleases'
 import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../hooks'
+import {getPublishDateFromRelease} from '../util/util'
 import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
 
 const StyledMenu = styled(Menu)`
@@ -69,6 +71,24 @@ function getRangePosition(
   return undefined
 }
 
+const sortReleaseByPublishAt: (a: ReleaseDocument, b: ReleaseDocument) => number = (
+  ARelease,
+  BRelease,
+) => compareDesc(getPublishDateFromRelease(BRelease), getPublishDateFromRelease(ARelease))
+
+const sortReleaseByTitle: (a: ReleaseDocument, b: ReleaseDocument) => number = (
+  ARelease,
+  BRelease,
+) => ARelease.metadata.title.localeCompare(BRelease.metadata.title)
+
+const releaseTypeSorting = {
+  asap: sortReleaseByTitle,
+  scheduled: sortReleaseByPublishAt,
+  undecided: sortReleaseByTitle,
+}
+
+const releaseTypeGroups: ('asap' | 'scheduled' | 'undecided')[] = ['asap', 'scheduled', 'undecided']
+
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {loading, data: releases} = useReleases()
   const {currentGlobalBundle} = usePerspective()
@@ -92,14 +112,18 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     [releases],
   )
 
-  const releaseTypeReleases = ['asap', 'scheduled', 'undecided'].reduce<
-    Record<string, ReleaseDocument[]>
-  >(
-    (acc, type) => ({
-      ...acc,
-      [type]: unarchivedReleases.filter(({metadata}) => metadata.releaseType === type),
-    }),
-    {},
+  const releaseTypeReleases = useMemo(
+    () =>
+      releaseTypeGroups.reduce<Record<string, ReleaseDocument[]>>(
+        (acc, type) => ({
+          ...acc,
+          [type]: unarchivedReleases
+            .filter(({metadata}) => metadata.releaseType === type)
+            .sort(releaseTypeSorting[type]),
+        }),
+        {},
+      ),
+    [unarchivedReleases],
   )
 
   const range: LayerRange = useMemo(() => {
@@ -137,12 +161,6 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       scheduled: 2 + asap.length,
       undecided: 2 + asap.length + scheduled.length,
     }
-
-    const releaseTypeGroups: ('asap' | 'scheduled' | 'undecided')[] = [
-      'asap',
-      'scheduled',
-      'undecided',
-    ]
 
     releaseTypeGroups.forEach((type) => processReleases(releaseTypeReleases[type], offsets[type]))
 
@@ -265,12 +283,12 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       </>
     )
   }, [
+    handleCreateBundleClick,
     loading,
     range,
     releaseTypeReleases.asap,
     releaseTypeReleases.scheduled,
     releaseTypeReleases.undecided,
-    handleCreateBundleClick,
     t,
   ])
 
