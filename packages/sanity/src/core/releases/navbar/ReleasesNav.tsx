@@ -16,10 +16,8 @@ import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
-const MotionDiv = motion(Box)
-
 const AnimatedMotionDiv = ({children, ...props}: PropsWithChildren<any>) => (
-  <MotionDiv
+  <motion.div
     {...props}
     initial={{width: 0, opacity: 0}}
     animate={{width: 'auto', opacity: 1}}
@@ -27,7 +25,7 @@ const AnimatedMotionDiv = ({children, ...props}: PropsWithChildren<any>) => (
     transition={{duration: 0.25, ease: 'easeInOut'}}
   >
     {children}
-  </MotionDiv>
+  </motion.div>
 )
 
 export function ReleasesNav(): JSX.Element {

@@ -1,6 +1,6 @@
 import {AddIcon, ChevronDownIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- MenuItem requires props, only supported by @sanity/ui
-import {Box, Button, Flex, Label, Menu, MenuDivider, MenuItem, Spinner} from '@sanity/ui'
+import {Box, Button, Flex, Menu, MenuDivider, MenuItem, Spinner} from '@sanity/ui'
 import {compareDesc} from 'date-fns'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {type ReleaseDocument, type ReleaseType} from 'sanity'
@@ -17,10 +17,12 @@ import {
   GlobalPerspectiveMenuItem,
   type LayerRange,
 } from './GlobalPerspectiveMenuItem'
-import {GlobalPerspectiveMenuLabelIndicator} from './PerspectiveLayerIndicator'
+import {ReleaseTypeSection} from './ReleaseTypeMenuSection'
+
+type ReleaseTypeSort = (a: ReleaseDocument, b: ReleaseDocument) => number
 
 const StyledMenu = styled(Menu)`
-  min-width: 200;
+  min-width: 200px;
   max-width: 320px;
 `
 
@@ -29,57 +31,8 @@ const StyledBox = styled(Box)`
   max-height: 75vh;
 `
 
-const RELEASE_TYPE_LABELS: Record<ReleaseType, string> = {
-  asap: 'release.type.asap',
-  scheduled: 'release.type.scheduled',
-  undecided: 'release.type.undecided',
-}
-
-function ReleaseTypeSection({
-  releaseType,
-  releases,
-  range,
-}: {
-  releaseType: ReleaseType
-  releases: ReleaseDocument[]
-  range: LayerRange
-}): JSX.Element | null {
-  const {t} = useTranslation()
-
-  if (releases.length === 0) return null
-
-  const {firstIndex, lastIndex, offsets} = range
-  const releaseTypeOffset = offsets[releaseType]
-
-  return (
-    <>
-      <GlobalPerspectiveMenuLabelIndicator
-        $withinRange={firstIndex < releaseTypeOffset && lastIndex >= releaseTypeOffset}
-        paddingRight={2}
-        paddingTop={4}
-        paddingBottom={2}
-      >
-        <Label muted style={{textTransform: 'uppercase'}} size={1}>
-          {t(RELEASE_TYPE_LABELS[releaseType])}
-        </Label>
-      </GlobalPerspectiveMenuLabelIndicator>
-      {releases.map((release, index) => (
-        <GlobalPerspectiveMenuItem
-          release={release}
-          key={release._id}
-          rangePosition={getRangePosition(range, releaseTypeOffset + index)}
-          toggleable={releaseTypeOffset < lastIndex}
-        />
-      ))}
-    </>
-  )
-}
-
-type ReleaseTypeSort = (a: ReleaseDocument, b: ReleaseDocument) => number
-
 const sortReleaseByPublishAt: ReleaseTypeSort = (ARelease, BRelease) =>
   compareDesc(getPublishDateFromRelease(BRelease), getPublishDateFromRelease(ARelease))
-
 const sortReleaseByTitle: ReleaseTypeSort = (ARelease, BRelease) =>
   ARelease.metadata.title.localeCompare(BRelease.metadata.title)
 

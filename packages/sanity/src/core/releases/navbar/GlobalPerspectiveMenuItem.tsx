@@ -17,10 +17,9 @@ export interface LayerRange {
   }
 }
 
-export function getRangePosition(
-  range: LayerRange,
-  index: number,
-): 'first' | 'within' | 'last' | undefined {
+type rangePosition = 'first' | 'within' | 'last' | undefined
+
+export function getRangePosition(range: LayerRange, index: number): rangePosition {
   const {firstIndex, lastIndex} = range
 
   if (firstIndex === lastIndex) return undefined
@@ -33,7 +32,7 @@ export function getRangePosition(
 
 export function GlobalPerspectiveMenuItem(props: {
   release: ReleaseDocument
-  rangePosition: 'first' | 'within' | 'last' | undefined
+  rangePosition: rangePosition
   toggleable: boolean
 }) {
   const {release, rangePosition, toggleable} = props
