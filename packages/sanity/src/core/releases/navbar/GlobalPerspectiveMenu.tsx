@@ -39,9 +39,11 @@ const LabelBox = styled(Box)`
 interface LayerRange {
   firstIndex: number
   lastIndex: number
-  immediatelyOffset: number
-  futureOffset: number
-  neverOffset: number
+  offsets: {
+    asap: number
+    scheduled: number
+    undecided: number
+  }
 }
 
 function getRangePosition(
@@ -69,7 +71,8 @@ function getRangePosition(
 
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {loading, data: releases} = useReleases()
-  const {currentGlobalBundle, setPerspectiveFromRelease, setPerspective} = usePerspective()
+  const {currentGlobalBundle} = usePerspective()
+  const currentGlobalBundleId = currentGlobalBundle._id
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
@@ -84,13 +87,20 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     setCreateBundleDialogOpen(false)
   }, [])
 
-  const unarchivedReleases = releases.filter((release) => release.state !== 'archived')
+  const unarchivedReleases = useMemo(
+    () => releases.filter((release) => release.state !== 'archived'),
+    [releases],
+  )
 
-  const releaseTypeReleases = {
-    asap: unarchivedReleases.filter(({metadata}) => metadata.releaseType === 'asap'),
-    scheduled: unarchivedReleases.filter(({metadata}) => metadata.releaseType === 'scheduled'),
-    undecided: unarchivedReleases.filter(({metadata}) => metadata.releaseType === 'undecided'),
-  }
+  const releaseTypeReleases = ['asap', 'scheduled', 'undecided'].reduce<
+    Record<string, ReleaseDocument[]>
+  >(
+    (acc, type) => ({
+      ...acc,
+      [type]: unarchivedReleases.filter(({metadata}) => metadata.releaseType === type),
+    }),
+    {},
+  )
 
   const range: LayerRange = useMemo(() => {
     let firstIndex = -1
@@ -100,63 +110,48 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     firstIndex = 0
     // }
 
-    if (currentGlobalBundle._id === 'published') {
+    if (currentGlobalBundleId === 'published') {
       lastIndex = 0
     }
 
-    const immediatelyOffset = 2
-    const futureOffset = immediatelyOffset + releaseTypeReleases.asap.length
-    const neverOffset = futureOffset + releaseTypeReleases.scheduled.length
+    const {asap, scheduled} = releaseTypeReleases
 
-    for (const item of releaseTypeReleases.asap) {
-      const index = immediatelyOffset + releaseTypeReleases.asap.indexOf(item)
+    const processReleases = (groupSubsetReleases: ReleaseDocument[], offset: number) => {
+      groupSubsetReleases.forEach(({_id}, i) => {
+        const index = offset + i
 
-      if (firstIndex === -1) {
-        // if (!item.hidden) {
-        firstIndex = index
-        // }
-      }
+        if (firstIndex === -1) {
+          // if (!item.hidden) {
+          firstIndex = index
+          // }
+        }
 
-      if (item._id === currentGlobalBundle._id) {
-        lastIndex = index
-      }
+        if (_id === currentGlobalBundleId) {
+          lastIndex = index
+        }
+      })
     }
 
-    for (const item of releaseTypeReleases.scheduled) {
-      const index = futureOffset + releaseTypeReleases.scheduled.indexOf(item)
-
-      if (firstIndex === -1) {
-        // if (!item.hidden) {
-        firstIndex = index
-        // }
-      }
-
-      if (item._id === currentGlobalBundle._id) {
-        lastIndex = index
-      }
+    const offsets = {
+      asap: 2,
+      scheduled: 2 + asap.length,
+      undecided: 2 + asap.length + scheduled.length,
     }
 
-    for (const item of releaseTypeReleases.undecided) {
-      const index = neverOffset + releaseTypeReleases.undecided.indexOf(item)
+    const releaseTypeGroups: ('asap' | 'scheduled' | 'undecided')[] = [
+      'asap',
+      'scheduled',
+      'undecided',
+    ]
 
-      if (firstIndex === -1) {
-        // if (!item.hidden) {
-        firstIndex = index
-        // }
-      }
+    releaseTypeGroups.forEach((type) => processReleases(releaseTypeReleases[type], offsets[type]))
 
-      if (item._id === currentGlobalBundle._id) {
-        lastIndex = index
-      }
+    return {
+      firstIndex,
+      lastIndex,
+      offsets,
     }
-
-    return {firstIndex, lastIndex, immediatelyOffset, futureOffset, neverOffset}
-  }, [
-    currentGlobalBundle._id,
-    releaseTypeReleases.asap,
-    releaseTypeReleases.scheduled,
-    releaseTypeReleases.undecided,
-  ])
+  }, [currentGlobalBundleId, releaseTypeReleases])
 
   const releasesList = useMemo(() => {
     if (loading) {
@@ -179,26 +174,25 @@ export function GlobalPerspectiveMenu(): JSX.Element {
             <>
               <LabelBox
                 data-within-range={
-                  range.firstIndex < range.immediatelyOffset &&
-                  range.lastIndex >= range.immediatelyOffset
+                  range.firstIndex < range.offsets.asap && range.lastIndex >= range.offsets.asap
                     ? ''
                     : undefined
                 }
                 paddingX={2}
                 paddingTop={4}
-                paddingBottom={1}
-                style={{paddingLeft: 33}}
+                paddingBottom={2}
+                style={{paddingLeft: 40}}
               >
-                <Label muted size={1}>
-                  ASAP
+                <Label muted style={{textTransform: 'uppercase'}} size={1}>
+                  {t('release.type.asap')}
                 </Label>
               </LabelBox>
               {releaseTypeReleases.asap.map((item, index) => (
                 <GlobalPerspectiveMenuItem
                   release={item}
                   key={item.name}
-                  rangePosition={getRangePosition(range, range.immediatelyOffset + index)}
-                  toggleable={range.immediatelyOffset < range.lastIndex}
+                  rangePosition={getRangePosition(range, range.offsets.asap + index)}
+                  toggleable={range.offsets.asap < range.lastIndex}
                 />
               ))}
             </>
@@ -207,25 +201,26 @@ export function GlobalPerspectiveMenu(): JSX.Element {
             <>
               <LabelBox
                 data-within-range={
-                  range.firstIndex < range.futureOffset && range.lastIndex >= range.futureOffset
+                  range.firstIndex < range.offsets.scheduled &&
+                  range.lastIndex >= range.offsets.scheduled
                     ? ''
                     : undefined
                 }
                 paddingX={2}
                 paddingTop={4}
-                paddingBottom={1}
-                style={{paddingLeft: 33}}
+                paddingBottom={2}
+                style={{paddingLeft: 40}}
               >
-                <Label muted size={1}>
-                  Scheduled
+                <Label muted style={{textTransform: 'uppercase'}} size={1}>
+                  {t('release.type.scheduled')}
                 </Label>
               </LabelBox>
               {releaseTypeReleases.scheduled.map((item, index) => (
                 <GlobalPerspectiveMenuItem
                   release={item}
                   key={item.name}
-                  rangePosition={getRangePosition(range, range.futureOffset + index)}
-                  toggleable={range.futureOffset < range.lastIndex}
+                  rangePosition={getRangePosition(range, range.offsets.scheduled + index)}
+                  toggleable={range.offsets.scheduled < range.lastIndex}
                 />
               ))}
             </>
@@ -235,25 +230,26 @@ export function GlobalPerspectiveMenu(): JSX.Element {
             <>
               <LabelBox
                 data-within-range={
-                  range.firstIndex < range.neverOffset && range.lastIndex >= range.neverOffset
+                  range.firstIndex < range.offsets.undecided &&
+                  range.lastIndex >= range.offsets.undecided
                     ? ''
                     : undefined
                 }
                 paddingX={2}
                 paddingTop={4}
-                paddingBottom={1}
-                style={{paddingLeft: 33}}
+                paddingBottom={2}
+                style={{paddingLeft: 40}}
               >
-                <Label muted size={1}>
-                  Undecided
+                <Label muted style={{textTransform: 'uppercase'}} size={1}>
+                  {t('release.type.undecided')}
                 </Label>
               </LabelBox>
               {releaseTypeReleases.undecided.map((item, index) => (
                 <GlobalPerspectiveMenuItem
                   release={item}
                   key={item.name}
-                  rangePosition={getRangePosition(range, range.neverOffset + index)}
-                  toggleable={range.neverOffset < range.lastIndex}
+                  rangePosition={getRangePosition(range, range.offsets.undecided + index)}
+                  toggleable={range.offsets.undecided < range.lastIndex}
                 />
               ))}
             </>

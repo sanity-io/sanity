@@ -1,5 +1,5 @@
 import {EyeOpenIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports
+// eslint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
 import {Box, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {getReleaseTone, RelativeTime, ReleaseAvatar, type ReleaseDocument} from 'sanity'
@@ -14,7 +14,7 @@ const Root = styled.div`
     content: '';
     display: block;
     position: absolute;
-    left: 14px;
+    left: 18px;
     bottom: -4px;
     width: 5px;
     height: 4px;
@@ -28,7 +28,7 @@ const Root = styled.div`
       content: '';
       display: block;
       position: absolute;
-      left: 14px;
+      left: 18px;
       top: 0;
       width: 5px;
       height: 16.5px;
@@ -39,7 +39,7 @@ const Root = styled.div`
       content: '';
       display: block;
       position: absolute;
-      left: 14px;
+      left: 18px;
       top: 16.5px;
       bottom: 0;
       width: 5px;
@@ -63,8 +63,8 @@ export function GlobalPerspectiveMenuItem(props: {
 }) {
   const {release, rangePosition, toggleable} = props
   //   const {current, replace: replaceVersion, replaceToggle} = usePerspective()
-  const {currentGlobalBundle, setPerspectiveFromRelease} = usePerspective()
-  const active = release.name === currentGlobalBundle._id
+  const {currentGlobalBundle, setPerspectiveFromRelease, setPerspective} = usePerspective()
+  const active = release._id === currentGlobalBundle._id
   const first = rangePosition === 'first'
   const within = rangePosition === 'within'
   const last = rangePosition === 'last'
@@ -74,6 +74,14 @@ export function GlobalPerspectiveMenuItem(props: {
     event.stopPropagation()
   }, [])
 
+  const handleOnReleaseClick = useCallback(
+    () =>
+      release._id === 'published'
+        ? setPerspective('published')
+        : setPerspectiveFromRelease(release._id),
+    [release._id, setPerspective, setPerspectiveFromRelease],
+  )
+
   return (
     <Root
       data-active={active ? '' : undefined}
@@ -82,17 +90,10 @@ export function GlobalPerspectiveMenuItem(props: {
       data-last={last ? '' : undefined}
       //   data-hidden={release.hidden ? '' : undefined}
     >
-      <MenuItem
-        // muted={visible}
-        onClick={() => setPerspectiveFromRelease(release._id)}
-        padding={1}
-        pressed={active}
-      >
-        {/* <div> */}
+      <MenuItem onClick={handleOnReleaseClick} padding={1} pressed={active}>
         <Flex align="flex-start" gap={1}>
           <Box
             flex="none"
-            padding={2}
             style={{
               position: 'relative',
               zIndex: 1,
