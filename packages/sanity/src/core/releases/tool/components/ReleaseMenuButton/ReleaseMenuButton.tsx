@@ -7,7 +7,7 @@ import {
 } from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Menu, Spinner, Text} from '@sanity/ui'
-import {useState} from 'react'
+import {type FormEventHandler, useState} from 'react'
 import {LoadingBlock} from 'sanity'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
@@ -35,7 +35,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
 
   const resetSelectedAction = () => setSelectedAction(undefined)
 
-  const handleArchive = async (e) => {
+  const handleArchive = async (e: Parameters<FormEventHandler<HTMLFormElement>>[0]) => {
     if (releaseMenuDisabled) return
     e.preventDefault()
 
