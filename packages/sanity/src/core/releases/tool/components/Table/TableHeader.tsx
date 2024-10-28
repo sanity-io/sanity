@@ -88,13 +88,13 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
         )`,
         }}
       >
-        {headers.map(({header: Header, width, id, sorting}) => (
+        {headers.map(({header: Header, style, width, id, sorting}) => (
           <Header
             key={String(id)}
             headerProps={{
               as: 'th',
               id: String(id),
-              style: {width: width || undefined},
+              style: {...style, width: width || undefined},
             }}
             header={{id, sorting}}
             searchDisabled={searchDisabled}
