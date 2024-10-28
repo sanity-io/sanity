@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {format} from 'date-fns'
+import {format, isBefore} from 'date-fns'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../../i18n'
@@ -36,12 +36,14 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
     }
   }, [_id, currentGlobalBundle._id, setPerspective, setPerspectiveFromRelease])
 
+  const isPublishDateInPast = publishAt && isBefore(new Date(publishAt), new Date())
+
   return (
     <Container width={3}>
       <Stack padding={3} paddingY={[4, 4, 5, 6]} space={[3, 3, 4, 5]}>
         <Flex gap={1}>
           <Button
-            disabled={publishAt !== undefined || state === 'archived'}
+            disabled={isPublishDateInPast || state === 'archived'}
             icon={_id === currentGlobalBundle._id ? PinFilledIcon : PinIcon}
             mode="bleed"
             onClick={handlePinRelease}
@@ -59,9 +61,11 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
                 <Flex flex={1} gap={2}>
                   <ReleaseAvatar padding={0} tone={getReleaseTone(release)} />
                   <Text muted size={1} weight="medium">
-                    {t('dashboard.details.published-on', {
-                      date: format(new Date(publishAt), `MMM d, yyyy`),
-                    })}
+                    {isPublishDateInPast
+                      ? format(new Date(publishAt), `PPpp`)
+                      : t('dashboard.details.published-on', {
+                          date: format(new Date(publishAt), `MMM d, yyyy`),
+                        })}
                   </Text>
                 </Flex>
               </Card>
