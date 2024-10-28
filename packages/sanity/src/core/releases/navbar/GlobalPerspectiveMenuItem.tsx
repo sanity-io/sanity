@@ -5,6 +5,7 @@ import {type MouseEvent, useCallback} from 'react'
 import {getReleaseTone, RelativeTime, ReleaseAvatar, type ReleaseDocument} from 'sanity'
 import {styled} from 'styled-components'
 
+import {Tooltip} from '../../../ui-components/tooltip'
 import {usePerspective} from '../hooks/usePerspective'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
@@ -23,7 +24,7 @@ const ToggleLayerButton = styled(Button)`
   --card-icon-color: inherit;
 
   background-color: inherit;
-  opacity: 1;
+  opacity: 0;
 
   @media (hover: hover) {
     &:not([data-disabled='true']):hover {
@@ -77,7 +78,12 @@ export function GlobalPerspectiveMenuItem(props: {
   )
 
   return (
-    <GlobalPerspectiveMenuItemIndicator $first={first} $last={last} $inRange={inRange}>
+    <GlobalPerspectiveMenuItemIndicator
+      $isPublished={release._id === 'published'}
+      $first={first}
+      $last={last}
+      $inRange={inRange}
+    >
       <MenuItem onClick={handleOnReleaseClick} padding={1} pressed={active}>
         <Flex align="flex-start" gap={1}>
           <Box
@@ -127,17 +133,19 @@ export function GlobalPerspectiveMenuItem(props: {
           </Stack>
           <Box flex="none">
             {inRange && (
-              <ToggleLayerButton
-                tooltipProps={{placement: 'bottom', content: 'Hide release'}}
-                // $visible={!release.hidden}
-                forwardedAs="div"
-                disabled={!active}
-                icon={EyeOpenIcon}
-                // icon={release.hidden ? EyeClosedIcon : EyeOpenIcon}
-                mode="bleed"
-                onClick={handleToggleReleaseVisibility}
-                padding={2}
-              />
+              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              <Tooltip portal content="Hide release" placement="bottom">
+                <ToggleLayerButton
+                  // $visible={!release.hidden}
+                  forwardedAs="div"
+                  disabled={!active}
+                  icon={EyeOpenIcon}
+                  // icon={release.hidden ? EyeClosedIcon : EyeOpenIcon}
+                  mode="bleed"
+                  onClick={handleToggleReleaseVisibility}
+                  padding={2}
+                />
+              </Tooltip>
             )}
           </Box>
         </Flex>

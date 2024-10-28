@@ -31,6 +31,14 @@ const StyledBox = styled(Box)`
   max-height: 75vh;
 `
 
+const StyledPublishedBox = styled(Box)`
+  position: sticky;
+  top: 0;
+  background-color: var(--card-bg-color);
+  z-index: 10;
+  padding-bottom: 16px;
+`
+
 const sortReleaseByPublishAt: ReleaseTypeSort = (ARelease, BRelease) =>
   compareDesc(getPublishDateFromRelease(BRelease), getPublishDateFromRelease(ARelease))
 const sortReleaseByTitle: ReleaseTypeSort = (ARelease, BRelease) =>
@@ -144,20 +152,24 @@ export function GlobalPerspectiveMenu(): JSX.Element {
 
     return (
       <Box>
-        <GlobalPerspectiveMenuItem
-          rangePosition={getRangePosition(range, 0)}
-          release={{_id: 'published', metadata: {title: 'Published'}} as ReleaseDocument}
-          toggleable
-        />
         <StyledBox>
-          {orderedReleaseTypes.map((releaseType) => (
-            <ReleaseTypeSection
-              key={releaseType}
-              releaseType={releaseType}
-              releases={sortedReleaseTypeReleases[releaseType]}
-              range={range}
+          <StyledPublishedBox>
+            <GlobalPerspectiveMenuItem
+              rangePosition={getRangePosition(range, 0)}
+              release={{_id: 'published', metadata: {title: 'Published'}} as ReleaseDocument}
+              toggleable
             />
-          ))}
+          </StyledPublishedBox>
+          <>
+            {orderedReleaseTypes.map((releaseType) => (
+              <ReleaseTypeSection
+                key={releaseType}
+                releaseType={releaseType}
+                releases={sortedReleaseTypeReleases[releaseType]}
+                range={range}
+              />
+            ))}
+          </>
         </StyledBox>
         <MenuDivider />
         <MenuItem
