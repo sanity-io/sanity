@@ -45,23 +45,23 @@ export function usePerspective(): PerspectiveValue {
   const excludedPerspectives = router.stickyParams.excludedPerspectives?.split(',')
 
   // TODO: Should it be possible to set the perspective within a pane, rather than globally?
-  const setPerspective = (releaseId: string | undefined) => {
-    let perspectiveParam = ''
+  const setPerspective = useCallback(
+    (releaseId: string | undefined) => {
+      let perspectiveParam = ''
 
-    if (releaseId === 'published') {
-      perspectiveParam = 'published'
-    } else if (releaseId !== 'drafts') {
-      perspectiveParam = `bundle.${releaseId}`
-    }
+      if (releaseId === 'published') {
+        perspectiveParam = 'published'
+      } else if (releaseId !== 'drafts') {
+        perspectiveParam = `bundle.${releaseId}`
+      }
 
-    router.navigate({
-      ...router.state,
-      _searchParams: [
-        ['excludedPerspectives', ''],
-        ['perspective', perspectiveParam],
-      ],
-    })
-  }
+      router.navigateStickyParams({
+        excludedPerspectives: '',
+        perspective: perspectiveParam,
+      })
+    },
+    [router],
+  )
 
   const selectedBundle =
     perspective && releases
@@ -108,7 +108,7 @@ export function usePerspective(): PerspectiveValue {
         nextExcludedPerspectives.push(excludedPerspectiveId)
       }
 
-      router.navigateStickyParam('excludedPerspectives', nextExcludedPerspectives.toString())
+      router.navigateStickyParams({excludedPerspectives: nextExcludedPerspectives.toString()})
     },
     [excludedPerspectives, router],
   )

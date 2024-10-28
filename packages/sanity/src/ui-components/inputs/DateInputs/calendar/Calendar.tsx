@@ -27,7 +27,7 @@ import {YearInput} from './YearInput'
 export const MONTH_PICKER_VARIANT = {
   select: 'select',
   carousel: 'carousel',
-}
+} as const
 
 export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean

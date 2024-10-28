@@ -118,7 +118,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   )
 
   const isReleasePerspectiveExcluded = isPerspectiveExcluded(releasePerspectiveId)
-  const canReleaseBeExcluded = inRange || (release._id === 'published' && !!currentGlobalBundle)
+  const canReleaseBeExcluded = inRange && !last
 
   return (
     <GlobalPerspectiveMenuItemIndicator
