@@ -1,10 +1,11 @@
+import {type SanityDocumentLike} from '@sanity/types'
 import {LayerProvider, PortalProvider, useToast} from '@sanity/ui'
 import {useCallback} from 'react'
-import {getBundleIdFromReleaseId, useReleaseOperations} from 'sanity'
 
-import {type SanityDocumentLike} from '../../../../../../@sanity/types/src/documents/types'
+import {useReleaseOperations} from '../../../store/release/useReleaseOperations'
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
+import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
 
 export function AddDocumentSearch({
   open,

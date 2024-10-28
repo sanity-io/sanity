@@ -1,5 +1,4 @@
 import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
-import {type User} from '@sanity/types'
 import {
   BehaviorSubject,
   catchError,
@@ -70,10 +69,8 @@ const INITIAL_STATE: ReleasesReducerState = {
 export function createReleaseStore(context: {
   previewStore: DocumentPreviewStore
   client: SanityClient
-  currentUser: User | null
-  perspective?: string
 }): ReleaseStore {
-  const {client, currentUser, previewStore} = context
+  const {client, previewStore} = context
 
   const dispatch$ = new Subject<ReleasesReducerAction>()
   const fetchPending$ = new BehaviorSubject<boolean>(false)
@@ -159,7 +156,7 @@ export function createReleaseStore(context: {
 
   const state$ = merge(listFetch$, dispatch$).pipe(
     filter((action): action is ReleasesReducerAction => typeof action !== 'undefined'),
-    scan((state, action) => releasesReducer(state, action, context.perspective), INITIAL_STATE),
+    scan((state, action) => releasesReducer(state, action), INITIAL_STATE),
     startWith(INITIAL_STATE),
     shareReplay(1),
   )

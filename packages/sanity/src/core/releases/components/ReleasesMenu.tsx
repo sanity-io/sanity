@@ -25,15 +25,14 @@ interface BundleListProps {
   releases: ReleaseDocument[] | null
   loading: boolean
   actions?: ReactElement
-  perspective?: string
 }
 
 /**
  * @internal
  */
 export const ReleasesMenu = memo(function ReleasesMenu(props: BundleListProps): ReactElement {
-  const {releases, loading, actions, button, perspective} = props
-  const {currentGlobalBundle, setPerspectiveFromRelease} = usePerspective(perspective)
+  const {releases, loading, actions, button} = props
+  const {currentGlobalBundle, setPerspectiveFromRelease} = usePerspective()
   const {t} = useTranslation()
 
   const sortedBundlesToDisplay = useMemo(() => {

@@ -1,9 +1,11 @@
+import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {type ReleaseType, useReleases} from '../../store/release'
 import {type ReleaseDocument} from '../../store/release/types'
 import {LATEST} from '../util/const'
 import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
+import {getReleasesPerspective} from './utils'
 
 /**
  * @internal
@@ -21,6 +23,10 @@ export interface PerspectiveValue {
   setPerspective: (releaseId: string) => void
   /* change the perspective in the studio based on a release ID */
   setPerspectiveFromRelease: (releaseId: string) => void
+  /**
+   * The stacked array of releases ids ordered chronologically to represent the state of documents at the given point in time.
+   */
+  bundlesPerspective: string[]
 }
 
 /**
@@ -28,10 +34,10 @@ export interface PerspectiveValue {
  *
  * @internal
  */
-export function usePerspective(selectedPerspective?: string): PerspectiveValue {
+export function usePerspective(): PerspectiveValue {
   const router = useRouter()
-  const {data: releases, dispatch} = useReleases()
-  const perspective = selectedPerspective ?? router.stickyParams.perspective
+  const {data: releases} = useReleases()
+  const perspective = router.stickyParams.perspective
 
   // TODO: Should it be possible to set the perspective within a pane, rather than globally?
   const setPerspective = (releaseId: string | undefined) => {
@@ -44,7 +50,6 @@ export function usePerspective(selectedPerspective?: string): PerspectiveValue {
     }
 
     router.navigateStickyParam('perspective', perspectiveParam)
-    dispatch({type: 'PERSPECTIVE_SET', payload: perspectiveParam})
   }
 
   const selectedBundle =
@@ -69,9 +74,21 @@ export function usePerspective(selectedPerspective?: string): PerspectiveValue {
   const setPerspectiveFromRelease = (releaseId: string) =>
     setPerspective(getBundleIdFromReleaseId(releaseId))
 
+  const bundlesPerspective = useMemo(
+    () =>
+      getReleasesPerspective({
+        releases,
+        perspective,
+        // TODO: Implement excluded perspectives
+        excluded: [],
+      }),
+    [releases, perspective],
+  )
+
   return {
     setPerspective,
     setPerspectiveFromRelease,
     currentGlobalBundle: currentGlobalBundle,
+    bundlesPerspective,
   }
 }
