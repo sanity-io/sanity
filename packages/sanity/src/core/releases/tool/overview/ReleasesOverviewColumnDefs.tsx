@@ -20,18 +20,20 @@ import {ReleaseDocumentsCounter} from './ReleaseDocumentsCounter'
 import {type TableRelease} from './ReleasesOverview'
 
 const ReleaseTime = ({release}: {release: TableRelease}) => {
-  const {t: tCore} = useTranslation()
+  const {t} = useTranslation()
   const {publishAt, metadata} = release
 
   const getTimeString = () => {
     if (metadata.releaseType === 'asap') {
-      return tCore('release.type.asap')
+      return t('release.type.asap')
     }
     if (metadata.releaseType === 'undecided') {
-      return tCore('release.type.undecided')
+      return t('release.type.undecided')
     }
 
-    return publishAt ? format(new Date(publishAt), 'PPpp') : null
+    const publishDate = publishAt || metadata.intendedPublishAt
+
+    return publishDate ? format(new Date(publishDate), 'PPpp') : null
   }
 
   return (
@@ -137,8 +139,10 @@ export const releasesOverviewColumnDefs: (
       sorting: true,
       sortTransform: ({metadata, publishAt}) => {
         if (metadata.releaseType === 'undecided') return Infinity
-        if (metadata.releaseType === 'asap' || !publishAt) return 0
-        return new Date(publishAt).getTime()
+
+        const publishDate = publishAt || metadata.intendedPublishAt
+        if (metadata.releaseType === 'asap' || !publishDate) return 0
+        return new Date(publishDate).getTime()
       },
       width: 250,
       header: (props) => (

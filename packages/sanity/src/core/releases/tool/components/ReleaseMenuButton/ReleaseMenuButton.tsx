@@ -8,6 +8,7 @@ import {
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Menu, Spinner, Text} from '@sanity/ui'
 import {useState} from 'react'
+import {LoadingBlock} from 'sanity'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -34,8 +35,9 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
 
   const resetSelectedAction = () => setSelectedAction(undefined)
 
-  const handleArchive = async () => {
+  const handleArchive = async (e) => {
     if (releaseMenuDisabled) return
+    e.preventDefault()
 
     setIsPerformingOperation(true)
     await archive(release._id)
@@ -72,6 +74,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
               text={t('action.edit')}
               data-testid="edit-release"
             />
+            {/* <MenuItem onClick={() => setSelectedAction('')} /> */}
             <MenuItem
               onClick={() => setSelectedAction('confirm-archive')}
               icon={isReleaseArchived ? UnarchiveIcon : ArchiveIcon}
@@ -100,6 +103,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
               {/* TODO localize string */}
               {/* eslint-disable-next-line i18next/no-literal-string */}
               <Text>Are you sure you want to archive the release? There's no going back (yet)</Text>
+              {isPerformingOperation && <LoadingBlock showText title={'archiving, wait'} />}
             </Box>
             <Flex justify="flex-end" paddingTop={5}>
               <Button
