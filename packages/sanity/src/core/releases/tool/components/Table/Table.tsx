@@ -189,14 +189,14 @@ const TableInner = <TableData, AdditionalRowTableData>({
             }}
             {...cardRowProps}
           >
-            {amalgamatedColumnDefs.map(({cell: Cell, width, id, sorting = false}) => (
+            {amalgamatedColumnDefs.map(({cell: Cell, style, width, id, sorting = false}) => (
               <Fragment key={String(id)}>
                 <Cell
                   datum={datum as RowDatum<TableData, AdditionalRowTableData>}
                   cellProps={{
                     as: 'td',
                     id: String(id),
-                    style: {width: width || undefined},
+                    style: {...style, width: width || undefined},
                   }}
                   sorting={sorting}
                 />
