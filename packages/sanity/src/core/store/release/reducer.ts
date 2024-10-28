@@ -1,5 +1,3 @@
-import {DRAFTS_FOLDER, getBundleIdFromReleaseId, resolveBundlePerspective} from 'sanity'
-
 import {type ReleaseDocument} from './types'
 
 interface BundleDeletedAction {
@@ -32,18 +30,12 @@ interface LoadingStateChangedAction {
   type: 'LOADING_STATE_CHANGED'
 }
 
-interface PerspectiveSetAction {
-  payload: string
-  type: 'PERSPECTIVE_SET'
-}
-
 export type ReleasesReducerAction =
   | BundleDeletedAction
   | BundleUpdatedAction
   | ReleasesSetAction
   | BundleReceivedAction
   | LoadingStateChangedAction
-  | PerspectiveSetAction
 
 export interface ReleasesReducerState {
   releases: Map<string, ReleaseDocument>
@@ -67,18 +59,8 @@ function createReleasesSet(releases: ReleaseDocument[] | null) {
 export function releasesReducer(
   state: ReleasesReducerState,
   action: ReleasesReducerAction,
-  perspective?: string,
 ): ReleasesReducerState {
   switch (action.type) {
-    case 'PERSPECTIVE_SET': {
-      return {
-        ...state,
-        releaseStack: getReleaseStack({
-          releases: state.releases,
-          perspective: action.payload,
-        }),
-      }
-    }
     case 'LOADING_STATE_CHANGED': {
       return {
         ...state,
@@ -94,10 +76,6 @@ export function releasesReducer(
       return {
         ...state,
         releases: releasesById,
-        releaseStack: getReleaseStack({
-          releases: releasesById,
-          perspective,
-        }),
       }
     }
 
@@ -109,10 +87,6 @@ export function releasesReducer(
       return {
         ...state,
         releases: currentReleases,
-        releaseStack: getReleaseStack({
-          releases: currentReleases,
-          perspective,
-        }),
       }
     }
 
@@ -125,49 +99,10 @@ export function releasesReducer(
       return {
         ...state,
         releases: currentReleases,
-        releaseStack: getReleaseStack({
-          releases: currentReleases,
-          perspective,
-        }),
       }
     }
 
     default:
       return state
-  }
-}
-
-function getReleaseStack({
-  releases,
-  perspective,
-}: {
-  releases?: Map<string, ReleaseDocument>
-  perspective?: string
-}): string[] {
-  if (typeof releases === 'undefined') {
-    return []
-  }
-
-  // TODO: Handle system perspectives.
-  if (!perspective?.startsWith('bundle.')) {
-    return []
-  }
-
-  const stack = [...releases.values()]
-    .toSorted(sortReleases(resolveBundlePerspective(perspective)))
-    .map(({_id}) => getBundleIdFromReleaseId(_id))
-    .concat(DRAFTS_FOLDER)
-
-  return stack
-}
-
-// TODO: Implement complete layering heuristics.
-function sortReleases(perspective?: string): (a: ReleaseDocument, b: ReleaseDocument) => number {
-  return function (a, b) {
-    // Ensure the current release takes highest precedence.
-    if (getBundleIdFromReleaseId(a._id) === perspective) {
-      return -1
-    }
-    return 0
   }
 }

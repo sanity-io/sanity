@@ -3,7 +3,7 @@ import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {getBundleIdFromReleaseId, getPublishedId} from 'sanity'
+import {getBundleIdFromReleaseId, getPublishedId, usePerspective} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
@@ -55,14 +55,15 @@ export function SearchResultItemPreview({
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const releases = useReleases()
+  const {bundlesPerspective} = usePerspective()
 
   const observable = useMemo(
     () =>
       getPreviewStateObservable(documentPreviewStore, schemaType, getPublishedId(documentId), '', {
         bundleIds: (releases.data ?? []).map((release) => getBundleIdFromReleaseId(release._id)),
-        bundleStack: releases.stack,
+        bundleStack: bundlesPerspective,
       }),
-    [releases.data, releases.stack, documentId, documentPreviewStore, schemaType],
+    [releases.data, bundlesPerspective, documentId, documentPreviewStore, schemaType],
   )
 
   const {

@@ -15,6 +15,7 @@ import {
   getPreviewValueWithFallback,
   isRecord,
   SanityDefaultPreview,
+  usePerspective,
   useReleases,
 } from 'sanity'
 
@@ -47,14 +48,14 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       : null
 
   const releases = useReleases()
-
+  const {bundlesPerspective} = usePerspective()
   const previewStateObservable = useMemo(
     () =>
       getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {
         bundleIds: (releases.data ?? []).map((release) => getBundleIdFromReleaseId(release._id)),
-        bundleStack: releases.stack,
+        bundleStack: bundlesPerspective,
       }),
-    [props.documentPreviewStore, schemaType, value._id, title, releases.data, releases.stack],
+    [props.documentPreviewStore, schemaType, value._id, title, releases.data, bundlesPerspective],
   )
 
   const {

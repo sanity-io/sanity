@@ -1,11 +1,12 @@
 import {isEqual} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {usePerspective} from 'sanity'
 import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
 import {type SearchTerms} from '../../../../../../search'
-import {useCurrentUser, useReleases} from '../../../../../../store'
+import {useCurrentUser} from '../../../../../../store'
 import {resolvePerspectiveOptions} from '../../../../../../util/resolvePerspective'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
@@ -31,7 +32,7 @@ interface SearchProviderProps {
 export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
-  const releases = useReleases()
+  const {bundlesPerspective} = usePerspective()
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const {
@@ -141,7 +142,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
-          ...resolvePerspectiveOptions(releases.stack),
+          ...resolvePerspectiveOptions(bundlesPerspective),
         },
         terms: {
           ...terms,
@@ -167,7 +168,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     searchState.terms,
     terms,
     cursor,
-    releases.stack,
+    bundlesPerspective,
   ])
 
   /**

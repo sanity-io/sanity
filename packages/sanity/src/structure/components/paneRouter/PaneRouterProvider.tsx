@@ -24,6 +24,7 @@ export function PaneRouterProvider(props: {
   params: Record<string, string | undefined>
   payload: unknown
   siblingIndex: number
+  // TODO: Remove this paneRouter perspective - releases are only global
   perspective?: string
 }) {
   const {children, flatIndex, index, params, payload, siblingIndex} = props

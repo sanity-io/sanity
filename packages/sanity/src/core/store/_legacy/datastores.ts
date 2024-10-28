@@ -1,9 +1,8 @@
 /* eslint-disable camelcase */
 
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo} from 'react'
 import {of} from 'rxjs'
-import {useRouter} from 'sanity/router'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
@@ -297,32 +296,26 @@ export function useKeyValueStore(): KeyValueStore {
 export function useReleasesStore(): ReleaseStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
-  const currentUser = useCurrentUser()
   const previewStore = useDocumentPreviewStore()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const router = useRouter()
-  const perspectiveRef = useRef(router.perspectiveState.perspective)
 
-  // TODO: Include hidden layers state.
   return useMemo(() => {
     const releaseStore =
       resourceCache.get<ReleaseStore>({
-        dependencies: [workspace, currentUser, previewStore],
+        dependencies: [workspace, previewStore],
         namespace: 'ReleasesStore',
       }) ||
       createReleaseStore({
         client: studioClient,
-        currentUser,
-        perspective: perspectiveRef.current,
         previewStore,
       })
 
     resourceCache.set({
-      dependencies: [workspace, currentUser, previewStore],
+      dependencies: [workspace, previewStore],
       namespace: 'ReleasesStore',
       value: releaseStore,
     })
 
     return releaseStore
-  }, [resourceCache, workspace, studioClient, currentUser, previewStore])
+  }, [resourceCache, workspace, studioClient, previewStore])
 }

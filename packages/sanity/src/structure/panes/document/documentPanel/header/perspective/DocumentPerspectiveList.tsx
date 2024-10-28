@@ -19,7 +19,7 @@ import {VersionChip} from './VersionChip'
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {perspective} = usePaneRouter()
   const {t} = useTranslation()
-  const {setPerspective} = usePerspective(perspective)
+  const {setPerspective} = usePerspective()
   const dateTimeFormat = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -41,10 +41,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   // remove the archived releases
   const filteredReleases =
     (documentVersions &&
-      releases?.filter(
-        (release) =>
-          !versionDocumentExists(documentVersions, release._id) && release.state !== 'archived',
-      )) ||
+      releases?.filter((release) => !versionDocumentExists(documentVersions, release._id))) ||
     []
 
   const asapReleases = documentVersions?.filter(

@@ -1,22 +1,23 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
+import {sortReleases} from '../../releases/hooks/utils'
 import {useReleasesStore} from '../_legacy/datastores'
 import {type ReleasesReducerAction} from './reducer'
 import {type ReleaseDocument} from './types'
 
 interface ReleasesState {
+  /**
+   * Sorted array of releases, excluding archived releases
+   */
   data: ReleaseDocument[]
-  // releases: Map<string, ReleaseDocument>
+  /**
+   * Array of archived releases
+   */
+  archivedReleases: ReleaseDocument[]
   error?: Error
   loading: boolean
-  dispatch: (action: ReleasesReducerAction) => void
-
-  /**
-   * An array of release ids ordered chronologically to represent the state of documents at the
-   * given point in time.
-   */
-  stack: string[]
+  dispatch: (event: ReleasesReducerAction) => void
 }
 
 /**
@@ -25,13 +26,22 @@ interface ReleasesState {
 export function useReleases(): ReleasesState {
   const {state$, dispatch} = useReleasesStore()
   const state = useObservable(state$)!
-  const releasesAsArray = useMemo(() => Array.from(state.releases.values()), [state.releases])
-
+  const releasesAsArray = useMemo(
+    () =>
+      sortReleases(
+        Array.from(state.releases.values()).filter((release) => release.state !== 'archived'),
+      ).reverse(),
+    [state.releases],
+  )
+  const archivedReleases = useMemo(
+    () => Array.from(state.releases.values()).filter((release) => release.state === 'archived'),
+    [state.releases],
+  )
   return {
     data: releasesAsArray,
+    archivedReleases,
     dispatch,
     error: state.error,
     loading: ['loading', 'initialising'].includes(state.state),
-    stack: state.releaseStack,
   }
 }

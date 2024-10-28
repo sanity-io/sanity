@@ -1,7 +1,6 @@
 import {AddIcon, ChevronDownIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- MenuItem requires props, only supported by @sanity/ui
 import {Box, Button, Flex, Menu, MenuDivider, MenuItem, Spinner} from '@sanity/ui'
-import {compareDesc} from 'date-fns'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {type ReleaseDocument, type ReleaseType} from 'sanity'
 import {styled} from 'styled-components'
@@ -11,7 +10,6 @@ import {useTranslation} from '../../i18n'
 import {useReleases} from '../../store/release/useReleases'
 import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../hooks'
-import {getPublishDateFromRelease} from '../util/util'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
@@ -19,8 +17,6 @@ import {
 } from './GlobalPerspectiveMenuItem'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
-
-type ReleaseTypeSort = (a: ReleaseDocument, b: ReleaseDocument) => number
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -39,17 +35,6 @@ const StyledPublishedBox = styled(Box)`
   z-index: 10;
   padding-bottom: 16px;
 `
-
-const sortReleaseByPublishAt: ReleaseTypeSort = (ARelease, BRelease) =>
-  compareDesc(getPublishDateFromRelease(BRelease), getPublishDateFromRelease(ARelease))
-const sortReleaseByTitle: ReleaseTypeSort = (ARelease, BRelease) =>
-  ARelease.metadata.title.localeCompare(BRelease.metadata.title)
-
-const releaseTypeSorting: Record<ReleaseType, ReleaseTypeSort> = {
-  asap: sortReleaseByTitle,
-  scheduled: sortReleaseByPublishAt,
-  undecided: sortReleaseByTitle,
-}
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
@@ -76,23 +61,16 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     setCreateBundleDialogOpen(false)
   }, [])
 
-  const unarchivedReleases = useMemo(
-    () => releases.filter((release) => release.state !== 'archived'),
-    [releases],
-  )
-
   const sortedReleaseTypeReleases = useMemo(
     () =>
       orderedReleaseTypes.reduce<Record<ReleaseType, ReleaseDocument[]>>(
         (ReleaseTypeReleases, releaseType) => ({
           ...ReleaseTypeReleases,
-          [releaseType]: unarchivedReleases
-            .filter(({metadata}) => metadata.releaseType === releaseType)
-            .sort(releaseTypeSorting[releaseType]),
+          [releaseType]: releases.filter(({metadata}) => metadata.releaseType === releaseType),
         }),
         {} as Record<ReleaseType, ReleaseDocument[]>,
       ),
-    [unarchivedReleases],
+    [releases],
   )
 
   const range: LayerRange = useMemo(() => {

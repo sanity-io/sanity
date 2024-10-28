@@ -46,10 +46,16 @@ export interface ReleaseDocument {
   _type: typeof RELEASE_DOCUMENT_TYPE
   _createdAt: string
   _updatedAt: string
+  /**
+   * The same as the last path segment of the _id, added by the backend.
+   */
   name: string
   createdBy: string
   state: ReleaseState
   finalDocumentStates?: ReleaseFinalDocumentState[]
+  /**
+   * If defined, it takes precedence over the intendedPublishAt, the state should be 'scheduled'
+   */
   publishAt?: string
   metadata: {
     title: string

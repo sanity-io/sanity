@@ -170,6 +170,7 @@ export interface PaneRouterContextValue {
   ) => void
 
   /**
+   * TODO: Remove this paneRouter perspective - releases are only global
    * Perspective of the current pane
    */
   perspective?: string
