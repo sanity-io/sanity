@@ -1,10 +1,13 @@
-import {Card} from '@sanity/ui'
-import {type RefObject, useCallback, useMemo} from 'react'
+import {AddIcon} from '@sanity/icons'
+import {Card, Container} from '@sanity/ui'
+import {type RefObject, useCallback, useMemo, useState} from 'react'
 
+import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store/release/types'
 import {releasesLocaleNamespace} from '../../i18n'
 import {Table, type TableProps} from '../components/Table/Table'
+import {AddDocumentSearch} from './AddDocumentSearch'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
@@ -29,6 +32,7 @@ const getRowProps: TableProps<DocumentWithHistory, undefined>['rowProps'] = (dat
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, scrollContainerRef} = props
+  const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -66,6 +70,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [],
   )
 
+  const closeAddDialog = useCallback(() => {
+    setAddDocumentDialog(false)
+  }, [])
+
   return (
     <Card borderTop ref={scrollContainerRef}>
       <Table<DocumentWithHistory>
@@ -78,6 +86,23 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         searchFilter={filterRows}
         rowProps={getRowProps}
         scrollContainerRef={scrollContainerRef}
+      />
+      <Container width={3}>
+        <Card padding={3}>
+          <Button
+            icon={AddIcon}
+            mode="bleed"
+            onClick={() => setAddDocumentDialog(true)}
+            padding={2}
+            text={t('action.add-document')}
+          />
+        </Card>
+      </Container>
+
+      <AddDocumentSearch
+        open={openAddDocumentDialog}
+        onClose={closeAddDialog}
+        releaseId={release._id}
       />
     </Card>
   )

@@ -1,7 +1,12 @@
 import {type Action, type SanityClient, type SanityDocument} from '@sanity/client'
 import {type User} from '@sanity/types'
 import {omit} from 'lodash'
-import {type EditableReleaseDocument, getBundleIdFromReleaseId, getPublishedId} from 'sanity'
+import {
+  type EditableReleaseDocument,
+  getBundleIdFromReleaseId,
+  getPublishedId,
+  getVersionId,
+} from 'sanity'
 
 import {RELEASE_METADATA_TMP_DOC_PATH, RELEASE_METADATA_TMP_DOC_TYPE} from './constants'
 
@@ -16,6 +21,7 @@ export interface ReleaseOperationsStore {
   unschedule: (releaseId: string) => Promise<void>
   updateRelease: (release: EditableReleaseDocument) => Promise<void>
   createRelease: (release: EditableReleaseDocument) => Promise<void>
+  createVersion: (releaseId: string, documentId: string) => Promise<void>
 }
 
 export function createReleaseOperationsStore(options: {
@@ -122,12 +128,20 @@ export function createReleaseOperationsStore(options: {
     ]).then(() => {})
   }
 
+  const handleCreateVersion = async (documentId: string, releaseId: string) => {
+    // fetch original document
+    const doc = await client.fetch(`*[_id == $documentId][0]`, {documentId})
+
+    return client.create({...doc, _id: getVersionId(documentId, releaseId)}).then(() => {})
+  }
+
   return {
     schedule: handleScheduleRelease,
     unschedule: handleUnscheduleRelease,
     createRelease: handleCreateRelease,
     updateRelease: handleUpdateRelease,
     publishRelease: handlePublishRelease,
+    createVersion: handleCreateVersion,
   }
 }
 
