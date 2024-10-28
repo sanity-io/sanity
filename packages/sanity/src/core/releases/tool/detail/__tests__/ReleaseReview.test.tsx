@@ -132,10 +132,6 @@ vi.mock('sanity/router', async (importOriginal) => ({
   }),
 }))
 
-vi.mock('../../../components/ReleasesMenu', () => ({
-  ReleasesMenu: () => <div>ReleasesMenu</div>,
-}))
-
 vi.mock('../../../../preview/useObserveDocument', () => {
   return {
     useObserveDocument: vi.fn(),

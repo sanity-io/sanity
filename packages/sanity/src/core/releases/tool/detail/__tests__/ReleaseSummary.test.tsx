@@ -24,10 +24,6 @@ vi.mock('../../../../user-color', () => ({
   useUserColor: vi.fn().mockReturnValue('red'),
 }))
 
-vi.mock('../../../components/ReleasesMenu', () => ({
-  ReleasesMenu: () => <div>ReleasesMenu</div>,
-}))
-
 const timeNow = new Date()
 
 const releaseDocuments: DocumentInRelease[] = [
