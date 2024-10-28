@@ -124,6 +124,7 @@ export const releasesOverviewColumnDefs: (
       id: 'title',
       sorting: false,
       width: null,
+      style: {minWidth: '50%'},
       header: ({headerProps}) => (
         <Flex {...headerProps} flex={1} marginLeft={3} paddingY={3} sizing="border">
           <Headers.BasicHeader text={t('table-header.title')} />

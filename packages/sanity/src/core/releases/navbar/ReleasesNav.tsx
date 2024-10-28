@@ -16,6 +16,18 @@ import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
+const AnimatedMotionDiv = ({children, ...props}: PropsWithChildren<any>) => (
+  <motion.div
+    {...props}
+    initial={{width: 0, opacity: 0}}
+    animate={{width: 'auto', opacity: 1}}
+    exit={{width: 0, opacity: 0}}
+    transition={{duration: 0.25, ease: 'easeInOut'}}
+  >
+    {children}
+  </motion.div>
+)
+
 export function ReleasesNav(): JSX.Element {
   const activeToolName = useRouterState(
     useCallback(
@@ -50,41 +62,36 @@ export function ReleasesNav(): JSX.Element {
 
   const currentGlobalPerspectiveLabel = useMemo(() => {
     if (!currentGlobalBundle || currentGlobalBundle._id === LATEST._id) return null
-    if (currentGlobalBundle._id === 'published') {
-      return (
-        <Card tone="inherit">
-          <Flex align="flex-start" gap={0}>
-            <Stack flex={1} paddingY={2} paddingX={2} space={2}>
-              <Text size={1} textOverflow="ellipsis" weight="medium">
-                {currentGlobalBundle.metadata?.title}
-              </Text>
-            </Stack>
-          </Flex>
-        </Card>
+
+    const visibleLabelChildren = () => {
+      const labelContent = (
+        <Flex align="flex-start" gap={0}>
+          <Box flex="none">
+            <ReleaseAvatar padding={2} tone={getReleaseTone(currentGlobalBundle)} />
+          </Box>
+          <Stack flex={1} paddingY={2} paddingX={2} space={2}>
+            <Text size={1} textOverflow="ellipsis" weight="medium">
+              {currentGlobalBundle.metadata?.title}
+            </Text>
+          </Stack>
+        </Flex>
       )
-    }
 
-    const releasesIntentLink = ({children, ...intentProps}: PropsWithChildren) => (
-      <IntentLink
-        {...intentProps}
-        intent={RELEASES_INTENT}
-        params={{id: getBundleIdFromReleaseId(currentGlobalBundle._id!)}}
-      >
-        {children}
-      </IntentLink>
-    )
+      if (currentGlobalBundle._id === 'published') {
+        return <Card tone="inherit">{labelContent}</Card>
+      }
 
-    const tone = currentGlobalBundle.metadata?.releaseType
-      ? getReleaseTone(currentGlobalBundle)
-      : 'default'
+      const releasesIntentLink = ({children, ...intentProps}: PropsWithChildren) => (
+        <IntentLink
+          {...intentProps}
+          intent={RELEASES_INTENT}
+          params={{id: getBundleIdFromReleaseId(currentGlobalBundle._id!)}}
+        >
+          {children}
+        </IntentLink>
+      )
 
-    return (
-      <motion.div
-        initial={{width: 0, opacity: 0}}
-        animate={{width: 'auto', opacity: 1}}
-        exit={{width: 0, opacity: 0}}
-        transition={{duration: 0.25, ease: 'easeInOut'}}
-      >
+      return (
         <Button
           as={releasesIntentLink}
           data-as="a"
@@ -94,19 +101,12 @@ export function ReleasesNav(): JSX.Element {
           radius="full"
           style={{maxWidth: '180px'}}
         >
-          <Flex align="flex-start" gap={0}>
-            <Box flex="none">
-              <ReleaseAvatar padding={2} tone={tone} />
-            </Box>
-            <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
-              <Text size={1} textOverflow="ellipsis" weight="medium">
-                {currentGlobalBundle.metadata?.title}
-              </Text>
-            </Stack>
-          </Flex>
+          {labelContent}
         </Button>
-      </motion.div>
-    )
+      )
+    }
+
+    return <AnimatedMotionDiv>{visibleLabelChildren()}</AnimatedMotionDiv>
   }, [currentGlobalBundle])
 
   return (

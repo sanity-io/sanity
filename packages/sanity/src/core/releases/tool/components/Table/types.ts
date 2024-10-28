@@ -1,3 +1,5 @@
+import {type CSSProperties} from 'react'
+
 export interface InjectedTableProps {
   as?: React.ElementType | keyof JSX.IntrinsicElements
   id: string
@@ -13,6 +15,7 @@ export interface Column<TableData = unknown> {
   }) => React.ReactNode
   id: keyof TableData | string
   width: number | null
+  style?: CSSProperties
   sorting?: boolean
   sortTransform?: (value: TableData) => number
 }
