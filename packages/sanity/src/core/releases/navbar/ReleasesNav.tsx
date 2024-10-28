@@ -69,7 +69,7 @@ export function ReleasesNav(): JSX.Element {
           <Box flex="none">
             <ReleaseAvatar padding={2} tone={getReleaseTone(currentGlobalBundle)} />
           </Box>
-          <Stack flex={1} paddingY={2} paddingX={2} space={2}>
+          <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
             <Text size={1} textOverflow="ellipsis" weight="medium">
               {currentGlobalBundle.metadata?.title}
             </Text>
