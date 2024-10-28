@@ -1189,6 +1189,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.form.search-icon-tooltip': 'Select release icon',
   /** Label for the title form field when creating releases */
   'release.form.title': 'Title',
+  /** Tooltip for button to hide release visibility */
+  'release.layer.hide': 'Hide release',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'Releases',
   /** Label for the release type 'as soon as possible' */

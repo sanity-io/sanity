@@ -296,5 +296,6 @@ export interface RouterContextValue {
    */
   perspectiveState: {
     perspective: string | undefined
+    excludedPerspectives: string | undefined
   }
 }

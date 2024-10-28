@@ -166,12 +166,12 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
   // separately to the entire router context object, which changes more frequently than the relevant
   // sticky parameters.
   //
-  // TODO: Add omitted bundles.
   const perspectiveState = useMemo(() => {
     return {
       perspective: stickyParamsByName.perspective,
+      excludedPerspectives: stickyParamsByName.excludedPerspectives,
     }
-  }, [stickyParamsByName.perspective])
+  }, [stickyParamsByName.excludedPerspectives, stickyParamsByName.perspective])
 
   const router: RouterContextValue = useMemo(
     () => ({
