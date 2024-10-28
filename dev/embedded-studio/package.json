@@ -1,6 +1,6 @@
 {
   "name": "embedded-studio",
-  "version": "3.61.0",
+  "version": "3.62.2",
   "private": true,
   "scripts": {
     "build": "tsc && vite build && sanity manifest extract",
@@ -8,17 +8,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@sanity/ui": "^2.8.9",
+    "@sanity/ui": "^2.8.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sanity": "workspace:*",
     "styled-components": "^6.1.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.5",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
     "typescript": "5.6.3",
-    "vite": "^4.5.3"
+    "vite": "^4.5.5"
   }
 }
