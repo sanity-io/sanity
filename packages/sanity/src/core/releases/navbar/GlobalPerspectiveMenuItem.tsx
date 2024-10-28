@@ -1,8 +1,9 @@
 import {EyeOpenIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
-import {Box, Flex, MenuItem, Stack, Text} from '@sanity/ui'
+// eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
+import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {getReleaseTone, RelativeTime, ReleaseAvatar, type ReleaseDocument} from 'sanity'
+import {styled} from 'styled-components'
 
 import {usePerspective} from '../hooks/usePerspective'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
@@ -16,6 +17,25 @@ export interface LayerRange {
     undecided: number
   }
 }
+
+const ToggleLayerButton = styled(Button)`
+  --card-fg-color: inherit;
+  --card-icon-color: inherit;
+
+  background-color: inherit;
+  opacity: 1;
+
+  @media (hover: hover) {
+    &:not([data-disabled='true']):hover {
+      --card-fg-color: inherit;
+      --card-icon-color: inherit;
+    }
+  }
+
+  [data-ui='MenuItem']:hover & {
+    opacity: 1;
+  }
+`
 
 type rangePosition = 'first' | 'within' | 'last' | undefined
 
@@ -106,24 +126,19 @@ export function GlobalPerspectiveMenuItem(props: {
               )}
           </Stack>
           <Box flex="none">
-            {!toggleable && (
-              <Box padding={2} style={{opacity: 0}}>
-                <Text size={1}>
-                  <EyeOpenIcon />
-                </Text>
-              </Box>
-            )}
-            {/* {toggleable && (
+            {inRange && (
               <ToggleLayerButton
-                $visible={!release.hidden}
+                tooltipProps={{placement: 'bottom', content: 'Hide release'}}
+                // $visible={!release.hidden}
                 forwardedAs="div"
                 disabled={!active}
-                icon={release.hidden ? EyeClosedIcon : EyeOpenIcon}
+                icon={EyeOpenIcon}
+                // icon={release.hidden ? EyeClosedIcon : EyeOpenIcon}
                 mode="bleed"
                 onClick={handleToggleReleaseVisibility}
                 padding={2}
               />
-            )} */}
+            )}
           </Box>
         </Flex>
       </MenuItem>
