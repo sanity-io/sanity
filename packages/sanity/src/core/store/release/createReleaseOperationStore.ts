@@ -19,6 +19,7 @@ export interface ReleaseOperationsStore {
   schedule: (releaseId: string, date: Date) => Promise<void>
   //todo: reschedule: (releaseId: string, newDate: Date) => Promise<void>
   unschedule: (releaseId: string) => Promise<void>
+  archive: (releaseId: string) => Promise<void>
   updateRelease: (release: EditableReleaseDocument) => Promise<void>
   createRelease: (release: EditableReleaseDocument) => Promise<void>
   createVersion: (releaseId: string, documentId: string) => Promise<void>
@@ -128,6 +129,15 @@ export function createReleaseOperationsStore(options: {
     ]).then(() => {})
   }
 
+  const handleArchiveRelease = (releaseId: string) => {
+    return requestAction(client, [
+      {
+        actionType: 'sanity.action.release.archive',
+        releaseId: getBundleIdFromReleaseId(releaseId),
+      },
+    ]).then(() => {})
+  }
+
   const handleCreateVersion = async (documentId: string, releaseId: string) => {
     // fetch original document
     const doc = await client.fetch(`*[_id == $documentId][0]`, {documentId})
@@ -136,6 +146,7 @@ export function createReleaseOperationsStore(options: {
   }
 
   return {
+    archive: handleArchiveRelease,
     schedule: handleScheduleRelease,
     unschedule: handleUnscheduleRelease,
     createRelease: handleCreateRelease,
@@ -149,6 +160,10 @@ interface ScheduleApiAction {
   actionType: 'sanity.action.release.schedule'
   releaseId: string
   publishAt: string
+}
+interface ArchiveApiAction {
+  actionType: 'sanity.action.release.archive'
+  releaseId: string
 }
 interface UnscheduleApiAction {
   actionType: 'sanity.action.release.unschedule'
@@ -166,7 +181,12 @@ interface EditReleaseApiAction {
   releaseId: string
 }
 
-type ReleaseAction = Action | ScheduleApiAction | CreateReleaseApiAction | UnscheduleApiAction
+type ReleaseAction =
+  | Action
+  | ScheduleApiAction
+  | CreateReleaseApiAction
+  | UnscheduleApiAction
+  | ArchiveApiAction
 
 function requestAction(client: SanityClient, actions: ReleaseAction | ReleaseAction[]) {
   const {dataset} = client.config()
