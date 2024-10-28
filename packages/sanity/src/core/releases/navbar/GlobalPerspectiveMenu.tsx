@@ -17,7 +17,8 @@ import {
   GlobalPerspectiveMenuItem,
   type LayerRange,
 } from './GlobalPerspectiveMenuItem'
-import {ReleaseTypeSection} from './ReleaseTypeMenuSection'
+import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
+import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
 type ReleaseTypeSort = (a: ReleaseDocument, b: ReleaseDocument) => number
 
@@ -60,6 +61,9 @@ export function GlobalPerspectiveMenu(): JSX.Element {
   const currentGlobalBundleId = currentGlobalBundle._id
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
+
+  const {isRangeVisible, onScroll, resetRangeVisibility, setScrollContainer, scrollElementRef} =
+    useScrollIndicatorVisibility()
 
   const {t} = useTranslation()
 
@@ -152,21 +156,22 @@ export function GlobalPerspectiveMenu(): JSX.Element {
 
     return (
       <Box>
-        <StyledBox>
+        <StyledBox ref={setScrollContainer} onScroll={onScroll}>
           <StyledPublishedBox>
             <GlobalPerspectiveMenuItem
-              rangePosition={getRangePosition(range, 0)}
+              rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
               release={{_id: 'published', metadata: {title: 'Published'}} as ReleaseDocument}
               toggleable
             />
           </StyledPublishedBox>
           <>
             {orderedReleaseTypes.map((releaseType) => (
-              <ReleaseTypeSection
+              <ReleaseTypeMenuSection
                 key={releaseType}
                 releaseType={releaseType}
                 releases={sortedReleaseTypeReleases[releaseType]}
                 range={range}
+                currentGlobalBundleMenuItemRef={scrollElementRef}
               />
             ))}
           </>
@@ -179,7 +184,17 @@ export function GlobalPerspectiveMenu(): JSX.Element {
         />
       </Box>
     )
-  }, [handleCreateBundleClick, loading, range, sortedReleaseTypeReleases, t])
+  }, [
+    handleCreateBundleClick,
+    isRangeVisible,
+    loading,
+    onScroll,
+    range,
+    scrollElementRef,
+    setScrollContainer,
+    sortedReleaseTypeReleases,
+    t,
+  ])
 
   return (
     <>
@@ -195,6 +210,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
           />
         }
         id="releases-menu"
+        onClose={resetRangeVisibility}
         menu={
           <StyledMenu data-testid="release-menu" ref={styledMenuRef}>
             {releasesList}

@@ -1,5 +1,6 @@
 import {Flex, Label} from '@sanity/ui'
-import {type ReleaseDocument, type ReleaseType, useTranslation} from 'sanity'
+import {useCallback} from 'react'
+import {type ReleaseDocument, type ReleaseType, usePerspective, useTranslation} from 'sanity'
 
 import {
   getRangePosition,
@@ -7,6 +8,7 @@ import {
   type LayerRange,
 } from './GlobalPerspectiveMenuItem'
 import {GlobalPerspectiveMenuLabelIndicator} from './PerspectiveLayerIndicator'
+import {type ScrollElement} from './useScrollIndicatorVisibility'
 
 const RELEASE_TYPE_LABELS: Record<ReleaseType, string> = {
   asap: 'release.type.asap',
@@ -14,16 +16,27 @@ const RELEASE_TYPE_LABELS: Record<ReleaseType, string> = {
   undecided: 'release.type.undecided',
 }
 
-export function ReleaseTypeSection({
+export function ReleaseTypeMenuSection({
   releaseType,
   releases,
   range,
+  currentGlobalBundleMenuItemRef,
 }: {
   releaseType: ReleaseType
   releases: ReleaseDocument[]
   range: LayerRange
+  currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
 }): JSX.Element | null {
   const {t} = useTranslation()
+  const {currentGlobalBundle} = usePerspective()
+
+  const getMenuItemRef = useCallback(
+    (releaseId: string) =>
+      releaseId === currentGlobalBundle._id
+        ? (currentGlobalBundleMenuItemRef as React.RefObject<HTMLDivElement>)
+        : undefined,
+    [currentGlobalBundle._id, currentGlobalBundleMenuItemRef],
+  )
 
   if (releases.length === 0) return null
 
@@ -47,6 +60,7 @@ export function ReleaseTypeSection({
           <GlobalPerspectiveMenuItem
             release={release}
             key={release._id}
+            ref={getMenuItemRef(release._id)}
             rangePosition={getRangePosition(range, releaseTypeOffset + index)}
             toggleable={releaseTypeOffset < lastIndex}
           />

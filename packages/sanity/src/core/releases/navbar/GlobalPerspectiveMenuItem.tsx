@@ -2,7 +2,7 @@ import {EyeOpenIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import formatRelative from 'date-fns/formatRelative'
-import {type MouseEvent, useCallback} from 'react'
+import {forwardRef, type MouseEvent, useCallback} from 'react'
 import {getReleaseTone, ReleaseAvatar, type ReleaseDocument} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -53,11 +53,14 @@ export function getRangePosition(range: LayerRange, index: number): rangePositio
   return undefined
 }
 
-export function GlobalPerspectiveMenuItem(props: {
-  release: ReleaseDocument
-  rangePosition: rangePosition
-  toggleable: boolean
-}) {
+export const GlobalPerspectiveMenuItem = forwardRef<
+  HTMLDivElement,
+  {
+    release: ReleaseDocument
+    rangePosition: rangePosition
+    toggleable: boolean
+  }
+>((props, ref) => {
   const {release, rangePosition, toggleable} = props
   //   const {current, replace: replaceVersion, replaceToggle} = usePerspective()
   const {currentGlobalBundle, setPerspectiveFromRelease, setPerspective} = usePerspective()
@@ -85,6 +88,7 @@ export function GlobalPerspectiveMenuItem(props: {
       $first={first}
       $last={last}
       $inRange={inRange}
+      ref={ref}
     >
       <MenuItem onClick={handleOnReleaseClick} padding={1} pressed={active}>
         <Flex align="flex-start" gap={1}>
@@ -151,4 +155,6 @@ export function GlobalPerspectiveMenuItem(props: {
       </MenuItem>
     </GlobalPerspectiveMenuItemIndicator>
   )
-}
+})
+
+GlobalPerspectiveMenuItem.displayName = 'GlobalPerspectiveMenuItem'
