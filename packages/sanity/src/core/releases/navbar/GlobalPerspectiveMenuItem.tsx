@@ -1,12 +1,14 @@
 import {EyeOpenIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
+import formatRelative from 'date-fns/formatRelative'
 import {type MouseEvent, useCallback} from 'react'
-import {getReleaseTone, RelativeTime, ReleaseAvatar, type ReleaseDocument} from 'sanity'
+import {getReleaseTone, ReleaseAvatar, type ReleaseDocument} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip'
 import {usePerspective} from '../hooks/usePerspective'
+import {getPublishDateFromRelease} from '../util/util'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
 export interface LayerRange {
@@ -124,10 +126,7 @@ export function GlobalPerspectiveMenuItem(props: {
             {release.metadata.releaseType !== 'undecided' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (
                 <Text muted size={1}>
-                  <RelativeTime
-                    time={(release.publishAt || release.metadata.intendedPublishAt)!}
-                    useTemporalPhrase
-                  />
+                  {formatRelative(getPublishDateFromRelease(release), new Date())}
                 </Text>
               )}
           </Stack>
