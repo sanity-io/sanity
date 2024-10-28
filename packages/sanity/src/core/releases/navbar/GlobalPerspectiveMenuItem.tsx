@@ -1,11 +1,11 @@
 import {EyeOpenIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
-import {Box, Flex, MenuItem, Stack, Text} from '@sanity/ui'
+import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {getReleaseTone, RelativeTime, ReleaseAvatar, type ReleaseDocument} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components/button'
+// import {Button} from '../../../ui-components/button'
 import {usePerspective} from '../hooks/usePerspective'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
