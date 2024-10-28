@@ -1,4 +1,4 @@
-import {Label} from '@sanity/ui'
+import {Flex, Label} from '@sanity/ui'
 import {type ReleaseDocument, type ReleaseType, useTranslation} from 'sanity'
 
 import {
@@ -42,14 +42,16 @@ export function ReleaseTypeSection({
           {t(RELEASE_TYPE_LABELS[releaseType])}
         </Label>
       </GlobalPerspectiveMenuLabelIndicator>
-      {releases.map((release, index) => (
-        <GlobalPerspectiveMenuItem
-          release={release}
-          key={release._id}
-          rangePosition={getRangePosition(range, releaseTypeOffset + index)}
-          toggleable={releaseTypeOffset < lastIndex}
-        />
-      ))}
+      <Flex direction="column" gap={1}>
+        {releases.map((release, index) => (
+          <GlobalPerspectiveMenuItem
+            release={release}
+            key={release._id}
+            rangePosition={getRangePosition(range, releaseTypeOffset + index)}
+            toggleable={releaseTypeOffset < lastIndex}
+          />
+        ))}
+      </Flex>
     </>
   )
 }

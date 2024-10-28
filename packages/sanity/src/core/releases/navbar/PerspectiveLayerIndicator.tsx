@@ -82,7 +82,8 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
 export const GlobalPerspectiveMenuLabelIndicator = styled(Box)<{$withinRange: boolean}>(
   ({$withinRange}) => css`
     position: relative;
-    padding-left: 40px;
+    // 4px padding + 33px release indicator width + 4px gap
+    padding-left: 41px;
 
     ${$withinRange &&
     css`
