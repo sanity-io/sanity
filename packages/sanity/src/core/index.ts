@@ -37,7 +37,6 @@ export {
   ReleaseAvatar,
   ReleaseBadge,
   ReleaseForm,
-  ReleasesMenu,
   useDocumentVersions,
   usePerspective,
   useVersionOperations,
