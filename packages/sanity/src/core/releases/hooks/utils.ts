@@ -6,7 +6,7 @@ import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[] {
   // The order should always be:
   // [undecided (sortByCreatedAt), scheduled(sortBy publishAt || metadata.intendedPublishAt), asap(sortByCreatedAt)]
-  return releases.toSorted((a, b) => {
+  return [...releases].sort((a, b) => {
     // undecided are always first, then by createdAt descending
     if (a.metadata.releaseType === 'undecided' && b.metadata.releaseType !== 'undecided') {
       return -1
