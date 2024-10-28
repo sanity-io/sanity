@@ -6,7 +6,7 @@ import {
   useElementRect,
 } from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {useCallback, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {
   ChangeConnectorRoot,
@@ -15,14 +15,17 @@ import {
   FieldActionsProvider,
   FieldActionsResolver,
   GetFormValueProvider,
+  getSanityCreateLinkMetadata,
+  isSanityCreateLinked,
   useGlobalCopyPasteElementHandler,
+  useSanityCreateConfig,
   useZIndex,
 } from 'sanity'
 import {type Path} from 'sanity-diff-patch'
 import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {Pane, PaneFooter, usePaneLayout} from '../../../components'
+import {Pane, PaneFooter, usePane, usePaneLayout} from '../../../components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
@@ -34,6 +37,7 @@ import {
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {DocumentOperationResults} from '../DocumentOperationResults'
 import {DocumentPanel} from '../documentPanel'
+import {Banner} from '../documentPanel/banners/Banner'
 import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentActionShortcuts} from '../keyboardShortcuts'
 import {getMenuItems} from '../menuItems'
@@ -83,8 +87,12 @@ export function DocumentLayout() {
   const {features} = useStructureTool()
   const {t} = useTranslation(structureLocaleNamespace)
   const {collapsed: layoutCollapsed} = usePaneLayout()
+
   const zOffsets = useZIndex()
   const previewUrl = usePreviewUrl(value)
+
+  const createLinkMetadata = getSanityCreateLinkMetadata(value)
+  const CreateLinkedBannerContent = useSanityCreateConfig().components?.documentLinkedBannerContent
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
@@ -206,6 +214,18 @@ export function DocumentLayout() {
         >
           <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
 
+          {createLinkMetadata &&
+            isSanityCreateLinked(createLinkMetadata) &&
+            CreateLinkedBannerContent && (
+              <ShowWhenPaneOpen>
+                <Banner
+                  tone="transparent"
+                  data-test-id="sanity-create-read-only-banner"
+                  content={<CreateLinkedBannerContent metadata={createLinkMetadata} />}
+                />
+              </ShowWhenPaneOpen>
+            )}
+
           <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
             <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
               <StyledChangeConnectorRoot
@@ -233,7 +253,10 @@ export function DocumentLayout() {
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
               <PaneFooter ref={setFooterElement}>
                 <TooltipDelayGroupProvider>
-                  <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
+                  <DocumentStatusBar
+                    actionsBoxRef={setActionsBoxElement}
+                    createLinkMetadata={createLinkMetadata}
+                  />
                 </TooltipDelayGroupProvider>
               </PaneFooter>
             </DialogProvider>
@@ -243,4 +266,13 @@ export function DocumentLayout() {
       </FieldActionsProvider>
     </GetFormValueProvider>
   )
+}
+
+/**
+ * Prevents whatever is inside of it from rendering when the pane is collapsed.
+ * Needed locally as DocumentLayout does lives outside PaneContext, but is provided _somewhere_ within it.
+ */
+function ShowWhenPaneOpen(props: {children: ReactNode}) {
+  const {collapsed} = usePane()
+  return collapsed ? null : props.children
 }

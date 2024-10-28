@@ -21,6 +21,7 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  isSanityCreateLinkedDocument,
   isVersionId,
   type OnPathFocusPayload,
   type PatchEvent,
@@ -578,6 +579,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permission: requiredPermission,
   })
 
+  const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
   const isNonExistentInBundle = typeof bundlePerspective !== 'undefined' && !isVersionId(value._id)
   const existsInBundle = typeof bundlePerspective !== 'undefined' && isVersionId(value._id)
@@ -605,7 +607,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isLocked ||
       isDeleting ||
       isDeleted ||
-      isLiveEditAndDraft
+      isLiveEditAndDraft ||
+      isCreateLinked
     )
   }, [
     isPermissionsLoading,
@@ -623,6 +626,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     revTime,
     isDeleting,
     isDeleted,
+    isCreateLinked,
   ])
 
   const formState = useFormState({
