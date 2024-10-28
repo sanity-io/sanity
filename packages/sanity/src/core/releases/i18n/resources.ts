@@ -4,6 +4,8 @@
  * @internal
  */
 const releasesLocaleStrings = {
+  /** Action text for adding a document to release */
+  'action.add-document': 'Add document',
   /** Action text for archiving a release */
   'action.archive': 'Archive',
   /** Action text for showing the archived releases */

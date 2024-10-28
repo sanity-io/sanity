@@ -252,9 +252,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
       <div
         style={
           {
-            'height': `${rowVirtualizer.getTotalSize()}px`,
-            // The padding accounts for the height of the <TableHeader> and extra space for padding at the bottom
-            'paddingBottom': '110px',
             'width': '100%',
             'position': 'relative',
             '--maxInlineSize': rem(maxInlineSize),
