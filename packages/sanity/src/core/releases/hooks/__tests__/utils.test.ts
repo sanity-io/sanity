@@ -1,7 +1,9 @@
-import {createReleaseId, getBundleIdFromReleaseId, type ReleaseDocument} from 'sanity'
 import {describe, expect, it} from 'vitest'
 
 import {RELEASE_DOCUMENT_TYPE} from '../../../store/release/constants'
+import {type ReleaseDocument} from '../../../store/release/types'
+import {createReleaseId} from '../../util/createReleaseId'
+import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
 import {getReleasesPerspective, sortReleases} from '../utils'
 
 function createReleaseMock(

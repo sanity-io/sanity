@@ -3,7 +3,7 @@ import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {getBundleIdFromReleaseId, getPublishedId, usePerspective} from 'sanity'
+import {getBundleIdFromReleaseId, getPublishedId} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
@@ -15,6 +15,7 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
+import {usePerspective} from '../../../../../../../releases/hooks/usePerspective'
 import {
   type DocumentPresence,
   useDocumentPreviewStore,

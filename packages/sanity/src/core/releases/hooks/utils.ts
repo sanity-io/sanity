@@ -1,10 +1,9 @@
-import {getBundleIdFromReleaseId} from 'sanity'
-
 import {type ReleaseDocument} from '../../store/release/types'
 import {DRAFTS_FOLDER} from '../../util/draftUtils'
 import {resolveBundlePerspective} from '../../util/resolvePerspective'
+import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 
-export function sortReleases(releases: ReleaseDocument[]): ReleaseDocument[] {
+export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[] {
   // The order should always be:
   // [undecided (sortByCreatedAt), scheduled(sortBy publishAt || metadata.intendedPublishAt), asap(sortByCreatedAt)]
   return releases.toSorted((a, b) => {

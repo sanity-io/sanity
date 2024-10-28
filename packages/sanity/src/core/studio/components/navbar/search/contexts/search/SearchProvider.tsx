@@ -1,10 +1,10 @@
 import {isEqual} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
-import {usePerspective} from 'sanity'
 import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
+import {usePerspective} from '../../../../../../releases/hooks/usePerspective'
 import {type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {resolvePerspectiveOptions} from '../../../../../../util/resolvePerspective'
