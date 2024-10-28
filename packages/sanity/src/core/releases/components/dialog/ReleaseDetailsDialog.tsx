@@ -50,13 +50,6 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
   // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
   const {setPerspective} = usePerspective()
 
-  const submit = useCallback(
-    (formValue: EditableReleaseDocument) => {
-      return formAction === 'edit' ? updateRelease(formValue) : createRelease(formValue)
-    },
-    [createRelease, formAction, updateRelease],
-  )
-
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       try {
@@ -67,7 +60,8 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
           ...value,
           metadata: {...value.metadata, title: value.metadata?.title?.trim()},
         }
-        await submit(submitValue)
+        const action = formAction === 'edit' ? updateRelease : createRelease
+        await action(submitValue)
         if (formAction === 'create') {
           setPerspective(value._id)
           telemetry.log(CreatedRelease, {origin})
@@ -86,7 +80,17 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
         onSubmit()
       }
     },
-    [value, submit, formAction, setPerspective, telemetry, origin, toast, onSubmit],
+    [
+      value,
+      formAction,
+      updateRelease,
+      createRelease,
+      setPerspective,
+      telemetry,
+      origin,
+      toast,
+      onSubmit,
+    ],
   )
 
   const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {

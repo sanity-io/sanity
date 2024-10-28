@@ -298,6 +298,7 @@ export function useReleasesStore(): ReleaseStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
   const currentUser = useCurrentUser()
+  const previewStore = useDocumentPreviewStore()
   const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const router = useRouter()
   const perspectiveRef = useRef(router.perspectiveState.perspective)
@@ -306,21 +307,22 @@ export function useReleasesStore(): ReleaseStore {
   return useMemo(() => {
     const releaseStore =
       resourceCache.get<ReleaseStore>({
-        dependencies: [workspace, currentUser],
+        dependencies: [workspace, currentUser, previewStore],
         namespace: 'ReleasesStore',
       }) ||
       createReleaseStore({
         client: studioClient,
         currentUser,
         perspective: perspectiveRef.current,
+        previewStore,
       })
 
     resourceCache.set({
-      dependencies: [workspace, currentUser],
+      dependencies: [workspace, currentUser, previewStore],
       namespace: 'ReleasesStore',
       value: releaseStore,
     })
 
     return releaseStore
-  }, [resourceCache, workspace, studioClient, currentUser])
+  }, [resourceCache, workspace, studioClient, currentUser, previewStore])
 }

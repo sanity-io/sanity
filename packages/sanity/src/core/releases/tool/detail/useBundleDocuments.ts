@@ -18,7 +18,7 @@ export interface DocumentValidationStatus extends ValidationStatus {
   hasError: boolean
 }
 
-export interface DocumentInBundleResult {
+export interface DocumentInRelease {
   memoKey: string
   document: SanityDocument & {publishedDocumentExists: boolean}
   validation: DocumentValidationStatus
@@ -27,7 +27,7 @@ export interface DocumentInBundleResult {
 
 export function useBundleDocuments(release: string): {
   loading: boolean
-  results: DocumentInBundleResult[]
+  results: DocumentInRelease[]
 } {
   const groqFilter = `_id in path("versions.${release}.*")`
   const documentPreviewStore = useDocumentPreviewStore()

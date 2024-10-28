@@ -8,11 +8,11 @@ import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {getPublishedId} from '../../../../util/draftUtils'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {DocumentReviewHeader} from '../review/DocumentReviewHeader'
-import {type DocumentInBundleResult} from '../useBundleDocuments'
+import {type DocumentInRelease} from '../useBundleDocuments'
 import {DocumentDiff} from './DocumentDiff'
 
 const DocumentDiffExpanded = memo(
-  function DocumentDiffExpanded({document}: {document: DocumentInBundleResult['document']}) {
+  function DocumentDiffExpanded({document}: {document: DocumentInRelease['document']}) {
     const publishedId = getPublishedId(document._id)
 
     const schema = useSchema()
@@ -40,7 +40,7 @@ export const DocumentDiffContainer = memo(
   }: {
     history?: DocumentHistory
     releaseSlug: string
-    item: DocumentInBundleResult
+    item: DocumentInRelease
     isExpanded: boolean
     toggleIsExpanded: () => void
   }) {

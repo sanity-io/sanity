@@ -10,7 +10,7 @@ interface ReleasesState {
   // releases: Map<string, ReleaseDocument>
   error?: Error
   loading: boolean
-  dispatch: (event: ReleasesReducerAction) => void
+  dispatch: (action: ReleasesReducerAction) => void
 
   /**
    * An array of release ids ordered chronologically to represent the state of documents at the

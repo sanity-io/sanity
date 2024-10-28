@@ -20,6 +20,10 @@ const releasesLocaleStrings = {
   'action.open': 'Open',
   /** Action text for publishing a release */
   'action.publish': 'Publish',
+  /** Action text for scheduling a release */
+  'action.schedule': 'Schedule for publishing',
+  /** Action text for scheduling a release */
+  'action.unschedule': 'Unschedule',
   /** Action text for publishing all documents in a release (and the release itself) */
   'action.publish-all': 'Publish all',
   /** Text for the review changes button in release tool */
@@ -122,6 +126,39 @@ const releasesLocaleStrings = {
   /** Label for when documents in release have validation errors */
   'publish-dialog.validation.error': 'Some documents have validation errors',
 
+  /** Title o unschedule release dialog */
+  'schedule-button.tooltip': 'Are you sure you want to unschedule the release?',
+
+  /** Schedule release button tooltip when validation is loading */
+  'schedule-button-tooltip.validation.loading': 'Validating documents...',
+  /** Schedule release button tooltip when there are validation errors */
+  'schedule-button-tooltip.validation.error': 'Some documents have validation errors',
+
+  /** Schedule release button tooltip when the release is already scheduled */
+  'schedule-button-tooltip.already-scheduled': 'This release is already scheduled',
+
+  /** Title for unschedule release dialog */
+  'schedule-dialog.confirm-title':
+    'Are you sure you want to schedule the release and all document versions for publishing?',
+  /** Description shown in unschedule relaease dialog */
+  'schedule-dialog.confirm-description_one':
+    "The '<strong>{{title}}</strong>' release and its document will be published on the selected date.",
+  /** Description for the dialog confirming the publish of a release with multiple documents */
+  'schedule-dialog.confirm-description_other':
+    'The <strong>{{title}}</strong> release and its {{count}}  document versions will be scheduled for publishing.',
+
+  /** Description for the confirm button for scheduling a release */
+  'schedule-dialog.confirm-button': 'Yes, schedule for publishing',
+
+  /** Label for date picker when scheduling a release */
+  'schedule-dialog.select-publish-date-label': 'Schedule for publishing on',
+
+  /** Title for unschedule release dialog */
+  'unschedule-dialog.confirm-title': 'Are you sure you want to unschedule the release?',
+  /** Description shown in unschedule relaease dialog */
+  'unschedule-dialog.confirm-description':
+    'The release will no longer be published on the scheduled date',
+
   /** Description for the review changes button in release tool */
   'review.description': 'Add documents to this release to review changes',
   /** Text for when a document is edited */
@@ -162,9 +199,17 @@ const releasesLocaleStrings = {
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
   /** Text for toast when release failed to publish */
-  'toast.error': "Failed to publish the '<strong>{{title}}</strong>'",
+  'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been published */
-  'toast.published': "The '<strong>{{title}}</strong>' release was published.",
+  'toast.publish.success': "The '<strong>{{title}}</strong>' release was published.",
+  /** Text for toast when release failed to schedule */
+  'toast.schedule.error': "Failed to schedule '<strong>{{title}}</strong>': {{error}}",
+  /** Text for toast when release has been scheduled */
+  'toast.schedule.success': "The '<strong>{{title}}</strong>' release was scheduled.",
+  /** Text for toast when release failed to unschedule */
+  'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
+  /** Text for toast when release has been unschedule */
+  'toast.unschedule.success': "The '<strong>{{title}}</strong>' release was unscheduled.",
 }
 
 /**

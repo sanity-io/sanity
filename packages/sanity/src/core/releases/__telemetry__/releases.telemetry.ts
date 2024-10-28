@@ -65,6 +65,24 @@ export const PublishedRelease = defineEvent({
   description: 'User published a release',
 })
 
+/** When a release is successfully scheduled
+ * @internal
+ */
+export const ScheduledRelease = defineEvent({
+  name: 'Schedule release',
+  version: 1,
+  description: 'User scheduled a release',
+})
+
+/** When a release is successfully scheduled
+ * @internal
+ */
+export const UnscheduledRelease = defineEvent({
+  name: 'Unschedule release',
+  version: 1,
+  description: 'User unscheduled a release',
+})
+
 /** When a release is successfully archived
  * @internal
  */

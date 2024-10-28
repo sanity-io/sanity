@@ -65,8 +65,8 @@ describe('DocumentPerspectiveList', () => {
   const mockCurrent: ReleaseDocument = {
     _updatedAt: '2024-07-12T10:39:32Z',
     createdBy: 'pzAhBTkNX',
-    _id: 'spring-drop',
-    _type: 'system-tmp.release',
+    _id: '_.releases.spring-drop',
+    _type: 'system.release',
     metadata: {
       description: 'What a spring drop, allergies galore 🌸',
       hue: 'magenta',
@@ -102,8 +102,8 @@ describe('DocumentPerspectiveList', () => {
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [
         {
-          _id: 'system-tmp-releases.spring-drop',
-          _type: 'system-tmp.release',
+          _id: '_.releases.spring-drop',
+          _type: 'system.release',
           createdBy: '',
           state: 'active',
           name: 'spring-drop',

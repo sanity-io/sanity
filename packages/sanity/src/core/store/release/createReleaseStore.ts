@@ -12,18 +12,20 @@ import {
   retry,
   scan,
   shareReplay,
-  skip,
   Subject,
   switchMap,
   tap,
   timeout,
 } from 'rxjs'
 import {startWith} from 'rxjs/operators'
+import {mergeMapArray} from 'rxjs-mergemap-array'
 
-import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
+import {type DocumentPreviewStore} from '../../preview'
+import {listenQuery} from '../_legacy'
+import {RELEASE_METADATA_TMP_DOC_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
-import {type ReleaseDocument, type ReleaseStore} from './types'
+import {type ReleaseDocument, type ReleaseStore, type ReleaseSystemDocument} from './types'
 
 type ActionWrapper = {action: ReleasesReducerAction}
 type EventWrapper = {event: ListenEvent<ReleaseDocument>}
@@ -32,9 +34,7 @@ type ResponseWrapper = {response: ReleaseDocument[]}
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'
 
-const QUERY_FILTERS = [
-  `_type == "${RELEASE_DOCUMENT_TYPE}" && (_id in path("${RELEASE_DOCUMENTS_PATH}.**"))`,
-]
+const QUERY_FILTERS = [`_type=="system.release" && (_id in path("_.**"))`]
 
 // TODO: Extend the projection with the fields needed
 const QUERY_PROJECTION = `{
@@ -68,11 +68,12 @@ const INITIAL_STATE: ReleasesReducerState = {
  * given the latest state upon subscription.
  */
 export function createReleaseStore(context: {
+  previewStore: DocumentPreviewStore
   client: SanityClient
   currentUser: User | null
   perspective?: string
 }): ReleaseStore {
-  const {client, currentUser} = context
+  const {client, currentUser, previewStore} = context
 
   const dispatch$ = new Subject<ReleasesReducerAction>()
   const fetchPending$ = new BehaviorSubject<boolean>(false)
@@ -94,7 +95,7 @@ export function createReleaseStore(context: {
     filter(() => !fetchPending$.value),
     tap(() => fetchPending$.next(true)),
     concatWith(
-      client.observable.fetch<ReleaseDocument[]>(QUERY, {}, {tag: 'releases.list'}).pipe(
+      listenQuery(client, QUERY, {}, {tag: 'releases.listen'}).pipe(
         timeout(10_000), // 10s timeout
         retry({
           count: 2,
@@ -102,6 +103,26 @@ export function createReleaseStore(context: {
           resetOnSuccess: true,
         }),
         tap(() => fetchPending$.next(false)),
+        mergeMapArray((releaseSystemDocument: ReleaseSystemDocument) =>
+          previewStore
+            // Temporary release metadata document
+            .unstable_observeDocument(
+              `${RELEASE_METADATA_TMP_DOC_PATH}.${releaseSystemDocument.name}`,
+            )
+            .pipe(
+              map((metadataDocument) => ({
+                metadataDocument,
+                releaseSystemDocument,
+              })),
+            ),
+        ),
+        map((results) =>
+          results.flatMap(({metadataDocument, releaseSystemDocument}): ReleaseDocument[] => {
+            return metadataDocument && releaseSystemDocument
+              ? {...(metadataDocument as any), ...releaseSystemDocument}
+              : []
+          }),
+        ),
         map((response) => ({response})),
       ),
     ),
@@ -136,89 +157,7 @@ export function createReleaseStore(context: {
     ),
   )
 
-  const listener$ = client.observable.listen<ReleaseDocument>(QUERY, {}, LISTEN_OPTIONS).pipe(
-    map((event) => ({event})),
-    catchError((error) =>
-      of<ActionWrapper>({
-        action: {
-          type: 'LOADING_STATE_CHANGED',
-          payload: {
-            loading: false,
-            error,
-          },
-        },
-      }),
-    ),
-    // Skip the first event received upon subscription. This `welcome` event would cause the list
-    // to be fetched again, which is not desirable immediately after the initial fetch has occurred.
-    skip(1),
-    // Ignore events emitted while the list fetch is pending.
-    filter(() => !fetchPending$.value),
-    switchMap<ActionWrapper | EventWrapper, Observable<ReleasesReducerAction | undefined>>(
-      (entry) => {
-        if ('action' in entry) {
-          return of(entry.action)
-        }
-
-        const {event} = entry
-
-        // After successful reconnection, fetch the list. Note that the first event is skipped, so
-        // this will not occur upon initial connection.
-        if (event.type === 'welcome') {
-          return listFetch$
-        }
-
-        // The reconnect event means that we are trying to reconnect to the realtime listener.
-        // In this case we set loading to true to indicate that we're trying to
-        // reconnect. Once a connection has been established, the welcome event
-        // will be received and we'll fetch all releases again (above)
-        if (event.type === 'reconnect') {
-          return of<ReleasesReducerAction>({
-            type: 'LOADING_STATE_CHANGED',
-            payload: {
-              loading: true,
-              error: undefined,
-            },
-          })
-        }
-
-        // Handle mutations (create, update, delete) from the realtime listener
-        // and update the releases store accordingly
-        if (event.type === 'mutation') {
-          if (event.transition === 'disappear') {
-            return of<ReleasesReducerAction>({
-              type: 'BUNDLE_DELETED',
-              id: event.documentId,
-              deletedByUserId: event.identity,
-              currentUserId: currentUser?.id?.toString(),
-            })
-          }
-
-          if (event.transition === 'appear') {
-            const nextBundle = event.result
-
-            if (nextBundle) {
-              return of<ReleasesReducerAction>({type: 'BUNDLE_RECEIVED', payload: nextBundle})
-            }
-
-            return of(undefined)
-          }
-
-          if (event.transition === 'update') {
-            const updatedBundle = event.result
-
-            if (updatedBundle) {
-              return of<ReleasesReducerAction>({type: 'BUNDLE_UPDATED', payload: updatedBundle})
-            }
-          }
-        }
-
-        return of(undefined)
-      },
-    ),
-  )
-
-  const state$ = merge(listFetch$, listener$, dispatch$).pipe(
+  const state$ = merge(listFetch$, dispatch$).pipe(
     filter((action): action is ReleasesReducerAction => typeof action !== 'undefined'),
     scan((state, action) => releasesReducer(state, action, context.perspective), INITIAL_STATE),
     startWith(INITIAL_STATE),

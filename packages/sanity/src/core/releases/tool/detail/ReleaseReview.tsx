@@ -9,7 +9,7 @@ import {type ReleaseDocument} from '../../../store/release/types'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
 import {DocumentDiffContainer} from './review/DocumentDiffContainer'
-import {type DocumentInBundleResult} from './useBundleDocuments'
+import {type DocumentInRelease} from './useBundleDocuments'
 
 const InputContainer = styled(Container)`
   margin: 0;
@@ -35,7 +35,7 @@ export function ReleaseReview({
   documentsHistory,
   scrollContainerRef,
 }: {
-  documents: DocumentInBundleResult[]
+  documents: DocumentInRelease[]
   release: ReleaseDocument
   documentsHistory: Record<string, DocumentHistory>
   scrollContainerRef: RefObject<HTMLDivElement>

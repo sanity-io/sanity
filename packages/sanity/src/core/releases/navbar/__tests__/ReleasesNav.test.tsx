@@ -67,7 +67,7 @@ describe('ReleasesNav', () => {
   it('should have clear button to unset perspective when a perspective is chosen', async () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: {
-        _id: 'system-tmp-releases.a-release',
+        _id: '_.releases.a-release',
         metadata: {title: 'Test Release'},
       },
       setPerspective: mockSetPerspective,
@@ -83,7 +83,7 @@ describe('ReleasesNav', () => {
   it('should list the title of the chosen perspective', async () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: {
-        _id: 'system-tmp-releases.a-release',
+        _id: '_.releases.a-release',
         metadata: {
           title: 'Test Bundle',
         },
@@ -99,7 +99,7 @@ describe('ReleasesNav', () => {
   it('should show release avatar for chosen perspective', async () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: {
-        _id: 'system-tmp-releases.a-release',
+        _id: '_.releases.a-release',
         metadata: {title: 'Test Bundle', releaseType: 'asap'},
       },
       setPerspective: mockSetPerspective,

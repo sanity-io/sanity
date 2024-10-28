@@ -71,7 +71,7 @@ describe('ReleaseDetailsDialog', () => {
       expect(onCancelMock).toHaveBeenCalled()
     })
 
-    it('should call createRelease, setPerspective, and onCreate when form is submitted with a valid slug', async () => {
+    it('should call createRelease, setPerspective, and onCreate when form is submitted', async () => {
       const value: Partial<ReleaseDocument> = {
         metadata: {
           title: 'Bundle 1',
@@ -89,7 +89,7 @@ describe('ReleaseDetailsDialog', () => {
 
       expect(useReleaseOperations().createRelease).toHaveBeenCalledWith(
         expect.objectContaining({
-          _id: expect.stringMatching(/system-tmp-releases\.r\w{8}$/),
+          _id: expect.stringMatching(/_\.releases\.r\w{8}$/),
           ...value,
         }),
       )
@@ -98,7 +98,7 @@ describe('ReleaseDetailsDialog', () => {
       expect(usePerspective().setPerspective).toHaveBeenCalledOnce()
 
       expect(usePerspective().setPerspective).toHaveBeenCalledWith(
-        expect.stringMatching(/system-tmp-releases\.r\w{8}$/),
+        expect.stringMatching(/_\.releases\.r\w{8}$/),
       )
       expect(onSubmitMock).toHaveBeenCalled()
     })
@@ -111,7 +111,7 @@ describe('ReleaseDetailsDialog', () => {
       _id: 'existing-release',
       name: 'existing',
       state: 'active',
-      _type: 'system-tmp.release',
+      _type: 'system.release',
       _createdAt: '2024-07-02T11:37:51Z',
       _updatedAt: '2024-07-12T10:39:32Z',
       createdBy: '123',

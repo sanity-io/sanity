@@ -1,13 +1,16 @@
+/* eslint-disable no-nested-ternary */
 import {Card, Flex} from '@sanity/ui'
 
 import {type ReleaseDocument} from '../../../store'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {ReleasePublishAllButton} from '../components/ReleasePublishAllButton/ReleasePublishAllButton'
+import {ReleaseScheduleButton} from '../components/ReleasePublishAllButton/ReleaseScheduleButton'
+import {ReleaseUnscheduleButton} from '../components/ReleasePublishAllButton/ReleaseUnscheduleButton'
 import {ReleaseStatusItems} from './ReleaseStatusItems'
-import {type DocumentInBundleResult} from './useBundleDocuments'
+import {type DocumentInRelease} from './useBundleDocuments'
 
 export function ReleaseDashboardFooter(props: {
-  documents: DocumentInBundleResult[]
+  documents: DocumentInRelease[]
   release: ReleaseDocument
 }) {
   const {documents, release} = props
@@ -22,11 +25,24 @@ export function ReleaseDashboardFooter(props: {
         </Flex>
 
         <Flex flex="none" gap={1}>
-          {/* TODO: Replace this with the real actions. */}
-          {!release.publishAt && (
+          {release.metadata.releaseType === 'scheduled' ? (
+            release.state === 'scheduled' || release.state === 'scheduling' ? (
+              <ReleaseUnscheduleButton
+                release={release}
+                documents={documents}
+                disabled={!documents.length}
+              />
+            ) : (
+              <ReleaseScheduleButton
+                release={release}
+                documents={documents}
+                disabled={!documents.length}
+              />
+            )
+          ) : (
             <ReleasePublishAllButton
               release={release}
-              releaseDocuments={documents}
+              documents={documents}
               disabled={!documents.length}
             />
           )}

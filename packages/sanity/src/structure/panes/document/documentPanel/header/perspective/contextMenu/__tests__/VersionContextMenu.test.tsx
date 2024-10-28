@@ -40,9 +40,9 @@ vi.mock('sanity/router', () => ({
 describe('VersionContextMenu', () => {
   const mockReleases: sanity.ReleaseDocument[] = [
     {
-      _id: 'release1',
+      _id: '_.releases.release1',
       name: 'release1',
-      _type: 'system-tmp.release',
+      _type: 'system.release',
       _updatedAt: '',
       _createdAt: '',
       state: 'active',
@@ -55,9 +55,9 @@ describe('VersionContextMenu', () => {
       },
     },
     {
-      _id: 'release2',
+      _id: '_.releases.release2',
       name: 'release2',
-      _type: 'system-tmp.release',
+      _type: 'system.release',
       _createdAt: '',
       _updatedAt: '',
       createdBy: 'safsd',

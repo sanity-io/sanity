@@ -27,6 +27,16 @@ export type ReleaseFinalDocumentState = {
 /**
  * @internal
  */
+export interface ReleaseSystemDocument {
+  _id: string
+  _type: 'system.release'
+  name: string
+  state: ReleaseState
+  publishAt?: string
+}
+/**
+ * @internal
+ */
 export interface ReleaseDocument {
   /**
    * typically

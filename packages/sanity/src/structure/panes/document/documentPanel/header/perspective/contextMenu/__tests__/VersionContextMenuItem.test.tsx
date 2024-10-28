@@ -6,8 +6,8 @@ import {createTestProvider} from '../../../../../../../../../test/testUtils/Test
 import {VersionContextMenuItem} from '../VersionContextMenuItem'
 
 const mockRelease: ReleaseDocument = {
-  _id: '1',
-  _type: 'system-tmp.release',
+  _id: '_.releases.1',
+  _type: 'system.release',
   createdBy: '',
   _createdAt: '',
   _updatedAt: '',

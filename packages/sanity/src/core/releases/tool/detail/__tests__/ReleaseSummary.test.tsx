@@ -9,7 +9,7 @@ import {type ReleaseDocument} from '../../../../store'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
-import {type DocumentInBundleResult} from '../useBundleDocuments'
+import {type DocumentInRelease} from '../useBundleDocuments'
 
 vi.mock('../../../../studio/addonDataset/useAddonDataset', () => ({
   useAddonDataset: vi.fn().mockReturnValue({client: {}}),
@@ -30,7 +30,7 @@ vi.mock('../../../components/ReleasesMenu', () => ({
 
 const timeNow = new Date()
 
-const releaseDocuments: DocumentInBundleResult[] = [
+const releaseDocuments: DocumentInRelease[] = [
   {
     memoKey: 'key123',
     document: {

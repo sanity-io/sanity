@@ -9,14 +9,14 @@ import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column} from '../../components/Table/types'
 import {type BundleDocumentRow} from '../ReleaseSummary'
-import {type DocumentInBundleResult} from '../useBundleDocuments'
+import {type DocumentInRelease} from '../useBundleDocuments'
 
 const MemoReleaseDocumentPreview = memo(
   function MemoReleaseDocumentPreview({
     item,
     releaseId,
   }: {
-    item: DocumentInBundleResult
+    item: DocumentInRelease
     releaseId: string
   }) {
     return (

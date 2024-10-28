@@ -8,9 +8,9 @@ import {Table, type TableProps} from '../components/Table/Table'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
-import {type DocumentInBundleResult} from './useBundleDocuments'
+import {type DocumentInRelease} from './useBundleDocuments'
 
-export type DocumentWithHistory = DocumentInBundleResult & {
+export type DocumentWithHistory = DocumentInRelease & {
   history: DocumentHistory | undefined
   // TODO: Get this value from the document, it can be calculated by checking if there is a corresponding document with no version attached
   isAdded?: boolean
@@ -18,7 +18,7 @@ export type DocumentWithHistory = DocumentInBundleResult & {
 export type BundleDocumentRow = DocumentWithHistory
 
 export interface ReleaseSummaryProps {
-  documents: DocumentInBundleResult[]
+  documents: DocumentInRelease[]
   documentsHistory: Record<string, DocumentHistory>
   scrollContainerRef: RefObject<HTMLDivElement>
   release: ReleaseDocument
