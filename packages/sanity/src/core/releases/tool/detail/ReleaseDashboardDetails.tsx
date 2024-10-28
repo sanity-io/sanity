@@ -62,10 +62,10 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
                   <ReleaseAvatar padding={0} tone={getReleaseTone(release)} />
                   <Text muted size={1} weight="medium">
                     {isPublishDateInPast
-                      ? format(new Date(publishAt), `PPpp`)
-                      : t('dashboard.details.published-on', {
+                      ? t('dashboard.details.published-on', {
                           date: format(new Date(publishAt), `MMM d, yyyy`),
-                        })}
+                        })
+                      : format(new Date(publishAt), `PPpp`)}
                   </Text>
                 </Flex>
               </Card>
