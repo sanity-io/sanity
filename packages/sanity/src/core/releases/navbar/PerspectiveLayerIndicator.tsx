@@ -33,7 +33,7 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
         bottom: -var(--indicator-bottom);
         width: var(--indicator-width);
         height: ${$isPublished
-          ? 'calc(var(--indicator-bottom) + 16px)'
+          ? 'calc(var(--indicator-bottom) + 12px)'
           : 'var(--indicator-bottom)'};
         background-color: var(--indicator-color);
       }
