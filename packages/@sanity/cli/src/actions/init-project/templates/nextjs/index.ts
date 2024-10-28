@@ -165,6 +165,9 @@ export const client = createClient({
 })
 `
 
+// Importing and querying through `sanityFetch` from this file will make data automatically stay up to date with any changes.
+// Before using it, import and render `<SanityLive />` in your layout - see
+// https://github.com/sanity-io/next-sanity#live-content-api for more information.
 const live = `import { defineLive } from "next-sanity";
 import { client } from './client'
 
