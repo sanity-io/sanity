@@ -1,7 +1,7 @@
 import {EyeOpenIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
-import formatRelative from 'date-fns/formatRelative'
+import {formatRelative} from 'date-fns'
 import {forwardRef, type MouseEvent, useCallback} from 'react'
 import {getReleaseTone, ReleaseAvatar, type ReleaseDocument} from 'sanity'
 import {styled} from 'styled-components'
