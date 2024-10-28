@@ -1,10 +1,16 @@
-import {EyeOpenIcon} from '@sanity/icons'
+import {DotIcon, EyeClosedIcon, EyeOpenIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {formatRelative} from 'date-fns'
-import {forwardRef, type MouseEvent, useCallback} from 'react'
-import {getReleaseTone, ReleaseAvatar, type ReleaseDocument} from 'sanity'
-import {styled} from 'styled-components'
+import {type CSSProperties, forwardRef, type MouseEvent, useCallback} from 'react'
+import {
+  getBundleIdFromReleaseId,
+  getReleaseTone,
+  ReleaseAvatar,
+  type ReleaseDocument,
+  useTranslation,
+} from 'sanity'
+import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip'
 import {usePerspective} from '../hooks/usePerspective'
@@ -21,24 +27,40 @@ export interface LayerRange {
   }
 }
 
-const ToggleLayerButton = styled(Button)`
-  --card-fg-color: inherit;
-  --card-icon-color: inherit;
+const ToggleLayerButton = styled(Button)<{$visible: boolean}>(
+  ({$visible}) => css`
+    --card-fg-color: inherit;
+    --card-icon-color: inherit;
 
-  background-color: inherit;
-  opacity: 0;
+    background-color: inherit;
+    opacity: ${$visible ? 0 : 1};
 
-  @media (hover: hover) {
-    &:not([data-disabled='true']):hover {
-      --card-fg-color: inherit;
-      --card-icon-color: inherit;
+    @media (hover: hover) {
+      &:not([data-disabled='true']):hover {
+        --card-fg-color: inherit;
+        --card-icon-color: inherit;
+      }
     }
-  }
 
-  [data-ui='MenuItem']:hover & {
-    opacity: 1;
-  }
-`
+    [data-ui='MenuItem']:hover & {
+      opacity: 1;
+    }
+  `,
+)
+
+const ExcludedLayerDot = () => (
+  <Box padding={3}>
+    <Text size={1}>
+      <DotIcon
+        style={
+          {
+            opacity: 0,
+          } as CSSProperties
+        }
+      />
+    </Text>
+  </Box>
+)
 
 type rangePosition = 'first' | 'within' | 'last' | undefined
 
@@ -58,21 +80,34 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   {
     release: ReleaseDocument
     rangePosition: rangePosition
-    toggleable: boolean
   }
 >((props, ref) => {
-  const {release, rangePosition, toggleable} = props
-  //   const {current, replace: replaceVersion, replaceToggle} = usePerspective()
-  const {currentGlobalBundle, setPerspectiveFromRelease, setPerspective} = usePerspective()
+  const {release, rangePosition} = props
+  const {
+    currentGlobalBundle,
+    setPerspectiveFromRelease,
+    setPerspective,
+    toggleExcludedPerspective,
+    isPerspectiveExcluded,
+  } = usePerspective()
   const active = release._id === currentGlobalBundle._id
   const first = rangePosition === 'first'
   const within = rangePosition === 'within'
   const last = rangePosition === 'last'
   const inRange = first || within || last
 
-  const handleToggleReleaseVisibility = useCallback((event: MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation()
-  }, [])
+  const {t} = useTranslation()
+
+  const releasePerspectiveId =
+    release._id === 'published' ? 'published' : getBundleIdFromReleaseId(release._id)
+
+  const handleToggleReleaseVisibility = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      event.stopPropagation()
+      toggleExcludedPerspective(releasePerspectiveId)
+    },
+    [toggleExcludedPerspective, releasePerspectiveId],
+  )
 
   const handleOnReleaseClick = useCallback(
     () =>
@@ -81,6 +116,9 @@ export const GlobalPerspectiveMenuItem = forwardRef<
         : setPerspectiveFromRelease(release._id),
     [release._id, setPerspective, setPerspectiveFromRelease],
   )
+
+  const isReleasePerspectiveExcluded = isPerspectiveExcluded(releasePerspectiveId)
+  const canReleaseBeExcluded = inRange && !last
 
   return (
     <GlobalPerspectiveMenuItemIndicator
@@ -100,16 +138,11 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             }}
           >
             <Text size={1}>
-              {/* {release.hidden ? (
-                <DotIcon
-                  style={
-                    {
-                      '--card-icon-color': 'var(--card-border-color)',
-                    } as CSSProperties
-                  }
-                />
-              ) : ( */}
-              <ReleaseAvatar tone={getReleaseTone(release)} />
+              {isReleasePerspectiveExcluded ? (
+                <ExcludedLayerDot />
+              ) : (
+                <ReleaseAvatar tone={getReleaseTone(release)} />
+              )}
               {/* )} */}
             </Text>
           </Box>
@@ -118,11 +151,9 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             paddingY={2}
             paddingRight={2}
             space={2}
-            style={
-              {
-                //   opacity: release.hidden ? 0.5 : undefined,
-              }
-            }
+            style={{
+              opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
+            }}
           >
             <Text size={1} weight="medium">
               {release.metadata.title}
@@ -135,15 +166,12 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               )}
           </Stack>
           <Box flex="none">
-            {inRange && (
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-              <Tooltip portal content="Hide release" placement="bottom">
+            {canReleaseBeExcluded && (
+              <Tooltip portal content={t('release.layer.hide')} placement="bottom">
                 <ToggleLayerButton
-                  // $visible={!release.hidden}
+                  $visible={!isReleasePerspectiveExcluded}
                   forwardedAs="div"
-                  disabled={!active}
-                  icon={EyeOpenIcon}
-                  // icon={release.hidden ? EyeClosedIcon : EyeOpenIcon}
+                  icon={isReleasePerspectiveExcluded ? EyeClosedIcon : EyeOpenIcon}
                   mode="bleed"
                   onClick={handleToggleReleaseVisibility}
                   padding={2}

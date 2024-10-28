@@ -118,15 +118,30 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
     [routerProp, state],
   )
 
-  const handleNavigateStickyParam = useCallback(
-    (param: string, value: string | undefined, options: NavigateOptions = {}) => {
-      if (!STICKY_PARAMS.includes(param)) {
-        throw new Error('Parameter is not sticky')
+  const handleNavigateStickyParams = useCallback(
+    (params: Record<string, string | undefined>, options: NavigateOptions = {}) => {
+      const hasInvalidParam = Object.keys(params).some((param) => !STICKY_PARAMS.includes(param))
+      if (hasInvalidParam) {
+        throw new Error('One or more parameters are not sticky')
       }
+
+      const allNextSearchParams = [...(state._searchParams || []), ...Object.entries(params)]
+
+      const searchParams = Object.entries(
+        allNextSearchParams.reduce(
+          (deduppedSearchParams, [key, value]) => ({
+            ...deduppedSearchParams,
+            [key]: value,
+          }),
+          [],
+        ),
+      )
+
+      // Trigger the navigation with updated _searchParams
       onNavigate({
         path: resolvePathFromState({
           ...state,
-          _searchParams: [[param, value || '']],
+          _searchParams: searchParams,
         }),
         replace: options.replace,
       })
@@ -166,18 +181,18 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
   // separately to the entire router context object, which changes more frequently than the relevant
   // sticky parameters.
   //
-  // TODO: Add omitted bundles.
   const perspectiveState = useMemo(() => {
     return {
       perspective: stickyParamsByName.perspective,
+      excludedPerspectives: stickyParamsByName.excludedPerspectives,
     }
-  }, [stickyParamsByName.perspective])
+  }, [stickyParamsByName.excludedPerspectives, stickyParamsByName.perspective])
 
   const router: RouterContextValue = useMemo(
     () => ({
       navigate,
       navigateIntent,
-      navigateStickyParam: handleNavigateStickyParam,
+      navigateStickyParams: handleNavigateStickyParams,
       navigateUrl: onNavigate,
       resolveIntentLink,
       resolvePathFromState,
@@ -186,7 +201,7 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
       perspectiveState,
     }),
     [
-      handleNavigateStickyParam,
+      handleNavigateStickyParams,
       navigate,
       navigateIntent,
       onNavigate,

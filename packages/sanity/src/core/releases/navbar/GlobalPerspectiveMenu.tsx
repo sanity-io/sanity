@@ -139,7 +139,6 @@ export function GlobalPerspectiveMenu(): JSX.Element {
             <GlobalPerspectiveMenuItem
               rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
               release={{_id: 'published', metadata: {title: 'Published'}} as ReleaseDocument}
-              toggleable
             />
           </StyledPublishedBox>
           <>

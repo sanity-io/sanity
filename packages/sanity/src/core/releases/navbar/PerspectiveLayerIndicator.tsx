@@ -68,6 +68,11 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
 
     ${$first &&
     css`
+      > [data-ui='MenuItem']:after {
+        margin-top: -3px;
+        border-top-left-radius: ${INDICATOR_WIDTH}px;
+        border-top-right-radius: ${INDICATOR_WIDTH}px;
+      }
       > [data-ui='MenuItem']:before {
         display: none;
       }
@@ -75,6 +80,12 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
 
     ${$last &&
     css`
+      > [data-ui='MenuItem']:before {
+        // dot diameter (5px) - 1.6px stroke divided by 2
+        padding-bottom: 1.7px;
+        border-bottom-left-radius: ${INDICATOR_WIDTH}px;
+        border-bottom-right-radius: ${INDICATOR_WIDTH}px;
+      }
       > [data-ui='MenuItem']:after {
         display: none;
       }

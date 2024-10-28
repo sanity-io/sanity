@@ -62,7 +62,6 @@ export function ReleaseTypeMenuSection({
             key={release._id}
             ref={getMenuItemRef(release._id)}
             rangePosition={getRangePosition(range, releaseTypeOffset + index)}
-            toggleable={releaseTypeOffset < lastIndex}
           />
         ))}
       </Flex>

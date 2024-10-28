@@ -103,7 +103,6 @@ const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
   return <CalendarDay {...props} dateStyles={dayHasReleases ? {fontWeight: 700} : {}} />
 }
 
-const EMPTY_RELEASE_GROUPS = {open: [], archived: []}
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
 
 const getInitialFilterDate = (router: RouterContextValue) => () => {
@@ -115,7 +114,7 @@ const getInitialFilterDate = (router: RouterContextValue) => () => {
 }
 
 export function ReleasesOverview() {
-  const {data: releases, loading: loadingReleases} = useReleases()
+  const {data: releases, archivedReleases, loading: loadingReleases} = useReleases()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>('open')
   const router = useRouter()
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
@@ -158,26 +157,12 @@ export function ReleasesOverview() {
     ]
   }, [hasReleases, releasesMetadata, releases])
 
-  const groupedReleases = useMemo(
-    () =>
-      tableReleases.reduce<{open: TableRelease[]; archived: TableRelease[]}>((groups, release) => {
-        const isReleaseArchived = release.state === 'archived' || release.state === 'published'
-        const group = isReleaseArchived ? 'archived' : 'open'
-
-        return {
-          ...groups,
-          [group]: [...groups[group], release],
-        }
-      }, EMPTY_RELEASE_GROUPS) || EMPTY_RELEASE_GROUPS,
-    [tableReleases],
-  )
-
   // switch to open mode if on archived mode and there are no archived releases
   useEffect(() => {
-    if (releaseGroupMode === 'archived' && !groupedReleases.archived.length) {
+    if (releaseGroupMode === 'archived' && !archivedReleases.length) {
       setReleaseGroupMode('open')
     }
-  }, [releaseGroupMode, groupedReleases.archived.length])
+  }, [releaseGroupMode, archivedReleases.length])
 
   const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
@@ -235,9 +220,9 @@ export function ReleasesOverview() {
         <MotionStudioButton
           {...groupModeButtonBaseProps}
           key="archived-group"
-          disabled={groupModeButtonBaseProps.disabled || !groupedReleases.archived.length}
+          disabled={groupModeButtonBaseProps.disabled || !archivedReleases.length}
           tooltipProps={{
-            disabled: groupedReleases.archived.length !== 0,
+            disabled: archivedReleases.length !== 0,
             content: t('no-archived-release'),
             placement: 'bottom',
           }}
@@ -249,12 +234,12 @@ export function ReleasesOverview() {
       </AnimatePresence>
     )
   }, [
-    releaseGroupMode,
-    groupedReleases.archived.length,
-    handleReleaseGroupModeChange,
-    hasReleases,
     loading,
+    hasReleases,
+    handleReleaseGroupModeChange,
+    releaseGroupMode,
     t,
+    archivedReleases.length,
   ])
 
   const createReleaseButton = useMemo(
@@ -290,7 +275,7 @@ export function ReleasesOverview() {
   }, [])
 
   const filteredReleases = useMemo(() => {
-    if (!releaseFilterDate) return groupedReleases[releaseGroupMode]
+    if (!releaseFilterDate) return releaseGroupMode === 'open' ? tableReleases : archivedReleases
 
     const [startOfDayUTC, endOfDayUTC] = getTimezoneAdjustedDateTimeRange(releaseFilterDate)
 
@@ -300,7 +285,7 @@ export function ReleasesOverview() {
       const publishDateUTC = new Date(release.publishAt)
       return publishDateUTC >= startOfDayUTC && publishDateUTC <= endOfDayUTC
     })
-  }, [releaseGroupMode, groupedReleases, releaseFilterDate, tableReleases])
+  }, [releaseFilterDate, releaseGroupMode, tableReleases, archivedReleases])
 
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
@@ -316,7 +301,7 @@ export function ReleasesOverview() {
             </Card>
           </Flex>
         )}
-        <Flex direction={'column'} flex={1} style={{position: 'relative'}}>
+        <Flex direction="column" flex={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
             <Flex align="flex-start" flex={1} gap={3}>
               <Stack padding={2} space={4}>
