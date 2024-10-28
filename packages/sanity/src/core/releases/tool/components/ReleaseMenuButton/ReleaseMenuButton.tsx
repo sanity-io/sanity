@@ -24,7 +24,7 @@ export type ReleaseMenuButtonProps = {
 
 export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) => {
   const {archive} = useReleaseOperations()
-  const isBundleArchived = release?.state === 'archived'
+  const isReleaseArchived = release?.state === 'archived'
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<'edit' | 'confirm-archive'>()
 
@@ -40,7 +40,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
     setIsPerformingOperation(true)
     await archive(release._id)
 
-    if (isBundleArchived) {
+    if (isReleaseArchived) {
       // it's in the process of becoming false, so the event we want to track is unarchive
       telemetry.log(UnarchivedRelease)
     } else {
@@ -74,8 +74,8 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
             />
             <MenuItem
               onClick={() => setSelectedAction('confirm-archive')}
-              icon={isBundleArchived ? UnarchiveIcon : ArchiveIcon}
-              text={isBundleArchived ? t('action.unarchive') : t('action.archive')}
+              icon={isReleaseArchived ? UnarchiveIcon : ArchiveIcon}
+              text={isReleaseArchived ? t('action.unarchive') : t('action.archive')}
               data-testid="archive-release"
             />
           </Menu>
