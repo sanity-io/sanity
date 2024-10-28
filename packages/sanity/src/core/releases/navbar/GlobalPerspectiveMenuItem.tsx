@@ -3,58 +3,33 @@ import {EyeOpenIcon} from '@sanity/icons'
 import {Box, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {getReleaseTone, RelativeTime, ReleaseAvatar, type ReleaseDocument} from 'sanity'
-import {styled} from 'styled-components'
 
 import {usePerspective} from '../hooks/usePerspective'
+import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
-const Root = styled.div`
-  position: relative;
-
-  &[data-in-range]:not([data-last]):after {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 18px;
-    bottom: -4px;
-    width: 5px;
-    height: 4px;
-    background-color: var(--card-border-color);
+export interface LayerRange {
+  firstIndex: number
+  lastIndex: number
+  offsets: {
+    asap: number
+    scheduled: number
+    undecided: number
   }
+}
 
-  &[data-in-range] > [data-ui='MenuItem'] {
-    position: relative;
+export function getRangePosition(
+  range: LayerRange,
+  index: number,
+): 'first' | 'within' | 'last' | undefined {
+  const {firstIndex, lastIndex} = range
 
-    &:before {
-      content: '';
-      display: block;
-      position: absolute;
-      left: 18px;
-      top: 0;
-      width: 5px;
-      height: 16.5px;
-      background-color: var(--card-border-color);
-    }
+  if (firstIndex === lastIndex) return undefined
+  if (index === firstIndex) return 'first'
+  if (index === lastIndex) return 'last'
+  if (index > firstIndex && index < lastIndex) return 'within'
 
-    &:after {
-      content: '';
-      display: block;
-      position: absolute;
-      left: 18px;
-      top: 16.5px;
-      bottom: 0;
-      width: 5px;
-      background-color: var(--card-border-color);
-    }
-  }
-
-  &[data-first] > [data-ui='MenuItem']:before {
-    display: none;
-  }
-
-  &[data-last] > [data-ui='MenuItem']:after {
-    display: none;
-  }
-`
+  return undefined
+}
 
 export function GlobalPerspectiveMenuItem(props: {
   release: ReleaseDocument
@@ -83,13 +58,7 @@ export function GlobalPerspectiveMenuItem(props: {
   )
 
   return (
-    <Root
-      data-active={active ? '' : undefined}
-      data-first={first ? '' : undefined}
-      data-in-range={inRange ? '' : undefined}
-      data-last={last ? '' : undefined}
-      //   data-hidden={release.hidden ? '' : undefined}
-    >
+    <GlobalPerspectiveMenuItemIndicator $first={first} $last={last} $inRange={inRange}>
       <MenuItem onClick={handleOnReleaseClick} padding={1} pressed={active}>
         <Flex align="flex-start" gap={1}>
           <Box
@@ -159,6 +128,6 @@ export function GlobalPerspectiveMenuItem(props: {
           </Box>
         </Flex>
       </MenuItem>
-    </Root>
+    </GlobalPerspectiveMenuItemIndicator>
   )
 }

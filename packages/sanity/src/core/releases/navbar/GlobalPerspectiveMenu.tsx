@@ -3,7 +3,7 @@ import {AddIcon, ChevronDownIcon} from '@sanity/icons'
 import {Box, Button, Flex, Label, Menu, MenuDivider, MenuItem, Spinner} from '@sanity/ui'
 import {compareDesc} from 'date-fns'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {type ReleaseDocument} from 'sanity'
+import {type ReleaseDocument, type ReleaseType} from 'sanity'
 import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components'
@@ -12,9 +12,15 @@ import {useReleases} from '../../store/release/useReleases'
 import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../hooks'
 import {getPublishDateFromRelease} from '../util/util'
-import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
+import {
+  getRangePosition,
+  GlobalPerspectiveMenuItem,
+  type LayerRange,
+} from './GlobalPerspectiveMenuItem'
+import {GlobalPerspectiveMenuLabelIndicator} from './PerspectiveLayerIndicator'
 
 const StyledMenu = styled(Menu)`
+  min-width: 200;
   max-width: 320px;
 `
 
@@ -23,71 +29,69 @@ const StyledBox = styled(Box)`
   max-height: 75vh;
 `
 
-const LabelBox = styled(Box)`
-  position: relative;
-
-  &[data-within-range]:before {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 18px;
-    top: 0;
-    bottom: -4px;
-    width: 5px;
-    background-color: var(--card-border-color);
-  }
-`
-
-interface LayerRange {
-  firstIndex: number
-  lastIndex: number
-  offsets: {
-    asap: number
-    scheduled: number
-    undecided: number
-  }
+const RELEASE_TYPE_LABELS: Record<ReleaseType, string> = {
+  asap: 'release.type.asap',
+  scheduled: 'release.type.scheduled',
+  undecided: 'release.type.undecided',
 }
 
-function getRangePosition(
-  range: LayerRange,
-  index: number,
-): 'first' | 'within' | 'last' | undefined {
-  if (range.firstIndex === range.lastIndex) {
-    return undefined
-  }
+function ReleaseTypeSection({
+  releaseType,
+  releases,
+  range,
+}: {
+  releaseType: ReleaseType
+  releases: ReleaseDocument[]
+  range: LayerRange
+}): JSX.Element | null {
+  const {t} = useTranslation()
 
-  if (index === range.firstIndex) {
-    return 'first'
-  }
+  if (releases.length === 0) return null
 
-  if (index === range.lastIndex) {
-    return 'last'
-  }
+  const {firstIndex, lastIndex, offsets} = range
+  const releaseTypeOffset = offsets[releaseType]
 
-  if (index > range.firstIndex && index < range.lastIndex) {
-    return 'within'
-  }
-
-  return undefined
+  return (
+    <>
+      <GlobalPerspectiveMenuLabelIndicator
+        $withinRange={firstIndex < releaseTypeOffset && lastIndex >= releaseTypeOffset}
+        paddingRight={2}
+        paddingTop={4}
+        paddingBottom={2}
+      >
+        <Label muted style={{textTransform: 'uppercase'}} size={1}>
+          {t(RELEASE_TYPE_LABELS[releaseType])}
+        </Label>
+      </GlobalPerspectiveMenuLabelIndicator>
+      {releases.map((release, index) => (
+        <GlobalPerspectiveMenuItem
+          release={release}
+          key={release._id}
+          rangePosition={getRangePosition(range, releaseTypeOffset + index)}
+          toggleable={releaseTypeOffset < lastIndex}
+        />
+      ))}
+    </>
+  )
 }
 
-const sortReleaseByPublishAt: (a: ReleaseDocument, b: ReleaseDocument) => number = (
-  ARelease,
-  BRelease,
-) => compareDesc(getPublishDateFromRelease(BRelease), getPublishDateFromRelease(ARelease))
+type ReleaseTypeSort = (a: ReleaseDocument, b: ReleaseDocument) => number
 
-const sortReleaseByTitle: (a: ReleaseDocument, b: ReleaseDocument) => number = (
-  ARelease,
-  BRelease,
-) => ARelease.metadata.title.localeCompare(BRelease.metadata.title)
+const sortReleaseByPublishAt: ReleaseTypeSort = (ARelease, BRelease) =>
+  compareDesc(getPublishDateFromRelease(BRelease), getPublishDateFromRelease(ARelease))
 
-const releaseTypeSorting = {
+const sortReleaseByTitle: ReleaseTypeSort = (ARelease, BRelease) =>
+  ARelease.metadata.title.localeCompare(BRelease.metadata.title)
+
+const releaseTypeSorting: Record<ReleaseType, ReleaseTypeSort> = {
   asap: sortReleaseByTitle,
   scheduled: sortReleaseByPublishAt,
   undecided: sortReleaseByTitle,
 }
 
-const releaseTypeGroups: ('asap' | 'scheduled' | 'undecided')[] = ['asap', 'scheduled', 'undecided']
+const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
+
+const ASAP_RANGE_OFFSET = 2
 
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {loading, data: releases} = useReleases()
@@ -112,16 +116,16 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     [releases],
   )
 
-  const releaseTypeReleases = useMemo(
+  const sortedReleaseTypeReleases = useMemo(
     () =>
-      releaseTypeGroups.reduce<Record<string, ReleaseDocument[]>>(
-        (acc, type) => ({
-          ...acc,
-          [type]: unarchivedReleases
-            .filter(({metadata}) => metadata.releaseType === type)
-            .sort(releaseTypeSorting[type]),
+      orderedReleaseTypes.reduce<Record<ReleaseType, ReleaseDocument[]>>(
+        (ReleaseTypeReleases, releaseType) => ({
+          ...ReleaseTypeReleases,
+          [releaseType]: unarchivedReleases
+            .filter(({metadata}) => metadata.releaseType === releaseType)
+            .sort(releaseTypeSorting[releaseType]),
         }),
-        {},
+        {} as Record<ReleaseType, ReleaseDocument[]>,
       ),
     [unarchivedReleases],
   )
@@ -138,11 +142,22 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       lastIndex = 0
     }
 
-    const {asap, scheduled} = releaseTypeReleases
+    const {asap, scheduled} = sortedReleaseTypeReleases
+    const countAsapReleases = asap.length
+    const countScheduledReleases = scheduled.length
 
-    const processReleases = (groupSubsetReleases: ReleaseDocument[], offset: number) => {
-      groupSubsetReleases.forEach(({_id}, i) => {
-        const index = offset + i
+    const offsets = {
+      asap: ASAP_RANGE_OFFSET,
+      scheduled: ASAP_RANGE_OFFSET + countAsapReleases,
+      undecided: ASAP_RANGE_OFFSET + countAsapReleases + countScheduledReleases,
+    }
+
+    const adjustIndexForReleaseType = (type: ReleaseType) => {
+      const groupSubsetReleases = sortedReleaseTypeReleases[type]
+      const offset = offsets[type]
+
+      groupSubsetReleases.forEach(({_id}, groupReleaseIndex) => {
+        const index = offset + groupReleaseIndex
 
         if (firstIndex === -1) {
           // if (!item.hidden) {
@@ -156,20 +171,14 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       })
     }
 
-    const offsets = {
-      asap: 2,
-      scheduled: 2 + asap.length,
-      undecided: 2 + asap.length + scheduled.length,
-    }
-
-    releaseTypeGroups.forEach((type) => processReleases(releaseTypeReleases[type], offsets[type]))
+    orderedReleaseTypes.forEach(adjustIndexForReleaseType)
 
     return {
       firstIndex,
       lastIndex,
       offsets,
     }
-  }, [currentGlobalBundleId, releaseTypeReleases])
+  }, [currentGlobalBundleId, sortedReleaseTypeReleases])
 
   const releasesList = useMemo(() => {
     if (loading) {
@@ -181,116 +190,31 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     }
 
     return (
-      <>
+      <Box>
         <GlobalPerspectiveMenuItem
           rangePosition={getRangePosition(range, 0)}
           release={{_id: 'published', metadata: {title: 'Published'}} as ReleaseDocument}
           toggleable
         />
         <StyledBox>
-          {releaseTypeReleases.asap.length > 0 && (
-            <>
-              <LabelBox
-                data-within-range={
-                  range.firstIndex < range.offsets.asap && range.lastIndex >= range.offsets.asap
-                    ? ''
-                    : undefined
-                }
-                paddingX={2}
-                paddingTop={4}
-                paddingBottom={2}
-                style={{paddingLeft: 40}}
-              >
-                <Label muted style={{textTransform: 'uppercase'}} size={1}>
-                  {t('release.type.asap')}
-                </Label>
-              </LabelBox>
-              {releaseTypeReleases.asap.map((item, index) => (
-                <GlobalPerspectiveMenuItem
-                  release={item}
-                  key={item.name}
-                  rangePosition={getRangePosition(range, range.offsets.asap + index)}
-                  toggleable={range.offsets.asap < range.lastIndex}
-                />
-              ))}
-            </>
-          )}
-          {releaseTypeReleases.scheduled.length > 0 && (
-            <>
-              <LabelBox
-                data-within-range={
-                  range.firstIndex < range.offsets.scheduled &&
-                  range.lastIndex >= range.offsets.scheduled
-                    ? ''
-                    : undefined
-                }
-                paddingX={2}
-                paddingTop={4}
-                paddingBottom={2}
-                style={{paddingLeft: 40}}
-              >
-                <Label muted style={{textTransform: 'uppercase'}} size={1}>
-                  {t('release.type.scheduled')}
-                </Label>
-              </LabelBox>
-              {releaseTypeReleases.scheduled.map((item, index) => (
-                <GlobalPerspectiveMenuItem
-                  release={item}
-                  key={item.name}
-                  rangePosition={getRangePosition(range, range.offsets.scheduled + index)}
-                  toggleable={range.offsets.scheduled < range.lastIndex}
-                />
-              ))}
-            </>
-          )}
-
-          {releaseTypeReleases.undecided.length > 0 && (
-            <>
-              <LabelBox
-                data-within-range={
-                  range.firstIndex < range.offsets.undecided &&
-                  range.lastIndex >= range.offsets.undecided
-                    ? ''
-                    : undefined
-                }
-                paddingX={2}
-                paddingTop={4}
-                paddingBottom={2}
-                style={{paddingLeft: 40}}
-              >
-                <Label muted style={{textTransform: 'uppercase'}} size={1}>
-                  {t('release.type.undecided')}
-                </Label>
-              </LabelBox>
-              {releaseTypeReleases.undecided.map((item, index) => (
-                <GlobalPerspectiveMenuItem
-                  release={item}
-                  key={item.name}
-                  rangePosition={getRangePosition(range, range.offsets.undecided + index)}
-                  toggleable={range.offsets.undecided < range.lastIndex}
-                />
-              ))}
-            </>
-          )}
+          {orderedReleaseTypes.map((releaseType) => (
+            <ReleaseTypeSection
+              key={releaseType}
+              releaseType={releaseType}
+              releases={sortedReleaseTypeReleases[releaseType]}
+              range={range}
+            />
+          ))}
         </StyledBox>
-
         <MenuDivider />
         <MenuItem
           icon={AddIcon}
           onClick={handleCreateBundleClick}
           text={t('release.action.create-new')}
         />
-      </>
+      </Box>
     )
-  }, [
-    handleCreateBundleClick,
-    loading,
-    range,
-    releaseTypeReleases.asap,
-    releaseTypeReleases.scheduled,
-    releaseTypeReleases.undecided,
-    t,
-  ])
+  }, [handleCreateBundleClick, loading, range, sortedReleaseTypeReleases, t])
 
   return (
     <>
