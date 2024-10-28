@@ -1,28 +1,29 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
-import {useMemo} from 'react'
-import {styled} from 'styled-components'
+import {type ComponentType, useMemo} from 'react'
+import {
+  isDraftId,
+  isPublishedId,
+  type PreparedSnapshot,
+  type ReleaseDocument,
+  useReleases,
+} from 'sanity'
 
-import {useDateTimeFormat, useRelativeTime} from '../../hooks'
+import {useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
 import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
-import {type CurrentPerspective} from '../../releases'
-import {PerspectiveBadge} from '../perspective/PerspectiveBadge'
+import {type CurrentPerspective, ReleaseAvatar} from '../../releases'
+import {RELEASE_DOCUMENTS_PATH} from '../../store/release/constants'
 
 interface DocumentStatusProps {
   absoluteDate?: boolean
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
   version?: PreviewValue | Partial<SanityDocument> | null
-  // eslint-disable-next-line
   versions?: VersionsRecord
   singleLine?: boolean
   currentGlobalBundle?: CurrentPerspective
 }
-
-const StyledText = styled(Text)`
-  white-space: nowrap;
-`
 
 /**
  * Displays document status indicating both last published and edited dates in either relative (the default)
@@ -34,86 +35,110 @@ const StyledText = styled(Text)`
  *
  * @internal
  */
-export function DocumentStatus({
-  absoluteDate,
-  draft,
-  published,
-  version,
-  singleLine,
-  currentGlobalBundle,
-}: DocumentStatusProps) {
+export function DocumentStatus({draft, published, versions, singleLine}: DocumentStatusProps) {
   const {t} = useTranslation()
-  const draftUpdatedAt = draft && '_updatedAt' in draft ? draft._updatedAt : ''
-  const versionUpdatedAt = version && '_updatedAt' in version ? version._updatedAt : ''
-  const publishedUpdatedAt = published && '_updatedAt' in published ? published._updatedAt : ''
-
-  const intlDateFormat = useDateTimeFormat({
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
-
-  const draftDateAbsolute = draftUpdatedAt && intlDateFormat.format(new Date(draftUpdatedAt))
-  const publishedDateAbsolute =
-    publishedUpdatedAt && intlDateFormat.format(new Date(publishedUpdatedAt))
-  const versionDateAbsolute = versionUpdatedAt && intlDateFormat.format(new Date(versionUpdatedAt))
-
-  const draftUpdatedTimeAgo = useRelativeTime(draftUpdatedAt || '', {
-    minimal: true,
-    useTemporalPhrase: true,
-  })
-  const publishedUpdatedTimeAgo = useRelativeTime(publishedUpdatedAt || '', {
-    minimal: true,
-    useTemporalPhrase: true,
-  })
-  const versionUpdatedTimeAgo = useRelativeTime(versionUpdatedAt || '', {
-    minimal: true,
-    useTemporalPhrase: true,
-  })
-
-  const publishedDate = absoluteDate ? publishedDateAbsolute : publishedUpdatedTimeAgo
-  const updatedDate = absoluteDate
-    ? versionDateAbsolute || draftDateAbsolute
-    : versionUpdatedTimeAgo || draftUpdatedTimeAgo
-
-  const title = currentGlobalBundle?.metadata?.title
-
-  const documentStatus = useMemo(() => {
-    if (published && '_id' in published) {
-      return 'published'
-    } else if (version && '_id' in version) {
-      return 'version'
-    }
-
-    return 'draft'
-  }, [published, version])
+  const {releases} = useReleases()
+  const versionsList = useMemo(() => Object.entries(versions ?? {}), [versions])
 
   return (
     <Flex
       align={singleLine ? 'center' : 'flex-start'}
       data-testid="pane-footer-document-status"
       direction={singleLine ? 'row' : 'column'}
-      gap={2}
+      gap={3}
       wrap="nowrap"
     >
-      {version && currentGlobalBundle && (
-        <PerspectiveBadge releaseTitle={title} documentStatus={documentStatus} />
+      {published && (
+        <VersionStatus
+          bundle={{
+            _id: 'published',
+            metadata: {
+              title: 'Published',
+            },
+          }}
+          version={{snapshot: published}}
+        />
       )}
-
-      {!version && !publishedDate && (
-        <StyledText size={1} weight="medium">
-          {t('document-status.not-published')}
-        </StyledText>
+      {draft && (
+        <VersionStatus
+          bundle={{
+            _id: 'draft',
+            metadata: {
+              title: 'Draft',
+            },
+          }}
+          version={{snapshot: draft}}
+        />
       )}
-      {!version && publishedDate && (
-        <StyledText size={1} weight="medium">
-          {t('document-status.published', {date: publishedDate})}
-        </StyledText>
-      )}
-      {updatedDate && (
-        <StyledText muted size={1} wrap="nowrap">
-          {t('document-status.edited', {date: updatedDate})}
-        </StyledText>
-      )}
+      {versionsList.map(([versionId, snapshot]) => (
+        <VersionStatus
+          key={versionId}
+          bundle={releases.get([RELEASE_DOCUMENTS_PATH, versionId].join('.'))}
+          version={snapshot}
+        />
+      ))}
     </Flex>
   )
+}
+
+type Mode = 'edited' | 'created' | 'draft' | 'published'
+
+const VersionStatus: ComponentType<{
+  bundle: ReleaseDocument | undefined
+  version: PreparedSnapshot
+}> = ({bundle, version}) => {
+  const {t} = useTranslation()
+  const mode = getMode(version)
+
+  const timestamps: Record<Mode, string> = {
+    draft: version.snapshot._updatedAt,
+    published: version.snapshot._updatedAt,
+    edited: version.snapshot._updatedAt,
+    created: version.snapshot._createdAt,
+  }
+
+  const labels: Record<Mode, string> = {
+    draft: 'document-status.edited',
+    published: 'document-status.published',
+    edited: 'document-status.edited',
+    created: 'document-status.created',
+  }
+
+  const relativeTime = useRelativeTime(timestamps[mode], {
+    minimal: true,
+    useTemporalPhrase: true,
+  })
+
+  return (
+    <Flex align="center" gap={2}>
+      {/* TODO: Tone. */}
+      <ReleaseAvatar tone="prospect" padding={0} />
+      <Text size={1}>
+        {bundle?.metadata.title}{' '}
+        <span style={{color: 'var(--card-muted-fg-color)'}}>
+          {t(labels[mode], {date: relativeTime})}
+        </span>
+      </Text>
+    </Flex>
+  )
+}
+
+function getMode(document: PreparedSnapshot): Mode {
+  if (isDraftId(document.snapshot?._id)) {
+    return 'draft'
+  }
+
+  if (isPublishedId(document.snapshot?._id)) {
+    return 'published'
+  }
+
+  if (typeof document.snapshot?._updatedAt !== 'undefined') {
+    return 'edited'
+  }
+
+  if (typeof document.snapshot?._createdAt !== 'undefined') {
+    return 'created'
+  }
+
+  return 'edited'
 }
