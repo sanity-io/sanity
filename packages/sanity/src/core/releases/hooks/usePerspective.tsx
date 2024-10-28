@@ -72,18 +72,23 @@ export function usePerspective(): PerspectiveValue {
       : LATEST
 
   // TODO: Improve naming; this may not be global.
-  const currentGlobalBundle =
-    perspective === 'published'
-      ? {
-          _id: 'published',
-          metadata: {
-            title: 'Published',
-          },
-        }
-      : selectedBundle || LATEST
+  const currentGlobalBundle = useMemo(
+    () =>
+      perspective === 'published'
+        ? {
+            _id: 'published',
+            metadata: {
+              title: 'Published',
+            },
+          }
+        : selectedBundle || LATEST,
+    [perspective, selectedBundle],
+  )
 
-  const setPerspectiveFromRelease = (releaseId: string) =>
-    setPerspective(getBundleIdFromReleaseId(releaseId))
+  const setPerspectiveFromRelease = useCallback(
+    (releaseId: string) => setPerspective(getBundleIdFromReleaseId(releaseId)),
+    [setPerspective],
+  )
 
   const bundlesPerspective = useMemo(
     () =>
@@ -123,12 +128,22 @@ export function usePerspective(): PerspectiveValue {
     [excludedPerspectives],
   )
 
-  return {
-    setPerspective,
-    setPerspectiveFromRelease,
-    toggleExcludedPerspective,
-    currentGlobalBundle: currentGlobalBundle,
-    bundlesPerspective,
-    isPerspectiveExcluded,
-  }
+  return useMemo(
+    () => ({
+      setPerspective,
+      setPerspectiveFromRelease,
+      toggleExcludedPerspective,
+      currentGlobalBundle,
+      bundlesPerspective,
+      isPerspectiveExcluded,
+    }),
+    [
+      bundlesPerspective,
+      currentGlobalBundle,
+      isPerspectiveExcluded,
+      setPerspective,
+      setPerspectiveFromRelease,
+      toggleExcludedPerspective,
+    ],
+  )
 }
