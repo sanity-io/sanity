@@ -184,6 +184,7 @@ export const ReleaseScheduleButton = ({
           content: scheduleTooltipContent,
           placement: 'bottom',
         }}
+        tone="primary"
         icon={CalendarIcon}
         disabled={isScheduleButtonDisabled || status === 'scheduling'}
         text={t('action.schedule')}

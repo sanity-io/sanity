@@ -23,11 +23,11 @@ const releasesLocaleStrings = {
   /** Action text for publishing a release */
   'action.publish': 'Publish',
   /** Action text for scheduling a release */
-  'action.schedule': 'Schedule for publishing',
+  'action.schedule': 'Schedule for publishing...',
   /** Action text for scheduling a release */
   'action.unschedule': 'Unschedule',
   /** Action text for publishing all documents in a release (and the release itself) */
-  'action.publish-all': 'Publish all',
+  'action.publish-all-documents': 'Publish all documents',
   /** Text for the review changes button in release tool */
   'action.review': 'Review changes',
   /** Text for the summary button in release tool */

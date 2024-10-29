@@ -1,21 +1,11 @@
-import {type Action, type SanityClient, type SanityDocument} from '@sanity/client'
+import {type Action, type SanityClient} from '@sanity/client'
 import {type User} from '@sanity/types'
-import {omit} from 'lodash'
-import {
-  type EditableReleaseDocument,
-  getBundleIdFromReleaseId,
-  getPublishedId,
-  getVersionId,
-} from 'sanity'
+import {type EditableReleaseDocument, getBundleIdFromReleaseId, getVersionId} from 'sanity'
 
 import {RELEASE_METADATA_TMP_DOC_PATH, RELEASE_METADATA_TMP_DOC_TYPE} from './constants'
 
 export interface ReleaseOperationsStore {
-  publishRelease: (
-    releaseId: string,
-    releaseDocuments: SanityDocument[],
-    publishedDocumentsRevisions: Record<string, string>,
-  ) => Promise<void>
+  publishRelease: (releaseId: string) => Promise<void>
   schedule: (releaseId: string, date: Date) => Promise<void>
   //todo: reschedule: (releaseId: string, newDate: Date) => Promise<void>
   unschedule: (releaseId: string) => Promise<void>
@@ -71,46 +61,15 @@ export function createReleaseOperationsStore(options: {
     await clientOperation.commit()
   }
 
-  const handlePublishRelease = async (
-    bundleId: string,
-    bundleDocuments: SanityDocument[],
-    publishedDocumentsRevisions: Record<string, string>,
-  ) => {
-    const transaction = client.transaction()
-    bundleDocuments.forEach((bundleDocument) => {
-      const publishedDocumentId = getPublishedId(bundleDocument._id)
-      const versionDocument = omit(bundleDocument, ['_version']) as SanityDocument
-      const publishedDocumentRevisionId = publishedDocumentsRevisions[publishedDocumentId]
+  const handlePublishRelease = async (releaseId: string) =>
+    requestAction(client, [
+      {
+        actionType: 'sanity.action.release.publish',
+        releaseId: getBundleIdFromReleaseId(releaseId),
+        useSystemDocument: true,
+      },
+    ])
 
-      const publishedDocument = {
-        ...versionDocument,
-        _id: publishedDocumentId,
-      }
-      // verify that local release document matches remote latest revision
-      transaction.patch(bundleDocument._id, {
-        unset: ['_revision_lock_pseudo_field_'],
-        ifRevisionID: bundleDocument._rev,
-      })
-
-      if (publishedDocumentRevisionId) {
-        // if published document exists, verify that local document matches remote latest revision
-        transaction.patch(publishedDocumentId, {
-          unset: ['_revision_lock_pseudo_field_'],
-          ifRevisionID: publishedDocumentRevisionId,
-        })
-        // update the published document with the release version
-        transaction.createOrReplace(publishedDocument)
-      } else {
-        // if published document doesn't exist, do not override
-        // only create the document and fail is it suddenly exists
-        transaction.create(publishedDocument)
-      }
-    })
-
-    await transaction.commit()
-    const publishedAt = new Date().toISOString()
-    await client.patch(bundleId).set({publishedAt, archivedAt: publishedAt}).commit()
-  }
   const handleScheduleRelease = (releaseId: string, publishAt: Date) => {
     return requestAction(client, [
       {
@@ -161,10 +120,18 @@ interface ScheduleApiAction {
   releaseId: string
   publishAt: string
 }
+
+interface PublishApiAction {
+  actionType: 'sanity.action.release.publish'
+  releaseId: string
+  useSystemDocument: true
+}
+
 interface ArchiveApiAction {
   actionType: 'sanity.action.release.archive'
   releaseId: string
 }
+
 interface UnscheduleApiAction {
   actionType: 'sanity.action.release.unschedule'
   releaseId: string
@@ -184,6 +151,7 @@ interface EditReleaseApiAction {
 type ReleaseAction =
   | Action
   | ScheduleApiAction
+  | PublishApiAction
   | CreateReleaseApiAction
   | UnscheduleApiAction
   | ArchiveApiAction
