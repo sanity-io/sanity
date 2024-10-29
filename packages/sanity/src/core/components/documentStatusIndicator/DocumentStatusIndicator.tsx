@@ -1,7 +1,6 @@
-import {DotIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {Flex, Text} from '@sanity/ui'
-import {type ComponentType, useMemo} from 'react'
+import {Flex} from '@sanity/ui'
+import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
@@ -13,7 +12,13 @@ interface DocumentStatusProps {
   versions: VersionsRecord | undefined
 }
 
-const Root = styled(Text)`
+const Dot = styled.div<{$index: number}>`
+  width: 5px;
+  height: 5px;
+  background-color: var(--card-icon-color);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--card-bg-color);
+  z-index: ${({$index}) => $index};
   &[data-status='not-published'] {
     --card-icon-color: var(--card-badge-default-dot-color);
     opacity: 0.5 !important;
@@ -78,15 +83,9 @@ export function DocumentStatusIndicator({draft, published, versions}: DocumentSt
     <Flex>
       {indicators
         .filter(({show}) => show)
-        .map(({status}) => (
-          <Dot key={status} status={status} />
+        .map(({status}, index) => (
+          <Dot key={status} data-status={status} $index={index + 1} />
         ))}
     </Flex>
   )
 }
-
-const Dot: ComponentType<{status: Status}> = ({status}) => (
-  <Root data-status={status} size={1}>
-    <DotIcon />
-  </Root>
-)
