@@ -2,10 +2,10 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 import {catchError} from 'rxjs/operators'
-import {createSWR} from 'sanity'
 
 import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../store'
 import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
+import {createSWR} from '../../util/rxSwr'
 import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 
 export interface DocumentPerspectiveProps {
