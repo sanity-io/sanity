@@ -1,11 +1,14 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocumentLike} from '@sanity/types'
 import {LayerProvider, PortalProvider, useToast} from '@sanity/ui'
 import {useCallback} from 'react'
+import {AddedVersion} from 'sanity'
 
 import {useReleaseOperations} from '../../../store/release/useReleaseOperations'
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
 import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
+import {getCreateVersionOrigin} from '../../util/util'
 
 export function AddDocumentSearch({
   open,
@@ -18,18 +21,36 @@ export function AddDocumentSearch({
 }): JSX.Element {
   const {createVersion} = useReleaseOperations()
   const toast = useToast()
+  const telemetry = useTelemetry()
 
   const addDocument = useCallback(
     (item: Pick<SanityDocumentLike, '_id' | '_type'>) => {
-      createVersion(item._id, getBundleIdFromReleaseId(releaseId)).then((msg) => {
+      try {
+        createVersion(item._id, getBundleIdFromReleaseId(releaseId))
+
         toast.push({
           closable: true,
           status: 'success',
           title: 'Document added to release',
         })
-      })
+
+        const origin = getCreateVersionOrigin(item._id)
+
+        telemetry.log(AddedVersion, {
+          schemaType: item._type,
+          documentOrigin: origin,
+        })
+      } catch (error) {
+        /* empty */
+
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: error.message,
+        })
+      }
     },
-    [createVersion, releaseId, toast],
+    [createVersion, releaseId, telemetry, toast],
   )
 
   const handleClose = useCallback(() => {
