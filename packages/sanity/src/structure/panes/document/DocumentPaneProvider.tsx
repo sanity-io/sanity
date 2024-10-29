@@ -159,8 +159,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const getDocumentPerspective = useCallback(() => {
     let version: DocumentActionsPerspective
     switch (true) {
-      // bundle Perspective will always be undefined in published and draft but not on version
-      case typeof bundlePerspective !== 'undefined':
+      /**
+       * bundle Perspective will always be undefined in published and draft but not on version
+       * should also check if the current value is a version otherwise this would impact the document actions
+       */
+      case typeof bundlePerspective !== 'undefined' && isVersionId(value._id):
         version = 'version'
         break
       case Boolean(params):
@@ -174,7 +177,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
 
     return version
-  }, [bundlePerspective, params, perspective])
+  }, [bundlePerspective, params, perspective, value._id])
 
   const actionsPerspective = useMemo(() => getDocumentPerspective(), [getDocumentPerspective])
 
