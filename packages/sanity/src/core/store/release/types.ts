@@ -61,11 +61,7 @@ export interface ReleaseDocument {
 
     intendedPublishAt?: string
     // todo: the below properties should probably live at the system document
-    createdBy?: string
-    publishedBy?: string
     releaseType: ReleaseType
-    archivedAt?: string
-    archivedBy?: string
   }
 }
 
