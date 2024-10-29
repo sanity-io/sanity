@@ -6,7 +6,6 @@ import {styled} from 'styled-components'
 
 import {Button, Popover, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
-import {type ReleaseDocument} from '../../../store/release/types'
 import {ReleaseBadge} from '../ReleaseBadge'
 
 const StyledStack = styled(Stack)`
@@ -18,8 +17,8 @@ const IconPickerFlex = styled(Flex)`
 `
 
 export interface ReleaseIconEditorPickerValue {
-  hue: ReleaseDocument['metadata']['hue']
-  icon: ReleaseDocument['metadata']['icon']
+  hue: ColorHueKey
+  icon: IconSymbol
 }
 
 export function ReleaseIconEditorPicker(props: {

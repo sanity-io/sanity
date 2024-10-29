@@ -38,8 +38,6 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
       metadata: {
         title: release?.metadata.title,
         description: release?.metadata.description,
-        hue: release?.metadata.hue || 'gray',
-        icon: release?.metadata.icon || 'cube',
         intendedPublishAt: release?.metadata?.intendedPublishAt,
         releaseType: release?.metadata.releaseType || DEFAULT_RELEASE_TYPE,
       },

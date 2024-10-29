@@ -38,46 +38,11 @@ export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
       {/* Edited */}
       {lastEdit && !release.publishAt && release.state === 'archived' && (
         <StatusItem
-          avatar={
-            release.metadata.publishedBy ? <UserAvatar size={0} user={lastEdit.author} /> : null
-          }
+          avatar={lastEdit ? <UserAvatar size={0} user={lastEdit.author} /> : null}
           text={
             <>
               {t('footer.status.edited')}{' '}
               <RelativeTime time={lastEdit.date} minimal useTemporalPhrase />
-            </>
-          }
-        />
-      )}
-
-      {/* Published */}
-      {release.publishAt && (
-        <StatusItem
-          avatar={
-            release.metadata.publishedBy ? (
-              <UserAvatar size={0} user={release.metadata.publishedBy} />
-            ) : null
-          }
-          text={
-            <>
-              {t('footer.status.published')}{' '}
-              <RelativeTime time={release.publishAt} minimal useTemporalPhrase />
-            </>
-          }
-        />
-      )}
-
-      {/* Archived */}
-      {release.state === 'archived' && release.metadata.archivedAt && (
-        <StatusItem
-          avatar={
-            release.metadata.archivedBy ? (
-              <UserAvatar size={0} user={release.metadata.archivedBy} />
-            ) : null
-          }
-          text={
-            <>
-              {t('footer.status.archived')} <RelativeTime time={release.metadata.archivedAt} />`
             </>
           }
         />

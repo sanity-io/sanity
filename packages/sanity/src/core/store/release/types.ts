@@ -1,5 +1,3 @@
-import {type ColorHueKey} from '@sanity/color'
-import {type IconSymbol} from '@sanity/icons'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
@@ -60,16 +58,10 @@ export interface ReleaseDocument {
   metadata: {
     title: string
     description?: string
-    hue?: ColorHueKey
-    icon?: IconSymbol
 
     intendedPublishAt?: string
     // todo: the below properties should probably live at the system document
-    createdBy?: string
-    publishedBy?: string
     releaseType: ReleaseType
-    archivedAt?: string
-    archivedBy?: string
   }
 }
 

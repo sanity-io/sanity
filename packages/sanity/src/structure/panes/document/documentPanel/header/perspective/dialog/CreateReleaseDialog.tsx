@@ -38,8 +38,6 @@ export function CreateReleaseDialog(props: {
       metadata: {
         title: '',
         description: '',
-        hue: 'gray',
-        icon: 'cube',
         releaseType: DEFAULT_RELEASE_TYPE,
       },
     } as const
