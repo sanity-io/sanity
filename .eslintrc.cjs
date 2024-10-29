@@ -3,6 +3,45 @@
 'use strict'
 
 const extensions = ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx']
+const sanityNoRestrictedImportsPaths = [
+  {
+    name: '@sanity/ui',
+    importNames: [
+      'Button',
+      'ButtonProps',
+      'Dialog',
+      'DialogProps',
+      'ErrorBoundary',
+      'MenuButton',
+      'MenuButtonProps',
+      'MenuGroup',
+      'MenuGroupProps',
+      'MenuItem',
+      'MenuItemProps',
+      'Popover',
+      'PopoverProps',
+      'Tab',
+      'TabProps',
+      'Tooltip',
+      'TooltipProps',
+      'TooltipDelayGroupProvider',
+      'TooltipDelayGroupProviderProps',
+    ],
+    message:
+      'Please use the (more opinionated) exported components in sanity/src/ui-components instead.',
+  },
+  {
+    name: 'styled-components',
+    importNames: ['default'],
+    message: 'Please use `import {styled} from "styled-components"` instead.',
+  },
+  {
+    name: 'react',
+    importNames: ['default', 'createContext'],
+    message:
+      'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.\nPlease place "context" in _singletons',
+  },
+]
 
 /** @type {import('eslint').Linter.Config} */
 const config = {
@@ -185,44 +224,23 @@ const config = {
         'no-restricted-imports': [
           'error',
           {
+            paths: sanityNoRestrictedImportsPaths,
+          },
+        ],
+      },
+    },
+    {
+      files: ['packages/sanity/src/core/**'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
             paths: [
               {
-                name: '@sanity/ui',
-                importNames: [
-                  'Button',
-                  'ButtonProps',
-                  'Dialog',
-                  'DialogProps',
-                  'ErrorBoundary',
-                  'MenuButton',
-                  'MenuButtonProps',
-                  'MenuGroup',
-                  'MenuGroupProps',
-                  'MenuItem',
-                  'MenuItemProps',
-                  'Popover',
-                  'PopoverProps',
-                  'Tab',
-                  'TabProps',
-                  'Tooltip',
-                  'TooltipProps',
-                  'TooltipDelayGroupProvider',
-                  'TooltipDelayGroupProviderProps',
-                ],
-                message:
-                  'Please use the (more opinionated) exported components in sanity/src/ui-components instead.',
+                name: 'sanity',
+                message: 'Please import from the relative path instead of the `sanity` package',
               },
-              {
-                name: 'styled-components',
-                importNames: ['default'],
-                message: 'Please use `import {styled} from "styled-components"` instead.',
-              },
-              {
-                name: 'react',
-                importNames: ['default', 'createContext'],
-                message:
-                  'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.\nPlease place "context" in _singletons',
-              },
+              ...sanityNoRestrictedImportsPaths,
             ],
           },
         ],
