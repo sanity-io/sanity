@@ -3,7 +3,7 @@ import {AddIcon, ChevronDownIcon} from '@sanity/icons'
 import {Box, Button, Flex, Menu, MenuDivider, MenuItem, Spinner} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {type ReleaseDocument, type ReleaseType} from 'sanity'
-import {styled} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
@@ -28,13 +28,15 @@ const StyledBox = styled(Box)`
   max-height: 75vh;
 `
 
-const StyledPublishedBox = styled(Box)`
-  position: sticky;
-  top: 0;
-  background-color: var(--card-bg-color);
-  z-index: 10;
-  padding-bottom: 16px;
-`
+const StyledPublishedBox = styled(Box)<{$removePadding: boolean}>(
+  ({$removePadding}) => css`
+    position: sticky;
+    top: 0;
+    background-color: var(--card-bg-color);
+    z-index: 10;
+    padding-bottom: ${$removePadding ? '4px' : '16px'};
+  `,
+)
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
@@ -135,7 +137,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     return (
       <Box>
         <StyledBox ref={setScrollContainer} onScroll={onScroll}>
-          <StyledPublishedBox>
+          <StyledPublishedBox $removePadding={!releases.length}>
             <GlobalPerspectiveMenuItem
               rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
               release={{_id: 'published', metadata: {title: 'Published'}} as ReleaseDocument}
@@ -167,6 +169,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     loading,
     onScroll,
     range,
+    releases.length,
     scrollElementRef,
     setScrollContainer,
     sortedReleaseTypeReleases,
