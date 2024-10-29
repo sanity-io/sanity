@@ -2,6 +2,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 import {catchError} from 'rxjs/operators'
+import {createSWR} from 'sanity'
 
 import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../store'
 import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
@@ -16,6 +17,8 @@ export interface DocumentPerspectiveState {
   error?: unknown
   loading: boolean
 }
+
+const swr = createSWR<{documentIds: string[]}>({maxSize: 100})
 
 /**
  * Fetches the document versions for a given document
@@ -36,8 +39,9 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
     return documentPreviewStore
       .unstable_observeDocumentIdSet(`sanity::versionOf("${publishedId}")`)
       .pipe(
-        map((data) => ({
-          documentIds: data.documentIds,
+        swr(`${publishedId}`),
+        map(({value}) => ({
+          documentIds: value.documentIds,
           loading: false,
           error: null,
         })),
@@ -56,7 +60,6 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
     () =>
       result.documentIds.flatMap((docId) => {
         const matchingBundle = releases?.find(
-          // eslint-disable-next-line max-nested-callbacks
           (release) => getVersionFromId(docId) === getBundleIdFromReleaseId(release._id),
         )
         return matchingBundle || []
