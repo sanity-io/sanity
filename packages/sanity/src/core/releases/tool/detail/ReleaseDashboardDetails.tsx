@@ -36,7 +36,8 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
     }
   }, [_id, currentGlobalBundle._id, setPerspective, setPerspectiveFromRelease])
 
-  const isPublishDateInPast = publishAt && isBefore(new Date(publishAt), new Date())
+  const publishDate = publishAt || release.metadata.intendedPublishAt
+  const isPublishDateInPast = publishDate && isBefore(new Date(publishDate), new Date())
 
   return (
     <Container width={3}>
@@ -56,16 +57,16 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
           />
 
           {
-            publishAt ? (
+            publishDate ? (
               <Card padding={2} radius={2} tone="positive">
                 <Flex flex={1} gap={2}>
                   <ReleaseAvatar padding={0} tone={getReleaseTone(release)} />
                   <Text muted size={1} weight="medium">
                     {isPublishDateInPast
                       ? t('dashboard.details.published-on', {
-                          date: format(new Date(publishAt), `MMM d, yyyy`),
+                          date: format(new Date(publishDate), `MMM d, yyyy`),
                         })
-                      : format(new Date(publishAt), `PPpp`)}
+                      : format(new Date(publishDate), `PPpp`)}
                   </Text>
                 </Flex>
               </Card>

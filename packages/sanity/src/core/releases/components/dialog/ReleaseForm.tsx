@@ -81,7 +81,10 @@ export function ReleaseForm(props: {
   const handleButtonReleaseTypeChange = useCallback(
     (pickedReleaseType: ReleaseType) => {
       setButtonReleaseType(pickedReleaseType)
-      onChange({...value, metadata: {...value.metadata, releaseType: pickedReleaseType}})
+      onChange({
+        ...value,
+        metadata: {...value.metadata, releaseType: pickedReleaseType, intendedPublishAt: undefined},
+      })
     },
     [onChange, value],
   )
