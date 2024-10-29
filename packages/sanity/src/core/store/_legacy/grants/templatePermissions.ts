@@ -1,6 +1,6 @@
 import {type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {combineLatest, from, type Observable, of} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
+import {combineLatest, defer, from, type Observable, of} from 'rxjs'
+import {concatMap, map, switchMap, toArray} from 'rxjs/operators'
 
 import {useSchema, useTemplates} from '../../../hooks'
 import {type InitialValueTemplateItem, resolveInitialValue, type Template} from '../../../templates'
@@ -61,70 +61,73 @@ export function getTemplatePermissions({
 > {
   if (!templateItems?.length) return of([])
 
-  return combineLatest(
-    templateItems
-      .map(serialize)
-      .map(async (item) => {
-        const template = templates.find((t) => t.id === item.templateId)
+  return defer(() => {
+    // Process items sequentially
+    return from(templateItems).pipe(
+      // Serialize and resolve each item one at a time
+      concatMap(async (item) => {
+        const serializedItem = serialize(item)
+        const template = templates.find((t) => t.id === serializedItem.templateId)
 
         if (!template) {
-          throw new Error(`template not found: "${item.templateId}"`)
+          throw new Error(`template not found: "${serializedItem.templateId}"`)
         }
 
         const resolvedInitialValue = await resolveInitialValue(
           schema,
           template,
-          item.parameters,
+          serializedItem.parameters,
           context,
-          {
-            useCache: true,
-          },
+          {useCache: true},
         )
 
-        return {template, item, resolvedInitialValue}
-      })
-      .map((promise) =>
-        from(promise).pipe(
-          switchMap(({item, resolvedInitialValue, template}) => {
-            const schemaType = schema.get(template.schemaType)
+        return {item: serializedItem, template, resolvedInitialValue}
+      }),
+      // Convert each resolved item into a permission check observable
+      map(({item, template, resolvedInitialValue}) => {
+        const schemaType = schema.get(template.schemaType)
 
-            if (!schemaType) {
-              throw new Error(`schema type not found: "${template.schemaType}"`)
-            }
+        if (!schemaType) {
+          throw new Error(`schema type not found: "${template.schemaType}"`)
+        }
 
-            const liveEdit = schemaType?.liveEdit
-            const {initialDocumentId = 'dummy-id'} = item
+        const liveEdit = schemaType?.liveEdit
+        const {initialDocumentId = 'dummy-id'} = item
+        const documentId = liveEdit
+          ? getPublishedId(initialDocumentId)
+          : getDraftId(initialDocumentId)
 
-            return getDocumentValuePermissions({
-              grantsStore,
-              permission: 'create',
-              document: {
-                _id: liveEdit ? getPublishedId(initialDocumentId) : getDraftId(initialDocumentId),
-                ...resolvedInitialValue,
-              },
-            }).pipe(
-              map(({granted, reason}) => {
-                const title = item.title || template.title
-                const result: TemplatePermissionsResult = {
-                  ...item,
-                  i18n: item.i18n || template.i18n,
-                  granted,
-                  reason,
-                  resolvedInitialValue,
-                  template,
-                  title,
-                  subtitle: schemaType.title === title ? undefined : schemaType.title,
-                  description: item.description || template.description,
-                  icon: item.icon || template.icon,
-                }
-
-                return result
-              }),
-            )
-          }),
-        ),
-      ),
-  )
+        return getDocumentValuePermissions({
+          grantsStore,
+          permission: 'create',
+          document: {
+            _id: documentId,
+            ...resolvedInitialValue,
+          },
+        }).pipe(
+          map(
+            ({granted, reason}): TemplatePermissionsResult => ({
+              ...item,
+              granted,
+              reason,
+              resolvedInitialValue,
+              template,
+              i18n: item.i18n || template.i18n,
+              title: item.title || template.title,
+              subtitle:
+                schemaType.title === (item.title || template.title) ? undefined : schemaType.title,
+              description: item.description || template.description,
+              icon: item.icon || template.icon,
+            }),
+          ),
+        )
+      }),
+      // Collect all permission check observables
+      toArray(),
+      // Switch to combined observable of all permission checks
+      switchMap((observables) => combineLatest(observables)),
+    )
+  })
 }
 
 /**
