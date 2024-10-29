@@ -69,10 +69,8 @@ describe('DocumentPerspectiveList', () => {
     _type: 'system.release',
     metadata: {
       description: 'What a spring drop, allergies galore 🌸',
-      hue: 'magenta',
       releaseType: 'asap',
       title: 'Spring Drop',
-      icon: 'heart-filled',
     },
     _createdAt: '2024-07-02T11:37:51Z',
     name: 'spring-drop',
@@ -112,8 +110,6 @@ describe('DocumentPerspectiveList', () => {
           metadata: {
             releaseType: 'asap',
             title: 'Spring Drop',
-            hue: 'magenta',
-            icon: 'heart-filled',
           },
         },
       ],

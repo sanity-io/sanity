@@ -64,8 +64,6 @@ describe('VersionContextMenu', () => {
       state: 'active',
       metadata: {
         title: 'Release 2',
-        hue: 'gray',
-        icon: 'string',
         releaseType: 'asap',
       },
     },

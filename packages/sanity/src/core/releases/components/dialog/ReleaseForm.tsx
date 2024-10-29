@@ -10,15 +10,17 @@ import {FormFieldHeaderText} from '../../../form'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useDateTimeFormat} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
-import {type EditableReleaseDocument, type ReleaseType} from '../../../store/release/types'
-import {ReleaseIconEditorPicker, type ReleaseIconEditorPickerValue} from './ReleaseIconEditorPicker'
+import {
+  type EditableReleaseDocument,
+  type ReleaseDocument,
+  type ReleaseType,
+} from '../../../store/release/types'
 
-const DEFAULT_METADATA = {
+const DEFAULT_METADATA: ReleaseDocument['metadata'] = {
   title: '',
   description: '',
-  hue: 'gray',
-  icon: 'cube',
-} as const
+  releaseType: 'asap',
+}
 
 /** @internal */
 export function ReleaseForm(props: {
@@ -26,7 +28,7 @@ export function ReleaseForm(props: {
   value: EditableReleaseDocument
 }): JSX.Element {
   const {onChange, value} = props
-  const {title, description, icon, hue, releaseType} = value.metadata || {}
+  const {title, description, releaseType} = value.metadata || {}
   const publishAt = value.publishAt
   // derive the action from whether the initial value prop has a slug
   // only editing existing releases will provide a value.slug
@@ -44,14 +46,6 @@ export function ReleaseForm(props: {
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
   const [inputValue, setInputValue] = useState<string | undefined>(
     publishAt ? dateFormatter.format(new Date(publishAt)) : undefined,
-  )
-
-  const iconValue: ReleaseIconEditorPickerValue = useMemo(
-    () => ({
-      icon: icon ?? DEFAULT_METADATA.icon,
-      hue: hue ?? DEFAULT_METADATA.hue,
-    }),
-    [icon, hue],
   )
 
   const handleReleaseTitleChange = useCallback(
@@ -84,16 +78,6 @@ export function ReleaseForm(props: {
     [dateFormatter, onChange, value],
   )
 
-  const handleIconValueChange = useCallback(
-    (pickedIcon: ReleaseIconEditorPickerValue) => {
-      onChange({
-        ...value,
-        metadata: {...value.metadata, icon: pickedIcon.icon, hue: pickedIcon.hue},
-      })
-    },
-    [onChange, value],
-  )
-
   const handleButtonReleaseTypeChange = useCallback(
     (pickedReleaseType: ReleaseType) => {
       setButtonReleaseType(pickedReleaseType)
@@ -104,10 +88,6 @@ export function ReleaseForm(props: {
 
   return (
     <Stack space={5}>
-      <Flex>
-        <ReleaseIconEditorPicker onChange={handleIconValueChange} value={iconValue} />
-      </Flex>
-
       <Stack space={2} style={{margin: -1}}>
         <Flex gap={1}>
           <Button
