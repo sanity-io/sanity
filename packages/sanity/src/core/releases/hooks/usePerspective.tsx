@@ -17,6 +17,11 @@ export type CurrentPerspective = Omit<Partial<ReleaseDocument>, 'metadata'> & {
  * @internal
  */
 export interface PerspectiveValue {
+  /* The current perspective */
+  perspective: 'published' | `bundle.${string}` | undefined
+
+  /* The excluded perspectives */
+  excludedPerspectives: string[]
   /* Return the current global release */
   currentGlobalBundle: CurrentPerspective
   /* Change the perspective in the studio based on the perspective name */
@@ -33,6 +38,7 @@ export interface PerspectiveValue {
   bundlesPerspective: string[]
 }
 
+const EMPTY_ARRAY: string[] = []
 /**
  * TODO: Improve distinction between global and pane perspectives.
  *
@@ -41,8 +47,13 @@ export interface PerspectiveValue {
 export function usePerspective(): PerspectiveValue {
   const router = useRouter()
   const {data: releases} = useReleases()
-  const perspective = router.stickyParams.perspective
-  const excludedPerspectives = router.stickyParams.excludedPerspectives?.split(',')
+  // TODO: Actually validate the perspective value, if it's not a valid perspective, we should fallback to undefined
+  const perspective = router.stickyParams.perspective as
+    | 'published'
+    | `bundle.${string}`
+    | undefined
+
+  const excludedPerspectives = router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY
 
   // TODO: Should it be possible to set the perspective within a pane, rather than globally?
   const setPerspective = useCallback(
@@ -130,6 +141,8 @@ export function usePerspective(): PerspectiveValue {
 
   return useMemo(
     () => ({
+      perspective,
+      excludedPerspectives,
       setPerspective,
       setPerspectiveFromRelease,
       toggleExcludedPerspective,
@@ -138,6 +151,8 @@ export function usePerspective(): PerspectiveValue {
       isPerspectiveExcluded,
     }),
     [
+      perspective,
+      excludedPerspectives,
       bundlesPerspective,
       currentGlobalBundle,
       isPerspectiveExcluded,
