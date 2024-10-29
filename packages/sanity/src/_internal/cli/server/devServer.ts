@@ -1,4 +1,4 @@
-import {type UserViteConfig} from '@sanity/cli'
+import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import chalk from 'chalk'
 import {createServer} from 'vite'
 
@@ -16,6 +16,7 @@ export interface DevServerOptions {
   projectName?: string
 
   reactStrictMode: boolean
+  reactCompiler: ReactCompilerConfig | undefined
   vite?: UserViteConfig
 }
 
@@ -24,7 +25,15 @@ export interface DevServer {
 }
 
 export async function startDevServer(options: DevServerOptions): Promise<DevServer> {
-  const {cwd, httpPort, httpHost, basePath, reactStrictMode, vite: extendViteConfig} = options
+  const {
+    cwd,
+    httpPort,
+    httpHost,
+    basePath,
+    reactStrictMode,
+    vite: extendViteConfig,
+    reactCompiler,
+  } = options
 
   const startTime = Date.now()
   debug('Writing Sanity runtime files')
@@ -37,6 +46,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     mode: 'development',
     server: {port: httpPort, host: httpHost},
     cwd,
+    reactCompiler,
   })
 
   // Extend Vite configuration with user-provided config

@@ -18,5 +18,8 @@ export default defineConfig({
       '@portabletext/editor': path.join(__dirname, './node_modules/@portabletext/editor/src'),
     },
   },
-  plugins: [react()],
+  plugins: [
+    // @ts-expect-error vite typings error
+    react({babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]}}),
+  ],
 })

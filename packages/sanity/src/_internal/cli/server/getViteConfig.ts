@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import {type UserViteConfig} from '@sanity/cli'
+import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import viteReact from '@vitejs/plugin-react'
 import debug from 'debug'
 import readPkgUp from 'read-pkg-up'
@@ -54,6 +54,7 @@ export interface ViteOptions {
   mode: 'development' | 'production'
 
   importMap?: {imports?: Record<string, string>}
+  reactCompiler: ReactCompilerConfig | undefined
 }
 
 /**
@@ -72,6 +73,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     minify,
     basePath: rawBasePath = '/',
     importMap,
+    reactCompiler,
   } = options
 
   const monorepo = await loadSanityMonorepo(cwd)
@@ -104,7 +106,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     configFile: false,
     mode,
     plugins: [
-      viteReact(),
+      viteReact(
+        reactCompiler ? {babel: {plugins: [['babel-plugin-react-compiler', reactCompiler]]}} : {},
+      ),
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityDotWorkaroundPlugin(),
       sanityRuntimeRewritePlugin(),

@@ -2,7 +2,7 @@ import {constants as fsConstants} from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import {type UserViteConfig} from '@sanity/cli'
+import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import readPkgUp from 'read-pkg-up'
 import {build} from 'vite'
 
@@ -34,6 +34,7 @@ export interface StaticBuildOptions {
   importMap?: {imports?: Record<string, string>}
 
   vite?: UserViteConfig
+  reactCompiler: ReactCompilerConfig | undefined
 }
 
 export async function buildStaticFiles(
@@ -47,6 +48,7 @@ export async function buildStaticFiles(
     basePath,
     vite: extendViteConfig,
     importMap,
+    reactCompiler,
   } = options
 
   debug('Writing Sanity runtime files')
@@ -62,6 +64,7 @@ export async function buildStaticFiles(
     sourceMap,
     mode,
     importMap,
+    reactCompiler,
   })
 
   // Extend Vite configuration with user-provided config
