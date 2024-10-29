@@ -48,7 +48,7 @@ export function ReleaseTypeMenuSection({
       <GlobalPerspectiveMenuLabelIndicator
         $withinRange={firstIndex < releaseTypeOffset && lastIndex >= releaseTypeOffset}
         paddingRight={2}
-        paddingTop={releaseType === 'asap' ? 0 : 4}
+        paddingTop={releaseType === 'asap' ? 1 : 4}
         paddingBottom={2}
       >
         <Label muted style={{textTransform: 'uppercase'}} size={1}>
