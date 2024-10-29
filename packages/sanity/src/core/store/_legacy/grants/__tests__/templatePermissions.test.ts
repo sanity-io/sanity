@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
-import {type InitialValueResolverContext} from '@sanity/types'
+import {type InitialValueResolverContext, type Schema} from '@sanity/types'
 import {firstValueFrom} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 
@@ -51,6 +51,14 @@ describe('getTemplatePermissions', () => {
       userId: null,
     })
 
+    const context: InitialValueResolverContext = {
+      projectId: 'test-project',
+      dataset: 'test-dataset',
+      schema: schema as Schema,
+      currentUser: null,
+      getClient: () => client as unknown as SanityClient,
+    }
+
     const permissions = firstValueFrom(
       getTemplatePermissions({
         grantsStore,
@@ -62,15 +70,17 @@ describe('getTemplatePermissions', () => {
             templateId: 'author-developer-locked',
             type: 'initialValueTemplateItem',
             schemaType: 'author',
+            parameters: {},
           },
           {
             id: 'author-developer-unlocked',
             templateId: 'author-developer-unlocked',
             type: 'initialValueTemplateItem',
             schemaType: 'author',
+            parameters: {},
           },
         ],
-        context: {} as InitialValueResolverContext,
+        context,
       }),
     )
 
@@ -79,6 +89,7 @@ describe('getTemplatePermissions', () => {
         description: undefined,
         granted: false,
         icon: undefined,
+        i18n: undefined,
         schemaType: 'author',
         id: 'author-developer-locked',
         reason: 'No matching grants found',
@@ -93,11 +104,13 @@ describe('getTemplatePermissions', () => {
         templateId: 'author-developer-locked',
         title: 'Developer',
         type: 'initialValueTemplateItem',
+        parameters: {},
       },
       {
         description: undefined,
         granted: true,
         icon: undefined,
+        i18n: undefined,
         schemaType: 'author',
         id: 'author-developer-unlocked',
         reason: 'Matching grant',
@@ -112,6 +125,7 @@ describe('getTemplatePermissions', () => {
         templateId: 'author-developer-unlocked',
         title: 'Developer',
         type: 'initialValueTemplateItem',
+        parameters: {},
       },
     ])
   })
