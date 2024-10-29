@@ -1,10 +1,10 @@
 import {Text} from '@sanity/ui'
-import {memo, useCallback} from 'react'
+import {memo, useCallback, useMemo} from 'react'
 import {
-  getBundleIdFromReleaseId,
   getReleaseTone,
   getVersionFromId,
   isVersionId,
+  type ReleaseDocument,
   Translate,
   useDateTimeFormat,
   usePerspective,
@@ -16,6 +16,44 @@ import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 
 import {VersionChip} from './VersionChip'
 
+type FilterReleases = {
+  notCurrentReleases: ReleaseDocument[]
+  currentReleases: ReleaseDocument[]
+}
+
+const TooltipContent = ({release}: {release: ReleaseDocument}) => {
+  const {t} = useTranslation()
+  const dateTimeFormat = useDateTimeFormat({
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+
+  if (release.metadata.releaseType === 'asap') {
+    return <Text size={1}>{t('release.type.asap')}</Text>
+  }
+  if (release.metadata.releaseType === 'scheduled') {
+    return (
+      <Text size={1}>
+        {release.metadata.intendedPublishAt ? (
+          <Translate
+            t={t}
+            i18nKey="release.chip.tooltip.intended-for-date"
+            values={{
+              date: dateTimeFormat.format(new Date(release.metadata.intendedPublishAt)),
+            }}
+          />
+        ) : (
+          t('release.chip.tooltip.unknown-date')
+        )}
+      </Text>
+    )
+  }
+  if (release.metadata.releaseType === 'undecided') {
+    return <Text size={1}>{t('release.type.undecided')}</Text>
+  }
+  return null
+}
+
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {perspective} = usePaneRouter()
   const {t} = useTranslation()
@@ -26,34 +64,24 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   })
   const {data: releases, loading} = useReleases()
 
-  const {
-    documentVersions: documentPaneVersions,
-    editState,
-    displayed,
-    documentType,
-  } = useDocumentPane()
-  const documentVersions = documentPaneVersions?.map((documentPaneVersion) => ({
-    ...documentPaneVersion,
-    perspectiveId: getBundleIdFromReleaseId(documentPaneVersion._id),
-  }))
+  const {documentVersions, editState, displayed, documentType} = useDocumentPane()
 
-  // remove the versions that the document already has
-  // remove the archived releases
-  const filteredReleases =
-    (documentVersions &&
-      releases?.filter((release) => !versionDocumentExists(documentVersions, release._id))) ||
-    []
+  const filteredReleases: FilterReleases = useMemo(() => {
+    if (!documentVersions) return {notCurrentReleases: [], currentReleases: []}
 
-  const asapReleases = documentVersions?.filter(
-    (release) => release.metadata.releaseType === 'asap',
-  )
-
-  const scheduledReleases = documentVersions?.filter(
-    (release) => release.metadata.releaseType === 'scheduled',
-  )
-  const undecidedReleases = documentVersions?.filter(
-    (release) => release.metadata.releaseType === 'undecided',
-  )
+    return releases.reduce(
+      (acc: FilterReleases, release) => {
+        const versionDocExists = versionDocumentExists(documentVersions, release._id)
+        if (versionDocExists) {
+          acc.currentReleases.push(release)
+        } else {
+          acc.notCurrentReleases.push(release)
+        }
+        return acc
+      },
+      {notCurrentReleases: [], currentReleases: []},
+    )
+  }, [documentVersions, releases])
 
   const handleBundleChange = useCallback(
     (bundleId: string) => () => {
@@ -86,7 +114,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         contextValues={{
           documentId: editState?.published?._id || editState?.id || '',
           menuReleaseId: editState?.published?._id || editState?.id || '',
-          releases: filteredReleases,
+          releases: filteredReleases.notCurrentReleases,
           releasesLoading: loading,
           documentType,
           fromRelease: 'published',
@@ -131,7 +159,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         contextValues={{
           documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
           menuReleaseId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
-          releases: filteredReleases,
+          releases: filteredReleases.notCurrentReleases,
           releasesLoading: loading,
           documentType: documentType,
           fromRelease: 'draft',
@@ -141,76 +169,21 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
       />
 
       {displayed &&
-        asapReleases?.map((release) => (
+        filteredReleases.currentReleases?.map((release) => (
           <VersionChip
             key={release._id}
-            tooltipContent={<Text size={1}>{t('release.type.asap')}</Text>}
-            selected={release.perspectiveId === getVersionFromId(displayed?._id || '')}
-            onClick={handleBundleChange(release.perspectiveId)}
+            tooltipContent={<TooltipContent release={release} />}
+            selected={release.name === getVersionFromId(displayed?._id || '')}
+            onClick={handleBundleChange(release.name)}
             text={release.metadata.title}
             tone={getReleaseTone(release)}
             contextValues={{
               documentId: displayed?._id || '',
               menuReleaseId: release._id,
-              releases: filteredReleases,
+              releases: filteredReleases.notCurrentReleases,
               releasesLoading: loading,
               documentType: documentType,
-              fromRelease: getBundleIdFromReleaseId(release._id),
-              isVersion: true,
-            }}
-          />
-        ))}
-      {/** @todo missing check if release is scheduled or only has a date version.scheduled ? */}
-      {displayed &&
-        scheduledReleases?.map((release) => (
-          <VersionChip
-            key={release._id}
-            tooltipContent={
-              <Text size={1}>
-                {release.metadata.intendedPublishAt ? (
-                  <Translate
-                    t={t}
-                    i18nKey="release.chip.tooltip.intended-for-date"
-                    values={{
-                      date: dateTimeFormat.format(new Date(release.metadata.intendedPublishAt)),
-                    }}
-                  />
-                ) : (
-                  t('release.chip.tooltip.unknown-date')
-                )}
-              </Text>
-            }
-            selected={release.perspectiveId === getVersionFromId(displayed?._id || '')}
-            onClick={handleBundleChange(release.perspectiveId)}
-            text={release.metadata.title}
-            tone={getReleaseTone(release)}
-            contextValues={{
-              documentId: displayed?._id || '',
-              menuReleaseId: release._id,
-              releases: filteredReleases,
-              releasesLoading: loading,
-              documentType: documentType,
-              fromRelease: getBundleIdFromReleaseId(release._id),
-              isVersion: true,
-            }}
-          />
-        ))}
-      {displayed &&
-        undecidedReleases?.map((release) => (
-          <VersionChip
-            key={release._id}
-            tooltipContent={t('release.type.undecided')}
-            selected={release.perspectiveId === getVersionFromId(displayed?._id || '')}
-            onClick={handleBundleChange(release.perspectiveId)}
-            text={release.metadata.title}
-            tone={getReleaseTone(release)}
-            contextValues={{
-              documentId: displayed?._id || '',
-              menuReleaseId: release._id,
-              releases: filteredReleases,
-              releasesLoading: loading,
-              documentType: documentType,
-              fromRelease: getBundleIdFromReleaseId(release._id),
+              fromRelease: release.name,
               isVersion: true,
             }}
           />

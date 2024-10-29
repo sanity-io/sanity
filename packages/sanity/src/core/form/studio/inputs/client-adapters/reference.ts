@@ -40,7 +40,6 @@ const NOT_FOUND = {
   reason: 'NOT_FOUND',
 } as const
 
-// type VersionsPreviewTuple = [bundleId: string, snapshot: PreviewValue | null]
 /**
  * Takes an id and a reference schema type, returns metadata about it
  */
