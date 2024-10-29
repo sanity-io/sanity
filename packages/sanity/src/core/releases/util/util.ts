@@ -71,3 +71,15 @@ export function getPublishDateFromRelease(release: ReleaseDocument): Date {
 
   return new Date(dateString)
 }
+
+/** @internal */
+export function getReleasePublishDate(
+  release: Pick<ReleaseDocument, 'publishAt'> & {
+    metadata: Pick<ReleaseDocument['metadata'], 'intendedPublishAt'>
+  },
+): Date | null {
+  const publishDate = release.metadata.intendedPublishAt || release.publishAt
+
+  if (!publishDate) return null
+  return new Date(publishDate)
+}

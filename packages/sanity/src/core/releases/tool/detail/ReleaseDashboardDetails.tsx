@@ -19,10 +19,11 @@ import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {usePerspective} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {getReleasePublishDate} from '../../util/util'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
-  const {state, _id, publishAt} = release
+  const {state, _id} = release
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -36,8 +37,8 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
     }
   }, [_id, currentGlobalBundle._id, setPerspective, setPerspectiveFromRelease])
 
-  const publishDate = publishAt || release.metadata.intendedPublishAt
-  const isPublishDateInPast = publishDate && isBefore(new Date(publishDate), new Date())
+  const publishDate = getReleasePublishDate(release)
+  const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
 
   return (
     <Container width={3}>
