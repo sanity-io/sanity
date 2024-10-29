@@ -132,8 +132,8 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
       <Tooltip
         content={tooltip}
         disabled={!tooltip}
-        fallbackPlacements={['top-end']}
-        placement="bottom-end"
+        fallbackPlacements={['top-end', 'bottom-end']}
+        placement="right"
       >
         {/* Currently tooltips won't trigger without a wrapping element */}
         <div>{children}</div>

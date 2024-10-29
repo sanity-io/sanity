@@ -7,6 +7,7 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../preview'
+import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {type Schedule} from '../types'
 
@@ -14,6 +15,7 @@ export interface PaneItemPreviewState {
   isLoading?: boolean
   draft?: SanityDocument | null
   published?: SanityDocument | null
+  versions?: VersionsRecord
 }
 
 export interface PreviewValue {

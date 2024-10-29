@@ -13,7 +13,7 @@ import {type DocumentPreviewStore} from '../documentPreviewStore'
  */
 export type VersionsRecord = Record<string, PreparedSnapshot>
 
-type VersionTuple = [bundleId: string, snapshot: PreparedSnapshot]
+export type VersionTuple = [bundleId: string, snapshot: PreparedSnapshot]
 
 export interface PreviewState {
   isLoading?: boolean

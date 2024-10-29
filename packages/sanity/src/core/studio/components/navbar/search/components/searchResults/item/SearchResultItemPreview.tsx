@@ -3,7 +3,7 @@ import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {getBundleIdFromReleaseId, getPublishedId} from 'sanity'
+import {getPublishedId} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
@@ -61,10 +61,10 @@ export function SearchResultItemPreview({
   const observable = useMemo(
     () =>
       getPreviewStateObservable(documentPreviewStore, schemaType, getPublishedId(documentId), '', {
-        bundleIds: (releases.data ?? []).map((release) => getBundleIdFromReleaseId(release._id)),
+        bundleIds: releases.releasesIds,
         bundleStack: bundlesPerspective,
       }),
-    [releases.data, bundlesPerspective, documentId, documentPreviewStore, schemaType],
+    [documentPreviewStore, schemaType, documentId, releases.releasesIds, bundlesPerspective],
   )
 
   const {
@@ -96,19 +96,12 @@ export function SearchResultItemPreview({
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         {showBadge && <Badge>{schemaType.title}</Badge>}
-        <DocumentStatusIndicator
-          draft={draft}
-          published={published}
-          version={version}
-          versions={versions}
-        />
+        <DocumentStatusIndicator draft={draft} published={published} versions={versions} />
       </Flex>
     )
-  }, [draft, isLoading, presence, published, schemaType.title, showBadge, version, versions])
+  }, [draft, isLoading, presence, published, schemaType.title, showBadge, versions])
 
-  const tooltip = (
-    <DocumentStatus draft={draft} published={published} version={version} versions={versions} />
-  )
+  const tooltip = <DocumentStatus draft={draft} published={published} versions={versions} />
 
   return (
     <SearchResultItemPreviewBox>

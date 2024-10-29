@@ -1,6 +1,17 @@
 import {Flex} from '@sanity/ui'
-import {useEffect, useLayoutEffect, useState} from 'react'
-import {DocumentStatus, DocumentStatusIndicator, usePerspective, useSyncState} from 'sanity'
+import {useEffect, useLayoutEffect, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
+import {of} from 'rxjs'
+import {
+  DocumentStatus,
+  getBundleIdFromReleaseId,
+  getPreviewStateObservable,
+  useDocumentPreviewStore,
+  usePerspective,
+  useReleases,
+  useSchema,
+  useSyncState,
+} from 'sanity'
 
 import {Tooltip} from '../../../../ui-components'
 import {useDocumentPane} from '../useDocumentPane'
@@ -9,17 +20,29 @@ import {DocumentStatusPulse} from './DocumentStatusPulse'
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
-interface DocumentStatusLineProps {
-  singleLine?: boolean
-}
-
-export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
+export function DocumentStatusLine() {
   const {documentId, documentType, editState, value} = useDocumentPane()
-
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
+  const documentPreviewStore = useDocumentPreviewStore()
+  const schema = useSchema()
+  const schemaType = schema.get(documentType)
+  const releases = useReleases()
+  const {currentGlobalBundle, bundlesPerspective} = usePerspective()
+  const previewStateObservable = useMemo(
+    () =>
+      schemaType
+        ? getPreviewStateObservable(documentPreviewStore, schemaType, value._id, 'Untitled', {
+            bundleIds: (releases.data ?? []).map((release) =>
+              getBundleIdFromReleaseId(release._id),
+            ),
+            bundleStack: bundlesPerspective,
+          })
+        : of({versions: {}}),
+    [documentPreviewStore, schemaType, value._id, releases.data, bundlesPerspective],
+  )
+  const {versions} = useObservable(previewStateObservable, {versions: {}})
 
   const syncState = useSyncState(documentId, documentType, {version: editState?.bundleId})
-  const {currentGlobalBundle} = usePerspective()
 
   const lastUpdated = value?._updatedAt
 
@@ -50,34 +73,46 @@ export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
     }
   }, [syncState.isSyncing, lastUpdated])
 
+  const getMode = () => {
+    if (currentGlobalBundle?._id === 'published') {
+      return 'published'
+    }
+    if (editState?.version) {
+      return 'version'
+    }
+    if (editState?.draft) {
+      return 'draft'
+    }
+    return 'published'
+  }
+  const mode = getMode()
+
   if (status) {
     return <DocumentStatusPulse status={status || undefined} />
   }
-
   return (
     <Tooltip
       content={
         <DocumentStatus
-          absoluteDate
           draft={editState?.draft}
           published={editState?.published}
-          version={editState?.version}
+          versions={versions}
         />
       }
       placement="top"
     >
-      <Flex align="center" gap={3}>
-        <DocumentStatusIndicator
-          draft={editState?.draft}
-          published={editState?.published}
-          version={editState?.version}
-        />
+      <Flex align="center" gap={3} data-ui="document-status-line">
+        {/* Shows only 1 line of document status */}
         <DocumentStatus
-          draft={editState?.draft}
-          published={editState?.published}
-          version={editState?.version}
-          singleLine={singleLine}
-          currentGlobalBundle={currentGlobalBundle}
+          draft={mode === 'draft' ? editState?.draft : undefined}
+          published={mode === 'published' ? editState?.published : undefined}
+          versions={
+            mode === 'version' && currentGlobalBundle.name && editState?.version
+              ? {
+                  [currentGlobalBundle.name]: {snapshot: editState?.version},
+                }
+              : undefined
+          }
         />
       </Flex>
     </Tooltip>

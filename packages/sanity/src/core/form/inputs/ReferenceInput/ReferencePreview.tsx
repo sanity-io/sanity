@@ -45,8 +45,6 @@ export function ReferencePreview(props: {
     [previewId, refType.name],
   )
 
-  const {draft, published, version} = preview
-
   const previewProps = useMemo(
     () => ({
       children: (
@@ -61,28 +59,31 @@ export function ReferencePreview(props: {
             <DocumentStatusIndicator
               draft={preview.draft}
               published={preview.published}
-              version={preview.version}
+              versions={preview.versions}
             />
           </Inline>
         </Box>
       ),
       layout,
       schemaType: refType,
-      tooltip: <DocumentStatus draft={draft} published={published} version={version} />,
+      tooltip: (
+        <DocumentStatus
+          draft={preview.draft}
+          published={preview.published}
+          versions={preview.versions}
+        />
+      ),
       value: previewStub,
     }),
     [
       documentPresence,
-      draft,
       layout,
       preview.draft,
       preview.published,
-      preview.version,
+      preview.versions,
       previewStub,
-      published,
       refType,
       showTypeLabel,
-      version,
     ],
   )
 
