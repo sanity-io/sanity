@@ -10,7 +10,6 @@ import {
   DocumentStatus,
   DocumentStatusIndicator,
   type GeneralPreviewLayoutKey,
-  getBundleIdFromReleaseId,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   isRecord,
@@ -52,10 +51,17 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const previewStateObservable = useMemo(
     () =>
       getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {
-        bundleIds: (releases.data ?? []).map((release) => getBundleIdFromReleaseId(release._id)),
+        bundleIds: releases.releasesIds,
         bundleStack: bundlesPerspective,
       }),
-    [props.documentPreviewStore, schemaType, value._id, title, releases.data, bundlesPerspective],
+    [
+      props.documentPreviewStore,
+      schemaType,
+      value._id,
+      title,
+      releases.releasesIds,
+      bundlesPerspective,
+    ],
   )
 
   const {
@@ -79,19 +85,12 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     <TooltipDelayGroupProvider>
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatusIndicator
-          draft={draft}
-          published={published}
-          version={version}
-          versions={versions}
-        />
+        <DocumentStatusIndicator draft={draft} published={published} versions={versions} />
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = (
-    <DocumentStatus draft={draft} published={published} version={version} versions={versions} />
-  )
+  const tooltip = <DocumentStatus draft={draft} published={published} versions={versions} />
 
   return (
     <SanityDefaultPreview

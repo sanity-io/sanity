@@ -1,12 +1,24 @@
 import {type SanityClient} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type ReferenceFilterSearchOptions, type ReferenceSchemaType} from '@sanity/types'
-import {combineLatest, type Observable, of} from 'rxjs'
-import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
+import {omit} from 'lodash'
+import {combineLatest, from, type Observable, of} from 'rxjs'
+import {map, mergeMap, scan, startWith, switchMap} from 'rxjs/operators'
 
 import {type DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
+import {
+  type VersionsRecord,
+  type VersionTuple,
+} from '../../../../preview/utils/getPreviewStateObservable'
 import {createSearch} from '../../../../search'
-import {collate, type CollatedHit, getDraftId, getIdPair, isRecord} from '../../../../util'
+import {
+  collate,
+  type CollatedHit,
+  getDraftId,
+  getIdPair,
+  getVersionId,
+  isRecord,
+} from '../../../../util'
 import {
   type PreviewDocumentValue,
   type ReferenceInfo,
@@ -28,6 +40,7 @@ const NOT_FOUND = {
   reason: 'NOT_FOUND',
 } as const
 
+// type VersionsPreviewTuple = [bundleId: string, snapshot: PreviewValue | null]
 /**
  * Takes an id and a reference schema type, returns metadata about it
  */
@@ -36,6 +49,7 @@ export function getReferenceInfo(
   id: string,
   referenceType: ReferenceSchemaType,
   {version}: {version?: string} = {},
+  perspective: {bundleIds: string[]; bundleStack: string[]} = {bundleIds: [], bundleStack: []},
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId, versionId} = getIdPair(id, {version})
 
@@ -67,6 +81,7 @@ export function getReferenceInfo(
             draft: undefined,
             published: undefined,
             version: undefined,
+            versions: {},
           },
         } as const)
       }
@@ -98,6 +113,7 @@ export function getReferenceInfo(
                 draft: undefined,
                 published: undefined,
                 version: undefined,
+                versions: {},
               },
             } as const)
           }
@@ -114,6 +130,7 @@ export function getReferenceInfo(
                 draft: undefined,
                 published: undefined,
                 version: undefined,
+                versions: {},
               },
             } as const)
           }
@@ -128,16 +145,52 @@ export function getReferenceInfo(
             refSchemaType,
           )
 
-          const versionPreview$ = versionId
-            ? documentPreviewStore.observePaths({_id: versionId}, previewPaths).pipe(
-                map((result) =>
-                  result
-                    ? {
-                        _id: versionId,
-                        ...prepareForPreview(result, refSchemaType),
-                      }
-                    : undefined,
+          const versions$ = from(perspective.bundleIds).pipe(
+            mergeMap<string, Observable<VersionTuple>>((bundleId) =>
+              documentPreviewStore
+                .observePaths({_id: getVersionId(id, bundleId)}, previewPaths)
+                .pipe(
+                  // eslint-disable-next-line max-nested-callbacks
+                  map((result) =>
+                    result
+                      ? [
+                          bundleId,
+                          {
+                            snapshot: {
+                              _id: versionId,
+                              ...prepareForPreview(result, refSchemaType),
+                            },
+                          },
+                        ]
+                      : [bundleId, {snapshot: null}],
+                  ),
                 ),
+            ),
+            scan((byBundleId, [bundleId, value]) => {
+              if (value.snapshot === null) {
+                return omit({...byBundleId}, [bundleId])
+              }
+
+              return {
+                ...byBundleId,
+                [bundleId]: value,
+              }
+            }, {}),
+            startWith<VersionsRecord>({}),
+          )
+
+          // Iterate the release stack in descending precedence, returning the highest precedence existing
+          // version document.
+          const versionPreview$ = versionId
+            ? versions$.pipe(
+                map((versions) => {
+                  for (const bundleId of perspective.bundleStack) {
+                    if (bundleId in versions) {
+                      return versions[bundleId]
+                    }
+                  }
+                  return null
+                }),
                 startWith(undefined),
               )
             : undefined
@@ -146,11 +199,13 @@ export function getReferenceInfo(
             draftPreview$,
             publishedPreview$,
             ...(versionPreview$ ? [versionPreview$] : []),
+            versions$,
           ]).pipe(
-            map(([draft, published, versionValue]) => ({
+            map(([draft, published, versionValue, versions]) => ({
               draft,
               published,
               ...(versionValue ? {version: versionValue} : {}),
+              versions: versions,
             })),
           )
 
@@ -178,9 +233,11 @@ export function getReferenceInfo(
                   published: (isRecord(value.published) ? value.published : undefined) as
                     | PreviewDocumentValue
                     | undefined,
-                  version: (isRecord(value.version) ? value.version : undefined) as
-                    | PreviewDocumentValue
-                    | undefined,
+                  version: (isRecord(value.version?.snapshot)
+                    ? value.version.snapshot
+                    : undefined) as PreviewDocumentValue | undefined,
+
+                  versions: isRecord(value.versions) ? value.versions : {},
                 },
               }
             }),

@@ -357,6 +357,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
 
+  /** Label to show in the document footer indicating the creation date of the document */
+  'document-status.created': 'Created {{date}}',
+
+  /** Label to show in the document status indicating the date of the status */
+  'document-status.date': '{{date}}',
   /** Label to show in the document footer indicating the last edited date of the document */
   'document-status.edited': 'Edited {{date}}',
   /** Label to show in the document footer indicating the document is not published*/

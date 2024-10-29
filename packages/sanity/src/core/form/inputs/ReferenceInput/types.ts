@@ -9,6 +9,7 @@ import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type DocumentAvailability} from '../../../preview'
+import {type VersionsRecord} from '../../../preview/utils/getPreviewStateObservable'
 import {type ObjectInputProps} from '../../types'
 
 export type PreviewDocumentValue = PreviewValue & {
@@ -25,6 +26,7 @@ export interface ReferenceInfo {
     draft: PreviewDocumentValue | undefined
     published: PreviewDocumentValue | undefined
     version: PreviewDocumentValue | undefined
+    versions: VersionsRecord
   }
 }
 

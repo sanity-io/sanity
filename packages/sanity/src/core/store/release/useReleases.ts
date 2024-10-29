@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
+import {getBundleIdFromReleaseId} from 'sanity'
 
 import {sortReleases} from '../../releases/hooks/utils'
 import {useReleasesStore} from '../_legacy/datastores'
@@ -11,6 +12,10 @@ interface ReleasesState {
    * Sorted array of releases, excluding archived releases
    */
   data: ReleaseDocument[]
+  /**
+   * Sorted array of release IDs, excluding archived releases
+   */
+  releasesIds: string[]
   /**
    * Array of archived releases
    */
@@ -37,8 +42,13 @@ export function useReleases(): ReleasesState {
     () => Array.from(state.releases.values()).filter((release) => release.state === 'archived'),
     [state.releases],
   )
+  const releasesIds = useMemo(
+    () => releasesAsArray.map((release) => getBundleIdFromReleaseId(release._id)),
+    [releasesAsArray],
+  )
   return {
     data: releasesAsArray,
+    releasesIds: releasesIds,
     archivedReleases,
     dispatch,
     error: state.error,

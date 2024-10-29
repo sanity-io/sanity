@@ -8,10 +8,11 @@ import {
   useMemo,
   useRef,
 } from 'react'
+import {usePerspective} from 'sanity'
 
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks'
-import {useDocumentPreviewStore} from '../../../store'
+import {useDocumentPreviewStore, useReleases} from '../../../store'
 import {isNonNullable} from '../../../util'
 import {useFormValue} from '../../contexts/FormValue'
 import {useReferenceInputOptions} from '../../studio'
@@ -34,6 +35,8 @@ interface Options {
 export function useReferenceInput(options: Options) {
   const {path, schemaType, version} = options
   const schema = useSchema()
+  const perspective = usePerspective()
+  const releases = useReleases()
   const documentPreviewStore = useDocumentPreviewStore()
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
@@ -114,8 +117,24 @@ export function useReferenceInput(options: Options) {
   }, [disableNew, initialValueTemplateItems, schemaType.to])
 
   const getReferenceInfo = useCallback(
-    (id: string) => adapter.getReferenceInfo(documentPreviewStore, id, schemaType, {version}),
-    [documentPreviewStore, schemaType, version],
+    (id: string) =>
+      adapter.getReferenceInfo(
+        documentPreviewStore,
+        id,
+        schemaType,
+        {version},
+        {
+          bundleIds: releases.releasesIds,
+          bundleStack: perspective.bundlesPerspective,
+        },
+      ),
+    [
+      documentPreviewStore,
+      schemaType,
+      version,
+      releases.releasesIds,
+      perspective.bundlesPerspective,
+    ],
   )
 
   return {

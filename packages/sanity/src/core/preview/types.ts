@@ -96,6 +96,7 @@ export interface DraftsModelDocumentAvailability {
    * document readability for the version document
    */
   version?: DocumentAvailability
+  // TODO:  validate versions availability?
 }
 
 /**
