@@ -4,7 +4,6 @@ import {map, of} from 'rxjs'
 import {catchError} from 'rxjs/operators'
 
 import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../store'
-import {createSWR} from '../../util'
 import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
 import {createSWR} from '../../util/rxSwr'
 import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
