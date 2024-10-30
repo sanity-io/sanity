@@ -132,7 +132,7 @@ export default function Tool() {
                 </Box>
               )}
 
-              <Box flex={1}>
+              <Box flex={1} overflow="auto">
                 {isInitialLoading ? (
                   <Box padding={4}>
                     <Text muted>Loading...</Text>
