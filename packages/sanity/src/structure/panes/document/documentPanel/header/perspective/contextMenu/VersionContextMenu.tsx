@@ -51,7 +51,6 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
           <IntentLink
             intent="release"
             params={{id: releaseId}}
-            target="_blank"
             rel="noopener noreferrer"
             style={{textDecoration: 'none'}}
             disabled={disabled}
