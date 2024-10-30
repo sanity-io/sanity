@@ -91,7 +91,7 @@ importers:
         specifier: ^7.18.0
         version: 7.18.0(eslint@8.57.0)(typescript@5.6.3)
       '@vitejs/plugin-react':
-        specifier: ^4.3.1
+        specifier: ^4.3.3
         version: 4.3.3(vite@4.5.5(@types/node@18.19.44)(terser@5.32.0))
       cac:
         specifier: ^6.7.12
@@ -1255,7 +1255,7 @@ importers:
         specifier: 1.0.10
         version: 1.0.10(@sanity/types@packages+@sanity+types)(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))
       '@vitejs/plugin-react':
-        specifier: ^4.3.1
+        specifier: ^4.3.3
         version: 4.3.3(vite@5.4.9(@types/node@22.5.4)(terser@5.32.0))
       react:
         specifier: ^18.3.1
@@ -1957,7 +1957,7 @@ importers:
         specifier: ^17.0.7
         version: 17.0.33
       '@vitejs/plugin-react':
-        specifier: ^4.3.1
+        specifier: ^4.3.3
         version: 4.3.3(vite@5.4.9(@types/node@22.5.4)(terser@5.32.0))
       chalk:
         specifier: ^4.1.2
