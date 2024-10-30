@@ -26,7 +26,6 @@ export {
   AddedVersion,
   CreatedRelease,
   createReleaseId,
-  type CurrentPerspective,
   DEFAULT_RELEASE_TYPE,
   DiscardVersionDialog,
   getBundleIdFromReleaseId,

@@ -9,7 +9,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
 import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
-import {getCreateVersionOrigin} from '../util/util'
+import {getCreateVersionOrigin, isPublishedPerspective} from '../util/util'
 import {usePerspective} from './usePerspective'
 
 /** @internal */
@@ -64,7 +64,7 @@ export function useVersionOperations(
       await client.delete(documentId)
 
       if (
-        currentGlobalBundle._id &&
+        !isPublishedPerspective(currentGlobalBundle) &&
         getBundleIdFromReleaseId(currentGlobalBundle._id) === getVersionFromId(documentId)
       ) {
         setPerspective('drafts')

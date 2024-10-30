@@ -137,16 +137,16 @@ export function ReleasesOverview() {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {timeZone} = useTimeZone()
-  const {currentGlobalBundle} = usePerspective()
+  const {currentGlobalBundleId} = usePerspective()
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> =>
       datum.isDeleted
         ? {tone: 'transparent'}
         : {
-            tone: currentGlobalBundle._id === datum._id ? getReleaseTone(datum) : 'default',
+            tone: currentGlobalBundleId === datum._id ? getReleaseTone(datum) : 'default',
           },
-    [currentGlobalBundle._id],
+    [currentGlobalBundleId],
   )
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)

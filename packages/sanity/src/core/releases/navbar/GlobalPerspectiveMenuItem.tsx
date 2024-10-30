@@ -14,7 +14,7 @@ import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip'
 import {usePerspective} from '../hooks/usePerspective'
-import {getPublishDateFromRelease} from '../util/util'
+import {getPublishDateFromRelease, isPublishedPerspective} from '../util/util'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
 export interface LayerRange {
@@ -78,28 +78,32 @@ export function getRangePosition(range: LayerRange, index: number): rangePositio
 export const GlobalPerspectiveMenuItem = forwardRef<
   HTMLDivElement,
   {
-    release: ReleaseDocument
+    release: ReleaseDocument | 'published'
     rangePosition: rangePosition
   }
 >((props, ref) => {
   const {release, rangePosition} = props
   const {
-    currentGlobalBundle,
+    currentGlobalBundleId,
     setPerspectiveFromRelease,
     setPerspective,
     toggleExcludedPerspective,
     isPerspectiveExcluded,
   } = usePerspective()
-  const active = release._id === currentGlobalBundle._id
+  const isReleasePublishedPerspective = isPublishedPerspective(release)
+  const releaseId = isReleasePublishedPerspective ? 'published' : release._id
+  const active = releaseId === currentGlobalBundleId
   const first = rangePosition === 'first'
   const within = rangePosition === 'within'
   const last = rangePosition === 'last'
   const inRange = first || within || last
 
-  const {t} = useTranslation()
+  const releasePerspectiveId = isReleasePublishedPerspective
+    ? releaseId
+    : getBundleIdFromReleaseId(releaseId)
+  const isReleasePerspectiveExcluded = isPerspectiveExcluded(releasePerspectiveId)
 
-  const releasePerspectiveId =
-    release._id === 'published' ? 'published' : getBundleIdFromReleaseId(release._id)
+  const {t} = useTranslation()
 
   const handleToggleReleaseVisibility = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -111,18 +115,17 @@ export const GlobalPerspectiveMenuItem = forwardRef<
 
   const handleOnReleaseClick = useCallback(
     () =>
-      release._id === 'published'
-        ? setPerspective('published')
-        : setPerspectiveFromRelease(release._id),
-    [release._id, setPerspective, setPerspectiveFromRelease],
+      isReleasePublishedPerspective
+        ? setPerspective(releaseId)
+        : setPerspectiveFromRelease(releaseId),
+    [releaseId, isReleasePublishedPerspective, setPerspective, setPerspectiveFromRelease],
   )
 
-  const isReleasePerspectiveExcluded = isPerspectiveExcluded(releasePerspectiveId)
   const canReleaseBeExcluded = inRange && !last
 
   return (
     <GlobalPerspectiveMenuItemIndicator
-      $isPublished={release._id === 'published'}
+      $isPublished={isReleasePublishedPerspective}
       $first={first}
       $last={last}
       $inRange={inRange}
@@ -156,9 +159,10 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             }}
           >
             <Text size={1} weight="medium">
-              {release.metadata.title}
+              {isReleasePublishedPerspective ? 'Published' : release.metadata.title}
             </Text>
-            {release.metadata.releaseType !== 'undecided' &&
+            {!isPublishedPerspective(release) &&
+              release.metadata.releaseType !== 'undecided' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (
                 <Text muted size={1}>
                   {formatRelative(getPublishDateFromRelease(release), new Date())}

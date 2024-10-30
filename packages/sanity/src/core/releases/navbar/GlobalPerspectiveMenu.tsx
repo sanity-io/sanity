@@ -44,8 +44,7 @@ const ASAP_RANGE_OFFSET = 2
 
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {loading, data: releases} = useReleases()
-  const {currentGlobalBundle} = usePerspective()
-  const currentGlobalBundleId = currentGlobalBundle._id
+  const {currentGlobalBundleId} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
@@ -140,7 +139,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
           <StyledPublishedBox $removePadding={!releases.length}>
             <GlobalPerspectiveMenuItem
               rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
-              release={{_id: 'published', metadata: {title: 'Published'}} as ReleaseDocument}
+              release={'published'}
             />
           </StyledPublishedBox>
           <>

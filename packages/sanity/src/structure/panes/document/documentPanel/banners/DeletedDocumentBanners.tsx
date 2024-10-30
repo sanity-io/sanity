@@ -11,6 +11,7 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {isDraftPerspective, isPublishedPerspective} from '../../../../../core/releases'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
@@ -19,7 +20,11 @@ export function DeletedDocumentBanners() {
   const {isDeleted, isDeleting} = useDocumentPane()
   const {currentGlobalBundle} = usePerspective()
 
-  if (currentGlobalBundle.state === 'archived') {
+  if (
+    !isPublishedPerspective(currentGlobalBundle) &&
+    !isDraftPerspective(currentGlobalBundle) &&
+    currentGlobalBundle.state === 'archived'
+  ) {
     return <ArchivedReleaseBanner release={currentGlobalBundle as ReleaseDocument} />
   }
   if (isDeleted && !isDeleting) return <DeletedDocumentBanner />

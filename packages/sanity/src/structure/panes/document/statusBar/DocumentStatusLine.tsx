@@ -13,6 +13,7 @@ import {
   useSyncState,
 } from 'sanity'
 
+import {isDraftPerspective, isPublishedPerspective} from '../../../../core/releases'
 import {Tooltip} from '../../../../ui-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusPulse} from './DocumentStatusPulse'
@@ -74,7 +75,7 @@ export function DocumentStatusLine() {
   }, [syncState.isSyncing, lastUpdated])
 
   const getMode = () => {
-    if (currentGlobalBundle?._id === 'published') {
+    if (isPublishedPerspective(currentGlobalBundle)) {
       return 'published'
     }
     if (editState?.version) {
@@ -86,6 +87,9 @@ export function DocumentStatusLine() {
     return 'published'
   }
   const mode = getMode()
+
+  const isReleasePerspective =
+    !isPublishedPerspective(currentGlobalBundle) && !isDraftPerspective(currentGlobalBundle)
 
   if (status) {
     return <DocumentStatusPulse status={status || undefined} />
@@ -107,7 +111,10 @@ export function DocumentStatusLine() {
           draft={mode === 'draft' ? editState?.draft : undefined}
           published={mode === 'published' ? editState?.published : undefined}
           versions={
-            mode === 'version' && currentGlobalBundle.name && editState?.version
+            mode === 'version' &&
+            isReleasePerspective &&
+            currentGlobalBundle.name &&
+            editState?.version
               ? {
                   [currentGlobalBundle.name]: {snapshot: editState?.version},
                 }

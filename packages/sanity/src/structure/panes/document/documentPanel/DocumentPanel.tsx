@@ -3,6 +3,7 @@ import {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import {ScrollContainer, usePerspective, VirtualizerScrollInstanceProvider} from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {isDraftPerspective, isPublishedPerspective} from '../../../../core/releases'
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
 import {isLiveEditEnabled} from '../../../components/paneItem/helpers'
 import {useStructureTool} from '../../../useStructureTool'
@@ -135,7 +136,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {currentGlobalBundle} = usePerspective()
 
   const currentPerspectiveIsRelease =
-    currentGlobalBundle._id !== 'published' && currentGlobalBundle._id !== 'drafts'
+    !isPublishedPerspective(currentGlobalBundle) && !isDraftPerspective(currentGlobalBundle)
 
   const banners = useMemo(() => {
     if (!existsInBundle && currentPerspectiveIsRelease) {

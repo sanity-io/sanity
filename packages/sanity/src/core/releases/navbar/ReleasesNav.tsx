@@ -14,6 +14,7 @@ import {RELEASES_INTENT, RELEASES_TOOL_NAME} from '../plugin'
 import {LATEST} from '../util/const'
 import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 import {getReleaseTone} from '../util/getReleaseTone'
+import {isDraftPerspective, isPublishedPerspective} from '../util/util'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
 const AnimatedMotionDiv = ({children, ...props}: PropsWithChildren<any>) => (
@@ -61,7 +62,7 @@ export function ReleasesNav(): JSX.Element {
   )
 
   const currentGlobalPerspectiveLabel = useMemo(() => {
-    if (!currentGlobalBundle || currentGlobalBundle._id === LATEST._id) return null
+    if (!currentGlobalBundle || isDraftPerspective(currentGlobalBundle)) return null
 
     const visibleLabelChildren = () => {
       const labelContent = (
@@ -71,13 +72,15 @@ export function ReleasesNav(): JSX.Element {
           </Box>
           <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
             <Text size={1} textOverflow="ellipsis" weight="medium">
-              {currentGlobalBundle.metadata?.title}
+              {isPublishedPerspective(currentGlobalBundle)
+                ? 'Published'
+                : currentGlobalBundle.metadata?.title}
             </Text>
           </Stack>
         </Flex>
       )
 
-      if (currentGlobalBundle._id === 'published') {
+      if (isPublishedPerspective(currentGlobalBundle)) {
         return <Card tone="inherit">{labelContent}</Card>
       }
 
@@ -115,7 +118,7 @@ export function ReleasesNav(): JSX.Element {
         <Box flex="none">{releasesToolLink}</Box>
         <AnimatePresence>{currentGlobalPerspectiveLabel}</AnimatePresence>
         <GlobalPerspectiveMenu />
-        {currentGlobalBundle._id !== LATEST._id && (
+        {!isDraftPerspective(currentGlobalBundle) && (
           <div>
             <Button
               icon={CloseIcon}

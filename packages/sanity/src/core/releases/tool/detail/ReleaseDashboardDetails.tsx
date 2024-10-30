@@ -27,15 +27,15 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
-  const {currentGlobalBundle, setPerspective, setPerspectiveFromRelease} = usePerspective()
+  const {currentGlobalBundleId, setPerspective, setPerspectiveFromRelease} = usePerspective()
 
   const handlePinRelease = useCallback(() => {
-    if (_id === currentGlobalBundle._id) {
+    if (_id === currentGlobalBundleId) {
       setPerspective('drafts')
     } else {
       setPerspectiveFromRelease(_id)
     }
-  }, [_id, currentGlobalBundle._id, setPerspective, setPerspectiveFromRelease])
+  }, [_id, currentGlobalBundleId, setPerspective, setPerspectiveFromRelease])
 
   const publishDate = getReleasePublishDate(release)
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
@@ -46,13 +46,13 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
       <Stack padding={3} paddingY={[4, 4, 5, 6]} space={[3, 3, 4, 5]}>
         <Flex gap={1}>
           <Button
-            disabled={isPublishDateInPast || state === 'archived'}
-            icon={_id === currentGlobalBundle._id ? PinFilledIcon : PinIcon}
+            disabled={state === 'archived' || state === 'published'}
+            icon={_id === currentGlobalBundleId ? PinFilledIcon : PinIcon}
             mode="bleed"
             onClick={handlePinRelease}
             padding={2}
             radius="full"
-            selected={_id === currentGlobalBundle._id}
+            selected={_id === currentGlobalBundleId}
             space={2}
             text={t('dashboard.details.pin-release')}
             tone={getReleaseTone(release)}

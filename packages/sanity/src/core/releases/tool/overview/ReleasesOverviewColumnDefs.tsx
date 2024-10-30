@@ -47,21 +47,17 @@ const ReleaseTime = ({release}: {release: TableRelease}) => {
 const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: release}) => {
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {
-    currentGlobalBundle: currentGlobalRelease,
-    setPerspective,
-    setPerspectiveFromRelease,
-  } = usePerspective()
+  const {currentGlobalBundleId, setPerspective, setPerspectiveFromRelease} = usePerspective()
   const {state, _id} = release
   const isArchived = state === 'archived'
 
   const handlePinRelease = useCallback(() => {
-    if (_id === currentGlobalRelease._id) {
+    if (_id === currentGlobalBundleId) {
       setPerspective('drafts')
     } else {
       setPerspectiveFromRelease(_id)
     }
-  }, [_id, currentGlobalRelease._id, setPerspective, setPerspectiveFromRelease])
+  }, [_id, currentGlobalBundleId, setPerspective, setPerspectiveFromRelease])
 
   const cardProps: TableRowProps = release.isDeleted
     ? {tone: 'transparent'}
@@ -72,7 +68,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
         tone: 'inherit',
       }
 
-  const isReleasePinned = _id === currentGlobalRelease._id
+  const isReleasePinned = _id === currentGlobalBundleId
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
 
   return (
@@ -97,7 +93,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
             onClick={handlePinRelease}
             padding={2}
             round
-            selected={_id === currentGlobalRelease._id}
+            selected={_id === currentGlobalBundleId}
           />
           <Card {...cardProps} padding={2} radius={2} flex={1}>
             <Flex align="center" gap={2}>
