@@ -89,11 +89,6 @@ const releasesLocaleStrings = {
   /**The text that will be shown in the footer to indicate the time the release was published */
   'footer.status.published': 'Published',
 
-  /** The placeholder text when the release doesn't have a title */
-  'form-placeholer-untitled-release': 'Untitled release',
-  /** The placeholder text when the release doesn't have a description */
-  'form-placeholer-describe-release': 'Describe the release…',
-
   /** Label text for the loading state whilst release is being loaded */
   'loading-release': 'Loading release',
 
