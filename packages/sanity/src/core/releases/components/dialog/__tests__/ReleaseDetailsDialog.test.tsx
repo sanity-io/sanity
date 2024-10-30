@@ -52,7 +52,8 @@ describe('ReleaseDetailsDialog', () => {
         loading: true,
         dispatch: vi.fn(),
         error: undefined,
-        stack: [],
+        releasesIds: [],
+        archivedReleases: [],
       })
 
       //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
@@ -75,8 +76,8 @@ describe('ReleaseDetailsDialog', () => {
       const value: Partial<ReleaseDocument> = {
         metadata: {
           title: 'Bundle 1',
-          hue: 'gray',
-          icon: 'cube',
+          description: undefined,
+          intendedPublishAt: undefined,
           releaseType: 'asap',
         },
       }
@@ -118,8 +119,6 @@ describe('ReleaseDetailsDialog', () => {
       metadata: {
         description: 'Existing release description',
         releaseType: 'asap',
-        hue: 'magenta',
-        icon: 'cube',
         title: 'Existing release',
       },
     }
@@ -130,10 +129,11 @@ describe('ReleaseDetailsDialog', () => {
 
       mockUseBundleStore.mockReturnValue({
         data: [],
+        releasesIds: [],
+        archivedReleases: [],
         loading: true,
         dispatch: vi.fn(),
         error: undefined,
-        stack: [],
       })
 
       //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
@@ -175,18 +175,14 @@ describe('ReleaseDetailsDialog', () => {
       })
       fireEvent.click(screen.getByTestId('submit-release-button'))
 
-      const {
-        metadata: {hue, icon},
-        _id,
-      } = existingBundleValue
+      const {_id} = existingBundleValue
 
       expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith({
         _id,
         metadata: {
-          hue,
-          icon,
           title: 'New title',
           description: 'New description',
+          intendedPublishAt: undefined,
           releaseType: 'asap',
         },
       } satisfies Partial<ReleaseDocument>)
