@@ -38,16 +38,16 @@ export const ReleaseDetail = () => {
 
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
   const releaseId = decodeURIComponent(releaseIdRaw || '')
-  const {archivedReleases: releases, loading} = useReleases()
+  const {data, archivedReleases, loading} = useReleases()
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
 
   const documentIds = results.map((result) => result.document?._id)
   const history = useReleaseHistory(documentIds, releaseId)
 
-  const releaseInDetail = releases?.find(
-    (candidate) => getBundleIdFromReleaseId(candidate._id) === releaseId,
-  )
+  const releaseInDetail = data
+    .concat(archivedReleases)
+    .find((candidate) => getBundleIdFromReleaseId(candidate._id) === releaseId)
 
   const navigateToReview = useCallback(() => {
     router.navigate({
