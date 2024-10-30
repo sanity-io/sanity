@@ -2,6 +2,8 @@ import {Text, useToast} from '@sanity/ui'
 import {useEffect} from 'react'
 import {Translate, usePerspective, useReleases, useTranslation} from 'sanity'
 
+import {isDraftPerspective, isPublishedPerspective} from '../../../../core/releases'
+
 export const useBundleDeletedToast = () => {
   const {currentGlobalBundle} = usePerspective()
   const {data: bundles} = useReleases()
@@ -9,6 +11,9 @@ export const useBundleDeletedToast = () => {
   const {t} = useTranslation()
 
   useEffect(() => {
+    if (isPublishedPerspective(currentGlobalBundle) || isDraftPerspective(currentGlobalBundle))
+      return
+
     const hasCheckedOutBundleBeenArchived = currentGlobalBundle.state === 'archived'
 
     if (hasCheckedOutBundleBeenArchived) {

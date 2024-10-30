@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {type ReleaseType, useReleases} from '../../store/release'
+import {useReleases} from '../../store/release'
 import {type ReleaseDocument} from '../../store/release/types'
 import {LATEST} from '../util/const'
 import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
@@ -10,9 +10,8 @@ import {getReleasesPerspective} from './utils'
 /**
  * @internal
  */
-export type CurrentPerspective = Omit<Partial<ReleaseDocument>, 'metadata'> & {
-  metadata: {title: string; releaseType?: ReleaseType}
-}
+export type CurrentPerspective = ReleaseDocument | 'published' | typeof LATEST
+
 /**
  * @internal
  */
@@ -36,6 +35,8 @@ export interface PerspectiveValue {
    * The stacked array of releases ids ordered chronologically to represent the state of documents at the given point in time.
    */
   bundlesPerspective: string[]
+  /* */
+  currentGlobalBundleId: string
 }
 
 const EMPTY_ARRAY: string[] = []
@@ -83,16 +84,8 @@ export function usePerspective(): PerspectiveValue {
       : LATEST
 
   // TODO: Improve naming; this may not be global.
-  const currentGlobalBundle = useMemo(
-    () =>
-      perspective === 'published'
-        ? {
-            _id: 'published',
-            metadata: {
-              title: 'Published',
-            },
-          }
-        : selectedBundle || LATEST,
+  const currentGlobalBundle: CurrentPerspective = useMemo(
+    () => (perspective === 'published' ? perspective : selectedBundle || LATEST),
     [perspective, selectedBundle],
   )
 
@@ -147,6 +140,8 @@ export function usePerspective(): PerspectiveValue {
       setPerspectiveFromRelease,
       toggleExcludedPerspective,
       currentGlobalBundle,
+      currentGlobalBundleId:
+        currentGlobalBundle === 'published' ? 'published' : currentGlobalBundle._id,
       bundlesPerspective,
       isPerspectiveExcluded,
     }),

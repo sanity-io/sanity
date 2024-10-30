@@ -1,18 +1,17 @@
 import {type BadgeTone} from '@sanity/ui'
 
-import {type ReleaseState, type ReleaseType} from '../../store'
+import {type ReleaseDocument} from '../../store/release/types'
+import {type LATEST} from './const'
+import {isDraftPerspective, isPublishedPerspective} from './util'
 
 /** @internal */
-export function getReleaseTone(release: {
-  state?: ReleaseState
-  _id?: string
-  metadata: {title: string; releaseType?: ReleaseType}
-}): BadgeTone {
+export function getReleaseTone(release: ReleaseDocument | 'published' | typeof LATEST): BadgeTone {
   /* conflicts with the type scheduled, maybe confusion with published?
  if (release.publishedAt !== undefined) {
     return 'positive'
   }*/
-  if (release._id === 'published') return 'positive'
+  if (isPublishedPerspective(release)) return 'positive'
+  if (isDraftPerspective(release)) return 'default'
 
   if (release.state === 'archived') {
     return 'default'

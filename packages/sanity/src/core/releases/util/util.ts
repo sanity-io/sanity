@@ -7,6 +7,8 @@ import {
   isVersionId,
   resolveBundlePerspective,
 } from '../../util'
+import {type CurrentPerspective} from '../hooks/usePerspective'
+import {LATEST} from './const'
 
 /**
  * @beta
@@ -82,4 +84,14 @@ export function getReleasePublishDate(
 
   if (!publishDate) return null
   return new Date(publishDate)
+}
+
+/** @internal */
+export function isPublishedPerspective(bundle: CurrentPerspective): bundle is 'published' {
+  return bundle === 'published'
+}
+
+/** @internal */
+export function isDraftPerspective(bundle: CurrentPerspective): bundle is typeof LATEST {
+  return bundle === LATEST
 }
