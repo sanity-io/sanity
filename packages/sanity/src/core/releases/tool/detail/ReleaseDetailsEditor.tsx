@@ -15,6 +15,7 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): JSX
     (changedValue: EditableReleaseDocument) => {
       clearTimeout(timer)
 
+      /** @todo I wasn't able to get this working with the debouncer that we use in other parts */
       const newTimer = setTimeout(() => {
         updateRelease(changedValue)
       }, 200)
