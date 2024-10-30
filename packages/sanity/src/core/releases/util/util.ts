@@ -92,6 +92,6 @@ export function isPublishedPerspective(bundle: CurrentPerspective): bundle is 'p
 }
 
 /** @internal */
-export function isDraftPerspective(bundle: CurrentPerspective): bundle is typeof LATEST {
+export function isDraftPerspective(bundle: CurrentPerspective | string): bundle is typeof LATEST {
   return bundle === LATEST
 }
