@@ -26,8 +26,9 @@ const DEFAULT_METADATA: ReleaseDocument['metadata'] = {
 export function ReleaseForm(props: {
   onChange: (params: EditableReleaseDocument) => void
   value: EditableReleaseDocument
+  isReleaseScheduled?: boolean
 }): JSX.Element {
-  const {onChange, value} = props
+  const {onChange, value, isReleaseScheduled = false} = props
   const {title, description, releaseType} = value.metadata || {}
   const publishAt = value.publishAt
   // derive the action from whether the initial value prop has a slug
@@ -94,18 +95,21 @@ export function ReleaseForm(props: {
       <Stack space={2} style={{margin: -1}}>
         <Flex gap={1}>
           <Button
+            disabled={isReleaseScheduled}
             mode="bleed"
             onClick={() => handleButtonReleaseTypeChange('asap')}
             selected={buttonReleaseType === 'asap'}
             text={t('release.type.asap')}
           />
           <Button
+            disabled={isReleaseScheduled}
             mode="bleed"
             onClick={() => handleButtonReleaseTypeChange('scheduled')}
             selected={buttonReleaseType === 'scheduled'}
             text={t('release.type.scheduled')}
           />
           <Button
+            disabled={isReleaseScheduled}
             mode="bleed"
             onClick={() => handleButtonReleaseTypeChange('undecided')}
             selected={buttonReleaseType === 'undecided'}
@@ -116,6 +120,7 @@ export function ReleaseForm(props: {
         {buttonReleaseType === 'scheduled' && (
           <DateTimeInput
             selectTime
+            readOnly={isReleaseScheduled}
             monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
             onChange={handleBundlePublishAtChange}
             calendarLabels={calendarLabels}

@@ -7,7 +7,7 @@ const releasesLocaleStrings = {
   /** Action text for adding a document to release */
   'action.add-document': 'Add document',
   /** Action text for archiving a release */
-  'action.archive': 'Archive',
+  'action.archive': 'Archive release',
   /** Action text for showing the archived releases */
   'action.archived': 'Archived',
   /** Action text for deleting a release */
@@ -17,11 +17,9 @@ const releasesLocaleStrings = {
   /** Description for toast when release is successfully deleted */
   'action.delete.success': '<strong>{{title}}</strong> release was successfully deleted',
   /** Action text for editing a release */
-  'action.edit': 'Edit',
+  'action.edit': 'Edit release',
   /** Action text for opening a release */
   'action.open': 'Open',
-  /** Action text for publishing a release */
-  'action.publish': 'Publish',
   /** Action text for scheduling a release */
   'action.schedule': 'Schedule for publishing...',
   /** Action text for scheduling a release */
@@ -33,7 +31,7 @@ const releasesLocaleStrings = {
   /** Text for the summary button in release tool */
   'actions.summary': 'Summary',
   /** Label for unarchiving a release */
-  'action.unarchive': 'Unarchive',
+  'action.unarchive': 'Unarchive release',
 
   /** Title for changes to published documents */
   'changes-published-docs.title': 'Changes to published documents',

@@ -1,4 +1,4 @@
-import {CalendarIcon, ErrorOutlineIcon} from '@sanity/icons'
+import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
@@ -150,42 +150,42 @@ export const ReleaseScheduleButton = ({
     dateFormatter,
   ])
 
-  const scheduleTooltipContent = useMemo(() => {
-    const tooltipText = () => {
-      if (isValidatingDocuments) {
-        return t('schedule-button-tooltip.validation.loading')
-      }
-
-      if (hasDocumentValidationErrors) {
-        return t('schedule-button-tooltip.validation.error')
-      }
-
-      if (release.state === 'scheduled' || release.state === 'scheduling') {
-        return t('schedule-button-tooltip.already-scheduled')
-      }
-      return null
+  const tooltipText = useMemo(() => {
+    if (isValidatingDocuments) {
+      return t('schedule-button-tooltip.validation.loading')
     }
 
+    if (hasDocumentValidationErrors) {
+      return t('schedule-button-tooltip.validation.error')
+    }
+
+    if (release.state === 'scheduled' || release.state === 'scheduling') {
+      return t('schedule-button-tooltip.already-scheduled')
+    }
+    return null
+  }, [hasDocumentValidationErrors, isValidatingDocuments, release.state, t])
+
+  const scheduleTooltipContent = useMemo(() => {
     return (
       <Flex gap={1} align="center">
         <ErrorOutlineIcon />
         <Text muted size={1}>
-          {tooltipText()}
+          {tooltipText}
         </Text>
       </Flex>
     )
-  }, [hasDocumentValidationErrors, isValidatingDocuments, release.state, t])
+  }, [tooltipText])
 
   return (
     <>
       <Button
         tooltipProps={{
-          disabled: !isScheduleButtonDisabled,
+          disabled: !tooltipText,
           content: scheduleTooltipContent,
           placement: 'bottom',
         }}
         tone="primary"
-        icon={CalendarIcon}
+        icon={ClockIcon}
         disabled={isScheduleButtonDisabled || status === 'scheduling'}
         text={t('action.schedule')}
         onClick={() => setStatus('confirm')}
