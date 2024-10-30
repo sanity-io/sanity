@@ -1,4 +1,4 @@
-import {PinFilledIcon, PinIcon} from '@sanity/icons'
+import {LockIcon, PinFilledIcon, PinIcon} from '@sanity/icons'
 import {
   Box,
   // Custom button with full radius used here
@@ -19,10 +19,11 @@ import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {usePerspective} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {getReleasePublishDate} from '../../util/util'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
-  const {state, _id, publishAt} = release
+  const {state, _id} = release
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -36,7 +37,9 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
     }
   }, [_id, currentGlobalBundle._id, setPerspective, setPerspectiveFromRelease])
 
-  const isPublishDateInPast = publishAt && isBefore(new Date(publishAt), new Date())
+  const publishDate = getReleasePublishDate(release)
+  const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
+  const isReleaseScheduled = release.state === 'scheduling' || release.state === 'scheduled'
 
   return (
     <Container width={3}>
@@ -55,24 +58,28 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
             tone={getReleaseTone(release)}
           />
 
-          {
-            publishAt ? (
-              <Card padding={2} radius={2} tone="positive">
-                <Flex flex={1} gap={2}>
-                  <ReleaseAvatar padding={0} tone={getReleaseTone(release)} />
-                  <Text muted size={1} weight="medium">
-                    {isPublishDateInPast
-                      ? t('dashboard.details.published-on', {
-                          date: format(new Date(publishAt), `MMM d, yyyy`),
-                        })
-                      : format(new Date(publishAt), `PPpp`)}
-                  </Text>
-                </Flex>
-              </Card>
-            ) : null
-            // TODO: Add the release time field here
+          {publishDate ? (
+            // TODO: replace with the release time field here
             // <ReleaseTimeField onChange={handleTimeChange} release={release} value={timeValue} />
-          }
+            <Card
+              padding={2}
+              style={isReleaseScheduled ? {opacity: 0.75} : undefined}
+              radius={2}
+              tone={isReleaseScheduled ? 'transparent' : 'positive'}
+            >
+              <Flex flex={1} gap={2} align="center">
+                <ReleaseAvatar padding={0} tone={getReleaseTone(release)} />
+                <Text muted size={1} weight="medium">
+                  {isPublishDateInPast
+                    ? t('dashboard.details.published-on', {
+                        date: format(new Date(publishDate), `MMM d, yyyy`),
+                      })
+                    : format(new Date(publishDate), `PPpp`)}
+                </Text>
+                {isReleaseScheduled && <LockIcon />}
+              </Flex>
+            </Card>
+          ) : null}
         </Flex>
 
         <Box padding={2}>

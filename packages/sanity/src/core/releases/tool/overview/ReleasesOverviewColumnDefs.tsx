@@ -13,6 +13,7 @@ import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {getReleasePublishDate} from '../../util/util'
 import {type TableRowProps} from '../components/Table/Table'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
@@ -21,7 +22,7 @@ import {type TableRelease} from './ReleasesOverview'
 
 const ReleaseTime = ({release}: {release: TableRelease}) => {
   const {t} = useTranslation()
-  const {publishAt, metadata} = release
+  const {metadata} = release
 
   const getTimeString = () => {
     if (metadata.releaseType === 'asap') {
@@ -31,7 +32,7 @@ const ReleaseTime = ({release}: {release: TableRelease}) => {
       return t('release.type.undecided')
     }
 
-    const publishDate = publishAt || metadata.intendedPublishAt
+    const publishDate = getReleasePublishDate(release)
 
     return publishDate ? format(new Date(publishDate), 'PPpp') : null
   }
@@ -140,7 +141,7 @@ export const releasesOverviewColumnDefs: (
       sortTransform: ({metadata, publishAt}) => {
         if (metadata.releaseType === 'undecided') return Infinity
 
-        const publishDate = publishAt || metadata.intendedPublishAt
+        const publishDate = getReleasePublishDate({metadata, publishAt})
         if (metadata.releaseType === 'asap' || !publishDate) return 0
         return new Date(publishDate).getTime()
       },

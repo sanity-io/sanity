@@ -98,11 +98,18 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
   const dialogTitle =
     formAction === 'edit' ? t('release.dialog.edit.title') : t('release.dialog.create.title')
 
+  const isReleaseScheduled =
+    release && (release.state === 'scheduled' || release.state === 'scheduling')
+
   return (
     <Dialog header={dialogTitle} id="create-release-dialog" onClose={onCancel} width={1}>
       <form onSubmit={handleOnSubmit}>
         <Box padding={4}>
-          <ReleaseForm onChange={handleOnChange} value={value} />
+          <ReleaseForm
+            onChange={handleOnChange}
+            value={value}
+            isReleaseScheduled={isReleaseScheduled}
+          />
         </Box>
         <Flex justify="flex-end" paddingTop={5}>
           <Button

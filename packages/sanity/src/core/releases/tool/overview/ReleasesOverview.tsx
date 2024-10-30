@@ -4,8 +4,7 @@ import {endOfDay, format, isSameDay, startOfDay} from 'date-fns'
 import {zonedTimeToUtc} from 'date-fns-tz'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {usePerspective} from 'sanity'
-import {type RouterContextValue, useRouter} from 'sanity/router'
+import {type RouterContextValue, type SearchParam, useRouter} from 'sanity/router'
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
 import {CalendarDay} from '../../../../ui-components/inputs/DateFilters/calendar/CalendarDay'
@@ -21,6 +20,7 @@ import {
   useReleasesMetadata,
 } from '../../../store/release/useReleasesMetadata'
 import {ReleaseDetailsDialog} from '../../components/dialog/ReleaseDetailsDialog'
+import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
@@ -68,6 +68,7 @@ const DateFilterButton = ({filterDate, onClear}: {filterDate: Date; onClear: () 
 
 const DATE_SEARCH_PARAM_KEY = 'date'
 const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
+const GROUP_SEARCH_PARAM_KEY = 'group'
 
 export interface TableRelease extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
@@ -113,10 +114,18 @@ const getInitialFilterDate = (router: RouterContextValue) => () => {
   return activeFilterDate ? new Date(activeFilterDate) : undefined
 }
 
+const getInitialReleaseGroupMode = (router: RouterContextValue) => () => {
+  const activeGroupMode = new URLSearchParams(router.state._searchParams).get(
+    GROUP_SEARCH_PARAM_KEY,
+  )
+
+  return activeGroupMode === 'archived' ? 'archived' : 'open'
+}
+
 export function ReleasesOverview() {
   const {data: releases, archivedReleases, loading: loadingReleases} = useReleases()
-  const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>('open')
   const router = useRouter()
+  const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
   )
@@ -159,10 +168,10 @@ export function ReleasesOverview() {
 
   // switch to open mode if on archived mode and there are no archived releases
   useEffect(() => {
-    if (releaseGroupMode === 'archived' && !archivedReleases.length) {
+    if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
       setReleaseGroupMode('open')
     }
-  }, [releaseGroupMode, archivedReleases.length])
+  }, [releaseGroupMode, archivedReleases.length, loadingReleases])
 
   const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
@@ -177,15 +186,23 @@ export function ReleasesOverview() {
     )
   }, [])
 
-  const clearFilterDate = useCallback(() => setReleaseFilterDate(undefined), [])
+  const clearFilterDate = useCallback(() => {
+    setReleaseFilterDate(undefined)
+    setReleaseGroupMode('open')
+  }, [])
 
   useEffect(() => {
+    const getSearchParams: () => SearchParam[] = () => {
+      if (releaseFilterDate)
+        return [[DATE_SEARCH_PARAM_KEY, format(releaseFilterDate, DATE_SEARCH_PARAM_VALUE_FORMAT)]]
+      if (releaseGroupMode) return [[GROUP_SEARCH_PARAM_KEY, releaseGroupMode]]
+      return []
+    }
+
     router.navigate({
-      _searchParams: releaseFilterDate
-        ? [[DATE_SEARCH_PARAM_KEY, format(releaseFilterDate, DATE_SEARCH_PARAM_VALUE_FORMAT)]]
-        : [],
+      _searchParams: getSearchParams(),
     })
-  }, [releaseFilterDate, router])
+  }, [releaseFilterDate, releaseGroupMode, router])
 
   const hasMounted = useRef(false)
 

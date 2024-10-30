@@ -2,6 +2,7 @@ import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
+import {useRouter} from 'sanity/router'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
@@ -10,7 +11,6 @@ import {useReleaseOperations} from '../../../../store/release/useReleaseOperatio
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type DocumentInRelease} from '../../../tool/detail/useBundleDocuments'
-import {useObserveDocumentRevisions} from './useObserveDocumentRevisions'
 
 interface ReleasePublishAllButtonProps {
   release: ReleaseDocument
@@ -24,15 +24,12 @@ export const ReleasePublishAllButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
+  const router = useRouter()
   const {publishRelease} = useReleaseOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
   const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
     'idle',
-  )
-
-  const publishedDocumentsRevisions = useObserveDocumentRevisions(
-    documents.map(({document}) => document),
   )
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
@@ -41,31 +38,37 @@ export const ReleasePublishAllButton = ({
   const isPublishButtonDisabled = disabled || isValidatingDocuments || hasDocumentValidationErrors
 
   const handleConfirmPublishAll = useCallback(async () => {
-    if (!release || !publishedDocumentsRevisions) return
+    if (!release) return
 
     try {
       setPublishBundleStatus('publishing')
-      await publishRelease(
-        release._id,
-        documents.map(({document}) => document),
-        publishedDocumentsRevisions,
-      )
+      await publishRelease(release._id)
       telemetry.log(PublishedRelease)
       toast.push({
         closable: true,
         status: 'success',
         title: (
           <Text muted size={1}>
-            <Translate t={t} i18nKey="toast.published" values={{title: release.metadata.title}} />
+            <Translate
+              t={t}
+              i18nKey="toast.publish.success"
+              values={{title: release.metadata.title}}
+            />
           </Text>
         ),
       })
+      // TODO: handle a published release on the document list
+      router.navigate({})
     } catch (publishingError) {
       toast.push({
         status: 'error',
         title: (
           <Text muted size={1}>
-            <Translate t={t} i18nKey="toast.error" values={{title: release.metadata.title}} />
+            <Translate
+              t={t}
+              i18nKey="toast.publish.error"
+              values={{title: release.metadata.title}}
+            />
           </Text>
         ),
       })
@@ -73,7 +76,7 @@ export const ReleasePublishAllButton = ({
     } finally {
       setPublishBundleStatus('idle')
     }
-  }, [release, documents, publishRelease, publishedDocumentsRevisions, t, telemetry, toast])
+  }, [release, publishRelease, telemetry, toast, t, router])
 
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null
@@ -85,8 +88,8 @@ export const ReleasePublishAllButton = ({
         onClose={() => setPublishBundleStatus('idle')}
         footer={{
           confirmButton: {
-            text: t('action.publish'),
-            tone: 'default',
+            text: t('action.publish-all-documents'),
+            tone: 'positive',
             onClick: handleConfirmPublishAll,
             loading: publishBundleStatus === 'publishing',
             disabled: publishBundleStatus === 'publishing',
@@ -108,7 +111,7 @@ export const ReleasePublishAllButton = ({
         </Text>
       </Dialog>
     )
-  }, [release.metadata.title, documents.length, handleConfirmPublishAll, publishBundleStatus, t])
+  }, [publishBundleStatus, t, handleConfirmPublishAll, release, documents.length])
 
   const publishTooltipContent = useMemo(() => {
     if (!hasDocumentValidationErrors && !isValidatingDocuments) return null
@@ -145,10 +148,11 @@ export const ReleasePublishAllButton = ({
         }}
         icon={PublishIcon}
         disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
-        text={t('action.publish-all')}
+        text={t('action.publish-all-documents')}
         onClick={() => setPublishBundleStatus('confirm')}
         loading={publishBundleStatus === 'publishing'}
         data-testid="publish-all-button"
+        tone="positive"
       />
       {confirmPublishDialog}
     </>

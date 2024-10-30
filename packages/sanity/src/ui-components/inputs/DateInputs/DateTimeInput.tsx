@@ -83,6 +83,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const suffix = (
     <Flex style={{padding: '5px'}}>
       <Button
+        disabled={rest.readOnly}
         aria-label={calendarLabels.ariaLabel}
         ref={buttonRef}
         icon={CalendarIcon}

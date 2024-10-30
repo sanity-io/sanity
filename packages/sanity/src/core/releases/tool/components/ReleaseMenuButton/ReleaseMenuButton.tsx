@@ -8,9 +8,9 @@ import {
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Menu, Spinner, Text} from '@sanity/ui'
 import {type FormEventHandler, useState} from 'react'
-import {LoadingBlock} from 'sanity'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../store/release/types'
 import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
@@ -22,6 +22,8 @@ export type ReleaseMenuButtonProps = {
   disabled?: boolean
   release?: ReleaseDocument
 }
+
+const ARCHIVIABLE_STATES = ['active', 'published']
 
 export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) => {
   const {archive} = useReleaseOperations()
@@ -74,9 +76,9 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
               text={t('action.edit')}
               data-testid="edit-release"
             />
-            {/* <MenuItem onClick={() => setSelectedAction('')} /> */}
             <MenuItem
               onClick={() => setSelectedAction('confirm-archive')}
+              disabled={!release || !ARCHIVIABLE_STATES.includes(release.state)}
               icon={isReleaseArchived ? UnarchiveIcon : ArchiveIcon}
               text={isReleaseArchived ? t('action.unarchive') : t('action.archive')}
               data-testid="archive-release"
