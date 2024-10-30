@@ -1186,12 +1186,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.create.title': 'Create release',
   /** The placeholder text when the release doesn't have a description */
   'release.form.placeholer-describe-release': 'Describe the release…',
-  /** The placeholder text when the release doesn't have a title */
-  'release.form.placeholer-untitled-release': 'Untitled release',
   /** Tooltip for button to hide release visibility */
   'release.layer.hide': 'Hide release',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'Releases',
+  /** The placeholder text when the release doesn't have a title */
+  'release.placeholder-untitled-release': 'Untitled release',
   /** Label for the release type 'as soon as possible' */
   'release.type.asap': 'ASAP',
   /** Label for the release type 'at time', meaning it's a release with a scheduled date */

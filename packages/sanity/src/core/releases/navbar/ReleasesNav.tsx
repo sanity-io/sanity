@@ -74,7 +74,8 @@ export function ReleasesNav(): JSX.Element {
             <Text size={1} textOverflow="ellipsis" weight="medium">
               {isPublishedPerspective(currentGlobalBundle)
                 ? 'Published'
-                : currentGlobalBundle.metadata?.title}
+                : (currentGlobalBundle.metadata?.title ??
+                  t('release.placeholder-untitled-release'))}
             </Text>
           </Stack>
         </Flex>
@@ -110,7 +111,7 @@ export function ReleasesNav(): JSX.Element {
     }
 
     return <AnimatedMotionDiv>{visibleLabelChildren()}</AnimatedMotionDiv>
-  }, [currentGlobalBundle])
+  }, [currentGlobalBundle, t])
 
   return (
     <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
