@@ -89,10 +89,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
         </Flex>
 
         <Box padding={2}>
-          <ReleaseDetailsEditor
-            description={release.metadata.description}
-            title={release.metadata.title}
-          />
+          <ReleaseDetailsEditor release={release} />
         </Box>
       </Stack>
     </Container>
