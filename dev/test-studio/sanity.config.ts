@@ -1,3 +1,8 @@
+/* eslint-disable import/no-unassigned-import */
+
+import '@sanity/ui/sanity-theme.css'
+import '@sanity/ui/system.css'
+
 import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'

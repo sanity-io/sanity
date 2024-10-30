@@ -188,7 +188,7 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
-      "@sanity/ui@2": "$@sanity/ui",
+      "@sanity/ui": "file:registry/sanity-ui-2.8.9.tgz",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }
