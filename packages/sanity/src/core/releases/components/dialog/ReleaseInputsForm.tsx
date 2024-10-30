@@ -8,6 +8,8 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type EditableReleaseDocument} from '../../../store'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
 
+const MAX_DESCRIPTION_HEIGHT = 200
+
 const TitleInput = styled.input((props) => {
   const {color, font} = getTheme_v2(props.theme)
   return css`
@@ -88,7 +90,8 @@ export function ReleaseInputsForm({
   onChange: (changedValue: EditableReleaseDocument) => void
 }): JSX.Element {
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
-  const [scrollHeight, setScrollHeight] = useState(0)
+
+  const [scrollHeight, setScrollHeight] = useState(46)
   const [value, setValue] = useState((): EditableReleaseDocument => {
     return {
       _id: release?._id,
@@ -131,8 +134,13 @@ export function ReleaseInputsForm({
       /** we must reset the height in order to make sure that if the text area shrinks,
        * that the actual input will change height as well */
       if (descriptionRef.current) {
+        descriptionRef.current.style.overflow = 'hidden'
         descriptionRef.current.style.height = 'auto'
         descriptionRef.current.style.height = `${descriptionRef.current.scrollHeight}px`
+
+        if (parseInt(descriptionRef.current.style.height, 10) > MAX_DESCRIPTION_HEIGHT) {
+          descriptionRef.current.style.overflow = 'auto'
+        }
       }
 
       setScrollHeight(event.currentTarget.scrollHeight)
@@ -159,6 +167,7 @@ export function ReleaseInputsForm({
           onChange={handleDescriptionChange}
           style={{
             height: `${scrollHeight}px`,
+            maxHeight: MAX_DESCRIPTION_HEIGHT,
           }}
           data-testid="release-form-description"
         />
