@@ -348,7 +348,7 @@ export function ReleasesOverview() {
           </Card>
           {!loading && !hasReleases && (
             <Container style={{margin: 0}} width={0}>
-              <Stack space={5}>
+              <Stack space={5} padding={4}>
                 <Text data-testid="no-releases-info-text" muted size={2}>
                   {t('overview.description')}
                 </Text>
