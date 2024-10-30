@@ -19,6 +19,12 @@ vi.mock('../../../../store/release', () => ({
   useReleases: vi.fn(),
 }))
 
+vi.mock('../../../i18n/hooks/useTranslation', () => ({
+  useTranslate: vi.fn().mockReturnValue({
+    t: vi.fn(),
+  }),
+}))
+
 const mockUseReleases = useReleases as Mock<typeof useReleases>
 const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
