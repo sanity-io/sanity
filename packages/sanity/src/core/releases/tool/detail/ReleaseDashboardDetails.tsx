@@ -11,7 +11,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {format, isBefore} from 'date-fns'
-import {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {useTranslation} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store'
@@ -25,7 +25,8 @@ import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const {state, _id} = release
 
-  const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation(releasesLocaleNamespace)
+  const {t} = useTranslation()
 
   const {currentGlobalBundleId, setPerspective, setPerspectiveFromRelease} = usePerspective()
 
@@ -41,6 +42,18 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
   const isReleaseScheduled = release.state === 'scheduling' || release.state === 'scheduled'
 
+  const publishDateLabel = useMemo(() => {
+    if (release.metadata.releaseType === 'asap') return t('release.type.asap')
+    if (release.metadata.releaseType === 'undecided') return t('release.type.undecided')
+    if (!publishDate) return null
+
+    return isPublishDateInPast
+      ? tCore('dashboard.details.published-on', {
+          date: format(new Date(publishDate), `MMM d, yyyy`),
+        })
+      : format(new Date(publishDate), `PPpp`)
+  }, [isPublishDateInPast, publishDate, release.metadata.releaseType, t, tCore])
+
   return (
     <Container width={3}>
       <Stack padding={3} paddingY={[4, 4, 5, 6]} space={[3, 3, 4, 5]}>
@@ -54,32 +67,25 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
             radius="full"
             selected={_id === currentGlobalBundleId}
             space={2}
-            text={t('dashboard.details.pin-release')}
+            text={tCore('dashboard.details.pin-release')}
             tone={getReleaseTone(release)}
           />
-
-          {publishDate ? (
-            // TODO: replace with the release time field here
-            // <ReleaseTimeField onChange={handleTimeChange} release={release} value={timeValue} />
-            <Card
-              padding={2}
-              style={isReleaseScheduled ? {opacity: 0.75} : undefined}
-              radius={2}
-              tone={isReleaseScheduled ? 'transparent' : 'positive'}
-            >
-              <Flex flex={1} gap={2} align="center">
-                <ReleaseAvatar padding={0} tone={getReleaseTone(release)} />
-                <Text muted size={1} weight="medium">
-                  {isPublishDateInPast
-                    ? t('dashboard.details.published-on', {
-                        date: format(new Date(publishDate), `MMM d, yyyy`),
-                      })
-                    : format(new Date(publishDate), `PPpp`)}
-                </Text>
-                {isReleaseScheduled && <LockIcon />}
-              </Flex>
-            </Card>
-          ) : null}
+          {/* TODO: replace with the release time field here //{' '} */}
+          {/* <ReleaseTimeField onChange={handleTimeChange} release={release} value={timeValue} /> */}
+          <Card
+            padding={2}
+            style={isReleaseScheduled ? {opacity: 0.75} : undefined}
+            radius={2}
+            tone={isReleaseScheduled ? 'positive' : 'transparent'}
+          >
+            <Flex flex={1} gap={2} align="center">
+              <ReleaseAvatar padding={0} tone={getReleaseTone(release)} />
+              <Text muted size={1} weight="medium">
+                {publishDateLabel}
+              </Text>
+              {isReleaseScheduled && <LockIcon />}
+            </Flex>
+          </Card>
         </Flex>
 
         <Box padding={2}>
