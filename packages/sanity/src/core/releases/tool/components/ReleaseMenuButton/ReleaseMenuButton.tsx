@@ -20,13 +20,13 @@ import {releasesLocaleNamespace} from '../../../i18n'
 
 export type ReleaseMenuButtonProps = {
   disabled?: boolean
-  release?: ReleaseDocument
+  release: ReleaseDocument
 }
 
-const ARCHIVIABLE_STATES = ['active', 'published']
+const ARCHIVABLE_STATES = ['active', 'published']
 
 export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) => {
-  const {archive} = useReleaseOperations()
+  const {archive, unarchive} = useReleaseOperations()
   const isReleaseArchived = release?.state === 'archived'
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<'edit' | 'confirm-archive'>()
@@ -44,13 +44,17 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
     setIsPerformingOperation(true)
     await archive(release._id)
 
-    if (isReleaseArchived) {
-      // it's in the process of becoming false, so the event we want to track is unarchive
-      telemetry.log(UnarchivedRelease)
-    } else {
-      // it's in the process of becoming true, so the event we want to track is archive
-      telemetry.log(ArchivedRelease)
-    }
+    // it's in the process of becoming true, so the event we want to track is archive
+    telemetry.log(ArchivedRelease)
+    setIsPerformingOperation(false)
+  }
+
+  const handleUnarchive = async () => {
+    setIsPerformingOperation(true)
+    await unarchive(release._id)
+
+    // it's in the process of becoming false, so the event we want to track is unarchive
+    telemetry.log(UnarchivedRelease)
     setIsPerformingOperation(false)
   }
 
@@ -76,13 +80,22 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
               text={t('action.edit')}
               data-testid="edit-release"
             />
-            <MenuItem
-              onClick={() => setSelectedAction('confirm-archive')}
-              disabled={!release || !ARCHIVIABLE_STATES.includes(release.state)}
-              icon={isReleaseArchived ? UnarchiveIcon : ArchiveIcon}
-              text={isReleaseArchived ? t('action.unarchive') : t('action.archive')}
-              data-testid="archive-release"
-            />
+
+            {release?.state && ARCHIVABLE_STATES.includes(release.state) ? (
+              <MenuItem
+                onClick={() => setSelectedAction('confirm-archive')}
+                icon={ArchiveIcon}
+                text={t('action.archive')}
+                data-testid="archive-release"
+              />
+            ) : (
+              <MenuItem
+                onClick={handleUnarchive}
+                icon={UnarchiveIcon}
+                text={t('action.unarchive')}
+                data-testid="unarchive-release"
+              />
+            )}
           </Menu>
         }
         popover={{

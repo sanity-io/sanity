@@ -12,6 +12,7 @@ export interface ReleaseOperationsStore {
   //todo: reschedule: (releaseId: string, newDate: Date) => Promise<void>
   unschedule: (releaseId: string) => Promise<void>
   archive: (releaseId: string) => Promise<void>
+  unarchive: (releaseId: string) => Promise<void>
   updateRelease: (release: EditableReleaseDocument) => Promise<void>
   createRelease: (release: EditableReleaseDocument) => Promise<void>
   createVersion: (releaseId: string, documentId: string) => Promise<void>
@@ -99,6 +100,15 @@ export function createReleaseOperationsStore(options: {
     ]).then(() => {})
   }
 
+  const handleUnarchiveRelease = (releaseId: string) => {
+    return requestAction(client, [
+      {
+        actionType: 'sanity.action.release.unarchive',
+        releaseId: getBundleIdFromReleaseId(releaseId),
+      },
+    ]).then(() => {})
+  }
+
   const handleCreateVersion = async (documentId: string, releaseId: string) => {
     // fetch original document
     const doc = await client.fetch(`*[_id == $documentId][0]`, {documentId})
@@ -108,6 +118,7 @@ export function createReleaseOperationsStore(options: {
 
   return {
     archive: handleArchiveRelease,
+    unarchive: handleUnarchiveRelease,
     schedule: handleScheduleRelease,
     unschedule: handleUnscheduleRelease,
     createRelease: handleCreateRelease,
@@ -134,6 +145,11 @@ interface ArchiveApiAction {
   releaseId: string
 }
 
+interface UnarchiveApiAction {
+  actionType: 'sanity.action.release.unarchive'
+  releaseId: string
+}
+
 interface UnscheduleApiAction {
   actionType: 'sanity.action.release.unschedule'
   releaseId: string
@@ -157,6 +173,7 @@ type ReleaseAction =
   | CreateReleaseApiAction
   | UnscheduleApiAction
   | ArchiveApiAction
+  | UnarchiveApiAction
 
 function requestAction(client: SanityClient, actions: ReleaseAction | ReleaseAction[]) {
   const {dataset} = client.config()
