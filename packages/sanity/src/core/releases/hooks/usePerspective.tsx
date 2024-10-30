@@ -7,7 +7,10 @@ import {LATEST} from '../util/const'
 import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 import {getReleasesPerspective} from './utils'
 
-export type Perspective = ReleaseDocument | 'published' | typeof LATEST
+/**
+ * @internal
+ */
+export type CurrentPerspective = ReleaseDocument | 'published' | typeof LATEST
 
 /**
  * @internal
@@ -19,7 +22,7 @@ export interface PerspectiveValue {
   /* The excluded perspectives */
   excludedPerspectives: string[]
   /* Return the current global release */
-  currentGlobalBundle: Perspective
+  currentGlobalBundle: CurrentPerspective
   /* Change the perspective in the studio based on the perspective name */
   setPerspective: (perspectiveId: string) => void
   /* change the perspective in the studio based on a release ID */
@@ -81,7 +84,7 @@ export function usePerspective(): PerspectiveValue {
       : LATEST
 
   // TODO: Improve naming; this may not be global.
-  const currentGlobalBundle: Perspective = useMemo(
+  const currentGlobalBundle: CurrentPerspective = useMemo(
     () => (perspective === 'published' ? perspective : selectedBundle || LATEST),
     [perspective, selectedBundle],
   )
