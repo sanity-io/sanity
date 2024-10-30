@@ -23,7 +23,7 @@ interface UseDocumentTitle {
  */
 export function useDocumentTitle(): UseDocumentTitle {
   const {connectionState, schemaType, title, editState} = useDocumentPane()
-  const documentValue = editState?.draft || editState?.published
+  const documentValue = editState?.version || editState?.draft || editState?.published
   const subscribed = Boolean(documentValue)
 
   const {error, value} = useValuePreview({
