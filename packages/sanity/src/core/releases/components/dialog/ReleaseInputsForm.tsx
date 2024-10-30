@@ -6,7 +6,6 @@ import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type EditableReleaseDocument} from '../../../store'
-import {releasesLocaleNamespace} from '../../i18n'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
 
 const TitleInput = styled.input((props) => {
@@ -101,7 +100,7 @@ export function ReleaseInputsForm({
       },
     } as const
   })
-  const {t} = useTranslation(releasesLocaleNamespace)
+  const {t} = useTranslation()
 
   useEffect(() => {
     // make sure that the text area for the description has the right height initially
@@ -147,7 +146,7 @@ export function ReleaseInputsForm({
         <TitleInput
           onChange={handleTitleChange}
           value={value.metadata.title}
-          placeholder={t('form-placeholer-untitled-release')}
+          placeholder={t('release.form.placeholer-untitled-release')}
           data-testid="release-form-title"
         />
       </Box>
@@ -156,7 +155,7 @@ export function ReleaseInputsForm({
           ref={descriptionRef}
           autoFocus={!value}
           value={value.metadata.description}
-          placeholder={t('form-placeholer-describe-release')}
+          placeholder={t('release.form.placeholer-describe-release')}
           onChange={handleDescriptionChange}
           style={{
             height: `${scrollHeight}px`,

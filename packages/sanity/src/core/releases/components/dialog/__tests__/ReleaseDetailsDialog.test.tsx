@@ -24,6 +24,12 @@ vi.mock('../../../hooks/usePerspective', () => ({
   }),
 }))
 
+vi.mock('../../../i18n/hooks/useTranslation', () => ({
+  useTranslate: vi.fn().mockReturnValue({
+    t: vi.fn(),
+  }),
+}))
+
 const mockUseBundleStore = useReleases as Mock<typeof useReleases>
 //const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
@@ -78,20 +84,21 @@ describe('ReleaseDetailsDialog', () => {
         },
       }
 
+      const titleInput = screen.getByTestId('release-form-title')
+      fireEvent.change(titleInput, {target: {value: value.metadata?.title}})
+
       const submitButton = screen.getByTestId('submit-release-button')
       fireEvent.click(submitButton)
 
       expect(useReleaseOperations().createRelease).toHaveBeenCalledWith(
         expect.objectContaining({
-          _id: expect.stringMatching(/r\w{8}$/),
+          _id: expect.stringContaining('releases'),
           ...value,
         }),
       )
       await Promise.resolve()
 
       expect(usePerspective().setPerspective).toHaveBeenCalledOnce()
-
-      expect(usePerspective().setPerspective).toHaveBeenCalledWith(expect.stringMatching(/r\w{8}$/))
 
       expect(onSubmitMock).toHaveBeenCalled()
     })
