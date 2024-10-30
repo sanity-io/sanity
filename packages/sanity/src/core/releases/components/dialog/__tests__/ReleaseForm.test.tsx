@@ -30,8 +30,6 @@ describe('ReleaseForm', () => {
     metadata: {
       title: '',
       description: '',
-      icon: 'cube',
-      hue: 'gray',
     },
   }
 
@@ -54,9 +52,6 @@ describe('ReleaseForm', () => {
             releaseType: 'asap',
             title: 'Spring Drop',
             description: 'What a spring drop, allergies galore 🌸',
-            createdBy: 'pzAhBTkNX',
-            icon: 'heart-filled',
-            hue: 'magenta',
           },
         },
         // Add more mock data if needed
@@ -66,7 +61,8 @@ describe('ReleaseForm', () => {
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
-        stack: [],
+        archivedReleases: [],
+        releasesIds: [],
       })
 
       mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
@@ -137,8 +133,6 @@ describe('ReleaseForm', () => {
       metadata: {
         title: 'Summer Drop',
         description: 'Summer time',
-        icon: 'heart-filled',
-        hue: 'magenta',
         releaseType: 'asap',
       },
     }
@@ -160,9 +154,6 @@ describe('ReleaseForm', () => {
             releaseType: 'asap',
             title: 'Spring Drop',
             description: 'What a spring drop, allergies galore 🌸',
-            createdBy: 'pzAhBTkNX',
-            icon: 'heart-filled',
-            hue: 'magenta',
           },
         },
         // Add more mock data if needed
@@ -171,7 +162,9 @@ describe('ReleaseForm', () => {
         data: mockData,
         loading: false,
         dispatch: vi.fn(),
-        stack: [],
+        error: undefined,
+        archivedReleases: [],
+        releasesIds: [],
       })
 
       mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
@@ -199,8 +192,6 @@ describe('ReleaseForm', () => {
       expect(screen.getByTestId('release-form-description')).toHaveValue(
         existingBundleValue.metadata.description,
       )
-      screen.getByTestId('release-badge-color-magenta')
-      screen.getByTestId('release-badge-icon-heart-filled')
     })
   })
 })

@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {type HTMLProps} from 'react'
-import {type ReleaseDocument, usePerspective} from 'sanity'
+import {type ReleaseDocument, usePerspective, useReleases} from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
@@ -15,6 +15,8 @@ vi.mock('sanity', async (importOriginal) => ({
     currentGlobalBundle: {},
     setPerspective: vi.fn(),
   }),
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+  versionDocumentExists: vi.fn().mockReturnValue(true),
   Translate: vi.fn(),
   /**
    * @todo
@@ -59,7 +61,8 @@ const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
 
-const mockUsePerspective = usePerspective as Mock
+const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
+const mockUseReleases = useReleases as Mock<typeof useReleases>
 
 describe('DocumentPerspectiveList', () => {
   const mockCurrent: ReleaseDocument = {
@@ -97,6 +100,24 @@ describe('DocumentPerspectiveList', () => {
   })
 
   it('should render the release chip when it has a release version', async () => {
+    mockUseReleases.mockReturnValue({
+      loading: false,
+      data: [
+        {
+          _id: '_.releases.spring-drop',
+          _type: 'system.release',
+          createdBy: '',
+          state: 'active',
+          name: 'spring-drop',
+          _createdAt: '',
+          _updatedAt: '',
+          metadata: {
+            releaseType: 'asap',
+            title: 'Spring Drop',
+          },
+        },
+      ],
+    })
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [
         {
