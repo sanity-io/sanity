@@ -90,7 +90,7 @@ describe('ReleaseDetailsDialog', () => {
 
       expect(useReleaseOperations().createRelease).toHaveBeenCalledWith(
         expect.objectContaining({
-          _id: expect.stringMatching(/_\.releases\.r\w{8}$/),
+          _id: expect.stringMatching(/r\w{8}$/),
           ...value,
         }),
       )
@@ -98,9 +98,8 @@ describe('ReleaseDetailsDialog', () => {
 
       expect(usePerspective().setPerspective).toHaveBeenCalledOnce()
 
-      expect(usePerspective().setPerspective).toHaveBeenCalledWith(
-        expect.stringMatching(/_\.releases\.r\w{8}$/),
-      )
+      expect(usePerspective().setPerspective).toHaveBeenCalledWith(expect.stringMatching(/r\w{8}$/))
+
       expect(onSubmitMock).toHaveBeenCalled()
     })
   })
