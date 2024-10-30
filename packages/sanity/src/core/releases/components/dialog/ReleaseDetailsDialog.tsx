@@ -115,7 +115,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
         <Flex justify="flex-end" paddingTop={5}>
           <Button
             size="large"
-            disabled={!value.metadata?.title?.trim() || isSubmitting}
+            disabled={isSubmitting}
             iconRight={ArrowRightIcon}
             type="submit"
             text={dialogTitle}

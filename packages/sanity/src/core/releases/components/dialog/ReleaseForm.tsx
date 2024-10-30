@@ -1,26 +1,16 @@
 import {type FormNodeValidation} from '@sanity/types'
-import {Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Flex, Stack} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
-import {FormFieldHeaderText} from '../../../form'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useDateTimeFormat} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
-import {
-  type EditableReleaseDocument,
-  type ReleaseDocument,
-  type ReleaseType,
-} from '../../../store/release/types'
-
-const DEFAULT_METADATA: ReleaseDocument['metadata'] = {
-  title: '',
-  description: '',
-  releaseType: 'asap',
-}
+import {type EditableReleaseDocument, type ReleaseType} from '../../../store/release/types'
+import {ReleaseInputsForm} from './ReleaseInputsForm'
 
 /** @internal */
 export function ReleaseForm(props: {
@@ -29,7 +19,7 @@ export function ReleaseForm(props: {
   isReleaseScheduled?: boolean
 }): JSX.Element {
   const {onChange, value, isReleaseScheduled = false} = props
-  const {title, description, releaseType} = value.metadata || {}
+  const {releaseType} = value.metadata || {}
   const publishAt = value.publishAt
   // derive the action from whether the initial value prop has a slug
   // only editing existing releases will provide a value.slug
@@ -37,8 +27,7 @@ export function ReleaseForm(props: {
 
   const dateFormatter = useDateTimeFormat()
 
-  // todo: figure out if these are needed
-  const [titleErrors, setTitleErrors] = useState<FormNodeValidation[]>([])
+  // todo: you can create a release without a title, but not without a date if the type is scheduled
   const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
@@ -47,28 +36,6 @@ export function ReleaseForm(props: {
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
   const [inputValue, setInputValue] = useState<string | undefined>(
     publishAt ? dateFormatter.format(new Date(publishAt)) : undefined,
-  )
-
-  const handleReleaseTitleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const pickedTitle = event.target.value
-      onChange({
-        ...value,
-        metadata: {...value.metadata, title: pickedTitle},
-      })
-    },
-    [onChange, value],
-  )
-
-  const handleBundleDescriptionChange = useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const {value: descriptionValue} = event.target
-
-      if (typeof descriptionValue !== 'undefined') {
-        onChange({...value, metadata: {...value.metadata, description: descriptionValue}})
-      }
-    },
-    [onChange, value],
   )
 
   const handleBundlePublishAtChange = useCallback(
@@ -85,6 +52,20 @@ export function ReleaseForm(props: {
       onChange({
         ...value,
         metadata: {...value.metadata, releaseType: pickedReleaseType, intendedPublishAt: undefined},
+      })
+    },
+    [onChange, value],
+  )
+
+  const handleTitleDescriotionChange = useCallback(
+    (upDatedRlease: EditableReleaseDocument) => {
+      onChange({
+        ...value,
+        metadata: {
+          ...value.metadata,
+          title: upDatedRlease.metadata.title,
+          description: upDatedRlease.metadata.description,
+        },
       })
     },
     [onChange, value],
@@ -130,27 +111,7 @@ export function ReleaseForm(props: {
           />
         )}
       </Stack>
-
-      <Stack space={3}>
-        <FormFieldHeaderText title={t('release.form.title')} validation={titleErrors} />
-        <TextInput
-          data-testid="release-form-title"
-          onChange={handleReleaseTitleChange}
-          customValidity={titleErrors.length > 0 ? 'error' : undefined}
-          value={title || ''}
-        />
-      </Stack>
-
-      <Stack space={3}>
-        <Text size={1} weight="medium">
-          {t('release.form.description')}
-        </Text>
-        <TextArea
-          onChange={handleBundleDescriptionChange}
-          value={description || ''}
-          data-testid="release-form-description"
-        />
-      </Stack>
+      <ReleaseInputsForm release={value} onChange={handleTitleDescriotionChange} />
     </Stack>
   )
 }
