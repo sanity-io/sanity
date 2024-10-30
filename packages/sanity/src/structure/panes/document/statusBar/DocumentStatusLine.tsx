@@ -6,6 +6,8 @@ import {
   DocumentStatus,
   getBundleIdFromReleaseId,
   getPreviewStateObservable,
+  isDraftPerspective,
+  isPublishedPerspective,
   useDocumentPreviewStore,
   usePerspective,
   useReleases,
@@ -13,7 +15,6 @@ import {
   useSyncState,
 } from 'sanity'
 
-import {isDraftPerspective, isPublishedPerspective} from '../../../../core/releases'
 import {Tooltip} from '../../../../ui-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusPulse} from './DocumentStatusPulse'

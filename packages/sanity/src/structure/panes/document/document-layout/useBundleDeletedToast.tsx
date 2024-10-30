@@ -1,8 +1,13 @@
 import {Text, useToast} from '@sanity/ui'
 import {useEffect} from 'react'
-import {Translate, usePerspective, useReleases, useTranslation} from 'sanity'
-
-import {isDraftPerspective, isPublishedPerspective} from '../../../../core/releases'
+import {
+  isDraftPerspective,
+  isPublishedPerspective,
+  Translate,
+  usePerspective,
+  useReleases,
+  useTranslation,
+} from 'sanity'
 
 export const useBundleDeletedToast = () => {
   const {currentGlobalBundle} = usePerspective()

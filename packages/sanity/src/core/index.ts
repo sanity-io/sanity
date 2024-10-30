@@ -32,6 +32,8 @@ export {
   getCreateVersionOrigin,
   getDocumentIsInPerspective,
   getReleaseTone,
+  isDraftPerspective,
+  isPublishedPerspective,
   LATEST,
   ReleaseAvatar,
   ReleaseBadge,
