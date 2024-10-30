@@ -1,8 +1,10 @@
 import {type Action, type SanityClient} from '@sanity/client'
 import {type User} from '@sanity/types'
-import {type EditableReleaseDocument, getBundleIdFromReleaseId, getVersionId} from 'sanity'
 
+import {getBundleIdFromReleaseId} from '../../releases'
+import {getVersionId} from '../../util'
 import {RELEASE_METADATA_TMP_DOC_PATH, RELEASE_METADATA_TMP_DOC_TYPE} from './constants'
+import {type EditableReleaseDocument} from './types'
 
 export interface ReleaseOperationsStore {
   publishRelease: (releaseId: string) => Promise<void>

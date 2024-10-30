@@ -4,7 +4,6 @@ import {endOfDay, format, isSameDay, startOfDay} from 'date-fns'
 import {zonedTimeToUtc} from 'date-fns-tz'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {usePerspective} from 'sanity'
 import {type RouterContextValue, type SearchParam, useRouter} from 'sanity/router'
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
@@ -21,6 +20,7 @@ import {
   useReleasesMetadata,
 } from '../../../store/release/useReleasesMetadata'
 import {ReleaseDetailsDialog} from '../../components/dialog/ReleaseDetailsDialog'
+import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'

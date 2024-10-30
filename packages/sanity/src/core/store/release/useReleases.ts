@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {getBundleIdFromReleaseId} from 'sanity'
 
+import {getBundleIdFromReleaseId} from '../../releases'
 import {sortReleases} from '../../releases/hooks/utils'
 import {useReleasesStore} from '../_legacy/datastores'
 import {type ReleasesReducerAction} from './reducer'
