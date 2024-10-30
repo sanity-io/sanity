@@ -1,7 +1,10 @@
+import {ErrorOutlineIcon} from '@sanity/icons'
 import {Badge, Box, Flex, Text} from '@sanity/ui'
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
 
+import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
+import {Tooltip} from '../../../../../ui-components/tooltip'
 import {UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
@@ -90,6 +93,7 @@ export const getDocumentTableColumnDefs: (
   {
     id: 'search',
     width: null,
+    style: {minWidth: '50%'},
     header: (props) => (
       <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
     ),
@@ -120,5 +124,46 @@ export const getDocumentTableColumnDefs: (
         )}
       </Flex>
     ),
+  },
+  {
+    id: 'validation',
+    sorting: false,
+    width: 50,
+    header: ({headerProps}) => (
+      <Flex {...headerProps} paddingY={3} sizing="border">
+        <Headers.BasicHeader text={''} />
+      </Flex>
+    ),
+    cell: ({cellProps, datum}) => {
+      const validationErrorCount = datum.validation.validation.length
+
+      return (
+        <Flex {...cellProps} flex={1} padding={1} justify="center" align="center">
+          {datum.validation.hasError && (
+            <Tooltip
+              portal
+              placement="bottom-end"
+              content={
+                <Text muted size={1}>
+                  <Flex align={'center'} gap={3} padding={1}>
+                    <ToneIcon symbol={ErrorOutlineIcon} tone="critical" />
+                    {t(
+                      validationErrorCount === 1
+                        ? 'document-validation.error-singular'
+                        : 'document-validation.error',
+                      {count: validationErrorCount},
+                    )}
+                  </Flex>
+                </Text>
+              }
+            >
+              <Text size={1}>
+                <ToneIcon symbol={ErrorOutlineIcon} tone="critical" />
+              </Text>
+            </Tooltip>
+          )}
+        </Flex>
+      )
+    },
   },
 ]

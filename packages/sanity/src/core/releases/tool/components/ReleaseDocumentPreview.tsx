@@ -1,10 +1,8 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
 import {type PreviewValue} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
-import {Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
@@ -59,26 +57,8 @@ export function ReleaseDocumentPreview({
   )
 
   return (
-    <Card
-      tone={hasValidationError ? 'critical' : 'default'}
-      as={LinkComponent}
-      radius={2}
-      data-as="a"
-    >
-      <SanityDefaultPreview {...previewValues} status={previewPresence} isPlaceholder={isLoading}>
-        {hasValidationError && (
-          <Tooltip
-            portal
-            content={
-              <Text muted size={1}>
-                {t('document-validation.error')}
-              </Text>
-            }
-          >
-            <ErrorOutlineIcon />
-          </Tooltip>
-        )}
-      </SanityDefaultPreview>
+    <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
+      <SanityDefaultPreview {...previewValues} status={previewPresence} isPlaceholder={isLoading} />
     </Card>
   )
 }

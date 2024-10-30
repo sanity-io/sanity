@@ -6,7 +6,7 @@ import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store/release/types'
 import {releasesLocaleNamespace} from '../../i18n'
-import {Table, type TableProps} from '../components/Table/Table'
+import {Table} from '../components/Table/Table'
 import {AddDocumentSearch} from './AddDocumentSearch'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
@@ -26,9 +26,6 @@ export interface ReleaseSummaryProps {
   scrollContainerRef: RefObject<HTMLDivElement>
   release: ReleaseDocument
 }
-
-const getRowProps: TableProps<DocumentWithHistory, undefined>['rowProps'] = (datum) =>
-  datum?.validation?.hasError ? {tone: 'critical'} : {}
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, scrollContainerRef} = props
@@ -84,7 +81,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}
         searchFilter={filterRows}
-        rowProps={getRowProps}
         scrollContainerRef={scrollContainerRef}
       />
       <Container width={3}>

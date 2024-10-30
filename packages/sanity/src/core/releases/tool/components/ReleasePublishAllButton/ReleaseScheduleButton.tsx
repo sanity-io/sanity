@@ -7,6 +7,7 @@ import {Button, Dialog} from '../../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../../../ui-components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../../ui-components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../../ui-components/inputs/DateInputs/DateTimeInput'
+import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {useDateTimeFormat} from '../../../../hooks'
 import {Translate, useTranslation} from '../../../../i18n'
@@ -165,16 +166,20 @@ export const ReleaseScheduleButton = ({
     return null
   }, [hasDocumentValidationErrors, isValidatingDocuments, release.state, t])
 
+  // TODO: this is a duplicate of logic in ReleasePublishAllButton
   const scheduleTooltipContent = useMemo(() => {
     return (
-      <Flex gap={1} align="center">
-        <ErrorOutlineIcon />
-        <Text muted size={1}>
+      <Text muted size={1}>
+        <Flex align="center" gap={3} padding={1}>
+          <ToneIcon
+            symbol={ErrorOutlineIcon}
+            tone={isValidatingDocuments ? 'default' : 'critical'}
+          />
           {tooltipText}
-        </Text>
-      </Flex>
+        </Flex>
+      </Text>
     )
-  }, [tooltipText])
+  }, [isValidatingDocuments, tooltipText])
 
   return (
     <>

@@ -5,6 +5,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Dialog} from '../../../../../ui-components'
+import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../store'
 import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
@@ -128,13 +129,17 @@ export const ReleasePublishAllButton = ({
       return null
     }
 
+    // TODO: this is a duplicate of logic in ReleaseScheduleButton
     return (
-      <Flex gap={1} align="center">
-        <ErrorOutlineIcon />
-        <Text muted size={1}>
+      <Text muted size={1}>
+        <Flex align="center" gap={3} padding={1}>
+          <ToneIcon
+            symbol={ErrorOutlineIcon}
+            tone={isValidatingDocuments ? 'default' : 'critical'}
+          />
           {tooltipText()}
-        </Text>
-      </Flex>
+        </Flex>
+      </Text>
     )
   }, [hasDocumentValidationErrors, isValidatingDocuments, t])
 

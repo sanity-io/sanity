@@ -73,8 +73,11 @@ const releasesLocaleStrings = {
   'document-count.changed-singular': '{{count}} changed document',
   /** Text for when documents of a release are loading */
   'document-loading': 'Loading documents',
-  /** Label for when documents in release have validation warnings */
-  'document-validation.error': 'There are validation errors in this document',
+  /** Label for when a document in a release has multiple validation warnings */
+  'document-validation.error': '{{count}} validation errors',
+  /** Label for when a document in a release has a single validation warning */
+  'document-validation.error-singular': '{{count}} validation error',
+
   /** Label when a release has been deleted by a different user */
   'deleted-release': "The '<strong>{{title}}</strong>' release has been deleted",
 
