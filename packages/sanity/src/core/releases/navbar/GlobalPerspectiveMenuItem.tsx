@@ -2,7 +2,7 @@ import {DotIcon, EyeClosedIcon, EyeOpenIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {formatRelative} from 'date-fns'
-import {type CSSProperties, forwardRef, type MouseEvent, useCallback} from 'react'
+import {type CSSProperties, forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip'
@@ -89,6 +89,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
     isPerspectiveExcluded,
   } = usePerspective()
   const isReleasePublishedPerspective = isPublishedPerspective(release)
+  const isUnnamedRelease = !isReleasePublishedPerspective && !release.metadata.title
   const releaseId = isReleasePublishedPerspective ? 'published' : release._id
   const active = releaseId === currentGlobalBundleId
   const first = rangePosition === 'first'
@@ -102,6 +103,18 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   const isReleasePerspectiveExcluded = isPerspectiveExcluded(releasePerspectiveId)
 
   const {t} = useTranslation()
+
+  const displayTitle = useMemo(() => {
+    if (isUnnamedRelease) {
+      return t('release.placeholder-untitled-release')
+    }
+
+    if (isReleasePublishedPerspective) {
+      return t('release.published')
+    }
+
+    return release.metadata?.title
+  }, [isReleasePublishedPerspective, isUnnamedRelease, release, t])
 
   const handleToggleReleaseVisibility = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -157,7 +170,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             }}
           >
             <Text size={1} weight="medium">
-              {isReleasePublishedPerspective ? 'Published' : release.metadata.title}
+              {displayTitle}
             </Text>
             {!isPublishedPerspective(release) &&
               release.metadata.releaseType !== 'undecided' &&

@@ -146,7 +146,7 @@ export function ReleaseInputsForm({
         <TitleInput
           onChange={handleTitleChange}
           value={value.metadata.title}
-          placeholder={t('release.form.placeholer-untitled-release')}
+          placeholder={t('release.placeholder-untitled-release')}
           data-testid="release-form-title"
         />
       </Box>

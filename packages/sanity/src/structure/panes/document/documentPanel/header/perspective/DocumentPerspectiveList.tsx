@@ -175,7 +175,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             tooltipContent={<TooltipContent release={release} />}
             selected={release.name === getVersionFromId(displayed?._id || '')}
             onClick={handleBundleChange(release.name)}
-            text={release.metadata.title}
+            text={release.metadata.title || t('release.placeholder-untitled-release')}
             tone={getReleaseTone(release)}
             contextValues={{
               documentId: displayed?._id || '',
