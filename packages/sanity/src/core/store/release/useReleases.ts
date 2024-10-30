@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {getBundleIdFromReleaseId} from '../../releases'
 import {sortReleases} from '../../releases/hooks/utils'
+import {getBundleIdFromReleaseId} from '../../releases/util/getBundleIdFromReleaseId'
 import {useReleasesStore} from '../_legacy/datastores'
 import {type ReleasesReducerAction} from './reducer'
 import {type ReleaseDocument} from './types'
