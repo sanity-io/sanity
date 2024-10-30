@@ -12,8 +12,8 @@ import {
   useTranslation,
   versionDocumentExists,
 } from 'sanity'
-import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 
+import {useDocumentPane} from '../../../useDocumentPane'
 import {VersionChip} from './VersionChip'
 
 type FilterReleases = {
@@ -55,7 +55,7 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
 }
 
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
-  const {perspective} = usePaneRouter()
+  const {perspective} = usePerspective()
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
   const dateTimeFormat = useDateTimeFormat({

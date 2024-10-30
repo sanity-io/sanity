@@ -4,17 +4,16 @@ import {
   resolveBundlePerspective,
   unstable_useValuePreview as useValuePreview,
   useEditState,
+  usePerspective,
   useSchema,
   useTranslation,
 } from 'sanity'
-import {useRouter} from 'sanity/router'
 
 import {LOADING_PANE} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
 import {type Panes} from '../../structureResolvers'
 import {type DocumentPaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
-import {usePaneRouter} from '../paneRouter'
 
 interface StructureTitleProps {
   resolvedPanes: Panes['resolvedPanes']
@@ -23,9 +22,7 @@ interface StructureTitleProps {
 // TODO: Fix state jank when editing different versions inside panes.
 const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const {documentId, documentType} = props
-  const router = useRouter()
-  const paneRouter = usePaneRouter()
-  const perspective = paneRouter.perspective ?? router.stickyParams.perspective
+  const {perspective} = usePerspective()
 
   const editState = useEditState(
     documentId,

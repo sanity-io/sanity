@@ -1,9 +1,7 @@
 import {isEqual} from 'lodash'
 import {lazy, memo, Suspense} from 'react'
-import {useRouter} from 'sanity/router'
 
 import {PaneRouterProvider} from '../components/paneRouter'
-import {useResolvedPanes} from '../structureResolvers'
 import {type PaneNode} from '../types'
 import {LoadingPane} from './loading'
 import {UnknownPane} from './unknown'
@@ -54,8 +52,6 @@ export const StructureToolPane = memo(
     } = props
 
     const PaneComponent = paneMap[pane.type] || UnknownPane
-    const {stickyParams} = useRouter()
-    const {resolvedPanes} = useResolvedPanes()
 
     return (
       <PaneRouterProvider
@@ -64,7 +60,6 @@ export const StructureToolPane = memo(
         params={params}
         payload={payload}
         siblingIndex={siblingIndex}
-        perspective={params.perspective ?? stickyParams.perspective}
       >
         <Suspense fallback={<LoadingPane paneKey={paneKey} path={path} selected={selected} />}>
           <PaneComponent

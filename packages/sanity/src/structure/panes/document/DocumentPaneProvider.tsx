@@ -21,6 +21,7 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  getVersionFromId,
   isSanityCreateLinkedDocument,
   isVersionId,
   type OnPathFocusPayload,
@@ -37,6 +38,7 @@ import {
   useEditState,
   useFormState,
   useInitialValue,
+  usePerspective,
   usePresenceStore,
   useSchema,
   useSource,
@@ -100,7 +102,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-  const {perspective} = paneRouter
+  const {perspective} = usePerspective()
 
   const bundlePerspective = resolveBundlePerspective(perspective)
 
@@ -584,8 +586,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
-  const isNonExistentInBundle = typeof bundlePerspective !== 'undefined' && !isVersionId(value._id)
-  const existsInBundle = typeof bundlePerspective !== 'undefined' && isVersionId(value._id)
+  const isNonExistentInBundle =
+    typeof bundlePerspective !== 'undefined' && getVersionFromId(value._id) !== bundlePerspective
+  const existsInBundle =
+    typeof bundlePerspective !== 'undefined' && getVersionFromId(value._id) === bundlePerspective
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
