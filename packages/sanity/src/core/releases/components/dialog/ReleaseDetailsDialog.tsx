@@ -15,6 +15,7 @@ import {
 import {usePerspective} from '../../hooks/usePerspective'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
 import {createReleaseId} from '../../util/createReleaseId'
+import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
 import {ReleaseForm} from './ReleaseForm'
 
 interface ReleaseDetailsDialogProps {
@@ -61,7 +62,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
         const action = formAction === 'edit' ? updateRelease : createRelease
         await action(submitValue)
         if (formAction === 'create') {
-          setPerspective(value._id)
+          setPerspective(getBundleIdFromReleaseId(value._id))
           telemetry.log(CreatedRelease, {origin})
         } else {
           telemetry.log(UpdatedRelease)
