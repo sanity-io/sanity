@@ -96,8 +96,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
     setValue(changedValue)
   }, [])
 
-  const dialogTitle =
-    formAction === 'edit' ? t('release.dialog.edit.title') : t('release.dialog.create.title')
+  const dialogTitle = t('release.dialog.create.title')
 
   const isReleaseScheduled =
     release && (release.state === 'scheduled' || release.state === 'scheduling')
