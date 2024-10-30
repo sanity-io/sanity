@@ -24,6 +24,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
   fallbackPlacements: ['bottom-end', 'bottom'],
   placement: 'bottom-end',
+  tone: 'default',
 }
 
 export function WorkspaceMenuButton() {
