@@ -9,10 +9,6 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {DocumentSheetListPane} from '../DocumentSheetListPane'
 
-vi.mock('../../../../../core/store/release/useReleases', () => ({
-  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
-}))
-
 vi.mock('../useDocumentSheetList', () => ({
   useDocumentSheetList: vi.fn().mockReturnValue({
     data: [

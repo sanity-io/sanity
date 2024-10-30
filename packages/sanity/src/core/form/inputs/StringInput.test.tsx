@@ -1,12 +1,8 @@
 import userEvent from '@testing-library/user-event'
-import {describe, expect, it, vi} from 'vitest'
+import {describe, expect, it} from 'vitest'
 
 import {renderStringInput} from '../../../../test/form/renderStringInput'
 import {StringInput} from './StringInput'
-
-vi.mock('../../store/release/useReleases', () => ({
-  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
-}))
 
 describe('StringInput', () => {
   it('renders input value', async () => {

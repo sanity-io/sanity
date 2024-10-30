@@ -2,14 +2,10 @@
 import {type FileAsset, type FileSchemaType} from '@sanity/types'
 import {fireEvent, waitFor} from '@testing-library/react'
 import {type Observable, of} from 'rxjs'
-import {describe, expect, it, vi} from 'vitest'
+import {describe, expect, it} from 'vitest'
 
 import {renderFileInput} from '../../../../../../../test/form'
 import {BaseFileInput} from '../FileInput'
-
-vi.mock('../../../../../store/release/useReleases', () => ({
-  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
-}))
 
 const observeAssetStub = (): Observable<FileAsset> =>
   of({

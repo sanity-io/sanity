@@ -9,16 +9,13 @@ import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
-vi.mock('../../../../../../../core/store/release/useReleases', () => ({
-  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
-}))
-
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   usePerspective: vi.fn().mockReturnValue({
     currentGlobalBundle: {},
     setPerspective: vi.fn(),
   }),
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   versionDocumentExists: vi.fn().mockReturnValue(true),
   Translate: vi.fn(),
   /**
@@ -88,12 +85,6 @@ describe('DocumentPerspectiveList', () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: mockCurrent,
       setPerspective: vi.fn(),
-      bundlesPerspective: ['drafts'],
-      excludedPerspectives: [],
-      isPerspectiveExcluded: vi.fn(),
-      perspective: undefined,
-      setPerspectiveFromRelease: vi.fn(),
-      toggleExcludedPerspective: vi.fn(),
     })
 
     mockUseDocumentPane.mockReturnValue({
@@ -126,10 +117,6 @@ describe('DocumentPerspectiveList', () => {
           },
         },
       ],
-      dispatch: vi.fn(),
-      error: undefined,
-      archivedReleases: [],
-      releasesIds: [],
     })
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [

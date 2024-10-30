@@ -8,10 +8,6 @@ import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {PaneContainer} from '../PaneContainer'
 
-vi.mock('../../../../core/store/release/useReleases', () => ({
-  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
-}))
-
 vi.mock('../../../useStructureToolSetting', () => ({
   useStructureToolSetting: vi.fn(),
 }))

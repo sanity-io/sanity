@@ -1,14 +1,10 @@
 import {defineField} from '@sanity/types'
 import {fireEvent, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {describe, expect, it, vi} from 'vitest'
+import {describe, expect, it} from 'vitest'
 
 import {renderBooleanInput} from '../../../../test/form/renderBooleanInput'
 import {BooleanInput} from './BooleanInput'
-
-vi.mock('../../store/release/useReleases', () => ({
-  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
-}))
 
 const defs = {
   booleanTest: defineField({
