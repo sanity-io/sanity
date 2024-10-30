@@ -8,6 +8,7 @@ import {
   SourceProvider,
   Translate,
   useDocumentType,
+  usePerspective,
   useSource,
   useTemplatePermissions,
   useTemplates,
@@ -44,6 +45,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
   const {resolveNewDocumentOptions} = useSource().document
+  const {perspective} = usePerspective()
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
@@ -130,7 +132,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
     <DocumentPaneProvider
       // this needs to be here to avoid formState from being re-used across (incompatible) document types
       // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
-      key={`${documentType}-${options.id}-${paneRouter.perspective || ''}`}
+      key={`${documentType}-${options.id}-${perspective || ''}`}
       {...providerProps}
     >
       {/* NOTE: this is a temporary location for this provider until we */}

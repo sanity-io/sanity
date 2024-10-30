@@ -11,6 +11,7 @@ import {
   getPublishedId,
   resolveBundlePerspective,
   useDocumentPreviewStore,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 
@@ -33,8 +34,8 @@ interface ParentReferenceInfo {
 
 export const ReferenceChangedBanner = memo(() => {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {params, groupIndex, routerPanesState, replaceCurrent, BackLink, perspective} =
-    usePaneRouter()
+  const {perspective} = usePerspective()
+  const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
   const routerReferenceId = routerPanesState[groupIndex]?.[0].id
   const parentGroup = routerPanesState[groupIndex - 1] as RouterPaneGroup | undefined
   const parentSibling = parentGroup?.[0]

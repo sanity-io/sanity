@@ -5,8 +5,8 @@ import {
   CommentsProvider,
   getVersionId,
   useCommentsEnabled,
+  usePerspective,
 } from 'sanity'
-import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
@@ -39,9 +39,8 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
 
   const {enabled} = useCommentsEnabled()
   const {connectionState, onPathOpen, inspector, openInspector, version} = useDocumentPane()
-  const router = useRouter()
-  const {params, setParams, createPathWithParams, ...paneRouter} = usePaneRouter()
-  const perspective = paneRouter.perspective ?? router.stickyParams.perspective
+  const {params, setParams, createPathWithParams} = usePaneRouter()
+  const {perspective} = usePerspective()
   const versionOrPublishedId = useMemo(
     () => (version ? getVersionId(documentId, version) : documentId),
     [documentId, version],
