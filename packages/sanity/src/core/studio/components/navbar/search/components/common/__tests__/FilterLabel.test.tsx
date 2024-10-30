@@ -1,12 +1,16 @@
+import {type SanityClient} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
-import {type SanityClient} from 'sanity'
-import {describe, expect, test} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
 import {SearchProvider} from '../../../contexts/search/SearchProvider'
 import {type SearchFilter} from '../../../types'
 import {FilterLabel} from '../FilterLabel'
+
+vi.mock('../../../../../../../store/release/useReleases', () => ({
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+}))
 
 describe('FilterLabel', () => {
   const mockFilter: SearchFilter = {

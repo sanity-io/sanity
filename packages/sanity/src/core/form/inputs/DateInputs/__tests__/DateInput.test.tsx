@@ -1,10 +1,14 @@
 import {defineField} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {expect, test} from 'vitest'
+import {expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
 import {DateInput} from '../DateInput'
+
+vi.mock('../../../../store/release/useReleases', () => ({
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+}))
 
 // NOTE: for the tests to be deterministic we need this to ensure tests are run in a predefined timezone
 // see globalSetup in jest config for details about how this is set up

@@ -1,7 +1,11 @@
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {renderNumberInput} from '../../../../test/form'
 import {NumberInput} from './NumberInput'
+
+vi.mock('../../store/release/useReleases', () => ({
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+}))
 
 describe('number-input', () => {
   it('renders the number input field', async () => {

@@ -1,10 +1,14 @@
 import {defineField} from '@sanity/types'
 import userEvent from '@testing-library/user-event'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {renderObjectInput} from '../../../../../../test/form'
 import {type FieldProps} from '../../../types'
 import {ObjectInput} from '../ObjectInput'
+
+vi.mock('../../../../store/release/useReleases', () => ({
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+}))
 
 const fieldsetsTestType = defineField({
   title: 'Fieldsets test',

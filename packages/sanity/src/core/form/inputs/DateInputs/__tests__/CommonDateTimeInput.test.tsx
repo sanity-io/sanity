@@ -10,10 +10,14 @@ import userEvent from '@testing-library/user-event'
 import {expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
-import {type CalendarLabels} from '../base/calendar/types'
+import {type CalendarLabels} from '../../../../../ui-components/inputs/DateInputs/calendar/types'
 import {CommonDateTimeInput} from '../CommonDateTimeInput'
 import {type ParseResult} from '../types'
 import {isValidDate} from '../utils'
+
+vi.mock('../../../../store/release/useReleases', () => ({
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+}))
 
 function parseInputValue(input: string): ParseResult {
   const candidate = parse(input, `${DEFAULT_DATE_FORMAT} ${DEFAULT_TIME_FORMAT}`)
@@ -35,6 +39,8 @@ function serialize(date: Date): string {
 }
 
 const CALENDAR_LABELS: CalendarLabels = {
+  ariaLabel: 'Calendar',
+  tooltipText: 'Open calendar',
   goToTomorrow: 'Tomorrow',
   goToYesterday: 'Yesterday',
   goToToday: 'Today',

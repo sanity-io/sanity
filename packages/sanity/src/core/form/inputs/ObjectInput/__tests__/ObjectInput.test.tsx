@@ -5,6 +5,10 @@ import {renderObjectInput} from '../../../../../../test/form'
 import {type RenderFieldCallback, type RenderInputCallback} from '../../../types'
 import {ObjectInput} from '../ObjectInput'
 
+vi.mock('../../../../store/release/useReleases', () => ({
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+}))
+
 const defs = {
   basic: defineType({
     title: 'very basic object',

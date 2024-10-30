@@ -12,6 +12,10 @@ import {defineConfig} from '../../../../config'
 import {CrossDatasetReferenceInput} from '../CrossDatasetReferenceInput'
 import {featureDisabledRequest, featureEnabledRequest} from './mocks'
 
+vi.mock('../../../../store/release/useReleases', () => ({
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+}))
+
 const AVAILABLE = {
   available: true,
   reason: 'READABLE',
