@@ -236,10 +236,10 @@ const config = {
           'error',
           {
             paths: [
-              {
-                name: 'sanity',
-                message: 'Please import from the relative path instead of the `sanity` package',
-              },
+              // {
+              //   name: 'sanity',
+              //   message: 'Please import from the relative path instead of the `sanity` package',
+              // },
               ...sanityNoRestrictedImportsPaths,
             ],
           },

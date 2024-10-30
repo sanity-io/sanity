@@ -87,7 +87,7 @@ export function getReleasePublishDate(
 }
 
 /** @internal */
-export function isPublishedPerspective(bundle: CurrentPerspective): bundle is 'published' {
+export function isPublishedPerspective(bundle: CurrentPerspective | string): bundle is 'published' {
   return bundle === 'published'
 }
 
