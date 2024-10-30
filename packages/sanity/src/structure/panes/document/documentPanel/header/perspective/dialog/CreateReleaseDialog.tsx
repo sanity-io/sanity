@@ -59,7 +59,7 @@ export function CreateReleaseDialog(props: {
     try {
       setIsSubmitting(true)
 
-      createRelease(value)
+      await createRelease(value)
 
       handleAddVersion()
       telemetry.log(CreatedRelease, {origin: 'document-panel'})
