@@ -307,17 +307,15 @@ export function ReleasesOverview() {
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
       <Flex flex={1}>
-        {(loading || hasReleases) && (
-          <Flex flex="none">
-            <Card borderRight flex="none" disabled>
-              <CalendarFilter
-                renderCalendarDay={ReleaseCalendarDay}
-                selectedDate={releaseFilterDate}
-                onSelect={handleSelectFilterDate}
-              />
-            </Card>
-          </Flex>
-        )}
+        <Flex flex="none">
+          <Card borderRight flex="none" disabled>
+            <CalendarFilter
+              renderCalendarDay={ReleaseCalendarDay}
+              selectedDate={releaseFilterDate}
+              onSelect={handleSelectFilterDate}
+            />
+          </Card>
+        </Flex>
         <Flex direction="column" flex={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
             <Flex align="flex-start" flex={1} gap={3}>
@@ -346,18 +344,17 @@ export function ReleasesOverview() {
               </Flex>
             </Flex>
           </Card>
-          {!loading && !hasReleases && (
-            <Container style={{margin: 0}} width={0}>
-              <Stack space={5} padding={4}>
-                <Text data-testid="no-releases-info-text" muted size={2}>
-                  {t('overview.description')}
-                </Text>
-                <Box>{createReleaseButton}</Box>
-              </Stack>
-            </Container>
-          )}
-          {(hasReleases || loadingTableData) && (
-            <Box ref={scrollContainerRef} marginTop={3} overflow={'auto'}>
+          <Box ref={scrollContainerRef} marginTop={3} overflow={'auto'}>
+            {!loading && !hasReleases ? (
+              <Container style={{margin: 0}} width={0}>
+                <Stack space={5} padding={4}>
+                  <Text data-testid="no-releases-info-text" muted size={2}>
+                    {t('overview.description')}
+                  </Text>
+                  <Box>{createReleaseButton}</Box>
+                </Stack>
+              </Container>
+            ) : (
               <Table<TableRelease>
                 // for resetting filter and sort on table when filer changed
                 key={releaseFilterDate ? 'by_date' : releaseGroupMode}
@@ -373,8 +370,8 @@ export function ReleasesOverview() {
                 scrollContainerRef={scrollContainerRef}
                 hideTableInlinePadding
               />
-            </Box>
-          )}
+            )}
+          </Box>
           {renderCreateReleaseDialog()}
         </Flex>
       </Flex>
