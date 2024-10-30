@@ -1,4 +1,8 @@
-import {unstable_useValuePreview as useValuePreview} from 'sanity'
+import {
+  isPublishedPerspective,
+  unstable_useValuePreview as useValuePreview,
+  usePerspective,
+} from 'sanity'
 
 import {useDocumentPane} from './useDocumentPane'
 
@@ -23,7 +27,11 @@ interface UseDocumentTitle {
  */
 export function useDocumentTitle(): UseDocumentTitle {
   const {connectionState, schemaType, title, editState} = useDocumentPane()
-  const documentValue = editState?.version || editState?.draft || editState?.published
+  const {perspective} = usePerspective()
+  const documentValue =
+    perspective && isPublishedPerspective(perspective)
+      ? editState?.published
+      : editState?.version || editState?.draft || editState?.published
   const subscribed = Boolean(documentValue)
 
   const {error, value} = useValuePreview({
