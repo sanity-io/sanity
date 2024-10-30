@@ -3,17 +3,15 @@ import {DotIcon, EyeClosedIcon, EyeOpenIcon} from '@sanity/icons'
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {formatRelative} from 'date-fns'
 import {type CSSProperties, forwardRef, type MouseEvent, useCallback} from 'react'
-import {
-  getBundleIdFromReleaseId,
-  getReleaseTone,
-  ReleaseAvatar,
-  type ReleaseDocument,
-  useTranslation,
-} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {type ReleaseDocument} from '../../store/release/types'
+import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {usePerspective} from '../hooks/usePerspective'
+import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
+import {getReleaseTone} from '../util/getReleaseTone'
 import {getPublishDateFromRelease, isPublishedPerspective} from '../util/util'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 

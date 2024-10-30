@@ -2,11 +2,11 @@ import {AddIcon, ChevronDownIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- MenuItem requires props, only supported by @sanity/ui
 import {Box, Button, Flex, Menu, MenuDivider, MenuItem, Spinner} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {type ReleaseDocument, type ReleaseType} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
+import {type ReleaseDocument, type ReleaseType} from '../../store/release/types'
 import {useReleases} from '../../store/release/useReleases'
 import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../hooks'
