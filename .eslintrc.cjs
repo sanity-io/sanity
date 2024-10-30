@@ -231,6 +231,11 @@ const config = {
     },
     {
       files: ['packages/sanity/src/core/**'],
+      excludedFiles: [
+        '**/__workshop__/**',
+        'packages/sanity/src/_singletons/**',
+        'packages/sanity/src/_createContext/**',
+      ],
       rules: {
         'no-restricted-imports': [
           'error',
