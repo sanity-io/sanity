@@ -213,6 +213,8 @@ const releasesLocaleStrings = {
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been unschedule */
   'toast.unschedule.success': "The '<strong>{{title}}</strong>' release was unscheduled.",
+
+  'type-picker.tooltip.scheduled': 'The release is scheduled, unschedule it to change type',
 }
 
 /**

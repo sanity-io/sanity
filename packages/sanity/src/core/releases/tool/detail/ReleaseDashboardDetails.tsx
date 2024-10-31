@@ -1,32 +1,27 @@
-import {LockIcon, PinFilledIcon, PinIcon} from '@sanity/icons'
+import {PinFilledIcon, PinIcon} from '@sanity/icons'
 import {
   Box,
   // Custom button with full radius used here
   // eslint-disable-next-line no-restricted-imports
   Button,
-  Card,
   Container,
   Flex,
   Stack,
-  Text,
 } from '@sanity/ui'
-import {format, isBefore} from 'date-fns'
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 
 import {useTranslation} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store'
-import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {usePerspective} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {getReleasePublishDate} from '../../util/util'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
+import {ReleaseTypePicker} from './ReleaseTypePicker'
 
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const {state, _id} = release
 
-  const {t: tCore} = useTranslation(releasesLocaleNamespace)
-  const {t} = useTranslation()
+  const {t: tRelease} = useTranslation(releasesLocaleNamespace)
 
   const {currentGlobalBundleId, setPerspective, setPerspectiveFromRelease} = usePerspective()
 
@@ -37,22 +32,6 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
       setPerspectiveFromRelease(_id)
     }
   }, [_id, currentGlobalBundleId, setPerspective, setPerspectiveFromRelease])
-
-  const publishDate = getReleasePublishDate(release)
-  const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
-  const isReleaseScheduled = release.state === 'scheduling' || release.state === 'scheduled'
-
-  const publishDateLabel = useMemo(() => {
-    if (release.metadata.releaseType === 'asap') return t('release.type.asap')
-    if (release.metadata.releaseType === 'undecided') return t('release.type.undecided')
-    if (!publishDate) return null
-
-    return isPublishDateInPast
-      ? tCore('dashboard.details.published-on', {
-          date: format(new Date(publishDate), `MMM d, yyyy`),
-        })
-      : format(new Date(publishDate), `PPpp`)
-  }, [isPublishDateInPast, publishDate, release.metadata.releaseType, t, tCore])
 
   return (
     <Container width={3}>
@@ -67,25 +46,10 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
             radius="full"
             selected={_id === currentGlobalBundleId}
             space={2}
-            text={tCore('dashboard.details.pin-release')}
+            text={tRelease('dashboard.details.pin-release')}
             tone={getReleaseTone(release)}
           />
-          {/* TODO: replace with the release time field here //{' '} */}
-          {/* <ReleaseTimeField onChange={handleTimeChange} release={release} value={timeValue} /> */}
-          <Card
-            padding={2}
-            style={isReleaseScheduled ? {opacity: 0.75} : undefined}
-            radius={2}
-            tone={isReleaseScheduled ? 'positive' : 'transparent'}
-          >
-            <Flex flex={1} gap={2} align="center">
-              <ReleaseAvatar padding={0} tone={getReleaseTone(release)} />
-              <Text muted size={1} weight="medium">
-                {publishDateLabel}
-              </Text>
-              {isReleaseScheduled && <LockIcon />}
-            </Flex>
-          </Card>
+          <ReleaseTypePicker release={release} />
         </Flex>
 
         <Box padding={2}>

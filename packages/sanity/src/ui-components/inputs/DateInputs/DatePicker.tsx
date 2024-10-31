@@ -11,10 +11,11 @@ export const DatePicker = forwardRef(function DatePicker(
     timeStep?: number
     calendarLabels: CalendarLabels
     monthPickerVariant?: CalendarProps['monthPickerVariant']
+    padding?: number
   },
   ref: ForwardedRef<HTMLDivElement>,
 ) {
-  const {value = new Date(), onChange, calendarLabels, ...rest} = props
+  const {value = new Date(), onChange, calendarLabels, padding = 2, ...rest} = props
   const [focusedDate, setFocusedDay] = useState<Date>()
 
   const handleSelect = useCallback(

@@ -38,6 +38,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   onFocusedDateChange: (index: Date) => void
   labels: CalendarLabels
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
+  padding?: number
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -73,6 +74,7 @@ export const Calendar = forwardRef(function Calendar(
     onSelect,
     labels,
     monthPickerVariant = 'select',
+    padding = 2,
     ...restProps
   } = props
 
@@ -273,7 +275,7 @@ export const Calendar = forwardRef(function Calendar(
   return (
     <Box data-ui="Calendar" {...restProps} ref={ref}>
       {/* Select date */}
-      <Box padding={2}>
+      <Box padding={padding}>
         {/* Day presets */}
         {features.dayPresets && (
           <Grid columns={3} data-ui="CalendaryDayPresets" gap={1}>
