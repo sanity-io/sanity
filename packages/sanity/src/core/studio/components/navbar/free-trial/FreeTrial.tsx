@@ -138,6 +138,7 @@ export function FreeTrial({type}: FreeTrialProps) {
         size={0}
         scheme={scheme}
         radius={3}
+        tone="default"
         portal
         placement={type === 'sidebar' ? 'top' : 'bottom-end'}
         content={

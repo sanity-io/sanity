@@ -128,12 +128,12 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
       const allNextSearchParams = [...(state._searchParams || []), ...Object.entries(params)]
 
       const searchParams = Object.entries(
-        allNextSearchParams.reduce(
+        allNextSearchParams.reduce<SearchParam>(
           (deduppedSearchParams, [key, value]) => ({
             ...deduppedSearchParams,
             [key]: value,
           }),
-          [],
+          [] as unknown as SearchParam,
         ),
       )
 

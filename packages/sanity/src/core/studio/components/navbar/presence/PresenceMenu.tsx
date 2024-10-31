@@ -67,6 +67,7 @@ export function PresenceMenu() {
       placement: 'bottom',
       portal: true,
       scheme: scheme,
+      tone: 'default',
     }),
     [scheme],
   )

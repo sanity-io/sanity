@@ -170,7 +170,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             }}
           >
             <Text size={1} weight="medium">
-              {displayTitle}
+              {isReleasePublishedPerspective ? t('release.chip.published') : release.metadata.title}
             </Text>
             {!isPublishedPerspective(release) &&
               release.metadata.releaseType !== 'undecided' &&
