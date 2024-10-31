@@ -8,6 +8,8 @@ const releasesLocaleStrings = {
   'action.add-document': 'Add document',
   /** Action text for archiving a release */
   'action.archive': 'Archive release',
+  /** Tooltip for when the archive release action is disabled due to release being scheduled  */
+  'action.archive.tooltip': 'Unschedule this release to archive it',
   /** Action text for showing the archived releases */
   'action.archived': 'Archived',
   /** Action text for deleting a release */

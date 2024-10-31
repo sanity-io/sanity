@@ -74,8 +74,11 @@ describe('DocumentHeaderTitle', () => {
       data: [],
       loading: false,
       dispatch: vi.fn(),
-      stack: [],
+      archivedReleases: [],
+      releasesIds: [],
     })
+
+    global.HTMLElement.prototype.scrollIntoView = vi.fn()
   })
 
   it('should render without crashing', async () => {

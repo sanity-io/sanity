@@ -85,11 +85,20 @@ describe('DocumentPerspectiveList', () => {
     mockUsePerspective.mockReturnValue({
       currentGlobalBundle: mockCurrent,
       setPerspective: vi.fn(),
+      bundlesPerspective: ['drafts'],
+      currentGlobalBundleId: '_.releases.spring-drop',
+      excludedPerspectives: [],
+      isPerspectiveExcluded: vi.fn().mockReturnValue(false),
+      perspective: undefined,
+      setPerspectiveFromRelease: vi.fn(),
+      toggleExcludedPerspective: vi.fn(),
     })
 
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [],
     })
+
+    global.HTMLElement.prototype.scrollIntoView = vi.fn()
   })
 
   it('should render "Published" and "Draft" chips when it has no other version', async () => {
@@ -117,6 +126,9 @@ describe('DocumentPerspectiveList', () => {
           },
         },
       ],
+      archivedReleases: [],
+      dispatch: vi.fn(),
+      releasesIds: [],
     })
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [

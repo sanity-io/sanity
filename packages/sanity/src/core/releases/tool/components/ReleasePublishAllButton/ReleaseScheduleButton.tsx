@@ -1,6 +1,7 @@
 import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Stack, Text, useToast} from '@sanity/ui'
+import {format, isValid, parse} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'
@@ -9,7 +10,6 @@ import {type CalendarLabels} from '../../../../../ui-components/inputs/DateInput
 import {DateTimeInput} from '../../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
-import {useDateTimeFormat} from '../../../../hooks'
 import {Translate, useTranslation} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../store'
 import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
@@ -33,15 +33,18 @@ export const ReleaseScheduleButton = ({
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
   const [status, setStatus] = useState<'idle' | 'confirm' | 'scheduling'>('idle')
+  const [publishAt, setPublishAt] = useState<Date | undefined>()
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
   const isScheduleButtonDisabled = disabled || isValidatingDocuments || hasDocumentValidationErrors
 
   const handleConfirmSchedule = useCallback(async () => {
+    if (!publishAt) return
+
     try {
       setStatus('scheduling')
-      await schedule(release._id, new Date(release.metadata.intendedPublishAt!))
+      await schedule(release._id, publishAt)
       telemetry.log(ScheduledRelease)
       toast.push({
         closable: true,
@@ -73,22 +76,26 @@ export const ReleaseScheduleButton = ({
     } finally {
       setStatus('idle')
     }
-  }, [
-    schedule,
-    release._id,
-    release.metadata.intendedPublishAt,
-    release.metadata.title,
-    telemetry,
-    toast,
-    t,
-  ])
+  }, [schedule, release._id, release.metadata.title, publishAt, telemetry, toast, t])
+
   const {t: coreT} = useTranslation()
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
-  const dateFormatter = useDateTimeFormat()
 
-  const [publishAt, setPublishAt] = useState<Date | undefined>(
-    release.metadata.intendedPublishAt ? new Date(release.metadata.intendedPublishAt) : new Date(),
-  )
+  const handleBundlePublishAtCalendarChange = useCallback((date: Date | null) => {
+    if (!date) return
+
+    setPublishAt(date)
+  }, [])
+
+  const handleBundleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
+    const date = event.currentTarget.value
+    const parsedDate = parse(date, 'PP HH:mm', new Date())
+
+    if (isValid(parsedDate)) {
+      setPublishAt(parsedDate)
+    }
+  }, [])
+
   const confirmScheduleDialog = useMemo(() => {
     if (status === 'idle') return null
 
@@ -119,10 +126,11 @@ export const ReleaseScheduleButton = ({
               <DateTimeInput
                 selectTime
                 monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-                onChange={(date) => setPublishAt(date || undefined)}
+                onChange={handleBundlePublishAtCalendarChange}
+                onInputChange={handleBundleInputChange}
                 value={publishAt}
                 calendarLabels={calendarLabels}
-                inputValue={dateFormatter.format(publishAt)}
+                inputValue={publishAt ? format(publishAt, 'PP HH:mm') : ''}
                 constrainSize={false}
               />
             </Stack>
@@ -145,11 +153,21 @@ export const ReleaseScheduleButton = ({
     t,
     documents.length,
     handleConfirmSchedule,
+    handleBundlePublishAtCalendarChange,
+    handleBundleInputChange,
+    publishAt,
     calendarLabels,
     release.metadata.title,
-    publishAt,
-    dateFormatter,
   ])
+
+  const handleOnInitialSchedule = useCallback(() => {
+    setPublishAt(
+      release.metadata.intendedPublishAt
+        ? new Date(release.metadata.intendedPublishAt)
+        : new Date(),
+    )
+    setStatus('confirm')
+  }, [release.metadata.intendedPublishAt])
 
   const tooltipText = useMemo(() => {
     if (isValidatingDocuments) {
@@ -193,7 +211,7 @@ export const ReleaseScheduleButton = ({
         icon={ClockIcon}
         disabled={isScheduleButtonDisabled || status === 'scheduling'}
         text={t('action.schedule')}
-        onClick={() => setStatus('confirm')}
+        onClick={handleOnInitialSchedule}
         loading={status === 'scheduling'}
         data-testid="schedule-button"
       />
