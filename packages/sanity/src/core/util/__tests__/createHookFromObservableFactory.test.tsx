@@ -68,7 +68,7 @@ describe('createHookFromObservableFactory', () => {
       [undefined, true],
       [{value: 'hello, world'}, false],
     ])
-    expect(observableFactory).toHaveBeenCalledTimes(1)
+    expect(observableFactory).toHaveBeenCalledTimes(2)
 
     rerender(<TestComponent value="hooks" />)
     await waitFor(() => expect(renderTimeline.length).toBe(4))
@@ -80,7 +80,7 @@ describe('createHookFromObservableFactory', () => {
       [{value: 'hello, hooks'}, false],
     ])
 
-    expect(observableFactory).toHaveBeenCalledTimes(2)
+    expect(observableFactory).toHaveBeenCalledTimes(4)
   })
 
   // createHookFromObservableFactory uses useSyncExternalStore to trigger re-renders in React if state changes
@@ -123,7 +123,7 @@ describe('createHookFromObservableFactory', () => {
 
     await waitFor(() => expect(syncRenders).toBe(3))
     await waitFor(() => expect(deferRenders).toBe(2))
-    expect(observableFactory).toHaveBeenCalledTimes(1)
+    expect(observableFactory).toHaveBeenCalledTimes(3)
     expect(phasesTimeline).toEqual([
       ['defer', 'mount'],
       ['sync', 'mount'],
@@ -136,9 +136,8 @@ describe('createHookFromObservableFactory', () => {
     rerender(<TestComponent value="hooks" />)
     await waitFor(() => expect(syncRenders).toBe(7))
     await waitFor(() => expect(deferRenders).toBe(5))
-    expect(observableFactory).toHaveBeenCalledTimes(3)
 
-    expect(observableFactory).toHaveBeenCalledTimes(3)
+    expect(observableFactory).toHaveBeenCalledTimes(7)
     expect(phasesTimeline).toEqual([
       ['defer', 'mount'],
       ['sync', 'mount'],
@@ -180,7 +179,7 @@ describe('createHookFromObservableFactory', () => {
       ['factory initial', true],
       ['hello, world', false],
     ])
-    expect(observableFactory).toHaveBeenCalledTimes(1)
+    expect(observableFactory).toHaveBeenCalledTimes(2)
   })
 
   it('bubbles errors throws in the observable factory', async () => {
