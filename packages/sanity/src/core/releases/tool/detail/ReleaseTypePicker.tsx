@@ -72,7 +72,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
 
     if (isPublishDateInPast && release.publishAt)
       return tRelease('dashboard.details.published-on', {
-        date: format(new Date(publishDate), `PPpp`),
+        date: format(new Date(publishDate), 'MMM d, yyyy'),
       })
 
     return format(new Date(labelDate), `PPpp`)
