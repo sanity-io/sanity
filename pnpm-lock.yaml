@@ -1713,8 +1713,8 @@ importers:
         specifier: ^2.1.6
         version: 2.2.0(react@18.3.1)
       react-rx:
-        specifier: ^4.0.1
-        version: 4.0.1(react@18.3.1)(rxjs@7.8.1)
+        specifier: ^4.1.0
+        version: 4.1.0(react@18.3.1)(rxjs@7.8.1)
       read-pkg-up:
         specifier: ^7.0.1
         version: 7.0.1
@@ -10245,6 +10245,11 @@ packages:
     peerDependencies:
       react: ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
 
+  react-compiler-runtime@19.0.0-beta-6fc168f-20241025:
+    resolution: {integrity: sha512-XY5p6GUVaz8P0c/B/2ebqz/xdp0YOtidtOSuiYyQB05fMws0Qys+zubDH7IKQBEtw4AKoCzrJ6ReeTtFLOKniw==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
   react-copy-to-clipboard@5.1.0:
     resolution: {integrity: sha512-k61RsNgAayIJNoy9yDsYzDe/yAZAzEbEgcz3DZMhF686LEyukcE1hzurxe85JandPUG+yTfGVFzuEw3xt8WP/A==}
     peerDependencies:
@@ -10355,10 +10360,10 @@ packages:
       react: ^18.3 || >=19.0.0-rc
       rxjs: ^7
 
-  react-rx@4.0.1:
-    resolution: {integrity: sha512-A0MnLHy9MOE34JRcQ9qnG8VyFN6jOZK76x2JcBooxkxoc72UtD16CbBN15DEoWCo+QL1zUBXLLe0J1s/p050TA==}
+  react-rx@4.1.0:
+    resolution: {integrity: sha512-8Bf8dvOrA9l48ksxR7o2TqDlr9+rdMGWjVSrqn8SCE00vrFKdQE1gqIgwD9PEpcxOPx5I7YgpWlTZRIN4nS8RA==}
     peerDependencies:
-      react: ^18.3 || >=19.0.0-rc
+      react: ^18.3 || >=19.0.0-0
       rxjs: ^7
 
   react-select@5.8.0:
@@ -22722,6 +22727,10 @@ snapshots:
       '@babel/runtime': 7.25.6
       react: 18.3.1
 
+  react-compiler-runtime@19.0.0-beta-6fc168f-20241025(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
   react-copy-to-clipboard@5.1.0(react@18.3.1):
     dependencies:
       copy-to-clipboard: 3.3.3
@@ -22839,10 +22848,11 @@ snapshots:
       rxjs: 7.8.1
       use-effect-event: 1.0.2(react@18.3.1)
 
-  react-rx@4.0.1(react@18.3.1)(rxjs@7.8.1):
+  react-rx@4.1.0(react@18.3.1)(rxjs@7.8.1):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.1)
       react: 18.3.1
+      react-compiler-runtime: 19.0.0-beta-6fc168f-20241025(react@18.3.1)
       rxjs: 7.8.1
       use-effect-event: 1.0.2(react@18.3.1)
 
