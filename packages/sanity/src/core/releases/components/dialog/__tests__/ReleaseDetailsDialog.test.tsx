@@ -4,7 +4,6 @@ import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type ReleaseDocument, useReleases} from '../../../../store'
 import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
-import {usePerspective} from '../../../hooks/usePerspective'
 import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
 
 vi.mock('../../../../store/release', () => ({
@@ -15,12 +14,6 @@ vi.mock('../../../../store/release/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn().mockReturnValue({
     createRelease: vi.fn(),
     updateRelease: vi.fn(),
-  }),
-}))
-
-vi.mock('../../../hooks/usePerspective', () => ({
-  usePerspective: vi.fn().mockReturnValue({
-    setPerspective: vi.fn(),
   }),
 }))
 
@@ -74,7 +67,7 @@ describe('ReleaseDetailsDialog', () => {
       expect(onCancelMock).toHaveBeenCalled()
     })
 
-    it('should call createRelease, setPerspective, and onCreate when form is submitted', async () => {
+    it('should call createRelease and onCreate when form is submitted', async () => {
       const value: Partial<ReleaseDocument> = {
         metadata: {
           title: 'Bundle 1',
@@ -97,8 +90,6 @@ describe('ReleaseDetailsDialog', () => {
         }),
       )
       await Promise.resolve()
-
-      expect(usePerspective().setPerspective).toHaveBeenCalledOnce()
 
       expect(onSubmitMock).toHaveBeenCalled()
     })

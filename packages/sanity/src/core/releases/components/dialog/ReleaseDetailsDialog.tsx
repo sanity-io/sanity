@@ -12,10 +12,8 @@ import {
   type OriginInfo,
   UpdatedRelease,
 } from '../../__telemetry__/releases.telemetry'
-import {usePerspective} from '../../hooks/usePerspective'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
 import {createReleaseId} from '../../util/createReleaseId'
-import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
 import {ReleaseForm} from './ReleaseForm'
 
 interface ReleaseDetailsDialogProps {
@@ -46,9 +44,6 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // TODO MAKE SURE THIS IS HOW WE WANT TO DO THIS
-  const {setPerspective} = usePerspective()
-
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       try {
@@ -62,7 +57,6 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
         const action = formAction === 'edit' ? updateRelease : createRelease
         await action(submitValue)
         if (formAction === 'create') {
-          setPerspective(getBundleIdFromReleaseId(value._id))
           telemetry.log(CreatedRelease, {origin})
         } else {
           telemetry.log(UpdatedRelease)
@@ -79,17 +73,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
         onSubmit()
       }
     },
-    [
-      value,
-      formAction,
-      updateRelease,
-      createRelease,
-      setPerspective,
-      telemetry,
-      origin,
-      toast,
-      onSubmit,
-    ],
+    [value, formAction, updateRelease, createRelease, telemetry, origin, toast, onSubmit],
   )
 
   const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
