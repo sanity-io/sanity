@@ -23,15 +23,16 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
 
-  const {currentGlobalBundleId, setPerspective, setPerspectiveFromRelease} = usePerspective()
+  const {currentGlobalBundleId, setPerspective, setPerspectiveFromReleaseDocumentId} =
+    usePerspective()
 
   const handlePinRelease = useCallback(() => {
     if (_id === currentGlobalBundleId) {
       setPerspective('drafts')
     } else {
-      setPerspectiveFromRelease(_id)
+      setPerspectiveFromReleaseDocumentId(_id)
     }
-  }, [_id, currentGlobalBundleId, setPerspective, setPerspectiveFromRelease])
+  }, [_id, currentGlobalBundleId, setPerspective, setPerspectiveFromReleaseDocumentId])
 
   return (
     <Container width={3}>

@@ -1,6 +1,7 @@
 import {Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {
+  getBundleIdFromReleaseDocumentId,
   getReleaseTone,
   LATEST,
   type ReleaseDocument,
@@ -15,24 +16,22 @@ import {Banner} from './Banner'
 
 export function AddToReleaseBanner({
   documentId,
-  documentType,
   currentRelease,
 }: {
   documentId: string
-  documentType: string
   currentRelease: ReleaseDocument
 }): JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
 
-  const {createVersion} = useVersionOperations(documentId, documentType)
+  const {createVersion} = useVersionOperations()
 
-  const handleAddToRelease = useCallback(() => {
+  const handleAddToRelease = useCallback(async () => {
     if (currentRelease._id) {
-      createVersion(currentRelease._id)
+      await createVersion(getBundleIdFromReleaseDocumentId(currentRelease._id), documentId)
     }
-  }, [createVersion, currentRelease._id])
+  }, [createVersion, currentRelease._id, documentId])
 
   return (
     <Banner

@@ -8,19 +8,12 @@ import {publish as serverPublish} from '../serverOperations/publish'
 import {restore as serverRestore} from '../serverOperations/restore'
 import {unpublish as serverUnpublish} from '../serverOperations/unpublish'
 import {commit} from './commit'
-import {createVersion} from './createVersion'
 import {del} from './delete'
 import {discardChanges} from './discardChanges'
 import {duplicate} from './duplicate'
 import {patch} from './patch'
 import {restore} from './restore'
-import {
-  type Operation,
-  type OperationArgs,
-  type OperationImpl,
-  type OperationsAPI,
-  type VersionOriginTypes,
-} from './types'
+import {type Operation, type OperationArgs, type OperationImpl, type OperationsAPI} from './types'
 import {unpublish} from './unpublish'
 
 function createOperationGuard(opName: string): Operation<any[], 'NOT_READY'> {
@@ -45,7 +38,6 @@ export const GUARDED: OperationsAPI = {
   unpublish: createOperationGuard('unpublish'),
   duplicate: createOperationGuard('duplicate'),
   restore: createOperationGuard('restore'),
-  createVersion: createOperationGuard('createVersion'),
 }
 const createEmitter =
   (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string) =>
@@ -75,10 +67,6 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     unpublish: wrap('unpublish', unpublish, args),
     duplicate: wrap('duplicate', duplicate, args),
     restore: wrap('restore', restore, args),
-    createVersion: wrap('createVersion', createVersion, args) as Operation<
-      [documentId: string, origin?: VersionOriginTypes],
-      'NO_NEW_VERSION'
-    >,
   }
 
   //as we add server operations one by one, we can add them here

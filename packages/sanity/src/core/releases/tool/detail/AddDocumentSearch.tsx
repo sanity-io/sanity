@@ -24,9 +24,9 @@ export function AddDocumentSearch({
   const telemetry = useTelemetry()
 
   const addDocument = useCallback(
-    (item: Pick<SanityDocumentLike, '_id' | '_type'>) => {
+    async (item: Pick<SanityDocumentLike, '_id' | '_type'>) => {
       try {
-        createVersion(item._id, getBundleIdFromReleaseDocumentId(releaseId))
+        await createVersion(getBundleIdFromReleaseDocumentId(releaseId), item._id)
 
         toast.push({
           closable: true,
@@ -37,7 +37,6 @@ export function AddDocumentSearch({
         const origin = getCreateVersionOrigin(item._id)
 
         telemetry.log(AddedVersion, {
-          schemaType: item._type,
           documentOrigin: origin,
         })
       } catch (error) {

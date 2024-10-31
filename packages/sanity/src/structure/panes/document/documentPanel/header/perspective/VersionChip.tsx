@@ -91,7 +91,7 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const docId = isVersion ? getVersionId(documentId, fromRelease) : documentId // operations recognises publish and draft as empty
 
-  const {createVersion} = useVersionOperations(docId, documentType)
+  const {createVersion} = useVersionOperations()
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -131,10 +131,10 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
-      createVersion(targetRelease)
+      await createVersion(getBundleIdFromReleaseDocumentId(targetRelease), docId)
       close()
     },
-    [createVersion, close],
+    [createVersion, docId, close],
   )
 
   const referenceElement = useMemo(() => {
