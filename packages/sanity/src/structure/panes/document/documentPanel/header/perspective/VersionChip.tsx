@@ -1,5 +1,14 @@
 import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {memo, type MouseEvent, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+import {
+  memo,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   DiscardVersionDialog,
   getBundleIdFromReleaseId,
@@ -74,6 +83,12 @@ export const VersionChip = memo(function VersionChip(props: {
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
 
+  const chipRef = useRef<HTMLButtonElement | null>(null)
+
+  useEffect(() => {
+    if (selected) chipRef.current?.scrollIntoView({inline: 'center'})
+  }, [selected])
+
   const docId = isVersion ? getVersionId(documentId, fromRelease) : documentId // operations recognises publish and draft as empty
 
   const {createVersion} = useVersionOperations(docId, documentType)
@@ -147,6 +162,7 @@ export const VersionChip = memo(function VersionChip(props: {
     <>
       <Tooltip content={tooltipContent} fallbackPlacements={[]} portal placement="bottom">
         <Chip
+          ref={(ref) => (chipRef.current = ref)}
           disabled={disabled}
           mode="bleed"
           onClick={onClick}
