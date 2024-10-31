@@ -33,7 +33,7 @@ export function ResourcesButton() {
           <ResourcesMenuItems error={error} isLoading={isLoading} value={value} />
         </StyledMenu>
       }
-      popover={{constrainSize: true}}
+      popover={{constrainSize: true, tone: 'default'}}
     />
   )
 }

@@ -241,6 +241,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       constrainSize
       onKeyDown={handlePopoverKeyDown}
       open={open}
+      tone="default"
       portal
       radius={3}
       ref={popoverRef}
