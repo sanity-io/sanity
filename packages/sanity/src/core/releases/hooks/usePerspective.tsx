@@ -1,11 +1,11 @@
 import {useCallback, useMemo} from 'react'
-import {isPublishedPerspective} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {useReleases} from '../../store/release'
 import {type ReleaseDocument} from '../../store/release/types'
 import {LATEST} from '../util/const'
 import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
+import {isPublishedPerspective} from '../util/util'
 import {getReleasesPerspective} from './utils'
 
 /**
