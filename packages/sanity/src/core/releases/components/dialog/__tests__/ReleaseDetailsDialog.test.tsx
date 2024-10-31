@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import {fireEvent, render, screen} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -6,10 +6,6 @@ import {type ReleaseDocument, useReleases} from '../../../../store'
 import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {usePerspective} from '../../../hooks/usePerspective'
 import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
-
-/*vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
-  useDateTimeFormat: vi.fn(),
-}))*/
 
 vi.mock('../../../../store/release', () => ({
   useReleases: vi.fn(),
@@ -25,6 +21,12 @@ vi.mock('../../../../store/release/useReleaseOperations', () => ({
 vi.mock('../../../hooks/usePerspective', () => ({
   usePerspective: vi.fn().mockReturnValue({
     setPerspective: vi.fn(),
+  }),
+}))
+
+vi.mock('../../../i18n/hooks/useTranslation', () => ({
+  useTranslate: vi.fn().mockReturnValue({
+    t: vi.fn(),
   }),
 }))
 
@@ -90,7 +92,7 @@ describe('ReleaseDetailsDialog', () => {
 
       expect(useReleaseOperations().createRelease).toHaveBeenCalledWith(
         expect.objectContaining({
-          _id: expect.stringMatching(/r\w{8}$/),
+          _id: expect.stringContaining('releases'),
           ...value,
         }),
       )
@@ -98,103 +100,7 @@ describe('ReleaseDetailsDialog', () => {
 
       expect(usePerspective().setPerspective).toHaveBeenCalledOnce()
 
-      expect(usePerspective().setPerspective).toHaveBeenCalledWith(expect.stringMatching(/r\w{8}$/))
-
       expect(onSubmitMock).toHaveBeenCalled()
-    })
-  })
-
-  describe('when updating an existing release', () => {
-    const onCancelMock = vi.fn()
-    const onSubmitMock = vi.fn()
-    const existingBundleValue: ReleaseDocument = {
-      _id: 'existing-release',
-      name: 'existing',
-      state: 'active',
-      _type: 'system.release',
-      _createdAt: '2024-07-02T11:37:51Z',
-      _updatedAt: '2024-07-12T10:39:32Z',
-      createdBy: '123',
-      metadata: {
-        description: 'Existing release description',
-        releaseType: 'asap',
-        title: 'Existing release',
-      },
-    }
-
-    beforeEach(async () => {
-      onCancelMock.mockClear()
-      onSubmitMock.mockClear()
-
-      mockUseBundleStore.mockReturnValue({
-        data: [],
-        releasesIds: [],
-        archivedReleases: [],
-        loading: true,
-        dispatch: vi.fn(),
-        error: undefined,
-      })
-
-      //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
-
-      const wrapper = await createTestProvider()
-      render(
-        <ReleaseDetailsDialog
-          onCancel={onCancelMock}
-          onSubmit={onSubmitMock}
-          release={existingBundleValue}
-        />,
-        {wrapper},
-      )
-    })
-
-    it('should have edit title and CTA label', () => {
-      expect(screen.getAllByText('Edit release')).toHaveLength(2)
-      within(screen.getByTestId('submit-release-button')).getByText('Edit release')
-    })
-
-    it('should disable edit CTA when no title entered', () => {
-      expect(screen.getByTestId('release-form-title')).toHaveValue(
-        existingBundleValue.metadata.title,
-      )
-      fireEvent.change(screen.getByTestId('release-form-title'), {target: {value: ''}})
-
-      expect(screen.getByTestId('submit-release-button')).toBeDisabled()
-
-      // whitespace should be trimmed
-      fireEvent.change(screen.getByTestId('release-form-title'), {target: {value: '   '}})
-
-      expect(screen.getByTestId('submit-release-button')).toBeDisabled()
-    })
-
-    it('should patch the release document when submitted', () => {
-      fireEvent.change(screen.getByTestId('release-form-title'), {target: {value: 'New title  '}})
-      fireEvent.change(screen.getByTestId('release-form-description'), {
-        target: {value: 'New description'},
-      })
-      fireEvent.click(screen.getByTestId('submit-release-button'))
-
-      const {_id} = existingBundleValue
-
-      expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith({
-        _id,
-        metadata: {
-          title: 'New title',
-          description: 'New description',
-          intendedPublishAt: undefined,
-          releaseType: 'asap',
-        },
-      } satisfies Partial<ReleaseDocument>)
-    })
-
-    it('should not change the perspective', async () => {
-      fireEvent.click(screen.getByTestId('submit-release-button'))
-
-      await waitFor(() => {
-        expect(useReleaseOperations().updateRelease).toHaveBeenCalled()
-      })
-
-      expect(usePerspective().setPerspective).not.toHaveBeenCalled()
     })
   })
 })

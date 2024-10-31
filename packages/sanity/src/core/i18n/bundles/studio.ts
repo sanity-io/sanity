@@ -1184,20 +1184,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.deleted-tooltip': 'This release has been deleted',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'Create release',
-  /** Title for editing releases dialog */
-  'release.dialog.edit.title': 'Edit release',
-  /** Label for the description form field when creating releases */
-  'release.form.description': 'Description',
-  /** Placeholder for the icon and colour picker */
-  'release.form.search-icon': 'Search icons',
-  /** Tooltip label for the icon display */
-  'release.form.search-icon-tooltip': 'Select release icon',
-  /** Label for the title form field when creating releases */
-  'release.form.title': 'Title',
+  /** The placeholder text when the release doesn't have a description */
+  'release.form.placeholer-describe-release': 'Describe the release…',
   /** Tooltip for button to hide release visibility */
   'release.layer.hide': 'Hide release',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'Releases',
+  /** The placeholder text when the release doesn't have a title */
+  'release.placeholder-untitled-release': 'Untitled release',
   /** Label for the release type 'as soon as possible' */
   'release.type.asap': 'ASAP',
   /** Label for the release type 'at time', meaning it's a release with a scheduled date */

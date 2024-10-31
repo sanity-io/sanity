@@ -1,27 +1,29 @@
-import {Box, Heading, Text} from '@sanity/ui'
+import {useCallback, useState} from 'react'
 
-import {type ReleaseDocument} from '../../../store'
+import {
+  type EditableReleaseDocument,
+  type ReleaseDocument,
+  useReleaseOperations,
+} from '../../../store'
+import {ReleaseInputsForm} from '../../components/dialog/ReleaseInputsForm'
 
-// TODO: This is not a working example, it's just a placeholder. A proper editor should be implemented.
-export function ReleaseDetailsEditor({
-  description,
-  title,
-}: {
-  description: ReleaseDocument['metadata']['description']
-  title: ReleaseDocument['metadata']['title']
-}) {
-  return (
-    <>
-      <Box paddingBottom={3}>
-        <Heading size={3} style={{margin: '1px 0'}} as="h1">
-          {title}
-        </Heading>
-      </Box>
-      <Box paddingTop={3}>
-        <Text muted size={2} style={{maxWidth: 600}}>
-          {description || 'Describe the release...'}
-        </Text>
-      </Box>
-    </>
+export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): JSX.Element {
+  const {updateRelease} = useReleaseOperations()
+  const [timer, setTimer] = useState<NodeJS.Timeout | undefined>(undefined)
+
+  const handleOnChange = useCallback(
+    (changedValue: EditableReleaseDocument) => {
+      clearTimeout(timer)
+
+      /** @todo I wasn't able to get this working with the debouncer that we use in other parts */
+      const newTimer = setTimeout(() => {
+        updateRelease(changedValue)
+      }, 200)
+
+      setTimer(newTimer)
+    },
+    [timer, updateRelease],
   )
+
+  return <ReleaseInputsForm release={release} onChange={handleOnChange} />
 }

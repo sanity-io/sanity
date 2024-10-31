@@ -74,7 +74,8 @@ export function ReleasesNav(): JSX.Element {
             <Text size={1} textOverflow="ellipsis" weight="medium">
               {isPublishedPerspective(currentGlobalBundle)
                 ? t('release.chip.published')
-                : currentGlobalBundle.metadata?.title}
+                : (currentGlobalBundle.metadata?.title ??
+                  t('release.placeholder-untitled-release'))}
             </Text>
           </Stack>
         </Flex>

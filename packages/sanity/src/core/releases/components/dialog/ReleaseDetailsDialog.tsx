@@ -96,8 +96,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
     setValue(changedValue)
   }, [])
 
-  const dialogTitle =
-    formAction === 'edit' ? t('release.dialog.edit.title') : t('release.dialog.create.title')
+  const dialogTitle = t('release.dialog.create.title')
 
   const isReleaseScheduled =
     release && (release.state === 'scheduled' || release.state === 'scheduling')
@@ -115,7 +114,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
         <Flex justify="flex-end" paddingTop={5}>
           <Button
             size="large"
-            disabled={!value.metadata?.title?.trim() || isSubmitting}
+            disabled={isSubmitting}
             iconRight={ArrowRightIcon}
             type="submit"
             text={dialogTitle}
