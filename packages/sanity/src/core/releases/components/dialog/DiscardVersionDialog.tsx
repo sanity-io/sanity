@@ -39,7 +39,6 @@ export function DiscardVersionDialog(props: {
     <Dialog
       id={'discard-version-dialog'}
       header={t('discard-version-dialog.header')}
-      onClickOutside={onClose}
       onClose={onClose}
       width={0}
       padding={false}
