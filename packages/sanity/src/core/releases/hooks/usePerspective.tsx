@@ -1,4 +1,5 @@
 import {useCallback, useMemo} from 'react'
+import {isPublishedPerspective} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {useReleases} from '../../store/release'
@@ -54,7 +55,10 @@ export function usePerspective(): PerspectiveValue {
     | `bundle.${string}`
     | undefined
 
-  const excludedPerspectives = router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY
+  const excludedPerspectives = useMemo(
+    () => router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY,
+    [router.stickyParams.excludedPerspectives],
+  )
 
   // TODO: Should it be possible to set the perspective within a pane, rather than globally?
   const setPerspective = useCallback(
@@ -107,15 +111,15 @@ export function usePerspective(): PerspectiveValue {
   const toggleExcludedPerspective = useCallback(
     (excluded: string) => {
       if (excluded === LATEST._id) return
-      const nextExcludedPerspectives: string[] = excludedPerspectives || []
+      const existingPerspectives = excludedPerspectives || []
 
-      const excludedPerspectiveId = excluded === 'published' ? 'published' : `bundle.${excluded}`
+      const excludedPerspectiveId = isPublishedPerspective(excluded)
+        ? 'published'
+        : `bundle.${excluded}`
 
-      if (excludedPerspectives?.includes(excludedPerspectiveId)) {
-        nextExcludedPerspectives.splice(nextExcludedPerspectives.indexOf(excludedPerspectiveId), 1)
-      } else {
-        nextExcludedPerspectives.push(excludedPerspectiveId)
-      }
+      const nextExcludedPerspectives = existingPerspectives.includes(excludedPerspectiveId)
+        ? existingPerspectives.filter((id) => id !== excludedPerspectiveId)
+        : [...existingPerspectives, excludedPerspectiveId]
 
       router.navigateStickyParams({excludedPerspectives: nextExcludedPerspectives.toString()})
     },
