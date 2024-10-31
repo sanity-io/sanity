@@ -69,7 +69,6 @@ export function createReleaseOperationsStore(options: {
       {
         actionType: 'sanity.action.release.publish',
         releaseId: getBundleIdFromReleaseId(releaseId),
-        useSystemDocument: true,
       },
     ])
 
@@ -137,7 +136,6 @@ interface ScheduleApiAction {
 interface PublishApiAction {
   actionType: 'sanity.action.release.publish'
   releaseId: string
-  useSystemDocument: true
 }
 
 interface ArchiveApiAction {
