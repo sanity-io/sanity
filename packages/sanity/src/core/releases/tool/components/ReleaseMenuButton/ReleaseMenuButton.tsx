@@ -1,10 +1,4 @@
-import {
-  ArchiveIcon,
-  ArrowRightIcon,
-  EditIcon,
-  EllipsisHorizontalIcon,
-  UnarchiveIcon,
-} from '@sanity/icons'
+import {ArchiveIcon, ArrowRightIcon, EllipsisHorizontalIcon, UnarchiveIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Menu, Spinner, Text} from '@sanity/ui'
 import {type FormEventHandler, useState} from 'react'
@@ -15,7 +9,6 @@ import {useTranslation} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../store/release/types'
 import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {ArchivedRelease, UnarchivedRelease} from '../../../__telemetry__/releases.telemetry'
-import {ReleaseDetailsDialog} from '../../../components/dialog/ReleaseDetailsDialog'
 import {releasesLocaleNamespace} from '../../../i18n'
 
 export type ReleaseMenuButtonProps = {
@@ -27,15 +20,12 @@ const ARCHIVABLE_STATES = ['active', 'published']
 
 export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) => {
   const {archive, unarchive} = useReleaseOperations()
-  const isReleaseArchived = release?.state === 'archived'
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<'edit' | 'confirm-archive'>()
 
   const releaseMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
-
-  const resetSelectedAction = () => setSelectedAction(undefined)
 
   const handleArchive = async (e: Parameters<FormEventHandler<HTMLFormElement>>[0]) => {
     if (releaseMenuDisabled) return
@@ -74,26 +64,24 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
         id="release-menu"
         menu={
           <Menu>
-            <MenuItem
-              onClick={() => setSelectedAction('edit')}
-              icon={EditIcon}
-              text={t('action.edit')}
-              data-testid="edit-release"
-            />
-
-            {release?.state && ARCHIVABLE_STATES.includes(release.state) ? (
-              <MenuItem
-                onClick={() => setSelectedAction('confirm-archive')}
-                icon={ArchiveIcon}
-                text={t('action.archive')}
-                data-testid="archive-release"
-              />
-            ) : (
+            {!release?.state || release.state === 'archived' ? (
               <MenuItem
                 onClick={handleUnarchive}
                 icon={UnarchiveIcon}
                 text={t('action.unarchive')}
                 data-testid="unarchive-release"
+              />
+            ) : (
+              <MenuItem
+                tooltipProps={{
+                  disabled: ARCHIVABLE_STATES.includes(release.state),
+                  content: t('action.archive.tooltip'),
+                }}
+                onClick={() => setSelectedAction('confirm-archive')}
+                icon={ArchiveIcon}
+                text={t('action.archive')}
+                data-testid="archive-release"
+                disabled={!ARCHIVABLE_STATES.includes(release.state)}
               />
             )}
           </Menu>
@@ -135,13 +123,6 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
             </Flex>
           </form>
         </Dialog>
-      )}
-      {selectedAction === 'edit' && (
-        <ReleaseDetailsDialog
-          onCancel={resetSelectedAction}
-          onSubmit={resetSelectedAction}
-          release={release}
-        />
       )}
     </>
   )

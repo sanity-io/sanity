@@ -1,6 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {type FormNodeValidation} from '@sanity/types'
 import {Card, Flex, Stack, TabList, TabPanel, Text} from '@sanity/ui'
+import {format, isValid, parse} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Tab, Tooltip} from '../../../../ui-components'
@@ -8,7 +9,6 @@ import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
-import {useDateTimeFormat} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {type EditableReleaseDocument, type ReleaseType} from '../../../store/release/types'
 import {ReleaseInputsForm} from './ReleaseInputsForm'
@@ -21,12 +21,10 @@ export function ReleaseForm(props: {
 }): JSX.Element {
   const {onChange, value, isReleaseScheduled = false} = props
   const {releaseType} = value.metadata || {}
-  const publishAt = value.publishAt
+  const publishAt = value.metadata.intendedPublishAt
   // derive the action from whether the initial value prop has a slug
   // only editing existing releases will provide a value.slug
   const {t} = useTranslation()
-
-  const dateFormatter = useDateTimeFormat()
 
   // todo: you can create a release without a title, but not without a date if the type is scheduled
   const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
@@ -34,16 +32,34 @@ export function ReleaseForm(props: {
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
-  const [inputValue, setInputValue] = useState<string | undefined>(
-    publishAt ? dateFormatter.format(new Date(publishAt)) : undefined,
+  const [inputValue, setInputValue] = useState<Date | undefined>(
+    publishAt ? new Date(publishAt) : undefined,
   )
 
-  const handleBundlePublishAtChange = useCallback(
-    (date: Date | null) => {
-      setInputValue(date ? dateFormatter.format(date) : undefined)
-      onChange({...value, metadata: {...value.metadata, intendedPublishAt: date?.toDateString()}})
+  const handleBundleInputChange = useCallback(
+    (event: React.FocusEvent<HTMLInputElement>) => {
+      const date = event.currentTarget.value
+      const parsedDate = parse(date, 'PP HH:mm', new Date())
+
+      if (isValid(parsedDate)) {
+        setInputValue(parsedDate)
+        onChange({
+          ...value,
+          metadata: {...value.metadata, intendedPublishAt: parsedDate.toISOString()},
+        })
+      }
     },
-    [dateFormatter, onChange, value],
+    [onChange, value],
+  )
+
+  const handleBundlePublishAtCalendarChange = useCallback(
+    (date: Date | null) => {
+      if (!date) return
+
+      setInputValue(date)
+      onChange({...value, metadata: {...value.metadata, intendedPublishAt: date.toISOString()}})
+    },
+    [onChange, value],
   )
 
   const handleButtonReleaseTypeChange = useCallback(
@@ -58,13 +74,13 @@ export function ReleaseForm(props: {
   )
 
   const handleTitleDescriotionChange = useCallback(
-    (upDatedRlease: EditableReleaseDocument) => {
+    (updatedRelease: EditableReleaseDocument) => {
       onChange({
         ...value,
         metadata: {
           ...value.metadata,
-          title: upDatedRlease.metadata.title,
-          description: upDatedRlease.metadata.description,
+          title: updatedRelease.metadata.title,
+          description: updatedRelease.metadata.description,
         },
       })
     },
@@ -134,10 +150,11 @@ export function ReleaseForm(props: {
                 selectTime
                 readOnly={isReleaseScheduled}
                 monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-                onChange={handleBundlePublishAtChange}
+                onChange={handleBundlePublishAtCalendarChange}
+                onInputChange={handleBundleInputChange}
                 calendarLabels={calendarLabels}
                 value={publishAt ? new Date(publishAt) : undefined}
-                inputValue={inputValue || ''}
+                inputValue={inputValue ? format(inputValue, 'PP HH:mm') : ''}
                 constrainSize={false}
               />
             </TabPanel>

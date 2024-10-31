@@ -1,8 +1,8 @@
 import {LockIcon} from '@sanity/icons'
 import {Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
-import {format, isBefore} from 'date-fns'
+import {format, isBefore, isValid, parse} from 'date-fns'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {type ReleaseDocument, type ReleaseType, useDateTimeFormat, useTranslation} from 'sanity'
+import {type ReleaseDocument, type ReleaseType, useTranslation} from 'sanity'
 
 import {Button, Popover, Tab} from '../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/calendar/Calendar'
@@ -30,15 +30,13 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
   const [dateInputOpen, setDateInputOpen] = useState(release.metadata.releaseType === 'scheduled')
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
   const [updatedDate, setUpdatedDate] = useState<string | undefined>(
-    release.metadata.intendedPublishAt || release.publishAt,
+    release.publishAt || release.metadata.intendedPublishAt,
   )
   const [isUpdating, setIsUpdating] = useState(false)
 
-  const dateFormatter = useDateTimeFormat()
-  const [inputValue, setInputValue] = useState<string | undefined>(
-    release.metadata.intendedPublishAt
-      ? dateFormatter.format(new Date(release.metadata.intendedPublishAt))
-      : undefined,
+  const publishDate = release.publishAt || release.metadata.intendedPublishAt
+  const [inputValue, setInputValue] = useState<Date | undefined>(
+    publishDate ? new Date(publishDate) : undefined,
   )
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
@@ -63,21 +61,22 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
     if (open) inputRef.current?.focus()
   }, [open])
 
-  const publishDate = updatedDate
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
-  const isReleaseScheduled = release.state === 'scheduling'
+  const isReleaseScheduled = release.state === 'scheduling' || release.state === 'scheduled'
 
   const publishDateLabel = useMemo(() => {
     if (releaseType === 'asap') return t('release.type.asap')
     if (releaseType === 'undecided') return t('release.type.undecided')
-    if (!publishDate) return null
+    const labelDate = publishDate || inputValue
+    if (!labelDate) return null
 
-    return isPublishDateInPast
-      ? tRelease('dashboard.details.published-on', {
-          date: format(new Date(publishDate), `MMM d, yyyy`),
-        })
-      : format(new Date(publishDate), `PPpp`)
-  }, [isPublishDateInPast, publishDate, releaseType, t, tRelease])
+    if (isPublishDateInPast && release.publishAt)
+      return tRelease('dashboard.details.published-on', {
+        date: format(new Date(publishDate), 'MMM d, yyyy'),
+      })
+
+    return format(new Date(labelDate), `PPpp`)
+  }, [inputValue, isPublishDateInPast, publishDate, release.publishAt, releaseType, t, tRelease])
 
   const handleButtonReleaseTypeChange = useCallback((pickedReleaseType: ReleaseType) => {
     if (pickedReleaseType === 'scheduled') {
@@ -85,26 +84,29 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
     }
 
     setReleaseType(pickedReleaseType)
+    const nextPublishAt = pickedReleaseType === 'scheduled' ? new Date() : undefined
+    setUpdatedDate(nextPublishAt?.toISOString())
+    setInputValue(nextPublishAt)
   }, [])
 
-  const handleBundlePublishAtChange = useCallback(
-    (date: Date | null) => {
-      setInputValue(dateFormatter.format(date || undefined))
+  const handleBundlePublishAtChange = useCallback((date: Date | null) => {
+    if (!date) return
 
-      setUpdatedDate(date ? date.toISOString() : undefined)
-    },
-    [dateFormatter],
-  )
+    setInputValue(new Date(date))
 
-  const handleInputChange = useCallback(
-    (event: React.FocusEvent<HTMLInputElement>) => {
-      const date = new Date(event.currentTarget.value)
-      setInputValue(dateFormatter.format(new Date(event.currentTarget.value) || undefined))
+    setUpdatedDate(date ? date.toISOString() : undefined)
+  }, [])
 
-      setUpdatedDate(date ? date.toISOString() : undefined)
-    },
-    [dateFormatter],
-  )
+  const handleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
+    const date = event.currentTarget.value
+    const parsedDate = parse(date, 'PP HH:mm', new Date())
+
+    if (isValid(parsedDate)) {
+      setInputValue(parsedDate)
+
+      setUpdatedDate(parsedDate ? parsedDate.toISOString() : undefined)
+    }
+  }, [])
 
   const PopoverContent = () => {
     return (
@@ -134,7 +136,10 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
         </TabList>
         {dateInputOpen && (
           <>
-            <LazyTextInput value={inputValue} onChange={handleInputChange} />
+            <LazyTextInput
+              value={inputValue ? format(inputValue, 'PP HH:mm') : undefined}
+              onChange={handleInputChange}
+            />
 
             <DatePicker
               monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
@@ -160,7 +165,9 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
       ref={popoverRef}
     >
       <Button
-        disabled={isReleaseScheduled || isPublishDateInPast}
+        disabled={
+          isReleaseScheduled || release.state === 'archived' || release.state === 'published'
+        }
         mode="bleed"
         onClick={() => setOpen(!open)}
         padding={2}
