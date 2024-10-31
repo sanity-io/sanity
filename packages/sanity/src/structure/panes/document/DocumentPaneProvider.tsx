@@ -586,8 +586,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
-  const isNonExistentInBundle =
-    typeof bundlePerspective !== 'undefined' && getVersionFromId(value._id) !== bundlePerspective
   const existsInBundle =
     typeof bundlePerspective !== 'undefined' && getVersionFromId(value._id) === bundlePerspective
 
@@ -603,7 +601,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const isSystemPerspectiveApplied = perspective && typeof bundlePerspective === 'undefined'
 
     return (
-      isNonExistentInBundle ||
       isSystemPerspectiveApplied ||
       !ready ||
       revTime !== null ||
@@ -622,7 +619,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permissions?.granted,
     schemaType,
     isNonExistent,
-    isNonExistentInBundle,
     connectionState,
     editState.transactionSyncLock?.enabled,
     editState.draft,
