@@ -12,7 +12,7 @@ import {
 } from '@sanity/ui'
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
-import {type RouterState, useRouter, useRouterState} from 'sanity/router'
+import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
@@ -70,7 +70,6 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   } = props
 
   const {name, tools} = useWorkspace()
-  const router = useRouter()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
@@ -162,8 +161,6 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const handleOpenDrawer = useCallback(() => {
     setDrawerOpen(true)
   }, [])
-
-  const perspective = useMemo(() => router.stickyParams.perspective, [router.stickyParams])
 
   const actionNodes = useMemo(() => {
     if (!shouldRender.tools) return null
