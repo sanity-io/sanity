@@ -1184,6 +1184,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.deleted-tooltip': 'This release has been deleted',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'Create release',
+  /** Label for description in tooltip to explain release types */
+  'release.dialog.tooltip.description':
+    'This makes it possible to show whether documents are in conflict when working on multiple versions.',
+  /** Label for noting that a release time is not final */
+  'release.dialog.tooltip.note':
+    'NOTE: You may change the time of release and set an exact time for scheduled publishing later.',
+  /** Title for tooltip to explain release time */
+  'release.dialog.tooltip.title': 'Approximate time of release',
   /** The placeholder text when the release doesn't have a description */
   'release.form.placeholer-describe-release': 'Describe the release…',
   /** Tooltip for button to hide release visibility */

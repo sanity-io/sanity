@@ -88,7 +88,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
   return (
     <Dialog header={dialogTitle} id="create-release-dialog" onClose={onCancel} width={1}>
       <form onSubmit={handleOnSubmit}>
-        <Box padding={4}>
+        <Box paddingX={4} paddingBottom={4}>
           <ReleaseForm
             onChange={handleOnChange}
             value={value}

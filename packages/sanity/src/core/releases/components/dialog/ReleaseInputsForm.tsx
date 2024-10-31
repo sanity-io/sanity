@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
@@ -149,29 +149,25 @@ export function ReleaseInputsForm({
   )
 
   return (
-    <>
-      <Box paddingBottom={3}>
-        <TitleInput
-          onChange={handleTitleChange}
-          value={value.metadata.title}
-          placeholder={t('release.placeholder-untitled-release')}
-          data-testid="release-form-title"
-        />
-      </Box>
-      <Box>
-        <DescriptionTextArea
-          ref={descriptionRef}
-          autoFocus={!value}
-          value={value.metadata.description}
-          placeholder={t('release.form.placeholer-describe-release')}
-          onChange={handleDescriptionChange}
-          style={{
-            height: `${scrollHeight}px`,
-            maxHeight: MAX_DESCRIPTION_HEIGHT,
-          }}
-          data-testid="release-form-description"
-        />
-      </Box>
-    </>
+    <Stack space={4}>
+      <TitleInput
+        onChange={handleTitleChange}
+        value={value.metadata.title}
+        placeholder={t('release.placeholder-untitled-release')}
+        data-testid="release-form-title"
+      />
+      <DescriptionTextArea
+        ref={descriptionRef}
+        autoFocus={!value}
+        value={value.metadata.description}
+        placeholder={t('release.form.placeholer-describe-release')}
+        onChange={handleDescriptionChange}
+        style={{
+          height: `${scrollHeight}px`,
+          maxHeight: MAX_DESCRIPTION_HEIGHT,
+        }}
+        data-testid="release-form-description"
+      />
+    </Stack>
   )
 }
