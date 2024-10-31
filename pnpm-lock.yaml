@@ -7,9 +7,9 @@ settings:
 overrides:
   '@npmcli/arborist': ^7.5.4
   '@sanity/client': 6.22.2-bundle-perspective-2
-  '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz
-  '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz
-  '@sanity/ui@2': file:registry/sanity-ui-2.8.9.tgz
+  '@sanity/icons': 3.5.0-corel.0
+  '@sanity/ui': 2.10.0-corel.0
+  '@sanity/ui@2': 2.10.0-corel.0
   '@typescript-eslint/eslint-plugin': ^7.18.0
   '@typescript-eslint/parser': ^7.18.0
 
@@ -64,8 +64,8 @@ importers:
         specifier: 1.0.113
         version: 1.0.113(@types/babel__core@7.20.5)(@types/node@18.19.44)(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))(terser@5.32.0)
       '@sanity/ui':
-        specifier: file:registry/sanity-ui-2.8.9.tgz
-        version: file:registry/sanity-ui-2.8.9.tgz(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
+        specifier: 2.10.0-corel.0
+        version: 2.10.0-corel.0(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -237,11 +237,11 @@ importers:
   dev/design-studio:
     dependencies:
       '@sanity/icons':
-        specifier: file:../../registry/sanity-icons-3.4.0.tgz
-        version: file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+        specifier: 3.5.0-corel.0
+        version: 3.5.0-corel.0(react@18.3.1)
       '@sanity/ui':
-        specifier: file:../../registry/sanity-ui-2.8.9.tgz
-        version: file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 2.10.0-corel.0
+        version: 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -258,8 +258,8 @@ importers:
   dev/embedded-studio:
     dependencies:
       '@sanity/ui':
-        specifier: file:../../registry/sanity-ui-2.8.9.tgz
-        version: file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 2.10.0-corel.0
+        version: 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -364,11 +364,11 @@ importers:
         specifier: ^4.0.0
         version: 4.0.1(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/icons':
-        specifier: file:../../registry/sanity-icons-3.4.0.tgz
-        version: file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+        specifier: 3.5.0-corel.0
+        version: 3.5.0-corel.0(react@18.3.1)
       '@sanity/ui':
-        specifier: file:../../registry/sanity-ui-2.8.9.tgz
-        version: file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 2.10.0-corel.0
+        version: 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/vision':
         specifier: 3.62.2
         version: link:../../packages/@sanity/vision
@@ -383,7 +383,7 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-media:
         specifier: ^2.3.1
-        version: 2.3.2(@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 2.3.2(@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       sanity-plugin-mux-input:
         specifier: ^2.2.1
         version: 2.3.6(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
@@ -469,8 +469,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.1(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/icons':
-        specifier: file:../../registry/sanity-icons-3.4.0.tgz
-        version: file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+        specifier: 3.5.0-corel.0
+        version: 3.5.0-corel.0(react@18.3.1)
       '@sanity/image-url':
         specifier: ^1.0.2
         version: 1.0.2
@@ -496,11 +496,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
-        specifier: ^2.0.0
-        version: 2.0.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))
+        specifier: ^2.0.1-release.0
+        version: 2.0.1-release.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))
       '@sanity/react-loader':
-        specifier: ^1.8.3
-        version: 1.10.13(@sanity/client@6.22.2-bundle-perspective-2)(react@18.3.1)
+        specifier: ^1.10.15-release.0
+        version: 1.10.15-release.0(@sanity/client@6.22.2-bundle-perspective-2)(react@18.3.1)
       '@sanity/tsdoc':
         specifier: 1.0.113
         version: 1.0.113(@types/babel__core@7.20.5)(@types/node@22.5.4)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)
@@ -508,11 +508,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: file:../../registry/sanity-ui-2.8.9.tgz
-        version: file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 2.10.0-corel.0
+        version: 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/ui-workshop':
         specifier: ^1.0.0
-        version: 1.2.11(@sanity/icons@file:registry/sanity-icons-3.4.0.tgz(react@18.3.1))(@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@22.5.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)
+        version: 1.2.11(@sanity/icons@3.5.0-corel.0(react@18.3.1))(@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@22.5.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)
       '@sanity/util':
         specifier: workspace:*
         version: link:../../packages/@sanity/util
@@ -523,8 +523,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: 2.4.1
-        version: 2.4.1(@sanity/client@6.22.2-bundle-perspective-2)(next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 2.4.3-release.0
+        version: 2.4.3-release.0(@sanity/client@6.22.2-bundle-perspective-2)(next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -569,10 +569,10 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-hotspot-array:
         specifier: ^2.0.0
-        version: 2.1.0(@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 2.1.0(@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       sanity-plugin-media:
         specifier: ^2.3.1
-        version: 2.3.2(@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 2.3.2(@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       sanity-plugin-mux-input:
         specifier: ^2.2.1
         version: 2.3.6(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
@@ -620,8 +620,8 @@ importers:
         specifier: 3.62.2
         version: link:../../packages/@sanity/cli
       '@sanity/ui':
-        specifier: file:../../registry/sanity-ui-2.8.9.tgz
-        version: file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 2.10.0-corel.0
+        version: 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1215,8 +1215,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/test-config
       '@sanity/icons':
-        specifier: file:../../../registry/sanity-icons-3.4.0.tgz
-        version: file:registry/sanity-icons-3.4.0.tgz(react@19.0.0-rc-f994737d14-20240522)
+        specifier: 3.5.0-corel.0
+        version: 3.5.0-corel.0(react@19.0.0-rc-f994737d14-20240522)
       '@types/arrify':
         specifier: ^1.0.4
         version: 1.0.4
@@ -1337,11 +1337,11 @@ importers:
         specifier: ^3.0.0
         version: 3.0.6
       '@sanity/icons':
-        specifier: file:../../../registry/sanity-icons-3.4.0.tgz
-        version: file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+        specifier: 3.5.0-corel.0
+        version: 3.5.0-corel.0(react@18.3.1)
       '@sanity/ui':
-        specifier: file:../../../registry/sanity-ui-2.8.9.tgz
-        version: file:registry/sanity-ui-2.8.9.tgz(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))
+        specifier: 2.10.0-corel.0
+        version: 2.10.0-corel.0(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))
       '@uiw/react-codemirror':
         specifier: ^4.11.4
         version: 4.23.0(@babel/runtime@7.25.6)(@codemirror/autocomplete@6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/common@1.2.1))(@codemirror/language@6.10.3)(@codemirror/lint@6.8.1)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.34.1)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1)
@@ -1479,8 +1479,8 @@ importers:
         specifier: ^3.41.0
         version: 3.41.0
       '@sanity/icons':
-        specifier: file:../../registry/sanity-icons-3.4.0.tgz
-        version: file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+        specifier: 3.5.0-corel.0
+        version: 3.5.0-corel.0(react@18.3.1)
       '@sanity/image-url':
         specifier: ^1.0.2
         version: 1.0.2
@@ -1488,8 +1488,8 @@ importers:
         specifier: ^3.37.3
         version: 3.37.5
       '@sanity/insert-menu':
-        specifier: 1.0.10
-        version: 1.0.10(@sanity/types@packages+@sanity+types)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 1.0.11-release.0
+        version: 1.0.11-release.0(@sanity/types@packages+@sanity+types)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/logos':
         specifier: ^2.1.4
         version: 2.1.13(@sanity/color@3.0.6)(react@18.3.1)
@@ -1500,8 +1500,8 @@ importers:
         specifier: 3.62.2
         version: link:../@sanity/mutator
       '@sanity/presentation':
-        specifier: 1.17.6
-        version: 1.17.6(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 1.17.8-release.0
+        version: 1.17.8-release.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
         specifier: 3.62.2
         version: link:../@sanity/schema
@@ -1512,8 +1512,8 @@ importers:
         specifier: 3.62.2
         version: link:../@sanity/types
       '@sanity/ui':
-        specifier: file:../../registry/sanity-ui-2.8.9.tgz
-        version: file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 2.10.0-corel.0
+        version: 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/util':
         specifier: 3.62.2
         version: link:../@sanity/util
@@ -1811,7 +1811,7 @@ importers:
         version: 1.0.113(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.7)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
-        version: 1.2.11(@sanity/icons@file:registry/sanity-icons-3.4.0.tgz(react@18.3.1))(@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@18.19.44)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)
+        version: 1.2.11(@sanity/icons@3.5.0-corel.0(react@18.3.1))(@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@18.19.44)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)
       '@sentry/types':
         specifier: ^8.12.0
         version: 8.25.0
@@ -3516,8 +3516,8 @@ packages:
   '@floating-ui/dom@1.6.10':
     resolution: {integrity: sha512-fskgCFv8J8OamCmyun8MfjB1Olfn+uZKjOKZ0vhYF3gRmEUXcGOjxWL8bBr7i4kIuPZ2KD2S3EUIOxnjC8kl2A==}
 
-  '@floating-ui/react-dom@2.1.1':
-    resolution: {integrity: sha512-4h84MJt3CHrtG18mGsXuLCHMrug49d7DFkU0RMIyshRveBeyV2hmV/pDaF2Uxtu8kgq5r46llp5E5FQiR0K2Yg==}
+  '@floating-ui/react-dom@2.1.2':
+    resolution: {integrity: sha512-06okr5cgPzMNBy+Ycse2A6udMi4bqwW/zgBF/rwjcNqWkyr82Mcg8b0vjX8OJpZFy/FKjJmw6wV7t44kK6kW7A==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
@@ -4572,12 +4572,12 @@ packages:
     resolution: {integrity: sha512-2TjYEvOftD0v7ukx3Csdh9QIu44P2z7NDJtlC3qITJRYV36J7R6Vfd3trVhFnN77/7CZrGjqngrtohv8VqO5nw==}
     engines: {node: '>=18.0.0'}
 
-  '@sanity/comlink@1.1.1':
-    resolution: {integrity: sha512-hmjL8X9/muInbO4Fko6rn9WOZhZWMPKz5n3FHttb/KurKaHbkhcon/jIkZ8DowxW75wkUDp8m/nkBZznJ58HIA==}
+  '@sanity/comlink@1.1.2-release.0':
+    resolution: {integrity: sha512-945nQyNUs/Dc8A/KR6Nssn2lFoklQG1xiNaWb/+7HVJRfFaIcNV+ntwbYujD/IEgOlzI7OwxEtxCSscTDEvwJw==}
     engines: {node: '>=18'}
 
-  '@sanity/core-loader@1.7.5':
-    resolution: {integrity: sha512-xHH85EqWb30OnNd0vsTmky/Y+GT1ikVNba/gZrhNHAxXJImOCQvqO89WtV3DPyvIBCpvsoLQyM0DfSxSf+7CVw==}
+  '@sanity/core-loader@1.7.7-release.0':
+    resolution: {integrity: sha512-HQxRyaZI2xFEKXvMryGibt/3pDwvFZu8TbVB+r2G5sCjauw+FraGDqwt0aqEwW22JtkuV1jyd4ctGk7UdZfrrA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': 6.22.2-bundle-perspective-2
@@ -4613,9 +4613,8 @@ packages:
       sanity: ^3.19.0
       styled-components: ^6.1
 
-  '@sanity/icons@file:registry/sanity-icons-3.4.0.tgz':
-    resolution: {integrity: sha512-1lo/y6n9f5gmf9pAQF5skaeVTrODLKBur7UmanufWX+GKnBLADDf8CZh6PejrE4taiac+xpO7n+CwwIp83iuQA==, tarball: file:registry/sanity-icons-3.4.0.tgz}
-    version: 3.4.0
+  '@sanity/icons@3.5.0-corel.0':
+    resolution: {integrity: sha512-dUba8cP0wgs4uVcSvR0nid8g4y0nfQahH82jFqks8A2cYWaH46/C8GqG1ghwj2YZvcNLYekZqy3lpVraMerJsQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^18.3 || >=19.0.0-rc
@@ -4640,6 +4639,15 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@sanity/types': ^3.62.2
+      react: ^18.3 || >=19.0.0-rc
+      react-dom: ^18.3 || >=19.0.0-rc
+      react-is: ^18.3 || >=19.0.0-rc
+
+  '@sanity/insert-menu@1.0.11-release.0':
+    resolution: {integrity: sha512-VOZQcpepz26AO0J8kAKEXMa+8Cq+dfhp6Fa+TITI2E07gnxbZefnTVbyO7rHzjVoQkP/cPLD9B2DpweqRTQBCw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@sanity/types': ^3.59.2-corel.316
       react: ^18.3 || >=19.0.0-rc
       react-dom: ^18.3 || >=19.0.0-rc
       react-is: ^18.3 || >=19.0.0-rc
@@ -4699,8 +4707,8 @@ packages:
     peerDependencies:
       typescript: 5.4.x || 5.5.x || 5.6.x
 
-  '@sanity/presentation@1.17.6':
-    resolution: {integrity: sha512-cEp9S5qG+gzC9YMn762iKeh1CqeIPyEXpJMVUNmc22Pl4hv4zXeAa+Rs68aPdn1Zk6Ughy++EAuIQcXDLrY2SQ==}
+  '@sanity/presentation@1.17.8-release.0':
+    resolution: {integrity: sha512-954VF2ckgu8tFtiPLq8jh0gwCxImmgWvKPThDioXytUwnANAU0cVy+/UWU5IWV0JbZQhZD6h3ORuXl/dLhN/oQ==}
     engines: {node: '>=16.14'}
     peerDependencies:
       '@sanity/client': 6.22.2-bundle-perspective-2
@@ -4710,14 +4718,14 @@ packages:
     peerDependencies:
       prettier: ^3.2.5
 
-  '@sanity/preview-url-secret@2.0.0':
-    resolution: {integrity: sha512-JfStdSb8KT0RzePtGbUIZewNNHNNbvYHwsW4WzYEmgPTfgZnPAIMFYUFSHAKKFyKQ3tqzARRQm3uURpoSTyIkA==}
+  '@sanity/preview-url-secret@2.0.1-release.0':
+    resolution: {integrity: sha512-rYMdwwgm5VgzvTZJkhzWXf0sLZX/GkFKMJymGuGOYZ0uesg5y+wAjINL50EMjWohQQuGeIYiy+R2a72CceZ/jg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': 6.22.2-bundle-perspective-2
 
-  '@sanity/react-loader@1.10.13':
-    resolution: {integrity: sha512-0zx/qt2TajRDJG/R+hS5ANPx6rdXLq+j38M98T6sJvbrV5YacyW5IL+ZNOf+K2XjFHrlfORbB89qAK0ChjV3iA==}
+  '@sanity/react-loader@1.10.15-release.0':
+    resolution: {integrity: sha512-NpKcu+jsQOg0N1Vyzba5imthGZjV2GOT40SFTLC+cUb7u4G8u8wel5fqLcJh43raT+KY7LQISyyLH4N6yR/0cQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': 6.22.2-bundle-perspective-2
@@ -4748,18 +4756,16 @@ packages:
 
   '@sanity/ui-workshop@1.2.11':
     resolution: {integrity: sha512-vzj7upIF7wq2W1HEA0D5VSkR8axaH4Rt07yNTAaas7CLgjSE9r2d+Gnkrq4FIbIuN1GYhhCD+D3/s60GaZrpQw==}
-    version: 1.2.11
     hasBin: true
     peerDependencies:
-      '@sanity/icons': file:/Users/pedrobonamin/code/sanity/registry/sanity-icons-3.4.0.tgz
-      '@sanity/ui': file:/Users/pedrobonamin/code/sanity/registry/sanity-ui-2.8.9.tgz
+      '@sanity/icons': 3.5.0-corel.0
+      '@sanity/ui': 2.10.0-corel.0
       react: ^18
       react-dom: ^18
       styled-components: ^5.2 || ^6
 
-  '@sanity/ui@file:registry/sanity-ui-2.8.9.tgz':
-    resolution: {integrity: sha512-L78y+pK2tqZ9U8o7cwpMOPAQT9l6r6thuzFvLUk4UOaZBF399r4P5eMzixS4t+B8UHM7MV4Txp5OvBibNlezxA==, tarball: file:registry/sanity-ui-2.8.9.tgz}
-    version: 2.8.9
+  '@sanity/ui@2.10.0-corel.0':
+    resolution: {integrity: sha512-ttOoO9t81bOxbFIjRGIghMYfhCLrbgaLYVMYVD13pfHLtOJ5y5lE2EhNqoj4994Uf8BP7mjWe8tfegzhlGoIiQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^18
@@ -4774,8 +4780,8 @@ packages:
   '@sanity/uuid@3.0.2':
     resolution: {integrity: sha512-vzdhqOrX7JGbMyK40KuIwwyXHm7GMLOGuYgn3xlC09e4ZVNofUO5mgezQqnRv0JAMthIRhofqs9f6ufUjMKOvw==}
 
-  '@sanity/visual-editing@2.4.1':
-    resolution: {integrity: sha512-qJp6yoiMKANwcAQ7HYpuElhPHn1OofLzSRuD6BPYbpdQsnuPtQMm4W/hByQzqdy/1T5X91Hmll4+/pkxmsEtnA==}
+  '@sanity/visual-editing@2.4.3-release.0':
+    resolution: {integrity: sha512-5rYL6cRvcUgUPj+VFLtUaeS6rvTjnuPXABUqYAkc7msM3KuFyejdzuDNepDKSD0cmO0mNy5Nh/8fTfetp4rmPw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
@@ -10674,20 +10680,18 @@ packages:
 
   sanity-plugin-hotspot-array@2.1.0:
     resolution: {integrity: sha512-q8W7uhHyr5X1DunSjRatX4v5/YPUp13DcnUpqMY0YZf+NlKt5j5LkuT0dbBc0MkybPaWn37BwKRQndIdwjb6nQ==}
-    version: 2.1.0
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/ui': file:/Users/pedrobonamin/code/sanity/registry/sanity-ui-2.8.9.tgz
+      '@sanity/ui': 2.10.0-corel.0
       react: ^18
       sanity: ^3.0.0
       styled-components: ^6.1
 
   sanity-plugin-media@2.3.2:
     resolution: {integrity: sha512-5RZJyKuN2SuatWjUEr9x+DOZOPg6+ga/6RD+pc8RK3PgviP+945M+E8k93XwnIzSGNFtix8jf0mUbdbCO7HpjA==}
-    version: 2.3.2
     engines: {node: '>=14'}
     peerDependencies:
-      '@sanity/ui': file:/Users/pedrobonamin/code/sanity/registry/sanity-ui-2.8.9.tgz
+      '@sanity/ui': 2.10.0-corel.0
       react: ^18
       react-dom: ^18
       sanity: ^3.0.0
@@ -13702,19 +13706,19 @@ snapshots:
       '@floating-ui/core': 1.6.7
       '@floating-ui/utils': 0.2.7
 
-  '@floating-ui/react-dom@2.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@floating-ui/react-dom@2.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@floating-ui/dom': 1.6.10
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@floating-ui/react-dom@2.1.1(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1)':
+  '@floating-ui/react-dom@2.1.2(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@floating-ui/dom': 1.6.10
       react: 18.3.1
       react-dom: 19.0.0-rc-f994737d14-20240522(react@18.3.1)
 
-  '@floating-ui/react-dom@2.1.1(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)':
+  '@floating-ui/react-dom@2.1.2(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)':
     dependencies:
       '@floating-ui/dom': 1.6.10
       react: 19.0.0-rc-f994737d14-20240522
@@ -15022,10 +15026,10 @@ snapshots:
 
   '@sanity/assist@3.0.8(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sanity/mutator': link:packages/@sanity/mutator
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       date-fns: 3.6.0
       lodash: 4.17.21
       lodash-es: 4.17.21
@@ -15073,7 +15077,7 @@ snapshots:
       '@juggle/resize-observer': 3.4.0
       '@lezer/highlight': 1.2.1
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@uiw/codemirror-themes': 4.23.5(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)
       '@uiw/react-codemirror': 4.23.0(@babel/runtime@7.25.6)(@codemirror/autocomplete@6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/common@1.2.1))(@codemirror/language@6.10.3)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.34.1)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
@@ -15090,16 +15094,16 @@ snapshots:
 
   '@sanity/color@3.0.6': {}
 
-  '@sanity/comlink@1.1.1':
+  '@sanity/comlink@1.1.2-release.0':
     dependencies:
       rxjs: 7.8.1
       uuid: 10.0.0
       xstate: 5.18.2
 
-  '@sanity/core-loader@1.7.5(@sanity/client@6.22.2-bundle-perspective-2)':
+  '@sanity/core-loader@1.7.7-release.0(@sanity/client@6.22.2-bundle-perspective-2)':
     dependencies:
       '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
-      '@sanity/comlink': 1.1.1
+      '@sanity/comlink': 1.1.2-release.0
 
   '@sanity/diff-match-patch@3.1.1': {}
 
@@ -15180,9 +15184,9 @@ snapshots:
 
   '@sanity/google-maps-input@4.0.1(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       lodash: 4.17.21
       react: 18.3.1
       sanity: link:packages/sanity
@@ -15191,11 +15195,11 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/icons@file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)':
+  '@sanity/icons@3.5.0-corel.0(react@18.3.1)':
     dependencies:
       react: 18.3.1
 
-  '@sanity/icons@file:registry/sanity-icons-3.4.0.tgz(react@19.0.0-rc-f994737d14-20240522)':
+  '@sanity/icons@3.5.0-corel.0(react@19.0.0-rc-f994737d14-20240522)':
     dependencies:
       react: 19.0.0-rc-f994737d14-20240522
 
@@ -15229,32 +15233,32 @@ snapshots:
 
   '@sanity/incompatible-plugin@1.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       react: 18.3.1
       react-copy-to-clipboard: 5.1.0(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)
 
-  '@sanity/insert-menu@1.0.10(@sanity/types@packages+@sanity+types)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
-    dependencies:
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
-      '@sanity/types': link:packages/@sanity/types
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      lodash.startcase: 4.4.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-is: 18.3.1
-    transitivePeerDependencies:
-      - styled-components
-
   '@sanity/insert-menu@1.0.10(@sanity/types@packages+@sanity+types)(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))
       lodash.startcase: 4.4.0
       react: 18.3.1
       react-dom: 19.0.0-rc-f994737d14-20240522(react@18.3.1)
       react-is: 19.0.0-rc-a7d1240c-20240731
+    transitivePeerDependencies:
+      - styled-components
+
+  '@sanity/insert-menu@1.0.11-release.0(@sanity/types@packages+@sanity+types)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+    dependencies:
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
+      '@sanity/types': link:packages/@sanity/types
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      lodash.startcase: 4.4.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-is: 18.3.1
     transitivePeerDependencies:
       - styled-components
 
@@ -15419,14 +15423,14 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation@1.17.6(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/presentation@1.17.8-release.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
-      '@sanity/comlink': 1.1.1
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/comlink': 1.1.2-release.0
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       '@sanity/logos': 2.1.13(@sanity/color@3.0.6)(react@18.3.1)
-      '@sanity/preview-url-secret': 2.0.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/preview-url-secret': 2.0.1-release.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
       fast-deep-equal: 3.1.3
@@ -15451,15 +15455,15 @@ snapshots:
       prettier: 3.3.3
       prettier-plugin-packagejson: 2.5.1(prettier@3.3.3)
 
-  '@sanity/preview-url-secret@2.0.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))':
+  '@sanity/preview-url-secret@2.0.1-release.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))':
     dependencies:
       '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/uuid': 3.0.2
 
-  '@sanity/react-loader@1.10.13(@sanity/client@6.22.2-bundle-perspective-2)(react@18.3.1)':
+  '@sanity/react-loader@1.10.15-release.0(@sanity/client@6.22.2-bundle-perspective-2)(react@18.3.1)':
     dependencies:
       '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
-      '@sanity/core-loader': 1.7.5(@sanity/client@6.22.2-bundle-perspective-2)
+      '@sanity/core-loader': 1.7.7-release.0(@sanity/client@6.22.2-bundle-perspective-2)
       react: 18.3.1
 
   '@sanity/telemetry@0.7.9(react@18.3.1)':
@@ -15495,9 +15499,9 @@ snapshots:
       '@portabletext/toolkit': 2.0.15
       '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/color': 3.0.6
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       '@sanity/pkg-utils': 6.11.4(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.7)(typescript@5.6.3)
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.3(vite@5.4.9(@types/node@18.19.44)(terser@5.32.0))
       cac: 6.7.14
@@ -15548,9 +15552,9 @@ snapshots:
       '@portabletext/toolkit': 2.0.15
       '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/color': 3.0.6
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@19.0.0-rc-f994737d14-20240522)
+      '@sanity/icons': 3.5.0-corel.0(react@19.0.0-rc-f994737d14-20240522)
       '@sanity/pkg-utils': 6.11.4(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.7)(typescript@5.6.3)
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.3(vite@5.4.9(@types/node@18.19.44)(terser@5.32.0))
       cac: 6.7.14
@@ -15601,9 +15605,9 @@ snapshots:
       '@portabletext/toolkit': 2.0.15
       '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/color': 3.0.6
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       '@sanity/pkg-utils': 6.11.4(@types/babel__core@7.20.5)(@types/node@22.5.4)(typescript@5.6.3)
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.3.3(vite@5.4.9(@types/node@22.5.4)(terser@5.32.0))
       cac: 6.7.14
@@ -15651,10 +15655,10 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/ui-workshop@1.2.11(@sanity/icons@file:registry/sanity-icons-3.4.0.tgz(react@18.3.1))(@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@18.19.44)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)':
+  '@sanity/ui-workshop@1.2.11(@sanity/icons@3.5.0-corel.0(react@18.3.1))(@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@18.19.44)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)':
     dependencies:
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@vitejs/plugin-react': 4.3.3(vite@4.5.5(@types/node@18.19.44)(terser@5.32.0))
       axe-core: 4.10.0
       cac: 6.7.14
@@ -15682,10 +15686,10 @@ snapshots:
       - supports-color
       - terser
 
-  '@sanity/ui-workshop@1.2.11(@sanity/icons@file:registry/sanity-icons-3.4.0.tgz(react@18.3.1))(@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@22.5.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)':
+  '@sanity/ui-workshop@1.2.11(@sanity/icons@3.5.0-corel.0(react@18.3.1))(@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@22.5.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)':
     dependencies:
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@vitejs/plugin-react': 4.3.3(vite@4.5.5(@types/node@22.5.4)(terser@5.32.0))
       axe-core: 4.10.0
       cac: 6.7.14
@@ -15713,11 +15717,11 @@ snapshots:
       - supports-color
       - terser
 
-  '@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@floating-ui/react-dom': 2.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@floating-ui/react-dom': 2.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sanity/color': 3.0.6
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       csstype: 3.1.3
       framer-motion: 11.0.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
@@ -15727,11 +15731,11 @@ snapshots:
       styled-components: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       use-effect-event: 1.0.2(react@18.3.1)
 
-  '@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@floating-ui/react-dom': 2.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@floating-ui/react-dom': 2.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sanity/color': 3.0.6
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       csstype: 3.1.3
       framer-motion: 11.0.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
@@ -15741,11 +15745,11 @@ snapshots:
       styled-components: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       use-effect-event: 1.0.2(react@18.3.1)
 
-  '@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))':
+  '@sanity/ui@2.10.0-corel.0(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@floating-ui/react-dom': 2.1.1(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1)
+      '@floating-ui/react-dom': 2.1.2(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1)
       '@sanity/color': 3.0.6
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       csstype: 3.1.3
       framer-motion: 11.0.8(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1)
       react: 18.3.1
@@ -15755,11 +15759,11 @@ snapshots:
       styled-components: 6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1)
       use-effect-event: 1.0.2(react@18.3.1)
 
-  '@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))':
+  '@sanity/ui@2.10.0-corel.0(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react-is@19.0.0-rc-a7d1240c-20240731)(react@19.0.0-rc-f994737d14-20240522)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522))':
     dependencies:
-      '@floating-ui/react-dom': 2.1.1(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
+      '@floating-ui/react-dom': 2.1.2(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
       '@sanity/color': 3.0.6
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@19.0.0-rc-f994737d14-20240522)
+      '@sanity/icons': 3.5.0-corel.0(react@19.0.0-rc-f994737d14-20240522)
       csstype: 3.1.3
       framer-motion: 11.0.8(react-dom@19.0.0-rc-f994737d14-20240522(react@19.0.0-rc-f994737d14-20240522))(react@19.0.0-rc-f994737d14-20240522)
       react: 19.0.0-rc-f994737d14-20240522
@@ -15784,12 +15788,13 @@ snapshots:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  '@sanity/visual-editing@2.4.1(@sanity/client@6.22.2-bundle-perspective-2)(next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@sanity/visual-editing@2.4.3-release.0(@sanity/client@6.22.2-bundle-perspective-2)(next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@sanity/comlink': 1.1.1
+      '@sanity/comlink': 1.1.2-release.0
       '@sanity/mutate': 0.10.1-canary.5(xstate@5.18.2)
-      '@sanity/preview-url-secret': 2.0.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))
+      '@sanity/preview-url-secret': 2.0.1-release.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))
       '@vercel/stega': 0.1.2
+      get-random-values-esm: 1.0.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       rxjs: 7.8.1
@@ -23078,12 +23083,12 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.1.1
 
-  sanity-plugin-hotspot-array@2.1.0(@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  sanity-plugin-hotspot-array@2.1.0(@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       '@sanity/asset-utils': 2.0.6
       '@sanity/image-url': 1.0.2
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/util': link:packages/@sanity/util
       '@types/lodash-es': 4.17.12
       framer-motion: 11.0.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -23094,12 +23099,12 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  sanity-plugin-media@2.3.2(@sanity/ui@file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  sanity-plugin-media@2.3.2(@sanity/ui@2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       '@hookform/resolvers': 3.9.0(react-hook-form@7.52.2(react@18.3.1))
       '@reduxjs/toolkit': 1.9.7(react-redux@7.2.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/uuid': 3.0.2
       '@tanem/react-nprogress': 5.0.51(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       copy-to-clipboard: 3.3.3
@@ -23133,9 +23138,9 @@ snapshots:
     dependencies:
       '@mux/mux-player-react': 2.9.1(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mux/upchunk': 3.4.0
-      '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
+      '@sanity/icons': 3.5.0-corel.0(react@18.3.1)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.10.0-corel.0(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/uuid': 3.0.2
       iso-639-1: 3.1.2
       jsonwebtoken-esm: 1.0.5

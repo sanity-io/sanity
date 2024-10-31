@@ -354,7 +354,7 @@ export default defineConfig([
           preview: '/preview/index.html',
         },
       }),
-      assist(),
+      // assist(),
       sharedSettings(),
     ],
     basePath: '/presentation',
