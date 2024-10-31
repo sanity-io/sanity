@@ -1,15 +1,16 @@
 import {defineEvent} from '@sanity/telemetry'
 
+import {type VersionOriginTypes} from '../../store'
+
 interface VersionInfo {
   /**
    * document type that was added
    */
-  schemaType: string
 
   /**
    * the origin of the version created (from a draft or from a version)
    */
-  documentOrigin: 'draft' | 'version'
+  documentOrigin: VersionOriginTypes
 }
 
 export interface OriginInfo {

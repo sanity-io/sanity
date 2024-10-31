@@ -1,67 +1,45 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
-import {filter, firstValueFrom} from 'rxjs'
 
-import {useClient, useDocumentOperation} from '../../hooks'
 import {Translate, useTranslation} from '../../i18n'
-import {useDocumentStore} from '../../store'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
+import {useReleaseOperations} from '../../store'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
-import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 import {getCreateVersionOrigin} from '../util/util'
 import {usePerspective} from './usePerspective'
 
 /** @internal */
-export function useVersionOperations(
-  documentId: string,
-  documentType: string,
-): {
-  createVersion: (releaseId: string) => void
-  discardVersion: () => void
+export function useVersionOperations(): {
+  createVersion: (releaseId: string, documentId: string) => Promise<void>
+  discardVersion: (releaseId: string, documentId: string) => Promise<void>
 } {
-  const publishedId = getPublishedId(documentId)
-
-  const documentStore = useDocumentStore()
   const telemetry = useTelemetry()
-  const {createVersion} = useDocumentOperation(
-    publishedId,
-    documentType,
-    getVersionFromId(documentId),
-  )
-  const {setPerspectiveFromRelease, setPerspective} = usePerspective()
+  const {createVersion, discardVersion} = useReleaseOperations()
+
+  const {setPerspectiveFromReleaseId} = usePerspective()
   const toast = useToast()
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {t} = useTranslation()
-  const {currentGlobalBundle} = usePerspective()
 
-  const handleCreateVersion = async (releaseId: string) => {
-    // set up the listener before executing to make sure it's successful
-    const createVersionSuccess = firstValueFrom(
-      documentStore.pair
-        .operationEvents(getPublishedId(documentId), documentType)
-        .pipe(filter((e) => e.op === 'createVersion' && e.type === 'success')),
-    )
-
-    const docId = getVersionId(publishedId, getBundleIdFromReleaseDocumentId(releaseId))
-
+  const handleCreateVersion = async (releaseId: string, documentId: string) => {
     const origin = getCreateVersionOrigin(documentId)
-    createVersion.execute(docId, origin)
-
-    // only change if the version was created successfully
-    await createVersionSuccess
-    setPerspectiveFromRelease(releaseId)
-
-    telemetry.log(AddedVersion, {
-      schemaType: documentType,
-      documentOrigin: origin,
-    })
+    try {
+      await createVersion(releaseId, documentId)
+      setPerspectiveFromReleaseId(releaseId)
+      telemetry.log(AddedVersion, {
+        documentOrigin: origin,
+      })
+    } catch (err) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: t('release.action.create-version.failure'),
+        description: err.message,
+      })
+    }
   }
 
-  const handleDiscardVersion = async () => {
+  const handleDiscardVersion = async (releaseId: string, documentId: string) => {
     try {
-      /** @todo eventually change this from using document operations */
-      await client.delete(documentId)
+      await discardVersion(releaseId, documentId)
 
       toast.push({
         closable: true,
@@ -74,11 +52,12 @@ export function useVersionOperations(
           />
         ),
       })
-    } catch (e) {
+    } catch (err) {
       toast.push({
         closable: true,
         status: 'error',
         title: t('release.action.discard-version.failure'),
+        description: err.message,
       })
     }
   }

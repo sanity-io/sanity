@@ -28,7 +28,8 @@ export interface PerspectiveValue {
   /* Change the perspective in the studio based on the perspective name */
   setPerspective: (perspectiveId: string) => void
   /* change the perspective in the studio based on a release ID */
-  setPerspectiveFromRelease: (releaseId: string) => void
+  setPerspectiveFromReleaseDocumentId: (releaseDocumentId: string) => void
+  setPerspectiveFromReleaseId: (releaseId: string) => void
   /* Add/remove excluded perspectives */
   toggleExcludedPerspective: (perspectiveId: string) => void
   /* Check if a perspective is excluded */
@@ -94,9 +95,14 @@ export function usePerspective(): PerspectiveValue {
     [perspective, selectedBundle],
   )
 
-  const setPerspectiveFromRelease = useCallback(
-    (releaseId: string) => setPerspective(getBundleIdFromReleaseDocumentId(releaseId)),
+  const setPerspectiveFromReleaseId = useCallback(
+    (releaseId: string) => setPerspective(releaseId),
     [setPerspective],
+  )
+
+  const setPerspectiveFromReleaseDocumentId = useCallback(
+    (releaseId: string) => setPerspectiveFromReleaseId(getBundleIdFromReleaseDocumentId(releaseId)),
+    [setPerspectiveFromReleaseId],
   )
 
   const bundlesPerspective = useMemo(
@@ -142,7 +148,8 @@ export function usePerspective(): PerspectiveValue {
       perspective,
       excludedPerspectives,
       setPerspective,
-      setPerspectiveFromRelease,
+      setPerspectiveFromReleaseDocumentId: setPerspectiveFromReleaseDocumentId,
+      setPerspectiveFromReleaseId: setPerspectiveFromReleaseId,
       toggleExcludedPerspective,
       currentGlobalBundle,
       currentGlobalBundleId: isPublishedPerspective(currentGlobalBundle)
@@ -154,12 +161,13 @@ export function usePerspective(): PerspectiveValue {
     [
       perspective,
       excludedPerspectives,
-      bundlesPerspective,
-      currentGlobalBundle,
-      isPerspectiveExcluded,
       setPerspective,
-      setPerspectiveFromRelease,
+      setPerspectiveFromReleaseDocumentId,
+      setPerspectiveFromReleaseId,
       toggleExcludedPerspective,
+      currentGlobalBundle,
+      bundlesPerspective,
+      isPerspectiveExcluded,
     ],
   )
 }

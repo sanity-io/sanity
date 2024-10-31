@@ -6,8 +6,10 @@ import {LoadingBlock} from '../../../components'
 import {useSchema} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {Preview} from '../../../preview'
-import {useVersionOperations} from '../../hooks'
+import {type ReleaseDocument} from '../../../store'
+import {usePerspective, useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 
 /**
  * @internal
@@ -20,7 +22,8 @@ export function DiscardVersionDialog(props: {
   const {onClose, documentId, documentType} = props
   const {t} = useTranslation(releasesLocaleNamespace)
 
-  const {discardVersion} = useVersionOperations(documentId, documentType)
+  const {currentGlobalBundle} = usePerspective()
+  const {discardVersion} = useVersionOperations()
   const schema = useSchema()
   const [isDiscarding, setIsDiscarding] = useState(false)
 
@@ -29,11 +32,14 @@ export function DiscardVersionDialog(props: {
   const handleDiscardVersion = useCallback(async () => {
     setIsDiscarding(true)
 
-    discardVersion()
+    await discardVersion(
+      getBundleIdFromReleaseDocumentId((currentGlobalBundle as ReleaseDocument)._id),
+      documentId,
+    )
     setIsDiscarding(false)
 
     onClose()
-  }, [discardVersion, onClose])
+  }, [currentGlobalBundle, discardVersion, documentId, onClose])
 
   return (
     <Dialog

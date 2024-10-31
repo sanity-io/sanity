@@ -65,7 +65,7 @@ export function CreateReleaseDialog(props: {
 
       await createRelease(value)
 
-      handleAddVersion()
+      await handleAddVersion()
       telemetry.log(CreatedRelease, {origin: 'document-panel'})
     } catch (err) {
       console.error(err)
@@ -73,6 +73,7 @@ export function CreateReleaseDialog(props: {
         closable: true,
         status: 'error',
         title: `Failed to create release`,
+        description: err.message,
       })
     } finally {
       setIsSubmitting(false)

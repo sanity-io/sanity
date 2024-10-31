@@ -145,13 +145,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const banners = useMemo(() => {
     if (!existsInBundle && currentPerspectiveIsRelease) {
-      return (
-        <AddToReleaseBanner
-          documentId={documentId}
-          documentType={documentType}
-          currentRelease={currentGlobalBundle}
-        />
-      )
+      return <AddToReleaseBanner documentId={value._id} currentRelease={currentGlobalBundle} />
     }
 
     if (activeView.type === 'form' && isLiveEdit && ready) {
@@ -183,7 +177,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     currentPerspectiveIsRelease,
     displayed,
     documentId,
-    documentType,
     existsInBundle,
     isLiveEdit,
     isPermissionsLoading,
@@ -191,6 +184,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     ready,
     requiredPermission,
     schemaType,
+    value._id,
   ])
 
   return (

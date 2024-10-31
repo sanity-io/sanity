@@ -83,7 +83,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   const {release, rangePosition} = props
   const {
     currentGlobalBundleId,
-    setPerspectiveFromRelease,
+    setPerspectiveFromReleaseDocumentId,
     setPerspective,
     toggleExcludedPerspective,
     isPerspectiveExcluded,
@@ -124,8 +124,8 @@ export const GlobalPerspectiveMenuItem = forwardRef<
     () =>
       isReleasePublishedPerspective
         ? setPerspective(releaseId)
-        : setPerspectiveFromRelease(releaseId),
-    [releaseId, isReleasePublishedPerspective, setPerspective, setPerspectiveFromRelease],
+        : setPerspectiveFromReleaseDocumentId(releaseId),
+    [releaseId, isReleasePublishedPerspective, setPerspective, setPerspectiveFromReleaseDocumentId],
   )
 
   const canReleaseBeExcluded = !isPublishedPerspective(release) && inRange && !last

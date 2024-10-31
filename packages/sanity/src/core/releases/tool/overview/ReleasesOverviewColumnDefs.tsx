@@ -48,7 +48,8 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {currentGlobalBundleId, setPerspective, setPerspectiveFromRelease} = usePerspective()
+  const {currentGlobalBundleId, setPerspective, setPerspectiveFromReleaseDocumentId} =
+    usePerspective()
   const {state, _id} = release
   const isArchived = state === 'archived'
 
@@ -56,9 +57,9 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
     if (_id === currentGlobalBundleId) {
       setPerspective('drafts')
     } else {
-      setPerspectiveFromRelease(_id)
+      setPerspectiveFromReleaseDocumentId(_id)
     }
-  }, [_id, currentGlobalBundleId, setPerspective, setPerspectiveFromRelease])
+  }, [_id, currentGlobalBundleId, setPerspective, setPerspectiveFromReleaseDocumentId])
 
   const cardProps: TableRowProps = release.isDeleted
     ? {tone: 'transparent'}
