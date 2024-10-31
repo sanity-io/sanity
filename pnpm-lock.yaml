@@ -1450,7 +1450,7 @@ importers:
         version: 8.0.1(react@18.3.1)
       '@sanity/asset-utils':
         specifier: ^2.0.6
-        version: 2.0.6
+        version: 2.0.7
       '@sanity/bifur-client':
         specifier: ^0.4.1
         version: 0.4.1
@@ -4540,12 +4540,12 @@ packages:
   '@rushstack/ts-command-line@4.23.0':
     resolution: {integrity: sha512-jYREBtsxduPV6ptNq8jOKp9+yx0ld1Tb/Tkdnlj8gTjazl1sF3DwX2VbluyYrNd0meWIL0bNeer7WDf5tKFjaQ==}
 
-  '@sanity/asset-utils@1.3.0':
-    resolution: {integrity: sha512-uyIOtGA4Duf+68I3BSbYHY5P+WGftn3QtNJD2Pn7h9WPGYsSrWViIPebE9yRN8N0NHhYj+hDQXaMpVdjG7r+zA==}
+  '@sanity/asset-utils@1.3.2':
+    resolution: {integrity: sha512-dixN6MpMXsCEVh0Dr932cgZ4cU3Z2JnNOYBxjV+dgO6AnqVpNQTY+KgGMYlA1ca5zCztQI1VSk/MBCPSxihPqQ==}
     engines: {node: '>=10'}
 
-  '@sanity/asset-utils@2.0.6':
-    resolution: {integrity: sha512-rjJG09JRdmIHQcHJjD1nd4wUbjQAsQUpjV51SOqabDPdRMzAx82I2cosnctNzBY+YXGhYYtlkVXjELW51B8ZZw==}
+  '@sanity/asset-utils@2.0.7':
+    resolution: {integrity: sha512-34rpta0GRkQJtFS2ttlG5iVPNK0HnL85KzbuodrjOqzP+e9kjtQJKLa0dNRx2upmc/xAfHT8eEzRChddZWkNOw==}
     engines: {node: '>=18'}
 
   '@sanity/assist@3.0.8':
@@ -15095,9 +15095,9 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@sanity/asset-utils@1.3.0': {}
+  '@sanity/asset-utils@1.3.2': {}
 
-  '@sanity/asset-utils@2.0.6': {}
+  '@sanity/asset-utils@2.0.7': {}
 
   '@sanity/assist@3.0.8(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
@@ -15301,7 +15301,7 @@ snapshots:
 
   '@sanity/import@3.37.5':
     dependencies:
-      '@sanity/asset-utils': 1.3.0
+      '@sanity/asset-utils': 1.3.2
       '@sanity/generate-help-url': 3.0.0
       '@sanity/mutator': 3.37.2
       '@sanity/uuid': 3.0.2
@@ -23262,7 +23262,7 @@ snapshots:
 
   sanity-plugin-hotspot-array@2.1.0(@sanity/ui@2.8.15(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
-      '@sanity/asset-utils': 2.0.6
+      '@sanity/asset-utils': 2.0.7
       '@sanity/image-url': 1.1.0
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sanity/ui': 2.8.15(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
