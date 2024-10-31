@@ -151,7 +151,7 @@ export function ReleasesOverview() {
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
-  const hasReleases = releases.length > 0
+  const hasReleases = releases.length > 0 || archivedReleases.length > 0
   const loadingOrHasReleases = loading || hasReleases
 
   const tableReleases = useMemo<TableRelease[]>(() => {
