@@ -3,6 +3,7 @@ import {type Ref, useCallback, useState} from 'react'
 import {
   type CreateLinkMetadata,
   getBundleIdFromReleaseId,
+  isDraftPerspective,
   isReleaseDocument,
   isSanityCreateLinked,
   usePerspective,
@@ -63,7 +64,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   } else if (showingRevision) {
     actions = <HistoryStatusBarActions />
   } else if (
-    !currentGlobalBundle ||
+    isDraftPerspective(currentGlobalBundle) ||
     (editState?.version &&
       isReleaseDocument(currentGlobalBundle) &&
       editState?.bundleId === getBundleIdFromReleaseId(currentGlobalBundle._id))
