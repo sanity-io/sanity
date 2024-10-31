@@ -86,7 +86,13 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
     release && (release.state === 'scheduled' || release.state === 'scheduling')
 
   return (
-    <Dialog header={dialogTitle} id="create-release-dialog" onClose={onCancel} width={1}>
+    <Dialog
+      onClickOutside={onCancel}
+      header={dialogTitle}
+      id="create-release-dialog"
+      onClose={onCancel}
+      width={1}
+    >
       <form onSubmit={handleOnSubmit}>
         <Box paddingX={4} paddingBottom={4}>
           <ReleaseForm
