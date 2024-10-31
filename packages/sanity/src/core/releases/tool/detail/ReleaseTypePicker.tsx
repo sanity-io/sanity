@@ -165,7 +165,9 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
       ref={popoverRef}
     >
       <Button
-        disabled={isReleaseScheduled}
+        disabled={
+          isReleaseScheduled || release.state === 'archived' || release.state === 'published'
+        }
         mode="bleed"
         onClick={() => setOpen(!open)}
         padding={2}
