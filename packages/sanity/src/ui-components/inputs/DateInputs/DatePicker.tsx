@@ -35,6 +35,7 @@ export const DatePicker = forwardRef(function DatePicker(
       onSelect={handleSelect}
       focusedDate={focusedDate || value}
       onFocusedDateChange={setFocusedDay}
+      padding={padding}
     />
   )
 })
