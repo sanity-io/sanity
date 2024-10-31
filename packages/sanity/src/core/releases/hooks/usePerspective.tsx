@@ -3,6 +3,7 @@ import {useRouter} from 'sanity/router'
 
 import {useReleases} from '../../store/release'
 import {type ReleaseDocument} from '../../store/release/types'
+import {resolveBundlePerspective} from '../../util/resolvePerspective'
 import {LATEST} from '../util/const'
 import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
 import {isPublishedPerspective} from '../util/util'
@@ -103,7 +104,7 @@ export function usePerspective(): PerspectiveValue {
       getReleasesPerspective({
         releases,
         perspective,
-        excluded: excludedPerspectives || [],
+        excluded: (excludedPerspectives.map(resolveBundlePerspective) as string[]) || [],
       }),
     [releases, perspective, excludedPerspectives],
   )
