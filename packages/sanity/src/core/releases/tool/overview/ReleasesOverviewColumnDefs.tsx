@@ -47,6 +47,7 @@ const ReleaseTime = ({release}: {release: TableRelease}) => {
 const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: release}) => {
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const {currentGlobalBundleId, setPerspective, setPerspectiveFromRelease} = usePerspective()
   const {state, _id} = release
   const isArchived = state === 'archived'
@@ -70,6 +71,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
 
   const isReleasePinned = _id === currentGlobalBundleId
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
+  const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
     <Box {...cellProps} marginLeft={3} flex={1} padding={1}>
@@ -77,7 +79,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
         disabled={!release.isDeleted}
         content={
           <Text size={1}>
-            <Translate t={t} i18nKey="deleted-release" values={{title: release.metadata.title}} />
+            <Translate t={t} i18nKey="deleted-release" values={{title: displayTitle}} />
           </Text>
         }
       >
@@ -103,7 +105,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
               <Stack flex={1} space={2}>
                 <Flex align="center" gap={2}>
                   <Text size={1} weight="medium">
-                    {release.metadata.title}
+                    {displayTitle}
                   </Text>
                 </Flex>
               </Stack>

@@ -24,6 +24,7 @@ export function AddToReleaseBanner({
 }): JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
 
   const {createVersion} = useVersionOperations(documentId, documentType)
 
@@ -43,7 +44,10 @@ export function AddToReleaseBanner({
             <Translate
               i18nKey="banners.release.not-in-release"
               t={t}
-              values={{title: currentRelease.metadata.title}}
+              values={{
+                title:
+                  currentRelease.metadata.title || tCore('release.placeholder-untitled-release'),
+              }}
               components={{
                 Label: ({children}) => {
                   return (

@@ -109,11 +109,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
       return t('release.placeholder-untitled-release')
     }
 
-    if (isReleasePublishedPerspective) {
-      return t('release.published')
-    }
-
-    return release.metadata?.title
+    return isReleasePublishedPerspective ? t('release.published') : release.metadata?.title
   }, [isReleasePublishedPerspective, isUnnamedRelease, release, t])
 
   const handleToggleReleaseVisibility = useCallback(
@@ -170,7 +166,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             }}
           >
             <Text size={1} weight="medium">
-              {isReleasePublishedPerspective ? t('release.chip.published') : release.metadata.title}
+              {displayTitle}
             </Text>
             {!isPublishedPerspective(release) &&
               release.metadata.releaseType !== 'undecided' &&

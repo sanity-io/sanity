@@ -12,6 +12,7 @@ import {
   ReleaseForm,
   useReleaseOperations,
   useSchema,
+  useTranslation,
 } from 'sanity'
 
 import {Dialog} from '../../../../../../../ui-components'
@@ -25,6 +26,7 @@ export function CreateReleaseDialog(props: {
   onCreateVersion: (releaseId: string) => void
 }): JSX.Element {
   const {onClose, documentId, documentType, tone, title, onCreateVersion} = props
+  const {t} = useTranslation()
   const toast = useToast()
 
   const schema = useSchema()
@@ -46,6 +48,8 @@ export function CreateReleaseDialog(props: {
 
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
+
+  const displayTitle = title || t('release.placeholder-untitled-release')
 
   const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
     setValue(changedValue)
@@ -113,10 +117,18 @@ export function CreateReleaseDialog(props: {
             gap={2}
             padding={1}
             paddingRight={2}
-            style={{borderRadius: 999, border: '1px solid var(--card-border-color)'}}
+            style={{
+              borderRadius: 999,
+              border: '1px solid var(--card-border-color)',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
           >
             <ReleaseAvatar padding={1} tone={tone} />
-            <Text size={1}>{title}</Text>
+            <Text size={1} title={displayTitle}>
+              {displayTitle}
+            </Text>
           </Flex>
         </Flex>
       </Box>

@@ -64,6 +64,14 @@ export function ReleasesNav(): JSX.Element {
   const currentGlobalPerspectiveLabel = useMemo(() => {
     if (!currentGlobalBundle || isDraftPerspective(currentGlobalBundle)) return null
 
+    let displayTitle
+    if (isPublishedPerspective(currentGlobalBundle)) {
+      displayTitle = t('release.chip.published')
+    } else {
+      displayTitle =
+        currentGlobalBundle.metadata?.title || t('release.placeholder-untitled-release')
+    }
+
     const visibleLabelChildren = () => {
       const labelContent = (
         <Flex align="flex-start" gap={0}>
@@ -72,10 +80,7 @@ export function ReleasesNav(): JSX.Element {
           </Box>
           <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
             <Text size={1} textOverflow="ellipsis" weight="medium">
-              {isPublishedPerspective(currentGlobalBundle)
-                ? t('release.chip.published')
-                : (currentGlobalBundle.metadata?.title ??
-                  t('release.placeholder-untitled-release'))}
+              {displayTitle}
             </Text>
           </Stack>
         </Flex>
