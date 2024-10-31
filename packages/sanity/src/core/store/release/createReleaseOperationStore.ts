@@ -72,40 +72,40 @@ export function createReleaseOperationsStore(options: {
       },
     ])
 
-  const handleScheduleRelease = (releaseId: string, publishAt: Date) => {
-    return requestAction(client, [
+  const handleScheduleRelease = async (releaseId: string, publishAt: Date) => {
+    await requestAction(client, [
       {
         actionType: 'sanity.action.release.schedule',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
         publishAt: publishAt.toISOString(),
       },
-    ]).then(() => {})
+    ])
   }
-  const handleUnscheduleRelease = (releaseId: string) => {
-    return requestAction(client, [
+  const handleUnscheduleRelease = async (releaseId: string) => {
+    await requestAction(client, [
       {
         actionType: 'sanity.action.release.unschedule',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
       },
-    ]).then(() => {})
+    ])
   }
 
-  const handleArchiveRelease = (releaseId: string) => {
-    return requestAction(client, [
+  const handleArchiveRelease = async (releaseId: string) => {
+    await requestAction(client, [
       {
         actionType: 'sanity.action.release.archive',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
       },
-    ]).then(() => {})
+    ])
   }
 
-  const handleUnarchiveRelease = (releaseId: string) => {
-    return requestAction(client, [
+  const handleUnarchiveRelease = async (releaseId: string) => {
+    await requestAction(client, [
       {
         actionType: 'sanity.action.release.unarchive',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
       },
-    ]).then(() => {})
+    ])
   }
 
   const handleCreateVersion = async (documentId: string, releaseId: string) => {
