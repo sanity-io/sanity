@@ -24,6 +24,10 @@ const Chip = styled(Button)`
   &:not([data-disabled='true']) {
     --card-border-color: var(--card-badge-default-bg-color);
   }
+
+  &[data-disabled='true'] {
+    color: var(--card-muted-fg-color);
+  }
 `
 
 export const VersionChip = memo(function VersionChip(props: {
