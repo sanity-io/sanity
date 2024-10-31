@@ -109,7 +109,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
       return t('release.placeholder-untitled-release')
     }
 
-    return isReleasePublishedPerspective ? t('release.published') : release.metadata?.title
+    return isReleasePublishedPerspective ? t('release.navbar.published') : release.metadata?.title
   }, [isReleasePublishedPerspective, isUnnamedRelease, release, t])
 
   const handleToggleReleaseVisibility = useCallback(

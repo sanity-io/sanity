@@ -1196,6 +1196,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.form.placeholer-describe-release': 'Describe the release…',
   /** Tooltip for button to hide release visibility */
   'release.layer.hide': 'Hide release',
+  /** Label for published releases in navbar */
+  'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'Releases',
   /** The placeholder text when the release doesn't have a title */
