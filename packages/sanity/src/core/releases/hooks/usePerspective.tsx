@@ -5,7 +5,7 @@ import {useReleases} from '../../store/release'
 import {type ReleaseDocument} from '../../store/release/types'
 import {resolveBundlePerspective} from '../../util/resolvePerspective'
 import {LATEST} from '../util/const'
-import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
+import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 import {isPublishedPerspective} from '../util/util'
 import {getReleasesPerspective} from './utils'
 
@@ -84,7 +84,7 @@ export function usePerspective(): PerspectiveValue {
     perspective && releases
       ? releases.find(
           (release: ReleaseDocument) =>
-            `bundle.${getBundleIdFromReleaseId(release._id)}` === perspective,
+            `bundle.${getBundleIdFromReleaseDocumentId(release._id)}` === perspective,
         )
       : LATEST
 
@@ -95,7 +95,7 @@ export function usePerspective(): PerspectiveValue {
   )
 
   const setPerspectiveFromRelease = useCallback(
-    (releaseId: string) => setPerspective(getBundleIdFromReleaseId(releaseId)),
+    (releaseId: string) => setPerspective(getBundleIdFromReleaseDocumentId(releaseId)),
     [setPerspective],
   )
 

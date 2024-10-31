@@ -6,7 +6,7 @@ import {catchError} from 'rxjs/operators'
 import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../store'
 import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
 import {createSWR} from '../../util/rxSwr'
-import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
+import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 
 export interface DocumentPerspectiveProps {
   documentId: string
@@ -60,7 +60,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
     () =>
       result.documentIds.flatMap((docId) => {
         const matchingBundle = releases?.find(
-          (release) => getVersionFromId(docId) === getBundleIdFromReleaseId(release._id),
+          (release) => getVersionFromId(docId) === getBundleIdFromReleaseDocumentId(release._id),
         )
         return matchingBundle || []
       }),

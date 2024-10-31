@@ -11,7 +11,7 @@ import {
 } from 'react'
 import {
   DiscardVersionDialog,
-  getBundleIdFromReleaseId,
+  getBundleIdFromReleaseDocumentId,
   getVersionId,
   ReleaseAvatar,
   type ReleaseDocument,
@@ -205,7 +205,7 @@ export const VersionChip = memo(function VersionChip(props: {
           onClose={() => setIsDiscardDialogOpen(false)}
           documentId={
             isVersion
-              ? getVersionId(documentId, getBundleIdFromReleaseId(menuReleaseId))
+              ? getVersionId(documentId, getBundleIdFromReleaseDocumentId(menuReleaseId))
               : documentId
           }
           documentType={documentType}
@@ -218,7 +218,7 @@ export const VersionChip = memo(function VersionChip(props: {
           onCreateVersion={handleAddVersion}
           documentId={
             isVersion
-              ? getVersionId(documentId, getBundleIdFromReleaseId(menuReleaseId))
+              ? getVersionId(documentId, getBundleIdFromReleaseDocumentId(menuReleaseId))
               : documentId
           }
           documentType={documentType}

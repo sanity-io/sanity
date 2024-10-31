@@ -3,7 +3,7 @@ import {type Schema} from '@sanity/types'
 import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
-  getBundleIdFromReleaseId,
+  getBundleIdFromReleaseDocumentId,
   type InitialValueTemplateItem,
   isPublishedPerspective,
   LATEST,
@@ -52,7 +52,7 @@ const getIntent = (
     type: 'create',
     params: item.parameters ? [baseParams, item.parameters] : baseParams,
     searchParams: isBundleIntent
-      ? [['perspective', `bundle.${getBundleIdFromReleaseId(version)}`]]
+      ? [['perspective', `bundle.${getBundleIdFromReleaseDocumentId(version)}`]]
       : undefined,
   }
 }

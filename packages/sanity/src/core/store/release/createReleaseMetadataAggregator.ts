@@ -12,7 +12,7 @@ import {
 } from 'rxjs'
 import {type SanityClient} from 'sanity'
 
-import {getBundleIdFromReleaseId} from '../../releases/util/getBundleIdFromReleaseId'
+import {getBundleIdFromReleaseDocumentId} from '../../releases/util/getBundleIdFromReleaseDocumentId'
 import {type ReleasesMetadata} from './useReleasesMetadata'
 
 export type ReleasesMetadataMap = Record<string, ReleasesMetadata>
@@ -25,7 +25,7 @@ const getFetchQuery = (releaseIds: string[]) => {
 
   return releaseIds.reduce(
     ({subquery: accSubquery, projection: accProjection}, releaseId) => {
-      const bundleId = getBundleIdFromReleaseId(releaseId)
+      const bundleId = getBundleIdFromReleaseDocumentId(releaseId)
       // get a version of the id that is safe to use as key in objects
       const safeId = getSafeKey(bundleId)
 

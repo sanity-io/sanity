@@ -10,7 +10,7 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type ReleaseDocument} from '../../store/release/types'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {usePerspective} from '../hooks/usePerspective'
-import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
+import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {getPublishDateFromRelease, isPublishedPerspective} from '../util/util'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
@@ -99,7 +99,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
 
   const releasePerspectiveId = isReleasePublishedPerspective
     ? releaseId
-    : getBundleIdFromReleaseId(releaseId)
+    : getBundleIdFromReleaseDocumentId(releaseId)
   const isReleasePerspectiveExcluded = isPerspectiveExcluded(releasePerspectiveId)
 
   const {t} = useTranslation()

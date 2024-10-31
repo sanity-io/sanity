@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '../../store/release/types'
 import {DRAFTS_FOLDER} from '../../util/draftUtils'
 import {resolveBundlePerspective} from '../../util/resolvePerspective'
-import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
+import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 
 export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[] {
   // The order should always be:
@@ -65,7 +65,9 @@ export function getReleasesPerspective({
     return []
   }
 
-  const sorted = sortReleases(releases).map((release) => getBundleIdFromReleaseId(release._id))
+  const sorted = sortReleases(releases).map((release) =>
+    getBundleIdFromReleaseDocumentId(release._id),
+  )
   const selectedIndex = sorted.indexOf(perspectiveId)
   if (selectedIndex === -1) {
     return []

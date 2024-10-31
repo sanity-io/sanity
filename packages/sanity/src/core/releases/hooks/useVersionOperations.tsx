@@ -8,7 +8,7 @@ import {useDocumentStore} from '../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
-import {getBundleIdFromReleaseId} from '../util/getBundleIdFromReleaseId'
+import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 import {getCreateVersionOrigin} from '../util/util'
 import {usePerspective} from './usePerspective'
 
@@ -43,7 +43,7 @@ export function useVersionOperations(
         .pipe(filter((e) => e.op === 'createVersion' && e.type === 'success')),
     )
 
-    const docId = getVersionId(publishedId, getBundleIdFromReleaseId(releaseId))
+    const docId = getVersionId(publishedId, getBundleIdFromReleaseDocumentId(releaseId))
 
     const origin = getCreateVersionOrigin(documentId)
     createVersion.execute(docId, origin)

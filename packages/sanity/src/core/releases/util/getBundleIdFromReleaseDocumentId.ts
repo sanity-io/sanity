@@ -6,7 +6,7 @@ const PATH_ID_PREFIX = `${RELEASE_DOCUMENTS_PATH}.`
  * @internal
  * @param releaseId - the document id of the release
  */
-export function getBundleIdFromReleaseId(releaseId: string) {
+export function getBundleIdFromReleaseDocumentId(releaseId: string) {
   if (!releaseId.startsWith(PATH_ID_PREFIX)) {
     throw new Error(`Release ID should start with ${RELEASE_DOCUMENTS_PATH}`)
   }

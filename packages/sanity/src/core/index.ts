@@ -28,7 +28,7 @@ export {
   createReleaseId,
   DEFAULT_RELEASE_TYPE,
   DiscardVersionDialog,
-  getBundleIdFromReleaseId,
+  getBundleIdFromReleaseDocumentId,
   getCreateVersionOrigin,
   getDocumentIsInPerspective,
   getReleaseTone,

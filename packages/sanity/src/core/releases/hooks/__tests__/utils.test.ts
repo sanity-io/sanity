@@ -3,7 +3,7 @@ import {describe, expect, it} from 'vitest'
 import {RELEASE_DOCUMENT_TYPE} from '../../../store/release/constants'
 import {type ReleaseDocument} from '../../../store/release/types'
 import {createReleaseId} from '../../util/createReleaseId'
-import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
+import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 import {getReleasesPerspective, sortReleases} from '../utils'
 
 function createReleaseMock(
@@ -14,13 +14,13 @@ function createReleaseMock(
   >,
 ): ReleaseDocument {
   const id = value._id || createReleaseId()
-  const name = getBundleIdFromReleaseId(id)
+  const name = getBundleIdFromReleaseDocumentId(id)
   return {
     _id: id,
     _type: RELEASE_DOCUMENT_TYPE,
     _createdAt: new Date().toISOString(),
     _updatedAt: new Date().toISOString(),
-    name: getBundleIdFromReleaseId(id),
+    name: getBundleIdFromReleaseDocumentId(id),
     createdBy: 'snty1',
     state: 'active',
     ...value,

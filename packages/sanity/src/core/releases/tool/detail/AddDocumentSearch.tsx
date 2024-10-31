@@ -7,7 +7,7 @@ import {AddedVersion} from 'sanity'
 import {useReleaseOperations} from '../../../store/release/useReleaseOperations'
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
-import {getBundleIdFromReleaseId} from '../../util/getBundleIdFromReleaseId'
+import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 import {getCreateVersionOrigin} from '../../util/util'
 
 export function AddDocumentSearch({
@@ -26,7 +26,7 @@ export function AddDocumentSearch({
   const addDocument = useCallback(
     (item: Pick<SanityDocumentLike, '_id' | '_type'>) => {
       try {
-        createVersion(item._id, getBundleIdFromReleaseId(releaseId))
+        createVersion(item._id, getBundleIdFromReleaseDocumentId(releaseId))
 
         toast.push({
           closable: true,

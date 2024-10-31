@@ -2,7 +2,7 @@ import {Card, Flex} from '@sanity/ui'
 import {type Ref, useCallback, useState} from 'react'
 import {
   type CreateLinkMetadata,
-  getBundleIdFromReleaseId,
+  getBundleIdFromReleaseDocumentId,
   isDraftPerspective,
   isReleaseDocument,
   isSanityCreateLinked,
@@ -67,7 +67,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     isDraftPerspective(currentGlobalBundle) ||
     (editState?.version &&
       isReleaseDocument(currentGlobalBundle) &&
-      editState?.bundleId === getBundleIdFromReleaseId(currentGlobalBundle._id))
+      editState?.bundleId === getBundleIdFromReleaseDocumentId(currentGlobalBundle._id))
   ) {
     actions = <DocumentStatusBarActions />
   }

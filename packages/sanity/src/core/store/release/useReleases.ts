@@ -2,7 +2,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {sortReleases} from '../../releases/hooks/utils'
-import {getBundleIdFromReleaseId} from '../../releases/util/getBundleIdFromReleaseId'
+import {getBundleIdFromReleaseDocumentId} from '../../releases/util/getBundleIdFromReleaseDocumentId'
 import {useReleasesStore} from '../_legacy/datastores'
 import {type ReleasesReducerAction} from './reducer'
 import {type ReleaseDocument} from './types'
@@ -50,7 +50,7 @@ export function useReleases(): ReleasesState {
     [state.releases],
   )
   const releasesIds = useMemo(
-    () => releasesAsArray.map((release) => getBundleIdFromReleaseId(release._id)),
+    () => releasesAsArray.map((release) => getBundleIdFromReleaseDocumentId(release._id)),
     [releasesAsArray],
   )
   return {
