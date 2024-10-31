@@ -601,6 +601,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const isSystemPerspectiveApplied = perspective && typeof bundlePerspective === 'undefined'
 
     return (
+      (bundlePerspective && !existsInBundle) ||
       isSystemPerspectiveApplied ||
       !ready ||
       revTime !== null ||
@@ -625,6 +626,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     liveEdit,
     perspective,
     bundlePerspective,
+    existsInBundle,
     ready,
     revTime,
     isDeleting,
