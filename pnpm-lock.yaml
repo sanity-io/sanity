@@ -6,7 +6,7 @@ settings:
 
 overrides:
   '@npmcli/arborist': ^7.5.4
-  '@sanity/client': 6.22.1-bundle-perspective
+  '@sanity/client': 6.22.2-bundle-perspective-2
   '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz
   '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz
   '@sanity/ui@2': file:registry/sanity-ui-2.8.9.tgz
@@ -40,8 +40,8 @@ importers:
         specifier: workspace:*
         version: link:packages/@repo/tsconfig
       '@sanity/client':
-        specifier: 6.22.1-bundle-perspective
-        version: 6.22.1-bundle-perspective(debug@4.3.7)
+        specifier: 6.22.2-bundle-perspective-2
+        version: 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/eslint-config-i18n':
         specifier: 1.0.0
         version: 1.0.0(eslint@8.57.0)(typescript@5.6.3)
@@ -176,13 +176,13 @@ importers:
         version: 9.1.4
       jest:
         specifier: ^29.7.0
-        version: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3))
+        version: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3))
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
       lerna:
         specifier: ^8.1.8
-        version: 8.1.8(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13))(babel-plugin-macros@3.1.0)(encoding@0.1.13)
+        version: 8.1.8(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14)(babel-plugin-macros@3.1.0)(encoding@0.1.13)
       lint-staged:
         specifier: ^12.1.2
         version: 12.5.0(enquirer@2.4.1)
@@ -460,8 +460,8 @@ importers:
         specifier: 3.62.2
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
-        specifier: 6.22.1-bundle-perspective
-        version: 6.22.1-bundle-perspective(debug@4.3.7)
+        specifier: 6.22.2-bundle-perspective-2
+        version: 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.6
@@ -497,10 +497,10 @@ importers:
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
         specifier: ^2.0.0
-        version: 2.0.0(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))
+        version: 2.0.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.10.13(@sanity/client@6.22.1-bundle-perspective)(react@18.3.1)
+        version: 1.10.13(@sanity/client@6.22.2-bundle-perspective-2)(react@18.3.1)
       '@sanity/tsdoc':
         specifier: 1.0.113
         version: 1.0.113(@types/babel__core@7.20.5)(@types/node@22.5.4)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)
@@ -524,7 +524,7 @@ importers:
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
         specifier: 2.4.1
-        version: 2.4.1(@sanity/client@6.22.1-bundle-perspective)(next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 2.4.1(@sanity/client@6.22.2-bundle-perspective-2)(next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -792,8 +792,8 @@ importers:
         specifier: ^7.23.5
         version: 7.25.7
       '@sanity/client':
-        specifier: 6.22.1-bundle-perspective
-        version: 6.22.1-bundle-perspective(debug@4.3.7)
+        specifier: 6.22.2-bundle-perspective-2
+        version: 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/codegen':
         specifier: 3.62.2
         version: link:../codegen
@@ -1098,8 +1098,8 @@ importers:
   packages/@sanity/migrate:
     dependencies:
       '@sanity/client':
-        specifier: 6.22.1-bundle-perspective
-        version: 6.22.1-bundle-perspective(debug@4.3.7)
+        specifier: 6.22.2-bundle-perspective-2
+        version: 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/mutate':
         specifier: ^0.10.1
         version: 0.10.1(debug@4.3.7)
@@ -1239,8 +1239,8 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: 6.22.1-bundle-perspective
-        version: 6.22.1-bundle-perspective(debug@4.3.7)
+        specifier: 6.22.2-bundle-perspective-2
+        version: 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@types/react':
         specifier: ^18.3.5
         version: 18.3.12
@@ -1270,8 +1270,8 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: 6.22.1-bundle-perspective
-        version: 6.22.1-bundle-perspective(debug@4.3.7)
+        specifier: 6.22.2-bundle-perspective-2
+        version: 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/types':
         specifier: 3.62.2
         version: link:../types
@@ -1371,8 +1371,8 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: 6.22.1-bundle-perspective
-        version: 6.22.1-bundle-perspective(debug@4.3.7)
+        specifier: 6.22.2-bundle-perspective-2
+        version: 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/codegen':
         specifier: workspace:*
         version: link:../codegen
@@ -1461,8 +1461,8 @@ importers:
         specifier: 3.62.2
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: 6.22.1-bundle-perspective
-        version: 6.22.1-bundle-perspective(debug@4.3.7)
+        specifier: 6.22.2-bundle-perspective-2
+        version: 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.6
@@ -1501,7 +1501,7 @@ importers:
         version: link:../@sanity/mutator
       '@sanity/presentation':
         specifier: 1.17.6
-        version: 1.17.6(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 1.17.6(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
         specifier: 3.62.2
         version: link:../@sanity/schema
@@ -1942,8 +1942,8 @@ importers:
   perf/efps:
     devDependencies:
       '@sanity/client':
-        specifier: 6.22.1-bundle-perspective
-        version: 6.22.1-bundle-perspective(debug@4.3.7)
+        specifier: 6.22.2-bundle-perspective-2
+        version: 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@swc-node/register':
         specifier: ^1.10.9
         version: 1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3)
@@ -2020,8 +2020,8 @@ importers:
         specifier: 1.44.1
         version: 1.44.1
       '@sanity/client':
-        specifier: 6.22.1-bundle-perspective
-        version: 6.22.1-bundle-perspective(debug@4.3.7)
+        specifier: 6.22.2-bundle-perspective-2
+        version: 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/uuid':
         specifier: ^3.0.1
         version: 3.0.2
@@ -2061,7 +2061,7 @@ importers:
         version: 0.21.5
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3)
+        version: 10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3)
       typescript:
         specifier: 5.6.3
         version: 5.6.3
@@ -4555,8 +4555,8 @@ packages:
   '@sanity/browserslist-config@1.0.3':
     resolution: {integrity: sha512-UkJuiTyROgPcxbvpHYyXwr+T88Np4eLzu3h05gMgeZ2hv3EM7g/4VMyng5HuA1JdPQPEdq8bmmfQDR+u4KC+TA==}
 
-  '@sanity/client@6.22.1-bundle-perspective':
-    resolution: {integrity: sha512-2vIUxWn4x5Ew5iIkodgq8UoChYknVOoC9kW6OlZ/m4A2zCrNnwam/DNxWY0b1J/g4tSXi+YpAEBjYr/VZN6F2w==}
+  '@sanity/client@6.22.2-bundle-perspective-2':
+    resolution: {integrity: sha512-QSNHI12WBMgipmOi/vKI77HwL075yQvJ3Hgy6q06QNd8hKpbL6FhM/364UAPh0SLUt7CRvS9QyndNupeCIcURA==}
     engines: {node: '>=14.18'}
 
   '@sanity/code-input@4.1.4':
@@ -4580,7 +4580,7 @@ packages:
     resolution: {integrity: sha512-xHH85EqWb30OnNd0vsTmky/Y+GT1ikVNba/gZrhNHAxXJImOCQvqO89WtV3DPyvIBCpvsoLQyM0DfSxSf+7CVw==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': 6.22.1-bundle-perspective
+      '@sanity/client': 6.22.2-bundle-perspective-2
 
   '@sanity/diff-match-patch@3.1.1':
     resolution: {integrity: sha512-dSZqGeYjHKGIkqAzGqLcG92LZyJGX+nYbs/FWawhBbTBDWi21kvQ0hsL3DJThuFVWtZMWTQijN3z6Cnd44Pf2g==}
@@ -4703,7 +4703,7 @@ packages:
     resolution: {integrity: sha512-cEp9S5qG+gzC9YMn762iKeh1CqeIPyEXpJMVUNmc22Pl4hv4zXeAa+Rs68aPdn1Zk6Ughy++EAuIQcXDLrY2SQ==}
     engines: {node: '>=16.14'}
     peerDependencies:
-      '@sanity/client': 6.22.1-bundle-perspective
+      '@sanity/client': 6.22.2-bundle-perspective-2
 
   '@sanity/prettier-config@1.0.2':
     resolution: {integrity: sha512-V4HinfhMYxQoyXefJ2B8zJnwlf7A8mVzAzKk24B/iCg4pkVlMGc8bj0buu9Uieh4bNeHvEAHOIQv+Xd7tiLuNA==}
@@ -4714,13 +4714,13 @@ packages:
     resolution: {integrity: sha512-JfStdSb8KT0RzePtGbUIZewNNHNNbvYHwsW4WzYEmgPTfgZnPAIMFYUFSHAKKFyKQ3tqzARRQm3uURpoSTyIkA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': 6.22.1-bundle-perspective
+      '@sanity/client': 6.22.2-bundle-perspective-2
 
   '@sanity/react-loader@1.10.13':
     resolution: {integrity: sha512-0zx/qt2TajRDJG/R+hS5ANPx6rdXLq+j38M98T6sJvbrV5YacyW5IL+ZNOf+K2XjFHrlfORbB89qAK0ChjV3iA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': 6.22.1-bundle-perspective
+      '@sanity/client': 6.22.2-bundle-perspective-2
       react: ^18.3 || >=19.0.0-rc
 
   '@sanity/telemetry@0.7.9':
@@ -4751,8 +4751,8 @@ packages:
     version: 1.2.11
     hasBin: true
     peerDependencies:
-      '@sanity/icons': file:/Users/bjoerge/code/sanity-io/sanity/registry/sanity-icons-3.4.0.tgz
-      '@sanity/ui': file:/Users/bjoerge/code/sanity-io/sanity/registry/sanity-ui-2.8.9.tgz
+      '@sanity/icons': file:/Users/pedrobonamin/code/sanity/registry/sanity-icons-3.4.0.tgz
+      '@sanity/ui': file:/Users/pedrobonamin/code/sanity/registry/sanity-ui-2.8.9.tgz
       react: ^18
       react-dom: ^18
       styled-components: ^5.2 || ^6
@@ -4779,7 +4779,7 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
-      '@sanity/client': 6.22.1-bundle-perspective
+      '@sanity/client': 6.22.2-bundle-perspective-2
       '@sveltejs/kit': '>= 2'
       next: '>= 13 || >=14.3.0-canary.0 <14.3.0 || >=15.0.0-rc'
       react: ^18.3 || >=19.0.0-rc
@@ -10677,7 +10677,7 @@ packages:
     version: 2.1.0
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/ui': file:/Users/bjoerge/code/sanity-io/sanity/registry/sanity-ui-2.8.9.tgz
+      '@sanity/ui': file:/Users/pedrobonamin/code/sanity/registry/sanity-ui-2.8.9.tgz
       react: ^18
       sanity: ^3.0.0
       styled-components: ^6.1
@@ -10687,7 +10687,7 @@ packages:
     version: 2.3.2
     engines: {node: '>=14'}
     peerDependencies:
-      '@sanity/ui': file:/Users/bjoerge/code/sanity-io/sanity/registry/sanity-ui-2.8.9.tgz
+      '@sanity/ui': file:/Users/pedrobonamin/code/sanity/registry/sanity-ui-2.8.9.tgz
       react: ^18
       react-dom: ^18
       sanity: ^3.0.0
@@ -13883,7 +13883,7 @@ snapshots:
       jest-util: 29.7.0
       slash: 3.0.0
 
-  '@jest/core@29.7.0(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3))':
+  '@jest/core@29.7.0(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3))':
     dependencies:
       '@jest/console': 29.7.0
       '@jest/reporters': 29.7.0(node-notifier@10.0.1)
@@ -13897,7 +13897,7 @@ snapshots:
       exit: 0.1.2
       graceful-fs: 4.2.11
       jest-changed-files: 29.7.0
-      jest-config: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3))
+      jest-config: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3))
       jest-haste-map: 29.7.0
       jest-message-util: 29.7.0
       jest-regex-util: 29.6.3
@@ -14075,12 +14075,12 @@ snapshots:
 
   '@juggle/resize-observer@3.4.0': {}
 
-  '@lerna/create@8.1.8(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13))(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.6.3)':
+  '@lerna/create@8.1.8(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.6.3)':
     dependencies:
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
-      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13)))
+      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14))
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 19.0.11(encoding@0.1.13)
       aproba: 2.0.0
@@ -14119,7 +14119,7 @@ snapshots:
       npm-package-arg: 11.0.2
       npm-packlist: 8.0.2
       npm-registry-fetch: 17.1.0
-      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13))
+      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14)
       p-map: 4.0.0
       p-map-series: 2.1.0
       p-queue: 6.6.2
@@ -14512,29 +14512,29 @@ snapshots:
       - bluebird
       - supports-color
 
-  '@nrwl/devkit@19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13)))':
+  '@nrwl/devkit@19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14))':
     dependencies:
-      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13)))
+      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14))
     transitivePeerDependencies:
       - nx
 
-  '@nrwl/tao@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13))':
+  '@nrwl/tao@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14)':
     dependencies:
-      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13))
+      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14)
       tslib: 2.8.0
     transitivePeerDependencies:
       - '@swc-node/register'
       - '@swc/core'
       - debug
 
-  '@nx/devkit@19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13)))':
+  '@nx/devkit@19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14))':
     dependencies:
-      '@nrwl/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13)))
+      '@nrwl/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14))
       ejs: 3.1.10
       enquirer: 2.3.6
       ignore: 5.3.2
       minimatch: 9.0.3
-      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13))
+      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14)
       semver: 7.6.3
       tmp: 0.2.3
       tslib: 2.8.0
@@ -15046,7 +15046,7 @@ snapshots:
 
   '@sanity/browserslist-config@1.0.3': {}
 
-  '@sanity/client@6.22.1-bundle-perspective(debug@4.3.7)':
+  '@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7)':
     dependencies:
       '@sanity/eventsource': 5.0.2
       get-it: 8.6.5(debug@4.3.7)
@@ -15096,9 +15096,9 @@ snapshots:
       uuid: 10.0.0
       xstate: 5.18.2
 
-  '@sanity/core-loader@1.7.5(@sanity/client@6.22.1-bundle-perspective)':
+  '@sanity/core-loader@1.7.5(@sanity/client@6.22.2-bundle-perspective-2)':
     dependencies:
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/comlink': 1.1.1
 
   '@sanity/diff-match-patch@3.1.1': {}
@@ -15161,7 +15161,7 @@ snapshots:
 
   '@sanity/export@3.41.0':
     dependencies:
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/util': 3.37.2(debug@4.3.7)
       archiver: 7.0.1
       debug: 4.3.7(supports-color@9.4.0)
@@ -15285,7 +15285,7 @@ snapshots:
 
   '@sanity/mutate@0.10.1(debug@4.3.7)':
     dependencies:
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/diff-match-patch': 3.1.1
       hotscript: 1.0.13
       lodash: 4.17.21
@@ -15297,7 +15297,7 @@ snapshots:
 
   '@sanity/mutate@0.10.1-canary.5(xstate@5.18.2)':
     dependencies:
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/diff-match-patch': 3.1.1
       hotscript: 1.0.13
       mendoza: 3.0.7
@@ -15419,13 +15419,13 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation@1.17.6(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/presentation@1.17.6(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/comlink': 1.1.1
       '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
       '@sanity/logos': 2.1.13(@sanity/color@3.0.6)(react@18.3.1)
-      '@sanity/preview-url-secret': 2.0.0(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))
+      '@sanity/preview-url-secret': 2.0.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))
       '@sanity/ui': file:registry/sanity-ui-2.8.9.tgz(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -15451,15 +15451,15 @@ snapshots:
       prettier: 3.3.3
       prettier-plugin-packagejson: 2.5.1(prettier@3.3.3)
 
-  '@sanity/preview-url-secret@2.0.0(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))':
+  '@sanity/preview-url-secret@2.0.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))':
     dependencies:
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/uuid': 3.0.2
 
-  '@sanity/react-loader@1.10.13(@sanity/client@6.22.1-bundle-perspective)(react@18.3.1)':
+  '@sanity/react-loader@1.10.13(@sanity/client@6.22.2-bundle-perspective-2)(react@18.3.1)':
     dependencies:
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
-      '@sanity/core-loader': 1.7.5(@sanity/client@6.22.1-bundle-perspective)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
+      '@sanity/core-loader': 1.7.5(@sanity/client@6.22.2-bundle-perspective-2)
       react: 18.3.1
 
   '@sanity/telemetry@0.7.9(react@18.3.1)':
@@ -15479,7 +15479,7 @@ snapshots:
   '@sanity/test@0.0.1-alpha.1':
     dependencies:
       '@playwright/test': 1.44.1
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/uuid': 3.0.2
       cac: 6.7.14
     transitivePeerDependencies:
@@ -15493,7 +15493,7 @@ snapshots:
       '@microsoft/tsdoc-config': 0.17.0
       '@portabletext/react': 3.1.0(react@18.3.1)
       '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/color': 3.0.6
       '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
       '@sanity/pkg-utils': 6.11.4(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.7)(typescript@5.6.3)
@@ -15546,7 +15546,7 @@ snapshots:
       '@microsoft/tsdoc-config': 0.17.0
       '@portabletext/react': 3.1.0(react@19.0.0-rc-f994737d14-20240522)
       '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/color': 3.0.6
       '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@19.0.0-rc-f994737d14-20240522)
       '@sanity/pkg-utils': 6.11.4(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.7)(typescript@5.6.3)
@@ -15599,7 +15599,7 @@ snapshots:
       '@microsoft/tsdoc-config': 0.17.0
       '@portabletext/react': 3.1.0(react@18.3.1)
       '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/color': 3.0.6
       '@sanity/icons': file:registry/sanity-icons-3.4.0.tgz(react@18.3.1)
       '@sanity/pkg-utils': 6.11.4(@types/babel__core@7.20.5)(@types/node@22.5.4)(typescript@5.6.3)
@@ -15646,7 +15646,7 @@ snapshots:
 
   '@sanity/types@3.37.2(debug@4.3.7)':
     dependencies:
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@types/react': 18.3.12
     transitivePeerDependencies:
       - debug
@@ -15771,7 +15771,7 @@ snapshots:
 
   '@sanity/util@3.37.2(debug@4.3.7)':
     dependencies:
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
       '@sanity/types': 3.37.2(debug@4.3.7)
       get-random-values-esm: 1.0.2
       moment: 2.30.1
@@ -15784,11 +15784,11 @@ snapshots:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  '@sanity/visual-editing@2.4.1(@sanity/client@6.22.1-bundle-perspective)(next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@sanity/visual-editing@2.4.1(@sanity/client@6.22.2-bundle-perspective-2)(next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@sanity/comlink': 1.1.1
       '@sanity/mutate': 0.10.1-canary.5(xstate@5.18.2)
-      '@sanity/preview-url-secret': 2.0.0(@sanity/client@6.22.1-bundle-perspective(debug@4.3.7))
+      '@sanity/preview-url-secret': 2.0.0(@sanity/client@6.22.2-bundle-perspective-2(debug@4.3.7))
       '@vercel/stega': 0.1.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -15798,8 +15798,8 @@ snapshots:
       valibot: 0.31.1
       xstate: 5.18.2
     optionalDependencies:
-      '@sanity/client': 6.22.1-bundle-perspective(debug@4.3.7)
-      next: 15.0.1(@babel/core@7.25.8)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@sanity/client': 6.22.2-bundle-perspective-2(debug@4.3.7)
+      next: 15.0.1(@babel/core@7.25.8)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
       - debug
 
@@ -17828,13 +17828,13 @@ snapshots:
       crc-32: 1.2.2
       readable-stream: 4.5.2
 
-  create-jest@29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3)):
+  create-jest@29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3)):
     dependencies:
       '@jest/types': 29.6.3
       chalk: 4.1.2
       exit: 0.1.2
       graceful-fs: 4.2.11
-      jest-config: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3))
+      jest-config: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3))
       jest-util: 29.7.0
       prompts: 2.4.2
     transitivePeerDependencies:
@@ -20446,16 +20446,16 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  jest-cli@29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3)):
+  jest-cli@29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3)):
     dependencies:
-      '@jest/core': 29.7.0(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3))
+      '@jest/core': 29.7.0(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3))
       '@jest/test-result': 29.7.0
       '@jest/types': 29.6.3
       chalk: 4.1.2
-      create-jest: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3))
+      create-jest: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3))
       exit: 0.1.2
       import-local: 3.2.0
-      jest-config: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3))
+      jest-config: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3))
       jest-util: 29.7.0
       jest-validate: 29.7.0
       yargs: 17.7.2
@@ -20467,7 +20467,7 @@ snapshots:
       - supports-color
       - ts-node
 
-  jest-config@29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3)):
+  jest-config@29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3)):
     dependencies:
       '@babel/core': 7.25.8
       '@jest/test-sequencer': 29.7.0
@@ -20493,7 +20493,7 @@ snapshots:
       strip-json-comments: 3.1.1
     optionalDependencies:
       '@types/node': 18.19.44
-      ts-node: 10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3)
+      ts-node: 10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3)
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
@@ -20728,12 +20728,12 @@ snapshots:
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
-  jest@29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3)):
+  jest@29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3)):
     dependencies:
-      '@jest/core': 29.7.0(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3))
+      '@jest/core': 29.7.0(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3))
       '@jest/types': 29.6.3
       import-local: 3.2.0
-      jest-cli: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3))
+      jest-cli: 29.7.0(@types/node@18.19.44)(babel-plugin-macros@3.1.0)(node-notifier@10.0.1)(ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3))
     optionalDependencies:
       node-notifier: 10.0.1
     transitivePeerDependencies:
@@ -20940,13 +20940,13 @@ snapshots:
     dependencies:
       readable-stream: 2.3.8
 
-  lerna@8.1.8(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13))(babel-plugin-macros@3.1.0)(encoding@0.1.13):
+  lerna@8.1.8(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14)(babel-plugin-macros@3.1.0)(encoding@0.1.13):
     dependencies:
-      '@lerna/create': 8.1.8(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13))(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.6.3)
+      '@lerna/create': 8.1.8(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.6.3)
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
-      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13)))
+      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14))
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 19.0.11(encoding@0.1.13)
       aproba: 2.0.0
@@ -20991,7 +20991,7 @@ snapshots:
       npm-package-arg: 11.0.2
       npm-packlist: 8.0.2
       npm-registry-fetch: 17.1.0
-      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13))
+      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14)
       p-map: 4.0.0
       p-map-series: 2.1.0
       p-pipe: 3.1.0
@@ -21580,6 +21580,33 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
+  next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@next/env': 15.0.1
+      '@swc/counter': 0.1.3
+      '@swc/helpers': 0.5.13
+      busboy: 1.6.0
+      caniuse-lite: 1.0.30001669
+      postcss: 8.4.31
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      styled-jsx: 5.1.6(@babel/core@7.25.8)(babel-plugin-macros@3.1.0)(react@18.3.1)
+    optionalDependencies:
+      '@next/swc-darwin-arm64': 15.0.1
+      '@next/swc-darwin-x64': 15.0.1
+      '@next/swc-linux-arm64-gnu': 15.0.1
+      '@next/swc-linux-arm64-musl': 15.0.1
+      '@next/swc-linux-x64-gnu': 15.0.1
+      '@next/swc-linux-x64-musl': 15.0.1
+      '@next/swc-win32-arm64-msvc': 15.0.1
+      '@next/swc-win32-x64-msvc': 15.0.1
+      '@playwright/test': 1.44.1
+      sharp: 0.33.5
+    transitivePeerDependencies:
+      - '@babel/core'
+      - babel-plugin-macros
+    optional: true
+
   next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@0.0.0-experimental-de2cfda-20240912)(react-dom@19.0.0-rc-a7d1240c-20240731(react@19.0.0-rc-a7d1240c-20240731))(react@19.0.0-rc-a7d1240c-20240731):
     dependencies:
       '@next/env': 15.0.1
@@ -21606,33 +21633,6 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
-
-  next@15.0.1(@babel/core@7.25.8)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
-    dependencies:
-      '@next/env': 15.0.1
-      '@swc/counter': 0.1.3
-      '@swc/helpers': 0.5.13
-      busboy: 1.6.0
-      caniuse-lite: 1.0.30001669
-      postcss: 8.4.31
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      styled-jsx: 5.1.6(@babel/core@7.25.8)(babel-plugin-macros@3.1.0)(react@18.3.1)
-    optionalDependencies:
-      '@next/swc-darwin-arm64': 15.0.1
-      '@next/swc-darwin-x64': 15.0.1
-      '@next/swc-linux-arm64-gnu': 15.0.1
-      '@next/swc-linux-arm64-musl': 15.0.1
-      '@next/swc-linux-x64-gnu': 15.0.1
-      '@next/swc-linux-x64-musl': 15.0.1
-      '@next/swc-win32-arm64-msvc': 15.0.1
-      '@next/swc-win32-x64-msvc': 15.0.1
-      '@playwright/test': 1.47.0
-      sharp: 0.33.5
-    transitivePeerDependencies:
-      - '@babel/core'
-      - babel-plugin-macros
-    optional: true
 
   nice-try@1.0.5: {}
 
@@ -21800,10 +21800,10 @@ snapshots:
 
   nwsapi@2.2.12: {}
 
-  nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13)):
+  nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14):
     dependencies:
       '@napi-rs/wasm-runtime': 0.2.4
-      '@nrwl/tao': 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3))(@swc/core@1.7.14(@swc/helpers@0.5.13))
+      '@nrwl/tao': 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.6.3))(@swc/core@1.7.14)
       '@yarnpkg/lockfile': 1.1.0
       '@yarnpkg/parsers': 3.0.0-rc.46
       '@zkochan/js-yaml': 0.0.7
@@ -24029,7 +24029,7 @@ snapshots:
     dependencies:
       typescript: 5.6.3
 
-  ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.6.3):
+  ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.6.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11

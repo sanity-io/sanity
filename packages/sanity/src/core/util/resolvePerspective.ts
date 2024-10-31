@@ -20,7 +20,7 @@ const MAXIMUM_SUPPORTED_BUNDLE_PERSPECTIVES = 10
  */
 export function resolvePerspectiveOptions(
   perspective: string[] | undefined,
-): {bundlePerspective: string} | Record<PropertyKey, never> {
+): {bundlePerspective: string[]} | Record<PropertyKey, never> {
   if (typeof perspective === 'undefined') {
     return {}
   }
@@ -30,6 +30,6 @@ export function resolvePerspectiveOptions(
     //       In production, it shouldn't be possible for a project to exceed this quantity of
     //       releases in the first place. We should improve handling of this scenario and remove
     //       the slice operation to avoid unexpected behaviour.
-    bundlePerspective: perspective.slice(0, MAXIMUM_SUPPORTED_BUNDLE_PERSPECTIVES - 1).join(','),
+    bundlePerspective: perspective.slice(0, MAXIMUM_SUPPORTED_BUNDLE_PERSPECTIVES - 1),
   }
 }
