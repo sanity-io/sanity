@@ -1713,8 +1713,8 @@ importers:
         specifier: ^2.1.6
         version: 2.2.0(react@18.3.1)
       react-rx:
-        specifier: ^4.0.0
-        version: 4.0.0(react@18.3.1)(rxjs@7.8.1)
+        specifier: ^4.0.1
+        version: 4.0.1(react@18.3.1)(rxjs@7.8.1)
       read-pkg-up:
         specifier: ^7.0.1
         version: 7.0.1
@@ -10355,8 +10355,8 @@ packages:
       react: ^18.3 || >=19.0.0-rc
       rxjs: ^7
 
-  react-rx@4.0.0:
-    resolution: {integrity: sha512-nJbL5VvUUKaNlEzPcAcGdTe9HqJLKfFi7SM3FFAqnPYdJ1mJbZHfmGH82DCkAEzGmOtW9ItdtDbjXSLMswE+dg==}
+  react-rx@4.0.1:
+    resolution: {integrity: sha512-A0MnLHy9MOE34JRcQ9qnG8VyFN6jOZK76x2JcBooxkxoc72UtD16CbBN15DEoWCo+QL1zUBXLLe0J1s/p050TA==}
     peerDependencies:
       react: ^18.3 || >=19.0.0-rc
       rxjs: ^7
@@ -22837,7 +22837,7 @@ snapshots:
       rxjs: 7.8.1
       use-effect-event: 1.0.2(react@18.3.1)
 
-  react-rx@4.0.0(react@18.3.1)(rxjs@7.8.1):
+  react-rx@4.0.1(react@18.3.1)(rxjs@7.8.1):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.1)
       react: 18.3.1
