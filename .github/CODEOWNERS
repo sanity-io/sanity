@@ -48,7 +48,7 @@ packages/sanity/src/structure/panes/documentList/sheetList @sanity-io/studio-ex
 /packages/@sanity/cli/templates/shopify* @thebiggianthead
 
 # Telemetry definitions
-*.telemetry.ts @sanity-io/growth
+*.telemetry.ts @sanity-io/data-eng
 
 # -- Plugins --
 
