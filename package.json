@@ -188,10 +188,10 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
+      "@portabletext/editor": "1.1.12-canary.3",
       "@sanity/ui@2": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
-      "@typescript-eslint/parser": "$@typescript-eslint/parser",
-      "@portabletext/editor": "1.1.12-canary.2"
+      "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }
   },
   "isSanityMonorepo": true
