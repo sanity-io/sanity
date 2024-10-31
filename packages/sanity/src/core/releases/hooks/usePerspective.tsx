@@ -130,7 +130,7 @@ export function usePerspective(): PerspectiveValue {
     (perspectiveId: string) =>
       Boolean(
         excludedPerspectives?.includes(
-          perspectiveId === 'published' ? 'published' : `bundle.${perspectiveId}`,
+          isPublishedPerspective(perspectiveId) ? 'published' : `bundle.${perspectiveId}`,
         ),
       ),
     [excludedPerspectives],
@@ -144,8 +144,9 @@ export function usePerspective(): PerspectiveValue {
       setPerspectiveFromRelease,
       toggleExcludedPerspective,
       currentGlobalBundle,
-      currentGlobalBundleId:
-        currentGlobalBundle === 'published' ? 'published' : currentGlobalBundle._id,
+      currentGlobalBundleId: isPublishedPerspective(currentGlobalBundle)
+        ? 'published'
+        : currentGlobalBundle._id,
       bundlesPerspective,
       isPerspectiveExcluded,
     }),
