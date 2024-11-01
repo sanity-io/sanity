@@ -1,11 +1,11 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {useReleasesStore} from '../../store/_legacy/datastores'
 import {sortReleases} from '../hooks/utils'
 import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 import {type ReleasesReducerAction} from './reducer'
 import {type ReleaseDocument} from './types'
+import {useReleasesStore} from './useReleasesStore'
 
 interface ReleasesState {
   /**

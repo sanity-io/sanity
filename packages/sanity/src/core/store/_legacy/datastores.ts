@@ -6,8 +6,6 @@ import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
-import {createReleaseStore} from '../../releases/store/createReleaseStore'
-import {type ReleaseStore} from '../../releases/store/types'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
@@ -290,32 +288,4 @@ export function useKeyValueStore(): KeyValueStore {
 
     return keyValueStore
   }, [client, resourceCache, workspace])
-}
-
-/** @internal */
-export function useReleasesStore(): ReleaseStore {
-  const resourceCache = useResourceCache()
-  const workspace = useWorkspace()
-  const previewStore = useDocumentPreviewStore()
-  const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
-  return useMemo(() => {
-    const releaseStore =
-      resourceCache.get<ReleaseStore>({
-        dependencies: [workspace, previewStore],
-        namespace: 'ReleasesStore',
-      }) ||
-      createReleaseStore({
-        client: studioClient,
-        previewStore,
-      })
-
-    resourceCache.set({
-      dependencies: [workspace, previewStore],
-      namespace: 'ReleasesStore',
-      value: releaseStore,
-    })
-
-    return releaseStore
-  }, [resourceCache, workspace, studioClient, previewStore])
 }
