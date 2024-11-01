@@ -5,7 +5,7 @@ import {useObservable} from 'react-rx'
 import {combineLatest, of} from 'rxjs'
 import {filter, map, startWith, switchAll, switchMap} from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useDocumentPreviewStore} from 'sanity'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from 'sanity'
 
 import {useClient, useSchema} from '../../../hooks'
 import {getPreviewValueWithFallback, prepareForPreview} from '../../../preview'
