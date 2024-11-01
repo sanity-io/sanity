@@ -5,7 +5,6 @@ export interface SanityDocument {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  _version?: Record<string, never>
   [key: string]: unknown
 }
 
@@ -22,7 +21,6 @@ export interface SanityDocumentLike {
   _createdAt?: string
   _updatedAt?: string
   _rev?: string
-  _version?: Record<string, never>
   [key: string]: unknown
 }
 
