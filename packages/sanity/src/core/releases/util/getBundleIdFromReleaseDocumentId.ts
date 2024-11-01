@@ -1,4 +1,4 @@
-import {RELEASE_DOCUMENTS_PATH} from '../../store/release/constants'
+import {RELEASE_DOCUMENTS_PATH} from '../store/constants'
 
 const PATH_ID_PREFIX = `${RELEASE_DOCUMENTS_PATH}.`
 

@@ -1,6 +1,6 @@
 import {defineEvent} from '@sanity/telemetry'
 
-import {type VersionOriginTypes} from '../../store'
+import {type VersionOriginTypes} from '../index'
 
 interface VersionInfo {
   /**

@@ -11,10 +11,10 @@ import {DateTimeInput} from '../../../../../ui-components/inputs/DateInputs/Date
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {Translate, useTranslation} from '../../../../i18n'
-import {type ReleaseDocument} from '../../../../store'
-import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {type ReleaseDocument} from '../../../index'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleaseScheduleButtonProps {

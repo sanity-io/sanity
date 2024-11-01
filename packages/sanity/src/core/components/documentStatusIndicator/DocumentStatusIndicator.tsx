@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
-import {useReleases} from '../../store/release/useReleases'
+import {useReleases} from '../../releases/store/useReleases'
 
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null

@@ -4,9 +4,9 @@ import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
 import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
-import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../../store'
-import {RELEASE_DOCUMENTS_PATH} from '../../../store/release/constants'
 import {getPublishedId, type PublishedId} from '../../../util/draftUtils'
+import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../index'
+import {RELEASE_DOCUMENTS_PATH} from '../../store/constants'
 import {useDocumentVersions} from '../useDocumentVersions'
 
 vi.mock('../../../../store/release/useReleasesMetadata', () => ({

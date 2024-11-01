@@ -3,9 +3,9 @@ import {act} from 'react'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {type ReleaseDocument} from '../../../../../store'
-import {useReleaseOperations} from '../../../../../store/release/useReleaseOperations'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
+import {type ReleaseDocument} from '../../../../index'
+import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
 vi.mock('sanity', () => ({

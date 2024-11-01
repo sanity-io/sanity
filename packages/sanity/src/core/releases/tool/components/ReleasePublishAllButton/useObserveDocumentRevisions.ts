@@ -3,8 +3,8 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
 
-import {useDocumentPreviewStore} from '../../../../store'
 import {getPublishedId} from '../../../../util'
+import {useDocumentPreviewStore} from '../../../index'
 
 export const useObserveDocumentRevisions = (documents: SanityDocument[]) => {
   const previewStore = useDocumentPreviewStore()

@@ -6,8 +6,8 @@ import {
 } from '@sanity/client'
 import {type User} from '@sanity/types'
 
-import {getBundleIdFromReleaseDocumentId} from '../../releases'
 import {getVersionId} from '../../util'
+import {getBundleIdFromReleaseDocumentId} from '../index'
 import {RELEASE_METADATA_TMP_DOC_PATH, RELEASE_METADATA_TMP_DOC_TYPE} from './constants'
 import {type EditableReleaseDocument} from './types'
 

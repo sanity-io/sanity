@@ -6,9 +6,9 @@ import {IntentLink} from 'sanity/router'
 import {useTranslation} from '../../../i18n'
 import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {useDocumentPresence} from '../../../store'
 import {getPublishedId} from '../../../util/draftUtils'
 import {releasesLocaleNamespace} from '../../i18n'
+import {useDocumentPresence} from '../../index'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 
 interface ReleaseDocumentPreviewProps {

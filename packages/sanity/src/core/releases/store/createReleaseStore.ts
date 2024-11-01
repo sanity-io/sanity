@@ -20,7 +20,7 @@ import {startWith} from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {type DocumentPreviewStore} from '../../preview'
-import {listenQuery} from '../_legacy'
+import {listenQuery} from '../../store/_legacy'
 import {RELEASE_METADATA_TMP_DOC_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'

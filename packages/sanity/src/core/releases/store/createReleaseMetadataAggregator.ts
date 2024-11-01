@@ -12,7 +12,7 @@ import {
 } from 'rxjs'
 import {type SanityClient} from 'sanity'
 
-import {getBundleIdFromReleaseDocumentId} from '../../releases/util/getBundleIdFromReleaseDocumentId'
+import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 import {type ReleasesMetadata} from './useReleasesMetadata'
 
 export type ReleasesMetadataMap = Record<string, ReleasesMetadata>

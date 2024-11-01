@@ -6,10 +6,10 @@ import {css, styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
-import {type ReleaseDocument, type ReleaseType} from '../../store/release/types'
-import {useReleases} from '../../store/release/useReleases'
 import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../hooks'
+import {type ReleaseDocument, type ReleaseType} from '../store/types'
+import {useReleases} from '../store/useReleases'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,

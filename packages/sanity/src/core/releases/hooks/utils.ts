@@ -1,6 +1,6 @@
-import {type ReleaseDocument} from '../../store/release/types'
 import {DRAFTS_FOLDER} from '../../util/draftUtils'
 import {resolveBundlePerspective} from '../../util/resolvePerspective'
+import {type ReleaseDocument} from '../store/types'
 import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 
 export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[] {

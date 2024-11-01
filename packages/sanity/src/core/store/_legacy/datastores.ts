@@ -6,11 +6,11 @@ import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
+import {createReleaseStore} from '../../releases/store/createReleaseStore'
+import {type ReleaseStore} from '../../releases/store/types'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
-import {createReleaseStore} from '../release/createReleaseStore'
-import {type ReleaseStore} from '../release/types'
 import {useCurrentUser} from '../user'
 import {
   type ConnectionStatusStore,

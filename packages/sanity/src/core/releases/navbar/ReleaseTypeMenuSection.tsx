@@ -2,8 +2,8 @@ import {Flex, Label} from '@sanity/ui'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {type ReleaseDocument, type ReleaseType} from '../../store/release/types'
 import {usePerspective} from '../hooks/usePerspective'
+import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,

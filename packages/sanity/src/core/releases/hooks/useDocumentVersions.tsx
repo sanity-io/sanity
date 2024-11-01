@@ -3,9 +3,10 @@ import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 import {catchError} from 'rxjs/operators'
 
-import {type ReleaseDocument, useDocumentPreviewStore, useReleases} from '../../store'
+import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
 import {createSWR} from '../../util/rxSwr'
+import {type ReleaseDocument, useReleases} from '../store'
 import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 
 export interface DocumentPerspectiveProps {

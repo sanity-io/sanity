@@ -2,7 +2,7 @@ import {LockIcon} from '@sanity/icons'
 import {Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
 import {format, isBefore, isValid, parse} from 'date-fns'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {type ReleaseDocument, type ReleaseType, useTranslation} from 'sanity'
+import {type ReleaseDocument, useTranslation} from 'sanity'
 
 import {Button, Popover, Tab} from '../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/calendar/Calendar'
@@ -10,9 +10,10 @@ import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/c
 import {DatePicker} from '../../../../ui-components/inputs/DateInputs/DatePicker'
 import {LazyTextInput} from '../../../../ui-components/inputs/DateInputs/LazyTextInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
-import {useReleaseOperations} from '../../../store/release/useReleaseOperations'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../i18n'
+import {type ReleaseType} from '../../store'
+import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseTone} from '../../util/getReleaseTone'
 
 export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Element {

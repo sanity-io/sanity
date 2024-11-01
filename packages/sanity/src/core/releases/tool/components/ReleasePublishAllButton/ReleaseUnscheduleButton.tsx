@@ -5,10 +5,10 @@ import {useCallback, useMemo, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
-import {type ReleaseDocument} from '../../../../store'
-import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {UnscheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {type ReleaseDocument} from '../../../index'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleaseScheduleButtonProps {

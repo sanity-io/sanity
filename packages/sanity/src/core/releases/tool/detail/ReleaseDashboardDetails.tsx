@@ -11,9 +11,9 @@ import {
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../../i18n'
-import {type ReleaseDocument} from '../../../store'
 import {usePerspective} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
+import {type ReleaseDocument} from '../../index'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'

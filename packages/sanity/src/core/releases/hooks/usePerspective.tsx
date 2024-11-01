@@ -1,9 +1,9 @@
 import {useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {useReleases} from '../../store/release'
-import {type ReleaseDocument} from '../../store/release/types'
 import {resolveBundlePerspective} from '../../util/resolvePerspective'
+import {useReleases} from '../store'
+import {type ReleaseDocument} from '../store/types'
 import {LATEST} from '../util/const'
 import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 import {isPublishedPerspective} from '../util/util'

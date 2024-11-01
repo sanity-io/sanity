@@ -2,7 +2,7 @@ import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {type ReleaseDocument, useReleaseOperations} from '../../../store'
+import {type ReleaseDocument, useReleaseOperations} from '../../index'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 
 // Mock the dependencies

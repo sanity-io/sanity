@@ -4,13 +4,10 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useReleases} from '../../../../store'
-import {type ReleaseDocument} from '../../../../store/release/types'
-import {
-  type ReleasesMetadata,
-  useReleasesMetadata,
-} from '../../../../store/release/useReleasesMetadata'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {useReleases} from '../../../index'
+import {type ReleaseDocument} from '../../../store/types'
+import {type ReleasesMetadata, useReleasesMetadata} from '../../../store/useReleasesMetadata'
 import {ReleasesOverview} from '../ReleasesOverview'
 
 vi.mock('sanity', () => {

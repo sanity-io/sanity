@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
 
 import {useClient} from '../../hooks'
+import {useCurrentUser} from '../../store/user'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {useCurrentUser} from '../user'
 import {createReleaseOperationsStore} from './createReleaseOperationStore'
 
 /**

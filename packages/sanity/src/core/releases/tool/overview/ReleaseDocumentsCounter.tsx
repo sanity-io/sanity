@@ -4,8 +4,8 @@ import {Translate, useTranslation} from 'sanity'
 
 import {Tooltip} from '../../../../ui-components'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
-import {type ReleasesMetadata} from '../../../store/release/useReleasesMetadata'
 import {releasesLocaleNamespace} from '../../i18n'
+import {type ReleasesMetadata} from '../../store/useReleasesMetadata'
 
 type Props = {
   releaseDocumentMetadata: ReleasesMetadata

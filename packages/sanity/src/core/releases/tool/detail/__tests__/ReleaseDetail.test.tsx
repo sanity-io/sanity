@@ -3,9 +3,9 @@ import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useReleases} from '../../../../store/release'
-import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {useReleases} from '../../../store'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {ReleaseDetail} from '../ReleaseDetail'
 import {useBundleDocuments} from '../useBundleDocuments'
 

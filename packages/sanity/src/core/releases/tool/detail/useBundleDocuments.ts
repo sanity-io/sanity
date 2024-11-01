@@ -5,14 +5,14 @@ import {useObservable} from 'react-rx'
 import {combineLatest, of} from 'rxjs'
 import {filter, map, startWith, switchAll, switchMap} from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from 'sanity'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, useDocumentPreviewStore} from 'sanity'
 
 import {useClient, useSchema} from '../../../hooks'
 import {getPreviewValueWithFallback, prepareForPreview} from '../../../preview'
-import {useDocumentPreviewStore} from '../../../store'
 import {useSource} from '../../../studio'
 import {getPublishedId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
+import {useDocumentPreviewStore} from '../../index'
 
 export interface DocumentValidationStatus extends ValidationStatus {
   hasError: boolean

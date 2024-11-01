@@ -4,9 +4,9 @@ import {LayerProvider, PortalProvider, useToast} from '@sanity/ui'
 import {useCallback} from 'react'
 import {AddedVersion} from 'sanity'
 
-import {useReleaseOperations} from '../../../store/release/useReleaseOperations'
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
+import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 import {getCreateVersionOrigin} from '../../util/util'
 

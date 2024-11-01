@@ -1,5 +1,3 @@
-import {type VersionOriginTypes} from '../../store'
-import {type ReleaseDocument} from '../../store/release/types'
 import {
   getVersionFromId,
   isDraftId,
@@ -8,6 +6,8 @@ import {
   resolveBundlePerspective,
 } from '../../util'
 import {type CurrentPerspective} from '../hooks/usePerspective'
+import {type VersionOriginTypes} from '../index'
+import {type ReleaseDocument} from '../store/types'
 import {LATEST} from './const'
 
 /**

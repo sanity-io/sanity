@@ -1,11 +1,7 @@
 import {useCallback, useState} from 'react'
 
-import {
-  type EditableReleaseDocument,
-  type ReleaseDocument,
-  useReleaseOperations,
-} from '../../../store'
 import {ReleaseInputsForm} from '../../components/dialog/ReleaseInputsForm'
+import {type EditableReleaseDocument, type ReleaseDocument, useReleaseOperations} from '../../index'
 
 export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): JSX.Element {
   const {updateRelease} = useReleaseOperations()

@@ -7,10 +7,10 @@ import {useRouter} from 'sanity/router'
 import {Button, Dialog} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
-import {type ReleaseDocument} from '../../../../store'
-import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {type ReleaseDocument} from '../../../index'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {type DocumentInRelease} from '../../../tool/detail/useBundleDocuments'
 
 interface ReleasePublishAllButtonProps {

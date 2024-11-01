@@ -11,8 +11,8 @@ import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../../../i18n'
-import {type ReleaseDocument} from '../../../store'
 import {releasesLocaleNamespace} from '../../i18n'
+import {type ReleaseDocument} from '../../index'
 import {type ReleaseInspector} from './ReleaseDetail'
 
 export function ReleaseDashboardHeader(props: {

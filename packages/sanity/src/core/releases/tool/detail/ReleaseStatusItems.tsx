@@ -2,8 +2,8 @@ import {Flex} from '@sanity/ui'
 
 import {RelativeTime, UserAvatar} from '../../../components'
 import {useTranslation} from '../../../i18n'
-import {type ReleaseDocument} from '../../../store'
 import {releasesLocaleNamespace} from '../../i18n'
+import {type ReleaseDocument} from '../../index'
 import {StatusItem} from '../components/StatusItem'
 
 interface LastEdit {

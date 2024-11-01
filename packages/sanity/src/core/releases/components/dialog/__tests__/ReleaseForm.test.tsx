@@ -3,12 +3,8 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useDateTimeFormat} from '../../../../hooks'
-import {
-  type EditableReleaseDocument,
-  type ReleaseDocument,
-  useReleases,
-} from '../../../../store/release'
-import {RELEASE_DOCUMENT_TYPE} from '../../../../store/release/constants'
+import {type EditableReleaseDocument, type ReleaseDocument, useReleases} from '../../../store'
+import {RELEASE_DOCUMENT_TYPE} from '../../../store/constants'
 import {ReleaseForm} from '../ReleaseForm'
 
 vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({

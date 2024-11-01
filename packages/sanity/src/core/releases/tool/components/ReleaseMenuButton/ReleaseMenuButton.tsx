@@ -6,10 +6,10 @@ import {type FormEventHandler, useState} from 'react'
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
-import {type ReleaseDocument} from '../../../../store/release/types'
-import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
 import {ArchivedRelease, UnarchivedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {type ReleaseDocument} from '../../../store/types'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
 
 export type ReleaseMenuButtonProps = {
   disabled?: boolean

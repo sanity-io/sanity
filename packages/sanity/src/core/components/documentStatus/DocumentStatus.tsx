@@ -1,12 +1,11 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {type BadgeTone, Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {useReleases} from 'sanity'
 
 import {useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
 import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
-import {getReleaseTone, ReleaseAvatar} from '../../releases'
+import {getReleaseTone, ReleaseAvatar, useReleases} from '../../releases'
 
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null

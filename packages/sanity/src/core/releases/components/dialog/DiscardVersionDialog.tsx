@@ -6,10 +6,10 @@ import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {Preview} from '../../../preview'
-import {type ReleaseDocument} from '../../../store'
 import {getPublishedId, getVersionFromId, isVersionId} from '../../../util/draftUtils'
 import {usePerspective, useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
+import {type ReleaseDocument} from '../../store'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 
 /**

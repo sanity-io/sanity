@@ -10,7 +10,7 @@ import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/c
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useTranslation} from '../../../i18n'
-import {type EditableReleaseDocument, type ReleaseType} from '../../../store/release/types'
+import {type EditableReleaseDocument, type ReleaseType} from '../../store/types'
 import {ReleaseInputsForm} from './ReleaseInputsForm'
 
 const RELEASE_TYPES: ReleaseType[] = ['asap', 'scheduled', 'undecided']

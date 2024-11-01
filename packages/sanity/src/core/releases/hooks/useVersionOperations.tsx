@@ -2,8 +2,8 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 
 import {Translate, useTranslation} from '../../i18n'
-import {useReleaseOperations} from '../../store'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
+import {useReleaseOperations} from '../index'
 import {getCreateVersionOrigin} from '../util/util'
 import {usePerspective} from './usePerspective'
 

@@ -8,11 +8,11 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {usePerspective} from 'sanity'
+import {usePerspective, useReleases} from 'sanity'
 
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks'
-import {useDocumentPreviewStore, useReleases} from '../../../store'
+import {useDocumentPreviewStore} from '../../../store'
 import {isNonNullable} from '../../../util'
 import {useFormValue} from '../../contexts/FormValue'
 import {useReferenceInputOptions} from '../../studio'

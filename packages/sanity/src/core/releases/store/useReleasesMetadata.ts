@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 
-import {useReleasesMetadataProvider} from '../../releases/contexts/ReleasesMetadataProvider'
+import {useReleasesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 
 export interface ReleasesMetadata {
   /**

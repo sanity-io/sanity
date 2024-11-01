@@ -5,7 +5,7 @@ import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {type EditableReleaseDocument} from '../../../store'
+import {type EditableReleaseDocument} from '../../index'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
 
 const MAX_DESCRIPTION_HEIGHT = 200

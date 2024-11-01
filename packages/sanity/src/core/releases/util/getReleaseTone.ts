@@ -1,6 +1,6 @@
 import {type BadgeTone} from '@sanity/ui'
 
-import {type ReleaseDocument} from '../../store/release/types'
+import {type ReleaseDocument} from '../store/types'
 import {type LATEST} from './const'
 import {isDraftPerspective, isPublishedPerspective} from './util'
 

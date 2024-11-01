@@ -14,14 +14,11 @@ import {
 } from '../../../../ui-components/inputs/DateFilters/calendar/CalendarFilter'
 import {useTranslation} from '../../../i18n'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
-import {type ReleaseDocument, useReleases} from '../../../store'
-import {
-  type ReleasesMetadata,
-  useReleasesMetadata,
-} from '../../../store/release/useReleasesMetadata'
 import {ReleaseDetailsDialog} from '../../components/dialog/ReleaseDetailsDialog'
 import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
+import {type ReleaseDocument, useReleases} from '../../index'
+import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'

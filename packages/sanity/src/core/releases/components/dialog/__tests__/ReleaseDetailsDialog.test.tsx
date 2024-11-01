@@ -2,8 +2,8 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {type ReleaseDocument, useReleases} from '../../../../store'
-import {useReleaseOperations} from '../../../../store/release/useReleaseOperations'
+import {type ReleaseDocument, useReleases} from '../../../index'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
 
 vi.mock('../../../../store/release', () => ({
