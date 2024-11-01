@@ -996,6 +996,9 @@ importers:
       vite:
         specifier: ^4.5.3
         version: 4.5.5(@types/node@18.19.44)(terser@5.32.0)
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@18.19.44)(jsdom@23.2.0)(terser@5.32.0)
       which:
         specifier: ^2.0.2
         version: 2.0.2

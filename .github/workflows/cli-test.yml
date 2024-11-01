@@ -70,10 +70,7 @@ jobs:
 
       - name: Test
         id: test
-        run: |
-          node -v
-          npm -v
-          pnpm test:jest --silent --selectProjects=@sanity/cli
+        run: pnpm test:vitest --silent --project=@sanity/cli
         env:
           # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to next
           SANITY_CI_CLI_AUTH_TOKEN_STAGING: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN_STAGING }}
