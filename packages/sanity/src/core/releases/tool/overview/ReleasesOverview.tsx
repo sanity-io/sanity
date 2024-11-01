@@ -271,13 +271,21 @@ export function ReleasesOverview() {
     [isCreateReleaseDialogOpen, tCore],
   )
 
+  const handleOnCreateRelease = useCallback(
+    (createdReleaseId: string) => {
+      setIsCreateReleaseDialogOpen(false)
+      router.navigate({releaseId: createdReleaseId})
+    },
+    [router],
+  )
+
   const renderCreateReleaseDialog = () => {
     if (!isCreateReleaseDialogOpen) return null
 
     return (
       <ReleaseDetailsDialog
         onCancel={() => setIsCreateReleaseDialogOpen(false)}
-        onSubmit={() => setIsCreateReleaseDialogOpen(false)}
+        onSubmit={handleOnCreateRelease}
         origin="release-plugin"
       />
     )

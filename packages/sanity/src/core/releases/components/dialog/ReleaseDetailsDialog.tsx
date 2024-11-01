@@ -5,40 +5,32 @@ import {type FormEvent, useCallback, useState} from 'react'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
-import {type EditableReleaseDocument, type ReleaseDocument} from '../../../store/release/types'
+import {type EditableReleaseDocument} from '../../../store/release/types'
 import {useReleaseOperations} from '../../../store/release/useReleaseOperations'
-import {
-  CreatedRelease,
-  type OriginInfo,
-  UpdatedRelease,
-} from '../../__telemetry__/releases.telemetry'
+import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
 import {createReleaseId} from '../../util/createReleaseId'
+import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 import {ReleaseForm} from './ReleaseForm'
 
 interface ReleaseDetailsDialogProps {
   onCancel: () => void
-  onSubmit: () => void
-  release?: ReleaseDocument
+  onSubmit: (createdReleaseId: string) => void
   origin?: OriginInfo['origin']
 }
 
 export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Element {
-  const {onCancel, onSubmit, release, origin} = props
+  const {onCancel, onSubmit, origin} = props
   const toast = useToast()
-  const {createRelease, updateRelease} = useReleaseOperations()
-  const formAction = release ? 'edit' : 'create'
+  const {createRelease} = useReleaseOperations()
   const {t} = useTranslation()
   const telemetry = useTelemetry()
 
   const [value, setValue] = useState((): EditableReleaseDocument => {
     return {
-      _id: release?._id || createReleaseId(),
+      _id: createReleaseId(),
       metadata: {
-        title: release?.metadata.title,
-        description: release?.metadata.description,
-        intendedPublishAt: release?.metadata?.intendedPublishAt,
-        releaseType: release?.metadata.releaseType || DEFAULT_RELEASE_TYPE,
+        releaseType: DEFAULT_RELEASE_TYPE,
       },
     } as const
   })
@@ -54,26 +46,21 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
           ...value,
           metadata: {...value.metadata, title: value.metadata?.title?.trim()},
         }
-        const action = formAction === 'edit' ? updateRelease : createRelease
-        await action(submitValue)
-        if (formAction === 'create') {
-          telemetry.log(CreatedRelease, {origin})
-        } else {
-          telemetry.log(UpdatedRelease)
-        }
+        await createRelease(submitValue)
+        telemetry.log(CreatedRelease, {origin})
       } catch (err) {
         console.error(err)
         toast.push({
           closable: true,
           status: 'error',
-          title: `Failed to ${formAction} release`,
+          title: `Failed to create release`,
         })
       } finally {
         setIsSubmitting(false)
-        onSubmit()
+        onSubmit(getBundleIdFromReleaseDocumentId(value._id))
       }
     },
-    [value, formAction, updateRelease, createRelease, telemetry, origin, toast, onSubmit],
+    [value, createRelease, telemetry, origin, toast, onSubmit],
   )
 
   const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
@@ -81,9 +68,6 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
   }, [])
 
   const dialogTitle = t('release.dialog.create.title')
-
-  const isReleaseScheduled =
-    release && (release.state === 'scheduled' || release.state === 'scheduling')
 
   return (
     <Dialog
@@ -95,11 +79,7 @@ export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Elem
     >
       <form onSubmit={handleOnSubmit}>
         <Box paddingX={4} paddingBottom={4}>
-          <ReleaseForm
-            onChange={handleOnChange}
-            value={value}
-            isReleaseScheduled={isReleaseScheduled}
-          />
+          <ReleaseForm onChange={handleOnChange} value={value} />
         </Box>
         <Flex justify="flex-end" paddingTop={5}>
           <Button

@@ -13,13 +13,14 @@ import {useTranslation} from '../../../i18n'
 import {type EditableReleaseDocument, type ReleaseType} from '../../../store/release/types'
 import {ReleaseInputsForm} from './ReleaseInputsForm'
 
+const RELEASE_TYPES: ReleaseType[] = ['asap', 'scheduled', 'undecided']
+
 /** @internal */
 export function ReleaseForm(props: {
   onChange: (params: EditableReleaseDocument) => void
   value: EditableReleaseDocument
-  isReleaseScheduled?: boolean
 }): JSX.Element {
-  const {onChange, value, isReleaseScheduled = false} = props
+  const {onChange, value} = props
   const {releaseType} = value.metadata || {}
   const publishAt = value.metadata.intendedPublishAt
   // derive the action from whether the initial value prop has a slug
@@ -73,7 +74,7 @@ export function ReleaseForm(props: {
     [onChange, value],
   )
 
-  const handleTitleDescriotionChange = useCallback(
+  const handleTitleDescriptionChange = useCallback(
     (updatedRelease: EditableReleaseDocument) => {
       onChange({
         ...value,
@@ -114,27 +115,16 @@ export function ReleaseForm(props: {
           <Card border overflow="hidden" padding={1} style={{borderRadius: 3.5}} tone="inherit">
             <Flex gap={1}>
               <TabList space={0.5}>
-                <Tab
-                  aria-controls="release-timing-asap"
-                  id="release-timing-asap-tab"
-                  onClick={() => handleButtonReleaseTypeChange('asap')}
-                  label={t('release.type.asap')}
-                  selected={buttonReleaseType === 'asap'}
-                />
-                <Tab
-                  aria-controls="release-timing-at-time"
-                  id="release-timing-at-time-tab"
-                  onClick={() => handleButtonReleaseTypeChange('scheduled')}
-                  selected={buttonReleaseType === 'scheduled'}
-                  label={t('release.type.scheduled')}
-                />
-                <Tab
-                  aria-controls="release-timing-undecided"
-                  id="release-timing-undecided-tab"
-                  onClick={() => handleButtonReleaseTypeChange('undecided')}
-                  selected={buttonReleaseType === 'undecided'}
-                  label={t('release.type.undecided')}
-                />
+                {RELEASE_TYPES.map((type) => (
+                  <Tab
+                    aria-controls={`release-timing-${type}`}
+                    id={`release-timing-${type}-tab`}
+                    key={type}
+                    onClick={() => handleButtonReleaseTypeChange(type)}
+                    selected={buttonReleaseType === type}
+                    label={t(`release.type.${type}`)}
+                  />
+                ))}
               </TabList>
             </Flex>
           </Card>
@@ -148,7 +138,6 @@ export function ReleaseForm(props: {
             >
               <DateTimeInput
                 selectTime
-                readOnly={isReleaseScheduled}
                 monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
                 onChange={handleBundlePublishAtCalendarChange}
                 onInputChange={handleBundleInputChange}
@@ -161,7 +150,7 @@ export function ReleaseForm(props: {
           )}
         </Flex>
       </Stack>
-      <ReleaseInputsForm release={value} onChange={handleTitleDescriotionChange} />
+      <ReleaseInputsForm release={value} onChange={handleTitleDescriptionChange} />
     </Stack>
   )
 }
