@@ -7,9 +7,9 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useObserveDocument} from '../../../../preview/useObserveDocument'
 import {ColorSchemeProvider} from '../../../../studio'
 import {UserColorManagerProvider} from '../../../../user-color'
-import {releasesUsEnglishLocaleRelease} from '../../../i18n'
+import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseReview} from '../ReleaseReview'
-import {type DocumentInReleaseResult} from '../useReleaseDocuments'
+import {type DocumentInRelease} from '../useBundleDocuments'
 
 const BASE_DOCUMENTS_MOCKS = {
   doc1: {
@@ -32,7 +32,7 @@ const BASE_DOCUMENTS_MOCKS = {
   },
 } as const
 
-const MOCKED_DOCUMENTS: DocumentInReleaseResult[] = [
+const MOCKED_DOCUMENTS: DocumentInRelease[] = [
   {
     memoKey: 'key123',
     document: {
@@ -142,7 +142,7 @@ const mockedUseObserveDocument = useObserveDocument as Mock<typeof useObserveDoc
 
 async function createReleaseReviewWrapper() {
   const wrapper = await createTestProvider({
-    resources: [releasesUsEnglishLocaleRelease],
+    resources: [releasesUsEnglishLocaleBundle],
   })
   return ({children}: {children: ReactNode}) =>
     wrapper({

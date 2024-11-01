@@ -25,12 +25,9 @@ vi.mock('../../../../../i18n', () => ({
   useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
 }))
 
-vi.mock('../../../../store/release/useReleasesMetadata', () => ({
-  useReleasesMetadata: vi.fn(),
-}))
-
-vi.mock('../../../../store/release/useReleases', async (importOriginal) => ({
+vi.mock('../../../store', async (importOriginal) => ({
   ...(await importOriginal()),
+  useReleasesMetadata: vi.fn(),
   useReleases: vi.fn(),
 }))
 
