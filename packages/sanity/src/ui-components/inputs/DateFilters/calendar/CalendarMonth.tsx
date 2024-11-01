@@ -14,10 +14,11 @@ interface CalendarMonthProps {
   onSelect: (date?: Date) => void
   hidden?: boolean
   renderCalendarDay?: CalendarProps['renderCalendarDay']
+  disabled?: boolean
 }
 
 export function CalendarMonth(props: CalendarMonthProps) {
-  const {date, renderCalendarDay, hidden} = props
+  const {date, renderCalendarDay, hidden, disabled} = props
   const {getCurrentZoneDate} = useTimeZone()
   const CalendarDay = renderCalendarDay || DefaultCalendarDay
   const weeksOfMonth = useWeeksOfMonth(date)
@@ -56,6 +57,7 @@ export function CalendarMonth(props: CalendarMonthProps) {
                 key={`${weekIdx}-${dayIdx}`}
                 onSelect={props.onSelect}
                 selected={selected}
+                disabled={disabled}
               />
             )
           }),

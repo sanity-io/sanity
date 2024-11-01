@@ -11,10 +11,20 @@ export interface CalendarDayProps {
   isToday: boolean
   selected?: boolean
   dateStyles?: React.CSSProperties
+  disabled?: boolean
 }
 
 export function CalendarDay(props: CalendarDayProps) {
-  const {date, focused, isCurrentMonth, isToday, onSelect, selected, dateStyles = {}} = props
+  const {
+    date,
+    focused,
+    isCurrentMonth,
+    isToday,
+    onSelect,
+    selected,
+    disabled,
+    dateStyles = {},
+  } = props
 
   const handleClick = useCallback(() => {
     if (selected) {
@@ -52,6 +62,7 @@ export function CalendarDay(props: CalendarDayProps) {
         selected={selected}
         style={{position: 'relative'}}
         tone={tone}
+        disabled={disabled}
       >
         <Text
           size={1}

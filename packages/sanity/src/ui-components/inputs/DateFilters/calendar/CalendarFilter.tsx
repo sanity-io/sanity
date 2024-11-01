@@ -26,6 +26,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   onFocusedDateChange?: (index: Date) => void
   selectedDate?: Date
   renderCalendarDay?: (props: CalendarDayProps) => React.ReactNode
+  disabled?: boolean
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -185,12 +186,14 @@ export const CalendarFilter = forwardRef(function Calendar(
                 mode="bleed"
                 onClick={handlePrevMonthClick}
                 tooltipProps={{content: 'Previous month'}}
+                disabled={restProps.disabled}
               />
               <Button
                 icon={ChevronRightIcon}
                 mode="bleed"
                 onClick={handleNextMonthClick}
                 tooltipProps={{content: 'Next month'}}
+                disabled={restProps.disabled}
               />
             </TooltipDelayGroupProvider>
           </Flex>
@@ -214,6 +217,7 @@ export const CalendarFilter = forwardRef(function Calendar(
             onSelect={handleDateChange}
             selected={selectedDate}
             renderCalendarDay={renderCalendarDay}
+            disabled={restProps.disabled}
           />
           {PRESERVE_FOCUS_ELEMENT}
         </Box>
@@ -222,6 +226,7 @@ export const CalendarFilter = forwardRef(function Calendar(
       {/* Today button */}
       <Box flex={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
         <Button
+          disabled={restProps.disabled}
           mode="bleed"
           onClick={handleNowClick}
           width="fill"

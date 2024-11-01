@@ -310,6 +310,7 @@ export function ReleasesOverview() {
         <Flex flex="none">
           <Card borderRight flex="none" disabled>
             <CalendarFilter
+              disabled={loading || releases.length === 0}
               renderCalendarDay={ReleaseCalendarDay}
               selectedDate={releaseFilterDate}
               onSelect={handleSelectFilterDate}
