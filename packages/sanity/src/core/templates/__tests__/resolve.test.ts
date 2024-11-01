@@ -22,7 +22,12 @@ const example: Template = {
   value: {title: 'here'},
 }
 
-const mockConfigContext: InitialValueResolverContext = {} as InitialValueResolverContext
+const mockConfigContext: InitialValueResolverContext = {
+  projectId: 'test-project',
+  dataset: 'test-dataset',
+  schema: schema,
+  currentUser: {id: 'user-123'},
+} as InitialValueResolverContext
 
 describe('resolveInitialValue', () => {
   test('serializes builders', () => {
@@ -360,66 +365,128 @@ describe('resolveInitialValue', () => {
       ],
     })
 
-    test('memoizes function calls', async () => {
-      for (let index = 0; index < 2; index++) {
-        await resolveInitialValue(testSchema, example, {}, mockConfigContext, {useCache: true})
-      }
+    test('caches based on stable JSON stringification', async () => {
+      // Objects with same content but different order should hit same cache
+      const params1 = {a: 1, b: 2}
+      const params2 = {b: 2, a: 1}
+
+      await resolveInitialValue(testSchema, example, params1, mockConfigContext, {useCache: true})
+      await resolveInitialValue(testSchema, example, params2, mockConfigContext, {useCache: true})
 
       expect(initialValue).toHaveBeenCalledTimes(1)
     })
 
-    test('calls function again if params change', async () => {
-      for (let index = 0; index < 2; index++) {
-        await resolveInitialValue(testSchema, example, {index}, mockConfigContext, {useCache: true})
-      }
+    test('differentiates cache based on nested object contents', async () => {
+      const params1 = {nested: {a: 1, b: 2}}
+      const params2 = {nested: {a: 1, b: 3}} // Different nested value
+
+      await resolveInitialValue(testSchema, example, params1, mockConfigContext, {useCache: true})
+      await resolveInitialValue(testSchema, example, params2, mockConfigContext, {useCache: true})
 
       expect(initialValue).toHaveBeenCalledTimes(2)
     })
 
-    test('calls function again if context.projectId changes', async () => {
-      for (let index = 0; index < 2; index++) {
-        await resolveInitialValue(
-          testSchema,
-          example,
-          {},
-          {projectId: index.toString()} as InitialValueResolverContext,
-          {useCache: true},
-        )
-      }
+    test('handles array order in cache key generation', async () => {
+      const params1 = {arr: [1, 2, 3]}
+      const params2 = {arr: [1, 2, 3]} // Same array
+      const params3 = {arr: [3, 2, 1]} // Different order
 
-      expect(initialValue).toHaveBeenCalledTimes(2)
+      await resolveInitialValue(testSchema, example, params1, mockConfigContext, {useCache: true})
+      await resolveInitialValue(testSchema, example, params2, mockConfigContext, {useCache: true})
+      await resolveInitialValue(testSchema, example, params3, mockConfigContext, {useCache: true})
+
+      expect(initialValue).toHaveBeenCalledTimes(2) // Different order = different cache key
     })
 
-    test('calls function again if context.dataset changes', async () => {
-      for (let index = 0; index < 2; index++) {
-        await resolveInitialValue(
-          testSchema,
-          example,
-          {},
-          {dataset: index.toString()} as InitialValueResolverContext,
-          {useCache: true},
-        )
-      }
+    test('respects useCache option', async () => {
+      const params = {test: 'value'}
 
-      expect(initialValue).toHaveBeenCalledTimes(2)
+      // With caching
+      await resolveInitialValue(testSchema, example, params, mockConfigContext, {useCache: true})
+      await resolveInitialValue(testSchema, example, params, mockConfigContext, {useCache: true})
+      expect(initialValue).toHaveBeenCalledTimes(1)
+
+      // Without caching
+      await resolveInitialValue(testSchema, example, params, mockConfigContext, {useCache: false})
+      await resolveInitialValue(testSchema, example, params, mockConfigContext, {useCache: false})
+      expect(initialValue).toHaveBeenCalledTimes(3)
     })
 
-    test('calls function again if context.currentUser.id changes', async () => {
-      for (let index = 0; index < 2; index++) {
-        await resolveInitialValue(
-          testSchema,
-          example,
-          {},
+    test('creates separate cache entries for different schema types', async () => {
+      const initialValueName = vi.fn(() => 'initial name')
+      const initialValueTitle = vi.fn(() => 'initial title')
+      const schemaWithTwoTypes = SchemaBuilder.compile({
+        name: 'default',
+        types: [
           {
-            currentUser: {
-              id: index.toString(),
-            },
-          } as InitialValueResolverContext,
-          {useCache: true},
-        )
+            name: 'author',
+            type: 'document',
+            fields: [{name: 'name', type: 'string', initialValue: initialValueName}],
+          },
+          {
+            name: 'book',
+            type: 'document',
+            fields: [{name: 'title', type: 'string', initialValue: initialValueTitle}],
+          },
+        ],
+      })
+
+      const authorTemplate = {...example, schemaType: 'author'}
+      const bookTemplate = {...example, schemaType: 'book'}
+
+      await resolveInitialValue(schemaWithTwoTypes, authorTemplate, {}, mockConfigContext, {
+        useCache: true,
+      })
+      await resolveInitialValue(schemaWithTwoTypes, bookTemplate, {}, mockConfigContext, {
+        useCache: true,
+      })
+
+      expect(initialValueName).toHaveBeenCalled()
+      expect(initialValueTitle).toHaveBeenCalled()
+    })
+
+    test('caches context based on relevant properties only', async () => {
+      const context1 = {
+        ...mockConfigContext,
+        irrelevantProp: 'should-not-affect-cache',
+      }
+      const context2 = {
+        ...mockConfigContext,
+        irrelevantProp: 'different-value',
       }
 
-      expect(initialValue).toHaveBeenCalledTimes(2)
+      await resolveInitialValue(testSchema, example, {}, context1, {useCache: true})
+      await resolveInitialValue(testSchema, example, {}, context2, {useCache: true})
+
+      expect(initialValue).toHaveBeenCalledTimes(1)
+    })
+
+    test('creates new cache entries when context changes', async () => {
+      const baseContext = {...mockConfigContext}
+      const contexts = [
+        {...baseContext, projectId: 'project1'},
+        {...baseContext, projectId: 'project2'},
+        {...baseContext, dataset: 'dataset2'},
+        {...baseContext, currentUser: {id: 'user2'}},
+      ] as InitialValueResolverContext[]
+
+      for (const context of contexts) {
+        await resolveInitialValue(testSchema, example, {}, context, {useCache: true})
+      }
+
+      expect(initialValue).toHaveBeenCalledTimes(4)
+    })
+
+    test('handles null and undefined in parameters correctly', async () => {
+      const params1 = {a: null}
+      const params2 = {a: undefined}
+      const params3 = {a: null} // Same as params1
+
+      await resolveInitialValue(testSchema, example, params1, mockConfigContext, {useCache: true})
+      await resolveInitialValue(testSchema, example, params2, mockConfigContext, {useCache: true})
+      await resolveInitialValue(testSchema, example, params3, mockConfigContext, {useCache: true})
+
+      expect(initialValue).toHaveBeenCalledTimes(2) // null and undefined are treated differently
     })
   })
 })
