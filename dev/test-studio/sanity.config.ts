@@ -165,7 +165,7 @@ const defaultWorkspace = {
   // eslint-disable-next-line camelcase
   __internal_serverDocumentActions: {
     // TODO: Switched off because Actions API doesn't support versions (yet).
-    enabled: true,
+    enabled: false,
   },
   scheduledPublishing: {
     enabled: true,
