@@ -19,12 +19,18 @@ on:
         default: false
 
 jobs:
-  efps:
+  efps-test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Add more shards here if needed
+        shardIndex: [1, 2, 3]
+        shardTotal: [3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -84,7 +90,61 @@ jobs:
           REFERENCE_TAG: ${{ github.event.inputs.reference_tag || 'latest' }}
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
-        run: pnpm efps:test
+        run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: efps-report
+          path: ${{ github.workspace }}/perf/efps/results/
+          retention-days: 30
+
+  merge-reports:
+    if: always()
+    needs: [efps-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-
+            v1-${{ runner.os }}-
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Download blob reports from Github Actions Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: efps-report
+          path: perf/efps/results
+
+      - name: Write report
+        run: pnpm efps:write:report
 
       - name: PR comment with report
         uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
@@ -92,10 +152,3 @@ jobs:
         with:
           comment_tag: "efps-report"
           filePath: ${{ github.workspace }}/perf/efps/results/benchmark-results.md
-
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: efps-report
-          path: perf/efps/results
-          retention-days: 30

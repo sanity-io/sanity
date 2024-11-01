@@ -12,6 +12,8 @@ import {createClient} from '@sanity/client'
 import chalk from 'chalk'
 import Table from 'cli-table3'
 import Ora from 'ora'
+import yargs from 'yargs'
+import {hideBin} from 'yargs/helpers'
 
 import {exec} from './helpers/exec'
 import {runTest} from './runTest'
@@ -19,8 +21,8 @@ import article from './tests/article/article'
 import recipe from './tests/recipe/recipe'
 import synthetic from './tests/synthetic/synthetic'
 import {type EfpsAbResult, type EfpsResult, type EfpsTest} from './types'
+import {formatPercentageChange, isSignificantlyDifferent} from './utils'
 
-const WARNING_THRESHOLD = 0.2
 const TEST_ATTEMPTS = process.env.CI ? 3 : 1
 
 const HEADLESS = true
@@ -62,6 +64,32 @@ const resultsDir = path.join(
     .toLowerCase()}`,
 )
 
+const argv = await yargs(hideBin(process.argv)).option('shard', {
+  describe:
+    'Shard number in the format "1/3" where 1 is the current shard and 3 is the total shards',
+  type: 'string',
+}).argv
+
+// Function to parse shard argument
+function parseShard(shard: string) {
+  const [current, total] = shard.split('/').map(Number)
+  if (!current || !total || current > total || current < 1) {
+    throw new Error(`Invalid shard format: ${shard}. It should be in the format "1/3"`)
+  }
+  return {current, total}
+}
+
+// Function to select tests based on shard
+function getTestsForShard(tests: EfpsTest[], shard: {current: number; total: number}) {
+  const testsPerShard = Math.ceil(tests.length / shard.total)
+  const start = (shard.current - 1) * testsPerShard
+  const end = start + testsPerShard
+  return tests.slice(start, end)
+}
+
+const shard = argv.shard ? parseShard(argv.shard) : null
+const selectedTests = shard ? getTestsForShard(TESTS, shard) : TESTS
+
 const getSanityPkgPathForTag = async (tag: string) => {
   const tmpDir = path.join(os.tmpdir(), `sanity-${tag}`)
 
@@ -92,28 +120,11 @@ const formatEfps = (latencyMs: number) => {
   return chalk.red(rounded)
 }
 
-const formatPercentageChange = (experiment: number, reference: number): string => {
-  if (experiment < 16 && reference < 16) return '-/-%'
-  const delta = (experiment - reference) / reference
-  if (!delta) return '-/-%'
-  const percentage = delta * 100
-  const rounded = percentage.toFixed(1)
-  const sign = delta >= 0 ? '+' : ''
-  return `${sign}${rounded}%`
-}
-
-// For markdown formatting without colors
-const formatEfpsPlain = (latencyMs: number) => {
-  const efps = 1000 / latencyMs
-  const rounded = efps.toFixed(1)
-
-  if (efps >= 100) return '99.9+'
-  return rounded
-}
-
 const spinner = Ora()
 
-spinner.info(`Running ${TESTS.length} tests: ${TESTS.map((t) => `'${t.name}'`).join(', ')}`)
+spinner.info(
+  `Running ${selectedTests.length} tests: ${selectedTests.map((t) => `'${t.name}'`).join(', ')}`,
+)
 
 await exec({
   text: ['Building the monorepo…', 'Built monorepo'],
@@ -212,13 +223,28 @@ async function runAbTest(test: EfpsTest) {
   )
 }
 
-for (let i = 0; i < TESTS.length; i++) {
-  const test = TESTS[i]
+for (let i = 0; i < selectedTests.length; i++) {
+  const test = selectedTests[i]
   testResults.push({
     name: test.name,
     results: await runAbTest(test),
   })
 }
+
+// Write the test results as a json file to the results/report directory
+// the name should be in format `test-results__${shard}-${total-shards}.json`
+
+// Create the report directory if it doesn't exist
+await fs.promises.mkdir(path.join(workspaceDir, 'results', 'report'), {recursive: true})
+await fs.promises.writeFile(
+  path.join(
+    workspaceDir,
+    'results',
+    'report',
+    `test-results__${shard?.current}-${shard?.total}.json`,
+  ),
+  JSON.stringify(testResults, null, 2),
+)
 
 const comparisonTableCli = new Table({
   head: ['Benchmark', 'reference', 'experiment', 'Δ (%)', ''].map((cell) => chalk.cyan(cell)),
@@ -236,13 +262,6 @@ const detailedInformationCliHead = [
 
 const referenceTableCli = new Table({head: detailedInformationCliHead})
 const experimentTableCli = new Table({head: detailedInformationCliHead})
-
-function isSignificantlyDifferent(experiment: number, reference: number) {
-  // values are too small to and are already performing well
-  if (experiment < 16 && reference < 16) return false
-  const delta = (experiment - reference) / reference
-  return delta >= WARNING_THRESHOLD
-}
 
 for (const {name, results} of testResults) {
   for (const {experiment, reference} of results) {
@@ -296,124 +315,3 @@ console.log(referenceTableCli.toString())
 console.log()
 console.log('Experiment result')
 console.log(experimentTableCli.toString())
-
-let comparisonTable = `
-| Benchmark | reference<br/><sup>latency of \`sanity@${REFERENCE_TAG}\`</sup> | experiment<br/><sup>latency of this branch</sup> | Δ (%)<br/><sup>latency difference</sup> | |
-| :-- | :-- | :-- | :-- | --- |
-`
-
-const detailedInformationHeader = `
-| Benchmark | latency | p75 | p90 | p99 | blocking time | test duration |
-| --------- | ------: | --: | --: | --: | ------------: | ------------: |
-`
-
-let referenceTable = detailedInformationHeader
-let experimentTable = detailedInformationHeader
-
-for (const {name, results} of testResults) {
-  for (const {experiment, reference} of results) {
-    const significantlyDifferent = isSignificantlyDifferent(
-      experiment.latency.p50,
-      reference.latency.p50,
-    )
-
-    const sign = experiment.latency.p50 >= reference.latency.p50 ? '+' : ''
-    const msDifference = `${sign}${(experiment.latency.p50 - reference.latency.p50).toFixed(0)}ms`
-    const percentageChange = formatPercentageChange(experiment.latency.p50, reference.latency.p50)
-
-    const benchmarkName = `${name} (${experiment.label})`
-
-    comparisonTable +=
-      // benchmark name
-      `| ${benchmarkName} ` +
-      // reference latency
-      `| ${formatEfpsPlain(reference.latency.p50)} efps (${reference.latency.p50.toFixed(0)}ms) ` +
-      // experiment latency
-      `| ${formatEfpsPlain(experiment.latency.p50)} efps (${experiment.latency.p50.toFixed(0)}ms) ` +
-      // difference
-      `| ${msDifference} (${percentageChange}) ` +
-      // status
-      `| ${significantlyDifferent ? '🔴' : '✅'} ` +
-      `|\n`
-
-    referenceTable +=
-      // benchmark name
-      `| ${benchmarkName} ` +
-      // latency
-      `| ${reference.latency.p50.toFixed(0)}ms ` +
-      // p75
-      `| ${reference.latency.p75.toFixed(0)}ms ` +
-      // p90
-      `| ${reference.latency.p90.toFixed(0)}ms ` +
-      // p99
-      `| ${reference.latency.p99.toFixed(0)}ms ` +
-      // blocking time
-      `| ${reference.blockingTime.toFixed(0)}ms ` +
-      // test duration
-      `| ${(reference.runDuration / 1000).toFixed(1)}s ` +
-      `|\n`
-
-    experimentTable +=
-      // benchmark name
-      `| ${benchmarkName} ` +
-      // latency
-      `| ${experiment.latency.p50.toFixed(0)}ms ` +
-      // p75
-      `| ${experiment.latency.p75.toFixed(0)}ms ` +
-      // p90
-      `| ${experiment.latency.p90.toFixed(0)}ms ` +
-      // p99
-      `| ${experiment.latency.p99.toFixed(0)}ms ` +
-      // blocking time
-      `| ${experiment.blockingTime.toFixed(0)}ms ` +
-      // test duration
-      `| ${(experiment.runDuration / 1000).toFixed(1)}s ` +
-      `|\n`
-  }
-}
-
-const markdown = `### ⚡️ Editor Performance Report
-
-Updated ${new Date().toUTCString()}
-
-${comparisonTable}
-
-> **efps** — editor "frames per second". The number of updates assumed to be possible within a second.
->
-> Derived from input latency. \`efps = 1000 / input_latency\`
-
-<details>
-
-<summary><strong>Detailed information</strong></summary>
-
-### 🏠 Reference result
-
-The performance result of \`sanity@${REFERENCE_TAG}\`
-
-
-${referenceTable}
-
-### 🧪 Experiment result
-
-The performance result of this branch
-
-${experimentTable}
-
-### 📚 Glossary
-
-> #### column definitions
->
-> - **benchmark** — the name of the test, e.g. "article", followed by the label of the field being measured, e.g. "(title)".
-> - **latency** — the time between when a key was pressed and when it was rendered. derived from a set of samples. the median (p50) is shown to show the most common latency.
-> - **p75** — the 75th percentile of the input latency in the test run. 75% of the sampled inputs in this benchmark were processed faster than this value. this provides insight into the upper range of typical performance.
-> - **p90** — the 90th percentile of the input latency in the test run. 90% of the sampled inputs were faster than this. this metric helps identify slower interactions that occurred less frequently during the benchmark.
-> - **p99** — the 99th percentile of the input latency in the test run. only 1% of sampled inputs were slower than this. this represents the worst-case scenarios encountered during the benchmark, useful for identifying potential performance outliers.
-> - **blocking time** — the total time during which the main thread was blocked, preventing user input and UI updates. this metric helps identify performance bottlenecks that may cause the interface to feel unresponsive.
-> - **test duration** — how long the test run took to complete.
-
-</details>
-`
-
-// Write markdown file to root of results
-const markdownOutputPath = path.join(workspaceDir, 'results', 'benchmark-results.md')
-await fs.promises.writeFile(markdownOutputPath, markdown)
