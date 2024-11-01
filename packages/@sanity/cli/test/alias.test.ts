@@ -1,11 +1,11 @@
-import {describe, expect, jest} from '@jest/globals'
+import {describe, expect, vi} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {getTestRunArgs, runSanityCmdCommand, studioVersions} from './shared/environment'
 
 describeCliTest('CLI: `sanity dataset alias`', () => {
   describe.each(studioVersions)('%s', (version) => {
-    jest.setTimeout(30 * 1000)
+    vi.setConfig({testTimeout: 30 * 1000})
 
     const testRunArgs = getTestRunArgs(version)
 

@@ -1,4 +1,4 @@
-import {expect, test} from '@jest/globals'
+import {expect, test} from 'vitest'
 
 import {describeCliTest} from './shared/describe'
 import {runSanityCmdCommand} from './shared/environment'
