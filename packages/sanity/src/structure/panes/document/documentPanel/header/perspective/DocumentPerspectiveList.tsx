@@ -3,7 +3,6 @@ import {memo, useCallback, useMemo} from 'react'
 import {
   getReleaseTone,
   getVersionFromId,
-  isVersionId,
   type ReleaseDocument,
   Translate,
   useDateTimeFormat,
@@ -108,7 +107,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         }
         disabled={!editState?.published}
         onClick={handleBundleChange('published')}
-        selected={perspective === 'published'}
+        selected={
+          perspective === 'published' || (!editState?.draft && !!perspective?.includes('bundle'))
+        }
         text={t('release.chip.published')}
         tone="positive"
         contextValues={{
@@ -147,11 +148,14 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           </Text>
         }
         selected={
-          (editState?.draft?._id === displayed?._id ||
-            !editState?.draft ||
-            !editState?.published) &&
-          !isVersionId(displayed?._id || '') &&
-          perspective !== 'published'
+          // when the perspective is null, the draft is selected
+          // when the document is not published, the draft is always selected
+          // when there is no draft (new document), the draft is selected
+          !!(
+            typeof perspective === 'undefined' ||
+            (!editState?.published && !perspective) ||
+            !editState?.draft
+          )
         }
         text={t('release.chip.draft')}
         tone="caution"

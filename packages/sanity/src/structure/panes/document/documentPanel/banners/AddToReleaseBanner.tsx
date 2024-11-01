@@ -2,6 +2,7 @@ import {Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {
   getReleaseTone,
+  isPublishedId,
   LATEST,
   type ReleaseDocument,
   Translate,
@@ -25,6 +26,7 @@ export function AddToReleaseBanner({
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
+  const isPublished = isPublishedId(documentId)
 
   const {createVersion} = useVersionOperations(documentId, documentType)
 
@@ -71,11 +73,19 @@ export function AddToReleaseBanner({
             />
           </Text>
 
-          <Button
-            text={t('banners.release.action.add-to-release')}
-            tone={tone}
-            onClick={handleAddToRelease}
-          />
+          <Button tone={tone} onClick={handleAddToRelease} tooltipProps={null}>
+            <Text size={1} weight="medium">
+              <Translate
+                t={t}
+                i18nKey={'banners.release.action.add-to-release'}
+                values={{
+                  fromLabel: isPublished
+                    ? tCore('release.chip.published')
+                    : tCore('release.chip.draft'),
+                }}
+              />
+            </Text>
+          </Button>
         </Flex>
       }
     />

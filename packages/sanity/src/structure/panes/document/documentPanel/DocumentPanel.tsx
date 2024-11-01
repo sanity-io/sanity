@@ -147,7 +147,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     if (!existsInBundle && currentPerspectiveIsRelease) {
       return (
         <AddToReleaseBanner
-          documentId={documentId}
+          documentId={displayed?._id || documentId}
           documentType={documentType}
           currentRelease={currentGlobalBundle}
         />
