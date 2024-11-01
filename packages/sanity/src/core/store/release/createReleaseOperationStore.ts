@@ -7,7 +7,7 @@ import {
 import {type User} from '@sanity/types'
 
 import {getBundleIdFromReleaseDocumentId} from '../../releases'
-import {getVersionId} from '../../util'
+import {getDraftId, getPublishedId, getVersionId} from '../../util'
 import {RELEASE_METADATA_TMP_DOC_PATH, RELEASE_METADATA_TMP_DOC_TYPE} from './constants'
 import {type EditableReleaseDocument} from './types'
 
@@ -141,13 +141,18 @@ export function createReleaseOperationsStore(options: {
   }
 
   const handleCreateVersion = async (releaseId: string, documentId: string) => {
+    const [draftId, publishedId] = [getDraftId(documentId), getPublishedId(documentId)]
     // fetch original document
-    const document = await client.getDocument(documentId)
+    const [draft, published] = await client.getDocuments([publishedId, draftId])
 
-    if (!document) {
+    if (!draft && !published) {
       throw new Error(`Document with id ${documentId} not found`)
     }
-    const versionDocument = {...document, _id: getVersionId(documentId, releaseId)}
+
+    const versionDocument = {
+      ...(draft || published),
+      _id: getVersionId(documentId, releaseId),
+    } as IdentifiedSanityDocumentStub
 
     await (IS_CREATE_VERSION_ACTION_SUPPORTED
       ? requestAction(client, [
