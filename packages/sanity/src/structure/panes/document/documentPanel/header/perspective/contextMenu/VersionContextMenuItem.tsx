@@ -1,3 +1,4 @@
+import {LockIcon} from '@sanity/icons'
 import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 import {
@@ -17,9 +18,10 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
     dateStyle: 'medium',
     timeStyle: 'short',
   })
+  const isScheduled = release.state === 'scheduled' || release.state === 'scheduling'
 
   return (
-    <Flex gap={3}>
+    <Flex gap={3} justify="center" align="center">
       <ReleaseAvatar padding={2} tone={getReleaseTone(release)} />
       <Stack flex={1} space={2}>
         <Text size={1} weight="medium">
@@ -37,6 +39,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
           {release.metadata.releaseType === 'undecided' && <>{t('release.type.undecided')}</>}
         </Text>
       </Stack>
+      {isScheduled && <LockIcon />}
     </Flex>
   )
 })

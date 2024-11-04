@@ -38,10 +38,10 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   } = props
   const {t} = useTranslation()
   const isPublished = isPublishedId(documentId) && !isVersion
-
   const optionsReleaseList = releases.map((release) => ({
     value: release,
   }))
+
   const releaseId = isVersion ? fromRelease : documentId
 
   return (
@@ -67,13 +67,16 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
         >
           <ReleasesList key={fromRelease} space={1}>
             {optionsReleaseList.map((option) => {
+              const isReleaseScheduled =
+                option.value.state === 'scheduled' || option.value.state === 'scheduling'
               return (
                 <MenuItem
                   as="a"
                   key={option.value._id}
                   onClick={() => onCreateVersion(option.value._id)}
                   renderMenuItem={() => <VersionContextMenuItem release={option.value} />}
-                  disabled={disabled}
+                  disabled={disabled || isReleaseScheduled}
+                  tooltipProps={{content: isReleaseScheduled && t('release.tooltip.locked')}}
                 />
               )
             })}
