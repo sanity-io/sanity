@@ -1,19 +1,18 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type UserApplication} from '../helpers'
 import * as _helpers from '../helpers'
 import undeployStudioAction from '../undeployAction'
 
 // Mock dependencies
-jest.mock('../helpers')
+vi.mock('../helpers')
 
-type Helpers = typeof _helpers
-const helpers = _helpers as {[K in keyof Helpers]: jest.Mock<Helpers[K]>}
+const helpers = vi.mocked(_helpers)
 type SpinnerInstance = {
-  start: jest.Mock<() => SpinnerInstance>
-  succeed: jest.Mock<() => SpinnerInstance>
-  fail: jest.Mock<() => SpinnerInstance>
+  start: Mock<() => SpinnerInstance>
+  succeed: Mock<() => SpinnerInstance>
+  fail: Mock<() => SpinnerInstance>
 }
 
 describe('undeployStudioAction', () => {
@@ -33,24 +32,24 @@ describe('undeployStudioAction', () => {
   let spinnerInstance: SpinnerInstance
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     spinnerInstance = {
-      start: jest.fn(() => spinnerInstance),
-      succeed: jest.fn(() => spinnerInstance),
-      fail: jest.fn(() => spinnerInstance),
+      start: vi.fn(() => spinnerInstance),
+      succeed: vi.fn(() => spinnerInstance),
+      fail: vi.fn(() => spinnerInstance),
     }
 
     mockContext = {
-      apiClient: jest.fn().mockReturnValue({
-        withConfig: jest.fn().mockReturnThis(),
+      apiClient: vi.fn().mockReturnValue({
+        withConfig: vi.fn().mockReturnThis(),
       }),
-      chalk: {yellow: jest.fn((str) => str), red: jest.fn((str) => str)},
+      chalk: {yellow: vi.fn((str) => str), red: vi.fn((str) => str)},
       output: {
-        print: jest.fn(),
-        spinner: jest.fn().mockReturnValue(spinnerInstance),
+        print: vi.fn(),
+        spinner: vi.fn().mockReturnValue(spinnerInstance),
       },
-      prompt: {single: jest.fn()},
+      prompt: {single: vi.fn()},
       cliConfig: {},
     } as unknown as CliCommandContext
   })
@@ -72,9 +71,9 @@ describe('undeployStudioAction', () => {
   it('prompts the user for confirmation and undeploys if confirmed', async () => {
     helpers.getUserApplication.mockResolvedValueOnce(mockApplication)
     helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
-    ;(
-      mockContext.prompt.single as jest.Mock<typeof mockContext.prompt.single>
-    ).mockResolvedValueOnce(true) // User confirms
+    ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+      true,
+    ) // User confirms
 
     await undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
 
@@ -94,9 +93,9 @@ describe('undeployStudioAction', () => {
 
   it('does not undeploy if the user cancels the prompt', async () => {
     helpers.getUserApplication.mockResolvedValueOnce(mockApplication)
-    ;(
-      mockContext.prompt.single as jest.Mock<typeof mockContext.prompt.single>
-    ).mockResolvedValueOnce(false) // User cancels
+    ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+      false,
+    ) // User cancels
 
     await undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
 
@@ -112,9 +111,9 @@ describe('undeployStudioAction', () => {
     const errorMessage = 'Example error'
     helpers.getUserApplication.mockResolvedValueOnce(mockApplication)
     helpers.deleteUserApplication.mockRejectedValueOnce(new Error(errorMessage))
-    ;(
-      mockContext.prompt.single as jest.Mock<typeof mockContext.prompt.single>
-    ).mockResolvedValueOnce(true) // User confirms
+    ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+      true,
+    ) // User confirms
 
     await expect(
       undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext),

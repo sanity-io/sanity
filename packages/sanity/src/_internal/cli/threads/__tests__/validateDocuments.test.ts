@@ -2,9 +2,9 @@ import {createServer, type Server} from 'node:http'
 import path from 'node:path'
 import {Worker} from 'node:worker_threads'
 
-import {afterAll, beforeAll, describe, expect, it, jest} from '@jest/globals'
 import {type SanityDocument} from '@sanity/client'
 import {evaluate, parse} from 'groq-js'
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {getMonorepoAliases} from '../../server/sanityMonorepo'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
@@ -73,7 +73,7 @@ const documents: SanityDocument[] = [
 ]
 
 describe('validateDocuments', () => {
-  jest.setTimeout(30000)
+  vi.setConfig({testTimeout: 30000})
 
   let server!: Server
   let receiver!: WorkerChannelReceiver<ValidationWorkerChannel>
@@ -190,7 +190,7 @@ describe('validateDocuments', () => {
       studioHost: localhost,
     }
 
-    const filepath = require.resolve('../validateDocuments')
+    const filepath = new URL('../validateDocuments.ts', import.meta.url).pathname
 
     const worker = new Worker(
       `
