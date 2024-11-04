@@ -5,7 +5,7 @@ import {defineLocalesResources} from '../../i18n'
  *
  * @internal
  */
-const createLocaleStrings = defineLocalesResources('comments', {
+const createLocaleStrings = defineLocalesResources('create', {
   /** "Start in Sanity Create" action button text */
   'start-in-create-action.label': 'Start in Sanity Create',
 
