@@ -11,7 +11,7 @@ export const duplicate: OperationImpl<[baseDocumentId: string], 'NOTHING_TO_DUPL
     return snapshots.published || snapshots.draft ? false : 'NOTHING_TO_DUPLICATE'
   },
   execute: ({schema, client, snapshots, typeName}, dupeId) => {
-    const source = snapshots.draft || snapshots.published
+    const source = snapshots.version || snapshots.draft || snapshots.published
 
     if (!source) {
       throw new Error('cannot execute on empty document')

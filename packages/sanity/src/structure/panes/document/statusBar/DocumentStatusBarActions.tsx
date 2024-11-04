@@ -53,7 +53,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   }, [firstActionState])
 
   const sideMenuItems = useMemo(() => {
-    return existsInBundle ? [firstActionState] : menuActionStates
+    return existsInBundle ? [firstActionState, ...menuActionStates] : menuActionStates
   }, [existsInBundle, firstActionState, menuActionStates])
 
   /* Version / Bundling handling */
