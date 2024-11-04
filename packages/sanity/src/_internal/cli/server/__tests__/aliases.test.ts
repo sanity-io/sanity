@@ -1,9 +1,9 @@
 import path from 'node:path'
 
-import {describe, expect, it, jest} from '@jest/globals'
 import {escapeRegExp} from 'lodash'
-import resolve from 'resolve.exports'
+import * as resolve from 'resolve.exports'
 import {type Alias} from 'vite'
+import {describe, expect, it, vi} from 'vitest'
 
 import {
   browserCompatibleSanityPackageSpecifiers,
@@ -13,7 +13,15 @@ import {getMonorepoAliases} from '../sanityMonorepo'
 
 const sanityPkgPath = path.resolve(__dirname, '../../../../../package.json')
 // eslint-disable-next-line import/no-dynamic-require
-const pkg = require(sanityPkgPath)
+const pkg = await import(sanityPkgPath)
+
+vi.mock(import('resolve.exports'), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    default: actual,
+    exports: actual.exports,
+  }
+})
 
 describe('browserCompatibleSanityPackageSpecifiers', () => {
   it('should have all specifiers listed in the package.json', () => {
@@ -98,7 +106,11 @@ describe('getAliases', () => {
       'sanity/presentation': '/path/to/monorepo/packages/sanity/src/presentation.ts',
     }
 
-    jest.doMock('@repo/dev-aliases', () => devAliases, {virtual: true})
+    vi.doMock('@repo/dev-aliases', () => {
+      return {
+        default: devAliases,
+      }
+    })
 
     const aliases = await getMonorepoAliases(monorepoPath)
 

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {type Stats} from 'node:fs'
+import {type Dirent, type Stats} from 'node:fs'
 import fs from 'node:fs/promises'
 import {Readable} from 'node:stream'
 import {type Gzip} from 'node:zlib'
 
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {type CliCommandContext} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {
   checkDir,
@@ -17,44 +17,42 @@ import {
   getOrCreateUserApplicationFromConfig,
 } from '../helpers'
 
-jest.mock('node:fs/promises')
+vi.mock('node:fs/promises')
 
-const mockFsPromises = fs as jest.Mocked<typeof fs>
-const mockFsPromisesStat = mockFsPromises.stat as jest.Mock<typeof fs.stat>
-const mockFsPromisesReaddir = mockFsPromises.readdir as unknown as jest.Mock<
-  () => Promise<string[]>
->
+const mockFsPromises = vi.mocked(fs)
+const mockFsPromisesStat = mockFsPromises.stat
+const mockFsPromisesReaddir = mockFsPromises.readdir
 
 const mockClient = {
-  request: jest.fn(),
-  config: jest.fn(),
+  request: vi.fn(),
+  config: vi.fn(),
 } as unknown as SanityClient
-const mockClientRequest = mockClient.request as jest.Mock<SanityClient['request']>
+const mockClientRequest = vi.mocked(mockClient).request
 
 const mockOutput = {
-  print: jest.fn(),
-  clear: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  spinner: jest.fn(),
+  print: vi.fn(),
+  clear: vi.fn(),
+  error: vi.fn(),
+  warn: vi.fn(),
+  spinner: vi.fn(),
 } as CliCommandContext['output']
 const mockPrompt = {
-  single: jest.fn(),
-  Separator: jest.fn(),
+  single: vi.fn(),
+  Separator: vi.fn(),
 } as unknown as CliCommandContext['prompt']
 const mockSpinner = {
-  start: jest.fn(),
-  succeed: jest.fn(),
+  start: vi.fn(),
+  succeed: vi.fn(),
 } as unknown as ReturnType<CliCommandContext['output']['spinner']>
 
-const mockFetch = jest.fn<typeof fetch>()
+const mockFetch = vi.fn<typeof fetch>()
 global.fetch = mockFetch
 
 const context = {output: mockOutput, prompt: mockPrompt}
 
 describe('getOrCreateUserApplication', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('gets the default user application if no `studioHost` is provided', async () => {
@@ -82,7 +80,7 @@ describe('getOrCreateUserApplication', () => {
     }
     mockClientRequest.mockResolvedValueOnce(null) // Simulate no existing app
     mockClientRequest.mockResolvedValueOnce([]) // Simulate no list of deployments
-    ;(mockPrompt.single as jest.Mock<any>).mockImplementationOnce(
+    vi.mocked(mockPrompt.single).mockImplementationOnce(
       async ({validate}: Parameters<CliCommandContext['prompt']['single']>[0]) => {
         // Simulate user input and validation
         const appHost = 'default.sanity.studio'
@@ -114,7 +112,7 @@ describe('getOrCreateUserApplication', () => {
     }
     mockClientRequest.mockResolvedValueOnce(null) // Simulate no existing app
     mockClientRequest.mockResolvedValueOnce([existingApp]) // Simulate no list of deployments
-    ;(mockPrompt.single as jest.Mock<any>).mockImplementationOnce(async ({choices}: any) => {
+    ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({choices}: any) => {
       // Simulate user input
       return Promise.resolve(choices[2].value)
     })
@@ -136,7 +134,7 @@ describe('getOrCreateUserApplication', () => {
 
 describe('getOrCreateUserApplicationFromConfig', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('gets an existing user application if a `studioHost` is provided in the config', async () => {
@@ -196,7 +194,7 @@ describe('getOrCreateUserApplicationFromConfig', () => {
 
 describe('createDeployment', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('sends the correct request to create a deployment and includes authorization header if token is present', async () => {
@@ -286,7 +284,7 @@ describe('createDeployment', () => {
 
 describe('deleteUserApplication', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('sends the correct request to delete the user application', async () => {
@@ -318,7 +316,7 @@ describe('deleteUserApplication', () => {
 
 describe('dirIsEmptyOrNonExistent', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('returns true if the directory does not exist', async () => {
@@ -338,7 +336,10 @@ describe('dirIsEmptyOrNonExistent', () => {
 
   it('returns false if the directory is not empty', async () => {
     mockFsPromisesStat.mockResolvedValueOnce({isDirectory: () => true} as Stats)
-    mockFsPromisesReaddir.mockResolvedValueOnce(['file1', 'file2'])
+    mockFsPromisesReaddir.mockResolvedValueOnce([
+      {name: 'file1'},
+      {name: 'file2'},
+    ] as unknown as Dirent[])
 
     const result = await dirIsEmptyOrNonExistent('notEmptyDir')
     expect(result).toBe(false)
@@ -355,7 +356,7 @@ describe('dirIsEmptyOrNonExistent', () => {
 
 describe('checkDir', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('does nothing if the directory and index.html exist', async () => {
