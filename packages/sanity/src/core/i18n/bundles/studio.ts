@@ -1162,6 +1162,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.new-release': 'New Release',
   /** Action message for when the view release is pressed */
   'release.action.view-release': 'View release',
+  /** Label for banner when release is scheduled */
+  'release.banner.scheduled-for-publishing-on': 'Scheduled for publishing on {{date}}',
   /** Label for Draft chip in document header */
   'release.chip.draft': 'Draft',
   /** Label for Published chip in document header */

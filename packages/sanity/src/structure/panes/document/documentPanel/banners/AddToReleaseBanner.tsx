@@ -1,4 +1,6 @@
+import {LockIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
+import {formatRelative} from 'date-fns'
 import {type CSSProperties, useCallback} from 'react'
 import {
   getBundleIdFromReleaseDocumentId,
@@ -11,6 +13,7 @@ import {
 } from 'sanity'
 import {structureLocaleNamespace} from 'sanity/structure'
 
+import {getPublishDateFromRelease} from '../../../../../core/releases/util/util'
 import {Button} from '../../../../../ui-components'
 import {Banner} from './Banner'
 
@@ -27,6 +30,9 @@ export function AddToReleaseBanner({
 
   const {createVersion} = useVersionOperations()
 
+  const isScheduled =
+    currentRelease?.state === 'scheduled' || currentRelease?.state === 'scheduling'
+
   const handleAddToRelease = useCallback(async () => {
     if (currentRelease._id) {
       await createVersion(getBundleIdFromReleaseDocumentId(currentRelease._id), documentId)
@@ -39,42 +45,57 @@ export function AddToReleaseBanner({
       paddingY={0}
       content={
         <Flex align="center" justify="space-between" gap={1} flex={1}>
-          <Text size={1} weight="medium">
-            <Translate
-              i18nKey="banners.release.not-in-release"
-              t={t}
-              values={{
-                title:
-                  currentRelease.metadata.title || tCore('release.placeholder-untitled-release'),
-              }}
-              components={{
-                Label: ({children}) => {
-                  return (
-                    <span
-                      style={
-                        {
-                          color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
-                          backgroundColor: `var(--card-badge-${tone ?? 'default'}-bg-color)`,
-                          borderRadius: 3,
-                          textDecoration: 'none',
-                          padding: '0px 2px',
-                          fontWeight: 500,
-                        } as CSSProperties
-                      }
-                    >
-                      {children}
-                    </span>
-                  )
-                },
-              }}
-            />
+          <Text size={1}>
+            {isScheduled ? (
+              <Flex align="center" justify="center" gap={2}>
+                <LockIcon />{' '}
+                <Translate
+                  t={tCore}
+                  i18nKey="release.banner.scheduled-for-publishing-on"
+                  values={{
+                    date: formatRelative(getPublishDateFromRelease(currentRelease), new Date()),
+                  }}
+                />
+              </Flex>
+            ) : (
+              <Translate
+                i18nKey="banners.release.not-in-release"
+                t={t}
+                values={{
+                  title:
+                    currentRelease.metadata.title || tCore('release.placeholder-untitled-release'),
+                }}
+                components={{
+                  Label: ({children}) => {
+                    return (
+                      <span
+                        style={
+                          {
+                            color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
+                            backgroundColor: `var(--card-badge-${tone ?? 'default'}-bg-color)`,
+                            borderRadius: 3,
+                            textDecoration: 'none',
+                            padding: '0px 2px',
+                            fontWeight: 500,
+                          } as CSSProperties
+                        }
+                      >
+                        {children}
+                      </span>
+                    )
+                  },
+                }}
+              />
+            )}
           </Text>
 
-          <Button
-            text={t('banners.release.action.add-to-release')}
-            tone={tone}
-            onClick={handleAddToRelease}
-          />
+          {!isScheduled && (
+            <Button
+              text={t('banners.release.action.add-to-release')}
+              tone={tone}
+              onClick={handleAddToRelease}
+            />
+          )}
         </Flex>
       }
     />
