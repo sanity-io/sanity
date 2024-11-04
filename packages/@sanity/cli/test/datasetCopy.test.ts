@@ -1,4 +1,4 @@
-import {describe, expect, jest, test} from '@jest/globals'
+import {describe, expect, test, vi} from 'vitest'
 
 import {describeCliTest} from './shared/describe'
 import {getTestRunArgs, runSanityCmdCommand, studioVersions} from './shared/environment'
@@ -6,7 +6,7 @@ import {getTestRunArgs, runSanityCmdCommand, studioVersions} from './shared/envi
 describeCliTest('CLI: `sanity dataset copy`', () => {
   describe.each(studioVersions)('%s', (version) => {
     // Copy tests can be fairly slow even on small datasets
-    jest.setTimeout(120 * 1000)
+    vi.setConfig({testTimeout: 120 * 1000})
 
     const testRunArgs = getTestRunArgs(version)
 

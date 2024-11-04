@@ -1,7 +1,7 @@
 import {readdir, readFile, stat} from 'node:fs/promises'
 import path from 'node:path'
 
-import {describe, expect, jest, test} from '@jest/globals'
+import {describe, expect, test, vi} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {runSanityCmdCommand, studiosPath, studioVersions} from './shared/environment'
@@ -11,7 +11,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
     const testConcurrentV3 = version === 'v3' ? testConcurrent : test.skip
 
     // Builds can take a bit of time with lots of concurrent tasks and slow CIs
-    jest.setTimeout(240 * 1000)
+    vi.setConfig({testTimeout: 240 * 1000})
 
     const studioPath = path.join(studiosPath, version)
 
