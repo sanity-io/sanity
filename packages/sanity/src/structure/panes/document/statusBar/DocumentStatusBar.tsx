@@ -2,9 +2,8 @@ import {Card, Flex} from '@sanity/ui'
 import {type Ref, useCallback, useState} from 'react'
 import {
   type CreateLinkMetadata,
-  getBundleIdFromReleaseDocumentId,
   isDraftPerspective,
-  isReleaseDocument,
+  isPublishedPerspective,
   isSanityCreateLinked,
   usePerspective,
   useSanityCreateConfig,
@@ -30,7 +29,7 @@ const CONTAINER_BREAKPOINT = 480 // px
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
-  const {editState, timelineStore, onChange: onDocumentChange} = useDocumentPane()
+  const {editState, timelineStore, onChange: onDocumentChange, existsInBundle} = useDocumentPane()
   const {currentGlobalBundle} = usePerspective()
   const {title} = useDocumentTitle()
 
@@ -64,10 +63,9 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   } else if (showingRevision) {
     actions = <HistoryStatusBarActions />
   } else if (
+    (existsInBundle && showingVersion) ||
     isDraftPerspective(currentGlobalBundle) ||
-    (editState?.version &&
-      isReleaseDocument(currentGlobalBundle) &&
-      editState?.bundleId === getBundleIdFromReleaseDocumentId(currentGlobalBundle._id))
+    isPublishedPerspective(currentGlobalBundle)
   ) {
     actions = <DocumentStatusBarActions />
   }
