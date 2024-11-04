@@ -51,7 +51,7 @@
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
-    "test": "jest",
+    "test": "vitest",
     "ts": "node -r esbuild-register",
     "watch": "pkg-utils watch"
   },
@@ -75,7 +75,6 @@
     "validate-npm-package-name": "^3.0.0"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
@@ -129,6 +128,7 @@
     "semver-compare": "^1.0.0",
     "tar": "^6.1.11",
     "vite": "^4.5.3",
+    "vitest": "^2.1.1",
     "which": "^2.0.2",
     "xdg-basedir": "^4.0.0"
   },
