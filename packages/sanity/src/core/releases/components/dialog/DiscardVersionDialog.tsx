@@ -3,10 +3,11 @@ import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
-import {useSchema} from '../../../hooks'
+import {useDocumentOperation, useSchema} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {Preview} from '../../../preview'
 import {type ReleaseDocument} from '../../../store'
+import {getPublishedId, getVersionFromId, isVersionId} from '../../../util/draftUtils'
 import {usePerspective, useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
@@ -21,6 +22,7 @@ export function DiscardVersionDialog(props: {
 }): JSX.Element {
   const {onClose, documentId, documentType} = props
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
 
   const {currentGlobalBundle} = usePerspective()
   const {discardVersion} = useVersionOperations()
@@ -32,14 +34,21 @@ export function DiscardVersionDialog(props: {
   const handleDiscardVersion = useCallback(async () => {
     setIsDiscarding(true)
 
-    await discardVersion(
-      getBundleIdFromReleaseDocumentId((currentGlobalBundle as ReleaseDocument)._id),
-      documentId,
-    )
+    if (isVersionId(documentId)) {
+      await discardVersion(
+        getVersionFromId(documentId) ||
+          getBundleIdFromReleaseDocumentId((currentGlobalBundle as ReleaseDocument)._id),
+        documentId,
+      )
+    } else {
+      // on the document header you can also discard the draft
+      discardChanges.execute()
+    }
+
     setIsDiscarding(false)
 
     onClose()
-  }, [currentGlobalBundle, discardVersion, documentId, onClose])
+  }, [currentGlobalBundle, discardChanges, discardVersion, documentId, onClose])
 
   return (
     <Dialog

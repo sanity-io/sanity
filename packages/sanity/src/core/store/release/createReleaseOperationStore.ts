@@ -7,7 +7,7 @@ import {
 import {type User} from '@sanity/types'
 
 import {getBundleIdFromReleaseDocumentId} from '../../releases'
-import {getDraftId, getPublishedId, getVersionId} from '../../util'
+import {getVersionId} from '../../util'
 import {RELEASE_METADATA_TMP_DOC_PATH, RELEASE_METADATA_TMP_DOC_TYPE} from './constants'
 import {type EditableReleaseDocument} from './types'
 
@@ -141,16 +141,18 @@ export function createReleaseOperationsStore(options: {
   }
 
   const handleCreateVersion = async (releaseId: string, documentId: string) => {
-    const [draftId, publishedId] = [getDraftId(documentId), getPublishedId(documentId)]
-    // fetch original document
-    const [draft, published] = await client.getDocuments([publishedId, draftId])
+    // the documentId will show you where the document is coming from and which
+    // document should it copy from
 
-    if (!draft && !published) {
+    // fetch original document
+    const document = await client.getDocument(documentId)
+
+    if (!document) {
       throw new Error(`Document with id ${documentId} not found`)
     }
 
     const versionDocument = {
-      ...(draft || published),
+      ...document,
       _id: getVersionId(documentId, releaseId),
     } as IdentifiedSanityDocumentStub
 

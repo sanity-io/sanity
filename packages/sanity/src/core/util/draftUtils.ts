@@ -97,6 +97,11 @@ export function isPublishedId(id: string): id is PublishedId {
 
 /** @internal */
 export function getDraftId(id: string): DraftId {
+  if (isVersionId(id)) {
+    const publishedId = getPublishedId(id)
+    return (DRAFTS_PREFIX + publishedId) as DraftId
+  }
+
   return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
