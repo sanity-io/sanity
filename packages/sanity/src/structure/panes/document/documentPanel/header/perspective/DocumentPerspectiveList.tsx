@@ -3,7 +3,6 @@ import {memo, useCallback, useMemo} from 'react'
 import {
   getReleaseTone,
   getVersionFromId,
-  isVersionId,
   type ReleaseDocument,
   Translate,
   useDateTimeFormat,
@@ -108,7 +107,17 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         }
         disabled={!editState?.published}
         onClick={handleBundleChange('published')}
-        selected={perspective === 'published'}
+        selected={
+          /** the publish is selected when:
+           * when the document displayed is a published document, but has no draft and the perspective that is
+           * selected is the null perspective - this means that it should be showing draft
+           * when the perspective is published
+           */
+          !!(
+            (editState?.published?._id === displayed?._id && !editState?.draft && perspective) ||
+            perspective === 'published'
+          )
+        }
         text={t('release.chip.published')}
         tone="positive"
         contextValues={{
@@ -147,11 +156,18 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           </Text>
         }
         selected={
-          (editState?.draft?._id === displayed?._id ||
-            !editState?.draft ||
-            !editState?.published) &&
-          !isVersionId(displayed?._id || '') &&
-          perspective !== 'published'
+          /** the draft is selected when:
+           * when the document displayed is a draft,
+           * when the perspective is null,
+           * when the document is not published,
+           * when there is no draft (new document),
+           */
+          !!(
+            editState?.draft?._id === displayed?._id ||
+            !perspective ||
+            (!editState?.published && editState?.draft) ||
+            (!editState?.published && !editState?.draft)
+          )
         }
         text={t('release.chip.draft')}
         tone="caution"
