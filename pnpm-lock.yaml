@@ -1054,9 +1054,6 @@ importers:
         specifier: ^3.22.4
         version: 3.23.8
     devDependencies:
-      '@jest/globals':
-        specifier: ^29.7.0
-        version: 29.7.0
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
@@ -1081,6 +1078,9 @@ importers:
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.1(@types/node@22.5.4)(jsdom@23.2.0)(terser@5.32.0)
 
   packages/@sanity/diff:
     dependencies:

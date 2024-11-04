@@ -1,6 +1,14 @@
-import {describe, expect, test} from '@jest/globals'
+import {describe, expect, test, vi} from 'vitest'
 
 import {findQueriesInSource} from '../findQueriesInSource'
+
+// Mock require since it's not supported in vitest
+vi.mock('node:module', () => ({
+  createRequire: vi.fn().mockReturnValue({
+    // Add the extension to the path
+    resolve: vi.fn((path) => `${path}.ts`),
+  }),
+}))
 
 describe('findQueries with the groq template', () => {
   describe('should find queries in source', () => {
