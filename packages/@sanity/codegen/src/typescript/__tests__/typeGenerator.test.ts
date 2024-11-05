@@ -1,6 +1,5 @@
 import path from 'node:path'
 
-import {describe, expect, test} from '@jest/globals'
 import {
   createReferenceTypeNode,
   type DocumentSchemaType,
@@ -10,6 +9,7 @@ import {
   type StringTypeNode,
   type TypeNode,
 } from 'groq-js'
+import {describe, expect, test} from 'vitest'
 
 import {readSchema} from '../../readSchema'
 import {TypeGenerator} from '../typeGenerator'
@@ -262,21 +262,21 @@ export type AllSanitySchemaTypes = Impossible;"
     const actualOutput = typeGenerator.generateSchemaTypes()
 
     expect(actualOutput).toMatchInlineSnapshot(`
-"export type BlogPost = {
-  author: {
-    _ref: string;
-    _type: \\"reference\\";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: \\"author\\";
-  };
-};
+      "export type BlogPost = {
+        author: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "author";
+        };
+      };
 
-export type Author = {
-  name: string;
-};
+      export type Author = {
+        name: string;
+      };
 
-export type AllSanitySchemaTypes = BlogPost | Author;"
-`)
+      export type AllSanitySchemaTypes = BlogPost | Author;"
+    `)
   })
 
   test('should generate correct types for document schema with union fields', () => {
@@ -478,14 +478,14 @@ describe('generateQueryMap', () => {
     const actualOutput = typeGenerator.generateQueryMap(queries)
 
     expect(actualOutput).toMatchInlineSnapshot(`
-"import \\"@sanity/client\\";
-declare module \\"@sanity/client\\" {
-  interface SanityQueries {
-    \\"*[_type == \\\\\\"author\\\\\\"]\\": AuthorsResult;
-    \\"*[_type == \\\\\\"author\\\\\\"][0]\\": FirstAuthorResult;
-  }
-}"
-`)
+      "import "@sanity/client";
+      declare module "@sanity/client" {
+        interface SanityQueries {
+          "*[_type == \\"author\\"]": AuthorsResult;
+          "*[_type == \\"author\\"][0]": FirstAuthorResult;
+        }
+      }"
+    `)
   })
 
   test('should generate a map of query results with duplicate type names', () => {
@@ -509,14 +509,14 @@ declare module \\"@sanity/client\\" {
     const actualOutput = typeGenerator.generateQueryMap(queries)
 
     expect(actualOutput).toMatchInlineSnapshot(`
-"import \\"@sanity/client\\";
-declare module \\"@sanity/client\\" {
-  interface SanityQueries {
-    \\"*[_type == \\\\\\"foo\\\\\\"]\\": Foo;
-    \\"*[_type == \\\\\\"bar\\\\\\"]\\": Foo_2;
-  }
-}"
-`)
+      "import "@sanity/client";
+      declare module "@sanity/client" {
+        interface SanityQueries {
+          "*[_type == \\"foo\\"]": Foo;
+          "*[_type == \\"bar\\"]": Foo_2;
+        }
+      }"
+    `)
   })
 
   test('should generate a map of query results with duplicate query strings', () => {
@@ -540,12 +540,12 @@ declare module \\"@sanity/client\\" {
     const actualOutput = typeGenerator.generateQueryMap(queries)
 
     expect(actualOutput).toMatchInlineSnapshot(`
-"import \\"@sanity/client\\";
-declare module \\"@sanity/client\\" {
-  interface SanityQueries {
-    \\"*[_type == \\\\\\"foo\\\\\\"]\\": Foo | Bar;
-  }
-}"
-`)
+      "import "@sanity/client";
+      declare module "@sanity/client" {
+        interface SanityQueries {
+          "*[_type == \\"foo\\"]": Foo | Bar;
+        }
+      }"
+    `)
   })
 })
