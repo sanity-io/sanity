@@ -11,4 +11,5 @@ export default defineWorkspace([
   'packages/@sanity/util',
   'packages/sanity',
   'packages/sanity/src/_internal/cli',
+  'perf/tests',
 ])
