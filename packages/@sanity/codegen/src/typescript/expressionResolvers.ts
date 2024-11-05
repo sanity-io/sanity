@@ -418,6 +418,27 @@ function resolveImportSpecifier({
     })
   }
 
+  let result: resolveExpressionReturnType | undefined
+  traverse(tree, {
+    ExportDeclaration(p) {
+      if (p.node.type === 'ExportAllDeclaration') {
+        try {
+          result = resolveExportSpecifier({
+            node: p.node,
+            importName,
+            filename: resolvedFile,
+            fnArguments,
+            resolver,
+            babelConfig,
+          })
+        } catch (e) {
+          if (e.cause !== `noBinding:${importName}`) throw e
+        }
+      }
+    },
+  })
+  if (result) return result
+
   throw new Error(`Could not find binding for import "${importName}" in ${importFileName}`)
 }
 
@@ -428,7 +449,7 @@ function resolveExportSpecifier({
   babelConfig,
   resolver,
 }: {
-  node: babelTypes.ExportNamedDeclaration
+  node: babelTypes.ExportNamedDeclaration | babelTypes.ExportAllDeclaration
   importName: string
   filename: string
   babelConfig: TransformOptions
@@ -466,5 +487,7 @@ function resolveExportSpecifier({
     })
   }
 
-  throw new Error(`Could not find binding for export "${importName}" in ${importFileName}`)
+  throw new Error(`Could not find binding for export "${importName}" in ${importFileName}`, {
+    cause: `noBinding:${importName}`,
+  })
 }

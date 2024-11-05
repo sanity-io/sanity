@@ -124,6 +124,18 @@ describe('findQueries with the groq template', () => {
     expect(queries[0].result).toBe('*[_type == "foo bar"]')
   })
 
+  test('can import from export *', () => {
+    const source = `
+      import { groq } from "groq";
+      import {foo}  from "./fixtures/exportStar";
+      const postQuery = groq\`*[_type == "\${foo}"]\`
+      const res = sanity.fetch(postQueryResult);
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('*[_type == "foo"]')
+  })
+
   test('will ignore declarations with ignore tag', () => {
     const source = `
       import { groq } from "groq";
