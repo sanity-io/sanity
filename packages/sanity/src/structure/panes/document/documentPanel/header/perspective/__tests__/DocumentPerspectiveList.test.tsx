@@ -36,7 +36,6 @@ vi.mock('sanity/router', () => {
   return {
     useRouter: vi.fn().mockReturnValue({
       stickyParams: {},
-      perspectiveState: {},
     }),
     route: {
       create: vi.fn(),

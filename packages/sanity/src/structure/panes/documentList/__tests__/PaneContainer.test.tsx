@@ -34,7 +34,6 @@ vi.mock('sanity/router', async (importOriginal) => ({
     stickyParams: {},
     state: {},
     navigate: vi.fn(),
-    perspectiveState: {},
   }),
 }))
 

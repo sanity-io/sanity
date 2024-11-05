@@ -177,17 +177,6 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
 
   const stickyParamsByName = useMemo(() => Object.fromEntries(stickyParams || []), [stickyParams])
 
-  // Storing perspective state in a dedicated, stable, object allows it to be used for memoization
-  // separately to the entire router context object, which changes more frequently than the relevant
-  // sticky parameters.
-  //
-  const perspectiveState = useMemo(() => {
-    return {
-      perspective: stickyParamsByName.perspective,
-      excludedPerspectives: stickyParamsByName.excludedPerspectives,
-    }
-  }, [stickyParamsByName.excludedPerspectives, stickyParamsByName.perspective])
-
   const router: RouterContextValue = useMemo(
     () => ({
       navigate,
@@ -198,14 +187,12 @@ export function RouterProvider(props: RouterProviderProps): ReactElement {
       resolvePathFromState,
       state: routerState,
       stickyParams: stickyParamsByName,
-      perspectiveState,
     }),
     [
       handleNavigateStickyParams,
       navigate,
       navigateIntent,
       onNavigate,
-      perspectiveState,
       resolveIntentLink,
       resolvePathFromState,
       routerState,
