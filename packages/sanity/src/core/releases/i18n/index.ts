@@ -5,7 +5,9 @@ import {type LocaleResourceBundle} from '../../i18n'
  *
  * @public
  */
-export const releasesLocaleNamespace = 'releases' as const
+// api extractor take issues with 'as const' for literals
+// eslint-disable-next-line @typescript-eslint/prefer-as-const
+export const releasesLocaleNamespace: 'releases' = 'releases'
 
 /**
  * The default locale release for the releases tool, which is US English.
