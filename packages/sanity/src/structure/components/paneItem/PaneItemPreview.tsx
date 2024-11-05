@@ -23,7 +23,6 @@ import {TooltipDelayGroupProvider} from '../../../ui-components'
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
   icon: ComponentType | false
-  perspective?: string
   layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
@@ -38,7 +37,7 @@ export interface PaneItemPreviewProps {
  * and are rendered by `<SanityDefaultPreview>`.
  */
 export function PaneItemPreview(props: PaneItemPreviewProps) {
-  const {icon, layout, perspective, presence, schemaType, value} = props
+  const {icon, layout, presence, schemaType, value} = props
   const title =
     (isRecord(value.title) && isValidElement(value.title)) ||
     isString(value.title) ||
@@ -47,7 +46,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       : null
 
   const releases = useReleases()
-  const {bundlesPerspective} = usePerspective()
+  const {bundlesPerspective, perspective} = usePerspective()
   const previewStateObservable = useMemo(
     () =>
       getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {

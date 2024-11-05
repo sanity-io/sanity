@@ -10,8 +10,7 @@ import {ReleaseForm} from '../ReleaseForm'
 vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
   useDateTimeFormat: vi.fn(),
 }))
-
-vi.mock('../../../../store/release', () => ({
+vi.mock('../../../store/useReleases', () => ({
   useReleases: vi.fn(),
 }))
 

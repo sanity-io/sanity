@@ -15,7 +15,7 @@ vi.mock('../../../../../../core/releases/hooks/usePerspective', () => ({
   usePerspective: vi.fn(),
 }))
 
-vi.mock('../../../../../../core/store/release/useReleases', () => ({
+vi.mock('../../../../../../core/releases/store/useReleases', () => ({
   useReleases: vi.fn(),
 }))
 
@@ -40,7 +40,8 @@ describe('DeletedDocumentBanners', () => {
     >)
     mockUseReleases.mockReturnValue({
       data: [],
-      deletedReleases: {},
+      releasesIds: [],
+      archivedReleases: [],
       dispatch: vi.fn(),
       loading: false,
     })
@@ -62,9 +63,10 @@ describe('DeletedDocumentBanners', () => {
     >)
     mockUseReleases.mockReturnValue({
       data: [mockReleaseDocument],
+      releasesIds: [mockReleaseDocument._id],
+      archivedReleases: [],
       dispatch: vi.fn(),
       loading: false,
-      stack: [],
     })
     mockUseDocumentPane.mockReturnValue({
       isDeleted: true,
@@ -89,9 +91,10 @@ describe('DeletedDocumentBanners', () => {
 
     mockUseReleases.mockReturnValue({
       data: [mockBundleDocument],
+      releasesIds: [mockBundleDocument._id],
       dispatch: vi.fn(),
       loading: false,
-      stack: [],
+      archivedReleases: [],
     })
 
     mockUseDocumentPane.mockReturnValue({

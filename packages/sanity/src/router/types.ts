@@ -293,12 +293,4 @@ export interface RouterContextValue {
    * The current router state. See {@link RouterState}
    */
   stickyParams: Record<string, string | undefined>
-
-  /**
-   * Values pertaining to the active perspective.
-   */
-  perspectiveState: {
-    perspective: string | undefined
-    excludedPerspectives: string | undefined
-  }
 }

@@ -37,14 +37,13 @@ vi.mock('sanity', async (importOriginal) => {
     unstable_useValuePreview: vi.fn(),
     useDocumentVersions: vi.fn(),
     useDateTimeFormat: vi.fn().mockReturnValue({format: vi.fn()}),
+    useReleases: vi.fn(),
+    usePerspective: vi.fn(() => ({perspective: undefined})),
+    useVersionOperations: vi.fn(() => ({})),
   }
 })
 
 vi.mock('sanity/router')
-
-vi.mock('../../../../../../../core/store/release/useReleases', () => ({
-  useReleases: vi.fn(),
-}))
 
 const mockUseReleases = useReleases as Mock<typeof useReleases>
 const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof useDocumentVersions>

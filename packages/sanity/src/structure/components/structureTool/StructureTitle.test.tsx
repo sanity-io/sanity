@@ -15,6 +15,7 @@ vi.mock('sanity', async (importOriginal) => ({
   useEditState: vi.fn(),
   useSchema: vi.fn(),
   unstable_useValuePreview: vi.fn(),
+  usePerspective: vi.fn(() => ({perspective: undefined})),
 }))
 
 function createWrapperComponent(client: SANITY.SanityClient) {

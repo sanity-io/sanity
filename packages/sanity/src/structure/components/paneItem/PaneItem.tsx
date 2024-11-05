@@ -24,7 +24,6 @@ import {
   useDocumentPreviewStore,
   useSchema,
 } from 'sanity'
-import {useRouter} from 'sanity/router'
 
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter'
@@ -77,7 +76,6 @@ export function PaneItem(props: PaneItemProps) {
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const {ChildLink} = usePaneRouter()
-  const {perspective} = useRouter().perspectiveState
   const documentPresence = useDocumentPresence(id)
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const [clicked, setClicked] = useState<boolean>(false)
@@ -90,7 +88,6 @@ export function PaneItem(props: PaneItemProps) {
 
       return (
         <PaneItemPreview
-          perspective={perspective}
           documentPreviewStore={documentPreviewStore}
           icon={getIconWithFallback(icon, schemaType, DocumentIcon)}
           layout={layout}
@@ -122,7 +119,6 @@ export function PaneItem(props: PaneItemProps) {
     schemaType,
     title,
     hasSchemaType,
-    perspective,
     documentPreviewStore,
     layout,
     documentPresence,
