@@ -76,7 +76,7 @@ importers:
         specifier: ^18.19.8
         version: 18.19.44
       '@types/react':
-        specifier: ^18.3.5
+        specifier: ^18.3.12
         version: 18.3.12
       '@types/semver':
         specifier: ^7.5.6
@@ -1227,7 +1227,7 @@ importers:
         specifier: ^1.13.0
         version: 1.13.0
       '@types/react':
-        specifier: ^18.3.5
+        specifier: ^18.3.12
         version: 18.3.12
       rimraf:
         specifier: ^3.0.2
@@ -1852,10 +1852,10 @@ importers:
         specifier: ^3.4.0
         version: 3.4.3
       '@types/react':
-        specifier: ^18.3.5
+        specifier: ^18.3.12
         version: 18.3.12
       '@types/react-dom':
-        specifier: ^18.3.0
+        specifier: ^18.3.1
         version: 18.3.1
       '@types/refractor':
         specifier: ^3.0.0
@@ -1945,10 +1945,10 @@ importers:
         specifier: ^1.10.9
         version: 1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.6.3)
       '@types/react':
-        specifier: ^18.3.3
+        specifier: ^18.3.12
         version: 18.3.12
       '@types/react-dom':
-        specifier: ^18.3.0
+        specifier: ^18.3.1
         version: 18.3.1
       '@types/serve-handler':
         specifier: ^6.1.4
