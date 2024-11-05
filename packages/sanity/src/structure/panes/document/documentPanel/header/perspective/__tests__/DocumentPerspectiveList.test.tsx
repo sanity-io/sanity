@@ -16,6 +16,7 @@ vi.mock('sanity', async (importOriginal) => ({
     setPerspective: vi.fn(),
   }),
   useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+  useVersionOperations: vi.fn().mockReturnValue({}),
   versionDocumentExists: vi.fn().mockReturnValue(true),
   Translate: vi.fn(),
   /**
