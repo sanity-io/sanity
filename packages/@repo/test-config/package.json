@@ -9,8 +9,6 @@
   },
   "devDependencies": {
     "@repo/dev-aliases": "workspace:*",
-    "dotenv": "^16.4.5",
-    "lodash-es": "^4.17.21",
     "vitest": "^2.1.1"
   }
 }
