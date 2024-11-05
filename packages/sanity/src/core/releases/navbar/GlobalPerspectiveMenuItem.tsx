@@ -172,7 +172,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               release.metadata.releaseType !== 'undecided' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (
                 <Text muted size={1}>
-                  {formatRelative(getPublishDateFromRelease(release), new Date())}
+                  {formatRelative(getPublishDateFromRelease(release) || new Date(), new Date())}
                 </Text>
               )}
           </Stack>

@@ -55,7 +55,10 @@ export function AddToReleaseBanner({
                   t={tCore}
                   i18nKey="release.banner.scheduled-for-publishing-on"
                   values={{
-                    date: formatRelative(getPublishDateFromRelease(currentRelease), new Date()),
+                    date: formatRelative(
+                      getPublishDateFromRelease(currentRelease) || new Date(),
+                      new Date(),
+                    ),
                   }}
                 />
               </Flex>
