@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import path from 'node:path'
 
-import {describe, expect, test} from '@jest/globals'
+import {describe, expect, test} from 'vitest'
 
 import {findQueriesInPath} from '../findQueriesInPath'
 

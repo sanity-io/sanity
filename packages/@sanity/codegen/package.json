@@ -46,7 +46,7 @@
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
-    "test": "jest",
+    "test": "vitest",
     "watch": "pkg-utils watch"
   },
   "dependencies": {
@@ -61,13 +61,12 @@
     "debug": "^4.3.4",
     "globby": "^10.0.0",
     "groq": "workspace:*",
-    "groq-js": "^1.13.0",
+    "groq-js": "^1.14.0",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@types/babel__core": "^7.20.5",
@@ -75,7 +74,8 @@
     "@types/babel__register": "^7.17.3",
     "@types/babel__traverse": "^7.20.5",
     "@types/debug": "^4.1.12",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "vitest": "^2.1.1"
   },
   "engines": {
     "node": ">=18"

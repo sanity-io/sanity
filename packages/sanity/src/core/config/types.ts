@@ -923,9 +923,10 @@ export type DefaultPluginsWorkspaceOptions = {
 }
 
 /**
- * Configuration for studio features.
+ * @internal
+ * Configuration for studio beta features.
  * */
-interface BetaFeatures {
+export interface BetaFeatures {
   /**
    * @beta
    * @hidden
