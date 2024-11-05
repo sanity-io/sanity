@@ -418,7 +418,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       babel-plugin-react-compiler:
-        specifier: 19.0.0-beta-63b359f-20241101
+        specifier: beta
         version: 19.0.0-beta-63b359f-20241101
       next:
         specifier: 15.0.2
