@@ -11,7 +11,7 @@ import {DateTimeInput} from '../../../../../ui-components/inputs/DateInputs/Date
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {Translate, useTranslation} from '../../../../i18n'
-import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
+import {ReleaseScheduledEvent} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -45,7 +45,7 @@ export const ReleaseScheduleButton = ({
     try {
       setStatus('scheduling')
       await schedule(release._id, publishAt)
-      telemetry.log(ScheduledRelease)
+      telemetry.log(ReleaseScheduledEvent)
       toast.push({
         closable: true,
         status: 'success',
