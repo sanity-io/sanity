@@ -4,6 +4,7 @@ import {formatRelative} from 'date-fns'
 import {type CSSProperties, useCallback} from 'react'
 import {
   getBundleIdFromReleaseDocumentId,
+  getPublishDateFromRelease,
   getReleaseTone,
   LATEST,
   type ReleaseDocument,
@@ -13,7 +14,6 @@ import {
 } from 'sanity'
 import {structureLocaleNamespace} from 'sanity/structure'
 
-import {getPublishDateFromRelease} from '../../../../../core/releases/util/util'
 import {Button} from '../../../../../ui-components'
 import {Banner} from './Banner'
 

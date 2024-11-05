@@ -32,6 +32,7 @@ export {
   getBundleIdFromReleaseDocumentId,
   getCreateVersionOrigin,
   getDocumentIsInPerspective,
+  getPublishDateFromRelease,
   getReleaseTone,
   isDraftPerspective,
   isPublishedPerspective,
