@@ -32,6 +32,7 @@ export interface ReleaseSystemDocument {
   state: ReleaseState
   publishAt?: string
 }
+
 /**
  * @internal
  */
