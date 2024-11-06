@@ -62,9 +62,7 @@ export function addChunksMetadata(chunks: Chunk[]): ChunksWithCollapsedDrafts[] 
       const previousPublish = getPreviousPublishAction(result)
       if (chunk.type === 'editDraft' && previousPublish?.type === 'publish') {
         Array.from(chunk.authors).forEach((id) => {
-          if (!previousPublish.authors.has(id)) {
-            previousPublish.collaborators.add(id)
-          }
+          previousPublish.collaborators.add(id)
         })
         previousPublish.children.push(chunk.id)
         result.push({

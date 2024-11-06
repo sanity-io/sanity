@@ -1,4 +1,4 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {createElement, type MouseEvent, useCallback, useMemo} from 'react'
@@ -6,11 +6,14 @@ import {
   type ChunkType,
   type RelativeTimeOptions,
   useDateTimeFormat,
+  UserAvatar,
   useRelativeTime,
   useTranslation,
+  useUser,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {Tooltip} from '../../../../ui-components'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'
@@ -59,6 +62,58 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
+const AvatarSkeleton = styled(Skeleton)((props) => {
+  const theme = getTheme_v2(props.theme)
+  return css`
+    border-radius: 50%;
+    width: ${theme.avatar.sizes[1].size}px;
+    height: ${theme.avatar.sizes[1].size}px;
+  `
+})
+
+const NameSkeleton = styled(Skeleton)((props) => {
+  const theme = getTheme_v2(props.theme)
+  return css`
+    width: 6ch;
+    height: ${theme.font.text.sizes[0].lineHeight}px;
+  `
+})
+
+const UserLine = ({userId}: {userId: string}) => {
+  const [user, loading] = useUser(userId)
+
+  return (
+    <Flex align="center" gap={2} key={userId} padding={1}>
+      <Box>{loading || !user ? <AvatarSkeleton animated /> : <UserAvatar user={user} />}</Box>
+      <Box>
+        {loading || !user?.displayName ? (
+          <Text size={1}>
+            <NameSkeleton animated />
+          </Text>
+        ) : (
+          <Text muted size={1}>
+            {user.displayName}
+          </Text>
+        )}
+      </Box>
+    </Flex>
+  )
+}
+const TooltipContent = ({collaborators}: {collaborators: string[]}) => {
+  const {t} = useTranslation('studio')
+  return (
+    <Stack paddingBottom={1}>
+      <Box padding={1} paddingBottom={2}>
+        <Text size={1} weight="medium">
+          {t('timeline.changes.title')}
+        </Text>
+      </Box>
+      {collaborators.map((userId) => (
+        <UserLine key={userId} userId={userId} />
+      ))}
+    </Stack>
+  )
+}
 export function TimelineItem({
   chunk,
   isSelected,
@@ -127,7 +182,20 @@ export function TimelineItem({
 
           {collaboratorsUsersIds.length > 0 && (
             <Flex flex={1} justify="flex-end" align="center">
-              <UserAvatarStack maxLength={3} userIds={collaboratorsUsersIds} size={0} />
+              <Tooltip
+                placement="top"
+                content={<TooltipContent collaborators={collaboratorsUsersIds} />}
+                portal
+              >
+                <Box paddingLeft={2} paddingY={2}>
+                  <UserAvatarStack
+                    maxLength={3}
+                    userIds={collaboratorsUsersIds}
+                    size={0}
+                    withTooltip={false}
+                  />
+                </Box>
+              </Tooltip>
             </Flex>
           )}
         </Flex>

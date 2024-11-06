@@ -1594,7 +1594,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'sheet-list.select-fields': 'Select up to 5 field types',
   /** Accessibility label for the navbar status button */
   'status-button.aria-label': 'Configuration status',
-
+  /** Title for the changes tooltip in the history inspector*/
+  'timeline.changes.title': 'Changes by',
   /** Description for error when the timeline for the given document can't be loaded */
   'timeline.error.load-document-changes-description':
     'Document history transactions have not been affected.',

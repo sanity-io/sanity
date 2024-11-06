@@ -117,6 +117,7 @@ describe('Tests addChunksMetadata', () => {
             "0181e905-db87-4a71-9b8d-dc61c3281686",
           ],
           "collaborators": Set {
+            "author1",
             "author2",
           },
           "draftState": "missing",
@@ -171,6 +172,7 @@ describe('Tests addChunksMetadata', () => {
           "collaborators": Set {
             "author1",
             "author2",
+            "author3",
           },
           "draftState": "missing",
           "end": -1,
