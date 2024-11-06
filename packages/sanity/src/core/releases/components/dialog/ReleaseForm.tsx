@@ -1,5 +1,4 @@
 import {InfoOutlineIcon} from '@sanity/icons'
-import {type FormNodeValidation} from '@sanity/types'
 import {Card, Flex, Stack, TabList, TabPanel, Text} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
@@ -27,15 +26,10 @@ export function ReleaseForm(props: {
   // only editing existing releases will provide a value.slug
   const {t} = useTranslation()
 
-  // todo: you can create a release without a title, but not without a date if the type is scheduled
-  const [dateErrors, setDateErrors] = useState<FormNodeValidation[]>([])
-
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
-  const [inputValue, setInputValue] = useState<Date | undefined>(
-    publishAt ? new Date(publishAt) : undefined,
-  )
+  const [inputValue, setInputValue] = useState<Date>(publishAt ? new Date(publishAt) : new Date())
 
   const handleBundleInputChange = useCallback(
     (event: React.FocusEvent<HTMLInputElement>) => {
@@ -142,8 +136,8 @@ export function ReleaseForm(props: {
                 onChange={handleBundlePublishAtCalendarChange}
                 onInputChange={handleBundleInputChange}
                 calendarLabels={calendarLabels}
-                value={publishAt ? new Date(publishAt) : undefined}
-                inputValue={inputValue ? format(inputValue, 'PP HH:mm') : ''}
+                value={publishAt ? new Date(publishAt) : new Date()}
+                inputValue={format(inputValue, 'dd/MM/yyyy, HH:mm O')}
                 constrainSize={false}
               />
             </TabPanel>
