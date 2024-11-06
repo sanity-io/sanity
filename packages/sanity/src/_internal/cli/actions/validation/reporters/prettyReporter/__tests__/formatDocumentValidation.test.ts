@@ -1,9 +1,15 @@
-import {describe, expect, it, jest} from '@jest/globals'
+import {describe, expect, it, vi} from 'vitest'
 
 import {formatDocumentValidation} from '../formatDocumentValidation'
 
 // disables some terminal specific things that are typically auto detected
-jest.mock('tty', () => ({isatty: () => false}))
+vi.mock(import('node:tty'), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    isatty: () => false,
+  }
+})
 
 describe('formatDocumentValidation', () => {
   it('formats a set of markers in to a printed tree, sorting markers, and adding spacing', () => {

@@ -1,26 +1,26 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {type InlineConfig} from 'vite'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {buildVendorDependencies} from '../buildVendorDependencies'
 
 // Mocking the vite.build function to inspect its calls. This allows us to test
 // that the function is called with the correct configuration without actually
 // performing the build process.
-jest.mock('vite', () => ({build: jest.fn()}))
+vi.mock('vite', () => ({build: vi.fn()}))
 
-describe('buildVendorDependencies', () => {
-  const {build} = require('vite')
+describe('buildVendorDependencies', async () => {
+  const {build} = await import('vite')
   const packageRoot = path.resolve(__dirname, '../../../../..')
   const examplesRoot = path.join(packageRoot, './fixtures/examples')
   const outputDir = './output-dir'
 
-  beforeEach(() => {
-    jest.resetAllMocks()
-    const vite = require('vite')
-    vite.build.mockImplementation((input: InlineConfig) => {
+  beforeEach(async () => {
+    vi.resetAllMocks()
+    const vite = await import('vite')
+    ;(vite as any).build.mockImplementation((input: InlineConfig) => {
       const libOptions = input.build?.lib
       if (!libOptions) throw new Error(`Expected lib in inline config`)
 

@@ -1,16 +1,16 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import resolveFrom from 'resolve-from'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {compareStudioDependencyVersions} from '../compareStudioDependencyVersions'
 import {readPackageJson} from '../readPackageJson'
 
-jest.mock('resolve-from')
-jest.mock('../readPackageJson')
+vi.mock('resolve-from')
+vi.mock('../readPackageJson')
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mockedFetch = jest.fn() as jest.MockedFunction<any>
-const mockedResolveFrom = resolveFrom as jest.MockedFunction<typeof resolveFrom>
-const mockedReadPackageJson = readPackageJson as jest.MockedFunction<typeof readPackageJson>
+const mockedFetch = vi.fn()
+const mockedResolveFrom = vi.mocked(resolveFrom)
+const mockedReadPackageJson = vi.mocked(readPackageJson)
 
 const autoUpdatesImports = {
   'sanity': 'v1/modules/sanity',
@@ -21,16 +21,16 @@ const autoUpdatesImports = {
 
 describe('compareStudioDependencyVersions', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should return empty array if versions match', async () => {
     mockedFetch.mockResolvedValue({
       headers: {
-        get: jest.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
+        get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
       },
     })
-    mockedResolveFrom.silent
+    vi.mocked(mockedResolveFrom.silent)
       .mockReturnValueOnce('/test/workdir/node_modules/sanity/package.json')
       .mockReturnValueOnce('/test/workdir/node_modules/@sanity/vision/package.json')
     mockedReadPackageJson
@@ -64,10 +64,10 @@ describe('compareStudioDependencyVersions', () => {
   it('should return one item in array if versions mismatches for one pkg', async () => {
     mockedFetch.mockResolvedValue({
       headers: {
-        get: jest.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
+        get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
       },
     })
-    mockedResolveFrom.silent
+    vi.mocked(mockedResolveFrom.silent)
       .mockReturnValueOnce('/test/workdir/node_modules/sanity/package.json')
       .mockReturnValueOnce('/test/workdir/node_modules/@sanity/vision/package.json')
     mockedReadPackageJson
@@ -106,10 +106,10 @@ describe('compareStudioDependencyVersions', () => {
   it('should return multiple items in array if versions mismatches for more pkg', async () => {
     mockedFetch.mockResolvedValue({
       headers: {
-        get: jest.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
+        get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
       },
     })
-    mockedResolveFrom.silent
+    vi.mocked(mockedResolveFrom.silent)
       .mockReturnValueOnce('/test/workdir/node_modules/sanity/package.json')
       .mockReturnValueOnce('/test/workdir/node_modules/@sanity/vision/package.json')
     mockedReadPackageJson
@@ -154,10 +154,10 @@ describe('compareStudioDependencyVersions', () => {
   it("should warn if the user's package.json version is greater then remote", async () => {
     mockedFetch.mockResolvedValue({
       headers: {
-        get: jest.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
+        get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
       },
     })
-    mockedResolveFrom.silent
+    vi.mocked(mockedResolveFrom.silent)
       .mockReturnValueOnce('/test/workdir/node_modules/sanity/package.json')
       .mockReturnValueOnce('/test/workdir/node_modules/@sanity/vision/package.json')
     mockedReadPackageJson
@@ -197,7 +197,7 @@ describe('compareStudioDependencyVersions', () => {
   it("should read from user's package.json if resolveFrom fails to find package.json in node_modules", async () => {
     mockedFetch.mockResolvedValue({
       headers: {
-        get: jest.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
+        get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
       },
     })
     mockedReadPackageJson.mockReturnValueOnce({
