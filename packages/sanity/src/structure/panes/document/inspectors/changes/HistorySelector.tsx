@@ -1,5 +1,5 @@
 import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui'
-import {useCallback, useRef, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {type Chunk, ScrollContainer, useTimelineSelector, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -16,7 +16,7 @@ const Scroller = styled(ScrollContainer)`
 
 export function HistorySelector({showList}: {showList: boolean}) {
   const {timelineError, setTimelineMode, setTimelineRange, timelineStore} = useDocumentPane()
-  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
   const [listHeight, setListHeight] = useState(0)
 
   const getScrollerRef = useCallback((el: HTMLDivElement | null) => {
@@ -26,7 +26,7 @@ export function HistorySelector({showList}: {showList: boolean}) {
      * To fix this, this component will set the list height to the height of the parent element - 1px, to avoid a double scroll line.
      */
     setListHeight(el?.clientHeight ? el.clientHeight - 1 : 0)
-    scrollRef.current = el
+    setScrollRef(el)
   }, [])
 
   const chunks = useTimelineSelector(timelineStore, (state) => state.chunks)
@@ -67,7 +67,7 @@ export function HistorySelector({showList}: {showList: boolean}) {
         {timelineError ? (
           <TimelineError />
         ) : (
-          <BoundaryElementProvider element={scrollRef.current}>
+          <BoundaryElementProvider element={scrollRef}>
             <Scroller data-ui="Scroller" ref={getScrollerRef}>
               {listHeight &&
               // This forces the list to unmount and remount, which is needed to reset the scroll position
