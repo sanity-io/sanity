@@ -3,7 +3,6 @@ import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {createElement, type MouseEvent, useCallback, useMemo} from 'react'
 import {
-  type Chunk,
   type ChunkType,
   type RelativeTimeOptions,
   useDateTimeFormat,
@@ -15,6 +14,7 @@ import {css, styled} from 'styled-components'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'
+import {type ChunksWithCollapsedDrafts} from './utils'
 
 export const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
   const theme = getTheme_v2(props.theme)
@@ -47,9 +47,9 @@ const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ThemeColor
 }
 
 export interface TimelineItemProps {
-  chunk: Chunk
+  chunk: ChunksWithCollapsedDrafts
   isSelected: boolean
-  onSelect: (chunk: Chunk) => void
+  onSelect: (chunk: ChunksWithCollapsedDrafts) => void
   collaborators?: Set<string>
   optionsMenu?: React.ReactNode
 }

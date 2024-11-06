@@ -11,7 +11,12 @@ import {
 import {ExpandableTimelineItemMenu} from './expandableTimelineItemMenu'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {TimelineItem} from './timelineItem'
-import {addChunksMetadata, isNonPublishChunk, isPublishChunk} from './utils'
+import {
+  addChunksMetadata,
+  type ChunksWithCollapsedDrafts,
+  isNonPublishChunk,
+  isPublishChunk,
+} from './utils'
 
 interface TimelineProps {
   chunks: Chunk[]
@@ -77,6 +82,17 @@ export const Timeline = ({
       selectedChunkId ? filteredChunks.findIndex((chunk) => chunk.id === selectedChunkId) : -1,
     [selectedChunkId, filteredChunks],
   )
+  const handleSelectChunk = useCallback(
+    (chunk: ChunksWithCollapsedDrafts) => {
+      const timelineChunk = chunks.find((c) => c.id === chunk.id)
+      if (timelineChunk) onSelect(timelineChunk)
+      else {
+        console.error('TimelineItem: chunk not found')
+        onSelect(chunk)
+      }
+    },
+    [chunks, onSelect],
+  )
 
   const renderItem = useCallback<CommandListRenderItemCallback<(typeof filteredChunks)[number]>>(
     (chunk, {activeIndex}) => {
@@ -92,7 +108,7 @@ export const Timeline = ({
           <TimelineItem
             chunk={chunk}
             isSelected={selectedChunkId === chunk.id}
-            onSelect={onSelect}
+            onSelect={handleSelectChunk}
             collaborators={isPublishChunk(chunk) ? chunk.collaborators : undefined}
             optionsMenu={
               isPublishChunk(chunk) && chunk.children.length > 0 ? (
@@ -112,8 +128,8 @@ export const Timeline = ({
       expandedParents,
       filteredChunks.length,
       handleExpandParent,
+      handleSelectChunk,
       hasMoreChunks,
-      onSelect,
       selectedChunkId,
     ],
   )

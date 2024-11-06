@@ -42,7 +42,6 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactEl
   const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
 
-  // Subscribe to external timeline state changes
   const rev = useTimelineSelector(timelineStore, (state) => state.revTime)
   const diff = useTimelineSelector(timelineStore, (state) => state.diff)
   const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
