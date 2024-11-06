@@ -3,9 +3,10 @@ import {createRequire} from 'node:module'
 import {type NodePath, type TransformOptions, traverse} from '@babel/core'
 import {type Scope} from '@babel/traverse'
 import * as babelTypes from '@babel/types'
+import {type PrimitiveTypeNode, type UnknownTypeNode} from 'groq-js'
 
 import {getBabelConfig} from '../getBabelConfig'
-import {type NamedQueryResult, resolveExpression} from './expressionResolvers'
+import {type NamedQueryResult, type QueryParameter, resolveExpression} from './expressionResolvers'
 import {parseSourceFile} from './parseSource'
 
 const require = createRequire(__filename)
@@ -84,12 +85,50 @@ export function findQueriesInSource(
             }
           : {}
 
-        queries.push({name: queryName, result: queryResult, location})
+        const parameters = declarationLeadingParameters(path)
+        queries.push({name: queryName, result: queryResult, location, parameters})
       }
     },
   })
 
   return queries
+}
+
+const groqParameterMatcher = /@groq-parameter\s*\{([^}]+)\}\s*\$(\S+)(?:\s*-\s*(.+))?$/
+function declarationLeadingParameters(path: NodePath): Record<string, QueryParameter> {
+  const parameters: Record<string, QueryParameter> = {}
+
+  const variableDeclaration = path.find((node) => node.isVariableDeclaration())
+  if (!variableDeclaration) return parameters
+  if (!variableDeclaration.node.leadingComments) return parameters
+  for (const comment of variableDeclaration.node.leadingComments) {
+    const value = comment.value.trim()
+    const matches = value.match(groqParameterMatcher)
+    if (!matches) {
+      continue
+    }
+    const typeName = matches[1]
+    const name = matches[2]
+    const description = matches[3]
+    let typeNode: PrimitiveTypeNode | UnknownTypeNode = {type: 'unknown'}
+    switch (typeName) {
+      case 'string': {
+        typeNode = {type: 'string', value: ''}
+        break
+      }
+      case 'number': {
+        typeNode = {type: 'number', value: 0}
+        break
+      }
+      default: {
+        // do nothing
+      }
+    }
+
+    parameters[name] = {name, typeNode, description}
+  }
+
+  return parameters
 }
 
 function declarationLeadingCommentContains(path: NodePath, comment: string): boolean {

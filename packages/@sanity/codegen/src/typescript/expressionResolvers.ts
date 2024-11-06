@@ -5,12 +5,19 @@ import {type TransformOptions} from '@babel/core'
 import traverse, {type Scope} from '@babel/traverse'
 import * as babelTypes from '@babel/types'
 import createDebug from 'debug'
+import {type PrimitiveTypeNode, type UnknownTypeNode} from 'groq-js'
 
 import {parseSourceFile} from './parseSource'
 
 const debug = createDebug('sanity:codegen:findQueries:debug')
 
 type resolveExpressionReturnType = string
+
+export type QueryParameter = {
+  name: string
+  description?: string
+  typeNode: PrimitiveTypeNode | UnknownTypeNode
+}
 
 /**
  * NamedQueryResult is a result of a named query
@@ -20,6 +27,8 @@ export interface NamedQueryResult {
   name: string
   /** result is a groq query */
   result: resolveExpressionReturnType
+  /** list of parameter to infer types or values */
+  parameters: Record<string, QueryParameter>
 
   /** location is the location of the query in the source */
   location: {
