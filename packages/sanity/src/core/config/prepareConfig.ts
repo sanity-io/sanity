@@ -43,6 +43,7 @@ import {
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
+  searchStrategyReducer,
   startInCreateEnabledReducer,
   toolsReducer,
 } from './configPropertyReducers'
@@ -608,6 +609,10 @@ function resolveSource({
           initialValue: config.search?.unstable_partialIndexing?.enabled ?? false,
         }),
       },
+      strategy: searchStrategyReducer({
+        config,
+        initialValue: 'groqLegacy',
+      }),
       enableLegacySearch: resolveConfigProperty({
         config,
         context,

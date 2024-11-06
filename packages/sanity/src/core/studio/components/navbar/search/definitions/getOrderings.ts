@@ -1,8 +1,10 @@
+import {type SearchStrategy} from '@sanity/types'
+
 import {type SearchOrdering} from '../types'
 
 export const getOrderings: (context: {
-  enableLegacySearch?: boolean
-}) => Record<string, SearchOrdering> = ({enableLegacySearch}) => ({
+  searchStrategy?: SearchStrategy
+}) => Record<string, SearchOrdering> = ({searchStrategy}) => ({
   createdAsc: {
     ignoreScore: true,
     sort: {direction: 'asc', field: '_createdAt'},
@@ -15,7 +17,7 @@ export const getOrderings: (context: {
   },
   relevance: {
     customMeasurementLabel: 'relevance',
-    ...(enableLegacySearch ? {sort: {direction: 'desc', field: '_updatedAt'}} : {}),
+    ...(searchStrategy === 'groqLegacy' ? {sort: {direction: 'desc', field: '_updatedAt'}} : {}),
     titleKey: 'search.ordering.best-match-label',
   },
   updatedAsc: {

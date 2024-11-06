@@ -6,6 +6,7 @@ import {describe, expect, it} from 'vitest'
 import {createMockAuthStore} from '../../store'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
+import {type PluginOptions} from '../types'
 
 describe('resolveConfig', () => {
   it('throws on invalid tools property', async () => {
@@ -288,3 +289,162 @@ describe('createSourceFromConfig', () => {
     })
   })
 })
+
+describe('search strategy selection', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('sets a default strategy', async () => {
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+    })
+
+    expect(workspace.search.strategy).toBeTypeOf('string')
+  })
+
+  it('infers strategy based on `enableLegacySearch`', async () => {
+    const workspaceA = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      search: {
+        enableLegacySearch: true,
+      },
+    })
+
+    expect(workspaceA.search.strategy).toBe('groqLegacy')
+
+    const workspaceB = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      search: {
+        enableLegacySearch: false,
+      },
+    })
+
+    expect(workspaceB.search.strategy).toBe('textSearch')
+  })
+
+  it('gives precedence to `strategy`', async () => {
+    const workspaceA = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      search: {
+        enableLegacySearch: true,
+        strategy: 'textSearch',
+      },
+    })
+
+    expect(workspaceA.search.strategy).toBe('textSearch')
+
+    const workspaceB = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      search: {
+        enableLegacySearch: false,
+        strategy: 'groqLegacy',
+      },
+    })
+
+    expect(workspaceB.search.strategy).toBe('groqLegacy')
+  })
+
+  it('can be composed with other configurations', async () => {
+    const workspaceA = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        getSearchOptionsPlugin({
+          enableLegacySearch: false,
+        }),
+      ],
+      search: {
+        enableLegacySearch: true,
+      },
+    })
+
+    expect(workspaceA.search.strategy).toBe('groqLegacy')
+
+    const workspaceB = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        getSearchOptionsPlugin({
+          enableLegacySearch: true,
+        }),
+      ],
+      search: {
+        enableLegacySearch: false,
+      },
+    })
+
+    expect(workspaceB.search.strategy).toBe('textSearch')
+
+    const workspaceC = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        getSearchOptionsPlugin({
+          enableLegacySearch: false,
+        }),
+      ],
+      search: {
+        strategy: 'groqLegacy',
+      },
+    })
+
+    expect(workspaceC.search.strategy).toBe('groqLegacy')
+
+    const workspaceD = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        getSearchOptionsPlugin({
+          strategy: 'textSearch',
+        }),
+      ],
+      search: {
+        strategy: 'groqLegacy',
+      },
+    })
+
+    expect(workspaceD.search.strategy).toBe('groqLegacy')
+
+    const workspaceE = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        getSearchOptionsPlugin({
+          strategy: 'textSearch',
+        }),
+      ],
+      search: {
+        enableLegacySearch: true,
+      },
+    })
+
+    expect(workspaceE.search.strategy).toBe('textSearch')
+
+    const workspaceF = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        getSearchOptionsPlugin({
+          strategy: 'groqLegacy',
+        }),
+      ],
+      search: {
+        enableLegacySearch: false,
+      },
+    })
+
+    expect(workspaceF.search.strategy).toBe('groqLegacy')
+  })
+})
+
+function getSearchOptionsPlugin(options: PluginOptions['search']): PluginOptions {
+  return definePlugin({
+    name: 'sanity/search-options',
+    search: options,
+  })()
+}
