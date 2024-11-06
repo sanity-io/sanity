@@ -75,7 +75,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 tabIndex={tabIndex}
               >
                 {loading && (
-                  <Box padding={3}>
+                  <Box padding={2}>
                     <TitleTextSkeleton animated radius={1} size={1} />
                   </Box>
                 )}
