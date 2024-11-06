@@ -31,7 +31,8 @@ export function AddToReleaseBanner({
   const {createVersion} = useVersionOperations()
 
   const isScheduled =
-    currentRelease?.state === 'scheduled' || currentRelease?.state === 'scheduling'
+    (currentRelease?.state === 'scheduled' || currentRelease?.state === 'scheduling') &&
+    currentRelease.metadata.releaseType === 'scheduled'
 
   const handleAddToRelease = useCallback(async () => {
     if (currentRelease._id) {
