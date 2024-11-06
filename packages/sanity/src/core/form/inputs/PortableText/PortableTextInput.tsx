@@ -13,6 +13,7 @@ import {
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Text, useToast} from '@sanity/ui'
+import {randomKey} from '@sanity/util/content'
 import {sortBy} from 'lodash'
 import {
   type MutableRefObject,
@@ -53,6 +54,10 @@ import {usePatches} from './usePatches'
 interface UploadTask {
   file: File
   uploaderCandidates: ResolvedUploader[]
+}
+
+function keyGenerator() {
+  return randomKey(12)
 }
 
 /** @internal */
@@ -384,6 +389,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
             <PortableTextEditor
               patches$={patches$}
+              keyGenerator={keyGenerator}
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
               ref={editorRef}
