@@ -1,5 +1,5 @@
-import {describe, expect, it} from '@jest/globals'
 import {type CliConfig} from '@sanity/cli'
+import {describe, expect, it} from 'vitest'
 
 import {type BuildSanityStudioCommandFlags} from '../../actions/build/buildAction'
 import {shouldAutoUpdate} from '../shouldAutoUpdate'

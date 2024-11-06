@@ -1,8 +1,8 @@
 import zlib from 'node:zlib'
 
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import buildSanityStudio from '../../build/buildAction'
 import deployStudioAction, {type DeployStudioActionFlags} from '../deployAction'
@@ -10,20 +10,19 @@ import * as _helpers from '../helpers'
 import {type UserApplication} from '../helpers'
 
 // Mock dependencies
-jest.mock('tar-fs')
-jest.mock('node:zlib')
-jest.mock('../helpers')
-jest.mock('../../build/buildAction')
+vi.mock('tar-fs')
+vi.mock('node:zlib')
+vi.mock('../helpers')
+vi.mock('../../build/buildAction')
 
-type Helpers = typeof _helpers
-const helpers = _helpers as unknown as {[K in keyof Helpers]: jest.Mock<Helpers[K]>}
-const buildSanityStudioMock = buildSanityStudio as jest.Mock<typeof buildSanityStudio>
-const tarPackMock = tar.pack as jest.Mock
-const zlibCreateGzipMock = zlib.createGzip as jest.Mock
+const helpers = vi.mocked(_helpers)
+const buildSanityStudioMock = vi.mocked(buildSanityStudio)
+const tarPackMock = vi.mocked(tar.pack)
+const zlibCreateGzipMock = vi.mocked(zlib.createGzip)
 type SpinnerInstance = {
-  start: jest.Mock<() => SpinnerInstance>
-  succeed: jest.Mock<() => SpinnerInstance>
-  fail: jest.Mock<() => SpinnerInstance>
+  start: Mock<() => SpinnerInstance>
+  succeed: Mock<() => SpinnerInstance>
+  fail: Mock<() => SpinnerInstance>
 }
 
 describe('deployStudioAction', () => {
@@ -42,26 +41,26 @@ describe('deployStudioAction', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
 
     spinnerInstance = {
-      start: jest.fn(() => spinnerInstance),
-      succeed: jest.fn(() => spinnerInstance),
-      fail: jest.fn(() => spinnerInstance),
+      start: vi.fn(() => spinnerInstance),
+      succeed: vi.fn(() => spinnerInstance),
+      fail: vi.fn(() => spinnerInstance),
     }
 
     mockContext = {
-      apiClient: jest.fn().mockReturnValue({
-        withConfig: jest.fn().mockReturnThis(),
+      apiClient: vi.fn().mockReturnValue({
+        withConfig: vi.fn().mockReturnThis(),
       }),
       workDir: '/fake/work/dir',
-      chalk: {cyan: jest.fn((str) => str), red: jest.fn((str) => str)},
+      chalk: {cyan: vi.fn((str) => str), red: vi.fn((str) => str)},
       output: {
-        error: jest.fn((str) => str),
-        print: jest.fn(),
-        spinner: jest.fn().mockReturnValue(spinnerInstance),
+        error: vi.fn((str) => str),
+        print: vi.fn(),
+        spinner: vi.fn().mockReturnValue(spinnerInstance),
       },
-      prompt: {single: jest.fn()},
+      prompt: {single: vi.fn()},
       cliConfig: {},
     } as unknown as CliCommandContext
   })
@@ -75,8 +74,10 @@ describe('deployStudioAction', () => {
     helpers.getOrCreateUserApplication.mockResolvedValueOnce(mockApplication)
     helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
-    tarPackMock.mockReturnValueOnce({pipe: jest.fn().mockReturnValue('tarball')})
-    zlibCreateGzipMock.mockReturnValue('gzipped')
+    tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
+      typeof tar.pack
+    >)
+    zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
 
     await deployStudioAction(
       {
@@ -128,8 +129,10 @@ describe('deployStudioAction', () => {
     helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockApplication)
     helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
-    tarPackMock.mockReturnValueOnce({pipe: jest.fn().mockReturnValue('tarball')})
-    zlibCreateGzipMock.mockReturnValue('gzipped')
+    tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
+      typeof tar.pack
+    >)
+    zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
 
     await deployStudioAction(
       {
@@ -176,15 +179,17 @@ describe('deployStudioAction', () => {
     const mockSpinner = mockContext.output.spinner('')
 
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(false)
-    ;(
-      mockContext.prompt.single as jest.Mock<typeof mockContext.prompt.single>
-    ).mockResolvedValueOnce(true) // User confirms to proceed
+    ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+      true,
+    ) // User confirms to proceed
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
     helpers.getOrCreateUserApplication.mockResolvedValueOnce(mockApplication)
     helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
-    tarPackMock.mockReturnValueOnce({pipe: jest.fn().mockReturnValue('tarball')})
-    zlibCreateGzipMock.mockReturnValue('gzipped')
+    tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
+      typeof tar.pack
+    >)
+    zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
 
     await deployStudioAction(
       {
@@ -268,8 +273,10 @@ describe('deployStudioAction', () => {
       error: 'Payment Required',
     })
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
-    tarPackMock.mockReturnValueOnce({pipe: jest.fn().mockReturnValue('tarball')})
-    zlibCreateGzipMock.mockReturnValue('gzipped')
+    tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
+      typeof tar.pack
+    >)
+    zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
 
     await deployStudioAction(
       {
