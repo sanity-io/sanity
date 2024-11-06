@@ -1189,6 +1189,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for description in tooltip to explain release types */
   'release.dialog.tooltip.description':
     'This makes it possible to show whether documents are in conflict when working on multiple versions.',
+  /** Label for the tooltip when the intended date is missing when creating a "At time" release */
+  'release.dialog.tooltip.missing-date':
+    'Intended date is required for the selected type of release',
+  /** Label for the tooltip when the title attribute is missing when creating a release */
+  'release.dialog.tooltip.missing-title': 'Release title is required',
   /** Label for noting that a release time is not final */
   'release.dialog.tooltip.note':
     'NOTE: You may change the time of release and set an exact time for scheduled publishing later.',
