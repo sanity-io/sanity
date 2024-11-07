@@ -10,7 +10,7 @@ import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTim
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useTranslation} from '../../../i18n'
 import {type EditableReleaseDocument, type ReleaseType} from '../../store/types'
-import {ReleaseInputsForm} from './ReleaseInputsForm'
+import {TitleDescriptionForm} from './TitleDescriptionForm'
 
 const RELEASE_TYPES: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
@@ -144,7 +144,7 @@ export function ReleaseForm(props: {
           )}
         </Flex>
       </Stack>
-      <ReleaseInputsForm release={value} onChange={handleTitleDescriptionChange} />
+      <TitleDescriptionForm release={value} onChange={handleTitleDescriptionChange} />
     </Stack>
   )
 }

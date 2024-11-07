@@ -19,7 +19,7 @@ import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleas
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
-import {CreateReleaseDialog} from './dialog/CreateReleaseDialog'
+import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
 
 const Chip = styled(Button)`
   border-radius: 9999px !important;
@@ -214,7 +214,7 @@ export const VersionChip = memo(function VersionChip(props: {
       )}
 
       {isCreateReleaseDialogOpen && (
-        <CreateReleaseDialog
+        <CopyToNewReleaseDialog
           onClose={() => setIsCreateReleaseDialogOpen(false)}
           onCreateVersion={handleAddVersion}
           documentId={

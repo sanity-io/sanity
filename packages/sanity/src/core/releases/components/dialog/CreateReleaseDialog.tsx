@@ -13,13 +13,13 @@ import {createReleaseId} from '../../util/createReleaseId'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 import {ReleaseForm} from './ReleaseForm'
 
-interface ReleaseDetailsDialogProps {
+interface CreateReleaseDialogProps {
   onCancel: () => void
   onSubmit: (createdReleaseId: string) => void
   origin?: OriginInfo['origin']
 }
 
-export function ReleaseDetailsDialog(props: ReleaseDetailsDialogProps): JSX.Element {
+export function CreateReleaseDialog(props: CreateReleaseDialogProps): JSX.Element {
   const {onCancel, onSubmit, origin} = props
   const toast = useToast()
   const {createRelease} = useReleaseOperations()

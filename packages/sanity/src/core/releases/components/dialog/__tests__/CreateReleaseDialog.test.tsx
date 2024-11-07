@@ -5,7 +5,7 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type ReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleases} from '../../../store/useReleases'
-import {ReleaseDetailsDialog} from '../ReleaseDetailsDialog'
+import {CreateReleaseDialog} from '../CreateReleaseDialog'
 
 vi.mock('../../../store/useReleases', () => ({
   useReleases: vi.fn(),
@@ -27,7 +27,7 @@ vi.mock('../../../i18n/hooks/useTranslation', () => ({
 const mockUseBundleStore = useReleases as Mock<typeof useReleases>
 //const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
-describe('ReleaseDetailsDialog', () => {
+describe('CreateReleaseDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -55,7 +55,7 @@ describe('ReleaseDetailsDialog', () => {
       //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
 
       const wrapper = await createTestProvider()
-      render(<ReleaseDetailsDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
+      render(<CreateReleaseDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
     })
     afterEach(() => {
       vitest.resetAllMocks()
@@ -74,7 +74,7 @@ describe('ReleaseDetailsDialog', () => {
     // TODO: Fix this test
     it.skip('should call createRelease and onCreate when form is submitted', async () => {
       // const wrapper = await createTestProvider()
-      // render(<ReleaseDetailsDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
+      // render(<CreateReleaseDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
 
       const value: Partial<ReleaseDocument> = {
         metadata: {

@@ -82,7 +82,7 @@ const DescriptionTextArea = styled.textarea((props) => {
   `
 })
 
-export function ReleaseInputsForm({
+export function TitleDescriptionForm({
   release,
   onChange,
 }: {

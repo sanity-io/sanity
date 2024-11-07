@@ -1,6 +1,6 @@
 import {useCallback, useState} from 'react'
 
-import {ReleaseInputsForm} from '../../components/dialog/ReleaseInputsForm'
+import {TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
 import {type EditableReleaseDocument, type ReleaseDocument, useReleaseOperations} from '../../index'
 
 export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): JSX.Element {
@@ -21,5 +21,5 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): JSX
     [timer, updateRelease],
   )
 
-  return <ReleaseInputsForm release={release} onChange={handleOnChange} />
+  return <TitleDescriptionForm release={release} onChange={handleOnChange} />
 }

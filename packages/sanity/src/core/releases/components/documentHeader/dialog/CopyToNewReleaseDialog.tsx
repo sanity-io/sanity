@@ -15,7 +15,7 @@ import {createReleaseId} from '../../../util/createReleaseId'
 import {ReleaseForm} from '../../dialog/ReleaseForm'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
-export function CreateReleaseDialog(props: {
+export function CopyToNewReleaseDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
