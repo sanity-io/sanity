@@ -1,16 +1,14 @@
 import {type ObjectDiff} from '@sanity/diff'
-import {AvatarStack, BoundaryElementProvider, Box, Card, Flex, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Box, Card, Flex, Text} from '@sanity/ui'
 import {type ReactElement, useMemo, useRef} from 'react'
 import {
   ChangeFieldWrapper,
   ChangeList,
-  DiffTooltip,
   type DocumentChangeContextInstance,
   LoadingBlock,
   NoChanges,
   type ObjectSchemaType,
   ScrollContainer,
-  UserAvatar,
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
@@ -76,7 +74,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactEl
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <Box padding={3}>
-        <Grid paddingX={1}>
+        <Grid paddingX={1} paddingBottom={2}>
           <Text size={1} muted>
             {structureT('changes.from.label')}
           </Text>
@@ -87,21 +85,6 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactEl
           </Text>
           <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
         </Grid>
-        {changeAnnotations.length > 0 && (
-          <Flex width={'full'} justify={'flex-end'} padding={3} paddingBottom={0}>
-            <DiffTooltip
-              annotations={changeAnnotations}
-              description={t('changes.changes-by-author')}
-              portal
-            >
-              <AvatarStack maxLength={4} aria-label={t('changes.changes-by-author')}>
-                {changeAnnotations.map(({author}) => (
-                  <UserAvatar key={author} user={author} size={0} />
-                ))}
-              </AvatarStack>
-            </DiffTooltip>
-          </Flex>
-        )}
       </Box>
 
       <Card flex={1}>
