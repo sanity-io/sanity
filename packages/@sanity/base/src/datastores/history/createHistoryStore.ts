@@ -120,7 +120,12 @@ const getAllRefIds = (doc) =>
   jsonReduce(
     doc,
     (acc, node) =>
-      node && typeof node === 'object' && '_ref' in node && !acc.includes(node._ref)
+      node &&
+      typeof node === 'object' &&
+      '_ref' in node &&
+      // exclude cross dataset refs
+      !('_dataset' in node) &&
+      !acc.includes(node._ref)
         ? [...acc, node._ref]
         : acc,
     []
@@ -149,7 +154,13 @@ function jsonMap(value, mapFn) {
 
 const mapRefNodes = (doc, mapFn) =>
   jsonMap(doc, (node) => {
-    return node && typeof node === 'object' && typeof node._ref === 'string' ? mapFn(node) : node
+    return node &&
+      typeof node === 'object' &&
+      typeof node._ref === 'string' &&
+      // exclude cross dataset refs
+      !('_dataset' in node)
+      ? mapFn(node)
+      : node
   })
 
 export const removeMissingReferences = (doc, existingIds) =>
