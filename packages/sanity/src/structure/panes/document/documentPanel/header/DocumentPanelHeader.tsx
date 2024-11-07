@@ -51,7 +51,6 @@ export const DocumentPanelHeader = memo(
       onPaneSplit,
       menuItemGroups,
       schemaType,
-      timelineStore,
       connectionState,
       views,
       unstable_languageFilter,
