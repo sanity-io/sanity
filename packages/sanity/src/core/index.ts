@@ -31,6 +31,7 @@ export {
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseDocument,
+  isReleaseLocked,
   LATEST,
   type ReleaseDocument,
   useDocumentVersions,

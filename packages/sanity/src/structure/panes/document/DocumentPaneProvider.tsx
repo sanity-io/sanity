@@ -102,7 +102,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-  const {perspective} = usePerspective()
+  const {perspective, currentGlobalBundle} = usePerspective()
 
   const bundlePerspective = resolveBundlePerspective(perspective)
 
@@ -599,6 +599,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const isLiveEditAndDraft = Boolean(liveEdit && editState.draft)
     const isSystemPerspectiveApplied = perspective && typeof bundlePerspective === 'undefined'
 
+    const isReleaseLocked =
+      typeof currentGlobalBundle === 'object' && 'state' in currentGlobalBundle
+        ? currentGlobalBundle.state === 'scheduled' || currentGlobalBundle.state === 'scheduling'
+        : false
+
     return (
       (bundlePerspective && !existsInBundle) ||
       isSystemPerspectiveApplied ||
@@ -612,7 +617,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isDeleting ||
       isDeleted ||
       isLiveEditAndDraft ||
-      isCreateLinked
+      isCreateLinked ||
+      isReleaseLocked
     )
   }, [
     isPermissionsLoading,
@@ -625,6 +631,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     liveEdit,
     perspective,
     bundlePerspective,
+    currentGlobalBundle,
     existsInBundle,
     ready,
     revTime,

@@ -95,3 +95,8 @@ export function isPublishedPerspective(bundle: CurrentPerspective | string): bun
 export function isDraftPerspective(bundle: CurrentPerspective | string): bundle is typeof LATEST {
   return bundle === LATEST
 }
+
+/** @internal */
+export function isReleaseLocked(release: ReleaseDocument): boolean {
+  return release.state === 'scheduled' || release.state === 'scheduling'
+}

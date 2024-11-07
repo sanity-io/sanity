@@ -3,6 +3,7 @@ import {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import {
   isDraftPerspective,
   isPublishedPerspective,
+  type ReleaseDocument,
   ScrollContainer,
   usePerspective,
   VirtualizerScrollInstanceProvider,
@@ -142,10 +143,19 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const currentPerspectiveIsRelease =
     !isPublishedPerspective(currentGlobalBundle) && !isDraftPerspective(currentGlobalBundle)
+  const isReleaseLocked =
+    typeof currentGlobalBundle === 'object' && 'state' in currentGlobalBundle
+      ? currentGlobalBundle.state === 'scheduled' || currentGlobalBundle.state === 'scheduling'
+      : false
 
   const banners = useMemo(() => {
-    if (!existsInBundle && currentPerspectiveIsRelease) {
-      return <AddToReleaseBanner documentId={value._id} currentRelease={currentGlobalBundle} />
+    if ((!existsInBundle && currentPerspectiveIsRelease) || isReleaseLocked) {
+      return (
+        <AddToReleaseBanner
+          documentId={value._id}
+          currentRelease={currentGlobalBundle as ReleaseDocument}
+        />
+      )
     }
 
     if (activeView.type === 'form' && isLiveEdit && ready) {
@@ -180,6 +190,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     existsInBundle,
     isLiveEdit,
     isPermissionsLoading,
+    isReleaseLocked,
     permissions?.granted,
     ready,
     requiredPermission,
