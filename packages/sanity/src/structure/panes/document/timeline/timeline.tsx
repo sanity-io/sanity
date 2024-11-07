@@ -56,6 +56,22 @@ export const Timeline = ({
     return new Set()
   })
 
+  useEffect(() => {
+    // This effect ensures that when we reload the timeline with a selected draft, we expand its parent.
+    if (selectedChunkId) {
+      const selected = chunksWithMetadata.find((chunk) => chunk.id === selectedChunkId)
+      if (selected && isNonPublishChunk(selected) && selected.parentId) {
+        const parentId = selected.parentId
+        setExpandedParents((prev) => {
+          if (prev.has(parentId)) return prev
+          const next = new Set(prev)
+          next.add(parentId)
+          return next
+        })
+      }
+    }
+  }, [chunksWithMetadata, selectedChunkId])
+
   const filteredChunks = useMemo(() => {
     return chunksWithMetadata.filter((chunk) => {
       if (isPublishChunk(chunk) || !chunk.parentId) return true
