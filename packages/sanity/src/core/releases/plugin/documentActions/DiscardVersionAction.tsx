@@ -9,9 +9,8 @@ import {
   useDocumentPairPermissions,
 } from 'sanity'
 
-/*
 /**
- * @beta
+ * @internal
  */
 export const DiscardVersionAction = (
   props: DocumentActionProps,

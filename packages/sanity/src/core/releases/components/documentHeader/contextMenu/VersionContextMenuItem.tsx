@@ -1,13 +1,12 @@
 import {LockIcon} from '@sanity/icons'
 import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
-import {
-  getReleaseTone,
-  ReleaseAvatar,
-  type ReleaseDocument,
-  useDateTimeFormat,
-  useTranslation,
-} from 'sanity'
+
+import {useDateTimeFormat} from '../../../../hooks/useDateTimeFormat'
+import {useTranslation} from '../../../../i18n'
+import {type ReleaseDocument} from '../../../store/types'
+import {getReleaseTone} from '../../../util/getReleaseTone'
+import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 export const VersionContextMenuItem = memo(function VersionContextMenuItem(props: {
   release: ReleaseDocument

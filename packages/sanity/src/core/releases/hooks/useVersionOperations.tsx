@@ -3,7 +3,7 @@ import {useToast} from '@sanity/ui'
 
 import {Translate, useTranslation} from '../../i18n'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
-import {useReleaseOperations} from '../index'
+import {useReleaseOperations} from '../store/useReleaseOperations'
 import {getCreateVersionOrigin} from '../util/util'
 import {usePerspective} from './usePerspective'
 

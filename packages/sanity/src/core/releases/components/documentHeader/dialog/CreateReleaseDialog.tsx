@@ -1,21 +1,19 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type BadgeTone, Box, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {
-  CreatedRelease,
-  createReleaseId,
-  DEFAULT_RELEASE_TYPE,
-  type EditableReleaseDocument,
-  LoadingBlock,
-  Preview,
-  ReleaseAvatar,
-  ReleaseForm,
-  useReleaseOperations,
-  useSchema,
-  useTranslation,
-} from 'sanity'
 
-import {Dialog} from '../../../../../../../ui-components'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Preview} from '../../../../preview/components/Preview'
+import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
+import {type EditableReleaseDocument} from '../../../store/types'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
+import {createReleaseId} from '../../../util/createReleaseId'
+import {ReleaseForm} from '../../dialog/ReleaseForm'
+import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 export function CreateReleaseDialog(props: {
   onClose: () => void

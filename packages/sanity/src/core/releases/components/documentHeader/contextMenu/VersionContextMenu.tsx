@@ -1,11 +1,14 @@
 import {AddIcon, CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
 import {memo} from 'react'
-import {isPublishedId, type ReleaseDocument, useTranslation} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {MenuGroup, MenuItem} from '../../../../../../../ui-components'
+import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {isPublishedId} from '../../../../util/draftUtils'
+import {type ReleaseDocument} from '../../../store/types'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
 const ReleasesList = styled(Stack)`
