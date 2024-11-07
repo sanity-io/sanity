@@ -3,7 +3,6 @@ import {
   Flex,
   type Placement,
   PortalProvider,
-  Text,
   useClickOutsideEvent,
   useGlobalKeyDown,
   useToast,
@@ -185,25 +184,24 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         portal
         ref={setPopoverRef}
       >
-        <Button
-          data-testid={open ? 'timeline-menu-close-button' : 'timeline-menu-open-button'}
-          disabled={!ready}
-          mode="ghost"
-          onClick={open ? handleClose : handleOpen}
-          ref={setButton}
-          selected={open}
-          width="fill"
-          tooltipProps={null}
-        >
-          <Flex align={'center'} justify={'space-between'}>
-            <Text size={1} weight="medium">
-              {ready ? buttonLabel : t('timeline.loading-history')}
-            </Text>
-            <Text size={1}>
-              <ChevronDownIcon />
-            </Text>
-          </Flex>
-        </Button>
+        <Flex width={'fill'}>
+          <Button
+            data-testid={open ? 'timeline-menu-close-button' : 'timeline-menu-open-button'}
+            disabled={!ready}
+            mode="ghost"
+            onClick={open ? handleClose : handleOpen}
+            ref={setButton}
+            selected={open}
+            width="fill"
+            tooltipProps={null}
+            justify={'space-between'}
+            style={{
+              maxWidth: '100%',
+            }}
+            iconRight={ChevronDownIcon}
+            text={ready ? buttonLabel : t('timeline.loading-history')}
+          />
+        </Flex>
       </Root>
     </PortalProvider>
   )

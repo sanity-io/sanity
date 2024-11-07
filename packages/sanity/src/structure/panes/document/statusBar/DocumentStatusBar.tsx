@@ -70,8 +70,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             gap={1}
             justify="space-between"
             paddingY={2}
-            paddingLeft={4}
-            paddingRight={3}
+            paddingLeft={showingRevision ? 3 : 4}
+            paddingRight={showingRevision ? 2 : 3}
           >
             <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
               <Flex align="center">

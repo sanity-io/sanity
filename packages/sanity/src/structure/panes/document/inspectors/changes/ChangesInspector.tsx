@@ -1,6 +1,6 @@
 import {type ObjectDiff} from '@sanity/diff'
 import {BoundaryElementProvider, Box, Card, Flex, Text} from '@sanity/ui'
-import {type ReactElement, useMemo, useRef} from 'react'
+import {type ReactElement, useMemo, useState} from 'react'
 import {
   ChangeFieldWrapper,
   ChangeList,
@@ -18,7 +18,6 @@ import {styled} from 'styled-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
-import {collectLatestAuthorAnnotations} from './helpers'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;
@@ -38,7 +37,7 @@ const Grid = styled(Box)`
 
 export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactElement {
   const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
-  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
 
   const rev = useTimelineSelector(timelineStore, (state) => state.revTime)
   const diff = useTimelineSelector(timelineStore, (state) => state.diff)
@@ -50,7 +49,6 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactEl
 
   // Note that we are using the studio core namespace here, as changes theoretically should
   // be part of Sanity core (needs to be moved from structure at some point)
-  const {t} = useTranslation('studio')
   const {t: structureT} = useTranslation(structureLocaleNamespace)
 
   const documentContext: DocumentChangeContextInstance = useMemo(
@@ -66,15 +64,10 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactEl
     [documentId, diff, isComparingCurrent, schemaType, value],
   )
 
-  const changeAnnotations = useMemo(
-    () => (diff ? collectLatestAuthorAnnotations(diff) : []),
-    [diff],
-  )
-
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <Box padding={3}>
-        <Grid paddingX={1} paddingBottom={2}>
+        <Grid paddingX={2} paddingBottom={2}>
           <Text size={1} muted>
             {structureT('changes.from.label')}
           </Text>
@@ -87,10 +80,10 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactEl
         </Grid>
       </Box>
 
-      <Card flex={1}>
-        <BoundaryElementProvider element={scrollRef.current}>
-          <Scroller data-ui="Scroller" ref={scrollRef}>
-            <Box flex={1} padding={3} paddingTop={2} height="fill">
+      <Card flex={1} paddingX={2} paddingY={2}>
+        <BoundaryElementProvider element={scrollRef}>
+          <Scroller data-ui="Scroller" ref={setScrollRef}>
+            <Box flex={1} paddingX={3} height="fill">
               {showChanges && (
                 <Content
                   diff={diff}
