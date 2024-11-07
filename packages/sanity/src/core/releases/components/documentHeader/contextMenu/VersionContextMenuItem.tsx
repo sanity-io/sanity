@@ -1,11 +1,12 @@
 import {LockIcon} from '@sanity/icons'
 import {Flex, Stack, Text} from '@sanity/ui'
+import {formatRelative} from 'date-fns'
 import {memo} from 'react'
 
-import {useDateTimeFormat} from '../../../../hooks/useDateTimeFormat'
 import {useTranslation} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../store/types'
 import {getReleaseTone} from '../../../util/getReleaseTone'
+import {getPublishDateFromRelease} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 export const VersionContextMenuItem = memo(function VersionContextMenuItem(props: {
@@ -13,10 +14,6 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
 }) {
   const {release} = props
   const {t} = useTranslation()
-  const dateTimeFormat = useDateTimeFormat({
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
   const isScheduled = release.state === 'scheduled' || release.state === 'scheduling'
 
   return (
@@ -30,9 +27,9 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.metadata.releaseType === 'scheduled' &&
             (release.metadata.intendedPublishAt ? (
-              <>{dateTimeFormat.format(new Date(release.metadata.intendedPublishAt))}</>
+              <>{formatRelative(getPublishDateFromRelease(release), new Date())}</>
             ) : (
-              /** @todo add date when it's scheduled and not just with a date */
+              /** should not be allowed to do, but a fall back in case if somehow no date is added */
               <>{t('release.chip.tooltip.unknown-date')}</>
             ))}
           {release.metadata.releaseType === 'undecided' && <>{t('release.type.undecided')}</>}
