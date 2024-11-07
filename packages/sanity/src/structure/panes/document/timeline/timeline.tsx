@@ -80,6 +80,16 @@ export const Timeline = ({
     })
   }, [chunksWithMetadata, expandedParents])
 
+  useEffect(() => {
+    // This effect ensures that we load more chunks if the list is not long enough.
+    // This could happen if a parent chunk has multiple drafts, so you could end with a list of 50 transactions but only
+    // 1 parent chunk, the publish, which squashed all the changes.
+    // In that case, users will see the loading block at the bottom, but nothing will really be happening. Because they haven't reach the end of the list.
+    if (filteredChunks.length < 16 && hasMoreChunks) {
+      onLoadMore()
+    }
+  }, [filteredChunks, hasMoreChunks, onLoadMore])
+
   const handleExpandParent = useCallback(
     (parentId: string) => () =>
       setExpandedParents((prev) => {
