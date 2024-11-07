@@ -1,11 +1,11 @@
-import {Menu, usePortal} from '@sanity/ui'
+import {ChevronLeftIcon} from '@sanity/icons'
 import {type MouseEvent, useCallback} from 'react'
-import {ContextMenuButton, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity'
+import {styled} from 'styled-components'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
+import {Button} from '../../../../ui-components'
 import {structureLocaleNamespace} from '../../../i18n'
 import {TIMELINE_LIST_WRAPPER_ID} from './timeline'
-import {TIMELINE_MENU_PORTAL} from './timelineMenu'
 
 /**
  * This is a hack to force the scrollbar to not appear when the list is expanding,
@@ -34,20 +34,24 @@ function hideScrollbarOnExpand(isExpanded: boolean) {
   }
 }
 
-export function ExpandableTimelineItemMenu({
-  chunkId,
+const FlipIcon = styled(ChevronLeftIcon)`
+  transition: transform 200ms;
+  &[data-expanded='true'] {
+    transform: rotate(-90deg);
+  }
+`
+
+export function ExpandableTimelineItemButton({
   isExpanded,
   onExpand,
 }: {
-  chunkId: string
   isExpanded: boolean
   onExpand: () => void
 }) {
   const {t} = useTranslation(structureLocaleNamespace)
-  const portalContext = usePortal()
 
   const handleExpandClick = useCallback(
-    (e: MouseEvent<HTMLDivElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
       hideScrollbarOnExpand(isExpanded)
       onExpand()
@@ -56,33 +60,15 @@ export function ExpandableTimelineItemMenu({
   )
 
   return (
-    <MenuButton
-      id={`timeline-item-menu-button-${chunkId}`}
-      button={
-        <ContextMenuButton
-          aria-label={t('timeline-item.menu-button.aria-label')}
-          size="large"
-          tooltipProps={{content: t('timeline-item.menu-button.tooltip')}}
-        />
-      }
-      menu={
-        <Menu padding={1}>
-          <MenuItem
-            text={t(
-              isExpanded
-                ? 'timeline-item.menu.action-collapse'
-                : 'timeline-item.menu.action-expand',
-            )}
-            onClick={handleExpandClick}
-          />
-        </Menu>
-      }
-      popover={{
-        // when used inside the timeline menu we want to keep the element inside the popover, to avoid closing the popover when clicking expand.
-        portal: portalContext.elements?.[TIMELINE_MENU_PORTAL] ? TIMELINE_MENU_PORTAL : true,
-        placement: 'bottom-end',
-        fallbackPlacements: ['left', 'left-end', 'left-start'],
+    <Button
+      mode="bleed"
+      icon={<FlipIcon data-expanded={isExpanded} />}
+      tooltipProps={{
+        content: isExpanded
+          ? t('timeline-item.menu.action-collapse')
+          : t('timeline-item.menu.action-expand'),
       }}
+      onClick={handleExpandClick}
     />
   )
 }

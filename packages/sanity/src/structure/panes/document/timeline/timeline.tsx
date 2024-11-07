@@ -8,7 +8,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ExpandableTimelineItemMenu} from './expandableTimelineItemMenu'
+import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {TimelineItem} from './timelineItem'
 import {
@@ -128,8 +128,7 @@ export const Timeline = ({
             collaborators={isPublishChunk(chunk) ? chunk.collaborators : undefined}
             optionsMenu={
               isPublishChunk(chunk) && chunk.children.length > 0 ? (
-                <ExpandableTimelineItemMenu
-                  chunkId={chunk.id}
+                <ExpandableTimelineItemButton
                   isExpanded={expandedParents.has(chunk.id)}
                   onExpand={handleExpandParent(chunk.id)}
                 />
