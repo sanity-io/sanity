@@ -1,8 +1,11 @@
 import {Text} from '@sanity/ui'
+import {formatRelative} from 'date-fns'
 import {memo, useCallback, useMemo} from 'react'
 import {
+  getPublishDateFromRelease,
   getReleaseTone,
   getVersionFromId,
+  isReleaseScheduledOrScheduling,
   type ReleaseDocument,
   Translate,
   useDateTimeFormat,
@@ -22,31 +25,38 @@ type FilterReleases = {
 
 const TooltipContent = ({release}: {release: ReleaseDocument}) => {
   const {t} = useTranslation()
-  const dateTimeFormat = useDateTimeFormat({
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
 
   if (release.metadata.releaseType === 'asap') {
     return <Text size={1}>{t('release.type.asap')}</Text>
   }
   if (release.metadata.releaseType === 'scheduled') {
+    const isActive = release.state === 'active'
+
     return (
-      <Text size={1}>
-        {release.metadata.intendedPublishAt ? (
-          <Translate
-            t={t}
-            i18nKey="release.chip.tooltip.intended-for-date"
-            values={{
-              date: dateTimeFormat.format(new Date(release.metadata.intendedPublishAt)),
-            }}
-          />
-        ) : (
-          t('release.chip.tooltip.unknown-date')
-        )}
-      </Text>
+      release.metadata.intendedPublishAt && (
+        <Text size={1}>
+          {isActive ? (
+            <Translate
+              t={t}
+              i18nKey="release.chip.tooltip.intended-for-date"
+              values={{
+                date: formatRelative(getPublishDateFromRelease(release), new Date()),
+              }}
+            />
+          ) : (
+            <Translate
+              t={t}
+              i18nKey="release.chip.tooltip.scheduled-for-date"
+              values={{
+                date: formatRelative(getPublishDateFromRelease(release), new Date()),
+              }}
+            />
+          )}
+        </Text>
+      )
     )
   }
+
   if (release.metadata.releaseType === 'undecided') {
     return <Text size={1}>{t('release.type.undecided')}</Text>
   }
@@ -193,6 +203,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             onClick={handleBundleChange(release.name)}
             text={release.metadata.title || t('release.placeholder-untitled-release')}
             tone={getReleaseTone(release)}
+            locked={isReleaseScheduledOrScheduling(release)}
             contextValues={{
               documentId: displayed?._id || '',
               menuReleaseId: release._id,

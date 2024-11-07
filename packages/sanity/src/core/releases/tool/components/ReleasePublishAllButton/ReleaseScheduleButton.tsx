@@ -13,7 +13,7 @@ import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {Translate, useTranslation} from '../../../../i18n'
 import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {type ReleaseDocument} from '../../../index'
+import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
@@ -178,11 +178,11 @@ export const ReleaseScheduleButton = ({
       return t('schedule-button-tooltip.validation.error')
     }
 
-    if (release.state === 'scheduled' || release.state === 'scheduling') {
+    if (isReleaseScheduledOrScheduling(release)) {
       return t('schedule-button-tooltip.already-scheduled')
     }
     return null
-  }, [hasDocumentValidationErrors, isValidatingDocuments, release.state, t])
+  }, [hasDocumentValidationErrors, isValidatingDocuments, release, t])
 
   // TODO: this is a duplicate of logic in ReleasePublishAllButton
   const scheduleTooltipContent = useMemo(() => {

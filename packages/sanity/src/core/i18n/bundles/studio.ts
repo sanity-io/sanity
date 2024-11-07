@@ -1172,7 +1172,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.created-date': 'Created {{date}}',
   /** Label for tooltip in chip with the lasted edited date */
   'release.chip.tooltip.edited-date': 'Edited {{date}}',
-  /** Label for tooltip in chip when document is intended for a future release */
+  /** Label for tooltip in chip when document is intended for a future release that hasn't been scheduled */
   'release.chip.tooltip.intended-for-date': 'Intended for {{date}}',
   /** Label for tooltip in chip when there is no recent draft edits */
   'release.chip.tooltip.no-edits': 'No edits',
@@ -1180,6 +1180,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.not-published': 'Not published',
   /** Label for tooltip in chip with the published date */
   'release.chip.tooltip.published-date': 'Published {{date}}',
+  /** Label for tooltip in chip when document is in a release that has been scheduled */
+  'release.chip.tooltip.scheduled-for-date': 'Scheduled for {{date}}',
   /** Label for tooltip in scheduled chip without a known date */
   'release.chip.tooltip.unknown-date': 'Unknown date',
   /** Label for tooltip on deleted release */

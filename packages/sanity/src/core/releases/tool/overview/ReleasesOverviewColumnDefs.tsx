@@ -13,7 +13,7 @@ import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {getReleasePublishDate} from '../../util/util'
+import {getReleasePublishDate, isReleaseScheduledOrScheduling} from '../../util/util'
 import {type TableRowProps} from '../components/Table/Table'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
@@ -160,7 +160,7 @@ export const releasesOverviewColumnDefs: (
       cell: ({cellProps, datum: release}) => (
         <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
           <ReleaseTime release={release} />
-          {(release.state === 'scheduled' || release.state === 'scheduling') && (
+          {isReleaseScheduledOrScheduling(release) && (
             <Text size={1}>
               <LockIcon />
             </Text>

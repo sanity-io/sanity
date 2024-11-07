@@ -9,6 +9,7 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {isPublishedId} from '../../../../util/draftUtils'
 import {type ReleaseDocument} from '../../../store/types'
+import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
 const ReleasesList = styled(Stack)`
@@ -27,6 +28,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   onCreateRelease: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
+  locked?: boolean
 }) {
   const {
     documentId,
@@ -38,6 +40,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     onCreateRelease,
     onCreateVersion,
     disabled,
+    locked,
   } = props
   const {t} = useTranslation()
   const isPublished = isPublishedId(documentId) && !isVersion
@@ -70,8 +73,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
         >
           <ReleasesList key={fromRelease} space={1}>
             {optionsReleaseList.map((option) => {
-              const isReleaseScheduled =
-                option.value.state === 'scheduled' || option.value.state === 'scheduling'
+              const isReleaseScheduled = isReleaseScheduledOrScheduling(option.value)
               return (
                 <MenuItem
                   as="a"
@@ -98,7 +100,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
               icon={TrashIcon}
               onClick={onDiscard}
               text={t('release.action.discard-version')}
-              disabled={disabled}
+              disabled={disabled || locked}
             />
           </>
         )}

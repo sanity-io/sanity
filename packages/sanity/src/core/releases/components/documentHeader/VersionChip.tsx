@@ -1,3 +1,4 @@
+import {LockIcon} from '@sanity/icons'
 import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {
   memo,
@@ -47,6 +48,7 @@ export const VersionChip = memo(function VersionChip(props: {
   onClick: () => void
   text: string
   tone: BadgeTone
+  locked?: boolean
   contextValues: {
     documentId: string
     releases: ReleaseDocument[]
@@ -65,6 +67,7 @@ export const VersionChip = memo(function VersionChip(props: {
     onClick,
     text,
     tone,
+    locked = false,
     contextValues: {
       documentId,
       releases,
@@ -174,6 +177,7 @@ export const VersionChip = memo(function VersionChip(props: {
           text={text}
           tone={tone}
           icon={<ReleaseAvatar padding={1} tone={tone} />}
+          iconRight={locked && LockIcon}
           onContextMenu={handleContextMenu}
         />
       </Tooltip>
@@ -190,6 +194,7 @@ export const VersionChip = memo(function VersionChip(props: {
             onCreateRelease={openCreateReleaseDialog}
             disabled={contextMenuDisabled}
             onCreateVersion={handleAddVersion}
+            locked={locked}
           />
         }
         fallbackPlacements={[]}
