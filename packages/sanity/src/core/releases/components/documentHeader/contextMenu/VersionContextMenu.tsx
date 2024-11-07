@@ -27,6 +27,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   onCreateRelease: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
+  locked?: boolean
 }) {
   const {
     documentId,
@@ -38,6 +39,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     onCreateRelease,
     onCreateVersion,
     disabled,
+    locked,
   } = props
   const {t} = useTranslation()
   const isPublished = isPublishedId(documentId) && !isVersion
@@ -98,7 +100,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
               icon={TrashIcon}
               onClick={onDiscard}
               text={t('release.action.discard-version')}
-              disabled={disabled}
+              disabled={disabled || locked}
             />
           </>
         )}

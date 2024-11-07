@@ -202,6 +202,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             onClick={handleBundleChange(release.name)}
             text={release.metadata.title || t('release.placeholder-untitled-release')}
             tone={getReleaseTone(release)}
+            locked={release.state === 'scheduled' || release.state === 'scheduling'}
             contextValues={{
               documentId: displayed?._id || '',
               menuReleaseId: release._id,
