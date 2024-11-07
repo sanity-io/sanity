@@ -81,7 +81,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
   const client = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
   const getClient = source.getClient
-  const {enableLegacySearch = false} = source.search
+  const {strategy: searchStrategy} = source.search
 
   const crossDatasetClient = useMemo(() => {
     return (
@@ -110,7 +110,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
             params,
             tag: 'search.cross-dataset-reference',
             maxFieldDepth,
-            enableLegacySearch,
+            strategy: searchStrategy,
           }),
         ),
 
@@ -123,15 +123,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         }),
       ),
 
-    [
-      schemaType,
-      documentRef,
-      path,
-      getClient,
-      crossDatasetClient,
-      maxFieldDepth,
-      enableLegacySearch,
-    ],
+    [schemaType, documentRef, path, getClient, crossDatasetClient, maxFieldDepth, searchStrategy],
   )
 
   const getReferenceInfo = useMemo(

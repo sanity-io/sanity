@@ -1,4 +1,4 @@
-import {type CurrentUser, type SchemaType} from '@sanity/types'
+import {type CurrentUser, type SchemaType, type SearchStrategy} from '@sanity/types'
 
 import {type SearchHit, type SearchTerms} from '../../../../../../search'
 import {getPublishedId} from '../../../../../../util'
@@ -40,7 +40,7 @@ export type SearchReducerState = PaginationState & {
   ordering: SearchOrdering
   result: SearchResult
   terms: RecentSearch | SearchTerms
-  enableLegacySearch?: boolean
+  strategy?: SearchStrategy
 }
 
 export interface SearchDefinitions {
@@ -62,7 +62,7 @@ export interface InitialSearchState {
   fullscreen?: boolean
   definitions: SearchDefinitions
   pagination: PaginationState
-  enableLegacySearch?: boolean
+  strategy?: SearchStrategy
 }
 
 export function initialSearchState({
@@ -70,7 +70,7 @@ export function initialSearchState({
   fullscreen,
   definitions,
   pagination,
-  enableLegacySearch,
+  strategy,
 }: InitialSearchState): SearchReducerState {
   return {
     currentUser,
@@ -80,7 +80,7 @@ export function initialSearchState({
     filtersVisible: true,
     fullscreen,
     lastActiveIndex: -1,
-    ordering: getOrderings({enableLegacySearch}).relevance,
+    ordering: getOrderings({searchStrategy: strategy}).relevance,
     ...pagination,
     result: {
       error: null,
@@ -94,7 +94,7 @@ export function initialSearchState({
       types: [],
     },
     definitions,
-    enableLegacySearch,
+    strategy,
   }
 }
 
@@ -177,7 +177,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     case 'ORDERING_RESET':
       return {
         ...state,
-        ordering: getOrderings({enableLegacySearch: state.enableLegacySearch}).relevance,
+        ordering: getOrderings({searchStrategy: state.strategy}).relevance,
         terms: stripRecent(state.terms),
         result: {
           ...state.result,

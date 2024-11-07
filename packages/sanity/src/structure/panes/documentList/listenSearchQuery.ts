@@ -21,6 +21,7 @@ import {
   getSearchableTypes,
   type SanityDocumentLike,
   type Schema,
+  type SearchStrategy,
 } from 'sanity'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
@@ -36,7 +37,7 @@ interface ListenQueryOptions {
   sort: SortOrder
   staticTypeNames?: string[] | null
   maxFieldDepth?: number
-  enableLegacySearch?: boolean
+  searchStrategy?: SearchStrategy
 }
 
 export interface SearchQueryResult {
@@ -57,7 +58,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     searchQuery,
     staticTypeNames,
     maxFieldDepth,
-    enableLegacySearch,
+    searchStrategy,
   } = options
   const sortBy = sort.by
   const extendedProjection = sort?.extendedProjection
@@ -123,7 +124,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
           const search = createSearch(types, client, {
             filter,
             params,
-            enableLegacySearch,
+            strategy: searchStrategy,
             maxDepth: maxFieldDepth,
           })
 

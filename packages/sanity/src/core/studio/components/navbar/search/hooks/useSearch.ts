@@ -82,17 +82,17 @@ export function useSearch({
   const [searchState, setSearchState] = useState(initialState)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
-  const {enableLegacySearch = false} = useWorkspace().search
+  const {strategy} = useWorkspace().search
 
   const search = useMemo(
     () =>
       createSearch(getSearchableOmnisearchTypes(schema), client, {
         tag: 'search.global',
         unique: true,
-        enableLegacySearch,
+        strategy,
         maxDepth: maxFieldDepth,
       }),
-    [client, maxFieldDepth, schema, enableLegacySearch],
+    [schema, client, strategy, maxFieldDepth],
   )
 
   const handleQueryChange = useObservableEvent((inputValue$: Observable<SearchRequest | null>) => {
