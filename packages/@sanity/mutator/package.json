@@ -22,7 +22,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "@types/diff-match-patch": "^1.0.32",
+    "@types/diff-match-patch": "1.0.32",
     "debug": "^3.2.7",
     "diff-match-patch": "^1.0.4",
     "lodash": "^4.17.15"
