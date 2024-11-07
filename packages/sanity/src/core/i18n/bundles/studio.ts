@@ -1182,6 +1182,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.published-date': 'Published {{date}}',
   /** Label for tooltip in chip when document is in a release that has been scheduled */
   'release.chip.tooltip.scheduled-for-date': 'Scheduled for {{date}}',
+  /** Label for tooltip in scheduled chip without a known date */
+  'release.chip.tooltip.unknown-date': 'Unknown date',
   /** Label for tooltip on deleted release */
   'release.deleted-tooltip': 'This release has been deleted',
   /** Title for creating releases dialog */

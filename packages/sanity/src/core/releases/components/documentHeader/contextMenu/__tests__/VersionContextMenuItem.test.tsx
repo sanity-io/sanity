@@ -36,7 +36,7 @@ describe('VersionContextMenuItem', () => {
     const scheduledRelease = {...mockRelease, releaseType: 'scheduled' as ReleaseType}
 
     render(<VersionContextMenuItem release={scheduledRelease} />, {wrapper})
-    expect(screen.getByText('Oct 1, 2023, 3:00 AM')).toBeInTheDocument()
+    expect(screen.getByText('10/01/2023')).toBeInTheDocument()
   })
 
   it('renders release type as ASAP', async () => {
