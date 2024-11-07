@@ -536,8 +536,6 @@ export interface DocumentActionsContext extends ConfigContext {
   bundleId?: string
   /** the perspective (version) of the open document */
   perspective?: DocumentActionsPerspective
-  /** the revision id of the open document */
-  revisionDisplay?: string
 }
 
 /**
