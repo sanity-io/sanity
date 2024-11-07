@@ -6,7 +6,7 @@ import {css, styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
-import {ReleaseDetailsDialog} from '../components/dialog/ReleaseDetailsDialog'
+import {CreateReleaseDialog} from '../components/dialog/CreateReleaseDialog'
 import {usePerspective} from '../hooks'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {useReleases} from '../store/useReleases'
@@ -205,7 +205,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
         }}
       />
       {createBundleDialogOpen && (
-        <ReleaseDetailsDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
+        <CreateReleaseDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
       )}
     </>
   )

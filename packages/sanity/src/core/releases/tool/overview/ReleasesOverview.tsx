@@ -14,7 +14,7 @@ import {
 } from '../../../../ui-components/inputs/DateFilters/calendar/CalendarFilter'
 import {useTranslation} from '../../../i18n'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
-import {ReleaseDetailsDialog} from '../../components/dialog/ReleaseDetailsDialog'
+import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument, useReleases} from '../../index'
@@ -280,7 +280,7 @@ export function ReleasesOverview() {
     if (!isCreateReleaseDialogOpen) return null
 
     return (
-      <ReleaseDetailsDialog
+      <CreateReleaseDialog
         onCancel={() => setIsCreateReleaseDialogOpen(false)}
         onSubmit={handleOnCreateRelease}
         origin="release-plugin"
