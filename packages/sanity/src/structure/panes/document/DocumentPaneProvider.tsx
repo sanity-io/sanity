@@ -188,10 +188,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       schemaType: documentType,
       documentId,
       perspective: actionsPerspective,
-      _rev: value._rev,
       ...(bundlePerspective && {bundleId: bundlePerspective}),
     }),
-    [actionsPerspective, bundlePerspective, documentId, documentType, value._rev],
+    [actionsPerspective, bundlePerspective, documentId, documentType],
   )
 
   // Resolve document actions
