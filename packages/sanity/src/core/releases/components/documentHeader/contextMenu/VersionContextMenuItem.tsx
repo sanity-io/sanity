@@ -6,7 +6,7 @@ import {memo} from 'react'
 import {useTranslation} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../store/types'
 import {getReleaseTone} from '../../../util/getReleaseTone'
-import {getPublishDateFromRelease} from '../../../util/util'
+import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 export const VersionContextMenuItem = memo(function VersionContextMenuItem(props: {
@@ -14,7 +14,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
 }) {
   const {release} = props
   const {t} = useTranslation()
-  const isScheduled = release.state === 'scheduled' || release.state === 'scheduling'
+  const isScheduled = isReleaseScheduledOrScheduling(release)
 
   return (
     <Flex gap={3} justify="center" align="center">

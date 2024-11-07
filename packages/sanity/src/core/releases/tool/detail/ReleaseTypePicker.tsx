@@ -2,7 +2,7 @@ import {LockIcon} from '@sanity/icons'
 import {Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
 import {format, isBefore, isValid, parse} from 'date-fns'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {type ReleaseDocument, useTranslation} from 'sanity'
+import {isReleaseScheduledOrScheduling, type ReleaseDocument, useTranslation} from 'sanity'
 
 import {Button, Popover, Tab} from '../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/calendar/Calendar'
@@ -63,7 +63,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
   }, [open])
 
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
-  const isReleaseScheduled = release.state === 'scheduling' || release.state === 'scheduled'
+  const isReleaseScheduled = isReleaseScheduledOrScheduling(release)
 
   const publishDateLabel = useMemo(() => {
     if (releaseType === 'asap') return t('release.type.asap')

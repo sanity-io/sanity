@@ -97,6 +97,6 @@ export function isDraftPerspective(bundle: CurrentPerspective | string): bundle 
 }
 
 /** @internal */
-export function isReleaseLocked(release: ReleaseDocument): boolean {
+export function isReleaseScheduledOrScheduling(release: ReleaseDocument): boolean {
   return release.state === 'scheduled' || release.state === 'scheduling'
 }

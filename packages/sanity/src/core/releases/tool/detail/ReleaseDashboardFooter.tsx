@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import {Card, Flex} from '@sanity/ui'
 
-import {type ReleaseDocument} from '../../index'
+import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../index'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {ReleasePublishAllButton} from '../components/ReleasePublishAllButton/ReleasePublishAllButton'
 import {ReleaseScheduleButton} from '../components/ReleasePublishAllButton/ReleaseScheduleButton'
@@ -26,7 +26,7 @@ export function ReleaseDashboardFooter(props: {
 
         <Flex flex="none" gap={1}>
           {release.metadata.releaseType === 'scheduled' ? (
-            release.state === 'scheduled' || release.state === 'scheduling' ? (
+            isReleaseScheduledOrScheduling(release) ? (
               <ReleaseUnscheduleButton
                 release={release}
                 documents={documents}

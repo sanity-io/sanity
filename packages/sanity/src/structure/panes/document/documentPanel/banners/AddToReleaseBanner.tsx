@@ -6,6 +6,7 @@ import {
   getBundleIdFromReleaseDocumentId,
   getPublishDateFromRelease,
   getReleaseTone,
+  isReleaseScheduledOrScheduling,
   LATEST,
   type ReleaseDocument,
   Translate,
@@ -31,7 +32,7 @@ export function AddToReleaseBanner({
   const {createVersion} = useVersionOperations()
 
   const isScheduled =
-    (currentRelease?.state === 'scheduled' || currentRelease?.state === 'scheduling') &&
+    isReleaseScheduledOrScheduling(currentRelease) &&
     currentRelease.metadata.releaseType === 'scheduled'
 
   const handleAddToRelease = useCallback(async () => {

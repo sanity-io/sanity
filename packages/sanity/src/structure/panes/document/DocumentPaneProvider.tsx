@@ -22,6 +22,7 @@ import {
   getExpandOperations,
   getPublishedId,
   getVersionFromId,
+  isReleaseScheduledOrScheduling,
   isSanityCreateLinkedDocument,
   isVersionId,
   type OnPathFocusPayload,
@@ -601,7 +602,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
     const isReleaseLocked =
       typeof currentGlobalBundle === 'object' && 'state' in currentGlobalBundle
-        ? currentGlobalBundle.state === 'scheduled' || currentGlobalBundle.state === 'scheduling'
+        ? isReleaseScheduledOrScheduling(currentGlobalBundle)
         : false
 
     return (
