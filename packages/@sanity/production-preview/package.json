@@ -1,6 +1,6 @@
 {
   "name": "@sanity/production-preview",
-  "version": "2.36.5",
+  "version": "2.36.6",
   "description": "Production preview",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -32,5 +32,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "f2b1c90cfa08e970ee55a82a9e987509495201bd"
 }

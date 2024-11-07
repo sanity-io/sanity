@@ -1,6 +1,6 @@
 {
   "name": "@sanity/state-router",
-  "version": "2.36.5",
+  "version": "2.36.6",
   "description": "A path pattern => state object bidirectional mapper",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
@@ -57,5 +57,6 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://www.sanity.io/"
+  "homepage": "https://www.sanity.io/",
+  "gitHead": "f2b1c90cfa08e970ee55a82a9e987509495201bd"
 }

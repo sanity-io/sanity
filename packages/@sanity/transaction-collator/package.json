@@ -1,6 +1,6 @@
 {
   "name": "@sanity/transaction-collator",
-  "version": "2.36.5",
+  "version": "2.36.6",
   "description": "Collate events from a series of transactions",
   "main": "./lib/index.js",
   "types": "./dist/dts/index.d.ts",
@@ -41,5 +41,6 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://www.sanity.io/"
+  "homepage": "https://www.sanity.io/",
+  "gitHead": "f2b1c90cfa08e970ee55a82a9e987509495201bd"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "2.36.5",
+  "version": "2.36.6",
   "description": "React-based data management tool for Sanity projects",
   "main": "lib/SanityVision.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -35,7 +35,7 @@
     "react-split-pane": "^0.1.84"
   },
   "devDependencies": {
-    "@sanity/base": "2.36.5",
+    "@sanity/base": "2.36.6",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1"
@@ -55,5 +55,6 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://www.sanity.io/"
+  "homepage": "https://www.sanity.io/",
+  "gitHead": "f2b1c90cfa08e970ee55a82a9e987509495201bd"
 }

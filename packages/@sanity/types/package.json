@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "2.36.5",
+  "version": "2.36.6",
   "description": "Type definitions for common Sanity data structures",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -36,5 +36,6 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://www.sanity.io/"
+  "homepage": "https://www.sanity.io/",
+  "gitHead": "f2b1c90cfa08e970ee55a82a9e987509495201bd"
 }

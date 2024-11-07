@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "2.36.5",
+  "version": "2.36.6",
   "description": "",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
@@ -31,7 +31,7 @@
   "license": "MIT",
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "2.36.5",
+    "@sanity/types": "2.36.6",
     "arrify": "^1.0.1",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
@@ -49,5 +49,6 @@
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/@sanity/schema"
-  }
+  },
+  "gitHead": "f2b1c90cfa08e970ee55a82a9e987509495201bd"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "2.36.5",
+  "version": "2.36.6",
   "description": "Utilities shared across projects of Sanity",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
@@ -41,7 +41,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/types": "2.36.5",
+    "@sanity/types": "2.36.6",
     "dotenv": "^8.2.0",
     "fs-extra": "^7.0.0",
     "get-random-values": "^1.2.2",
@@ -52,5 +52,6 @@
   "devDependencies": {
     "@types/moment": "^2.13.0",
     "rimraf": "^2.7.1"
-  }
+  },
+  "gitHead": "f2b1c90cfa08e970ee55a82a9e987509495201bd"
 }

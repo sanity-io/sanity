@@ -1,6 +1,6 @@
 {
   "name": "@sanity/export",
-  "version": "2.36.5",
+  "version": "2.36.6",
   "description": "Export Sanity documents and assets",
   "main": "lib/export.js",
   "engines": {
@@ -48,5 +48,6 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://www.sanity.io/"
+  "homepage": "https://www.sanity.io/",
+  "gitHead": "f2b1c90cfa08e970ee55a82a9e987509495201bd"
 }

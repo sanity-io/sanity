@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "2.36.5",
+  "version": "2.36.6",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
@@ -42,8 +42,8 @@
     "@sanity/client": "^3.3.3",
     "@sanity/eslint-config-studio": "^2.0.0",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/resolver": "2.36.5",
-    "@sanity/util": "2.36.5",
+    "@sanity/resolver": "2.36.6",
+    "@sanity/util": "2.36.6",
     "boxen": "^4.1.0",
     "chalk": "^2.4.2",
     "configstore": "^5.0.1",
@@ -82,5 +82,6 @@
     "webpack": "^4.46.0",
     "which": "^1.3.0",
     "xdg-basedir": "^3.0.0"
-  }
+  },
+  "gitHead": "f2b1c90cfa08e970ee55a82a9e987509495201bd"
 }
