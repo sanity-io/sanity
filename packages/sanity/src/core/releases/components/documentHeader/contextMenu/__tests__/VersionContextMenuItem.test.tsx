@@ -1,8 +1,8 @@
 import {render, screen} from '@testing-library/react'
-import {type ReleaseDocument, type ReleaseType} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {type ReleaseDocument, type ReleaseType} from '../../../../store/types'
 import {VersionContextMenuItem} from '../VersionContextMenuItem'
 
 const mockRelease: ReleaseDocument = {
@@ -17,34 +17,8 @@ const mockRelease: ReleaseDocument = {
     title: 'Test Release',
     releaseType: 'scheduled',
     intendedPublishAt: '2023-10-01T10:00:00Z',
-    hue: 'gray',
-    icon: 'string',
   },
 }
-
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useDateTimeFormat: vi.fn(() => ({
-    format: (date: Date) => date.toLocaleString(),
-  })),
-  ReleaseAvatar: () => <div data-testid="release-avatar" />,
-  getReleaseTone: vi.fn(),
-  SANITY_VERSION: 'test',
-
-  /**
-   * @todo
-   * is there no better way of mocking this?? */
-  useTranslation: vi.fn().mockReturnValue({
-    t: vi.fn().mockImplementation((key: string) => {
-      const translations: Record<string, string> = {
-        'release.chip.tooltip.unknown-date': 'Unknown date',
-        'release.type.asap': 'ASAP',
-        'release.type.undecided': 'Undecided',
-      }
-      return translations[key]
-    }),
-  }),
-}))
 
 describe('VersionContextMenuItem', () => {
   beforeEach(() => {
@@ -62,7 +36,7 @@ describe('VersionContextMenuItem', () => {
     const scheduledRelease = {...mockRelease, releaseType: 'scheduled' as ReleaseType}
 
     render(<VersionContextMenuItem release={scheduledRelease} />, {wrapper})
-    expect(screen.getByText('10/1/2023, 3:00:00 AM')).toBeInTheDocument()
+    expect(screen.getByText('Oct 1, 2023, 3:00 AM')).toBeInTheDocument()
   })
 
   it('renders release type as ASAP', async () => {
@@ -102,6 +76,6 @@ describe('VersionContextMenuItem', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenuItem release={mockRelease} />, {wrapper})
-    expect(screen.getByTestId('release-avatar')).toBeInTheDocument()
+    expect(screen.getByTestId('release-avatar-primary')).toBeInTheDocument()
   })
 })

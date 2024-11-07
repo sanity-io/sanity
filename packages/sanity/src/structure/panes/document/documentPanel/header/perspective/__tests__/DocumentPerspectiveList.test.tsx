@@ -16,21 +16,6 @@ vi.mock('sanity', async (importOriginal) => ({
     setPerspective: vi.fn(),
   }),
   useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
-  useVersionOperations: vi.fn().mockReturnValue({}),
-  versionDocumentExists: vi.fn().mockReturnValue(true),
-  Translate: vi.fn(),
-  /**
-   * @todo
-   * is there no better way of mocking this??  */
-  useTranslation: vi.fn().mockReturnValue({
-    t: vi.fn().mockImplementation((key: string) => {
-      const translations: Record<string, string> = {
-        'release.chip.published': 'Published',
-        'release.chip.draft': 'Draft',
-      }
-      return translations[key]
-    }),
-  }),
 }))
 
 vi.mock('sanity/router', () => {
@@ -90,8 +75,9 @@ describe('DocumentPerspectiveList', () => {
       excludedPerspectives: [],
       isPerspectiveExcluded: vi.fn().mockReturnValue(false),
       perspective: undefined,
-      setPerspectiveFromRelease: vi.fn(),
       toggleExcludedPerspective: vi.fn(),
+      setPerspectiveFromReleaseDocumentId: vi.fn(),
+      setPerspectiveFromReleaseId: vi.fn(),
     })
 
     mockUseDocumentPane.mockReturnValue({

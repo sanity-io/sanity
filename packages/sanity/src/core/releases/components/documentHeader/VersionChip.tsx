@@ -9,17 +9,15 @@ import {
   useRef,
   useState,
 } from 'react'
-import {
-  DiscardVersionDialog,
-  getBundleIdFromReleaseDocumentId,
-  getVersionId,
-  ReleaseAvatar,
-  type ReleaseDocument,
-  useVersionOperations,
-} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, Popover, Tooltip} from '../../../../../../ui-components'
+import {Button, Popover, Tooltip} from '../../../../ui-components'
+import {getVersionId} from '../../../util/draftUtils'
+import {useVersionOperations} from '../../hooks/useVersionOperations'
+import {type ReleaseDocument} from '../../store/types'
+import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
+import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
+import {ReleaseAvatar} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CreateReleaseDialog} from './dialog/CreateReleaseDialog'
 
@@ -39,6 +37,9 @@ const Chip = styled(Button)`
   }
 `
 
+/**
+ * @internal
+ */
 export const VersionChip = memo(function VersionChip(props: {
   disabled?: boolean
   selected: boolean

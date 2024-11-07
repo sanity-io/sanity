@@ -2,33 +2,8 @@ import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import * as sanity from 'sanity'
 import {describe, expect, it, vi} from 'vitest'
 
-import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {VersionContextMenu} from '../VersionContextMenu'
-
-// Mock necessary hooks and components
-vi.mock('sanity', async (importOriginal) => {
-  return {
-    ...(await importOriginal()),
-    useTelemetry: vi.fn(),
-    useDocumentOperation: vi.fn().mockReturnValue({createVersion: {execute: vi.fn()}}),
-    useDocumentStore: vi.fn().mockReturnValue({pair: {operationEvents: vi.fn()}}),
-    usePerspective: vi.fn().mockReturnValue({setPerspective: vi.fn()}),
-    SANITY_VERSION: 'test',
-    isPublishedId: vi.fn(),
-    getPublishedId: vi.fn(),
-    useDateTimeFormat: vi.fn(),
-    ReleaseAvatar: () => <div>ReleaseAvatar</div>,
-    getReleaseTone: vi.fn(),
-  }
-})
-
-/**
- * @todo change this once improvements have been done to test mocking
- * there is currently some limitations with importing translations
- * in order to make sure that the translations work on tests,
- * you need to mock it from the relative path vs doing it in the main mock
- */
-vi.mock('../../../../../../../core/i18n/hooks/useTranslation')
 
 vi.mock('sanity/router', () => ({
   IntentLink: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
@@ -49,8 +24,6 @@ describe('VersionContextMenu', () => {
       createdBy: 'safsd',
       metadata: {
         title: 'Release 1',
-        hue: 'gray',
-        icon: 'string',
         releaseType: 'asap',
       },
     },

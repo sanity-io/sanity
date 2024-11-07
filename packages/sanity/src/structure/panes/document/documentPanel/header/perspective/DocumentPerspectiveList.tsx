@@ -9,11 +9,11 @@ import {
   usePerspective,
   useReleases,
   useTranslation,
+  VersionChip,
   versionDocumentExists,
 } from 'sanity'
 
 import {useDocumentPane} from '../../../useDocumentPane'
-import {VersionChip} from './VersionChip'
 
 type FilterReleases = {
   notCurrentReleases: ReleaseDocument[]
