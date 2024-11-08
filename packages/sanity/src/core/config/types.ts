@@ -8,6 +8,7 @@ import {
   type Schema,
   type SchemaType,
   type SchemaTypeDefinition,
+  type SearchStrategy,
 } from '@sanity/types'
 import {type i18n} from 'i18next'
 import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
@@ -383,8 +384,25 @@ export interface PluginOptions {
     unstable_partialIndexing?: {
       enabled: boolean
     }
+
+    /**
+     * Control the strategy used for searching documents. This should generally only be used if you
+     * wish to try experimental search strategies.
+     *
+     * This option takes precedence over the deprecated `search.enableLegacySearch` option.
+     *
+     * Can be one of:
+     *
+     * - `"groqLegacy"` (default): Use client-side tokenization and schema introspection to search
+     *   using the GROQ Query API.
+     * - `"textSearch"` (deprecated): Perform full text searching using the Text Search API.
+     */
+    strategy?: SearchStrategy
+
     /**
      * Enables the legacy Query API search strategy.
+     *
+     * @deprecated Use `search.strategy` instead.
      */
     enableLegacySearch?: boolean
   }
@@ -774,6 +792,7 @@ export interface Source {
     }
 
     enableLegacySearch?: boolean
+    strategy?: SearchStrategy
   }
 
   /** @internal */

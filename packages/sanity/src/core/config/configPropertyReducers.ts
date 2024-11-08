@@ -1,4 +1,10 @@
-import {type AssetSource, type SchemaTypeDefinition} from '@sanity/types'
+import {
+  type AssetSource,
+  isSearchStrategy,
+  type SchemaTypeDefinition,
+  searchStrategies,
+  type SearchStrategy,
+} from '@sanity/types'
 import {type ErrorInfo, type ReactNode} from 'react'
 
 import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
@@ -390,6 +396,61 @@ export const legacySearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigCo
   }
 
   return prev
+}
+
+/**
+ * Some projects may already be using the `enableLegacySearch` option. In order to gracefully
+ * migrate to the `strategy` option, this reducer produces a value that respects any existing
+ * `enableLegacySearch` option.
+ *
+ * If the project currently enables the Text Search API search strategy by setting
+ * `enableLegacySearch` to `false`, this is mapped to the `textSearch` strategy.
+ *
+ * Any explicitly defined `strategy` value will take precedence over the value inferred from
+ * `enableLegacySearch`.
+ */
+export const searchStrategyReducer = ({
+  config,
+  initialValue,
+}: {
+  config: PluginOptions
+  initialValue: SearchStrategy
+}): SearchStrategy => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  type SearchStrategyReducerState = [
+    implicit: SearchStrategy | undefined,
+    explicit: SearchStrategy | undefined,
+  ]
+
+  const [implicit, explicit] = flattenedConfig.reduce<SearchStrategyReducerState>(
+    ([currentImplicit, currentExplicit], entry) => {
+      const {enableLegacySearch, strategy} = entry.config.search ?? {}
+
+      // The strategy has been explicitly defined.
+      if (typeof strategy !== 'undefined') {
+        if (!isSearchStrategy(strategy)) {
+          const listFormatter = new Intl.ListFormat('en-US', {type: 'disjunction'})
+          const options = listFormatter.format(searchStrategies.map((value) => `"${value}"`))
+          const received =
+            typeof strategy === 'string' ? `"${strategy}"` : getPrintableType(strategy)
+          throw new Error(`Expected \`search.strategy\` to be ${options}, but received ${received}`)
+        }
+
+        return [currentImplicit, strategy]
+      }
+
+      // The strategy has been implicitly defined.
+      if (typeof enableLegacySearch === 'boolean') {
+        return [enableLegacySearch ? 'groqLegacy' : 'textSearch', currentExplicit]
+      }
+
+      return [currentImplicit, currentExplicit]
+    },
+    [undefined, undefined],
+  )
+
+  return explicit ?? implicit ?? initialValue
 }
 
 export const startInCreateEnabledReducer = (opts: {

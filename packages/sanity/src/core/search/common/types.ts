@@ -1,5 +1,10 @@
 import {type SanityClient} from '@sanity/client'
-import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
+import {
+  type CrossDatasetType,
+  type SanityDocumentLike,
+  type SchemaType,
+  type SearchStrategy,
+} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
 /**
@@ -64,7 +69,7 @@ export interface SearchFactoryOptions {
   tag?: string
   /* only return unique documents (e.g. not both draft and published) */
   unique?: boolean
-  enableLegacySearch?: boolean
+  strategy?: SearchStrategy
 }
 
 /**

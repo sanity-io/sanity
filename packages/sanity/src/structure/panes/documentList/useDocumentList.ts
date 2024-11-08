@@ -73,7 +73,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
   })
-  const {enableLegacySearch = false} = useWorkspace().search
+  const {strategy: searchStrategy} = useWorkspace().search
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
 
@@ -98,7 +98,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
       sort: sortOrder || DEFAULT_ORDERING,
       staticTypeNames: typeNameFromFilter,
       maxFieldDepth,
-      enableLegacySearch,
+      searchStrategy,
     }
 
     const partialList$ = listenSearchQuery(listenSearchQueryArgs).pipe(
@@ -180,7 +180,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     sortOrder,
     typeNameFromFilter,
     maxFieldDepth,
-    enableLegacySearch,
+    searchStrategy,
     onFetchFullList$,
     onRetry$,
   ])

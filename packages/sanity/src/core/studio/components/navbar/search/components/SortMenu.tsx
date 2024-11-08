@@ -48,7 +48,7 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
 
 export function SortMenu() {
   const {t} = useTranslation()
-  const {enableLegacySearch = false} = useWorkspace().search
+  const {strategy: searchStrategy} = useWorkspace().search
   const {
     state: {ordering},
   } = useSearchState()
@@ -56,7 +56,7 @@ export function SortMenu() {
   const menuButtonId = useId()
 
   const menuOrderings: (SearchDivider | SearchOrdering)[] = useMemo(() => {
-    const orderings = getOrderings({enableLegacySearch})
+    const orderings = getOrderings({searchStrategy})
     return [
       orderings.relevance,
       {type: 'divider'},
@@ -66,7 +66,7 @@ export function SortMenu() {
       orderings.updatedAsc,
       orderings.updatedDesc,
     ]
-  }, [enableLegacySearch])
+  }, [searchStrategy])
 
   const currentMenuItem = menuOrderings.find(
     (item): item is SearchOrdering => isEqual(ordering, item) && !isSearchDivider(item),

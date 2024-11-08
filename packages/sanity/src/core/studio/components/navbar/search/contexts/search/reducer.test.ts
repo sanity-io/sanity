@@ -129,7 +129,7 @@ describe('searchReducer', () => {
         searchReducer,
         initialSearchState({
           ...initialStateContext,
-          enableLegacySearch: false,
+          strategy: 'textSearch',
         }),
       ),
     )
@@ -150,7 +150,7 @@ describe('searchReducer', () => {
         searchReducer,
         initialSearchState({
           ...initialStateContext,
-          enableLegacySearch: true,
+          strategy: 'groqLegacy',
         }),
       ),
     )

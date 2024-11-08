@@ -277,11 +277,9 @@ export function referenceSearch(
   textTerm: string,
   type: ReferenceSchemaType,
   options: ReferenceFilterSearchOptions,
-  enableLegacySearch: boolean,
 ): Observable<ReferenceSearchHit[]> {
   const search = createSearch(type.to, client, {
     ...options,
-    enableLegacySearch,
     maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
   })
   return search(textTerm, {includeDrafts: true}).pipe(
