@@ -99,6 +99,7 @@ export default defineType({
           },
         },
       ],
+      validation: (rule: Rule) => rule.required(),
     },
     // {
     //   name: 'specie',
