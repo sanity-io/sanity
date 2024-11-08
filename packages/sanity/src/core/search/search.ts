@@ -11,6 +11,7 @@ import {createWeightedSearch} from './weighted'
 const searchStrategies = {
   groqLegacy: createWeightedSearch,
   textSearch: createTextSearch,
+  groq2024: createWeightedSearch,
 } satisfies Record<SearchStrategy, SearchStrategyFactory<TextSearchResults | WeightedSearchResults>>
 
 const DEFAULT_SEARCH_STRATEGY: SearchStrategy = 'groqLegacy'
