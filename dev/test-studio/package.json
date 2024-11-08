@@ -36,7 +36,7 @@
     "@sanity/react-loader": "^1.8.3",
     "@sanity/tsdoc": "1.0.126",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.8.21",
+    "@sanity/ui": "^2.8.22",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
