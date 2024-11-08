@@ -494,7 +494,7 @@ importers:
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
         specifier: ^2.0.0
-        version: 2.0.1(@sanity/client@6.22.3)
+        version: 2.0.2(@sanity/client@6.22.3(debug@4.3.7))
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.10.15(@sanity/client@6.22.3)(react@18.3.1)
@@ -1473,8 +1473,8 @@ importers:
         specifier: 3.63.0
         version: link:../@sanity/mutator
       '@sanity/presentation':
-        specifier: 1.17.8
-        version: 1.17.8(@sanity/client@6.22.3(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 1.17.10
+        version: 1.17.10(@sanity/client@6.22.3(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
         specifier: 3.63.0
         version: link:../@sanity/schema
@@ -4545,11 +4545,11 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/presentation@1.17.8':
-    resolution: {integrity: sha512-vMwXSLa7W4rvXMPNq47yBsEdszuH1Jyhd0pRUTvAd+BnpsO72ThYfSsv+qwieB2IePSooXn0Fkbb8mWunv39Sg==}
+  '@sanity/presentation@1.17.10':
+    resolution: {integrity: sha512-+rcHhoJt3mQOlHVTqUeZ3RY6dBPbDECQFk7+4oGsvlET9ZZajWc5KQlgw5EK+FcA9qmm2fIui7Lzo07U6ciM4Q==}
     engines: {node: '>=16.14'}
     peerDependencies:
-      '@sanity/client': ^6.22.2
+      '@sanity/client': ^6.22.3
 
   '@sanity/prettier-config@1.0.3':
     resolution: {integrity: sha512-daeoWaW67I2t3yIV1s3PI2o8+A7jZnucFQzaIphpFDhHYM/mqjNvEROka300TcZ1Csm4VyPBSvx1IQQ/FkqA5Q==}
@@ -4562,8 +4562,8 @@ packages:
     peerDependencies:
       '@sanity/client': ^6.22.2
 
-  '@sanity/preview-url-secret@2.0.1':
-    resolution: {integrity: sha512-faUejxyNhGJ1R+qCfVb2CL8gQA1ztmpo5rwf23rYfVhdTAi2BxdL12OKhu/oCSh0WHC9ttEFtCp7s18Mj+0+lA==}
+  '@sanity/preview-url-secret@2.0.2':
+    resolution: {integrity: sha512-5e8kdGLMGxWYajeu1uuZ60zvqy7JhAdxDnRr8U5sY5WNCZx3321debTvg35ZD1Cwc9TWn6oOo/DS5G7cEN6BWA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.22.3
@@ -14677,13 +14677,13 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation@1.17.8(@sanity/client@6.22.3(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/presentation@1.17.10(@sanity/client@6.22.3(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@sanity/client': 6.22.3(debug@4.3.7)
       '@sanity/comlink': 1.1.1
       '@sanity/icons': 3.4.0(react@18.3.1)
       '@sanity/logos': 2.1.13(@sanity/color@3.0.6)(react@18.3.1)
-      '@sanity/preview-url-secret': 2.0.0(@sanity/client@6.22.3(debug@4.3.7))
+      '@sanity/preview-url-secret': 2.0.2(@sanity/client@6.22.3(debug@4.3.7))
       '@sanity/ui': 2.8.21(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -14709,12 +14709,12 @@ snapshots:
       prettier: 3.3.3
       prettier-plugin-packagejson: 2.5.3(prettier@3.3.3)
 
-  '@sanity/preview-url-secret@2.0.0(@sanity/client@6.22.3(debug@4.3.7))':
+  '@sanity/preview-url-secret@2.0.0(@sanity/client@6.22.3)':
     dependencies:
       '@sanity/client': 6.22.3(debug@4.3.7)
       '@sanity/uuid': 3.0.2
 
-  '@sanity/preview-url-secret@2.0.1(@sanity/client@6.22.3)':
+  '@sanity/preview-url-secret@2.0.2(@sanity/client@6.22.3(debug@4.3.7))':
     dependencies:
       '@sanity/client': 6.22.3(debug@4.3.7)
       '@sanity/uuid': 3.0.2
@@ -15071,7 +15071,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 1.1.1
       '@sanity/mutate': 0.10.1-canary.5(xstate@5.18.2)
-      '@sanity/preview-url-secret': 2.0.0(@sanity/client@6.22.3(debug@4.3.7))
+      '@sanity/preview-url-secret': 2.0.0(@sanity/client@6.22.3)
       '@vercel/stega': 0.1.2
       get-random-values-esm: 1.0.2
       react: 18.3.1
