@@ -123,7 +123,6 @@ export const ReleaseDetail = () => {
             setInspector={setInspector}
           />
         </Card>
-        <Card flex="none" borderBottom style={{opacity: 0.6}} />
 
         <Flex flex={1}>
           <Flex direction="column" flex={1} height="fill">
