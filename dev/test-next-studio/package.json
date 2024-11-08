@@ -13,7 +13,7 @@
   "dependencies": {
     "@sanity/vision": "workspace:*",
     "babel-plugin-react-compiler": "beta",
-    "next": "15.0.2",
+    "next": "15.0.3",
     "react": "19.0.0-rc-a7d1240c-20240731",
     "react-dom": "19.0.0-rc-a7d1240c-20240731",
     "react-is": "19.0.0-rc-a7d1240c-20240731",
