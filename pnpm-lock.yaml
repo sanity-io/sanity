@@ -46,8 +46,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(eslint@8.57.0)(typescript@5.6.3)
       '@sanity/mutate':
-        specifier: ^0.10.1
-        version: 0.10.1(debug@4.3.7)
+        specifier: ^0.10.2
+        version: 0.10.2(debug@4.3.7)
       '@sanity/pkg-utils':
         specifier: 6.11.9
         version: 6.11.9(@types/babel__core@7.20.5)(@types/node@18.19.44)(debug@4.3.7)(typescript@5.6.3)
@@ -1074,8 +1074,8 @@ importers:
         specifier: ^6.22.3
         version: 6.22.3(debug@4.3.7)
       '@sanity/mutate':
-        specifier: ^0.10.1
-        version: 0.10.1(debug@4.3.7)
+        specifier: ^0.10.2
+        version: 0.10.2(debug@4.3.7)
       '@sanity/types':
         specifier: 3.63.0
         version: link:../types
@@ -4518,10 +4518,6 @@ packages:
       '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
       react: ^18.3 || >=19.0.0-rc
 
-  '@sanity/mutate@0.10.1':
-    resolution: {integrity: sha512-yjRBoscacw4hl4c3UF/BhOCTUOjGDRP2u7biF/ALsgAOnMhUDlLA1OtDz3op7oyz4Yp30QydnlrtR3ha/Una5g==}
-    engines: {node: '>=18'}
-
   '@sanity/mutate@0.10.1-canary.5':
     resolution: {integrity: sha512-ce5xQJhqvbFnYejUEUlpR8VNq9RqMYYnasVdtZPBoD2gJpHpwSMXhpvWHcZM3gtNDcQEkHT/ttPDluMghbF8aw==}
     engines: {node: '>=18'}
@@ -4530,6 +4526,10 @@ packages:
     peerDependenciesMeta:
       xstate:
         optional: true
+
+  '@sanity/mutate@0.10.2':
+    resolution: {integrity: sha512-ZkaB3Xkn3H0nBXcWKtyygUmTW/1aRI/XV0+wcfANtBWHQRWAwFQh5Xh6j5bYDduOA31N+XJdYaLcZsv1u5n3uw==}
+    engines: {node: '>=18'}
 
   '@sanity/mutator@3.37.2':
     resolution: {integrity: sha512-F0MvseVtgPBaPxNZtSidF6BQeygviYThgmhRbjZ89AhlRhWiLODvLakdogFmwD1NEQ0tpKn+8m0pQIOHgt2C3w==}
@@ -14543,18 +14543,6 @@ snapshots:
       '@sanity/color': 3.0.6
       react: 18.3.1
 
-  '@sanity/mutate@0.10.1(debug@4.3.7)':
-    dependencies:
-      '@sanity/client': 6.22.3(debug@4.3.7)
-      '@sanity/diff-match-patch': 3.1.1
-      hotscript: 1.0.13
-      lodash: 4.17.21
-      mendoza: 3.0.7
-      nanoid: 5.0.7
-      rxjs: 7.8.1
-    transitivePeerDependencies:
-      - debug
-
   '@sanity/mutate@0.10.1-canary.5(xstate@5.18.2)':
     dependencies:
       '@sanity/client': 6.22.3(debug@4.3.7)
@@ -14565,6 +14553,18 @@ snapshots:
       rxjs: 7.8.1
     optionalDependencies:
       xstate: 5.18.2
+    transitivePeerDependencies:
+      - debug
+
+  '@sanity/mutate@0.10.2(debug@4.3.7)':
+    dependencies:
+      '@sanity/client': 6.22.3(debug@4.3.7)
+      '@sanity/diff-match-patch': 3.1.1
+      hotscript: 1.0.13
+      lodash: 4.17.21
+      mendoza: 3.0.7
+      nanoid: 5.0.7
+      rxjs: 7.8.1
     transitivePeerDependencies:
       - debug
 
