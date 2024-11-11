@@ -16,7 +16,8 @@ import {useStudioAppIdStore} from '../studio-app/useStudioAppIdStore'
 import {type CreateLinkedSanityDocument} from '../types'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 import {CreateLinkingDialog} from './CreateLinkingDialog'
-import {StartInCreateDialog} from './StartInCreateDialog'
+import {StartInCreateActionContent} from './StartInCreateActionContent'
+import {StartInCreateActionFooter} from './StartInCreateActionFooter'
 
 export function createStartInCreateAction(appIdCache: AppIdCache): DocumentActionComponent {
   const StartInCreateActionWrapper: DocumentActionComponent = function StartInCreateActionWrapper(
@@ -69,10 +70,9 @@ export function StartInCreateAction(
       : isDialogOpen && {
           type: 'dialog',
           onClose: closeDialog,
-          header: t('start-in-create-dialog.header'),
-          width: 'small',
-          content: (
-            <StartInCreateDialog
+          content: <StartInCreateActionContent />,
+          footer: (
+            <StartInCreateActionFooter
               onLinkingStarted={linkingStarted}
               createLinkId={createLinkId}
               appId={appId}
@@ -80,6 +80,8 @@ export function StartInCreateAction(
               autoConfirm={autoConfirm}
             />
           ),
+          header: t('start-in-create-dialog.header'),
+          width: 'small',
         },
     onHandle: () => {
       if (!isDialogOpen) {

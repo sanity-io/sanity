@@ -1,17 +1,16 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useId, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 
 import {Button} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
 import {useWorkspace} from '../../studio'
 import {CreateLearnMoreButton} from '../components/CreateLearnMoreButton'
-import {CreateSvg} from '../components/media/CreateSvg'
 import {getCreateLinkUrl} from '../createDocumentUrls'
 import {createLocaleNamespace} from '../i18n'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 
-export interface StartInCreateDialogProps {
+interface StartInCreateActionFooterProps {
   createLinkId: string
   appId: string
   type: string
@@ -19,7 +18,7 @@ export interface StartInCreateDialogProps {
   autoConfirm: boolean
 }
 
-export function StartInCreateDialog(props: StartInCreateDialogProps) {
+export function StartInCreateActionFooter(props: StartInCreateActionFooterProps) {
   const {createLinkId, appId, type, onLinkingStarted, autoConfirm} = props
   const {t} = useTranslation(createLocaleNamespace)
   const checkboxId = useId()
@@ -61,13 +60,6 @@ export function StartInCreateDialog(props: StartInCreateDialogProps) {
 
   return (
     <Stack space={4}>
-      <CreateSvg />
-      <Text size={1} weight="semibold">
-        {t('start-in-create-dialog.lede')}
-      </Text>
-      <Text muted size={1}>
-        {t('start-in-create-dialog.details')}
-      </Text>
       <Flex gap={2} align="center">
         <Checkbox id={checkboxId} checked={dontShowAgain} onChange={toggleDontShowAgain} />
         <Text as="label" htmlFor={checkboxId} muted size={1}>
