@@ -45,7 +45,6 @@ import {
   useSource,
   useTemplates,
   useTimelineSelector,
-  useTimelineStore,
   useTranslation,
   useUnique,
   useValidationStatus,
@@ -65,6 +64,7 @@ import {
 } from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
+import {useHistory} from './HistoryProvider'
 import {type DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 
@@ -222,22 +222,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
-  const [timelineError, setTimelineError] = useState<Error | null>(null)
-
-  /**
-   * Create an intermediate store which handles document Timeline + TimelineController
-   * creation, and also fetches pre-requsite document snapshots. Compatible with `useSyncExternalStore`
-   * and made available to child components via DocumentPaneContext.
-   */
-  const timelineStore = useTimelineStore({
-    documentId,
-    documentType,
-    onError: setTimelineError,
-    rev: params.rev,
-    since: params.since,
-    version: bundlePerspective,
-  })
-
+  const {store: timelineStore, error: timelineError} = useHistory()
   // Subscribe to external timeline state changes
   const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
   const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
