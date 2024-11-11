@@ -8,6 +8,7 @@ import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {isPublishedId} from '../../../../util/draftUtils'
+import {releasesLocaleNamespace} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store/types'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
@@ -42,7 +43,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     disabled,
     locked,
   } = props
-  const {t} = useTranslation()
+  const {t} = useTranslation(releasesLocaleNamespace)
   const isPublished = isPublishedId(documentId) && !isVersion
   const optionsReleaseList = releases.map((release) => ({
     value: release,
@@ -61,14 +62,14 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             style={{textDecoration: 'none'}}
             disabled={disabled}
           >
-            <MenuItem icon={CalendarIcon} text={t('release.action.view-release')} />
+            <MenuItem icon={CalendarIcon} text={t('action.view-release')} />
           </IntentLink>
         )}
         {releasesLoading && <Spinner />}
         <MenuGroup
           icon={CopyIcon}
           popover={{placement: 'right-start'}}
-          text={t('release.action.copy-to')}
+          text={t('action.copy-to')}
           disabled={disabled}
         >
           <ReleasesList key={fromRelease} space={1}>
@@ -81,17 +82,13 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
                   onClick={() => onCreateVersion(option.value._id)}
                   renderMenuItem={() => <VersionContextMenuItem release={option.value} />}
                   disabled={disabled || isReleaseScheduled}
-                  tooltipProps={{content: isReleaseScheduled && t('release.tooltip.locked')}}
+                  tooltipProps={{content: isReleaseScheduled && t('tooltip.locked')}}
                 />
               )
             })}
           </ReleasesList>{' '}
           {optionsReleaseList.length > 1 && <MenuDivider />}
-          <MenuItem
-            onClick={onCreateRelease}
-            text={t('release.action.new-release')}
-            icon={AddIcon}
-          />
+          <MenuItem onClick={onCreateRelease} text={t('action.new-release')} icon={AddIcon} />
         </MenuGroup>
         {!isPublished && (
           <>
@@ -99,7 +96,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             <MenuItem
               icon={TrashIcon}
               onClick={onDiscard}
-              text={t('release.action.discard-version')}
+              text={t('action.discard-version')}
               disabled={disabled || locked}
             />
           </>

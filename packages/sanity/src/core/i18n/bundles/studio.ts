@@ -1147,21 +1147,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.add-to-release': 'Add to {{title}}',
   /** Action message for when document is already in release  */
   'release.action.already-in-release': 'Already in release {{title}}',
-  /** Action message for when you click to view all versions you can copy the current document to */
-  'release.action.copy-to': 'Copy version to',
   /** Action message for creating new releases */
   'release.action.create-new': 'New release',
-  /** Action message for when document is already in release  */
-  'release.action.discard-version': 'Discard version',
-  /** Description for toast when version discarding failed */
-  'release.action.discard-version.failure': 'Failed to discard version',
-  /** Description for toast when version deletion is successfully discarded */
-  'release.action.discard-version.success':
-    '<strong>{{title}}</strong> version was successfully discarded',
-  /** Action message for when a new release is created off an existing version, draft or published document */
-  'release.action.new-release': 'New Release',
-  /** Action message for when the view release is pressed */
-  'release.action.view-release': 'View release',
   /** Label for banner when release is scheduled */
   'release.banner.scheduled-for-publishing-on': 'Scheduled for publishing on {{date}}',
   /** Label for Draft chip in document header */
@@ -1206,9 +1193,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.tooltip': 'Releases',
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
-  /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */
-  'release.tooltip.locked':
-    'This release has been scheduled. Unsechedule it to add more documents.',
   /** Label for the release type 'as soon as possible' */
   'release.type.asap': 'ASAP',
   /** Label for the release type 'at time', meaning it's a release with a scheduled date */

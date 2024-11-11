@@ -12,12 +12,22 @@ const releasesLocaleStrings = {
   'action.archive.tooltip': 'Unschedule this release to archive it',
   /** Action text for showing the archived releases */
   'action.archived': 'Archived',
+  /** Action message for when you click to view all versions you can copy the current document to */
+  'action.copy-to': 'Copy version to',
+  /** Action text for creating a new document version */
+  'action.create-version.failure': 'Failed to create version',
   /** Action text for deleting a release */
   'action.delete': 'Delete',
   /** Description for toast when release deletion failed */
   'action.delete.failure': 'Failed to delete release',
   /** Description for toast when release is successfully deleted */
   'action.delete.success': '<strong>{{title}}</strong> release was successfully deleted',
+  /** Action message for when document is already in release  */
+  'action.discard-version': 'Discard version',
+  /** Description for toast when version discarding failed */
+  'action.discard-version.failure': 'Failed to discard version',
+  /** Description for toast when version deletion is successfully discarded */
+  'action.discard-version.success': '<strong>{{title}}</strong> version was successfully discarded',
   /** Action text for editing a release */
   'action.edit': 'Edit release',
   /** Action text for opening a release */
@@ -28,12 +38,16 @@ const releasesLocaleStrings = {
   'action.unschedule': 'Unschedule',
   /** Action text for publishing all documents in a release (and the release itself) */
   'action.publish-all-documents': 'Publish all documents',
+  /** Action message for when a new release is created off an existing version, draft or published document */
+  'action.new-release': 'New Release',
   /** Text for the review changes button in release tool */
   'action.review': 'Review changes',
   /** Text for the summary button in release tool */
   'actions.summary': 'Summary',
   /** Label for unarchiving a release */
   'action.unarchive': 'Unarchive release',
+  /** Action message for when the view release is pressed */
+  'action.view-release': 'View release',
 
   /** Title for changes to published documents */
   'changes-published-docs.title': 'Changes to published documents',
@@ -215,6 +229,9 @@ const releasesLocaleStrings = {
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been unschedule */
   'toast.unschedule.success': "The '<strong>{{title}}</strong>' release was unscheduled.",
+
+  /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */
+  'tooltip.locked': 'This release has been scheduled. Unsechedule it to add more documents.',
 
   'type-picker.tooltip.scheduled': 'The release is scheduled, unschedule it to change type',
 }
