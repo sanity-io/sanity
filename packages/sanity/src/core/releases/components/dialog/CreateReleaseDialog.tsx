@@ -67,7 +67,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): JSX.Elemen
     setValue(changedValue)
   }, [])
 
-  const dialogTitle = t('release.dialog.create.title')
+  const dialogTitle = t('dialog.create.title')
 
   return (
     <Dialog

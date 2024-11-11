@@ -22,6 +22,16 @@ const releasesLocaleStrings = {
   'action.delete.failure': 'Failed to delete release',
   /** Description for toast when release is successfully deleted */
   'action.delete.success': '<strong>{{title}}</strong> release was successfully deleted',
+  /** Title for creating releases dialog */
+  'dialog.create.title': 'Create release',
+  /** Label for description in tooltip to explain release types */
+  'dialog.tooltip.description':
+    'This makes it possible to show whether documents are in conflict when working on multiple versions.',
+  /** Label for noting that a release time is not final */
+  'dialog.tooltip.note':
+    'NOTE: You may change the time of release and set an exact time for scheduled publishing later.',
+  /** Title for tooltip to explain release time */
+  'dialog.tooltip.title': 'Approximate time of release',
   /** Action message for when document is already in release  */
   'action.discard-version': 'Discard version',
   /** Description for toast when version discarding failed */

@@ -9,6 +9,7 @@ import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/c
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useTranslation} from '../../../i18n'
+import {releasesLocaleNamespace} from '../../i18n'
 import {type EditableReleaseDocument, type ReleaseType} from '../../store/types'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
 
@@ -24,7 +25,8 @@ export function ReleaseForm(props: {
   const publishAt = value.metadata.intendedPublishAt
   // derive the action from whether the initial value prop has a slug
   // only editing existing releases will provide a value.slug
-  const {t} = useTranslation()
+  const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
 
@@ -86,14 +88,14 @@ export function ReleaseForm(props: {
     <Stack space={5}>
       <Stack space={2} style={{margin: -1}}>
         <Text muted size={1}>
-          {t('release.dialog.tooltip.title')}
+          {t('dialog.tooltip.title')}
           <span style={{marginLeft: 10, opacity: 0.5}}>
             <Tooltip
               content={
                 <Stack space={4} style={{maxWidth: 320 - 16}}>
-                  <Text size={1}>{t('release.dialog.tooltip.description')}</Text>
+                  <Text size={1}>{t('dialog.tooltip.description')}</Text>
                   <Text muted size={1}>
-                    {t('release.dialog.tooltip.note')}
+                    {t('dialog.tooltip.note')}
                   </Text>
                 </Stack>
               }
@@ -116,7 +118,7 @@ export function ReleaseForm(props: {
                     key={type}
                     onClick={() => handleButtonReleaseTypeChange(type)}
                     selected={buttonReleaseType === type}
-                    label={t(`release.type.${type}`)}
+                    label={tCore(`release.type.${type}`)}
                   />
                 ))}
               </TabList>
