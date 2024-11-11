@@ -30,7 +30,7 @@ export function ReleaseForm(props: {
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
 
-  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(tCore), [tCore])
   const [inputValue, setInputValue] = useState<Date>(publishAt ? new Date(publishAt) : new Date())
 
   const handleBundleInputChange = useCallback(
@@ -139,7 +139,7 @@ export function ReleaseForm(props: {
                 onInputChange={handleBundleInputChange}
                 calendarLabels={calendarLabels}
                 value={publishAt ? new Date(publishAt) : new Date()}
-                inputValue={format(inputValue, 'dd/MM/yyyy, HH:mm O')}
+                inputValue={format(inputValue, 'MM/dd/yyyy, HH:mm O')}
                 constrainSize={false}
               />
             </TabPanel>

@@ -6,6 +6,7 @@ import {type FormEvent, useCallback, useState} from 'react'
 import {Button, Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
+import {releasesLocaleNamespace} from '../../i18n'
 import {type EditableReleaseDocument} from '../../store/types'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
@@ -23,7 +24,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): JSX.Elemen
   const {onCancel, onSubmit, origin} = props
   const toast = useToast()
   const {createRelease} = useReleaseOperations()
-  const {t} = useTranslation()
+  const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
 
   const [value, setValue] = useState((): EditableReleaseDocument => {
