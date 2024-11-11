@@ -254,6 +254,11 @@ export default defineConfig([
     unstable_tasks: {
       enabled: true,
     },
+    beta: {
+      eventsAPI: {
+        enabled: true,
+      },
+    },
   },
   {
     name: 'custom-components',

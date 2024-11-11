@@ -1007,4 +1007,7 @@ export interface BetaFeatures {
      */
     fallbackStudioOrigin?: string
   }
+  eventsAPI?: {
+    enabled: boolean
+  }
 }
