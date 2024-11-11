@@ -13,7 +13,7 @@ import {
 import {useCallback, useRef, useState} from 'react'
 
 import {Button, Popover} from '../../../ui-components'
-import {Translate, useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n'
 import {createLocaleNamespace} from '../i18n'
 import {type CreateLinkedDocumentBannerContentProps} from '../types'
 import {CreateLearnMoreButton} from './CreateLearnMoreButton'
@@ -61,9 +61,7 @@ export function CreateLinkedDocumentBannerContent(props: CreateLinkedDocumentBan
         </Flex>
         <Stack space={4}>
           <Heading size={2}>{t('create-link-info-popover.header')}</Heading>
-          <Text size={1}>
-            <Translate t={t} i18nKey={'create-link-info-popover.text'} />
-          </Text>
+          <Text size={1}>{t('create-link-info-popover.text')}</Text>
           <Flex flex={1} justify="flex-end">
             <CreateLearnMoreButton />
           </Flex>
@@ -73,15 +71,17 @@ export function CreateLinkedDocumentBannerContent(props: CreateLinkedDocumentBan
   )
 
   return (
-    <Flex gap={2} align="center">
-      <Text size={0} weight="medium">
-        <ReadOnlyIcon />
-      </Text>
-      <Box>
-        <Text size={1} weight="medium">
-          {t('studio-create-link-banner.text')}
+    <Flex gap={1} align="center">
+      <Flex gap={2} align="center">
+        <Text size={0} weight="medium">
+          <ReadOnlyIcon />
         </Text>
-      </Box>
+        <Box>
+          <Text size={1} weight="medium">
+            {t('studio-create-link-banner.text')}
+          </Text>
+        </Box>
+      </Flex>
       <Popover
         content={popoverContent}
         open={infoOpen}
@@ -96,7 +96,8 @@ export function CreateLinkedDocumentBannerContent(props: CreateLinkedDocumentBan
           icon={InfoOutlineIcon}
           mode="bleed"
           onClick={toggleOpen}
-          style={{marginBottom: '-1em', marginTop: '-1em'}}
+          // Negative margins added to prevent the button from blowing out banner height
+          style={{marginBottom: '-0.5em', marginTop: '-0.5em'}}
           tooltipProps={{content: t('create-link-info.tooltip')}}
         />
       </Popover>
