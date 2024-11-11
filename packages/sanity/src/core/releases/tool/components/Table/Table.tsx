@@ -213,8 +213,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
       return (
         <Card
           as="tr"
-          border
-          radius={3}
+          borderBottom
           display="flex"
           padding={4}
           style={{
