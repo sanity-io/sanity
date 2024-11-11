@@ -177,7 +177,7 @@
     "@sanity/schema": "3.63.0",
     "@sanity/telemetry": "^0.7.7",
     "@sanity/types": "3.63.0",
-    "@sanity/ui": "^2.8.22",
+    "@sanity/ui": "^2.8.23",
     "@sanity/util": "3.63.0",
     "@sanity/uuid": "^3.0.1",
     "@sentry/react": "^8.7.0",
