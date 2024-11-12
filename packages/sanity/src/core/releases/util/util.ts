@@ -64,9 +64,13 @@ export function getCreateVersionOrigin(documentId: string): VersionOriginTypes {
 }
 
 /** @internal */
-export function getPublishDateFromRelease(release: ReleaseDocument): Date | null {
+export function getPublishDateFromRelease(release: ReleaseDocument): Date {
   const dateString = release.publishAt || release.metadata.intendedPublishAt
-  if (!dateString) return null
+  if (!dateString) {
+    // Eventually we should remove this fallback, and assert the type of release that is passed in.
+    console.error('No publish date found on release', release)
+    return new Date()
+  }
 
   return new Date(dateString)
 }
