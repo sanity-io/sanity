@@ -1,6 +1,6 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Stack, TabList, TabPanel, Text} from '@sanity/ui'
-import {format, isValid, parse} from 'date-fns'
+import {format, isValid} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Tab, Tooltip} from '../../../../ui-components'
@@ -33,14 +33,13 @@ export function ReleaseForm(props: {
 
   const handleBundleInputChange = useCallback(
     (event: React.FocusEvent<HTMLInputElement>) => {
-      const date = event.currentTarget.value
-      const parsedDate = parse(date, 'PP HH:mm', new Date())
+      const date = new Date(event.currentTarget.value)
 
-      if (isValid(parsedDate)) {
-        setInputValue(parsedDate)
+      if (isValid(date)) {
+        setInputValue(date)
         onChange({
           ...value,
-          metadata: {...value.metadata, intendedPublishAt: parsedDate.toISOString()},
+          metadata: {...value.metadata, intendedPublishAt: date.toISOString()},
         })
       }
     },
@@ -136,8 +135,8 @@ export function ReleaseForm(props: {
                 onChange={handleBundlePublishAtCalendarChange}
                 onInputChange={handleBundleInputChange}
                 calendarLabels={calendarLabels}
-                value={publishAt ? new Date(publishAt) : new Date()}
-                inputValue={format(inputValue, 'dd/MM/yyyy, HH:mm O')}
+                value={inputValue}
+                inputValue={format(inputValue, 'MM/dd/yyyy, HH:mm O')}
                 constrainSize={false}
               />
             </TabPanel>

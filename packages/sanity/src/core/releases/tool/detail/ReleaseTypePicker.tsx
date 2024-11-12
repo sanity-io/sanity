@@ -1,6 +1,6 @@
 import {LockIcon} from '@sanity/icons'
 import {Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
-import {format, isBefore, isValid, parse} from 'date-fns'
+import {format, isBefore, isValid} from 'date-fns'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {isReleaseScheduledOrScheduling, type ReleaseDocument, useTranslation} from 'sanity'
 
@@ -99,13 +99,12 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
   }, [])
 
   const handleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
-    const date = event.currentTarget.value
-    const parsedDate = parse(date, 'PP HH:mm', new Date())
+    const parsedDate = new Date(event.currentTarget.value)
 
     if (isValid(parsedDate)) {
       setInputValue(parsedDate)
 
-      setUpdatedDate(parsedDate ? parsedDate.toISOString() : undefined)
+      setUpdatedDate(parsedDate.toISOString())
     }
   }, [])
 
@@ -138,7 +137,9 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
         {dateInputOpen && (
           <>
             <LazyTextInput
-              value={inputValue ? format(inputValue, 'PP HH:mm') : undefined}
+              value={
+                inputValue ? format(inputValue, 'MM/dd/yyyy, HH:mm O') : new Date().toDateString()
+              }
               onChange={handleInputChange}
             />
 
@@ -147,7 +148,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
               calendarLabels={calendarLabels}
               selectTime
               padding={0}
-              value={updatedDate ? new Date(updatedDate) : undefined}
+              value={inputValue}
               onChange={handleBundlePublishAtChange}
             />
           </>
