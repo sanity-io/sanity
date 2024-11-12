@@ -25,12 +25,12 @@ export function ReleaseForm(props: {
   const publishAt = value.metadata.intendedPublishAt
   // derive the action from whether the initial value prop has a slug
   // only editing existing releases will provide a value.slug
-  const {t} = useTranslation(releasesLocaleNamespace)
-  const {t: tCore} = useTranslation()
+  const {t} = useTranslation()
+  const {t: tReleases} = useTranslation(releasesLocaleNamespace)
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
 
-  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(tCore), [tCore])
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   const [inputValue, setInputValue] = useState<Date>(publishAt ? new Date(publishAt) : new Date())
 
   const handleBundleInputChange = useCallback(
@@ -88,14 +88,14 @@ export function ReleaseForm(props: {
     <Stack space={5}>
       <Stack space={2} style={{margin: -1}}>
         <Text muted size={1}>
-          {t('dialog.tooltip.title')}
+          {tReleases('dialog.tooltip.title')}
           <span style={{marginLeft: 10, opacity: 0.5}}>
             <Tooltip
               content={
                 <Stack space={4} style={{maxWidth: 320 - 16}}>
-                  <Text size={1}>{t('dialog.tooltip.description')}</Text>
+                  <Text size={1}>{tReleases('dialog.tooltip.description')}</Text>
                   <Text muted size={1}>
-                    {t('dialog.tooltip.note')}
+                    {tReleases('dialog.tooltip.note')}
                   </Text>
                 </Stack>
               }
@@ -118,7 +118,7 @@ export function ReleaseForm(props: {
                     key={type}
                     onClick={() => handleButtonReleaseTypeChange(type)}
                     selected={buttonReleaseType === type}
-                    label={tCore(`release.type.${type}`)}
+                    label={t(`release.type.${type}`)}
                   />
                 ))}
               </TabList>

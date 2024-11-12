@@ -1,5 +1,6 @@
-import {render} from '@testing-library/react'
-import {beforeEach, describe, it, type Mock, vi} from 'vitest'
+import {fireEvent, render, screen} from '@testing-library/react'
+import {act} from 'react'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useDateTimeFormat} from '../../../../hooks'
@@ -7,7 +8,7 @@ import {studioDefaultLocaleResources} from '../../../../i18n/bundles/studio'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {type EditableReleaseDocument, type ReleaseDocument, useReleases} from '../../../store'
 import {RELEASE_DOCUMENT_TYPE} from '../../../store/constants'
-import {ReleaseForm} from '../ReleaseForm'
+import {TitleDescriptionForm} from '../TitleDescriptionForm'
 
 vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
   useDateTimeFormat: vi.fn(),
@@ -19,7 +20,7 @@ vi.mock('../../../store/useReleases', () => ({
 const mockUseReleases = useReleases as Mock<typeof useReleases>
 const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
-describe('ReleaseForm', () => {
+describe('TitleDescriptionForm', () => {
   const onChangeMock = vi.fn()
   const onErrorMock = vi.fn()
   const valueMock: EditableReleaseDocument = {
@@ -27,10 +28,12 @@ describe('ReleaseForm', () => {
     metadata: {
       title: '',
       description: '',
+      intendedPublishAt: undefined,
+      releaseType: 'asap',
     },
   }
 
-  describe.todo('when creating a new release', () => {
+  describe('when creating a new release', () => {
     beforeEach(async () => {
       onChangeMock.mockClear()
       onErrorMock.mockClear()
@@ -67,20 +70,38 @@ describe('ReleaseForm', () => {
       const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle, studioDefaultLocaleResources],
       })
-      render(<ReleaseForm onChange={onChangeMock} value={valueMock} />, {
+      render(<TitleDescriptionForm onChange={onChangeMock} release={valueMock} />, {
         wrapper,
       })
     })
 
-    it.todo('should call onChange when changing the releaseType', () => {})
-    it.todo('should show the date input when the release type is changed to "At time"', () => {})
+    it('should render the form fields', () => {
+      expect(screen.getByTestId('release-form-title')).toBeInTheDocument()
+      expect(screen.getByTestId('release-form-description')).toBeInTheDocument()
+    })
 
-    /*
-    it('should call onChange when publishAt input value changes', () => {
-    const publishAtInput = screen.getByTestId('release-form-publish-at')
-    fireEvent.change(publishAtInput, {target: {value: '2022-01-01'}})
+    it('should call onChange when title input value changes', () => {
+      const titleInput = screen.getByTestId('release-form-title')
 
-    expect(onChangeMock).toHaveBeenCalledWith({...valueMock, publishAt: '2022-01-01'})
-  })*/
+      act(() => {
+        fireEvent.change(titleInput, {target: {value: 'Bundle 1'}})
+      })
+
+      expect(onChangeMock).toHaveBeenCalledWith({
+        ...valueMock,
+        metadata: {...valueMock.metadata, title: 'Bundle 1'},
+      })
+    })
+
+    it('should call onChange when description textarea value changes', () => {
+      const descriptionTextarea = screen.getByTestId('release-form-description')
+
+      fireEvent.change(descriptionTextarea, {target: {value: 'New Description'}})
+
+      expect(onChangeMock).toHaveBeenCalledWith({
+        ...valueMock,
+        metadata: {...valueMock.metadata, description: 'New Description'},
+      })
+    })
   })
 })
