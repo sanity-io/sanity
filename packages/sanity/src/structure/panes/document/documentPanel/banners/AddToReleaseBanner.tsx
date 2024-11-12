@@ -1,6 +1,5 @@
 import {LockIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {formatRelative} from 'date-fns'
 import {type CSSProperties, useCallback} from 'react'
 import {
   getBundleIdFromReleaseDocumentId,
@@ -15,6 +14,7 @@ import {
 } from 'sanity'
 import {structureLocaleNamespace} from 'sanity/structure'
 
+import {formatRelativeLocale} from '../../../../../core/util/formatRelativeLocale'
 import {Button} from '../../../../../ui-components'
 import {Banner} from './Banner'
 
@@ -55,7 +55,10 @@ export function AddToReleaseBanner({
                   t={tCore}
                   i18nKey="release.banner.scheduled-for-publishing-on"
                   values={{
-                    date: formatRelative(getPublishDateFromRelease(currentRelease), new Date()),
+                    date: formatRelativeLocale(
+                      getPublishDateFromRelease(currentRelease),
+                      new Date(),
+                    ),
                   }}
                 />
               </Flex>

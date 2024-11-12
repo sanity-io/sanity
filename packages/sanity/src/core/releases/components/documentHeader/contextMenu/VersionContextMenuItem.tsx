@@ -1,9 +1,9 @@
 import {LockIcon} from '@sanity/icons'
 import {Flex, Stack, Text} from '@sanity/ui'
-import {formatRelative} from 'date-fns'
 import {memo} from 'react'
 
 import {useTranslation} from '../../../../i18n'
+import {formatRelativeLocale} from '../../../../util/formatRelativeLocale'
 import {type ReleaseDocument} from '../../../store/types'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../../util/util'
@@ -27,7 +27,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.metadata.releaseType === 'scheduled' &&
             (release.metadata.intendedPublishAt ? (
-              <>{formatRelative(getPublishDateFromRelease(release), new Date())}</>
+              <>{formatRelativeLocale(getPublishDateFromRelease(release), new Date())}</>
             ) : (
               /** should not be allowed to do, but a fall back in case if somehow no date is added */
               <>{t('release.chip.tooltip.unknown-date')}</>

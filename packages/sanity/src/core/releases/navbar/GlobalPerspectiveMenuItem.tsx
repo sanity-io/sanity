@@ -1,18 +1,22 @@
-import {DotIcon, EyeClosedIcon, EyeOpenIcon} from '@sanity/icons'
+import {DotIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
-import {formatRelative} from 'date-fns'
 import {type CSSProperties, forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {formatRelativeLocale} from '../../util/formatRelativeLocale'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {usePerspective} from '../hooks/usePerspective'
 import {type ReleaseDocument} from '../store/types'
 import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 import {getReleaseTone} from '../util/getReleaseTone'
-import {getPublishDateFromRelease, isPublishedPerspective} from '../util/util'
+import {
+  getPublishDateFromRelease,
+  isPublishedPerspective,
+  isReleaseScheduledOrScheduling,
+} from '../util/util'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
 export interface LayerRange {
@@ -128,7 +132,8 @@ export const GlobalPerspectiveMenuItem = forwardRef<
     [releaseId, isReleasePublishedPerspective, setPerspective, setPerspectiveFromReleaseDocumentId],
   )
 
-  const canReleaseBeExcluded = !isPublishedPerspective(release) && inRange && !last
+  const canReleaseBeExcluded =
+    !isPublishedPerspective(release) && !isReleaseScheduledOrScheduling(release) && inRange && !last
 
   return (
     <GlobalPerspectiveMenuItemIndicator
@@ -169,10 +174,10 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               {displayTitle}
             </Text>
             {!isPublishedPerspective(release) &&
-              release.metadata.releaseType !== 'undecided' &&
+              release.metadata.releaseType === 'scheduled' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (
                 <Text muted size={1}>
-                  {formatRelative(getPublishDateFromRelease(release), new Date())}
+                  {formatRelativeLocale(getPublishDateFromRelease(release), new Date())}
                 </Text>
               )}
           </Stack>
@@ -188,6 +193,13 @@ export const GlobalPerspectiveMenuItem = forwardRef<
                   padding={2}
                 />
               </Tooltip>
+            )}
+            {!isPublishedPerspective(release) && isReleaseScheduledOrScheduling(release) && (
+              <Box padding={2}>
+                <Text size={1}>
+                  <LockIcon />
+                </Text>
+              </Box>
             )}
           </Box>
         </Flex>

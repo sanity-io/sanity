@@ -20,6 +20,10 @@ const mockRelease: ReleaseDocument = {
   },
 }
 
+vi.mock('../../../../../util/formatRelativeLocale', () => ({
+  formatRelativeLocale: () => 'formatted date',
+}))
+
 describe('VersionContextMenuItem', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -36,7 +40,7 @@ describe('VersionContextMenuItem', () => {
     const scheduledRelease = {...mockRelease, releaseType: 'scheduled' as ReleaseType}
 
     render(<VersionContextMenuItem release={scheduledRelease} />, {wrapper})
-    expect(screen.getByText('10/01/2023')).toBeInTheDocument()
+    expect(screen.getByText('formatted date')).toBeInTheDocument()
   })
 
   it('renders release type as ASAP', async () => {
