@@ -33,6 +33,7 @@ export interface DateTimeInputProps {
   calendarLabels: CalendarLabels
   constrainSize?: boolean
   monthPickerVariant?: CalendarProps['monthPickerVariant']
+  padding?: number
 }
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
@@ -49,6 +50,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     calendarLabels,
     constrainSize = true,
     monthPickerVariant,
+    padding,
     ...rest
   } = props
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -123,6 +125,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                       onKeyUp={handleKeyUp}
                       value={value}
                       onChange={onChange}
+                      padding={padding}
                     />
                   </FocusLock>
                 </Box>

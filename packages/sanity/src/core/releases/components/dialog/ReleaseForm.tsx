@@ -138,6 +138,7 @@ export function ReleaseForm(props: {
                 value={inputValue}
                 inputValue={format(inputValue, 'MM/dd/yyyy, HH:mm O')}
                 constrainSize={false}
+                padding={0}
               />
             </TabPanel>
           )}
