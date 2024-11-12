@@ -2,6 +2,7 @@ import {LockIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {
+  formatRelativeLocale,
   getBundleIdFromReleaseDocumentId,
   getPublishDateFromRelease,
   getReleaseTone,
@@ -14,7 +15,6 @@ import {
 } from 'sanity'
 import {structureLocaleNamespace} from 'sanity/structure'
 
-import {formatRelativeLocale} from '../../../../../core/util/formatRelativeLocale'
 import {Button} from '../../../../../ui-components'
 import {Banner} from './Banner'
 

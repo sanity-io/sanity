@@ -1,6 +1,7 @@
 import {Text} from '@sanity/ui'
 import {memo, useCallback, useMemo} from 'react'
 import {
+  formatRelativeLocale,
   getPublishDateFromRelease,
   getReleaseTone,
   getVersionFromId,
@@ -15,7 +16,6 @@ import {
   versionDocumentExists,
 } from 'sanity'
 
-import {formatRelativeLocale} from '../../../../../../core/util/formatRelativeLocale'
 import {useDocumentPane} from '../../../useDocumentPane'
 
 type FilterReleases = {
