@@ -1,6 +1,7 @@
 export * from './createHookFromObservableFactory'
 export * from './draftUtils'
 export * from './empty'
+export * from './formatRelativeLocale'
 export * from './globalScope'
 export * from './isArray'
 export * from './isNonNullable'
