@@ -69,7 +69,7 @@ export const PublishedRelease = defineEvent({
 /** When a release is successfully scheduled
  * @internal
  */
-export const ReleaseScheduledEvent = defineEvent({
+export const ScheduledRelease = defineEvent({
   name: 'Schedule release',
   version: 1,
   description: 'User scheduled a release',
