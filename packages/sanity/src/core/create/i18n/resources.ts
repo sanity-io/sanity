@@ -10,13 +10,13 @@ const createLocaleStrings = defineLocalesResources('create', {
   'start-in-create-action.label': 'Start in Sanity Create',
 
   /** Header of the "Start writing in Create" dialog */
-  'start-in-create-dialog.header': 'Start authoring with Sanity Create',
+  'start-in-create-dialog.header': 'Start authoring in Sanity Create',
   /** The lede text in the "Start writing in Create" dialog */
   'start-in-create-dialog.lede':
-    'Map your free-form ideas back to the studio as structured content whilst you write.',
+    'Author in a free-form editor and have it mapped back to the Studio as structured content, as you type.',
   /** The details on what "Start writing in Create" implies */
   'start-in-create-dialog.details':
-    'This will open Sanity Create in a new window and automatically link this document.',
+    'This will open Sanity Create in a new window and automatically link it to this document.',
   /** CTA in "Start writing in Create" dialog: Continue to create */
   'start-in-create-dialog.cta.continue': 'Continue',
   /** CTA in "Start writing in Create" dialog: Learn more */
@@ -29,29 +29,30 @@ const createLocaleStrings = defineLocalesResources('create', {
   /** Header of the "Linking in progress" dialog */
   'linking-in-progress-dialog.header': 'Linking in progress',
   /** Lede text for the "Linking in progress" dialog */
-  'linking-in-progress-dialog.lede': 'Please continue in the newly opened Sanity Create window.',
+  'linking-in-progress-dialog.lede':
+    'Please return to Sanity Create. Linking the document should only take a few seconds.',
   /** Details for the "Linking in progress" dialog */
   'linking-in-progress-dialog.details':
-    'On completion, this dialog will automatically close and changes from Sanity Create will appear in this document in real-time.',
+    'When complete, this dialog will close and edits made in Sanity Create will start appearing here as they happen.',
   /** "Linking in progress" troubleshooting button title */
-  'linking-in-progress-dialog.troubleshooting.button.title': 'Link failed?',
+  'linking-in-progress-dialog.troubleshooting.button.title': 'Linking taking a while?',
   /** "Linking in progress" troubleshooting content */
   'linking-in-progress-dialog.troubleshooting.content':
-    "If you're unable to link to Sanity Create, please confirm that your deployed studio is up to date and you are logged in to both Sanity Studio and Create with the same user account.",
+    'Did you close the Sanity Create window? Does the process appear to be stuck? Please reload this page and try again.',
   /** Text for the document pane banner informing users that the document is linked to Sanity Create */
   'studio-create-link-banner.text': 'This document is linked to Sanity Create',
 
   /** Tooltip for Create Link button */
-  'create-link-info.tooltip': 'Sanity Create information',
+  'create-link-info.tooltip': 'Learn more',
   /** Text above header in Create Link info popover */
   'create-link-info-popover.eyebrow-title': 'Sanity Create',
   /** Text in badge above header in Create Link info popover */
   'create-link-info-popover.eyebrow-badge': 'Beta',
   /** Header in Create Link info popover */
-  'create-link-info-popover.header': 'Gather. Contextualize. Realize.',
+  'create-link-info-popover.header': 'Idea first authoring',
   /** Informational text in Create Link info popover */
   'create-link-info-popover.text':
-    'Map your free-form ideas back to the studio as <em>structured content</em> whilst you write.',
+    'Sanity Create lets you author in a free-form editor that automatically maps back to the Studio as structured content - as you type.',
 
   /** Edit in Create button text */
   'edit-in-create-button.text': 'Edit in Sanity Create',

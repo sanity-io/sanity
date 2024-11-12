@@ -1,7 +1,7 @@
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'
 
-import {Button, Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components'
 import {PatchEvent, unset} from '../../form'
 import {Translate, useTranslation} from '../../i18n'
 import {createLocaleNamespace} from '../i18n'
@@ -30,8 +30,24 @@ export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps)
   }, [onDocumentChange, telemetry])
 
   return (
-    <Dialog id={id} header={t('unlink-from-create-dialog.header')} onClose={onClose}>
-      <Stack space={5}>
+    <Dialog
+      footer={{
+        cancelButton: {
+          onClick: onClose,
+          text: t('unlink-from-create-dialog.cancel.text'),
+        },
+        confirmButton: {
+          disabled: unlinking,
+          onClick: unlink,
+          text: t('unlink-from-create-dialog.unlink.text'),
+          tone: 'primary',
+        },
+      }}
+      id={id}
+      header={t('unlink-from-create-dialog.header')}
+      onClose={onClose}
+    >
+      <Stack space={4}>
         <Text size={1}>
           <Translate
             t={t}
@@ -41,20 +57,6 @@ export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps)
         </Text>
 
         <Text size={1}>{t('unlink-from-create-dialog.second-paragraph')}</Text>
-
-        <Flex flex={1} justify="flex-end" gap={2}>
-          <Button
-            mode="bleed"
-            text={t('unlink-from-create-dialog.cancel.text')}
-            onClick={onClose}
-          />
-          <Button
-            tone="primary"
-            text={t('unlink-from-create-dialog.unlink.text')}
-            onClick={unlink}
-            disabled={unlinking}
-          />
-        </Flex>
       </Stack>
     </Dialog>
   )
