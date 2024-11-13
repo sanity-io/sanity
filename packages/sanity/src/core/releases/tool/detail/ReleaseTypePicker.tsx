@@ -1,8 +1,14 @@
 import {LockIcon} from '@sanity/icons'
 import {Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
 import {format, isBefore, isValid} from 'date-fns'
+import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {isReleaseScheduledOrScheduling, type ReleaseDocument, useTranslation} from 'sanity'
+import {
+  getPublishDateFromRelease,
+  isReleaseScheduledOrScheduling,
+  type ReleaseDocument,
+  useTranslation,
+} from 'sanity'
 
 import {Button, Popover, Tab} from '../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/calendar/Calendar'
@@ -10,6 +16,7 @@ import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/c
 import {DatePicker} from '../../../../ui-components/inputs/DateInputs/DatePicker'
 import {LazyTextInput} from '../../../../ui-components/inputs/DateInputs/LazyTextInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
+import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseType} from '../../store'
@@ -22,6 +29,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const datePickerRef = useRef<HTMLDivElement | null>(null)
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const {t} = useTranslation()
@@ -30,37 +38,61 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
   const [open, setOpen] = useState(false)
   const [dateInputOpen, setDateInputOpen] = useState(release.metadata.releaseType === 'scheduled')
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
-  const [updatedDate, setUpdatedDate] = useState<string | undefined>(
-    release.publishAt || release.metadata.intendedPublishAt,
-  )
+  const publishDate = getPublishDateFromRelease(release)
+
+  const [updatedDate, setUpdatedDate] = useState<string | undefined>(publishDate.toDateString())
   const [isUpdating, setIsUpdating] = useState(false)
 
-  const publishDate = release.publishAt || release.metadata.intendedPublishAt
   const [inputValue, setInputValue] = useState<Date | undefined>(
     publishDate ? new Date(publishDate) : undefined,
   )
 
+  const {timeZone, utcToCurrentZoneDate} = useTimeZone()
+  const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
+
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
 
   const close = useCallback(() => {
-    if (open) {
-      setIsUpdating(true)
-      updateRelease({
+    // a bit of a hack to make sure the timezone dialog is not immediately closed on out
+    // the dialog itself is in the Calendar component who is basically unrealted to this one
+    const dialog = document.querySelector('#time-zone')
+
+    if (open && !dialog) {
+      const newRelease = {
         ...release,
         metadata: {...release.metadata, intendedPublishAt: updatedDate, releaseType},
-      }).then(() => {
-        setIsUpdating(false)
-      })
-      setOpen(false)
-      setDateInputOpen(releaseType === 'scheduled')
-    }
-  }, [updateRelease, release, updatedDate, releaseType, open])
+      }
 
-  useClickOutsideEvent(close, () => [popoverRef.current, buttonRef.current, inputRef.current])
+      if (!isEqual(newRelease, release)) {
+        setIsUpdating(true)
+        updateRelease(newRelease).then(() => {
+          setIsUpdating(false)
+        })
+        setDateInputOpen(releaseType === 'scheduled')
+      }
+      setOpen(false)
+    }
+  }, [open, updateRelease, release, updatedDate, releaseType])
+
+  useClickOutsideEvent(close, () => [
+    popoverRef.current,
+    buttonRef.current,
+    inputRef.current,
+    datePickerRef.current,
+  ])
 
   useEffect(() => {
-    if (open) inputRef.current?.focus()
-  }, [open])
+    /** makes sure to wait for the useTimezone has enough time to update
+     * and based on that it will update the input value to the current timezone
+     */
+    if (timeZone.name !== currentTimezone) {
+      setCurrentTimezone(timeZone.name)
+      if (updatedDate && isValid(new Date(updatedDate))) {
+        const currentZoneDate = utcToCurrentZoneDate(new Date(updatedDate))
+        setInputValue(currentZoneDate)
+      }
+    }
+  }, [currentTimezone, inputValue, timeZone, updatedDate, utcToCurrentZoneDate])
 
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
   const isReleaseScheduled = isReleaseScheduledOrScheduling(release)
@@ -137,19 +169,20 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
         {dateInputOpen && (
           <>
             <LazyTextInput
-              value={
-                inputValue ? format(inputValue, 'MM/dd/yyyy, HH:mm O') : new Date().toDateString()
-              }
+              value={inputValue ? format(inputValue, 'PPp') : undefined}
               onChange={handleInputChange}
+              readOnly
             />
 
             <DatePicker
+              ref={datePickerRef}
               monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
               calendarLabels={calendarLabels}
               selectTime
               padding={0}
               value={inputValue}
               onChange={handleBundlePublishAtChange}
+              showTimezone
             />
           </>
         )}
@@ -163,7 +196,6 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
       open={open}
       padding={1}
       placement="bottom-start"
-      portal
       ref={popoverRef}
     >
       <Button
@@ -180,6 +212,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
         }}
         selected={open}
         tone={getReleaseTone({...release, metadata: {...release.metadata, releaseType}})}
+        style={{borderRadius: '999px'}}
       >
         <Flex flex={1} gap={2}>
           {isUpdating ? (

@@ -34,6 +34,7 @@ export interface DateTimeInputProps {
   constrainSize?: boolean
   monthPickerVariant?: CalendarProps['monthPickerVariant']
   padding?: number
+  disableInput?: boolean
 }
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
@@ -51,6 +52,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     constrainSize = true,
     monthPickerVariant,
     padding,
+    disableInput,
     ...rest
   } = props
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -103,6 +105,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
       ref={ref}
       {...rest}
       value={inputValue}
+      readOnly={disableInput}
       onChange={onInputChange}
       suffix={
         isPickerOpen ? (
