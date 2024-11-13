@@ -161,7 +161,7 @@ export function getReferenceInfo(
                             },
                           },
                         ]
-                      : [bundleId, {snapshot: null}],
+                      : [bundleId, {snapshot: undefined}],
                   ),
                 ),
             ),

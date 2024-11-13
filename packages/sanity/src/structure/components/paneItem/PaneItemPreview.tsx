@@ -1,7 +1,6 @@
 import {type SanityDocument, type SchemaType} from '@sanity/types'
 import {Flex} from '@sanity/ui'
-import {isNumber, isString} from 'lodash'
-import {type ComponentType, isValidElement, useMemo} from 'react'
+import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type DocumentPresence,
@@ -12,7 +11,6 @@ import {
   type GeneralPreviewLayoutKey,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
-  isRecord,
   SanityDefaultPreview,
   usePerspective,
   useReleases,
@@ -38,29 +36,16 @@ export interface PaneItemPreviewProps {
  */
 export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, value} = props
-  const title =
-    (isRecord(value.title) && isValidElement(value.title)) ||
-    isString(value.title) ||
-    isNumber(value.title)
-      ? value.title
-      : null
 
   const releases = useReleases()
   const {bundlesPerspective, perspective} = usePerspective()
   const previewStateObservable = useMemo(
     () =>
-      getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {
+      getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, {
         bundleIds: releases.releasesIds,
         bundleStack: bundlesPerspective,
       }),
-    [
-      props.documentPreviewStore,
-      schemaType,
-      value._id,
-      title,
-      releases.releasesIds,
-      bundlesPerspective,
-    ],
+    [props.documentPreviewStore, schemaType, value._id, releases.releasesIds, bundlesPerspective],
   )
 
   const {

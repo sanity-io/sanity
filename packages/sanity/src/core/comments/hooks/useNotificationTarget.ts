@@ -39,7 +39,7 @@ export function useNotificationTarget(
 
   const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '')
+    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId)
   }, [documentId, documentPreviewStore, schemaType])
   const previewState = useObservable(previewStateObservable)
 

@@ -1,6 +1,5 @@
 import {type PreviewValue, type SanityDocument, type SchemaType} from '@sanity/types'
 import {omit} from 'lodash'
-import {type ReactNode} from 'react'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {map, mergeMap, scan, startWith} from 'rxjs/operators'
 import {type PreparedSnapshot} from 'sanity'
@@ -34,7 +33,6 @@ export function getPreviewStateObservable(
   documentPreviewStore: DocumentPreviewStore,
   schemaType: SchemaType,
   documentId: string,
-  title: ReactNode,
   perspective: {
     /**
      * An array of all existing bundle ids.
@@ -83,9 +81,9 @@ export function getPreviewStateObservable(
           return versions[bundleId]
         }
       }
-      return {snapshot: null}
+      return {snapshot: undefined}
     }),
-    startWith<PreparedSnapshot>({snapshot: null}),
+    startWith<PreparedSnapshot>({snapshot: undefined}),
   )
 
   const published$ = documentPreviewStore.observeForPreview(
@@ -95,10 +93,10 @@ export function getPreviewStateObservable(
 
   return combineLatest([draft$, published$, version$, versions$]).pipe(
     map(([draft, published, version, versions]) => ({
-      draft: draft.snapshot ? {title, ...(draft.snapshot || {})} : null,
+      draft: draft.snapshot,
       isLoading: false,
-      published: published.snapshot ? {title, ...(published.snapshot || {})} : null,
-      version: version.snapshot ? {title, ...(version.snapshot || {})} : null,
+      published: published.snapshot,
+      version: version.snapshot,
       versions,
     })),
     startWith({

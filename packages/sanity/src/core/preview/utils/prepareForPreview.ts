@@ -4,6 +4,7 @@ import {
   type PreviewValue,
   type SchemaType,
   type TitledListValue,
+  type UserPreparedPreviewValue,
 } from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 
@@ -13,14 +14,14 @@ import {type PreviewableType} from '../types'
 import {keysOf} from './keysOf'
 import {extractTextFromBlocks, isPortableTextPreviewValue} from './portableText'
 
-const PRESERVE_KEYS = ['_id', '_type', '_upload', '_createdAt', '_updatedAt']
+const PRESERVE_KEYS = ['_id', '_type', '_upload', '_createdAt', '_updatedAt'] as const
 const EMPTY: never[] = []
 
 type SelectedValue = Record<string, unknown>
 
 export type PrepareInvocationResult = {
   selectedValue?: SelectedValue
-  returnValue: null | PreviewValue
+  returnValue: UserPreparedPreviewValue | undefined
   errors: Error[]
 }
 
@@ -163,8 +164,8 @@ function assignType(type: string, error: Error) {
   return Object.assign(error, {type})
 }
 
-function validatePreparedValue(preparedValue: PreviewValue | null) {
-  if (!isPlainObject(preparedValue) || preparedValue === null) {
+function validatePreparedValue(preparedValue: UserPreparedPreviewValue | undefined) {
+  if (!isPlainObject(preparedValue) || preparedValue === undefined) {
     return [
       assignType(
         'returnValueError',
@@ -189,7 +190,7 @@ function validateReturnedPreview(result: PrepareInvocationResult) {
   }
 }
 
-function defaultPrepare(value: SelectedValue) {
+function defaultPrepare(value: SelectedValue): UserPreparedPreviewValue {
   return keysOf(value).reduce((acc: SelectedValue, fieldName: keyof SelectedValue) => {
     const val = value[fieldName]
     return {
@@ -207,14 +208,12 @@ export function invokePrepare(
   const prepare = type.preview?.prepare
   try {
     return {
-      returnValue: prepare
-        ? (prepare(value, viewOptions) as Record<string, unknown>)
-        : defaultPrepare(value),
+      returnValue: prepare ? prepare(value, viewOptions) : defaultPrepare(value),
       errors: EMPTY,
     }
   } catch (error) {
     return {
-      returnValue: null,
+      returnValue: undefined,
       errors: [assignType('prepareError', error)],
     }
   }
@@ -298,7 +297,9 @@ export function prepareForPreview(
   }
 
   const returnValueResult = validateReturnedPreview(prepareResult)
-  return returnValueResult.errors.length > 0
-    ? withErrors(returnValueResult, type, selectedValue)
-    : {...pick(rawValue, PRESERVE_KEYS), ...prepareResult.returnValue}
+  return (
+    returnValueResult.errors.length > 0
+      ? withErrors(returnValueResult, type, selectedValue)
+      : {...pick(rawValue, PRESERVE_KEYS), ...prepareResult.returnValue}
+  ) as PreviewValue
 }

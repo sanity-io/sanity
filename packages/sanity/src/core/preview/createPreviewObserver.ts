@@ -18,7 +18,7 @@ import {
   type PreviewableType,
 } from './types'
 import {getPreviewPaths} from './utils/getPreviewPaths'
-import {invokePrepare, prepareForPreview} from './utils/prepareForPreview'
+import {prepareForPreview} from './utils/prepareForPreview'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)
@@ -99,7 +99,7 @@ export function createPreviewObserver(context: {
       return observePaths(value, paths, apiConfig).pipe(
         map((snapshot) => ({
           type: type,
-          snapshot: snapshot ? prepareForPreview(snapshot, type, viewOptions) : null,
+          snapshot: snapshot ? prepareForPreview(snapshot, type, viewOptions) : undefined,
         })),
       )
     }
@@ -110,8 +110,7 @@ export function createPreviewObserver(context: {
     // `file`s, and `document`s
     return of({
       type,
-      snapshot:
-        value && isRecord(value) ? invokePrepare(type, value, viewOptions).returnValue : null,
+      snapshot: value && isRecord(value) ? prepareForPreview(value, type, viewOptions) : undefined,
     })
   }
 }

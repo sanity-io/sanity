@@ -1,5 +1,6 @@
 import {type ElementType, type ReactNode} from 'react'
 
+import {type UploadState} from '../upload'
 import {type SortOrdering} from './types'
 
 /** @public */
@@ -9,10 +10,7 @@ export interface PrepareViewOptions {
 }
 
 /** @public */
-export interface PreviewValue {
-  _id?: string
-  _createdAt?: string
-  _updatedAt?: string
+export interface UserPreparedPreviewValue {
   title?: string
   subtitle?: string
   description?: string
@@ -21,10 +19,19 @@ export interface PreviewValue {
 }
 
 /** @public */
+export interface PreviewValue extends UserPreparedPreviewValue {
+  _id?: string
+  _type?: string
+  _upload?: UploadState
+  _createdAt?: string
+  _updatedAt?: string
+}
+
+/** @public */
 export interface PreviewConfig<
   Select extends Record<string, string> = Record<string, string>,
   PrepareValue extends Record<keyof Select, any> = Record<keyof Select, any>,
 > {
   select?: Select
-  prepare?: (value: PrepareValue, viewOptions?: PrepareViewOptions) => PreviewValue
+  prepare?: (value: PrepareValue, viewOptions?: PrepareViewOptions) => UserPreparedPreviewValue
 }

@@ -56,7 +56,7 @@ export function SearchResultItemPreview({
 
   const observable = useMemo(
     () =>
-      getPreviewStateObservable(documentPreviewStore, schemaType, getPublishedId(documentId), '', {
+      getPreviewStateObservable(documentPreviewStore, schemaType, getPublishedId(documentId), {
         bundleIds: releases.releasesIds,
         bundleStack: bundlesPerspective,
       }),

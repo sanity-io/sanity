@@ -33,7 +33,7 @@ export function DocumentStatusLine() {
   const previewStateObservable = useMemo(
     () =>
       schemaType
-        ? getPreviewStateObservable(documentPreviewStore, schemaType, value._id, 'Untitled', {
+        ? getPreviewStateObservable(documentPreviewStore, schemaType, value._id, {
             bundleIds: (releases.data ?? []).map((release) =>
               getBundleIdFromReleaseDocumentId(release._id),
             ),
