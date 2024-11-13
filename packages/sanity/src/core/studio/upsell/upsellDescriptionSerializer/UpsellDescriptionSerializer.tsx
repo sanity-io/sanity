@@ -195,6 +195,8 @@ const createComponents = ({
     bullet: ({children}) => (
       <Text
         as="li"
+        size={1}
+        muted
         style={{
           display: 'list-item',
           padding: '0.5rem 0',
@@ -206,6 +208,8 @@ const createComponents = ({
     number: ({children}) => (
       <Text
         as="li"
+        size={1}
+        muted
         style={{
           display: 'list-item',
           padding: '0.5rem 0',
