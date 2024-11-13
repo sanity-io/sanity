@@ -1,14 +1,16 @@
-import {InfoOutlineIcon} from '@sanity/icons'
+import {EarthGlobeIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Stack, TabList, TabPanel, Text} from '@sanity/ui'
 import {format, isValid} from 'date-fns'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {Tab, Tooltip} from '../../../../ui-components'
+import {Button, Tab, Tooltip} from '../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../ui-components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useTranslation} from '../../../i18n'
+import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
+import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {type EditableReleaseDocument, type ReleaseType} from '../../store/types'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
 
@@ -22,29 +24,16 @@ export function ReleaseForm(props: {
   const {onChange, value} = props
   const {releaseType} = value.metadata || {}
   const publishAt = value.metadata.intendedPublishAt
-  // derive the action from whether the initial value prop has a slug
-  // only editing existing releases will provide a value.slug
   const {t} = useTranslation()
+
+  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
+  const {timeZone, utcToCurrentZoneDate} = useTimeZone()
+  const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   const [inputValue, setInputValue] = useState<Date>(publishAt ? new Date(publishAt) : new Date())
-
-  const handleBundleInputChange = useCallback(
-    (event: React.FocusEvent<HTMLInputElement>) => {
-      const date = new Date(event.currentTarget.value)
-
-      if (isValid(date)) {
-        setInputValue(date)
-        onChange({
-          ...value,
-          metadata: {...value.metadata, intendedPublishAt: date.toISOString()},
-        })
-      }
-    },
-    [onChange, value],
-  )
 
   const handleBundlePublishAtCalendarChange = useCallback(
     (date: Date | null) => {
@@ -80,6 +69,19 @@ export function ReleaseForm(props: {
     },
     [onChange, value],
   )
+
+  useEffect(() => {
+    /** makes sure to wait for the useTimezone has enough time to update
+     * and based on that it will update the input value to the current timezone
+     */
+    if (timeZone.name !== currentTimezone) {
+      setCurrentTimezone(timeZone.name)
+      if (isValid(inputValue)) {
+        const currentZoneDate = utcToCurrentZoneDate(inputValue)
+        setInputValue(currentZoneDate)
+      }
+    }
+  }, [currentTimezone, inputValue, timeZone, utcToCurrentZoneDate])
 
   return (
     <Stack space={5}>
@@ -129,22 +131,35 @@ export function ReleaseForm(props: {
               style={{outline: 'none'}}
               tabIndex={-1}
             >
-              <DateTimeInput
-                selectTime
-                monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-                onChange={handleBundlePublishAtCalendarChange}
-                onInputChange={handleBundleInputChange}
-                calendarLabels={calendarLabels}
-                value={inputValue}
-                inputValue={format(inputValue, 'MM/dd/yyyy, HH:mm O')}
-                constrainSize={false}
-                padding={0}
-              />
+              <Flex flex={1} justify="space-between">
+                <DateTimeInput
+                  selectTime
+                  monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
+                  onChange={handleBundlePublishAtCalendarChange}
+                  calendarLabels={calendarLabels}
+                  value={inputValue}
+                  inputValue={format(inputValue, 'PPp')}
+                  constrainSize={false}
+                  padding={0}
+                  disableInput
+                />
+
+                <Button
+                  icon={EarthGlobeIcon}
+                  mode="bleed"
+                  padding={2}
+                  size="default"
+                  text={`${timeZone.abbreviation}`}
+                  onClick={dialogTimeZoneShow}
+                />
+              </Flex>
             </TabPanel>
           )}
         </Flex>
       </Stack>
       <TitleDescriptionForm release={value} onChange={handleTitleDescriptionChange} />
+
+      {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
     </Stack>
   )
 }

@@ -15,6 +15,7 @@ import {
   useRef,
 } from 'react'
 
+import useDialogTimeZone from '../../../../core/scheduledPublishing/hooks/useDialogTimeZone'
 import useTimeZone from '../../../../core/scheduledPublishing/hooks/useTimeZone'
 import {Button} from '../../../button/Button'
 import {TooltipDelayGroupProvider} from '../../../tooltipDelayGroupProvider'
@@ -82,6 +83,7 @@ export const Calendar = forwardRef(function Calendar(
   } = props
 
   const {timeZone} = useTimeZone()
+  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
 
   const setFocusedDate = useCallback(
     (date: Date) => onFocusedDateChange(date),
@@ -314,84 +316,92 @@ export const Calendar = forwardRef(function Calendar(
           {PRESERVE_FOCUS_ELEMENT}
         </Box>
       </Box>
-      {/* Select time */}
-      {selectTime && (
-        <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
-          <Flex align="center">
-            <Flex align="center" flex={1}>
-              <Box>
-                <Select
-                  aria-label={labels.selectHour}
-                  fontSize={1}
+
+      <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
+        <Flex align="center" justify="space-between">
+          {/* Select time */}
+          {selectTime && (
+            <>
+              <Flex align="center">
+                <Flex align="center" flex={1}>
+                  <Box>
+                    <Select
+                      aria-label={labels.selectHour}
+                      fontSize={1}
+                      padding={2}
+                      radius={2}
+                      value={selectedDate?.getHours()}
+                      onChange={handleHoursChange}
+                    >
+                      {HOURS_24.map((h) => (
+                        <option key={h} value={h}>
+                          {`${h}`.padStart(2, '0')}
+                        </option>
+                      ))}
+                    </Select>
+                  </Box>
+
+                  <Box paddingX={1}>
+                    <Text size={1}>:</Text>
+                  </Box>
+
+                  <Box>
+                    <Select
+                      aria-label={labels.selectMinute}
+                      fontSize={1}
+                      padding={2}
+                      radius={2}
+                      value={selectedDate?.getMinutes()}
+                      onChange={handleMinutesChange}
+                    >
+                      {range(0, 60, timeStep).map((m) => (
+                        <option key={m} value={m}>
+                          {`${m}`.padStart(2, '0')}
+                        </option>
+                      ))}
+                    </Select>
+                  </Box>
+                </Flex>
+
+                <Box marginLeft={2}>
+                  <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />
+                </Box>
+              </Flex>
+
+              {showTimezone && (
+                <Button
+                  icon={EarthGlobeIcon}
+                  mode="bleed"
                   padding={2}
-                  radius={2}
-                  value={selectedDate?.getHours()}
-                  onChange={handleHoursChange}
-                >
-                  {HOURS_24.map((h) => (
-                    <option key={h} value={h}>
-                      {`${h}`.padStart(2, '0')}
-                    </option>
-                  ))}
-                </Select>
-              </Box>
+                  size="default"
+                  text={`${timeZone.abbreviation}`}
+                  onClick={dialogTimeZoneShow}
+                />
+              )}
 
-              <Box paddingX={1}>
-                <Text size={1}>:</Text>
-              </Box>
-
-              <Box>
-                <Select
-                  aria-label={labels.selectMinute}
-                  fontSize={1}
-                  padding={2}
-                  radius={2}
-                  value={selectedDate?.getMinutes()}
-                  onChange={handleMinutesChange}
-                >
-                  {range(0, 60, timeStep).map((m) => (
-                    <option key={m} value={m}>
-                      {`${m}`.padStart(2, '0')}
-                    </option>
-                  ))}
-                </Select>
-              </Box>
-            </Flex>
-
-            <Box marginLeft={2}>
-              <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />
-            </Box>
-
-            {showTimezone && (
-              <Button
-                icon={EarthGlobeIcon}
-                mode="bleed"
-                padding={2}
-                size="default"
-                text={`${timeZone.abbreviation}`}
-              />
-            )}
-          </Flex>
-
-          {features.timePresets && (
-            <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
-              {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
-                const text = formatTime(hours, minutes)
-                return (
-                  <CalendarTimePresetButton
-                    key={`${hours}-${minutes}`}
-                    hours={hours}
-                    minutes={minutes}
-                    onTimeChange={handleTimeChange}
-                    text={text}
-                    aria-label={labels.setToTimePreset(text, selectedDate)}
-                  />
-                )
-              })}
-            </Flex>
+              {features.timePresets && (
+                <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
+                  {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
+                    const text = formatTime(hours, minutes)
+                    return (
+                      <CalendarTimePresetButton
+                        key={`${hours}-${minutes}`}
+                        hours={hours}
+                        minutes={minutes}
+                        onTimeChange={handleTimeChange}
+                        text={text}
+                        aria-label={labels.setToTimePreset(text, selectedDate)}
+                      />
+                    )
+                  })}
+                </Flex>
+              )}
+            </>
           )}
-        </Box>
-      )}
+
+          {showTimezone && DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+        </Flex>
+      </Box>
     </Box>
   )
 })
