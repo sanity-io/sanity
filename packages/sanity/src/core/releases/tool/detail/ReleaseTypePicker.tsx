@@ -138,7 +138,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
           <>
             <LazyTextInput
               value={
-                inputValue ? format(inputValue, 'MM/dd/yyyy, HH:mm O') : new Date().toDateString()
+                inputValue ? format(inputValue, 'MM/dd/yyyy, HH:mm') : new Date().toDateString()
               }
               onChange={handleInputChange}
             />
@@ -150,6 +150,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
               padding={0}
               value={inputValue}
               onChange={handleBundlePublishAtChange}
+              showTimezone
             />
           </>
         )}

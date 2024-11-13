@@ -1,4 +1,4 @@
-import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
@@ -15,7 +15,8 @@ import {
   useRef,
 } from 'react'
 
-import {Button} from '../../../button'
+import useTimeZone from '../../../../core/scheduledPublishing/hooks/useTimeZone'
+import {Button} from '../../../button/Button'
 import {TooltipDelayGroupProvider} from '../../../tooltipDelayGroupProvider'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
@@ -39,6 +40,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   labels: CalendarLabels
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
   padding?: number
+  showTimezone?: boolean
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -75,8 +77,11 @@ export const Calendar = forwardRef(function Calendar(
     labels,
     monthPickerVariant = 'select',
     padding = 2,
+    showTimezone = false,
     ...restProps
   } = props
+
+  const {timeZone} = useTimeZone()
 
   const setFocusedDate = useCallback(
     (date: Date) => onFocusedDateChange(date),
@@ -212,10 +217,13 @@ export const Calendar = forwardRef(function Calendar(
           }}
         >
           <Flex align="center" flex={1} justify="space-between">
-            <Text weight="medium" size={1}>
-              {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
-              {(focusedDate || new Date())?.getFullYear()}
-            </Text>
+            <Flex align="center" flex={1}>
+              <Text weight="medium" size={1}>
+                {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
+                {(focusedDate || new Date())?.getFullYear()}
+              </Text>
+            </Flex>
+
             <Flex paddingRight={3} gap={2}>
               <TooltipDelayGroupProvider>
                 <Button
@@ -292,7 +300,7 @@ export const Calendar = forwardRef(function Calendar(
         <Box
           data-calendar-grid
           onKeyDown={handleKeyDown}
-          marginTop={2}
+          marginY={2}
           overflow="hidden"
           tabIndex={0}
         >
@@ -306,7 +314,6 @@ export const Calendar = forwardRef(function Calendar(
           {PRESERVE_FOCUS_ELEMENT}
         </Box>
       </Box>
-
       {/* Select time */}
       {selectTime && (
         <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
@@ -354,6 +361,16 @@ export const Calendar = forwardRef(function Calendar(
             <Box marginLeft={2}>
               <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />
             </Box>
+
+            {showTimezone && (
+              <Button
+                icon={EarthGlobeIcon}
+                mode="bleed"
+                padding={2}
+                size="default"
+                text={`${timeZone.abbreviation}`}
+              />
+            )}
           </Flex>
 
           {features.timePresets && (
