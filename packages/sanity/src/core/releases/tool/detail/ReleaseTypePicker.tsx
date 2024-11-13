@@ -53,7 +53,11 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
 
   const close = useCallback(() => {
-    if (open) {
+    // a bit of a hack to make sure the timezone dialog is not immediately closed on out
+    // the dialog itself is in the Calendar component who is basically unrealted to this one
+    const dialog = document.querySelector('#time-zone')
+
+    if (open && !dialog) {
       const newRelease = {
         ...release,
         metadata: {...release.metadata, intendedPublishAt: updatedDate, releaseType},
