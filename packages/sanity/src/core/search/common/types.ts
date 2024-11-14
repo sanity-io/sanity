@@ -70,6 +70,7 @@ export interface SearchFactoryOptions {
   /* only return unique documents (e.g. not both draft and published) */
   unique?: boolean
   strategy?: SearchStrategy
+  perspective?: string
 }
 
 /**

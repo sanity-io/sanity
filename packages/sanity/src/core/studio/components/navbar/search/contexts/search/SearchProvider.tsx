@@ -89,7 +89,7 @@ export function SearchProvider({
   const previousTermsRef = useRef<SearchTerms | RecentSearch>(initialState.terms)
 
   const {handleSearch, searchState} = useSearch({
-    initialState: {...result, terms},
+    initialState: {...result, terms, perspective},
     onComplete: (searchResult) => dispatch({...searchResult, type: 'SEARCH_REQUEST_COMPLETE'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),

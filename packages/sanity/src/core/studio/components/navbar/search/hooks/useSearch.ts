@@ -91,8 +91,9 @@ export function useSearch({
         unique: true,
         strategy,
         maxDepth: maxFieldDepth,
+        perspective: searchState.perspective,
       }),
-    [schema, client, strategy, maxFieldDepth],
+    [schema, client, strategy, maxFieldDepth, searchState.perspective],
   )
 
   const handleQueryChange = useObservableEvent((inputValue$: Observable<SearchRequest | null>) => {

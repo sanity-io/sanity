@@ -131,6 +131,8 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
   client,
   factoryOptions,
 ) => {
+  const {perspective} = factoryOptions
+
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).
   return function search(searchParams, searchOptions = {}) {
@@ -144,7 +146,8 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       searchTerms.filter ? `(${searchTerms.filter})` : false,
       // Versions are collated server-side using the `bundlePerspective` option. Therefore, they
       // must not be fetched individually.
-      '!(_id in path("versions.**"))',
+      // This should only be added if the search needs to be narrow to the perspective
+      !perspective && '!(_id in path("versions.**"))',
     ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
     const textSearchParams: TextSearchParams = {

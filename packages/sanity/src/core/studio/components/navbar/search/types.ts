@@ -88,4 +88,5 @@ export interface SearchState {
   error: Error | null
   options?: SearchOptions
   terms: SearchTerms
+  perspective?: string
 }
