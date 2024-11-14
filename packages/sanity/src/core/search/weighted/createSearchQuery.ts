@@ -137,7 +137,6 @@ export function createSearchQuery(
     searchTerms.filter ? `(${searchTerms.filter})` : '',
     // Versions are collated server-side using the `bundlePerspective` option. Therefore, they must
     // not be fetched individually.
-    '!(_id in path("versions.**"))',
   ].filter(Boolean)
 
   const selections = specs.map((spec) => {
@@ -191,8 +190,8 @@ export function createSearchQuery(
     },
     options: {
       tag,
-      perspective: searchOpts.perspective,
-      bundlePerspective: searchOpts.bundlePerspective,
+      perspective: undefined,
+      bundlePerspective: undefined,
     },
     searchSpec: specs,
     terms,

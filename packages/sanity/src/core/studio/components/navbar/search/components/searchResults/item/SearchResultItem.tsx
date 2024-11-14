@@ -1,6 +1,7 @@
 import {type SanityDocumentLike} from '@sanity/types'
 import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
 import {type MouseEvent, useCallback, useMemo} from 'react'
+import {getPublishedId, useSearchState} from 'sanity'
 import {useIntentLink, useRouter} from 'sanity/router'
 
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
@@ -37,16 +38,33 @@ export function SearchResultItem({
     intent: 'edit',
     params,
   })
+  const {state} = useSearchState()
+
+  /**
+   * if it exists in the release then it means that this component is being used
+   * in the context of the release tool where we need to avoid pressing items that are already in the release
+   */
+  const existsInRelease = state.idsInRelease?.some((id) => id.includes(getPublishedId(documentId)))
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
-      onItemSelect?.({_id: documentId, _type: documentType})
-      if (!disableIntentLink) {
-        onIntentClick(e)
+      if (!existsInRelease) {
+        onItemSelect?.({_id: documentId, _type: documentType})
+        if (!disableIntentLink) {
+          onIntentClick(e)
+        }
+        onClick?.()
       }
-      onClick?.()
     },
-    [onItemSelect, documentId, documentType, disableIntentLink, onClick, onIntentClick],
+    [
+      onItemSelect,
+      documentId,
+      documentType,
+      disableIntentLink,
+      existsInRelease,
+      onClick,
+      onIntentClick,
+    ],
   )
 
   if (!type) return null
@@ -57,15 +75,19 @@ export function SearchResultItem({
         as="a"
         data-as="a"
         flex={1}
-        href={disableIntentLink ? undefined : href}
+        href={disableIntentLink || existsInRelease ? undefined : href}
         onClick={handleClick}
         radius={2}
         tabIndex={-1}
+        style={{
+          pointerEvents: existsInRelease ? 'none' : undefined,
+          opacity: existsInRelease ? 0.5 : 1,
+        }}
       >
         <SearchResultItemPreview
           documentId={documentId}
           layout={layout}
-          perspective={perspective}
+          perspective={state.perspective ?? perspective}
           presence={documentPresence}
           schemaType={type}
         />

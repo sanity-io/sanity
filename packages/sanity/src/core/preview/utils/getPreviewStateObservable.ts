@@ -46,9 +46,16 @@ export function getPreviewStateObservable(
      * given point in time.
      */
     bundleStack: string[]
+
+    /**
+     * Perspective to use when fetching versions.
+     * Soemtimes we want to fetch versions from a perspective not bound by the bundleStack
+     */
+    name?: string
   } = {
     bundleIds: [],
     bundleStack: [],
+    name: '',
   },
 ): Observable<PreviewState> {
   const draft$ = isLiveEditEnabled(schemaType)
@@ -74,11 +81,12 @@ export function getPreviewStateObservable(
     startWith<VersionsRecord>({}),
   )
 
+  const list = perspective.name === 'raw' ? perspective.bundleIds : perspective.bundleStack
   // Iterate the release stack in descending precedence, returning the highest precedence existing
   // version document.
   const version$ = versions$.pipe(
     map((versions) => {
-      for (const bundleId of perspective.bundleStack) {
+      for (const bundleId of list) {
         if (bundleId in versions) {
           return versions[bundleId]
         }

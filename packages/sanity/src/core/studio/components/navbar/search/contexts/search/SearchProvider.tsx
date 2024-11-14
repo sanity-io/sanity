@@ -5,6 +5,7 @@ import {SearchContext} from 'sanity/_singletons'
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
 import {usePerspective} from '../../../../../../releases/hooks/usePerspective'
+import {useReleases} from '../../../../../../releases/store/useReleases'
 import {type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {resolvePerspectiveOptions} from '../../../../../../util/resolvePerspective'
@@ -24,15 +25,27 @@ import {initialSearchState, searchReducer} from './reducer'
 interface SearchProviderProps {
   children?: ReactNode
   fullscreen?: boolean
+  perspective?: string
+  /**
+   * if provided, then it means that the search is being done from within the release plugin
+   * where we add documents picked in this search to the release
+   */
+  idsInRelease?: string[]
 }
 
 /**
  * @internal
  */
-export function SearchProvider({children, fullscreen}: SearchProviderProps) {
+export function SearchProvider({
+  children,
+  fullscreen,
+  perspective,
+  idsInRelease,
+}: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
   const {bundlesPerspective} = usePerspective()
+  const {data: releases} = useReleases()
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const {
@@ -119,6 +132,11 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           ordering?.customMeasurementLabel || `${ordering.sort?.field} ${ordering.sort?.direction}`
       }
 
+      const perspectives =
+        state.perspective === 'raw'
+          ? {bundlePerspective: undefined}
+          : resolvePerspectiveOptions(bundlesPerspective)
+
       handleSearch({
         options: {
           // Comments prepended to each query for future measurement
@@ -135,7 +153,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
-          ...resolvePerspectiveOptions(bundlesPerspective),
+          ...perspectives,
         },
         terms: {
           ...terms,
@@ -162,6 +180,8 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     terms,
     cursor,
     bundlesPerspective,
+    releases,
+    state.perspective,
   ])
 
   /**
@@ -187,9 +207,11 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
       state: {
         ...state,
         fullscreen,
+        perspective,
+        idsInRelease,
       },
     }),
-    [fullscreen, onClose, searchCommandList, state],
+    [fullscreen, idsInRelease, onClose, perspective, searchCommandList, state],
   )
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
