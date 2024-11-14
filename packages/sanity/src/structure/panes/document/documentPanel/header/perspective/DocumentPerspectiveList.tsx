@@ -169,13 +169,15 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           /** the draft is selected when:
            * when the document displayed is a draft,
            * when the perspective is null,
-           * when the document is not published,
+           * when the document is not published and the displayed version is draft,
            * when there is no draft (new document),
            */
           !!(
             editState?.draft?._id === displayed?._id ||
             !perspective ||
-            (!editState?.published && editState?.draft) ||
+            (!editState?.published &&
+              editState?.draft &&
+              editState?.draft?._id === displayed?._id) ||
             (!editState?.published && !editState?.draft)
           )
         }
