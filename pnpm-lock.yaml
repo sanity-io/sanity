@@ -383,7 +383,7 @@ importers:
         version: 2.3.2(@sanity/ui@2.8.23(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       sanity-plugin-mux-input:
         specifier: ^2.2.1
-        version: 2.3.6(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 2.4.0(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       sanity-test-studio:
         specifier: workspace:*
         version: link:../test-studio
@@ -572,7 +572,7 @@ importers:
         version: 2.3.2(@sanity/ui@2.8.23(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       sanity-plugin-mux-input:
         specifier: ^2.2.1
-        version: 2.3.6(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 2.4.0(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       styled-components:
         specifier: ^6.1.11
         version: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -7690,8 +7690,8 @@ packages:
   history@5.3.0:
     resolution: {integrity: sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==}
 
-  hls.js@1.5.14:
-    resolution: {integrity: sha512-5wLiQ2kWJMui6oUslaq8PnPOv1vjuee5gTxjJD0DSsccY12OXtDT0h137UuqjczNeHzeEYR0ROZQibKNMr7Mzg==}
+  hls.js@1.5.17:
+    resolution: {integrity: sha512-wA66nnYFvQa1o4DO/BFgLNRKnBTVXpNeldGRBJ2Y0SvFtdwvFKCbqa9zhHoZLoxHhZ+jYsj3aIBkWQQCPNOhMw==}
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
@@ -8208,8 +8208,8 @@ packages:
     resolution: {integrity: sha512-LpB/54B+/2J5hqQ7imZHfdU31OlgQqx7ZicVlkm9kzg9/w8GKLEcFfJl/t7DCEDueOyBAD6zCCwTO6Fzs0NoEQ==}
     engines: {node: '>=16'}
 
-  iso-639-1@3.1.2:
-    resolution: {integrity: sha512-Le7BRl3Jt9URvaiEHJCDEdvPZCfhiQoXnFgLAWNRhzFMwRFdWO7/5tLRQbiPzE394I9xd7KdRCM7S6qdOhwG5A==}
+  iso-639-1@3.1.3:
+    resolution: {integrity: sha512-1jz0Wh9hyLMRwqEPchb/KZCiTqfFWtc9R3nm7GHPygBAKS8wdKJ3FH4lvLsri6UtAE5Kz5SnowtXZa//6bqMyw==}
     engines: {node: '>=6.0'}
 
   isobject@2.1.0:
@@ -9852,12 +9852,6 @@ packages:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
     engines: {node: '>=0.10.0'}
 
-  react-rx@3.1.3:
-    resolution: {integrity: sha512-ITYuqiathSqLJjMvIO5kDDMSTDuvzpxebiDWNKIVMlGpvJxRXnnlwcQhlMcjV2Yr8+fNQHOHdf6fO/zS9+SMGw==}
-    peerDependencies:
-      react: ^18.3 || >=19.0.0-rc
-      rxjs: ^7
-
   react-rx@4.1.5:
     resolution: {integrity: sha512-52ifThj/uhMnq5j6l/qnCTyPay/oIdWT16TcoKlPFUiR+WTgnC4645euf7hGjQpNurQXnSbqPuybocpdfnj07Q==}
     peerDependencies:
@@ -10263,8 +10257,8 @@ packages:
       sanity: ^3.0.0
       styled-components: ^5.0 || ^6.0
 
-  sanity-plugin-mux-input@2.3.6:
-    resolution: {integrity: sha512-qBiQE6VuVgJ42mfWbw+9T6UVsr5VyRZvs41Qew32XSb0vPlP19yb3eI2Vxxv5ENNTyhaXD5CxMQZOsv+OFADDA==}
+  sanity-plugin-mux-input@2.4.0:
+    resolution: {integrity: sha512-k50Rt7+rxBX26l0NCIHLNV5KZMby/d4z+r537nGQ97eZXkfElgTLbM2vvN89rW6EceHAqX41aX5kD7kkdaF2eQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18
@@ -11088,8 +11082,8 @@ packages:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
 
-  type-fest@4.24.0:
-    resolution: {integrity: sha512-spAaHzc6qre0TlZQQ2aA/nGMe+2Z/wyGk5Z+Ru2VUfdNwT6kWO6TjevOlpebsATEG1EIQ2sOiDszud3lO5mt/Q==}
+  type-fest@4.26.1:
+    resolution: {integrity: sha512-yOGpmOAL7CkKe/91I5O3gPICmJNLJ1G4zFYVAsRHg7M64biSnPtRj0WNQt++bRkjYOqjWXrhnUw1utzmVErAdg==}
     engines: {node: '>=16'}
 
   type-is@1.6.18:
@@ -13521,7 +13515,7 @@ snapshots:
 
   '@mux/playback-core@0.25.2':
     dependencies:
-      hls.js: 1.5.14
+      hls.js: 1.5.17
       mux-embed: 5.2.1
 
   '@mux/upchunk@3.4.0':
@@ -18950,7 +18944,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.26.0
 
-  hls.js@1.5.14: {}
+  hls.js@1.5.17: {}
 
   hoist-non-react-statics@3.3.2:
     dependencies:
@@ -19421,7 +19415,7 @@ snapshots:
 
   isexe@3.1.1: {}
 
-  iso-639-1@3.1.2: {}
+  iso-639-1@3.1.3: {}
 
   isobject@2.1.0:
     dependencies:
@@ -20868,7 +20862,7 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.26.2
       index-to-position: 0.1.2
-      type-fest: 4.24.0
+      type-fest: 4.26.1
 
   parse-ms@2.1.0: {}
 
@@ -21337,13 +21331,6 @@ snapshots:
 
   react-refresh@0.14.2: {}
 
-  react-rx@3.1.3(react@18.3.1)(rxjs@7.8.1):
-    dependencies:
-      observable-callback: 1.0.3(rxjs@7.8.1)
-      react: 18.3.1
-      rxjs: 7.8.1
-      use-effect-event: 1.0.2(react@18.3.1)
-
   react-rx@4.1.5(react@18.3.1)(rxjs@7.8.1):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.1)
@@ -21406,7 +21393,7 @@ snapshots:
     dependencies:
       find-up-simple: 1.0.0
       read-pkg: 9.0.1
-      type-fest: 4.24.0
+      type-fest: 4.26.1
 
   read-pkg-up@3.0.0:
     dependencies:
@@ -21437,7 +21424,7 @@ snapshots:
       '@types/normalize-package-data': 2.4.4
       normalize-package-data: 6.0.2
       parse-json: 8.1.0
-      type-fest: 4.24.0
+      type-fest: 4.26.1
       unicorn-magic: 0.1.0
 
   read@3.0.1:
@@ -21844,7 +21831,7 @@ snapshots:
       - react-native
       - supports-color
 
-  sanity-plugin-mux-input@2.3.6(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  sanity-plugin-mux-input@2.4.0(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       '@mux/mux-player-react': 2.9.1(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mux/upchunk': 3.4.0
@@ -21852,19 +21839,19 @@ snapshots:
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sanity/ui': 2.8.23(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-a7d1240c-20240731)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/uuid': 3.0.2
-      iso-639-1: 3.1.2
+      iso-639-1: 3.1.3
       jsonwebtoken-esm: 1.0.5
       lodash: 4.17.21
       react: 18.3.1
       react-is: 19.0.0-rc-a7d1240c-20240731
-      react-rx: 3.1.3(react@18.3.1)(rxjs@7.8.1)
+      react-rx: 4.1.5(react@18.3.1)(rxjs@7.8.1)
       rxjs: 7.8.1
       sanity: link:packages/sanity
       scroll-into-view-if-needed: 3.1.0
       styled-components: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       suspend-react: 0.1.3(react@18.3.1)
       swr: 2.2.5(react@18.3.1)
-      type-fest: 4.24.0
+      type-fest: 4.26.1
       use-error-boundary: 2.0.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
@@ -22832,7 +22819,7 @@ snapshots:
 
   type-fest@0.8.1: {}
 
-  type-fest@4.24.0: {}
+  type-fest@4.26.1: {}
 
   type-is@1.6.18:
     dependencies:
