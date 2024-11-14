@@ -20,22 +20,20 @@ export const StatusText = styled(Text)`
 export function RevisionStatusLine(): JSX.Element {
   const {displayed} = useDocumentPane()
   const {t} = useTranslation()
+  const date = displayed?._updatedAt || displayed?._createdAt
 
   const message = {
     name: 'revision',
     icon: RestoreIcon,
-    text: (
+    text: date ? (
       <Translate
         t={t}
         i18nKey="document-status.revision-from"
         values={{
-          date: format(
-            new Date(displayed?._updatedAt || displayed?._createdAt || 0),
-            `MMM d, yyyy '@' pp`,
-          ),
+          date: format(new Date(date), `MMM d, yyyy '@' pp`),
         }}
       />
-    ),
+    ) : null,
     tone: 'caution',
   }
 
