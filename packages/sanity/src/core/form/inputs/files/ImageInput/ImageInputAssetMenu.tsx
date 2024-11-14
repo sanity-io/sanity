@@ -9,6 +9,7 @@ import {type Observable} from 'rxjs'
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ActionsMenu} from '../common/ActionsMenu'
+import {SUPPORTED_IMAGE_UPLOAD_TYPES} from '../constants'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {type BaseImageInputProps} from './types'
 
@@ -54,7 +55,10 @@ function ImageInputAssetMenuComponent(
   } = props
   const {t} = useTranslation()
 
-  const accept = useMemo(() => get(schemaType, 'options.accept', 'image/*'), [schemaType])
+  const accept = useMemo(
+    () => get(schemaType, 'options.accept', SUPPORTED_IMAGE_UPLOAD_TYPES.join(',')),
+    [schemaType],
+  )
   const asset = value?.asset
 
   const showAdvancedEditButton = value && asset && isImageToolEnabled
