@@ -1,4 +1,9 @@
-import {type CrossDatasetType, type SchemaType, type SearchConfiguration} from '@sanity/types'
+import {
+  type CrossDatasetType,
+  type ReferenceSchemaType,
+  type SchemaType,
+  type SearchConfiguration,
+} from '@sanity/types'
 import {toString as pathToString} from '@sanity/util/paths'
 
 import {isRecord} from '../../util'
@@ -37,6 +42,110 @@ const isSearchConfiguration = (options: unknown): options is SearchConfiguration
 
 function isSchemaType(input: SchemaType | CrossDatasetType | undefined): input is SchemaType {
   return typeof input !== 'undefined' && 'name' in input
+}
+
+type AccessType = 'property' | 'dereference'
+
+const accessTokens: Record<AccessType, string> = {
+  property: '.',
+  dereference: '->',
+}
+
+/**
+ * Traverse the schema, following the provided path. Yields a string for each segment and accessor
+ * that comprises the fully qualified path. This path properly dereferences dot-notation property
+ * access of references.
+ *
+ * For example, in a schema containing a reference field named `reference`, the path
+ * `document.reference.field` would be converted to the fully qualified path
+ * `document.reference->field`. The generator would yield `"document"`, `"."`, `"reference"`,
+ * `"->"`, `"field`".
+ */
+function* traverseByPath(
+  type: SchemaType | CrossDatasetType | undefined,
+  [head, ...tail]: string[],
+  accessType?: AccessType,
+): Generator<string> {
+  // Skip non-schema types, including Cross Dataset References.
+  // TODO: How should Cross Dataset References be weighted?
+  if (!isSchemaType(type)) {
+    return
+  }
+
+  if (typeof head === 'undefined') {
+    if (accessType === 'dereference') {
+      yield accessTokens.dereference
+    }
+    return
+  }
+
+  if (accessType) {
+    yield accessTokens[accessType]
+  }
+
+  if (isStringField(type) || isPtField(type)) {
+    yield head
+    return
+  }
+
+  const typeChain = getTypeChain(type)
+
+  // TODO: Handle arrays.
+  // replace indexed paths with `[]`
+  // e.g. `arrayOfObjects.0.myField` becomes `arrayOfObjects[].myField`
+  // selectionPath.replace(/\.\d+/g, '[]'),
+
+  const objectTypes = typeChain.filter(
+    (t): t is Extract<SchemaType, {jsonType: 'object'}> =>
+      t.jsonType === 'object' && !!t.fields?.length && !builtInObjectTypes.includes(t.name),
+  )
+
+  for (const objectType of objectTypes) {
+    for (const field of objectType.fields) {
+      if (field.name === head) {
+        yield head
+        yield* traverseByPath(
+          field.type,
+          tail,
+          field.type.name === 'reference' ? 'dereference' : 'property',
+        )
+        return
+      }
+    }
+  }
+
+  if (objectTypes.length !== 0) {
+    throw new Error(`Field \`${head}\` not found in \`${type.name}\`.`)
+  }
+
+  const referenceTypes = typeChain.filter(
+    (t): t is ReferenceSchemaType => (t.type ?? {}).name === 'reference',
+  )
+
+  for (const referenceType of referenceTypes) {
+    // TODO: How should we handle multiple reference types?
+    for (const referenceTargetType of referenceType.to) {
+      yield head
+      for (const field of referenceTargetType.fields) {
+        if (field.name === head) {
+          yield* traverseByPath(
+            field.type,
+            tail,
+            field.type.name === 'reference' ? 'dereference' : 'property',
+          )
+          return
+        }
+      }
+    }
+  }
+
+  if (referenceTypes.length !== 0) {
+    throw new Error(`Field \`${head}\` not found in type.`)
+  }
+}
+
+function resolvePath(type: SchemaType | CrossDatasetType | undefined, path: string): string {
+  return [...traverseByPath(type, path.split('.'))].join('')
 }
 
 function getLeafWeights(
