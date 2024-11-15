@@ -34,7 +34,7 @@ type ResponseWrapper = {response: ReleaseDocument[]}
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'
 
-const QUERY_FILTER = `_type=="${RELEASE_DOCUMENT_TYPE}"(_id in path("${RELEASE_DOCUMENTS_PATH}.*"))`
+const QUERY_FILTER = `_type=="${RELEASE_DOCUMENT_TYPE}" && _id in path("${RELEASE_DOCUMENTS_PATH}.*")`
 
 // TODO: Extend the projection with the fields needed
 const QUERY_PROJECTION = `{
