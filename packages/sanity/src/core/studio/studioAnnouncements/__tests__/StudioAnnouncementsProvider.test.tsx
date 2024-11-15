@@ -2,7 +2,7 @@
 import {fireEvent, render, renderHook, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {of} from 'rxjs'
-import {defineConfig} from 'sanity'
+import {type Config, defineConfig} from 'sanity'
 import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -36,10 +36,11 @@ vi.mock('@sanity/client', () => ({
 vi.mock('../../../hooks/useClient')
 const useClientMock = useClient as ReturnType<typeof vi.fn>
 
+const mockObservableRequest = vi.fn((announcements) => of(announcements))
 const mockClient = (announcements: StudioAnnouncementDocument[]) => {
   useClientMock.mockReturnValue({
     observable: {
-      request: () => of(announcements),
+      request: () => mockObservableRequest(announcements),
     },
   })
 }
@@ -55,9 +56,12 @@ const config = defineConfig({
   projectId: 'test',
   dataset: 'test',
 })
-async function createAnnouncementWrapper() {
+async function createAnnouncementWrapper(configOverride: Partial<Config> = {}) {
   const wrapper = await createTestProvider({
-    config,
+    config: {
+      ...config,
+      ...configOverride,
+    },
     resources: [],
   })
 
@@ -114,7 +118,8 @@ describe('StudioAnnouncementsProvider', () => {
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
       })
-
+      expect(seenAnnouncementsMock).toBeCalled()
+      expect(mockObservableRequest).toBeCalled()
       expect(result.current.unseenAnnouncements).toEqual([])
       expect(result.current.studioAnnouncements).toEqual(mockAnnouncements)
     })
@@ -639,5 +644,26 @@ describe('StudioAnnouncementsProvider', () => {
       fireEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
+  })
+})
+
+describe('StudioAnnouncementsProvider-Disabled', () => {
+  let wrapper = ({children}: {children: ReactNode}) => children
+  beforeAll(async () => {
+    // Reset all mocks
+    vi.clearAllMocks()
+    wrapper = await createAnnouncementWrapper({
+      announcements: {enabled: false},
+    })
+  })
+  test('if the feature is disabled, the client should not be called', () => {
+    const {result} = renderHook(() => useStudioAnnouncements(), {
+      wrapper,
+    })
+
+    expect(result.current.unseenAnnouncements).toEqual([])
+    expect(result.current.studioAnnouncements).toEqual([])
+    expect(seenAnnouncementsMock).not.toBeCalled()
+    expect(mockObservableRequest).not.toBeCalled()
   })
 })
