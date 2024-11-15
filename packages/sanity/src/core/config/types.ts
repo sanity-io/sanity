@@ -416,6 +416,13 @@ export interface PluginOptions {
    * @beta
    */
   onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
+  /**
+   * @hidden
+   * @internal
+   */
+  announcements?: {
+    enabled: boolean
+  }
 }
 
 /** @internal */
@@ -810,6 +817,13 @@ export interface Source {
    * @beta
    */
   onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
+  /**
+   * @hidden
+   * @internal
+   */
+  announcements?: {
+    enabled: boolean
+  }
 }
 
 /** @internal */

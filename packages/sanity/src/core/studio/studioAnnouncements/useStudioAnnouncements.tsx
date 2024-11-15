@@ -5,8 +5,13 @@ import {type StudioAnnouncementsContextValue} from './types'
 
 export function useStudioAnnouncements(): StudioAnnouncementsContextValue {
   const context = useContext(StudioAnnouncementContext)
+
   if (!context) {
-    throw new Error('useStudioAnnouncements: missing context value')
+    return {
+      studioAnnouncements: [],
+      unseenAnnouncements: [],
+      onDialogOpen: () => {},
+    }
   }
 
   return context
