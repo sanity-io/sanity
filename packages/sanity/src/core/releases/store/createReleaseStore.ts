@@ -179,10 +179,8 @@ export function createReleaseStore(context: {
     ),
   )
 
-  const state$ = concat(
-    migrateWith(client).pipe(mergeMap(() => EMPTY)),
-    merge(listFetch$, dispatch$),
-  ).pipe(
+  const migrateTmpReleases = process.env.NODE_ENV === 'development' ? migrateWith(client) : EMPTY
+  const state$ = concat(migrateTmpReleases, merge(listFetch$, dispatch$)).pipe(
     filter((action): action is ReleasesReducerAction => typeof action !== 'undefined'),
     scan((state, action) => releasesReducer(state, action), INITIAL_STATE),
     startWith(INITIAL_STATE),
