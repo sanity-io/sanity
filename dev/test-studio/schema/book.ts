@@ -40,12 +40,56 @@ export default {
         {name: 'se', type: 'string', title: 'Swedish'},
       ],
     },
+
     {
       name: 'author',
       title: 'Author',
       type: 'reference',
-      to: {type: 'author', title: 'Author'},
+      to: {
+        type: 'author',
+        title: 'Author',
+      },
+      options: {
+        search: {
+          weights: {
+            'bestFriend.name': 111,
+          },
+        },
+      },
     },
+
+    // {
+    //   name: 'author',
+    //   title: 'Author',
+    //   type: 'reference',
+    //   to: {
+    //     type: 'author',
+    //     title: 'Author',
+    //     // xxx another api option
+    //     // options: {
+    //     //   search: {
+    //     //     weights: {
+    //     //       'bestfriend.name': 666,
+    //     //     },
+    //     //   },
+    //     // },
+    //   },
+    //   options: {
+    //     search: {
+    //       // should weight `->(nestedAttributes())`?
+    //       // weight: 10,
+    //       weights: {
+    //         'bestFriend.name': 111,
+    //       },
+    //       // weights: [
+    //       //   {
+    //       //     path: 'bestFriend.name',
+    //       //     weight: 100,
+    //       //   },
+    //       // ],
+    //     },
+    //   },
+    // },
     {
       name: 'coverImage',
       title: 'Cover Image',
@@ -118,7 +162,7 @@ export default {
     {
       title: 'Authors best friend',
       name: 'authorBFF',
-      by: [{field: 'author.bestFriend.name', direction: 'asc'}],
+      by: [{field: 'author.bestFriend.name', direction: 'asc'}], // xxx how is this mapped to a dereference?
     },
     {
       title: 'Size of coverImage',
@@ -135,23 +179,34 @@ export default {
     },
   ],
   preview: {
+    // select: {
+    //   title: 'title',
+    //   translations: 'translations',
+    //   createdAt: '_createdAt',
+    //   date: '_updatedAt',
+    //   authorName: 'author.name',
+    //   authorBFF: 'author.bestFriend.name',
+    //   publicationYear: 'publicationYear',
+    //   media: 'coverImage',
+    // },
+    // prepare(book: any, options: any = {}) {
+    //   return Object.assign({}, book, {
+    //     title:
+    //       ((options.ordering || {}).name === 'swedishTitle' && (book.translations || {}).se) ||
+    //       book.title,
+    //     subtitle: formatSubtitle(book),
+    //   })
+    // },
     select: {
-      title: 'title',
-      translations: 'translations',
-      createdAt: '_createdAt',
-      date: '_updatedAt',
-      authorName: 'author.name',
-      authorBFF: 'author.bestFriend.name',
-      publicationYear: 'publicationYear',
-      media: 'coverImage',
-    },
-    prepare(book: any, options: any = {}) {
-      return Object.assign({}, book, {
-        title:
-          ((options.ordering || {}).name === 'swedishTitle' && (book.translations || {}).se) ||
-          book.title,
-        subtitle: formatSubtitle(book),
-      })
+      title: 'author.bestFriend.bestFriend.bestFriend.name',
+      // actual path is `author.bestFriend->name`
+      // subtitle: 'author.bestFriend.bestFriend._id',
+      // description: 'coverImage._id',
+      // description: 'coverImage.asset.metadata.lqip',
+      // title: 'coverImage.asset.metadata.blurHash',
+      // title: 'author.bestFriend.bestFriend.name',
+      // foo: 'author.bestFriend.bestFriend.name',
+      // swedish: 'translations.se',
     },
   },
   initialValue: {

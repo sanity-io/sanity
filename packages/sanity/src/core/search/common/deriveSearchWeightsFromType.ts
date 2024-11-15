@@ -11,6 +11,7 @@ import {type SearchPath, type SearchSpec} from './types'
 
 interface SearchWeightEntry {
   path: string
+  fullyQualifiedPath: string
   weight: number
   type: 'string' | 'pt'
 }
@@ -21,7 +22,7 @@ const PREVIEW_FIELD_WEIGHT_MAP = {
   subtitle: 5,
   description: 1.5,
 }
-const BASE_WEIGHTS: Record<string, Omit<SearchWeightEntry, 'path'>> = {
+const BASE_WEIGHTS: Record<string, Omit<SearchWeightEntry, 'path' | 'fullyQualifiedPath'>> = {
   _id: {weight: 1, type: 'string'},
   _type: {weight: 1, type: 'string'},
 }
@@ -148,6 +149,44 @@ function resolvePath(type: SchemaType | CrossDatasetType | undefined, path: stri
   return [...traverseByPath(type, path.split('.'))].join('')
 }
 
+/**
+ * Get weights for reference fields that have explicitly been given weights; either by selecting
+ * them for document list previews or by assigning their weight directly.
+ *
+ * Unlike other field types, references are not automatically factored into search result weighting.
+ */
+function getReferencePreviewWeights(
+  schemaType: SchemaType | CrossDatasetType | undefined,
+): Record<string, SearchWeightEntry> {
+  const select = schemaType?.preview?.select ?? {}
+  const paths = Object.entries(select)
+
+  return paths.reduce<Record<string, SearchWeightEntry>>((weights, [key, path]) => {
+    try {
+      const fullyQualifiedPath = [...traverseByPath(schemaType, path.split('.'))].join('')
+      const includesDereference = fullyQualifiedPath.includes(accessTokens.dereference)
+
+      // Exclude any path that does not include a dereference.
+      if (!includesDereference) {
+        return weights
+      }
+
+      return {
+        ...weights,
+        [path]: {
+          path,
+          fullyQualifiedPath,
+          weight: PREVIEW_FIELD_WEIGHT_MAP[key as keyof typeof PREVIEW_FIELD_WEIGHT_MAP] ?? 1,
+        },
+      }
+    } catch (error) {
+      throw new Error(`Unable to resolve schema path \`${path}\`. ${error.message}`, {
+        cause: error,
+      })
+    }
+  }, {})
+}
+
 function getLeafWeights(
   schemaType: SchemaType | CrossDatasetType | undefined,
   maxDepth: number,
@@ -167,7 +206,7 @@ function getLeafWeights(
       const weight = getWeight(type, path)
 
       if (typeof weight !== 'number') return []
-      return [{path, weight, type: isPtField(type) ? 'pt' : 'string'}]
+      return [{path, fullyQualifiedPath: path, weight, type: isPtField(type) ? 'pt' : 'string'}]
     }
 
     const results: SearchWeightEntry[] = []
@@ -179,6 +218,32 @@ function getLeafWeights(
       for (const field of objectType.fields) {
         const nextPath = pathToString([path, field.name].filter(Boolean))
         results.push(...traverse(field.type, nextPath, depth + 1))
+      }
+    }
+
+    const referenceTypes = typeChain.filter(
+      (t): t is ReferenceSchemaType => (t.type ?? {}).name === 'reference',
+    )
+
+    // TODO: Change to `isReferenceType`?
+    // TODO: Handle multiple reference types.
+    if (referenceTypes.length !== 0) {
+      for (const referenceType of referenceTypes) {
+        for (const referenceTargetType of referenceType.to) {
+          const weight = getWeight(type, path)
+          if (!Array.isArray(weight)) {
+            continue
+          }
+          const [selfWeight, weights] = weight
+          const paths = Object.entries(weights)
+          for (const [nestedPath, nestedWeight] of paths) {
+            results.push({
+              path: nestedPath,
+              fullyQualifiedPath: resolvePath(referenceTargetType, nestedPath),
+              weight: nestedWeight,
+            })
+          }
+        }
       }
     }
 
@@ -202,8 +267,8 @@ function getLeafWeights(
   }
 
   return traverse(schemaType, '', 0).reduce<Record<string, SearchWeightEntry>>(
-    (acc, {path, weight, type}) => {
-      acc[path] = {weight, type, path}
+    (acc, searchWeightEntry) => {
+      acc[searchWeightEntry.path] = searchWeightEntry
       return acc
     },
     {},
@@ -214,6 +279,10 @@ const getUserSetWeight = (schemaType: SchemaType) => {
   const searchOptions = getTypeChain(schemaType)
     .map((type) => type.options)
     .find(isSearchConfiguration)
+
+  if (typeof searchOptions?.search?.weights !== 'undefined') {
+    return [searchOptions?.search?.weight, searchOptions.search.weights]
+  }
 
   return typeof searchOptions?.search?.weight === 'number' ? searchOptions.search.weight : null
 }
@@ -252,13 +321,15 @@ const getPreviewWeights = (
     Object.entries(defaultWeights)
       .map(([path, {type}]) => ({path, type}))
       .filter(({path}) => selectionKeysBySelectionPath[path])
-      .map(({path, type}) => [
-        path,
+      .map((searchWeightEntry) => [
+        searchWeightEntry.path,
         {
-          type,
+          ...searchWeightEntry,
           weight:
             PREVIEW_FIELD_WEIGHT_MAP[
-              selectionKeysBySelectionPath[path] as keyof typeof PREVIEW_FIELD_WEIGHT_MAP
+              selectionKeysBySelectionPath[
+                searchWeightEntry.path
+              ] as keyof typeof PREVIEW_FIELD_WEIGHT_MAP
             ],
         },
       ]),
@@ -271,6 +342,7 @@ const getPreviewWeights = (
           path,
           {
             path,
+            fullyQualifiedPath: path,
             type: 'string',
             weight:
               PREVIEW_FIELD_WEIGHT_MAP[previewFieldName as keyof typeof PREVIEW_FIELD_WEIGHT_MAP],
@@ -306,20 +378,23 @@ export function deriveSearchWeightsFromType({
   const hiddenWeights = getLeafWeights(schemaType, maxDepth, getHiddenWeight)
   const defaultWeights = getLeafWeights(schemaType, maxDepth, getDefaultWeights)
   const previewWeights = getPreviewWeights(schemaType, maxDepth, isCrossDataset)
+  const referencePreviewWeights = getReferencePreviewWeights(schemaType)
 
   const weights: Record<string, Omit<SearchWeightEntry, 'path'>> = {
     ...BASE_WEIGHTS,
     ...defaultWeights,
     ...hiddenWeights,
     ...previewWeights,
+    ...referencePreviewWeights,
     ...userSetWeights,
   }
 
   const result = {
     typeName: isSchemaType(schemaType) ? schemaType.name : schemaType.type,
     paths: processPaths(
-      Object.entries(weights).map(([path, {type, weight}]) => ({
+      Object.entries(weights).map(([path, {weight, fullyQualifiedPath}]) => ({
         path,
+        fullyQualifiedPath,
         weight,
         ...(type === 'pt' && {mapWith: 'pt::text'}),
       })),

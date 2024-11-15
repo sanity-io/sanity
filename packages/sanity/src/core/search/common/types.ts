@@ -23,6 +23,7 @@ export interface SearchTerms<Type extends SchemaType | CrossDatasetType = Schema
 export interface SearchPath {
   weight: number
   path: string
+  fullyQualifiedPath: string
   mapWith?: string
 }
 
