@@ -29,6 +29,10 @@ function createWrapperComponent(client: SanityClient) {
   })
 }
 
+vi.mock('../../../../../../../core/releases/store/useReleases', () => ({
+  useReleases: vi.fn(),
+}))
+
 vi.mock('../../../../useDocumentPane')
 
 vi.mock('sanity', async (importOriginal) => {
@@ -36,7 +40,6 @@ vi.mock('sanity', async (importOriginal) => {
     ...(await importOriginal()),
     unstable_useValuePreview: vi.fn(),
     useDocumentVersions: vi.fn(),
-    useReleases: vi.fn(),
     usePerspective: vi.fn(() => ({perspective: undefined})),
   }
 })
@@ -44,6 +47,7 @@ vi.mock('sanity', async (importOriginal) => {
 vi.mock('sanity/router')
 
 const mockUseReleases = useReleases as Mock<typeof useReleases>
+
 const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof useDocumentVersions>
 
 describe('DocumentHeaderTitle', () => {

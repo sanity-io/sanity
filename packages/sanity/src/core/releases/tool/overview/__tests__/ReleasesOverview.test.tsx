@@ -31,6 +31,14 @@ vi.mock('../../../store', async (importOriginal) => ({
   useReleases: vi.fn(),
 }))
 
+vi.mock('../../../store/useReleases', () => ({
+  useReleases: vi.fn(),
+}))
+
+vi.mock('../../../store/useReleasesMetadata', () => ({
+  useReleasesMetadata: vi.fn(),
+}))
+
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
