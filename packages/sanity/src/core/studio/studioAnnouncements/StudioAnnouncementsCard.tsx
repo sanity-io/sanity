@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import {RemoveIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
@@ -72,7 +72,7 @@ const Root = styled.div((props) => {
 const ButtonRoot = styled.div`
   z-index: 1;
   position: absolute;
-  top: 4px;
+  top: 0px;
   right: 6px;
 `
 
@@ -152,7 +152,7 @@ export function StudioAnnouncementsCard({
               id="close-floating-button"
               mode="bleed"
               onClick={onCardDismiss}
-              icon={RemoveIcon}
+              icon={CloseIcon}
               tone="default"
               aria-label={t('announcement.floating-button.dismiss-label')}
               tooltipProps={{
