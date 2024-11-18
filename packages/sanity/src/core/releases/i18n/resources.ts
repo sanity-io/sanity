@@ -34,6 +34,16 @@ const releasesLocaleStrings = {
   'actions.summary': 'Summary',
   /** Label for unarchiving a release */
   'action.unarchive': 'Unarchive release',
+  /** Title for the dialog confirming the archive of a release */
+  'archive-dialog.confirm-archive-title':
+    "Are you sure you want to archive the <strong>'{{title}}'</strong> release?",
+  /** Description for the dialog confirming the archive of a release with one document */
+  'archive-dialog.confirm-archive-description-singular': 'This will archive 1 document version.',
+  /** Description for the dialog confirming the publish of a release with more than one document */
+  'archive-dialog.confirm-archive-description-multiple':
+    'This will archive {{count}} document versions.',
+  /** Label for the button to proceed with archiving a release */
+  'archive-dialog.confirm-archive-button': 'Yes, archive now',
 
   /** Title for changes to published documents */
   'changes-published-docs.title': 'Changes to published documents',
@@ -203,6 +213,10 @@ const releasesLocaleStrings = {
   'table-header.edited': 'Edited',
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
+  /** Text for toast when release has been archived */
+  'toast.archive.success': "The '<strong>{{title}}</strong>' release was archived.",
+  /** Text for toast when release failed to archive */
+  'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release failed to publish */
   'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been published */

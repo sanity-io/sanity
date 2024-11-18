@@ -104,41 +104,38 @@ export function createReleaseOperationsStore(options: {
       },
     ])
 
-  const handleScheduleRelease = async (releaseId: string, publishAt: Date) => {
-    await requestAction(client, [
+  const handleScheduleRelease = async (releaseId: string, publishAt: Date) =>
+    requestAction(client, [
       {
         actionType: 'sanity.action.release.schedule',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
         publishAt: publishAt.toISOString(),
       },
     ])
-  }
-  const handleUnscheduleRelease = async (releaseId: string) => {
-    await requestAction(client, [
+
+  const handleUnscheduleRelease = async (releaseId: string) =>
+    requestAction(client, [
       {
         actionType: 'sanity.action.release.unschedule',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
       },
     ])
-  }
 
-  const handleArchiveRelease = async (releaseId: string) => {
-    await requestAction(client, [
+  const handleArchiveRelease = async (releaseId: string) =>
+    requestAction(client, [
       {
         actionType: 'sanity.action.release.archive',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
       },
     ])
-  }
 
-  const handleUnarchiveRelease = async (releaseId: string) => {
-    await requestAction(client, [
+  const handleUnarchiveRelease = async (releaseId: string) =>
+    requestAction(client, [
       {
         actionType: 'sanity.action.release.unarchive',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
       },
     ])
-  }
 
   const handleCreateVersion = async (releaseId: string, documentId: string) => {
     // the documentId will show you where the document is coming from and which
@@ -167,18 +164,13 @@ export function createReleaseOperationsStore(options: {
       : client.create(versionDocument))
   }
 
-  const handleDiscardVersion = async (releaseId: string, documentId: string) => {
-    if (!document) {
-      throw new Error(`Document with id ${documentId} not found`)
-    }
-
-    await requestAction(client, [
+  const handleDiscardVersion = async (releaseId: string, documentId: string) =>
+    requestAction(client, [
       {
         actionType: 'sanity.action.document.discard',
         draftId: getVersionId(documentId, releaseId),
       },
     ])
-  }
 
   return {
     archive: handleArchiveRelease,
