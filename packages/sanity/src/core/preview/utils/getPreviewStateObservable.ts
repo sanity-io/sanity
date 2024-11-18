@@ -4,15 +4,16 @@ import {combineLatest, from, type Observable, of} from 'rxjs'
 import {map, mergeMap, scan, startWith} from 'rxjs/operators'
 import {type PreparedSnapshot} from 'sanity'
 
+import {type ReleaseId} from '../../releases'
 import {getDraftId, getPublishedId, getVersionId} from '../../util/draftUtils'
 import {type DocumentPreviewStore} from '../documentPreviewStore'
 
 /**
  * @internal
  */
-export type VersionsRecord = Record<string, PreparedSnapshot>
+export type VersionsRecord = Record<ReleaseId, PreparedSnapshot>
 
-export type VersionTuple = [bundleId: string, snapshot: PreparedSnapshot]
+export type VersionTuple = [bundleId: ReleaseId, snapshot: PreparedSnapshot]
 
 export interface PreviewState {
   isLoading?: boolean
@@ -33,57 +34,32 @@ export function getPreviewStateObservable(
   documentPreviewStore: DocumentPreviewStore,
   schemaType: SchemaType,
   documentId: string,
-  perspective: {
-    /**
-     * An array of all existing bundle ids.
-     */
-    bundleIds: string[]
-
-    /**
-     * An array of release ids ordered chronologically to represent the state of documents at the
-     * given point in time.
-     */
-    bundleStack: string[]
-  } = {
-    bundleIds: [],
-    bundleStack: [],
-  },
+  /**
+   * What additional releases to fetch versions from
+   */
+  releases: ReleaseId[] = [],
 ): Observable<PreviewState> {
   const draft$ = isLiveEditEnabled(schemaType)
     ? of({snapshot: null})
     : documentPreviewStore.observeForPreview({_id: getDraftId(documentId)}, schemaType)
 
-  const versions$ = from(perspective.bundleIds).pipe(
-    mergeMap<string, Observable<VersionTuple>>((bundleId) =>
+  const versions$ = from(releases).pipe(
+    mergeMap((release) =>
       documentPreviewStore
-        .observeForPreview({_id: getVersionId(documentId, bundleId)}, schemaType)
-        .pipe(map((storeValue) => [bundleId, storeValue])),
+        .observeForPreview({_id: getVersionId(documentId, release)}, schemaType)
+        .pipe(map((storeValue): VersionTuple => [release, storeValue])),
     ),
-    scan<VersionTuple, VersionsRecord>((byBundleId, [bundleId, value]) => {
-      if (value.snapshot === null) {
-        return omit({...byBundleId}, [bundleId])
+    scan((byVersionId, [releaseId, value]) => {
+      if (value.snapshot === undefined) {
+        return omit({...byVersionId}, [releaseId])
       }
 
       return {
-        ...byBundleId,
-        [bundleId]: value,
+        ...byVersionId,
+        [releaseId]: value,
       }
     }, {}),
     startWith<VersionsRecord>({}),
-  )
-
-  // Iterate the release stack in descending precedence, returning the highest precedence existing
-  // version document.
-  const version$ = versions$.pipe(
-    map((versions) => {
-      for (const bundleId of perspective.bundleStack) {
-        if (bundleId in versions) {
-          return versions[bundleId]
-        }
-      }
-      return {snapshot: undefined}
-    }),
-    startWith<PreparedSnapshot>({snapshot: undefined}),
   )
 
   const published$ = documentPreviewStore.observeForPreview(
@@ -91,19 +67,17 @@ export function getPreviewStateObservable(
     schemaType,
   )
 
-  return combineLatest([draft$, published$, version$, versions$]).pipe(
-    map(([draft, published, version, versions]) => ({
+  return combineLatest([draft$, published$, versions$]).pipe(
+    map(([draft, published, versions]) => ({
       draft: draft.snapshot,
       isLoading: false,
       published: published.snapshot,
-      version: version.snapshot,
       versions,
     })),
     startWith({
-      draft: null,
+      draft: undefined,
       isLoading: true,
-      published: null,
-      version: null,
+      published: undefined,
       versions: {},
     }),
   )

@@ -1,7 +1,10 @@
-import {DRAFTS_FOLDER} from '../../util/draftUtils'
-import {resolveBundlePerspective} from '../../util/resolvePerspective'
 import {type ReleaseDocument} from '../store/types'
-import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
+import {
+  PUBLISHED_PERSPECTIVE,
+  type PublishedPerspective,
+  type SelectableReleasePerspective,
+} from '../util/perspective'
+import {getReleaseIdFromReleaseDocumentId, type ReleaseId} from '../util/releaseId'
 
 export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[] {
   // The order should always be:
@@ -48,32 +51,28 @@ export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[
   })
 }
 
-export function getReleasesPerspective({
+export function getReleasesStack({
   releases,
-  perspective,
+  current,
   excluded,
 }: {
   releases: ReleaseDocument[]
-  perspective: string | undefined // Includes the bundle.<releaseName> or 'published'
-  excluded: string[]
-}): string[] {
-  if (!perspective?.startsWith('bundle.')) {
-    return []
-  }
-  const perspectiveId = resolveBundlePerspective(perspective)
-  if (!perspectiveId) {
+  current: SelectableReleasePerspective | undefined
+  excluded: SelectableReleasePerspective[]
+}): SelectableReleasePerspective[] {
+  if (!current) {
     return []
   }
 
-  const sorted = sortReleases(releases).map((release) =>
-    getBundleIdFromReleaseDocumentId(release._id),
+  const sorted: (ReleaseId | PublishedPerspective)[] = sortReleases(releases).map((release) =>
+    getReleaseIdFromReleaseDocumentId(release._id),
   )
-  const selectedIndex = sorted.indexOf(perspectiveId)
+  const selectedIndex = sorted.indexOf(current)
   if (selectedIndex === -1) {
     return []
   }
   return sorted
     .slice(selectedIndex)
-    .concat(DRAFTS_FOLDER)
+    .concat(PUBLISHED_PERSPECTIVE)
     .filter((name) => !excluded.includes(name))
 }

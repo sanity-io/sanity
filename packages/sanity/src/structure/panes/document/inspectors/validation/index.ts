@@ -8,7 +8,7 @@ import {
   isValidationError,
   isValidationWarning,
   resolveBundlePerspective,
-  usePerspective,
+  useStudioPerspectiveState,
   useTranslation,
   useValidationStatus,
 } from 'sanity'
@@ -19,11 +19,11 @@ import {ValidationInspector} from './ValidationInspector'
 function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {documentId, documentType} = props
   const {t} = useTranslation('validation')
-  const {perspective} = usePerspective()
+  const {current} = useStudioPerspectiveState()
   const {validation: validationMarkers} = useValidationStatus(
     documentId,
     documentType,
-    resolveBundlePerspective(perspective),
+    resolveBundlePerspective(current),
   )
 
   const validation: FormNodeValidation[] = useMemo(

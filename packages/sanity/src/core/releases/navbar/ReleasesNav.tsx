@@ -9,11 +9,11 @@ import {IntentLink, useRouterState} from 'sanity/router'
 import {Tooltip} from '../../../ui-components'
 import {ToolLink} from '../../studio'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
-import {usePerspective} from '../hooks/usePerspective'
+import {useStudioPerspectiveState} from '../hooks/useStudioPerspectiveState'
 import {RELEASES_INTENT, RELEASES_TOOL_NAME} from '../plugin'
-import {LATEST} from '../util/const'
 import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 import {getReleaseTone} from '../util/getReleaseTone'
+import {PUBLISHED_PERSPECTIVE} from '../util/perspective'
 import {isDraftPerspective, isPublishedPerspective} from '../util/util'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
@@ -37,10 +37,10 @@ export function ReleasesNav(): JSX.Element {
     ),
   )
 
-  const {currentGlobalBundle, setPerspective} = usePerspective()
+  const {currentGlobalRelease, current, setCurrent} = useStudioPerspectiveState()
   const {t} = useTranslation()
 
-  const handleClearPerspective = () => setPerspective(LATEST._id)
+  const handleClearPerspective = () => setCurrent(PUBLISHED_PERSPECTIVE)
 
   const releasesToolLink = useMemo(
     () => (
@@ -62,21 +62,21 @@ export function ReleasesNav(): JSX.Element {
   )
 
   const currentGlobalPerspectiveLabel = useMemo(() => {
-    if (!currentGlobalBundle || isDraftPerspective(currentGlobalBundle)) return null
+    if (!currentGlobalRelease || isDraftPerspective(current)) return null
 
     let displayTitle
-    if (isPublishedPerspective(currentGlobalBundle)) {
+    if (isPublishedPerspective(current)) {
       displayTitle = t('release.chip.published')
     } else {
       displayTitle =
-        currentGlobalBundle.metadata?.title || t('release.placeholder-untitled-release')
+        currentGlobalRelease.metadata?.title || t('release.placeholder-untitled-release')
     }
 
     const visibleLabelChildren = () => {
       const labelContent = (
         <Flex align="flex-start" gap={0}>
           <Box flex="none">
-            <ReleaseAvatar padding={2} tone={getReleaseTone(currentGlobalBundle)} />
+            <ReleaseAvatar padding={2} tone={getReleaseTone(currentGlobalRelease)} />
           </Box>
           <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
             <Text size={1} textOverflow="ellipsis" weight="medium">
@@ -86,7 +86,7 @@ export function ReleasesNav(): JSX.Element {
         </Flex>
       )
 
-      if (isPublishedPerspective(currentGlobalBundle)) {
+      if (isPublishedPerspective(current)) {
         return <Card tone="inherit">{labelContent}</Card>
       }
 
@@ -94,7 +94,7 @@ export function ReleasesNav(): JSX.Element {
         <IntentLink
           {...intentProps}
           intent={RELEASES_INTENT}
-          params={{id: getBundleIdFromReleaseDocumentId(currentGlobalBundle._id!)}}
+          params={{id: getBundleIdFromReleaseDocumentId(currentGlobalRelease._id!)}}
         >
           {children}
         </IntentLink>
@@ -116,7 +116,7 @@ export function ReleasesNav(): JSX.Element {
     }
 
     return <AnimatedMotionDiv>{visibleLabelChildren()}</AnimatedMotionDiv>
-  }, [currentGlobalBundle, t])
+  }, [currentGlobalRelease, current, t])
 
   return (
     <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
@@ -124,7 +124,7 @@ export function ReleasesNav(): JSX.Element {
         <Box flex="none">{releasesToolLink}</Box>
         <AnimatePresence>{currentGlobalPerspectiveLabel}</AnimatePresence>
         <GlobalPerspectiveMenu />
-        {!isDraftPerspective(currentGlobalBundle) && (
+        {!isDraftPerspective(current) && (
           <div>
             <Button
               icon={CloseIcon}

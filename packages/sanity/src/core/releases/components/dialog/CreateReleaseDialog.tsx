@@ -9,8 +9,8 @@ import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.tele
 import {type EditableReleaseDocument} from '../../store/types'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
-import {createReleaseId} from '../../util/createReleaseId'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
+import {generateReleaseDocumentId} from '../../util/releaseId'
 import {ReleaseForm} from './ReleaseForm'
 
 interface CreateReleaseDialogProps {
@@ -28,7 +28,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): JSX.Elemen
 
   const [value, setValue] = useState((): EditableReleaseDocument => {
     return {
-      _id: createReleaseId(),
+      _id: generateReleaseDocumentId(),
       metadata: {
         releaseType: DEFAULT_RELEASE_TYPE,
       },

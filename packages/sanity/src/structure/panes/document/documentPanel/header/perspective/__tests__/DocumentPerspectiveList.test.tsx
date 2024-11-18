@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {type HTMLProps} from 'react'
-import {type ReleaseDocument, usePerspective, useReleases} from 'sanity'
+import {type ReleaseDocument, useReleases, useStudioPerspectiveState} from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
@@ -46,7 +46,7 @@ const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
 
-const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
+const mockUsePerspective = useStudioPerspectiveState as Mock<typeof useStudioPerspectiveState>
 const mockUseReleases = useReleases as Mock<typeof useReleases>
 
 describe('DocumentPerspectiveList', () => {
@@ -68,16 +68,16 @@ describe('DocumentPerspectiveList', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: mockCurrent,
-      setPerspective: vi.fn(),
+      currentGlobalRelease: mockCurrent,
+      setCurrent: vi.fn(),
       bundlesPerspective: ['drafts'],
-      currentGlobalBundleId: '_.releases.spring-drop',
-      excludedPerspectives: [],
+      current: '_.releases.spring-drop',
+      excluded: [],
       isPerspectiveExcluded: vi.fn().mockReturnValue(false),
-      perspective: undefined,
-      toggleExcludedPerspective: vi.fn(),
+      current: undefined,
+      toggle: vi.fn(),
       setPerspectiveFromReleaseDocumentId: vi.fn(),
-      setPerspectiveFromReleaseId: vi.fn(),
+      setCurrent: vi.fn(),
     })
 
     mockUseDocumentPane.mockReturnValue({

@@ -11,7 +11,7 @@ import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
 import {type EditableReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
-import {createReleaseId} from '../../../util/createReleaseId'
+import {generateReleaseDocumentId, type ReleaseDocumentId} from '../../../util/releaseId'
 import {ReleaseForm} from '../../dialog/ReleaseForm'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
@@ -21,7 +21,7 @@ export function CopyToNewReleaseDialog(props: {
   documentType: string
   tone: BadgeTone
   title: string
-  onCreateVersion: (releaseId: string) => void
+  onCreateVersion: (releaseId: ReleaseDocumentId) => void
 }): JSX.Element {
   const {onClose, documentId, documentType, tone, title, onCreateVersion} = props
   const {t} = useTranslation()
@@ -30,7 +30,7 @@ export function CopyToNewReleaseDialog(props: {
   const schema = useSchema()
   const schemaType = schema.get(documentType)
 
-  const [newReleaseId] = useState(createReleaseId())
+  const [newReleaseId] = useState(generateReleaseDocumentId())
 
   const [value, setValue] = useState((): EditableReleaseDocument => {
     return {

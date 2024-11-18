@@ -12,8 +12,8 @@ import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   SanityDefaultPreview,
-  usePerspective,
   useReleases,
+  useStudioPerspectiveState,
 } from 'sanity'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components'
@@ -38,14 +38,16 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, value} = props
 
   const releases = useReleases()
-  const {bundlesPerspective, perspective} = usePerspective()
+  const {current} = useStudioPerspectiveState()
   const previewStateObservable = useMemo(
     () =>
-      getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, {
-        bundleIds: releases.releasesIds,
-        bundleStack: bundlesPerspective,
-      }),
-    [props.documentPreviewStore, schemaType, value._id, releases.releasesIds, bundlesPerspective],
+      getPreviewStateObservable(
+        props.documentPreviewStore,
+        schemaType,
+        value._id,
+        releases.releasesIds,
+      ),
+    [props.documentPreviewStore, schemaType, value._id, releases.releasesIds],
   )
 
   const {
@@ -60,7 +62,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     published: null,
     version: null,
     versions: {},
-    perspective,
+    current: current,
   })
 
   const isLoading = previewIsLoading || releases.loading
@@ -78,7 +80,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   return (
     <SanityDefaultPreview
-      {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
+      {...getPreviewValueWithFallback({value, draft, published, version})}
       isPlaceholder={isLoading}
       icon={icon}
       layout={layout}

@@ -3,11 +3,12 @@ import {Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {
   formatRelativeLocale,
-  getBundleIdFromReleaseDocumentId,
+  getPerspectiveTone,
   getPublishDateFromRelease,
+  getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   isReleaseScheduledOrScheduling,
-  LATEST,
+  PUBLISHED_PERSPECTIVE,
   type ReleaseDocument,
   Translate,
   useTranslation,
@@ -25,7 +26,9 @@ export function AddToReleaseBanner({
   documentId: string
   currentRelease: ReleaseDocument
 }): JSX.Element {
-  const tone = getReleaseTone(currentRelease ?? LATEST)
+  const tone = currentRelease
+    ? getReleaseTone(currentRelease)
+    : getPerspectiveTone(PUBLISHED_PERSPECTIVE)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
 
@@ -37,7 +40,7 @@ export function AddToReleaseBanner({
 
   const handleAddToRelease = useCallback(async () => {
     if (currentRelease._id) {
-      await createVersion(getBundleIdFromReleaseDocumentId(currentRelease._id), documentId)
+      await createVersion(getReleaseIdFromReleaseDocumentId(currentRelease._id), documentId)
     }
   }, [createVersion, currentRelease._id, documentId])
 

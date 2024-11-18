@@ -2,7 +2,7 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {usePerspective} from '../../hooks/usePerspective'
+import {useStudioPerspectiveState} from '../../hooks/useStudioPerspectiveState'
 import {LATEST} from '../../util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
@@ -24,7 +24,7 @@ vi.mock('../../../store/releases/useBundles', () => ({
   }),
 }))
 
-const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
+const mockUsePerspective = useStudioPerspectiveState as Mock<typeof useStudioPerspectiveState>
 
 const renderTest = async () => {
   const wrapper = await createTestProvider({
@@ -38,8 +38,8 @@ const mockSetPerspective = vi.fn()
 describe('ReleasesNav', () => {
   beforeEach(() => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: LATEST,
-      setPerspective: mockSetPerspective,
+      currentGlobalRelease: LATEST,
+      setCurrent: mockSetPerspective,
     })
   })
 
@@ -66,11 +66,11 @@ describe('ReleasesNav', () => {
 
   it('should have clear button to unset perspective when a perspective is chosen', async () => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: {
+      currentGlobalRelease: {
         _id: '_.releases.a-release',
         metadata: {title: 'Test Release'},
       },
-      setPerspective: mockSetPerspective,
+      setCurrent: mockSetPerspective,
     })
 
     await renderTest()
@@ -82,13 +82,13 @@ describe('ReleasesNav', () => {
 
   it('should list the title of the chosen perspective', async () => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: {
+      currentGlobalRelease: {
         _id: '_.releases.a-release',
         metadata: {
           title: 'Test Bundle',
         },
       },
-      setPerspective: mockSetPerspective,
+      setCurrent: mockSetPerspective,
     })
 
     await renderTest()
@@ -98,11 +98,11 @@ describe('ReleasesNav', () => {
 
   it('should show release avatar for chosen perspective', async () => {
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: {
+      currentGlobalRelease: {
         _id: '_.releases.a-release',
         metadata: {title: 'Test Bundle', releaseType: 'asap'},
       },
-      setPerspective: mockSetPerspective,
+      setCurrent: mockSetPerspective,
     })
 
     await renderTest()

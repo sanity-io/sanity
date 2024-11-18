@@ -2,12 +2,10 @@ import {DocumentRemoveIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
-  isDraftPerspective,
-  isPublishedPerspective,
   type ReleaseDocument,
   Translate,
   useDocumentOperation,
-  usePerspective,
+  useStudioPerspectiveState,
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
@@ -19,14 +17,10 @@ import {Banner} from './Banner'
 
 export function DeletedDocumentBanners() {
   const {isDeleted, isDeleting} = useDocumentPane()
-  const {currentGlobalBundle} = usePerspective()
+  const {currentGlobalRelease} = useStudioPerspectiveState()
 
-  if (
-    !isPublishedPerspective(currentGlobalBundle) &&
-    !isDraftPerspective(currentGlobalBundle) &&
-    currentGlobalBundle.state === 'archived'
-  ) {
-    return <ArchivedReleaseBanner release={currentGlobalBundle as ReleaseDocument} />
+  if (currentGlobalRelease?.state === 'archived') {
+    return <ArchivedReleaseBanner release={currentGlobalRelease as ReleaseDocument} />
   }
   if (isDeleted && !isDeleting) return <DeletedDocumentBanner />
 }

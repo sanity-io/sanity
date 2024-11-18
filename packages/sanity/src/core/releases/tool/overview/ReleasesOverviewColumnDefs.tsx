@@ -9,10 +9,12 @@ import {Button, Tooltip} from '../../../../ui-components'
 import {RelativeTime} from '../../../components'
 import {Translate, useTranslation} from '../../../i18n'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
-import {usePerspective} from '../../hooks/usePerspective'
+import {useStudioPerspectiveState} from '../../hooks/useStudioPerspectiveState'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {DRAFTS_PERSPECTIVE} from '../../util/perspective'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/releaseId'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 import {type TableRowProps} from '../components/Table/Table'
 import {Headers} from '../components/Table/TableHeader'
@@ -48,18 +50,17 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {currentGlobalBundleId, setPerspective, setPerspectiveFromReleaseDocumentId} =
-    usePerspective()
+  const {current, setCurrent} = useStudioPerspectiveState()
   const {state, _id} = release
   const isArchived = state === 'archived'
-
+  const releaseId = getReleaseIdFromReleaseDocumentId(_id)
   const handlePinRelease = useCallback(() => {
-    if (_id === currentGlobalBundleId) {
-      setPerspective('drafts')
+    if (releaseId === current) {
+      setCurrent(DRAFTS_PERSPECTIVE)
     } else {
-      setPerspectiveFromReleaseDocumentId(_id)
+      setCurrent(getReleaseIdFromReleaseDocumentId(_id))
     }
-  }, [_id, currentGlobalBundleId, setPerspective, setPerspectiveFromReleaseDocumentId])
+  }, [_id, current, releaseId, setCurrent])
 
   const cardProps: TableRowProps = release.isDeleted
     ? {tone: 'transparent'}
@@ -70,7 +71,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
         tone: 'inherit',
       }
 
-  const isReleasePinned = _id === currentGlobalBundleId
+  const isReleasePinned = releaseId === current
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
   const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
@@ -96,7 +97,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
             onClick={handlePinRelease}
             padding={2}
             round
-            selected={_id === currentGlobalBundleId}
+            selected={releaseId === current}
           />
           <Card {...cardProps} padding={2} radius={2} flex={1}>
             <Flex align="center" gap={2}>

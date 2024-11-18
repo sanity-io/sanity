@@ -10,6 +10,7 @@ import {
   type VersionsRecord,
   type VersionTuple,
 } from '../../../../preview/utils/getPreviewStateObservable'
+import {type ReleaseId} from '../../../../releases'
 import {createSearch} from '../../../../search'
 import {
   collate,
@@ -48,7 +49,7 @@ export function getReferenceInfo(
   id: string,
   referenceType: ReferenceSchemaType,
   {version}: {version?: string} = {},
-  perspective: {bundleIds: string[]; bundleStack: string[]} = {bundleIds: [], bundleStack: []},
+  perspective: {releaseIds: ReleaseId[]; bundleStack: string[]} = {releaseIds: [], bundleStack: []},
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId, versionId} = getIdPair(id, {version})
 
@@ -144,28 +145,30 @@ export function getReferenceInfo(
             refSchemaType,
           )
 
-          const versions$ = from(perspective.bundleIds).pipe(
-            mergeMap<string, Observable<VersionTuple>>((bundleId) =>
+          const versions$ = from(perspective.releaseIds).pipe(
+            mergeMap((bundleId) =>
               documentPreviewStore
                 .observePaths({_id: getVersionId(id, bundleId)}, previewPaths)
                 .pipe(
-                  // eslint-disable-next-line max-nested-callbacks
-                  map((result) =>
-                    result
-                      ? [
-                          bundleId,
-                          {
-                            snapshot: {
-                              _id: versionId,
-                              ...prepareForPreview(result, refSchemaType),
+                  map(
+                    // eslint-disable-next-line max-nested-callbacks
+                    (result): VersionTuple =>
+                      result
+                        ? [
+                            bundleId,
+                            {
+                              snapshot: {
+                                _id: versionId,
+                                ...prepareForPreview(result, refSchemaType),
+                              },
                             },
-                          },
-                        ]
-                      : [bundleId, {snapshot: undefined}],
+                          ]
+                        : [bundleId, {snapshot: undefined}],
                   ),
                 ),
             ),
-            scan((byBundleId, [bundleId, value]) => {
+
+            scan((byBundleId: VersionsRecord, [bundleId, value]) => {
               if (value.snapshot === null) {
                 return omit({...byBundleId}, [bundleId])
               }

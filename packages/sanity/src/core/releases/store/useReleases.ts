@@ -2,7 +2,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
-import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId, type ReleaseId} from '../util/releaseId'
 import {type ReleasesReducerAction} from './reducer'
 import {type ReleaseDocument} from './types'
 import {useReleasesStore} from './useReleasesStore'
@@ -15,7 +15,7 @@ interface ReleasesState {
   /**
    * Sorted array of release IDs, excluding archived releases
    */
-  releasesIds: string[]
+  releasesIds: ReleaseId[]
   /**
    * Array of archived releases
    */
@@ -50,7 +50,7 @@ export function useReleases(): ReleasesState {
     [state.releases],
   )
   const releasesIds = useMemo(
-    () => releasesAsArray.map((release) => getBundleIdFromReleaseDocumentId(release._id)),
+    () => releasesAsArray.map((release) => getReleaseIdFromReleaseDocumentId(release._id)),
     [releasesAsArray],
   )
   return {

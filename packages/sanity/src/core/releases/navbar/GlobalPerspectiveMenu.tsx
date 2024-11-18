@@ -7,14 +7,13 @@ import {css, styled} from 'styled-components'
 import {MenuButton} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {CreateReleaseDialog} from '../components/dialog/CreateReleaseDialog'
-import {usePerspective} from '../hooks'
+import {useStudioPerspectiveState} from '../hooks'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {useReleases} from '../store/useReleases'
-import {
-  getRangePosition,
-  GlobalPerspectiveMenuItem,
-  type LayerRange,
-} from './GlobalPerspectiveMenuItem'
+import {PUBLISHED_PERSPECTIVE} from '../util/perspective'
+import {getReleaseIdFromReleaseDocumentId} from '../util/releaseId'
+import {GlobalPublishedPerspectiveMenuItem} from './GlobalPublishedPerspectiveMenuItem'
+import {getRangePosition, type LayerRange} from './GlobalReleasePerspectiveMenuItem'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
@@ -44,7 +43,7 @@ const ASAP_RANGE_OFFSET = 2
 
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {loading, data: releases} = useReleases()
-  const {currentGlobalBundleId} = usePerspective()
+  const {current} = useStudioPerspectiveState()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
@@ -82,7 +81,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     firstIndex = 0
     // }
 
-    if (currentGlobalBundleId === 'published') {
+    if (current === 'published') {
       lastIndex = 0
     }
 
@@ -109,7 +108,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
           // }
         }
 
-        if (_id === currentGlobalBundleId) {
+        if (getReleaseIdFromReleaseDocumentId(_id) === current) {
           lastIndex = index
         }
       })
@@ -122,7 +121,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       lastIndex,
       offsets,
     }
-  }, [currentGlobalBundleId, sortedReleaseTypeReleases])
+  }, [current, sortedReleaseTypeReleases])
 
   const releasesList = useMemo(() => {
     if (loading) {
@@ -137,9 +136,9 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       <Box>
         <StyledBox ref={setScrollContainer} onScroll={onScroll}>
           <StyledPublishedBox $removePadding={!releases.length}>
-            <GlobalPerspectiveMenuItem
+            <GlobalPublishedPerspectiveMenuItem
               rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
-              release={'published'}
+              perspective={PUBLISHED_PERSPECTIVE}
             />
           </StyledPublishedBox>
           <>

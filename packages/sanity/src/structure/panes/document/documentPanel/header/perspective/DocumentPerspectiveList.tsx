@@ -1,21 +1,26 @@
 import {Text} from '@sanity/ui'
-import {memo, useCallback, useMemo} from 'react'
+import {memo, useMemo} from 'react'
 import {
   formatRelativeLocale,
   getPublishDateFromRelease,
   getReleaseTone,
   getVersionFromId,
   isReleaseScheduledOrScheduling,
+  PUBLISHED_PERSPECTIVE,
   type ReleaseDocument,
   Translate,
   useDateTimeFormat,
-  usePerspective,
   useReleases,
+  useStudioPerspectiveState,
   useTranslation,
   VersionChip,
   versionDocumentExists,
 } from 'sanity'
 
+import {
+  DRAFTS_PERSPECTIVE,
+  getReleaseIdFromReleaseDocumentId,
+} from '../../../../../../core/releases'
 import {useDocumentPane} from '../../../useDocumentPane'
 
 type FilterReleases = {
@@ -64,9 +69,9 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
 }
 
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
-  const {perspective} = usePerspective()
+  const {current} = useStudioPerspectiveState()
   const {t} = useTranslation()
-  const {setPerspective} = usePerspective()
+  const {setCurrent} = useStudioPerspectiveState()
   const dateTimeFormat = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -92,13 +97,6 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     )
   }, [documentVersions, releases])
 
-  const handleBundleChange = useCallback(
-    (bundleId: string) => () => {
-      setPerspective(bundleId)
-    },
-    [setPerspective],
-  )
-
   return (
     <>
       <VersionChip
@@ -116,7 +114,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           </Text>
         }
         disabled={!editState?.published}
-        onClick={handleBundleChange('published')}
+        onClick={() => () => {
+          setCurrent(PUBLISHED_PERSPECTIVE)
+        }}
         selected={
           /** the publish is selected when:
            * when the document displayed is a published document, but has no draft and the perspective that is
@@ -124,8 +124,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
            * when the perspective is published
            */
           !!(
-            (editState?.published?._id === displayed?._id && !editState?.draft && perspective) ||
-            perspective === 'published'
+            (editState?.published?._id === displayed?._id && !editState?.draft && current) ||
+            current === 'published'
           )
         }
         text={t('release.chip.published')}
@@ -172,18 +172,16 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
            * when the document is not published and the displayed version is draft,
            * when there is no draft (new document),
            */
-          !!(
-            editState?.draft?._id === displayed?._id ||
-            !perspective ||
-            (!editState?.published &&
-              editState?.draft &&
-              editState?.draft?._id === displayed?._id) ||
-            (!editState?.published && !editState?.draft)
-          )
+          editState?.draft?._id === displayed?._id ||
+          !current ||
+          (!editState?.published && editState?.draft && editState?.draft?._id === displayed?._id) ||
+          (!editState?.published && !editState?.draft)
         }
         text={t('release.chip.draft')}
         tone="caution"
-        onClick={handleBundleChange('drafts')}
+        onClick={() => () => {
+          setCurrent(DRAFTS_PERSPECTIVE)
+        }}
         contextValues={{
           documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
           menuReleaseId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
@@ -202,7 +200,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             key={release._id}
             tooltipContent={<TooltipContent release={release} />}
             selected={release.name === getVersionFromId(displayed?._id || '')}
-            onClick={handleBundleChange(release.name)}
+            onClick={() => () => {
+              setCurrent(getReleaseIdFromReleaseDocumentId(release._id))
+            }}
             text={release.metadata.title || t('release.placeholder-untitled-release')}
             tone={getReleaseTone(release)}
             locked={isReleaseScheduledOrScheduling(release)}

@@ -11,10 +11,12 @@ import {
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../hooks'
+import {useStudioPerspectiveState} from '../../hooks/useStudioPerspectiveState'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../index'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {DRAFTS_PERSPECTIVE} from '../../util/perspective'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/releaseId'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
 
@@ -23,16 +25,17 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
 
-  const {currentGlobalBundleId, setPerspective, setPerspectiveFromReleaseDocumentId} =
-    usePerspective()
+  const {current, setCurrent} = useStudioPerspectiveState()
+  const selected = getReleaseIdFromReleaseDocumentId(_id) === current
 
   const handlePinRelease = useCallback(() => {
-    if (_id === currentGlobalBundleId) {
-      setPerspective('drafts')
+    if (selected) {
+      // toggle off
+      setCurrent(DRAFTS_PERSPECTIVE)
     } else {
-      setPerspectiveFromReleaseDocumentId(_id)
+      setCurrent(getReleaseIdFromReleaseDocumentId(_id))
     }
-  }, [_id, currentGlobalBundleId, setPerspective, setPerspectiveFromReleaseDocumentId])
+  }, [_id, selected, setCurrent])
 
   return (
     <Container width={3}>
@@ -40,12 +43,12 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
         <Flex gap={1}>
           <Button
             disabled={state === 'archived' || state === 'published'}
-            icon={_id === currentGlobalBundleId ? PinFilledIcon : PinIcon}
+            icon={selected ? PinFilledIcon : PinIcon}
             mode="bleed"
             onClick={handlePinRelease}
             padding={2}
             radius="full"
-            selected={_id === currentGlobalBundleId}
+            selected={selected}
             space={2}
             text={tRelease('dashboard.details.pin-release')}
             tone={getReleaseTone(release)}

@@ -2,9 +2,10 @@ import {describe, expect, it} from 'vitest'
 
 import {RELEASE_DOCUMENT_TYPE} from '../../store/constants'
 import {type ReleaseDocument} from '../../store/types'
-import {createReleaseId} from '../../util/createReleaseId'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
-import {getReleasesPerspective, sortReleases} from '../utils'
+import {type SelectableReleasePerspective} from '../../util/perspective'
+import {generateReleaseDocumentId, ReleaseDocumentId} from '../../util/releaseId'
+import {getReleasesStack, sortReleases} from '../utils'
 
 function createReleaseMock(
   value: Partial<
@@ -13,10 +14,10 @@ function createReleaseMock(
     }
   >,
 ): ReleaseDocument {
-  const id = value._id || createReleaseId()
+  const id = value._id || generateReleaseDocumentId()
   const name = getBundleIdFromReleaseDocumentId(id)
   return {
-    _id: id,
+    _id: ReleaseDocumentId(id),
     _type: RELEASE_DOCUMENT_TYPE,
     _createdAt: new Date().toISOString(),
     _updatedAt: new Date().toISOString(),
@@ -35,14 +36,14 @@ describe('sortReleases()', () => {
   it('should return the asap releases ordered by createdAt', () => {
     const releases: ReleaseDocument[] = [
       createReleaseMock({
-        _id: '_.releases.asap1',
+        _id: ReleaseDocumentId('_.releases.asap1'),
         _createdAt: '2024-10-24T00:00:00Z',
         metadata: {
           releaseType: 'asap',
         },
       }),
       createReleaseMock({
-        _id: '_.releases.asap2',
+        _id: ReleaseDocumentId('_.releases.asap2'),
         _createdAt: '2024-10-25T00:00:00Z',
         metadata: {
           releaseType: 'asap',
@@ -58,21 +59,21 @@ describe('sortReleases()', () => {
   it('should return the scheduled releases ordered by intendedPublishAt or publishAt', () => {
     const releases: ReleaseDocument[] = [
       createReleaseMock({
-        _id: '_.releases.future2',
+        _id: ReleaseDocumentId('_.releases.future2'),
         metadata: {
           releaseType: 'scheduled',
           intendedPublishAt: '2024-11-25T00:00:00Z',
         },
       }),
       createReleaseMock({
-        _id: '_.releases.future1',
+        _id: ReleaseDocumentId('_.releases.future1'),
         metadata: {
           releaseType: 'scheduled',
           intendedPublishAt: '2024-11-23T00:00:00Z',
         },
       }),
       createReleaseMock({
-        _id: '_.releases.future4',
+        _id: ReleaseDocumentId('_.releases.future4'),
         state: 'scheduled',
         publishAt: '2024-11-31T00:00:00Z',
         metadata: {
@@ -81,7 +82,7 @@ describe('sortReleases()', () => {
         },
       }),
       createReleaseMock({
-        _id: '_.releases.future3',
+        _id: ReleaseDocumentId('_.releases.future3'),
         state: 'scheduled',
         publishAt: '2024-11-26T00:00:00Z',
         metadata: {
@@ -99,14 +100,14 @@ describe('sortReleases()', () => {
   it('should return the undecided releases ordered by createdAt', () => {
     const releases: ReleaseDocument[] = [
       createReleaseMock({
-        _id: '_.releases.undecided1',
+        _id: ReleaseDocumentId('_.releases.undecided1'),
         _createdAt: '2024-10-25T00:00:00Z',
         metadata: {
           releaseType: 'undecided',
         },
       }),
       createReleaseMock({
-        _id: '_.releases.undecided2',
+        _id: ReleaseDocumentId('_.releases.undecided2'),
         _createdAt: '2024-10-26T00:00:00Z',
         metadata: {
           releaseType: 'undecided',
@@ -122,28 +123,28 @@ describe('sortReleases()', () => {
   it("should gracefully combine all release types, and sort them by 'undecided', 'scheduled', 'asap'", () => {
     const releases = [
       createReleaseMock({
-        _id: '_.releases.asap2',
+        _id: ReleaseDocumentId('_.releases.asap2'),
         _createdAt: '2024-10-25T00:00:00Z',
         metadata: {
           releaseType: 'asap',
         },
       }),
       createReleaseMock({
-        _id: '_.releases.asap1',
+        _id: ReleaseDocumentId('_.releases.asap1'),
         _createdAt: '2024-10-24T00:00:00Z',
         metadata: {
           releaseType: 'asap',
         },
       }),
       createReleaseMock({
-        _id: '_.releases.undecided2',
+        _id: ReleaseDocumentId('_.releases.undecided2'),
         _createdAt: '2024-10-26T00:00:00Z',
         metadata: {
           releaseType: 'undecided',
         },
       }),
       createReleaseMock({
-        _id: '_.releases.future4',
+        _id: ReleaseDocumentId('_.releases.future4'),
         state: 'scheduled',
         publishAt: '2024-11-31T00:00:00Z',
         metadata: {
@@ -152,7 +153,7 @@ describe('sortReleases()', () => {
         },
       }),
       createReleaseMock({
-        _id: '_.releases.future1',
+        _id: ReleaseDocumentId('_.releases.future1'),
         metadata: {
           releaseType: 'scheduled',
           intendedPublishAt: '2024-11-23T00:00:00Z',
@@ -170,28 +171,28 @@ describe('sortReleases()', () => {
 describe('getReleasesPerspective()', () => {
   const releases = [
     createReleaseMock({
-      _id: '_.releases.asap2',
+      _id: ReleaseDocumentId('_.releases.asap2'),
       _createdAt: '2024-10-25T00:00:00Z',
       metadata: {
         releaseType: 'asap',
       },
     }),
     createReleaseMock({
-      _id: '_.releases.asap1',
+      _id: ReleaseDocumentId('_.releases.asap1'),
       _createdAt: '2024-10-24T00:00:00Z',
       metadata: {
         releaseType: 'asap',
       },
     }),
     createReleaseMock({
-      _id: '_.releases.undecided2',
+      _id: ReleaseDocumentId('_.releases.undecided2'),
       _createdAt: '2024-10-26T00:00:00Z',
       metadata: {
         releaseType: 'undecided',
       },
     }),
     createReleaseMock({
-      _id: '_.releases.future4',
+      _id: ReleaseDocumentId('_.releases.future4'),
       state: 'scheduled',
       publishAt: '2024-11-31T00:00:00Z',
       metadata: {
@@ -200,7 +201,7 @@ describe('getReleasesPerspective()', () => {
       },
     }),
     createReleaseMock({
-      _id: '_.releases.future1',
+      _id: ReleaseDocumentId('_.releases.future1'),
       metadata: {
         releaseType: 'scheduled',
         intendedPublishAt: '2024-11-23T00:00:00Z',
@@ -219,13 +220,13 @@ describe('getReleasesPerspective()', () => {
     {
       perspective: 'bundle.undecided2',
       excluded: ['future1', 'drafts'],
-      expected: ['undecided2', 'future4', 'asap2', 'asap1'],
+      expected: ['undecided2', 'future4', 'asap2', 'asap1'] as SelectableReleasePerspective[],
     },
   ]
   it.each(testCases)(
     'should return the correct release stack for %s',
     ({perspective, excluded, expected}) => {
-      const result = getReleasesPerspective({releases, perspective, excluded})
+      const result = getReleasesStack({releases, perspective, excluded})
       expect(result).toEqual(expected)
     },
   )

@@ -2,6 +2,7 @@ import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type PartialExcept} from '../../util'
+import {type ReleaseDocumentId} from '../util/releaseId'
 import {RELEASE_DOCUMENT_TYPE} from './constants'
 import {type MetadataWrapper} from './createReleaseMetadataAggregator'
 import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
@@ -30,7 +31,7 @@ export interface ReleaseDocument {
    * typically
    * _.releases.<name>
    */
-  _id: string
+  _id: ReleaseDocumentId
   _type: typeof RELEASE_DOCUMENT_TYPE
   _createdAt: string
   _updatedAt: string

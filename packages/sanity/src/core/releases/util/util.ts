@@ -5,10 +5,18 @@ import {
   isVersionId,
   resolveBundlePerspective,
 } from '../../util'
-import {type CurrentPerspective} from '../hooks/usePerspective'
-import {type VersionOriginTypes} from '../index'
+import {
+  type ReleasePerspective,
+  type SelectableReleasePerspective,
+  type VersionOriginTypes,
+} from '../index'
 import {type ReleaseDocument} from '../store/types'
-import {LATEST} from './const'
+import {
+  DRAFTS_PERSPECTIVE,
+  type DraftsPerspective,
+  PUBLISHED_PERSPECTIVE,
+  type PublishedPerspective,
+} from './perspective'
 
 /**
  * @beta
@@ -76,13 +84,17 @@ export function getPublishDateFromRelease(release: ReleaseDocument): Date {
 }
 
 /** @internal */
-export function isPublishedPerspective(bundle: CurrentPerspective | string): bundle is 'published' {
-  return bundle === 'published'
+export function isPublishedPerspective(
+  perspective: SelectableReleasePerspective,
+): perspective is PublishedPerspective {
+  return perspective === PUBLISHED_PERSPECTIVE
 }
 
 /** @internal */
-export function isDraftPerspective(bundle: CurrentPerspective | string): bundle is typeof LATEST {
-  return bundle === LATEST
+export function isDraftPerspective(
+  perspective: ReleasePerspective | string,
+): perspective is DraftsPerspective {
+  return perspective === DRAFTS_PERSPECTIVE
 }
 
 /** @internal */

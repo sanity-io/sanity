@@ -15,9 +15,9 @@ import {
 import {useTranslation} from '../../../i18n'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
-import {usePerspective} from '../../hooks/usePerspective'
+import {useStudioPerspectiveState} from '../../hooks/useStudioPerspectiveState'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument, useReleases} from '../../index'
+import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument, useReleases} from '../../index'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
@@ -134,16 +134,19 @@ export function ReleasesOverview() {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {timeZone} = useTimeZone()
-  const {currentGlobalBundleId} = usePerspective()
+  const {current} = useStudioPerspectiveState()
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> =>
       datum.isDeleted
         ? {tone: 'transparent'}
         : {
-            tone: currentGlobalBundleId === datum._id ? getReleaseTone(datum) : 'default',
+            tone:
+              current === getReleaseIdFromReleaseDocumentId(datum._id)
+                ? getReleaseTone(datum)
+                : 'default',
           },
-    [currentGlobalBundleId],
+    [current],
   )
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)

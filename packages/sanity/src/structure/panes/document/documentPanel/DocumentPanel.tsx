@@ -4,9 +4,9 @@ import {
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
-  type ReleaseDocument,
   ScrollContainer,
-  usePerspective,
+  useCurrentRelease,
+  useStudioPerspectiveState,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {css, styled} from 'styled-components'
@@ -69,10 +69,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     permissions,
     isPermissionsLoading,
     existsInBundle,
-    documentType,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
+  const currentRelease = useCurrentRelease()
   const parentPortal = usePortal()
   const {features} = useStructureTool()
   const portalRef = useRef<HTMLDivElement | null>(null)
@@ -140,23 +140,18 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {currentGlobalBundle} = usePerspective()
+  const {current} = useStudioPerspectiveState()
 
   const currentPerspectiveIsRelease =
-    !isPublishedPerspective(currentGlobalBundle) && !isDraftPerspective(currentGlobalBundle)
+    current && !isPublishedPerspective(current) && !isDraftPerspective(current)
   const isScheduledRelease =
-    typeof currentGlobalBundle === 'object' && 'state' in currentGlobalBundle
-      ? isReleaseScheduledOrScheduling(currentGlobalBundle)
+    typeof current === 'object' && 'state' in current
+      ? isReleaseScheduledOrScheduling(current)
       : false
 
   const banners = useMemo(() => {
-    if ((!existsInBundle && currentPerspectiveIsRelease) || isScheduledRelease) {
-      return (
-        <AddToReleaseBanner
-          documentId={value._id}
-          currentRelease={currentGlobalBundle as ReleaseDocument}
-        />
-      )
+    if (currentRelease && (!existsInBundle || isScheduledRelease)) {
+      return <AddToReleaseBanner documentId={value._id} currentRelease={currentRelease} />
     }
 
     if (activeView.type === 'form' && isLiveEdit && ready) {
@@ -184,8 +179,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     )
   }, [
     activeView.type,
-    currentGlobalBundle,
-    currentPerspectiveIsRelease,
+    currentRelease,
     displayed,
     documentId,
     existsInBundle,

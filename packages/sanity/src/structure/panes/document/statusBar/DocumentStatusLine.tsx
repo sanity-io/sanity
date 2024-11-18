@@ -4,17 +4,17 @@ import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {
   DocumentStatus,
-  getBundleIdFromReleaseDocumentId,
   getPreviewStateObservable,
-  isDraftPerspective,
+  getReleaseIdFromReleaseDocumentId,
   isPublishedPerspective,
   useDocumentPreviewStore,
-  usePerspective,
   useReleases,
   useSchema,
+  useStudioPerspectiveState,
   useSyncState,
 } from 'sanity'
 
+import {useCurrentRelease} from '../../../../core/releases/hooks/useCurrentRelease'
 import {Tooltip} from '../../../../ui-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusPulse} from './DocumentStatusPulse'
@@ -29,19 +29,17 @@ export function DocumentStatusLine() {
   const schema = useSchema()
   const schemaType = schema.get(documentType)
   const releases = useReleases()
-  const {currentGlobalBundle, bundlesPerspective} = usePerspective()
-  const previewStateObservable = useMemo(
-    () =>
-      schemaType
-        ? getPreviewStateObservable(documentPreviewStore, schemaType, value._id, {
-            bundleIds: (releases.data ?? []).map((release) =>
-              getBundleIdFromReleaseDocumentId(release._id),
-            ),
-            bundleStack: bundlesPerspective,
-          })
-        : of({versions: {}}),
-    [documentPreviewStore, schemaType, value._id, releases.data, bundlesPerspective],
-  )
+
+  const {current: currentPerspective} = useStudioPerspectiveState()
+  const currentRelease = useCurrentRelease()
+  const previewStateObservable = useMemo(() => {
+    const releaseIds = (releases.data ?? []).map((release) =>
+      getReleaseIdFromReleaseDocumentId(release._id),
+    )
+    return schemaType
+      ? getPreviewStateObservable(documentPreviewStore, schemaType, value._id, releaseIds)
+      : of({versions: {}})
+  }, [documentPreviewStore, schemaType, value._id, releases.data])
   const {versions} = useObservable(previewStateObservable, {versions: {}})
 
   const syncState = useSyncState(documentId, documentType, {version: editState?.bundleId})
@@ -76,21 +74,17 @@ export function DocumentStatusLine() {
   }, [syncState.isSyncing, lastUpdated])
 
   const getMode = () => {
-    if (isPublishedPerspective(currentGlobalBundle)) {
-      return 'published'
-    }
-    if (editState?.version) {
-      return 'version'
-    }
-    if (editState?.draft) {
+    if (!currentPerspective) {
       return 'draft'
     }
-    return 'published'
+    if (isPublishedPerspective(currentPerspective)) {
+      return 'published'
+    }
+    return 'version'
   }
   const mode = getMode()
 
-  const isReleasePerspective =
-    !isPublishedPerspective(currentGlobalBundle) && !isDraftPerspective(currentGlobalBundle)
+  const isReleasePerspective = currentPerspective && !isPublishedPerspective(currentPerspective)
 
   if (status) {
     return <DocumentStatusPulse status={status || undefined} />
@@ -112,12 +106,9 @@ export function DocumentStatusLine() {
           draft={mode === 'draft' ? editState?.draft : undefined}
           published={mode === 'published' ? editState?.published : undefined}
           versions={
-            mode === 'version' &&
-            isReleasePerspective &&
-            currentGlobalBundle.name &&
-            editState?.version
+            mode === 'version' && isReleasePerspective && currentRelease?.name && editState?.version
               ? {
-                  [currentGlobalBundle.name]: {snapshot: editState?.version},
+                  [currentRelease.name]: {snapshot: editState?.version},
                 }
               : undefined
           }

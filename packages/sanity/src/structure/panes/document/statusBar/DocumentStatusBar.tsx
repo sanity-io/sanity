@@ -5,8 +5,8 @@ import {
   isDraftPerspective,
   isPublishedPerspective,
   isSanityCreateLinked,
-  usePerspective,
   useSanityCreateConfig,
+  useStudioPerspectiveState,
   useTimelineSelector,
 } from 'sanity'
 
@@ -30,7 +30,7 @@ const CONTAINER_BREAKPOINT = 480 // px
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
   const {editState, timelineStore, onChange: onDocumentChange, existsInBundle} = useDocumentPane()
-  const {currentGlobalBundle} = usePerspective()
+  const {current} = useStudioPerspectiveState()
   const {title} = useDocumentTitle()
 
   const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
@@ -64,8 +64,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     actions = <HistoryStatusBarActions />
   } else if (
     (existsInBundle && showingVersion) ||
-    isDraftPerspective(currentGlobalBundle) ||
-    isPublishedPerspective(currentGlobalBundle)
+    isDraftPerspective(current) ||
+    isPublishedPerspective(current)
   ) {
     actions = <DocumentStatusBarActions />
   }

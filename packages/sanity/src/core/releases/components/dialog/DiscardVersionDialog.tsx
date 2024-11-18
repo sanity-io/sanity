@@ -1,3 +1,4 @@
+import {DocumentId, getPublishedId, getVersionNameFromId, isVersionId} from '@sanity/id-utils'
 import {Box} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
@@ -6,11 +7,9 @@ import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {Preview} from '../../../preview'
-import {getPublishedId, getVersionFromId, isVersionId} from '../../../util/draftUtils'
-import {usePerspective, useVersionOperations} from '../../hooks'
+import {useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../store'
-import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
+import {ReleaseId} from '../../util/releaseId'
 
 /**
  * @internal
@@ -20,11 +19,11 @@ export function DiscardVersionDialog(props: {
   documentId: string
   documentType: string
 }): JSX.Element {
-  const {onClose, documentId, documentType} = props
+  const {onClose, documentType} = props
+  const documentId = DocumentId(props.documentId)
   const {t} = useTranslation(releasesLocaleNamespace)
   const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
 
-  const {currentGlobalBundle} = usePerspective()
   const {discardVersion} = useVersionOperations()
   const schema = useSchema()
   const [isDiscarding, setIsDiscarding] = useState(false)
@@ -35,11 +34,7 @@ export function DiscardVersionDialog(props: {
     setIsDiscarding(true)
 
     if (isVersionId(documentId)) {
-      await discardVersion(
-        getVersionFromId(documentId) ||
-          getBundleIdFromReleaseDocumentId((currentGlobalBundle as ReleaseDocument)._id),
-        documentId,
-      )
+      await discardVersion(ReleaseId(getVersionNameFromId(documentId)), documentId)
     } else {
       // on the document header you can also discard the draft
       discardChanges.execute()
@@ -48,7 +43,7 @@ export function DiscardVersionDialog(props: {
     setIsDiscarding(false)
 
     onClose()
-  }, [currentGlobalBundle, discardChanges, discardVersion, documentId, onClose])
+  }, [discardChanges, discardVersion, documentId, onClose])
 
   return (
     <Dialog

@@ -3,15 +3,14 @@ import {type Schema} from '@sanity/types'
 import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
-  getBundleIdFromReleaseDocumentId,
   type InitialValueTemplateItem,
+  isDraftPerspective,
   isPublishedPerspective,
-  LATEST,
   type Template,
   type TemplatePermissionsResult,
   useGetI18nText,
-  usePerspective,
   useSchema,
+  useStudioPerspectiveState,
   useTemplatePermissions,
   useTemplates,
   useTranslation,
@@ -37,23 +36,22 @@ const getIntent = (
   item: InitialValueTemplateItem,
   version?: string,
 ): PaneHeaderIntentProps | null => {
-  const isBundleIntent = version && version !== LATEST._id && !isPublishedPerspective(version)
+  const isReleaseIntent =
+    version && !isDraftPerspective(version) && !isPublishedPerspective(version)
   const typeName = templates.find((t) => t.id === item.templateId)?.schemaType
   if (!typeName) return null
 
   const baseParams = {
     template: item.templateId,
     type: typeName,
-    version: isBundleIntent ? version : undefined,
+    version: isReleaseIntent ? version : undefined,
     id: item.initialDocumentId,
   }
 
   return {
     type: 'create',
     params: item.parameters ? [baseParams, item.parameters] : baseParams,
-    searchParams: isBundleIntent
-      ? [['perspective', `bundle.${getBundleIdFromReleaseDocumentId(version)}`]]
-      : undefined,
+    searchParams: isReleaseIntent ? [['perspective', version]] : undefined,
   }
 }
 
@@ -64,7 +62,7 @@ interface PaneHeaderCreateButtonProps {
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const schema = useSchema()
   const templates = useTemplates()
-  const {currentGlobalBundleId} = usePerspective()
+  const {current} = useStudioPerspectiveState()
 
   const {t} = useTranslation(structureLocaleNamespace)
   const getI18nText = useGetI18nText([...templateItems, ...templates])
@@ -115,7 +113,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
-    const intent = getIntent(schema, templates, firstItem, currentGlobalBundleId)
+    const intent = getIntent(schema, templates, firstItem, current)
     if (!intent) return null
 
     return (
@@ -153,7 +151,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(schema, templates, item, currentGlobalBundleId)
+            const intent = getIntent(schema, templates, item, current)
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
 

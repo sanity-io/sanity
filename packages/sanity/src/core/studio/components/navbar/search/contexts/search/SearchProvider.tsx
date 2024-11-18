@@ -4,7 +4,7 @@ import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
-import {usePerspective} from '../../../../../../releases/hooks/usePerspective'
+import {useStudioPerspectiveState} from '../../../../../../releases/hooks/useStudioPerspectiveState'
 import {type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {resolvePerspectiveOptions} from '../../../../../../util/resolvePerspective'
@@ -32,7 +32,7 @@ interface SearchProviderProps {
 export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
-  const {bundlesPerspective} = usePerspective()
+  const {bundlesPerspective} = useStudioPerspectiveState()
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const {
