@@ -2,7 +2,6 @@ import {ArchiveIcon, EllipsisHorizontalIcon, UnarchiveIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, Spinner, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {getBundleIdFromReleaseDocumentId} from 'sanity'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
@@ -10,6 +9,7 @@ import {ArchivedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {getBundleIdFromReleaseDocumentId} from '../../../util/getBundleIdFromReleaseDocumentId'
 import {useBundleDocuments} from '../../detail/useBundleDocuments'
 
 export type ReleaseMenuButtonProps = {
@@ -90,6 +90,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
     return (
       <Dialog
         id="confirm-archive-dialog"
+        data-testid="confirm-archive-dialog"
         header={
           <Translate
             t={t}
