@@ -110,7 +110,7 @@ export function SearchResultItemPreview({
           published,
           version,
           value: sanityDocument,
-          perspective: perspective,
+          perspective,
         })}
         isPlaceholder={isLoading ?? true}
         layout={layout || 'default'}
