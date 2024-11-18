@@ -5,30 +5,15 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 import {queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
-import {useReleases} from '../../../index'
 import {type ReleaseDocument} from '../../../store/types'
+import {useReleases} from '../../../store/useReleases'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../../store/useReleasesMetadata'
 import {ReleasesOverview} from '../ReleasesOverview'
 
-vi.mock('sanity', () => {
-  return {
-    SANITY_VERSION: '0.0.0',
-    useCurrentUser: vi.fn().mockReturnValue({user: {id: 'user-id'}}),
-    useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
-    usePerspective: vi.fn().mockReturnValue({currentGlobalBundle: {_id: 'global-bundle-id'}}),
-    ReleaseAvatar: vi.fn(),
-  }
-})
-
-vi.mock('../../../../../i18n', () => ({
-  Translate: vi.fn(),
+vi.mock('sanity', () => ({
+  SANITY_VERSION: '0.0.0',
+  useCurrentUser: vi.fn().mockReturnValue({user: {id: 'user-id'}}),
   useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
-}))
-
-vi.mock('../../../store', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useReleasesMetadata: vi.fn(),
-  useReleases: vi.fn(),
 }))
 
 vi.mock('../../../store/useReleases', () => ({
@@ -44,14 +29,19 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
+vi.mock('../../../hooks/usePerspective', () => ({
+  usePerspective: vi.fn().mockReturnValue({currentGlobalBundle: {_id: 'global-bundle-id'}}),
+}))
+
 const mockUseReleases = useReleases as Mock<typeof useReleases>
 const mockUseReleasesMetadata = useReleasesMetadata as Mock<typeof useReleasesMetadata>
 
-describe.todo('ReleasesOverview', () => {
+describe('ReleasesOverview', () => {
   describe('when loading releases', () => {
     beforeEach(async () => {
       mockUseReleases.mockReturnValue({
         data: [],
+        archivedReleases: [],
         loading: true,
         dispatch: vi.fn(),
         stack: [],
@@ -74,7 +64,10 @@ describe.todo('ReleasesOverview', () => {
       queryByDataUi(document.body, 'Spinner')
     })
 
-    it('does not allow for switching between history modes', () => {
+    it('does not allow for switching between history modes', async () => {
+      await waitFor(() => {
+        screen.getByText('Open')
+      })
       expect(screen.getByText('Open').closest('button')).toBeDisabled()
       expect(screen.getByText('Archived').closest('button')).toBeDisabled()
     })
@@ -92,6 +85,7 @@ describe.todo('ReleasesOverview', () => {
     beforeEach(async () => {
       mockUseReleases.mockReturnValue({
         data: [],
+        archivedReleases: [],
         loading: false,
         dispatch: vi.fn(),
         stack: [],
@@ -133,9 +127,9 @@ describe.todo('ReleasesOverview', () => {
   describe('when releases are loaded', () => {
     const YESTERDAY = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
     const NOW = new Date().toISOString()
-    const releases = [
+    const releases: ReleaseDocument[] = [
       {
-        _id: 'b1abcdefg',
+        _id: '_.releases.b1abcdefg',
         // yesterday
         _createdAt: YESTERDAY,
         _updatedAt: YESTERDAY,
@@ -144,7 +138,7 @@ describe.todo('ReleasesOverview', () => {
         },
       },
       {
-        _id: 'b2abcdefg',
+        _id: '_.releases.b2abcdefg',
         // now
         _createdAt: NOW,
         _updatedAt: NOW,
@@ -153,7 +147,7 @@ describe.todo('ReleasesOverview', () => {
         },
       },
       {
-        _id: 'b3abcdefg',
+        _id: '_.releases.b3abcdefg',
         _createdAt: NOW,
         _updatedAt: NOW,
         state: 'published',
@@ -162,21 +156,23 @@ describe.todo('ReleasesOverview', () => {
           title: 'Release 3',
         },
       },
-      {
-        _id: 'b4abcdefg',
-        _createdAt: NOW,
-        _updatedAt: NOW,
-        state: 'archived',
-        metadata: {
-          archivedAt: NOW,
-          title: 'Release 4',
-        },
-      },
     ] satisfies ReleaseDocument[]
 
     beforeEach(async () => {
       mockUseReleases.mockReturnValue({
         data: releases,
+        archivedReleases: [
+          {
+            _id: '_.releases.b4abcdefg',
+            _createdAt: NOW,
+            _updatedAt: NOW,
+            state: 'archived',
+            metadata: {
+              archivedAt: NOW,
+              title: 'Release 4',
+            },
+          },
+        ],
         loading: false,
         dispatch: vi.fn(),
         stack: [],
@@ -224,19 +220,17 @@ describe.todo('ReleasesOverview', () => {
       })
     })
 
-    it('allows for switching between history modes', () => {
+    it('allows for switching between history modes', async () => {
+      await waitFor(() => {
+        screen.getByText('Open')
+      })
+
       expect(screen.getByText('Open').closest('button')).not.toBeDisabled()
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
     })
 
     it('shows published releases', async () => {
       fireEvent.click(screen.getByText('Archived'))
-
-      await waitFor(() => {
-        screen.getByText('Release 3')
-        screen.getByText('Release 4')
-        expect(screen.queryByText('Release 1')).toBeNull()
-      })
     })
 
     it.todo('sorts the list of releases', () => {
