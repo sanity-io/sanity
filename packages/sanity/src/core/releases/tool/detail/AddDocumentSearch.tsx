@@ -63,7 +63,7 @@ export function AddDocumentSearch({
   return (
     <LayerProvider zOffset={1}>
       {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
-      <SearchProvider perspective="raw" idsInRelease={idsInRelease}>
+      <SearchProvider perspective="raw" documentIds={idsInRelease}>
         <PortalProvider>
           <SearchPopover
             onClose={handleClose}

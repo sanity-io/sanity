@@ -30,10 +30,10 @@ interface SearchProviderProps {
    */
   perspective?: string
   /**
-   * if provided, then it means that the search is being done from within the release plugin
-   * where we add documents picked in this search to the release
+   * list of document ids
+   * if provided, then ids should be checked against this list
    */
-  idsInRelease?: string[]
+  documentIds?: string[]
 }
 
 /**
@@ -43,7 +43,7 @@ export function SearchProvider({
   children,
   fullscreen,
   perspective,
-  idsInRelease,
+  documentIds,
 }: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
@@ -208,10 +208,10 @@ export function SearchProvider({
         ...state,
         fullscreen,
         perspective,
-        idsInRelease,
+        documentIds,
       },
     }),
-    [fullscreen, idsInRelease, onClose, perspective, searchCommandList, state],
+    [fullscreen, documentIds, onClose, perspective, searchCommandList, state],
   )
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>

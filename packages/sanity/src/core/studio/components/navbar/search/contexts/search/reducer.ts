@@ -41,7 +41,7 @@ export type SearchReducerState = PaginationState & {
   result: SearchResult
   terms: RecentSearch | SearchTerms
   strategy?: SearchStrategy
-  idsInRelease?: string[]
+  documentIds?: string[]
   perspective?: string
 }
 

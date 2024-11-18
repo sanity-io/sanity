@@ -44,7 +44,7 @@ export function SearchResultItem({
   const pickedPerspective = state.perspective ?? perspective
 
   // the current search result exists in the release provided by the search provider
-  const existsInRelease = state.idsInRelease?.some((id) => id.includes(getPublishedId(documentId)))
+  const existsInRelease = state.documentIds?.some((id) => id.includes(getPublishedId(documentId)))
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
