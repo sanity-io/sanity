@@ -253,6 +253,9 @@ export default defineConfig([
     unstable_tasks: {
       enabled: true,
     },
+    search: {
+      strategy: 'groq2024',
+    },
   },
   {
     name: 'custom-components',
