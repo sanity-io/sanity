@@ -134,7 +134,7 @@ export function SearchProvider({
 
       const perspectives =
         state.perspective === 'raw'
-          ? {bundlePerspective: undefined}
+          ? {bundlePerspective: undefined, perspective: undefined}
           : resolvePerspectiveOptions(bundlesPerspective)
 
       handleSearch({
