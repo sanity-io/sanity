@@ -135,9 +135,7 @@ export function SearchProvider({
           ordering?.customMeasurementLabel || `${ordering.sort?.field} ${ordering.sort?.direction}`
       }
 
-      const perspectives = isPerspectiveRaw(state.perspective)
-        ? {bundlePerspective: undefined, perspective: undefined}
-        : resolvePerspectiveOptions(bundlesPerspective)
+      const isRaw = isPerspectiveRaw(state.perspective)
 
       handleSearch({
         options: {
@@ -155,7 +153,7 @@ export function SearchProvider({
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
-          ...perspectives,
+          ...resolvePerspectiveOptions(isRaw ? undefined : bundlesPerspective),
         },
         terms: {
           ...terms,
