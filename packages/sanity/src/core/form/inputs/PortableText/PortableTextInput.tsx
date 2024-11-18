@@ -238,10 +238,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           onBlur(change.event)
           setHasFocusWithin(false)
           break
-        case 'undo':
-        case 'redo':
-          onChange(toFormPatches(change.patches))
-          break
         case 'invalidValue':
           setInvalidValue(change)
           break
