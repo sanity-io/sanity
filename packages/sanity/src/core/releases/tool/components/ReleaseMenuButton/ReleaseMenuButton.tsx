@@ -84,8 +84,8 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
 
     const dialogDescription =
       releaseDocuments.length === 1
-        ? 'archive-dialog.confirm-archive-description-singular'
-        : 'archive-dialog.confirm-archive-description-multiple'
+        ? 'archive-dialog.confirm-archive-description_one'
+        : 'archive-dialog.confirm-archive-description_other'
 
     return (
       <Dialog
@@ -131,6 +131,14 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
     t,
   ])
 
+  const handleOnInitiateArchive = useCallback(() => {
+    if (releaseDocuments.length > 0) {
+      setSelectedAction('confirm-archive')
+    } else {
+      handleArchive()
+    }
+  }, [handleArchive, releaseDocuments.length])
+
   return (
     <>
       <MenuButton
@@ -159,10 +167,10 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
             ) : (
               <MenuItem
                 tooltipProps={{
-                  disabled: ARCHIVABLE_STATES.includes(release.state),
+                  disabled: ARCHIVABLE_STATES.includes(release.state) || isPerformingOperation,
                   content: t('action.archive.tooltip'),
                 }}
-                onClick={() => setSelectedAction('confirm-archive')}
+                onClick={handleOnInitiateArchive}
                 icon={ArchiveIcon}
                 text={t('action.archive')}
                 data-testid="archive-release"

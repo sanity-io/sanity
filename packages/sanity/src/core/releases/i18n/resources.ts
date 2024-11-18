@@ -38,9 +38,9 @@ const releasesLocaleStrings = {
   'archive-dialog.confirm-archive-title':
     "Are you sure you want to archive the <strong>'{{title}}'</strong> release?",
   /** Description for the dialog confirming the archive of a release with one document */
-  'archive-dialog.confirm-archive-description-singular': 'This will archive 1 document version.',
+  'archive-dialog.confirm-archive-description_one': 'This will archive 1 document version.',
   /** Description for the dialog confirming the publish of a release with more than one document */
-  'archive-dialog.confirm-archive-description-multiple':
+  'archive-dialog.confirm-archive-description_other':
     'This will archive {{count}} document versions.',
   /** Label for the button to proceed with archiving a release */
   'archive-dialog.confirm-archive-button': 'Yes, archive now',

@@ -8,6 +8,10 @@ import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../index'
 import {useReleaseOperationsMock} from '../../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
+import {
+  documentsInRelease,
+  useBundleDocumentsMock,
+} from '../../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
 vi.mock('../../../../store/useReleaseOperations', () => ({
@@ -15,10 +19,7 @@ vi.mock('../../../../store/useReleaseOperations', () => ({
 }))
 
 vi.mock('../../../detail/useBundleDocuments', () => ({
-  useBundleDocuments: vi.fn().mockReturnValue({
-    loading: false,
-    results: [{_id: 'versions.releaseId.documentId', _type: 'document'}],
-  }),
+  useBundleDocuments: vi.fn(() => useBundleDocumentsMock),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -55,6 +56,28 @@ describe('ReleaseMenuButton', () => {
 
       screen.getByTestId('confirm-archive-dialog')
     }
+
+    test('does not require confirmation when no documents in release', async () => {
+      useBundleDocumentsMock.results = []
+
+      await renderTest({release: activeScheduledRelease})
+
+      await waitFor(() => {
+        screen.getByTestId('release-menu-button')
+      })
+
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+      screen.getByTestId('archive-release')
+
+      await act(() => {
+        fireEvent.click(screen.getByTestId('archive-release'))
+      })
+
+      expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
+      expect(useReleaseOperations().archive).toHaveBeenCalledWith(activeScheduledRelease._id)
+
+      useBundleDocumentsMock.results = [documentsInRelease]
+    })
 
     test('can reject archiving', async () => {
       await openConfirmArchiveDialog()
