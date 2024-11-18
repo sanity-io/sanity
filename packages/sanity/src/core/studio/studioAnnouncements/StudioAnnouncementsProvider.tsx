@@ -6,6 +6,7 @@ import {catchError, combineLatest, map, type Observable, startWith} from 'rxjs'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
+import {useSource} from '../../studio/source'
 import {useWorkspace} from '../../studio/workspace'
 import {SANITY_VERSION} from '../../version'
 import {
@@ -28,11 +29,7 @@ interface StudioAnnouncementsProviderProps {
 }
 const CLIENT_OPTIONS = {apiVersion: 'v2024-09-19'}
 
-/**
- * @internal
- * @hidden
- */
-export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProviderProps) {
+function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProviderProps) {
   const telemetry = useTelemetry()
   const [dialogMode, setDialogMode] = useState<DialogMode | null>(null)
   const [isCardDismissed, setIsCardDismissed] = useState(false)
@@ -158,4 +155,17 @@ export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProvi
       )}
     </StudioAnnouncementContext.Provider>
   )
+}
+
+/**
+ * @internal
+ * @hidden
+ */
+export function StudioAnnouncementsProvider(props: StudioAnnouncementsProviderProps) {
+  const source = useSource()
+
+  if (source.announcements?.enabled) {
+    return <StudioAnnouncementsProviderInner {...props} />
+  }
+  return props.children
 }

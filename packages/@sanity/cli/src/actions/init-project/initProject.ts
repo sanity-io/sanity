@@ -524,7 +524,7 @@ export default async function initSanity(
     }
 
     if (chosen === 'npm') {
-      await execa('npm', ['install', 'next-sanity@9'], execOptions)
+      await execa('npm', ['install', '--legacy-peer-deps', 'next-sanity@9'], execOptions)
     } else if (chosen === 'yarn') {
       await execa('npx', ['install-peerdeps', '--yarn', 'next-sanity@9'], execOptions)
     } else if (chosen === 'pnpm') {

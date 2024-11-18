@@ -1,10 +1,12 @@
-import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
+import {ClientError, type SanityClient} from '@sanity/client'
 import {
   BehaviorSubject,
   catchError,
+  concat,
   concatWith,
+  EMPTY,
   filter,
-  map,
+  from,
   merge,
   type Observable,
   of,
@@ -16,24 +18,23 @@ import {
   tap,
   timeout,
 } from 'rxjs'
-import {startWith} from 'rxjs/operators'
-import {mergeMapArray} from 'rxjs-mergemap-array'
+import {map, mergeMap, startWith, toArray} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../preview'
 import {listenQuery} from '../../store/_legacy'
-import {RELEASE_METADATA_TMP_DOC_PATH} from './constants'
+import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
+import {requestAction} from './createReleaseOperationStore'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
-import {type ReleaseDocument, type ReleaseStore, type ReleaseSystemDocument} from './types'
+import {type ReleaseDocument, type ReleaseStore} from './types'
 
 type ActionWrapper = {action: ReleasesReducerAction}
-type EventWrapper = {event: ListenEvent<ReleaseDocument>}
 type ResponseWrapper = {response: ReleaseDocument[]}
 
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'
 
-const QUERY_FILTERS = [`_type=="system.release" && (_id in path("_.**"))`]
+const QUERY_FILTER = `_type=="${RELEASE_DOCUMENT_TYPE}" && _id in path("${RELEASE_DOCUMENTS_PATH}.*")`
 
 // TODO: Extend the projection with the fields needed
 const QUERY_PROJECTION = `{
@@ -43,14 +44,7 @@ const QUERY_PROJECTION = `{
 // Newest releases first
 const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 
-const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
-
-const LISTEN_OPTIONS: ListenOptions = {
-  events: ['welcome', 'mutation', 'reconnect'],
-  includeResult: true,
-  visibility: 'query',
-  tag: 'releases.listen',
-}
+const QUERY = `*[${QUERY_FILTER}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
 const INITIAL_STATE: ReleasesReducerState = {
   releases: new Map(),
@@ -58,6 +52,48 @@ const INITIAL_STATE: ReleasesReducerState = {
   releaseStack: [],
 }
 
+const RELEASE_METADATA_TMP_DOC_PATH = 'system-tmp-releases'
+// todo: remove this after first tagged release
+function migrateWith(client: SanityClient) {
+  return client.observable.fetch(`*[_id in path('${RELEASE_METADATA_TMP_DOC_PATH}.**')]`).pipe(
+    tap((tmpDocs: ReleaseDocument[]) => {
+      // eslint-disable-next-line
+      console.log('Migrating %d release documents', tmpDocs.length)
+    }),
+    mergeMap((tmpDocs: ReleaseDocument[]) => {
+      if (tmpDocs.length === 0) {
+        return EMPTY
+      }
+      return from(tmpDocs).pipe(
+        mergeMap(async (tmpDoc) => {
+          const releaseId = tmpDoc._id.slice(RELEASE_METADATA_TMP_DOC_PATH.length + 1)
+          await requestAction(client, {
+            actionType: 'sanity.action.release.edit',
+            releaseId,
+            patch: {
+              set: {userMetadata: tmpDoc.metadata},
+            },
+          }).catch((err) => {
+            if (err instanceof ClientError) {
+              if (err.details.description == `Release "${releaseId}" was not found`) {
+                // ignore
+                return
+              }
+            }
+            throw err
+          })
+          await client.delete(tmpDoc._id)
+        }, 2),
+      )
+    }),
+    toArray(),
+    tap((migrated) => {
+      // eslint-disable-next-line
+      console.log('Migrated %d releases', migrated.length)
+    }),
+    mergeMap(() => EMPTY),
+  )
+}
 /**
  * The releases store is initialised lazily when first subscribed to. Upon subscription, it will
  * fetch a list of releases and create a listener to keep the locally held state fresh.
@@ -70,7 +106,7 @@ export function createReleaseStore(context: {
   previewStore: DocumentPreviewStore
   client: SanityClient
 }): ReleaseStore {
-  const {client, previewStore} = context
+  const {client} = context
 
   const dispatch$ = new Subject<ReleasesReducerAction>()
   const fetchPending$ = new BehaviorSubject<boolean>(false)
@@ -100,29 +136,18 @@ export function createReleaseStore(context: {
           resetOnSuccess: true,
         }),
         tap(() => fetchPending$.next(false)),
-        mergeMapArray((releaseSystemDocument: ReleaseSystemDocument) =>
-          previewStore
-            // Temporary release metadata document
-            .unstable_observeDocument(
-              `${RELEASE_METADATA_TMP_DOC_PATH}.${releaseSystemDocument.name}`,
-            )
-            .pipe(
-              map((metadataDocument) => ({
-                metadataDocument,
-                releaseSystemDocument,
-              })),
-            ),
+        map((releases) =>
+          releases.map(
+            (releaseDoc: ReleaseDocument): ReleaseDocument => ({
+              ...releaseDoc,
+              metadata: {...(releaseDoc as any).userMetadata, ...releaseDoc.metadata},
+            }),
+          ),
         ),
-        map((results) =>
-          results.flatMap(({metadataDocument, releaseSystemDocument}): ReleaseDocument[] => {
-            return metadataDocument && releaseSystemDocument
-              ? {...(metadataDocument as any), ...releaseSystemDocument}
-              : []
-          }),
-        ),
-        map((response) => ({response})),
+        map((releases) => ({response: releases})),
       ),
     ),
+
     catchError((error) =>
       of<ActionWrapper>({
         action: {
@@ -154,7 +179,8 @@ export function createReleaseStore(context: {
     ),
   )
 
-  const state$ = merge(listFetch$, dispatch$).pipe(
+  const migrateTmpReleases = process.env.NODE_ENV === 'development' ? migrateWith(client) : EMPTY
+  const state$ = concat(migrateTmpReleases, merge(listFetch$, dispatch$)).pipe(
     filter((action): action is ReleasesReducerAction => typeof action !== 'undefined'),
     scan((state, action) => releasesReducer(state, action), INITIAL_STATE),
     startWith(INITIAL_STATE),

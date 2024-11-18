@@ -99,4 +99,7 @@ export default defineConfig({
       enabled: true,
     },
   },
+  announcements: {
+    enabled: false,
+  },
 })
