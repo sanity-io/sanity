@@ -78,7 +78,9 @@ const sharedSettings = definePlugin({
       enabled: true,
     },
   },
-
+  search: {
+    strategy: 'groq2024',
+  },
   document: {
     actions: documentActions,
     inspectors: (prev, ctx) => {
