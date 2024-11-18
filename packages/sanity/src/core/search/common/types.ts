@@ -93,7 +93,18 @@ export interface WeightedSearchResults {
 /**
  * @internal
  */
-export type SearchStrategyFactory<TResult extends TextSearchResults | WeightedSearchResults> = (
+export interface Groq2024SearchResults {
+  type: 'groq2024'
+  hits: SearchHit[]
+  nextCursor?: string
+}
+
+/**
+ * @internal
+ */
+export type SearchStrategyFactory<
+  TResult extends TextSearchResults | WeightedSearchResults | Groq2024SearchResults,
+> = (
   types: (SchemaType | CrossDatasetType)[],
   client: SanityClient,
   commonOpts: SearchFactoryOptions,
