@@ -3,6 +3,7 @@ import {act} from 'react'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {activeScheduledRelease} from '../../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../index'
 import {useReleaseOperationsMock} from '../../../../store/__tests__/__mocks/useReleaseOperations.mock'
@@ -39,22 +40,7 @@ describe('ReleaseMenuButton', () => {
 
   describe('archive release', () => {
     const openConfirmArchiveDialog = async () => {
-      const activeRelease: ReleaseDocument = {
-        _id: '_.releases.activeRelease',
-        _type: 'system.release',
-        createdBy: '',
-        _createdAt: '',
-        _updatedAt: '',
-        state: 'active',
-        name: 'active release',
-        metadata: {
-          title: 'active Release',
-          releaseType: 'scheduled',
-          intendedPublishAt: '2023-10-01T10:00:00Z',
-        },
-      }
-
-      await renderTest({release: activeRelease})
+      await renderTest({release: activeScheduledRelease})
 
       await waitFor(() => {
         screen.getByTestId('release-menu-button')
@@ -90,7 +76,7 @@ describe('ReleaseMenuButton', () => {
           fireEvent.click(screen.getByTestId('confirm-button'))
         })
 
-        expect(useReleaseOperations().archive).toHaveBeenCalledWith('_.releases.activeRelease')
+        expect(useReleaseOperations().archive).toHaveBeenCalledWith(activeScheduledRelease._id)
         expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
       })
     })
@@ -107,27 +93,14 @@ describe('ReleaseMenuButton', () => {
           fireEvent.click(screen.getByTestId('confirm-button'))
         })
 
-        expect(useReleaseOperations().archive).toHaveBeenCalledWith('_.releases.activeRelease')
+        expect(useReleaseOperations().archive).toHaveBeenCalledWith(activeScheduledRelease._id)
         expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
       })
     })
   })
 
   test.todo('will unarchive an archived release', async () => {
-    const archivedRelease: ReleaseDocument = {
-      _id: '_.releases.archivedRelease',
-      _type: 'system.release',
-      createdBy: '',
-      _createdAt: '',
-      _updatedAt: '',
-      state: 'archived',
-      name: 'archived release',
-      metadata: {
-        title: 'Archived Release',
-        releaseType: 'scheduled',
-        intendedPublishAt: '2023-10-01T10:00:00Z',
-      },
-    }
+    const archivedRelease: ReleaseDocument = {...activeScheduledRelease, state: 'archived'}
 
     await renderTest({release: archivedRelease})
 
@@ -144,22 +117,7 @@ describe('ReleaseMenuButton', () => {
   })
 
   test('will be disabled', async () => {
-    const disabledActionRelease: ReleaseDocument = {
-      _id: '_.releases.activeEmptyRelease',
-      _type: 'system.release',
-      createdBy: '',
-      _createdAt: '',
-      _updatedAt: '',
-      state: 'active',
-      name: 'active empty release',
-      metadata: {
-        title: 'active empty release',
-        releaseType: 'scheduled',
-        intendedPublishAt: '2023-10-01T10:00:00Z',
-      },
-    }
-
-    await renderTest({release: disabledActionRelease, disabled: true})
+    await renderTest({release: activeScheduledRelease, disabled: true})
 
     const actionsButton = screen.getByTestId('release-menu-button')
 
