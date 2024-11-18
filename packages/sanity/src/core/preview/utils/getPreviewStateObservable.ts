@@ -5,7 +5,13 @@ import {combineLatest, from, type Observable, of} from 'rxjs'
 import {map, mergeMap, scan, startWith} from 'rxjs/operators'
 import {type PreparedSnapshot} from 'sanity'
 
-import {getDraftId, getPublishedId, getVersionId} from '../../util/draftUtils'
+import {
+  getDraftId,
+  getPublishedId,
+  getVersionFromId,
+  getVersionId,
+  isVersionId,
+} from '../../util/draftUtils'
 import {type DocumentPreviewStore} from '../documentPreviewStore'
 
 /**
@@ -49,13 +55,14 @@ export function getPreviewStateObservable(
 
     /**
      * Perspective to use when fetching versions.
-     * Soemtimes we want to fetch versions from a perspective not bound by the bundleStack
+     * Sometimes we want to fetch versions from a perspective not bound by the bundleStack
+     * (e.g. raw).
      */
-    name?: string
+    isRaw?: boolean
   } = {
     bundleIds: [],
     bundleStack: [],
-    name: '',
+    isRaw: false,
   },
 ): Observable<PreviewState> {
   const draft$ = isLiveEditEnabled(schemaType)
@@ -81,7 +88,7 @@ export function getPreviewStateObservable(
     startWith<VersionsRecord>({}),
   )
 
-  const list = perspective.name === 'raw' ? perspective.bundleIds : perspective.bundleStack
+  const list = perspective.isRaw ? perspective.bundleIds : perspective.bundleStack
   // Iterate the release stack in descending precedence, returning the highest precedence existing
   // version document.
   const version$ = versions$.pipe(
@@ -102,13 +109,25 @@ export function getPreviewStateObservable(
   )
 
   return combineLatest([draft$, published$, version$, versions$]).pipe(
-    map(([draft, published, version, versions]) => ({
-      draft: draft.snapshot ? {title, ...(draft.snapshot || {})} : null,
-      isLoading: false,
-      published: published.snapshot ? {title, ...(published.snapshot || {})} : null,
-      version: version.snapshot ? {title, ...(version.snapshot || {})} : null,
-      versions,
-    })),
+    map(([draft, published, version, versions]) => {
+      let v = version.snapshot ? {title, ...(version.snapshot || {})} : null
+
+      /**
+       * when the search type should be raw, there are versions and the document provided is a version
+       * then we need to find the exact version to display
+       */
+      if (perspective.isRaw && versions && isVersionId(documentId)) {
+        v = {title, ...versions[getVersionFromId(documentId) ?? '']?.snapshot}
+      }
+
+      return {
+        draft: draft.snapshot ? {title, ...(draft.snapshot || {})} : null,
+        isLoading: false,
+        published: published.snapshot ? {title, ...(published.snapshot || {})} : null,
+        version: v,
+        versions,
+      }
+    }),
     startWith({
       draft: null,
       isLoading: true,
