@@ -25,6 +25,9 @@ import {initialSearchState, searchReducer} from './reducer'
 interface SearchProviderProps {
   children?: ReactNode
   fullscreen?: boolean
+  /**
+   * if provided, then it means that the search is being done from within a specific perspective
+   */
   perspective?: string
   /**
    * if provided, then it means that the search is being done from within the release plugin
