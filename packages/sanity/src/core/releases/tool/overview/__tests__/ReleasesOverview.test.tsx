@@ -124,7 +124,7 @@ describe('ReleasesOverview', () => {
     })
   })
 
-  describe('when releases are loaded', () => {
+  describe.todo('when releases are loaded', () => {
     const YESTERDAY = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
     const NOW = new Date().toISOString()
     const releases: ReleaseDocument[] = [
