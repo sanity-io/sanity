@@ -167,19 +167,6 @@ export const DocumentPanelHeader = memo(
               {menuButtonNodes.map((item) => (
                 <PaneHeaderActionButton key={item.key} node={item} />
               ))}
-
-              {/* todo update translation */}
-              {/*eslint-disable-next-line i18next/no-literal-string*/}
-              <Tooltip content={<Text size={1}>History</Text>} placement="bottom" portal>
-                <Button
-                  icon={RestoreIcon}
-                  mode="bleed"
-                  onClick={handleHistoryOpen}
-                  padding={2}
-                  selected={inspector?.name === 'sanity/structure/history'}
-                  tooltipProps={{content: t('buttons.history.tooltip')}}
-                />
-              </Tooltip>
               {editState && (
                 <>
                   <RenderActionCollectionState

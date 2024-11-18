@@ -222,7 +222,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
-  const {store: timelineStore, error: timelineError} = useHistory()
+  const {store: timelineStore, error: timelineError, eventsStore} = useHistory()
   // Subscribe to external timeline state changes
   const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
   const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
@@ -288,9 +288,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {t} = useTranslation(structureLocaleNamespace)
 
   const inspectOpen = params.inspect === 'on'
-  const compareValue: Partial<SanityDocument> | null = changesOpen
-    ? sinceAttributes
-    : editState?.published || null
+  const compareValue: Partial<SanityDocument> | null =
+    eventsStore?.sinceRevision?.document || changesOpen
+      ? sinceAttributes
+      : editState?.published || null
 
   const fieldActions: DocumentFieldAction[] = useMemo(
     () => (schemaType ? fieldActionsResolver({documentId, documentType, schemaType}) : []),
@@ -314,10 +315,22 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState.ready &&
     (!params.rev || timelineReady || !!timelineError)
 
-  const displayed: Partial<SanityDocument> | undefined = useMemo(
-    () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
-    [onOlderRevision, timelineDisplayed, value],
-  )
+  const displayed: Partial<SanityDocument> | undefined = useMemo(() => {
+    if (eventsStore?.revision?.revisionId) {
+      return eventsStore?.revision?.document || {_id: value._id, _type: value._type}
+    }
+    if (onOlderRevision) {
+      console.log('RETURNING OLDER REVISION; WHY ARE WE HERE???')
+      return timelineDisplayed || {_id: value._id, _type: value._type}
+    }
+    return value
+  }, [
+    eventsStore?.revision?.document,
+    eventsStore?.revision?.revisionId,
+    onOlderRevision,
+    timelineDisplayed,
+    value,
+  ])
 
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {

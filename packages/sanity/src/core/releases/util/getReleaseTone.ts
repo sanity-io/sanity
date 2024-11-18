@@ -22,7 +22,7 @@ export function getReleaseTone(release: ReleaseDocument | 'published' | typeof L
   }
 
   if (release?.metadata?.releaseType === 'undecided') {
-    return 'explore'
+    return 'default' // was "explore", but that is not a valid badgeTone?
   }
 
   if (release?.metadata?.releaseType === 'scheduled') {
