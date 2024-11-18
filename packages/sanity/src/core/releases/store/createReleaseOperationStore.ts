@@ -4,11 +4,9 @@ import {
   type IdentifiedSanityDocumentStub,
   type SanityClient,
 } from '@sanity/client'
-import {type User} from '@sanity/types'
 
 import {getVersionId} from '../../util'
-import {getBundleIdFromReleaseDocumentId} from '../index'
-import {RELEASE_METADATA_TMP_DOC_PATH, RELEASE_METADATA_TMP_DOC_TYPE} from './constants'
+import {getBundleIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type EditableReleaseDocument} from './types'
 
 export interface ReleaseOperationsStore {
@@ -25,40 +23,19 @@ export interface ReleaseOperationsStore {
 }
 
 const IS_CREATE_VERSION_ACTION_SUPPORTED = false
-const IS_RELEASE_METADATA_PROPERTIES_SUPPORTED = false
-const IS_RELEASE_EDIT_SUPPORTED = false
+// todo: change to `metadata` once the relevant PR has been deployed
+const METADATA_PROPERTY_NAME = 'userMetadata'
 
 export function createReleaseOperationsStore(options: {
   client: SanityClient
-  currentUser: User
 }): ReleaseOperationsStore {
-  const {client, currentUser} = options
+  const {client} = options
   const handleCreateRelease = async (release: EditableReleaseDocument) => {
-    if (IS_RELEASE_METADATA_PROPERTIES_SUPPORTED) {
-      await requestAction(client, {
-        actionType: 'sanity.action.release.create',
-        releaseId: getBundleIdFromReleaseDocumentId(release._id),
-      })
-      await requestAction(client, {
-        actionType: 'sanity.action.release.create',
-        releaseId: getBundleIdFromReleaseDocumentId(release._id),
-        // @ts-expect-error - this is TBD
-        metadata: release,
-      })
-    } else {
-      // todo: remove once metadata properties are supported
-      const bundleId = getBundleIdFromReleaseDocumentId(release._id)
-      const metadataDocument = {
-        ...release,
-        _id: `${RELEASE_METADATA_TMP_DOC_PATH}.${bundleId}`,
-        _type: RELEASE_METADATA_TMP_DOC_TYPE,
-      }
-      await requestAction(client, {
-        actionType: 'sanity.action.release.create',
-        releaseId: getBundleIdFromReleaseDocumentId(release._id),
-      })
-      await client.createIfNotExists(metadataDocument)
-    }
+    await requestAction(client, {
+      actionType: 'sanity.action.release.create',
+      releaseId: getBundleIdFromReleaseDocumentId(release._id),
+      [METADATA_PROPERTY_NAME]: release.metadata,
+    })
   }
 
   const handleUpdateRelease = async (release: EditableReleaseDocument) => {
@@ -66,34 +43,17 @@ export function createReleaseOperationsStore(options: {
 
     const unsetKeys = Object.entries(release)
       .filter(([_, value]) => value === undefined)
-      .map(([key]) => `metadata.${key}`)
+      .map(([key]) => `${METADATA_PROPERTY_NAME}.${key}`)
 
-    if (IS_RELEASE_EDIT_SUPPORTED) {
-      await requestAction(client, {
-        actionType: 'sanity.action.release.edit',
-        releaseId: bundleId,
-        patch: {
-          // todo: consider more granular updates here
-          set: {metadata: release.metadata},
-          unset: unsetKeys,
-        },
-      })
-    } else {
-      // todo: delete when `sanity.action.release.edit` action is supported for custom metadata/attributes
-      const metadataDocument = {
-        ...release,
-        _id: `${RELEASE_METADATA_TMP_DOC_PATH}.${bundleId}`,
-        _type: RELEASE_METADATA_TMP_DOC_TYPE,
-        authorId: currentUser?.id,
-      }
-
-      let clientOperation = client.patch(metadataDocument._id).set(metadataDocument)
-      if (unsetKeys.length) {
-        clientOperation = clientOperation.unset(unsetKeys)
-      }
-
-      await clientOperation.commit()
-    }
+    await requestAction(client, {
+      actionType: 'sanity.action.release.edit',
+      releaseId: bundleId,
+      patch: {
+        // todo: consider more granular updates here
+        set: {[METADATA_PROPERTY_NAME]: release.metadata},
+        unset: unsetKeys,
+      },
+    })
   }
 
   const handlePublishRelease = async (releaseId: string) =>
@@ -222,6 +182,7 @@ interface UnscheduleApiAction {
 interface CreateReleaseApiAction {
   actionType: 'sanity.action.release.create'
   releaseId: string
+  [METADATA_PROPERTY_NAME]?: Partial<ReleaseDocument['metadata']>
 }
 
 interface CreateVersionReleaseApiAction {
@@ -230,7 +191,6 @@ interface CreateVersionReleaseApiAction {
   attributes: IdentifiedSanityDocumentStub
 }
 
-// Todo: not supported by backend yet – this is me guessing what it will look like
 interface EditReleaseApiAction {
   actionType: 'sanity.action.release.edit'
   releaseId: string
@@ -248,7 +208,7 @@ type ReleaseAction =
   | UnarchiveApiAction
   | CreateVersionReleaseApiAction
 
-function requestAction(client: SanityClient, actions: ReleaseAction | ReleaseAction[]) {
+export function requestAction(client: SanityClient, actions: ReleaseAction | ReleaseAction[]) {
   const {dataset} = client.config()
   return client.request({
     uri: `/data/actions/${dataset}`,

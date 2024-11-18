@@ -25,6 +25,7 @@ import {operatorDefinitions} from '../studio/components/navbar/search/definition
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
+  announcementsEnabledReducer,
   createFallbackOriginReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -662,6 +663,10 @@ function resolveSource({
         startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: false}),
         fallbackStudioOrigin: createFallbackOriginReducer(config),
       },
+    },
+
+    announcements: {
+      enabled: announcementsEnabledReducer({config, initialValue: true}),
     },
   }
 
