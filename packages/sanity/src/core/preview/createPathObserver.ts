@@ -36,12 +36,7 @@ function observePaths(
   paths: PreviewPath[],
   observeFields: ObserveFieldsFn,
   apiConfig?: ApiConfig,
-): Observable<Record<string, unknown> | null> {
-  if (!value || typeof value !== 'object') {
-    // Reached a leaf. Return as is
-    return observableOf(value as null) // @todo
-  }
-
+): Observable<Record<string, unknown> | undefined> {
   const id = getDocumentId(value)
 
   const currentValue: Record<string, unknown> = id ? {...value, _id: id} : {...value}
@@ -70,7 +65,7 @@ function observePaths(
     return observeFields(id, nextHeads, refApiConfig).pipe(
       switchMap((snapshot) => {
         if (snapshot === null) {
-          return observableOf(null)
+          return observableOf(undefined)
         }
 
         return observePaths(
@@ -132,7 +127,7 @@ export function createPathObserver(options: {observeFields: ObserveFieldsFn}) {
     value: Previewable,
     paths: (FieldName | PreviewPath)[],
     apiConfig?: ApiConfig,
-  ): Observable<Record<string, unknown> | null> => {
+  ): Observable<Record<string, unknown> | undefined> => {
     return observePaths(value, normalizePaths(paths), observeFields, apiConfig)
   }
 }

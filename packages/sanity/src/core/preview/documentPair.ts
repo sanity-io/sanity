@@ -39,7 +39,7 @@ export function createObservePathsDocumentPair(options: {
           // short circuit, neither draft nor published is available so no point in trying to get a snapshot
           return of({
             id: publishedId,
-            type: null,
+            type: undefined,
             draft: {
               availability: availability.draft,
               snapshot: undefined,
@@ -74,11 +74,11 @@ export function createObservePathsDocumentPair(options: {
               (isRecord(publishedSnapshot) &&
                 '_type' in publishedSnapshot &&
                 publishedSnapshot._type) ||
-              null
+              undefined
 
             return {
               id: publishedId,
-              type: typeof type === 'string' ? type : null,
+              type: typeof type === 'string' ? type : undefined,
               draft: {
                 availability: availability.draft,
                 snapshot: draftSnapshot as T,

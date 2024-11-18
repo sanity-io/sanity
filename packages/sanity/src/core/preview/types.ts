@@ -1,7 +1,6 @@
 import {
   type CrossDatasetType,
   type PreviewValue,
-  type Reference,
   type SanityDocumentLike,
   type SchemaType,
 } from '@sanity/types'
@@ -39,6 +38,11 @@ export type PreviewPath = FieldName[]
 /** @internal */
 export type Selection = [Id, FieldName[]]
 
+/** @internal */
+export interface PartialPreviewDocument {
+  _id: string
+  _type: string
+}
 /**
  * @hidden
  * @beta */
@@ -104,7 +108,7 @@ export interface DraftsModelDocumentAvailability {
  * @beta */
 export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocumentLike> {
   id: string
-  type: string | null
+  type: string | undefined
   draft: {
     availability: DocumentAvailability
     snapshot: T | undefined
@@ -135,7 +139,7 @@ export type InvalidationChannelEvent =
  * @beta */
 export interface PreparedSnapshot {
   type?: PreviewableType
-  snapshot: PreviewValue | null | undefined
+  snapshot: PreviewValue | undefined
 }
 
 /** @internal */
@@ -152,7 +156,7 @@ export interface ObservePathsFn {
     value: Previewable,
     paths: (string | PreviewPath)[],
     apiConfig?: ApiConfig,
-  ): Observable<PreviewValue | SanityDocumentLike | Reference | string | null>
+  ): Observable<Record<string, unknown> | undefined>
 }
 
 /**

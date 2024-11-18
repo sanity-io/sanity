@@ -11,7 +11,7 @@ import {
   getPublishedId,
   resolveBundlePerspective,
   useDocumentPreviewStore,
-  usePerspective,
+  useStudioPerspectiveState,
   useTranslation,
 } from 'sanity'
 
@@ -34,7 +34,7 @@ interface ParentReferenceInfo {
 
 export const ReferenceChangedBanner = memo(() => {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {perspective} = usePerspective()
+  const {current} = useStudioPerspectiveState()
   const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
   const routerReferenceId = routerPanesState[groupIndex]?.[0].id
   const parentGroup = routerPanesState[groupIndex - 1] as RouterPaneGroup | undefined
@@ -46,7 +46,7 @@ export const ReferenceChangedBanner = memo(() => {
   }, [params?.parentRefPath])
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const bundlePerspective = resolveBundlePerspective(perspective)
+  const bundlePerspective = resolveBundlePerspective(current)
 
   /**
    * Loads information regarding the reference field of the parent pane. This

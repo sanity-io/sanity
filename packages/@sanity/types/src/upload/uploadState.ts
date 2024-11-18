@@ -1,4 +1,4 @@
-/** @internal */
+/** @public */
 export interface UploadState {
   progress: number
   /** @deprecated use createdAt instead */

@@ -30,9 +30,9 @@ const PreviewCell = (props: {
   }
 }) => {
   const {documentPreviewStore, row, schemaType} = props
-  const title = 'Document title'
+
   const previewStateObservable = useMemo(
-    () => getPreviewStateObservable(documentPreviewStore, schemaType, row.original._id, title),
+    () => getPreviewStateObservable(documentPreviewStore, schemaType, row.original._id),
     [documentPreviewStore, row.original._id, schemaType],
   )
   const {draft, published, isLoading} = useObservable(previewStateObservable, {

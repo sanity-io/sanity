@@ -16,7 +16,7 @@ export function ReferencePreviewTitle({
   const documentPreviewStore = useDocumentPreviewStore()
 
   const observable = useMemo(
-    () => getPreviewStateObservable(documentPreviewStore, schemaType, documentId, ''),
+    () => getPreviewStateObservable(documentPreviewStore, schemaType, documentId),
     [documentId, documentPreviewStore, schemaType],
   )
   const {draft, published, isLoading} = useObservable(observable, {

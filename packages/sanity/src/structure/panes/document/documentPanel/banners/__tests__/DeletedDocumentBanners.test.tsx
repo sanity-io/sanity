@@ -1,5 +1,5 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {LATEST, type ReleaseDocument, usePerspective, useReleases} from 'sanity'
+import {LATEST, type ReleaseDocument, useReleases, useStudioPerspectiveState} from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -25,7 +25,7 @@ vi.mock('../../../../../../core/store/_legacy/history/useTimelineSelector', () =
 
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 const mockUseReleases = useReleases as Mock<typeof useReleases>
-const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
+const mockUsePerspective = useStudioPerspectiveState as Mock<typeof useStudioPerspectiveState>
 
 const renderTest = async () => {
   const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
@@ -35,8 +35,8 @@ const renderTest = async () => {
 
 describe('DeletedDocumentBanners', () => {
   it('does not show either banner when document is not deleted', async () => {
-    mockUsePerspective.mockReturnValue({currentGlobalBundle: {_id: 'test'}} as ReturnType<
-      typeof usePerspective
+    mockUsePerspective.mockReturnValue({currentGlobalRelease: {_id: 'test'}} as ReturnType<
+      typeof useStudioPerspectiveState
     >)
     mockUseReleases.mockReturnValue({
       data: [],
@@ -58,8 +58,8 @@ describe('DeletedDocumentBanners', () => {
 
   it('prefers to show release deleted banner when document was in a release', async () => {
     const mockReleaseDocument = {_id: 'test', state: 'archived'} as ReleaseDocument
-    mockUsePerspective.mockReturnValue({currentGlobalBundle: mockReleaseDocument} as ReturnType<
-      typeof usePerspective
+    mockUsePerspective.mockReturnValue({currentGlobalRelease: mockReleaseDocument} as ReturnType<
+      typeof useStudioPerspectiveState
     >)
     mockUseReleases.mockReturnValue({
       data: [mockReleaseDocument],
@@ -85,9 +85,9 @@ describe('DeletedDocumentBanners', () => {
     const mockBundleDocument: ReleaseDocument = {_id: 'test', state: 'archived'} as ReleaseDocument
 
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: LATEST,
-      setPerspective: vi.fn(),
-    } as ReturnType<typeof usePerspective>)
+      currentGlobalRelease: LATEST,
+      setCurrent: vi.fn(),
+    } as ReturnType<typeof useStudioPerspectiveState>)
 
     mockUseReleases.mockReturnValue({
       data: [mockBundleDocument],

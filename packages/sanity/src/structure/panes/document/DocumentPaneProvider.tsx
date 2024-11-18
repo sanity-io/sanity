@@ -33,16 +33,17 @@ import {
   toMutationPatches,
   useConnectionState,
   useCopyPaste,
+  useCurrentRelease,
   useDocumentOperation,
   useDocumentValuePermissions,
   useDocumentVersions,
   useEditState,
   useFormState,
   useInitialValue,
-  usePerspective,
   usePresenceStore,
   useSchema,
   useSource,
+  useStudioPerspectiveState,
   useTemplates,
   useTimelineSelector,
   useTimelineStore,
@@ -103,9 +104,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-  const {perspective, currentGlobalBundle} = usePerspective()
+  const {current} = useStudioPerspectiveState()
+  const currentGlobalRelease = useCurrentRelease()
 
-  const bundlePerspective = resolveBundlePerspective(perspective)
+  const bundlePerspective = resolveBundlePerspective(current)
 
   /* Version and the global perspective should match.
    * If user clicks on add document, and then switches to another version, he should click again on create document.
@@ -150,7 +152,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     case typeof bundlePerspective !== 'undefined':
       value = editState.version || editState.draft || editState.published || value
       break
-    case perspective === 'published':
+    case current === 'published':
       value = editState.published || editState.draft || value
       break
     default:
@@ -172,7 +174,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       case Boolean(params):
         version = 'revision'
         break
-      case perspective === 'published':
+      case current === 'published':
         version = 'published'
         break
       default:
@@ -180,7 +182,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
 
     return version
-  }, [bundlePerspective, params, perspective, value._id])
+  }, [bundlePerspective, params, current, value._id])
 
   const actionsPerspective = useMemo(() => getDocumentPerspective(), [getDocumentPerspective])
 
@@ -598,11 +600,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     // in cases where the document has drafts but the schema is live edit,
     // there is a risk of data loss, so we disable editing in this case
     const isLiveEditAndDraft = Boolean(liveEdit && editState.draft)
-    const isSystemPerspectiveApplied = perspective && typeof bundlePerspective === 'undefined'
+    const isSystemPerspectiveApplied = current && typeof bundlePerspective === 'undefined'
 
     const isReleaseLocked =
-      typeof currentGlobalBundle === 'object' && 'state' in currentGlobalBundle
-        ? isReleaseScheduledOrScheduling(currentGlobalBundle)
+      typeof currentGlobalRelease === 'object' && 'state' in currentGlobalRelease
+        ? isReleaseScheduledOrScheduling(currentGlobalRelease)
         : false
 
     return (
@@ -630,9 +632,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState.transactionSyncLock?.enabled,
     editState.draft,
     liveEdit,
-    perspective,
+    current,
     bundlePerspective,
-    currentGlobalBundle,
+    currentGlobalRelease,
     existsInBundle,
     ready,
     revTime,

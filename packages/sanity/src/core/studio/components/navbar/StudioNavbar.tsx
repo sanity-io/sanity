@@ -19,7 +19,7 @@ import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../../releases'
+import {getPerspectiveTone, useCurrentRelease, useStudioPerspectiveState} from '../../../releases'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {useWorkspace} from '../../workspace'
@@ -85,7 +85,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {currentGlobalBundle} = usePerspective()
+  const {current} = useStudioPerspectiveState()
+  const currentGlobalRelease = useCurrentRelease()
 
   const ToolMenu = useToolMenuComponent()
 
@@ -189,7 +190,11 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
-          tone={getReleaseTone(currentGlobalBundle)}
+          tone={
+            currentGlobalRelease
+              ? getReleaseTone(currentGlobalRelease)
+              : getPerspectiveTone(current)
+          }
           borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"

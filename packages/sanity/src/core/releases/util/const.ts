@@ -1,11 +1,13 @@
 /*  TEMPORARY  DUMMY DATA */
 
+import {DRAFTS_PERSPECTIVE} from './perspective'
+
 /**
  * @internal
  */
 export const LATEST = {
   // this exists implicitly
-  _id: 'drafts',
+  _id: DRAFTS_PERSPECTIVE,
   metadata: {
     title: 'Latest',
   },

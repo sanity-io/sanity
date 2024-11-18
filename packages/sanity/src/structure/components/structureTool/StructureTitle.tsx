@@ -4,8 +4,8 @@ import {
   resolveBundlePerspective,
   unstable_useValuePreview as useValuePreview,
   useEditState,
-  usePerspective,
   useSchema,
+  useStudioPerspectiveState,
   useTranslation,
 } from 'sanity'
 
@@ -22,13 +22,13 @@ interface StructureTitleProps {
 // TODO: Fix state jank when editing different versions inside panes.
 const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const {documentId, documentType} = props
-  const {perspective} = usePerspective()
+  const {current} = useStudioPerspectiveState()
 
   const editState = useEditState(
     documentId,
     documentType,
     'default',
-    resolveBundlePerspective(perspective),
+    resolveBundlePerspective(current),
   )
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)

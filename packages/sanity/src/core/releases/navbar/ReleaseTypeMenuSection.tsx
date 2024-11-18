@@ -2,13 +2,13 @@ import {Flex, Label} from '@sanity/ui'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {usePerspective} from '../hooks/usePerspective'
+import {useStudioPerspectiveState} from '../hooks/useStudioPerspectiveState'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {
   getRangePosition,
-  GlobalPerspectiveMenuItem,
+  GlobalReleasePerspectiveMenuItem,
   type LayerRange,
-} from './GlobalPerspectiveMenuItem'
+} from './GlobalReleasePerspectiveMenuItem'
 import {GlobalPerspectiveMenuLabelIndicator} from './PerspectiveLayerIndicator'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
 
@@ -30,14 +30,14 @@ export function ReleaseTypeMenuSection({
   currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
 }): JSX.Element | null {
   const {t} = useTranslation()
-  const {currentGlobalBundleId} = usePerspective()
+  const {current} = useStudioPerspectiveState()
 
   const getMenuItemRef = useCallback(
     (releaseId: string) =>
-      releaseId === currentGlobalBundleId
+      releaseId === current
         ? (currentGlobalBundleMenuItemRef as React.RefObject<HTMLDivElement>)
         : undefined,
-    [currentGlobalBundleId, currentGlobalBundleMenuItemRef],
+    [current, currentGlobalBundleMenuItemRef],
   )
 
   if (releases.length === 0) return null
@@ -59,7 +59,7 @@ export function ReleaseTypeMenuSection({
       </GlobalPerspectiveMenuLabelIndicator>
       <Flex direction="column" gap={1}>
         {releases.map((release, index) => (
-          <GlobalPerspectiveMenuItem
+          <GlobalReleasePerspectiveMenuItem
             release={release}
             key={release._id}
             ref={getMenuItemRef(release._id)}

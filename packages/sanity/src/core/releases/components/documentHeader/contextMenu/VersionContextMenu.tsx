@@ -9,6 +9,7 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {isPublishedId} from '../../../../util/draftUtils'
 import {type ReleaseDocument} from '../../../store/types'
+import {type ReleaseDocumentId} from '../../../util/releaseId'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
@@ -26,7 +27,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   isVersion: boolean
   onDiscard: () => void
   onCreateRelease: () => void
-  onCreateVersion: (targetId: string) => void
+  onCreateVersion: (targetId: ReleaseDocumentId) => void
   disabled?: boolean
   locked?: boolean
 }) {
