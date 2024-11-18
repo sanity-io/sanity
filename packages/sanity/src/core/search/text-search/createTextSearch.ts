@@ -5,6 +5,7 @@ import {map} from 'rxjs/operators'
 import {removeDupes} from '../../util/draftUtils'
 import {
   deriveSearchWeightsFromType,
+  isPerspectiveRaw,
   type SearchOptions,
   type SearchPath,
   type SearchSort,
@@ -132,7 +133,7 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
   factoryOptions,
 ) => {
   const {perspective} = factoryOptions
-  const isRaw = perspective === 'raw'
+  const isRaw = isPerspectiveRaw(perspective)
 
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).

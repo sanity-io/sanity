@@ -4,6 +4,7 @@ import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 
 import {
   deriveSearchWeightsFromType,
+  isPerspectiveRaw,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchPath,
@@ -128,7 +129,7 @@ export function createSearchQuery(
   // Extract search terms from string query, factoring in phrases wrapped in quotes
   const terms = extractTermsFromQuery(searchTerms.query)
   const {perspective} = searchOpts
-  const isRaw = perspective === 'raw'
+  const isRaw = isPerspectiveRaw(perspective)
 
   // Construct search filters used in this GROQ query
   const filters = [

@@ -6,7 +6,7 @@ import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
 import {usePerspective} from '../../../../../../releases/hooks/usePerspective'
 import {useReleases} from '../../../../../../releases/store/useReleases'
-import {type SearchTerms} from '../../../../../../search'
+import {isPerspectiveRaw, type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {resolvePerspectiveOptions} from '../../../../../../util/resolvePerspective'
 import {useSource} from '../../../../../source'
@@ -135,10 +135,9 @@ export function SearchProvider({
           ordering?.customMeasurementLabel || `${ordering.sort?.field} ${ordering.sort?.direction}`
       }
 
-      const perspectives =
-        state.perspective === 'raw'
-          ? {bundlePerspective: undefined, perspective: undefined}
-          : resolvePerspectiveOptions(bundlesPerspective)
+      const perspectives = isPerspectiveRaw(state.perspective)
+        ? {bundlePerspective: undefined, perspective: undefined}
+        : resolvePerspectiveOptions(bundlesPerspective)
 
       handleSearch({
         options: {

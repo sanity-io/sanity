@@ -3,7 +3,7 @@ import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {useReleases, useSearchState} from 'sanity'
+import {isPerspectiveRaw, useReleases, useSearchState} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
@@ -54,7 +54,7 @@ export function SearchResultItemPreview({
   const releases = useReleases()
   const {bundlesPerspective} = usePerspective()
   const {state} = useSearchState()
-  const isRaw = state.perspective === 'raw'
+  const isRaw = isPerspectiveRaw(state.perspective)
 
   const observable = useMemo(
     () =>
