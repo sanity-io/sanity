@@ -1,22 +1,25 @@
-import {fireEvent, render, screen} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {act} from 'react'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {activeScheduledRelease} from '../../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../index'
+import {useReleaseOperationsMock} from '../../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
+import {
+  documentsInRelease,
+  useBundleDocumentsMock,
+} from '../../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
-vi.mock('sanity', () => ({
-  SANITY_VERSION: '0.0.0',
-  useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
+vi.mock('../../../../store/useReleaseOperations', () => ({
+  useReleaseOperations: vi.fn(() => useReleaseOperationsMock),
 }))
 
-vi.mock('../../../../../store/release/useReleaseOperations', () => ({
-  useReleaseOperations: vi.fn().mockReturnValue({
-    updateRelease: vi.fn(),
-  }),
+vi.mock('../../../detail/useBundleDocuments', () => ({
+  useBundleDocuments: vi.fn(() => useBundleDocumentsMock),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -31,54 +34,97 @@ const renderTest = async ({release, disabled = false}: ReleaseMenuButtonProps) =
   return render(<ReleaseMenuButton disabled={disabled} release={release} />, {wrapper})
 }
 
-describe.skip('ReleaseMenuButton', () => {
+describe('ReleaseMenuButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  test('will archive an unarchived release', async () => {
-    const activeRelease: ReleaseDocument = {
-      _id: 'activeRelease',
-      _type: 'release',
-      timing: 'immediately',
-      archivedAt: undefined,
-      title: 'activeRelease',
-      createdBy: 'author',
-      _createdAt: new Date().toISOString(),
-      _updatedAt: new Date().toISOString(),
-      _rev: '',
-      hue: 'gray',
-      icon: 'cube',
+  describe('archive release', () => {
+    const openConfirmArchiveDialog = async () => {
+      await renderTest({release: activeScheduledRelease})
+
+      await waitFor(() => {
+        screen.getByTestId('release-menu-button')
+      })
+
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+      screen.getByTestId('archive-release')
+
+      await act(() => {
+        fireEvent.click(screen.getByTestId('archive-release'))
+      })
+
+      screen.getByTestId('confirm-archive-dialog')
     }
 
-    await renderTest({release: activeRelease})
+    test('does not require confirmation when no documents in release', async () => {
+      useBundleDocumentsMock.results = []
 
-    fireEvent.click(screen.getByTestId('release-menu-button'))
+      await renderTest({release: activeScheduledRelease})
 
-    await act(() => {
-      fireEvent.click(screen.getByTestId('archive-release'))
+      await waitFor(() => {
+        screen.getByTestId('release-menu-button')
+      })
+
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+      screen.getByTestId('archive-release')
+
+      await act(() => {
+        fireEvent.click(screen.getByTestId('archive-release'))
+      })
+
+      expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
+      expect(useReleaseOperations().archive).toHaveBeenCalledWith(activeScheduledRelease._id)
+
+      useBundleDocumentsMock.results = [documentsInRelease]
     })
 
-    expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith({
-      ...activeRelease,
-      archivedAt: expect.any(String),
+    test('can reject archiving', async () => {
+      await openConfirmArchiveDialog()
+
+      await act(() => {
+        fireEvent.click(screen.getByTestId('cancel-button'))
+      })
+
+      expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
+    })
+
+    describe('when archiving is successful', () => {
+      beforeEach(async () => {
+        await openConfirmArchiveDialog()
+      })
+
+      test('will archive an active release', async () => {
+        await act(() => {
+          fireEvent.click(screen.getByTestId('confirm-button'))
+        })
+
+        expect(useReleaseOperations().archive).toHaveBeenCalledWith(activeScheduledRelease._id)
+        expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when archiving fails', () => {
+      beforeEach(async () => {
+        useReleaseOperationsMock.archive.mockRejectedValue(new Error('some rejection reason'))
+
+        await openConfirmArchiveDialog()
+      })
+
+      test('will not archive the release', async () => {
+        await act(() => {
+          fireEvent.click(screen.getByTestId('confirm-button'))
+        })
+
+        expect(useReleaseOperations().archive).toHaveBeenCalledWith(activeScheduledRelease._id)
+        expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
+      })
     })
   })
 
-  test('will unarchive an archived release', async () => {
-    const archivedRelease: ReleaseDocument = {
-      _id: 'activeRelease',
-      _type: 'release',
-      timing: 'immediately',
-      archivedAt: new Date().toISOString(),
-      title: 'activeRelease',
-      createdBy: 'author',
-      _createdAt: new Date().toISOString(),
-      _updatedAt: new Date().toISOString(),
-      _rev: '',
-      hue: 'gray',
-      icon: 'cube',
-    }
+  test.todo('will unarchive an archived release', async () => {
+    const archivedRelease: ReleaseDocument = {...activeScheduledRelease, state: 'archived'}
+
     await renderTest({release: archivedRelease})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
@@ -94,21 +140,14 @@ describe.skip('ReleaseMenuButton', () => {
   })
 
   test('will be disabled', async () => {
-    const disabledActionRelease: ReleaseDocument = {
-      _id: 'activeEmptyRelease',
-      _type: 'release',
-      archivedAt: new Date().toISOString(),
-      title: 'activeEmptyRelease',
-      timing: 'immediately',
-      createdBy: 'author',
-      _createdAt: new Date().toISOString(),
-      _updatedAt: new Date().toISOString(),
-      _rev: '',
-      hue: 'gray',
-      icon: 'cube',
-    }
-    await renderTest({release: disabledActionRelease, disabled: true})
+    await renderTest({release: activeScheduledRelease, disabled: true})
 
-    fireEvent.click(screen.getByTestId('release-menu-button'))
+    const actionsButton = screen.getByTestId('release-menu-button')
+
+    expect(actionsButton).toBeDisabled()
+
+    fireEvent.click(actionsButton)
+
+    expect(screen.queryByTestId('archive-release')).not.toBeInTheDocument()
   })
 })

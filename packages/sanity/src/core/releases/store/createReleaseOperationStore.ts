@@ -30,13 +30,12 @@ export function createReleaseOperationsStore(options: {
   client: SanityClient
 }): ReleaseOperationsStore {
   const {client} = options
-  const handleCreateRelease = async (release: EditableReleaseDocument) => {
-    await requestAction(client, {
+  const handleCreateRelease = (release: EditableReleaseDocument) =>
+    requestAction(client, {
       actionType: 'sanity.action.release.create',
       releaseId: getBundleIdFromReleaseDocumentId(release._id),
       [METADATA_PROPERTY_NAME]: release.metadata,
     })
-  }
 
   const handleUpdateRelease = async (release: EditableReleaseDocument) => {
     const bundleId = getBundleIdFromReleaseDocumentId(release._id)
@@ -56,7 +55,7 @@ export function createReleaseOperationsStore(options: {
     })
   }
 
-  const handlePublishRelease = async (releaseId: string) =>
+  const handlePublishRelease = (releaseId: string) =>
     requestAction(client, [
       {
         actionType: 'sanity.action.release.publish',
@@ -64,41 +63,38 @@ export function createReleaseOperationsStore(options: {
       },
     ])
 
-  const handleScheduleRelease = async (releaseId: string, publishAt: Date) => {
-    await requestAction(client, [
+  const handleScheduleRelease = (releaseId: string, publishAt: Date) =>
+    requestAction(client, [
       {
         actionType: 'sanity.action.release.schedule',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
         publishAt: publishAt.toISOString(),
       },
     ])
-  }
-  const handleUnscheduleRelease = async (releaseId: string) => {
-    await requestAction(client, [
+
+  const handleUnscheduleRelease = (releaseId: string) =>
+    requestAction(client, [
       {
         actionType: 'sanity.action.release.unschedule',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
       },
     ])
-  }
 
-  const handleArchiveRelease = async (releaseId: string) => {
-    await requestAction(client, [
+  const handleArchiveRelease = (releaseId: string) =>
+    requestAction(client, [
       {
         actionType: 'sanity.action.release.archive',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
       },
     ])
-  }
 
-  const handleUnarchiveRelease = async (releaseId: string) => {
-    await requestAction(client, [
+  const handleUnarchiveRelease = (releaseId: string) =>
+    requestAction(client, [
       {
         actionType: 'sanity.action.release.unarchive',
         releaseId: getBundleIdFromReleaseDocumentId(releaseId),
       },
     ])
-  }
 
   const handleCreateVersion = async (releaseId: string, documentId: string) => {
     // the documentId will show you where the document is coming from and which
@@ -127,18 +123,13 @@ export function createReleaseOperationsStore(options: {
       : client.create(versionDocument))
   }
 
-  const handleDiscardVersion = async (releaseId: string, documentId: string) => {
-    if (!document) {
-      throw new Error(`Document with id ${documentId} not found`)
-    }
-
-    await requestAction(client, [
+  const handleDiscardVersion = (releaseId: string, documentId: string) =>
+    requestAction(client, [
       {
         actionType: 'sanity.action.document.discard',
         draftId: getVersionId(documentId, releaseId),
       },
     ])
-  }
 
   return {
     archive: handleArchiveRelease,
