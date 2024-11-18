@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, TabList, TabPanel} from '@sanity/ui'
-import {type DocumentInspectorProps, useTranslation} from 'sanity'
+import {type DocumentInspectorProps, useSource, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, Tab} from '../../../../../ui-components'
@@ -8,6 +8,8 @@ import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
 import {ChangesInspector} from './ChangesInspector'
+import {EventsInspector} from './EventsInspector'
+import {EventsSelector} from './EventsSelector'
 import {HistorySelector} from './HistorySelector'
 
 const FadeInFlex = styled(Flex)`
@@ -24,6 +26,8 @@ const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
 
 export function ChangesTabs(props: DocumentInspectorProps) {
   const {params, setParams} = usePaneRouter()
+  const source = useSource()
+
   const {t} = useTranslation(structureLocaleNamespace)
   const isReady = params?.inspect === HISTORY_INSPECTOR_NAME
 
@@ -72,7 +76,11 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         hidden={paneRouterTab !== 'history'}
         id="history-panel"
       >
-        <HistorySelector showList={paneRouterTab === 'history'} />
+        {source.beta?.eventsAPI?.enabled ? (
+          <EventsSelector showList={paneRouterTab === 'history'} />
+        ) : (
+          <HistorySelector showList={paneRouterTab === 'history'} />
+        )}
       </TabPanel>
 
       <TabPanel
@@ -81,7 +89,15 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         id="review-panel"
         height="fill"
       >
-        <ChangesInspector showChanges={paneRouterTab === 'review'} />
+        {source.beta?.eventsAPI?.enabled ? (
+          <>
+            {paneRouterTab === 'review' ? (
+              <EventsInspector showChanges={paneRouterTab === 'review'} />
+            ) : null}
+          </>
+        ) : (
+          <ChangesInspector showChanges={paneRouterTab === 'review'} />
+        )}
       </TabPanel>
     </FadeInFlex>
   )

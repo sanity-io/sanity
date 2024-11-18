@@ -25,6 +25,7 @@ import {
 } from '@sanity/types'
 import {type ComponentType} from 'react'
 
+import {type DocumentGroupEvent} from '../store/events'
 import {type FieldValueError} from './validation'
 
 /**
@@ -69,7 +70,8 @@ export type Chunk = {
  * @beta
  */
 export type AnnotationDetails = {
-  chunk: Chunk
+  chunk?: Chunk // This is not used anywhere, could be removed
+  event?: DocumentGroupEvent
   timestamp: string
   author: string
 }

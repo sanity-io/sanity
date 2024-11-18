@@ -132,6 +132,7 @@ const config = {
             'status',
             'group',
             'textWeight',
+            'showChangesBy',
           ],
         },
       },
