@@ -40,31 +40,21 @@ export function SearchResultItem({
   })
   const {state} = useSearchState()
 
-  /**
-   * if it exists in the release then it means that this component is being used
-   * in the context of the release tool where we need to avoid pressing items that are already in the release
-   */
+  // if the perspective is set within the searchState then it means it should override the router perspective
+  const pickedPerspective = state.perspective ?? perspective
+
+  // the current search result exists in the release provided by the search provider
   const existsInRelease = state.idsInRelease?.some((id) => id.includes(getPublishedId(documentId)))
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
-      if (!existsInRelease) {
-        onItemSelect?.({_id: documentId, _type: documentType})
-        if (!disableIntentLink) {
-          onIntentClick(e)
-        }
-        onClick?.()
+      onItemSelect?.({_id: documentId, _type: documentType})
+      if (!disableIntentLink) {
+        onIntentClick(e)
       }
+      onClick?.()
     },
-    [
-      onItemSelect,
-      documentId,
-      documentType,
-      disableIntentLink,
-      existsInRelease,
-      onClick,
-      onIntentClick,
-    ],
+    [onItemSelect, documentId, documentType, disableIntentLink, onClick, onIntentClick],
   )
 
   if (!type) return null
@@ -72,7 +62,7 @@ export function SearchResultItem({
   return (
     <Box {...rest}>
       <PreviewCard
-        as="a"
+        as={existsInRelease ? undefined : 'a'}
         data-as="a"
         flex={1}
         href={disableIntentLink || existsInRelease ? undefined : href}
@@ -87,7 +77,7 @@ export function SearchResultItem({
         <SearchResultItemPreview
           documentId={documentId}
           layout={layout}
-          perspective={state.perspective ?? perspective}
+          perspective={pickedPerspective}
           presence={documentPresence}
           schemaType={type}
         />
