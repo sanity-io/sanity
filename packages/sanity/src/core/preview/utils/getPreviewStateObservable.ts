@@ -93,6 +93,12 @@ export function getPreviewStateObservable(
   // version document.
   const version$ = versions$.pipe(
     map((versions) => {
+      if (perspective.isRaw && versions && isVersionId(documentId)) {
+        const versionId = getVersionFromId(documentId) ?? ''
+        if (versionId in versions) {
+          return versions[versionId]
+        }
+      }
       for (const bundleId of list) {
         if (bundleId in versions) {
           return versions[bundleId]
@@ -109,25 +115,13 @@ export function getPreviewStateObservable(
   )
 
   return combineLatest([draft$, published$, version$, versions$]).pipe(
-    map(([draft, published, version, versions]) => {
-      let v = version.snapshot ? {title, ...(version.snapshot || {})} : null
-
-      /**
-       * when the search type should be raw, there are versions and the document provided is a version
-       * then we need to find the exact version to display
-       */
-      if (perspective.isRaw && versions && isVersionId(documentId)) {
-        v = {title, ...versions[getVersionFromId(documentId) ?? '']?.snapshot}
-      }
-
-      return {
-        draft: draft.snapshot ? {title, ...(draft.snapshot || {})} : null,
-        isLoading: false,
-        published: published.snapshot ? {title, ...(published.snapshot || {})} : null,
-        version: v,
-        versions,
-      }
-    }),
+    map(([draft, published, version, versions]) => ({
+      draft: draft.snapshot ? {title, ...(draft.snapshot || {})} : null,
+      isLoading: false,
+      published: published.snapshot ? {title, ...(published.snapshot || {})} : null,
+      version: version.snapshot ? {title, ...(version.snapshot || {})} : null,
+      versions,
+    })),
     startWith({
       draft: null,
       isLoading: true,
