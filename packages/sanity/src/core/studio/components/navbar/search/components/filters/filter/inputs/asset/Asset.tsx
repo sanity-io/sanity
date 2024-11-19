@@ -7,7 +7,6 @@ import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
 import {type Source} from '../../../../../../../../../config'
-import {SUPPORTED_IMAGE_UPLOAD_TYPES} from '../../../../../../../../../form/inputs/files/constants'
 import {FileSource, ImageSource} from '../../../../../../../../../form/studio/assetSource'
 import {useClient} from '../../../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../../../i18n'
@@ -103,15 +102,13 @@ export function SearchFilterAssetInput(type?: AssetType) {
 
     const AssetSourceComponent = selectedAssetSource?.component
 
+    const fontSize = fullscreen ? 2 : 1
+
     const buttonText = t(value ? 'search.filter-asset-change' : 'search.filter-asset-select', {
       context: type,
     })
 
-    const accept = get(
-      type,
-      'options.accept',
-      type === 'image' ? SUPPORTED_IMAGE_UPLOAD_TYPES.join(',') : '',
-    )
+    const accept = get(type, 'options.accept', type === 'image' ? 'image/*' : '')
 
     return (
       <ContainerBox>
