@@ -21,11 +21,12 @@ export function uploadImage(
   options?: UploadOptions,
 ): Observable<UploadProgressEvent> {
   const upload$ = uploadImageAsset(client, file, options).pipe(
-    filter((event) => !('stage' in event) || event.stage !== 'download'),
+    filter((event: any) => event.stage !== 'download'),
     map((event) => ({
       ...event,
-      progress: event.type === 'complete' ? 100 : 2 + (event.percent / 100) * 98,
+      progress: 2 + (event.percent / 100) * 98,
     })),
+
     map((event) => {
       if (event.type === 'complete') {
         return createUploadEvent([

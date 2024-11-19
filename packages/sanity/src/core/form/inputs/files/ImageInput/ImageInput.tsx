@@ -108,8 +108,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
   }, [path])
 
   const clearUploadStatus = useCallback(() => {
-    onChange(unset(['_upload']))
-  }, [onChange])
+    if (value?._upload) {
+      onChange(unset(['_upload']))
+    }
+  }, [onChange, value?._upload])
   const cancelUpload = useCallback(() => {
     if (uploadSubscription.current) {
       uploadSubscription.current.unsubscribe()
