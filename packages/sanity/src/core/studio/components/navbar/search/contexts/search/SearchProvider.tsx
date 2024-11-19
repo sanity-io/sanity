@@ -26,9 +26,10 @@ interface SearchProviderProps {
   children?: ReactNode
   fullscreen?: boolean
   /**
-   * if provided, then it means that the search is being done from within a specific perspective
+   * list of perspective ids
+   * if provided, then it means that the search is being done using a specific list of perspectives
    */
-  perspective?: string
+  perspective?: string[]
   /**
    * list of document ids
    * if provided, then ids should be checked against this list
@@ -135,7 +136,7 @@ export function SearchProvider({
           ordering?.customMeasurementLabel || `${ordering.sort?.field} ${ordering.sort?.direction}`
       }
 
-      const isRaw = isPerspectiveRaw(state.perspective)
+      const isRaw = isPerspectiveRaw(perspective)
 
       handleSearch({
         options: {
@@ -153,7 +154,8 @@ export function SearchProvider({
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
-          ...resolvePerspectiveOptions(isRaw ? undefined : bundlesPerspective),
+          ...resolvePerspectiveOptions(isRaw ? undefined : (perspective ?? bundlesPerspective)),
+          perspective: isRaw ? ['raw'] : state.perspective,
         },
         terms: {
           ...terms,
@@ -182,6 +184,7 @@ export function SearchProvider({
     bundlesPerspective,
     releases,
     state.perspective,
+    perspective,
   ])
 
   /**

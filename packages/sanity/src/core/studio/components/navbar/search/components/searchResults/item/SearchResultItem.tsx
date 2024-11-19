@@ -41,7 +41,7 @@ export function SearchResultItem({
   const {state} = useSearchState()
 
   // if the perspective is set within the searchState then it means it should override the router perspective
-  const pickedPerspective = state.perspective ?? perspective
+  const pickedPerspective = state.perspective ? state.perspective[0] : perspective
 
   // the current search result exists in the release provided by the search provider
   const existsInRelease = state.documentIds?.some((id) => id.includes(getPublishedId(documentId)))

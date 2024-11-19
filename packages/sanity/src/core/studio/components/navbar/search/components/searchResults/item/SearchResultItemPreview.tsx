@@ -3,7 +3,7 @@ import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {isPerspectiveRaw, useReleases, useSearchState} from 'sanity'
+import {isArray, isPerspectiveRaw, useReleases, useSearchState} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
@@ -60,10 +60,22 @@ export function SearchResultItemPreview({
     () =>
       getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '', {
         bundleIds: releases.releasesIds,
-        bundleStack: bundlesPerspective,
+        /**
+         * if the perspective is defined in the state it means that there is a scope to the search
+         * and that the preview needs to take that into account
+         */
+        bundleStack: state.perspective && !isRaw ? state.perspective : bundlesPerspective,
         isRaw: isRaw,
       }),
-    [documentPreviewStore, schemaType, documentId, releases.releasesIds, bundlesPerspective, isRaw],
+    [
+      documentPreviewStore,
+      schemaType,
+      documentId,
+      releases.releasesIds,
+      state.perspective,
+      bundlesPerspective,
+      isRaw,
+    ],
   )
 
   const {
@@ -110,7 +122,7 @@ export function SearchResultItemPreview({
           published,
           version,
           value: sanityDocument,
-          perspective,
+          perspective: isArray(perspective) ? perspective[0] : perspective,
         })}
         isPlaceholder={isLoading ?? true}
         layout={layout || 'default'}

@@ -1,6 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {assignWith} from 'lodash'
+import {isPerspectiveRaw} from 'sanity'
 
 import {isPublishedId, isVersionId, resolveBundlePerspective} from '../../util'
 
@@ -33,7 +34,7 @@ export const getPreviewValueWithFallback = ({
 
   // check if it's searching globally
   // if it is then use the value directly
-  if (perspective === 'raw') {
+  if (isPerspectiveRaw(perspective)) {
     switch (true) {
       case isVersionId(value._id):
         snapshot = version
@@ -46,7 +47,7 @@ export const getPreviewValueWithFallback = ({
     }
   } else {
     switch (true) {
-      case typeof resolveBundlePerspective(perspective) !== 'undefined':
+      case typeof resolveBundlePerspective(perspective) !== 'undefined' || isVersionId(value._id):
         snapshot = version || draft || published
         break
       case perspective === 'published':

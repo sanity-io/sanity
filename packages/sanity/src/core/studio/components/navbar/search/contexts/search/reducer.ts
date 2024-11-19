@@ -42,7 +42,7 @@ export type SearchReducerState = PaginationState & {
   terms: RecentSearch | SearchTerms
   strategy?: SearchStrategy
   documentIds?: string[]
-  perspective?: string
+  perspective?: string[]
 }
 
 export interface SearchDefinitions {
