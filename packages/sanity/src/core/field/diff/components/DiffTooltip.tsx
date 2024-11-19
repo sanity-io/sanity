@@ -80,11 +80,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
       {annotation.event ? (
         <>
           <Card borderBottom marginBottom={2} />
-          <Event
-            // TODO: Remove the hardcoded authors
-            event={{...annotation.event, authors: ['pIASlMUvq', 'p27ewL8aM']}}
-            showChangesBy="inline"
-          />
+          <Event event={annotation.event} showChangesBy="inline" />
         </>
       ) : (
         <Inline space={2}>

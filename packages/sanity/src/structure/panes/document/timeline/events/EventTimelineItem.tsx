@@ -45,7 +45,7 @@ export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: Ti
         data-testid="timeline-item-button"
         data-chunk-timestamp={event.timestamp}
       >
-        <Event event={{...event, authors: ['pIASlMUvq', 'p27ewL8aM']}} showChangesBy="tooltip" />
+        <Event event={event} showChangesBy="tooltip" />
       </Card>
       {optionsMenu}
     </Flex>

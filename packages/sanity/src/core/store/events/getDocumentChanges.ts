@@ -1,14 +1,13 @@
 import {diffInput, wrap} from '@sanity/diff'
 import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
+import {incremental} from 'mendoza'
 import {from, map, type Observable, of, startWith} from 'rxjs'
 import {type SanityClient} from 'sanity'
 
-import {type ObjectDiff} from '../../field'
-import {getJsonStream} from '../_legacy/history/history/getJsonStream'
-import {calculateDiff} from './reconstruct'
+import {type Annotation, type ObjectDiff} from '../../field'
+import {wrapValue} from '../_legacy/history/history/diffValue'
+import {getDocumentTransactions} from './getDocumentTransactions'
 import {type DocumentGroupEvent} from './types'
-
-const TRANSLOG_ENTRY_LIMIT = 50
 
 const buildDocumentForDiffInput = (document?: Partial<SanityDocument> | null) => {
   if (!document) return {}
@@ -20,59 +19,123 @@ const buildDocumentForDiffInput = (document?: Partial<SanityDocument> | null) =>
   return rest
 }
 
-const documentTransactionsCache: Record<string, TransactionLogEventWithEffects[]> =
-  Object.create(null)
+type EventMeta = {
+  transactionIndex: number
+  event?: DocumentGroupEvent
+} | null
 
-async function getDocumentTransactions({
-  documentId,
-  client,
-  toTransaction,
-  fromTransaction,
+function omitRev(document: SanityDocument | undefined) {
+  if (document === undefined) {
+    return undefined
+  }
+  const {_rev, ...doc} = document
+  return doc
+}
+
+function annotationForTransactionIndex(
+  transactions: TransactionLogEventWithEffects[],
+  idx: number,
+  event?: DocumentGroupEvent,
+) {
+  const tx = transactions[idx]
+  if (!tx) return null
+
+  return {
+    timestamp: tx.timestamp,
+    author: tx.author,
+    event: event,
+  }
+}
+
+function extractAnnotationForFromInput(
+  transactions: TransactionLogEventWithEffects[],
+  meta: EventMeta,
+): Annotation {
+  if (meta) {
+    // The next transaction is where it disappeared:
+    return annotationForTransactionIndex(transactions, meta.transactionIndex + 1, meta.event)
+  }
+
+  return null
+}
+function extractAnnotationForToInput(
+  transactions: TransactionLogEventWithEffects[],
+  meta: EventMeta,
+): Annotation {
+  if (meta) {
+    return annotationForTransactionIndex(transactions, meta.transactionIndex, meta.event)
+  }
+
+  return null
+}
+
+function diffValue({
+  transactions,
+  fromValue,
+  fromRaw,
+  toValue,
+  toRaw,
 }: {
-  documentId: string
-  client: SanityClient
-  toTransaction: string
-  fromTransaction: string
+  transactions: TransactionLogEventWithEffects[]
+  fromValue: incremental.Value<EventMeta>
+  fromRaw: unknown
+  toValue: incremental.Value<EventMeta>
+  toRaw: unknown
 }) {
-  const cacheKey = `${documentId}-${toTransaction}-${fromTransaction}`
-  if (documentTransactionsCache[cacheKey]) {
-    return documentTransactionsCache[cacheKey]
-  }
-  const clientConfig = client.config()
-  const dataset = clientConfig.dataset
-
-  const queryParams = new URLSearchParams({
-    tag: 'sanity.studio.documents.history',
-    effectFormat: 'mendoza',
-    excludeContent: 'true',
-    includeIdentifiedDocumentsOnly: 'true',
-    // reverse: 'true',
-    limit: TRANSLOG_ENTRY_LIMIT.toString(),
-    // https://www.sanity.io/docs/history-api#toTransaction-d28ec5b5ff40
-    toTransaction: toTransaction,
-    // https://www.sanity.io/docs/history-api#fromTransaction-db53ef83c809
-    fromTransaction: fromTransaction,
+  const fromInput = wrapValue<EventMeta>(fromValue, fromRaw, {
+    fromValue(value) {
+      return extractAnnotationForFromInput(transactions, value.endMeta)
+    },
+    fromMeta(meta) {
+      return extractAnnotationForFromInput(transactions, meta)
+    },
   })
-  const transactionsUrl = client.getUrl(
-    `/data/history/${dataset}/transactions/${documentId}?${queryParams.toString()}`,
-  )
-  const transactions: TransactionLogEventWithEffects[] = []
 
-  const stream = await getJsonStream(transactionsUrl, clientConfig.token)
-  const reader = stream.getReader()
-  for (;;) {
-    // eslint-disable-next-line no-await-in-loop
-    const result = await reader.read()
-    if (result.done) break
+  const toInput = wrapValue<EventMeta>(toValue, toRaw, {
+    fromValue(value) {
+      return extractAnnotationForToInput(transactions, value.startMeta)
+    },
+    fromMeta(meta) {
+      return extractAnnotationForToInput(transactions, meta)
+    },
+  })
+  return diffInput(fromInput, toInput)
+}
 
-    if ('error' in result.value) {
-      throw new Error(result.value.error.description || result.value.error.type)
+function calculateDiff({
+  initialDoc,
+  finalDoc,
+  transactions,
+  events = [],
+}: {
+  initialDoc: SanityDocument
+  finalDoc: SanityDocument
+  transactions: TransactionLogEventWithEffects[]
+  events: DocumentGroupEvent[]
+}) {
+  const documentId = initialDoc._id
+
+  const initialValue = incremental.wrap<EventMeta>(omitRev(initialDoc), null)
+  let document = incremental.wrap<EventMeta>(omitRev(initialDoc), null)
+
+  transactions.forEach((transaction, index) => {
+    const meta: EventMeta = {
+      transactionIndex: index,
+      event: events.find((event) => 'revisionId' in event && event.revisionId === transaction.id),
     }
-    if (result.value.id === fromTransaction) continue
-    else transactions.push(result.value)
-  }
-  documentTransactionsCache[cacheKey] = transactions
-  return transactions
+    const effect = transaction.effects[documentId]
+    if (effect) {
+      document = incremental.applyPatch(document, effect.apply, meta)
+    }
+  })
+  const diff = diffValue({
+    transactions,
+    fromValue: initialValue,
+    fromRaw: initialDoc,
+    toValue: document,
+    toRaw: finalDoc,
+  })
+  return diff
 }
 
 export function getDocumentChanges({

@@ -290,9 +290,22 @@ export interface EditDocumentVersionEvent extends BaseEvent {
   // Given this event could be a result of multiple edits, we could have more than one author.
   authors: string[]
   releaseId?: string
+  /**
+   * One edit event could contain multiple transactions that are merged together.
+   * This represents the oldest transaction in the merged events.
+   */
+  fromRevisionId: string
+  /**
+   * One edit event could contain multiple transactions that are merged together.
+   * This represents the newest transaction in the merged events.
+   */
   revisionId: string
-  versionRevisionId: string
-  mergedEvents?: EditDocumentVersionEvent[]
+  transactions: {
+    type: 'EditTransaction'
+    author: string
+    timestamp: string
+    revisionId: string
+  }[]
 }
 
 export interface EventsStoreRevision {

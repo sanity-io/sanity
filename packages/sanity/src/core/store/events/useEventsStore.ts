@@ -1,14 +1,16 @@
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, type Observable, of} from 'rxjs'
+import {combineLatest, from, type Observable, of} from 'rxjs'
 import {catchError, map, startWith, tap} from 'rxjs/operators'
-import {getVersionFromId, type SanityClient, type SanityDocument} from 'sanity'
+import {getPublishedId, getVersionFromId, type SanityClient, type SanityDocument} from 'sanity'
 
 import {useClient} from '../../hooks'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromName} from '../../releases/util/getReleaseIdFromName'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDocumentChanges} from './getDocumentChanges'
+import {getDocumentTransactions} from './getDocumentTransactions'
+import {getEditEvents} from './getEditEvents'
 import {type DocumentGroupEvent, type EventsStore, type EventsStoreRevision} from './types'
 
 const INITIAL_VALUE = {
@@ -70,6 +72,8 @@ export function useEventsStore({
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {state$} = useReleasesStore()
 
+  const isPublishedId = getPublishedId(documentId) === documentId
+
   const eventsObservable$: Observable<{
     events: DocumentGroupEvent[]
     nextCursor: string
@@ -92,10 +96,24 @@ export function useEventsStore({
         map((response) => {
           console.log('response', response)
           return {
-            events: response.events[documentId] || [],
+            events:
+              response.events[documentId].map((e) => ({
+                ...e,
+                revisionId: e.revisionId || e.versionRevisionId,
+              })) || [],
             nextCursor: response.nextCursor,
             loading: false,
             error: null,
+          }
+        }),
+        // This is temporal - The API is returning duplicated events, we need to remove them.
+        map((response) => {
+          return {
+            ...response,
+            events: response.events.filter(
+              (event, index) =>
+                index === response.events.length - 1 || event.type !== 'CreateDocumentVersion',
+            ),
           }
         }),
         catchError((error: Error) => {
@@ -135,6 +153,41 @@ export function useEventsStore({
   }, [state$, eventsObservable$])
 
   const {events, loading, error, nextCursor} = useObservable(observable$, INITIAL_VALUE)
+  const lastEventVersionRevisionId = useMemo(() => {
+    const lastVersionRevisionIdIndex = events.findIndex(
+      (event) => 'versionRevisionId' in event && event.versionRevisionId,
+    )
+    if (lastVersionRevisionIdIndex !== 0 && !isPublishedId && events.length) {
+      console.log('Verify this, it could be an error', events)
+    }
+    return events[lastVersionRevisionIdIndex]?.versionRevisionId as string
+  }, [events, isPublishedId])
+
+  const editEvents$ = useMemo(() => {
+    if (!lastEventVersionRevisionId || isPublishedId) {
+      return of([])
+    }
+    // For drafts and version documents we want to find the edit events.
+    // This events won't be returned by the events api, we need to create them from the transactions.
+    // We also need to provide a sync mechanism, to only fetch the translog once.
+    // Initially, we will need the transactions that occurred from the last event present in the document to the present moment.
+    return from(
+      getDocumentTransactions({
+        client,
+        documentId,
+        fromTransaction: lastEventVersionRevisionId,
+        toTransaction: undefined, // We need to get up to the present moment
+      }),
+    ).pipe(
+      map((transactions) => getEditEvents(transactions, documentId)),
+      catchError((err) => {
+        console.error('Something failed', err)
+        return []
+      }),
+    )
+  }, [client, documentId, lastEventVersionRevisionId, isPublishedId])
+
+  const editEvents = useObservable(editEvents$)
 
   const revision$ = useMemo(
     () =>
@@ -214,20 +267,20 @@ export function useEventsStore({
   )
 
   const changesList = useCallback(
-    ({to, from}: {to: SanityDocument; from: SanityDocument | null}) => {
+    ({to, from: fromDoc}: {to: SanityDocument; from: SanityDocument | null}) => {
       return getDocumentChanges({
         client,
         events,
         documentId,
         to,
-        since: from,
+        since: fromDoc,
       })
     },
     [client, events, documentId],
   )
 
   return {
-    events: events,
+    events: editEvents ? [...editEvents, ...events] : events,
     nextCursor: nextCursor,
     loading: loading,
     error: error,
