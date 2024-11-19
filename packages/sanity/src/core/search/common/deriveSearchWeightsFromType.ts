@@ -20,7 +20,7 @@ const BASE_WEIGHTS: Record<string, Omit<SearchWeightEntry, 'path'>> = {
   _id: {weight: 1, type: 'string'},
   _type: {weight: 1, type: 'string'},
 }
-const builtInObjectTypes = ['reference', 'crossDatasetReference']
+const ignoredBuiltInObjectTypes = ['reference', 'crossDatasetReference']
 
 const getTypeChain = (type: SchemaType | undefined): SchemaType[] =>
   type ? [type, ...getTypeChain(type.type)] : []
@@ -64,7 +64,9 @@ function getLeafWeights(
     const results: SearchWeightEntry[] = []
     const objectTypes = typeChain.filter(
       (t): t is Extract<SchemaType, {jsonType: 'object'}> =>
-        t.jsonType === 'object' && !!t.fields?.length && !builtInObjectTypes.includes(t.name),
+        t.jsonType === 'object' &&
+        !!t.fields?.length &&
+        !ignoredBuiltInObjectTypes.includes(t.name),
     )
     for (const objectType of objectTypes) {
       for (const field of objectType.fields) {
