@@ -31,10 +31,11 @@ interface SearchProviderProps {
    */
   perspective?: string[]
   /**
-   * list of document ids
+   * list of document ids that should be be disabled in the search
+   * if they are found to exist in the search results
    * if provided, then ids should be checked against this list
    */
-  documentIds?: string[]
+  disabledDocumentIds?: string[]
 }
 
 /**
@@ -44,7 +45,7 @@ export function SearchProvider({
   children,
   fullscreen,
   perspective,
-  documentIds,
+  disabledDocumentIds,
 }: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
@@ -211,10 +212,10 @@ export function SearchProvider({
         ...state,
         fullscreen,
         perspective,
-        documentIds,
+        disabledDocumentIds,
       },
     }),
-    [fullscreen, documentIds, onClose, perspective, searchCommandList, state],
+    [fullscreen, disabledDocumentIds, onClose, perspective, searchCommandList, state],
   )
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
