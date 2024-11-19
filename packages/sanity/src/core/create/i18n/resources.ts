@@ -10,13 +10,12 @@ const createLocaleStrings = defineLocalesResources('create', {
   'start-in-create-action.label': 'Start in Sanity Create',
 
   /** Header of the "Start writing in Create" dialog */
-  'start-in-create-dialog.header': 'Start authoring in Sanity Create',
+  'start-in-create-dialog.header': 'Write naturally, publish structured',
   /** The lede text in the "Start writing in Create" dialog */
   'start-in-create-dialog.lede':
-    'Author in a free-form editor and have it mapped back to the Studio as structured content, as you type.',
+    'Create content your way in an AI-powered editor. Your writing automatically maps to the right fields in Sanity Studio as you type.',
   /** The details on what "Start writing in Create" implies */
-  'start-in-create-dialog.details':
-    'This will open Sanity Create in a new window and automatically link it to this document.',
+  'start-in-create-dialog.details': 'This opens in a new window, linked directly to this document.',
   /** CTA in "Start writing in Create" dialog: Continue to create */
   'start-in-create-dialog.cta.continue': 'Continue',
   /** CTA in "Start writing in Create" dialog: Learn more */
@@ -27,18 +26,17 @@ const createLocaleStrings = defineLocalesResources('create', {
   'start-in-create-dialog.error-toast.unresolved-url': 'Unable to determine Sanity Create URL.',
 
   /** Header of the "Linking in progress" dialog */
-  'linking-in-progress-dialog.header': 'Linking in progress',
+  'linking-in-progress-dialog.header': 'Linking to Sanity Create',
   /** Lede text for the "Linking in progress" dialog */
   'linking-in-progress-dialog.lede':
-    'Please return to Sanity Create. Linking the document should only take a few seconds.',
+    'Head back to Sanity Create. Your document will sync automatically (usually takes a few seconds).',
   /** Details for the "Linking in progress" dialog */
-  'linking-in-progress-dialog.details':
-    'When complete, this dialog will close and edits made in Sanity Create will start appearing here as they happen.',
+  'linking-in-progress-dialog.details': 'Once linked, your edits will appear here in real-time.',
   /** "Linking in progress" troubleshooting button title */
-  'linking-in-progress-dialog.troubleshooting.button.title': 'Linking taking a while?',
+  'linking-in-progress-dialog.troubleshooting.button.title': 'Linking delayed?',
   /** "Linking in progress" troubleshooting content */
   'linking-in-progress-dialog.troubleshooting.content':
-    'Did you close the Sanity Create window? Does the process appear to be stuck? Please reload this page and try again.',
+    'Check if your Sanity Create window is still open, or if the process seems stuck. If problems persist, try refreshing the Studio and try again.',
   /** Text for the document pane banner informing users that the document is linked to Sanity Create */
   'studio-create-link-banner.text': 'This document is linked to Sanity Create',
 
@@ -47,26 +45,26 @@ const createLocaleStrings = defineLocalesResources('create', {
   /** Text above header in Create Link info popover */
   'create-link-info-popover.eyebrow-title': 'Sanity Create',
   /** Text in badge above header in Create Link info popover */
-  'create-link-info-popover.eyebrow-badge': 'Beta',
+  'create-link-info-popover.eyebrow-badge': 'Early access',
   /** Header in Create Link info popover */
-  'create-link-info-popover.header': 'Idea first authoring',
+  'create-link-info-popover.header': 'Idea-first authoring',
   /** Informational text in Create Link info popover */
   'create-link-info-popover.text':
-    'Sanity Create lets you author in a free-form editor that automatically maps back to the Studio as structured content - as you type.',
+    'Write naturally in an AI-powered editor. Your content automatically maps to Studio fields as you type.',
 
   /** Edit in Create button text */
-  'edit-in-create-button.text': 'Edit in Sanity Create',
+  'edit-in-create-button.text': 'Edit with Sanity Create',
   /** Unlink document from Sanity Create button text */
   'unlink-from-create-button.text': 'Unlink',
 
   /** Unlink from Create dialog header */
-  'unlink-from-create-dialog.header': 'Unlink from Sanity Create?',
+  'unlink-from-create-dialog.header': 'Switch editing to Studio?',
   /** Unlink from Create dialog – first informational paragraph */
   'unlink-from-create-dialog.first-paragraph':
     'You’re unlinking “<strong>{{title}}</strong>” from Sanity Create so it can be edited here.',
   /** Unlink from Create dialog – second informational paragraph */
   'unlink-from-create-dialog.second-paragraph':
-    'You’ll keep all of your current changes, but future edits made in Create will no longer be automatically transferred here.',
+    'You’ll keep your content in both places. Any new changes in Sanity Create will stop syncing to this Studio.',
   /** Unlink from Create dialog: Cancel button text */
   'unlink-from-create-dialog.cancel.text': 'Cancel',
   /** Unlink from Create dialog: Document title used if no other title can be determined */

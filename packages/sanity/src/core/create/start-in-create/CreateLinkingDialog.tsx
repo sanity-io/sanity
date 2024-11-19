@@ -1,4 +1,4 @@
-import {ChevronDownIcon, ChevronRightIcon, InfoOutlineIcon} from '@sanity/icons'
+import {ChevronDownIcon, ChevronUpIcon, InfoOutlineIcon} from '@sanity/icons'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
@@ -50,7 +50,7 @@ export function CreateLinkingDialog() {
                   </Text>
                 </Flex>
                 <Text size={1} weight="medium">
-                  {troubleshootingOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                  {troubleshootingOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
                 </Text>
               </Flex>
             </Button>
