@@ -8,7 +8,7 @@ const PATH_ID_PREFIX = `${RELEASE_DOCUMENTS_PATH}.`
  */
 export function getBundleIdFromReleaseDocumentId(releaseId: string) {
   if (!releaseId.startsWith(PATH_ID_PREFIX)) {
-    throw new Error(`Release ID should start with ${RELEASE_DOCUMENTS_PATH}`)
+    throw new Error(`Release ID was ${releaseId} but should start with ${RELEASE_DOCUMENTS_PATH}`)
   }
   return releaseId.slice(PATH_ID_PREFIX.length)
 }

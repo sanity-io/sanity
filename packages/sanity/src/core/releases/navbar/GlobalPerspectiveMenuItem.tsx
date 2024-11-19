@@ -20,7 +20,6 @@ import {
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
 export interface LayerRange {
-  firstIndex: number
   lastIndex: number
   offsets: {
     asap: number
@@ -67,12 +66,12 @@ const ExcludedLayerDot = () => (
 type rangePosition = 'first' | 'within' | 'last' | undefined
 
 export function getRangePosition(range: LayerRange, index: number): rangePosition {
-  const {firstIndex, lastIndex} = range
+  const {lastIndex} = range
 
-  if (firstIndex === lastIndex) return undefined
-  if (index === firstIndex) return 'first'
+  if (lastIndex === 0) return undefined
+  if (index === 0) return 'first'
   if (index === lastIndex) return 'last'
-  if (index > firstIndex && index < lastIndex) return 'within'
+  if (index > 0 && index < lastIndex) return 'within'
 
   return undefined
 }
@@ -191,12 +190,13 @@ export const GlobalPerspectiveMenuItem = forwardRef<
                   mode="bleed"
                   onClick={handleToggleReleaseVisibility}
                   padding={2}
+                  data-testid="release-toggle-visibility"
                 />
               </Tooltip>
             )}
             {!isPublishedPerspective(release) && isReleaseScheduledOrScheduling(release) && (
               <Box padding={2}>
-                <Text size={1}>
+                <Text size={1} data-testid="release-lock-icon">
                   <LockIcon />
                 </Text>
               </Box>

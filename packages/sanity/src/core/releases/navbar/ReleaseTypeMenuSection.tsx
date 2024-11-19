@@ -42,13 +42,13 @@ export function ReleaseTypeMenuSection({
 
   if (releases.length === 0) return null
 
-  const {firstIndex, lastIndex, offsets} = range
+  const {lastIndex, offsets} = range
   const releaseTypeOffset = offsets[releaseType]
 
   return (
     <>
       <GlobalPerspectiveMenuLabelIndicator
-        $withinRange={firstIndex < releaseTypeOffset && lastIndex >= releaseTypeOffset}
+        $withinRange={releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset}
         paddingRight={2}
         paddingTop={releaseType === 'asap' ? 1 : 4}
         paddingBottom={2}

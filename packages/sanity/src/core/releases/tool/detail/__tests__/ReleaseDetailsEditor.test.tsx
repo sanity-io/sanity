@@ -1,12 +1,12 @@
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {type ReleaseDocument} from '../../index'
-import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {type ReleaseDocument} from '../../../index'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {ReleaseDetailsEditor} from '../ReleaseDetailsEditor'
 // Mock the dependencies
-vi.mock('../../store/useReleaseOperations', () => ({
+vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn().mockReturnValue({
     updateRelease: vi.fn(),
   }),
