@@ -1,8 +1,14 @@
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, from, type Observable, of} from 'rxjs'
-import {catchError, map, startWith, tap} from 'rxjs/operators'
-import {getPublishedId, getVersionFromId, type SanityClient, type SanityDocument} from 'sanity'
+import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators'
+import {
+  getPublishedId,
+  getVersionFromId,
+  isVersionId,
+  type SanityClient,
+  type SanityDocument,
+} from 'sanity'
 
 import {useClient} from '../../hooks'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
@@ -11,7 +17,21 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDocumentChanges} from './getDocumentChanges'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {getEditEvents} from './getEditEvents'
-import {type DocumentGroupEvent, type EventsStore, type EventsStoreRevision} from './types'
+import {
+  type DocumentGroupEvent,
+  type EventsStore,
+  type EventsStoreRevision,
+  isCreateDocumentVersionEvent,
+  isCreateLiveDocumentEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
+  isEditDocumentVersionEvent,
+  isPublishDocumentVersionEvent,
+  isScheduleDocumentVersionEvent,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
+  isUpdateLiveDocumentEvent,
+} from './types'
 
 const INITIAL_VALUE = {
   events: [],
@@ -60,6 +80,36 @@ function getDocumentAtRevision({
     )
 }
 
+const addEventId = (
+  event: Omit<DocumentGroupEvent, 'id'>,
+  isPublishedDoc: boolean,
+): DocumentGroupEvent => {
+  let id = ''
+  if (isCreateDocumentVersionEvent(event)) {
+    id = isPublishedDoc ? event.revisionId : event.versionRevisionId
+  } else if (isDeleteDocumentVersionEvent(event)) {
+    id = isPublishedDoc ? `deleteAt-${event.timestamp}` : event.versionRevisionId
+  } else if (isPublishDocumentVersionEvent(event)) {
+    id = isPublishedDoc ? event.revisionId : event.versionRevisionId || event.revisionId
+  } else if (isUnpublishDocumentEvent(event)) {
+    // This event is only available for the published document
+    id = isPublishedDoc ? `unpublishAt-${event.timestamp}` : ''
+  } else if (isScheduleDocumentVersionEvent(event)) {
+    // This event is only available for the version document
+    id = isPublishedDoc ? '' : event.versionRevisionId
+  } else if (isUnscheduleDocumentVersionEvent(event)) {
+    id = isPublishedDoc ? '' : event.versionRevisionId
+  } else if (isDeleteDocumentGroupEvent(event)) {
+    id = `deleted-${event.timestamp}`
+  } else if (isCreateLiveDocumentEvent(event)) {
+    id = event.revisionId
+  } else if (isUpdateLiveDocumentEvent(event)) {
+    id = event.revisionId
+  } else if (isEditDocumentVersionEvent(event)) {
+    id = event.revisionId
+  }
+  return {...event, id} as DocumentGroupEvent
+}
 export function useEventsStore({
   documentId,
   rev,
@@ -72,21 +122,21 @@ export function useEventsStore({
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {state$} = useReleasesStore()
 
-  const isPublishedId = getPublishedId(documentId) === documentId
-
   const eventsObservable$: Observable<{
     events: DocumentGroupEvent[]
     nextCursor: string
     loading: boolean
     error: null | Error
   }> = useMemo(() => {
+    const isPublishedDoc = getPublishedId(documentId) === documentId
+
     const params = new URLSearchParams({
       // This is not working yet, CL needs to fix it.
       limit: '2',
     })
     return client.observable
       .request<{
-        events: Record<string, DocumentGroupEvent[]>
+        events: Record<string, Omit<DocumentGroupEvent, 'id'>[]>
         nextCursor: string
       }>({
         url: `/data/events/${client.config().dataset}/documents/${documentId}?${params.toString()}`,
@@ -94,13 +144,8 @@ export function useEventsStore({
       })
       .pipe(
         map((response) => {
-          console.log('response', response)
           return {
-            events:
-              response.events[documentId].map((e) => ({
-                ...e,
-                revisionId: e.revisionId || e.versionRevisionId,
-              })) || [],
+            events: response.events[documentId]?.map((ev) => addEventId(ev, isPublishedDoc)) || [],
             nextCursor: response.nextCursor,
             loading: false,
             error: null,
@@ -115,6 +160,48 @@ export function useEventsStore({
                 index === response.events.length - 1 || event.type !== 'CreateDocumentVersion',
             ),
           }
+        }),
+        // Get the edit events if necessary.
+        switchMap((response) => {
+          if (isPublishedDoc) {
+            // For the published document we don't need to fetch the edit events.
+            return of(response)
+          }
+          console.log('EVENTS BEFORE EDIT EVENTS', response.events)
+
+          // TODO: Improve how we get this value.
+          const lastVersionRevisionIdIndex = response.events.findIndex(
+            (event) => 'versionRevisionId' in event && event.versionRevisionId,
+          )
+          // TODO: Think how to handle more events in a version document.
+          // Version docs are kind of short-lived, they are created, edited and published, once published they are not re-created again.
+          if (
+            lastVersionRevisionIdIndex !== 0 &&
+            !isPublishedDoc &&
+            response.events.length &&
+            isVersionId(documentId)
+          ) {
+            console.log('Verify this, it could be an error', response.events)
+          }
+          const lastEventVersionRevisionId = response.events[lastVersionRevisionIdIndex]
+            ?.versionRevisionId as string
+
+          if (!lastEventVersionRevisionId) {
+            return of(response)
+          }
+          return from(
+            getDocumentTransactions({
+              client,
+              documentId,
+              fromTransaction: lastEventVersionRevisionId,
+              toTransaction: undefined, // We need to get up to the present moment
+            }),
+          ).pipe(
+            map((transactions) => {
+              const editEvents = getEditEvents(transactions, documentId)
+              return {...response, events: [...editEvents, ...response.events]}
+            }),
+          )
         }),
         catchError((error: Error) => {
           console.error('Error fetching events', error)
@@ -153,49 +240,9 @@ export function useEventsStore({
   }, [state$, eventsObservable$])
 
   const {events, loading, error, nextCursor} = useObservable(observable$, INITIAL_VALUE)
-  const lastEventVersionRevisionId = useMemo(() => {
-    const lastVersionRevisionIdIndex = events.findIndex(
-      (event) => 'versionRevisionId' in event && event.versionRevisionId,
-    )
-    if (lastVersionRevisionIdIndex !== 0 && !isPublishedId && events.length) {
-      console.log('Verify this, it could be an error', events)
-    }
-    return events[lastVersionRevisionIdIndex]?.versionRevisionId as string
-  }, [events, isPublishedId])
-
-  const editEvents$ = useMemo(() => {
-    if (!lastEventVersionRevisionId || isPublishedId) {
-      return of([])
-    }
-    // For drafts and version documents we want to find the edit events.
-    // This events won't be returned by the events api, we need to create them from the transactions.
-    // We also need to provide a sync mechanism, to only fetch the translog once.
-    // Initially, we will need the transactions that occurred from the last event present in the document to the present moment.
-    return from(
-      getDocumentTransactions({
-        client,
-        documentId,
-        fromTransaction: lastEventVersionRevisionId,
-        toTransaction: undefined, // We need to get up to the present moment
-      }),
-    ).pipe(
-      map((transactions) => getEditEvents(transactions, documentId)),
-      catchError((err) => {
-        console.error('Something failed', err)
-        return []
-      }),
-    )
-  }, [client, documentId, lastEventVersionRevisionId, isPublishedId])
-
-  const editEvents = useObservable(editEvents$)
 
   const revision$ = useMemo(
-    () =>
-      getDocumentAtRevision({
-        client,
-        documentId,
-        revisionId: rev,
-      }),
+    () => getDocumentAtRevision({client, documentId, revisionId: rev}),
     [rev, client, documentId],
   )
   const revision = useObservable(revision$, null)
@@ -235,15 +282,12 @@ export function useEventsStore({
     (nextRev: string): [string | null, string | null] => {
       if (!events) return [null, null]
       if (!since) return [null, nextRev]
-      const revisionIndex = events.findIndex(
-        (event) => 'revisionId' in event && event.revisionId === nextRev,
-      )
-      const sinceIndex = events.findIndex(
-        (event) => 'revisionId' in event && event.revisionId === since,
-      )
+      const revisionIndex = events.findIndex((event) => event.id === nextRev)
+      const sinceIndex = events.findIndex((event) => event.id === since)
 
       if (sinceIndex === -1 || revisionIndex === -1) return [null, nextRev]
-      if (sinceIndex > revisionIndex) return [null, nextRev]
+      if (sinceIndex < revisionIndex) return [null, nextRev]
+      if (sinceIndex === revisionIndex) return [null, nextRev]
       return [since, nextRev]
     },
     [events, since],
@@ -253,14 +297,11 @@ export function useEventsStore({
     (nextSince: string): [string | null, string | null] => {
       if (!events) return [null, null]
       if (!rev) return [nextSince, null]
-      const revisionIndex = events.findIndex(
-        (event) => 'revisionId' in event && event.revisionId === rev,
-      )
-      const sinceIndex = events.findIndex(
-        (event) => 'revisionId' in event && event.revisionId === nextSince,
-      )
+      const revisionIndex = events.findIndex((event) => event.id === rev)
+      const sinceIndex = events.findIndex((event) => event.id === nextSince)
       if (sinceIndex === -1 || revisionIndex === -1) return [nextSince, null]
       if (sinceIndex < revisionIndex) return [nextSince, null]
+      if (sinceIndex === revisionIndex) return [nextSince, null]
       return [nextSince, rev]
     },
     [events, rev],
@@ -280,7 +321,7 @@ export function useEventsStore({
   )
 
   return {
-    events: editEvents ? [...editEvents, ...events] : events,
+    events: events,
     nextCursor: nextCursor,
     loading: loading,
     error: error,

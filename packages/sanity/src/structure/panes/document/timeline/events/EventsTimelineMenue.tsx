@@ -80,7 +80,8 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
           console.error('Event is not selectable')
           return
         }
-        const [since, rev] = findRangeForRevision(revEvent.revisionId)
+        // ('versionRevisionId' in revEvent && revEvent.versionRevisionId) || revEvent.revisionId,
+        const [since, rev] = findRangeForRevision(revEvent?.id)
         console.log('selectRev', {since, rev})
         setTimelineRange(since, rev)
         handleClose()
@@ -99,17 +100,8 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
   const selectSince = useCallback(
     (sinceEvent: DocumentGroupEvent) => {
       try {
-        if (
-          sinceEvent.type === 'DeleteDocumentVersion' ||
-          sinceEvent.type === 'DeleteDocumentGroup' ||
-          sinceEvent.type === 'UnpublishDocument' ||
-          sinceEvent.type === 'ScheduleDocumentVersion' ||
-          sinceEvent.type == 'UnscheduleDocumentVersion'
-        ) {
-          console.error('Event is not selectable')
-          return
-        }
-        const [since, rev] = findRangeForSince(sinceEvent.revisionId)
+        // ('versionRevisionId' in sinceEvent && sinceEvent.versionRevisionId) || sinceEvent.revisionId,
+        const [since, rev] = findRangeForSince(sinceEvent.id)
         console.log('selectSince', {since, rev})
 
         setTimelineRange(since, rev)
@@ -140,7 +132,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
         <EventsTimeline
           events={events}
           hasMoreEvents={Boolean(nextCursor)}
-          selectedEventId={event?.revisionId}
+          selectedEventId={event?.id}
           onLoadMore={handleLoadMore}
           onSelect={selectRev}
         />
@@ -151,21 +143,12 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
       <EventsTimeline
         events={events}
         hasMoreEvents={Boolean(nextCursor)}
-        selectedEventId={event?.revisionId}
+        selectedEventId={event?.id}
         onLoadMore={handleLoadMore}
         onSelect={selectSince}
       />
     )
-  }, [
-    event?.revisionId,
-    events,
-    handleLoadMore,
-    mode,
-    nextCursor,
-    selectRev,
-    selectSince,
-    timelineError,
-  ])
+  }, [event?.id, events, handleLoadMore, mode, nextCursor, selectRev, selectSince, timelineError])
 
   const revLabel = event
     ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.type], {

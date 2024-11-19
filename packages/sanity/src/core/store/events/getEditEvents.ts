@@ -68,12 +68,13 @@ export function getEditEvents(
     // If result is empty, add the current event
     const event: EditDocumentVersionEvent = {
       type: 'EditDocumentVersion',
+      id: transaction.id,
       timestamp: transaction.timestamp,
       author: transaction.author,
       authors: [transaction.author],
       releaseId: getVersionFromId(documentId),
-      fromRevisionId: transaction.id,
       revisionId: transaction.id,
+      fromRevisionId: transaction.id,
       transactions: [getEditTransaction(transaction)],
     }
     if (result.length === 0) {

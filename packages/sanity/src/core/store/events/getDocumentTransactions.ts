@@ -8,8 +8,6 @@ const TRANSLOG_ENTRY_LIMIT = 50
 const documentTransactionsCache: Record<string, TransactionLogEventWithEffects[]> =
   Object.create(null)
 
-// TODO: This needs to account for pagination, if the limit is reached and the toTransaction is not found we need to keep fetching
-// Possibly: if(limitReached && !toTransactionFound) { return getDocumentTransactions({documentId, client, toTransaction, fromTransaction: lastTransactionId}) }
 export async function getDocumentTransactions({
   documentId,
   client,
@@ -19,8 +17,8 @@ export async function getDocumentTransactions({
   documentId: string
   client: SanityClient
   toTransaction?: string
-  fromTransaction?: string
-}) {
+  fromTransaction: string
+}): Promise<TransactionLogEventWithEffects[]> {
   const cacheKey = `${documentId}-${toTransaction}-${fromTransaction}`
   if (documentTransactionsCache[cacheKey] && typeof toTransaction !== 'undefined') {
     return documentTransactionsCache[cacheKey]
@@ -35,13 +33,11 @@ export async function getDocumentTransactions({
     includeIdentifiedDocumentsOnly: 'true',
     // reverse: 'true',
     limit: TRANSLOG_ENTRY_LIMIT.toString(),
+    // https://www.sanity.io/docs/history-api#fromTransaction-db53ef83c809
+    fromTransaction,
   })
   if (toTransaction) {
     queryParams.append('toTransaction', toTransaction)
-  }
-  if (fromTransaction) {
-    // https://www.sanity.io/docs/history-api#fromTransaction-db53ef83c809
-    queryParams.append('fromTransaction', fromTransaction)
   }
 
   const transactionsUrl = client.getUrl(
@@ -62,6 +58,27 @@ export async function getDocumentTransactions({
     if (result.value.id === fromTransaction) continue
     else transactions.push(result.value)
   }
+
+  if (
+    transactions.length ===
+    // The transaction received with the id fromTransaction is not included in the list but it's returned by the API; remove that from the count
+    TRANSLOG_ENTRY_LIMIT - 1
+  ) {
+    // We have received the max values, we need to fetch the next batch. (Unless we have reached the toTransaction)
+    if (
+      (toTransaction && transactions[transactions.length - 1].id !== toTransaction) ||
+      !toTransaction
+    ) {
+      const nextTransactions = await getDocumentTransactions({
+        documentId,
+        client,
+        toTransaction,
+        fromTransaction: transactions[transactions.length - 1].id,
+      })
+      return transactions.concat(nextTransactions)
+    }
+  }
+
   documentTransactionsCache[cacheKey] = transactions
   return transactions
 }
