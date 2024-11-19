@@ -1,3 +1,6 @@
+'use no memo'
+// The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
+
 import {isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {

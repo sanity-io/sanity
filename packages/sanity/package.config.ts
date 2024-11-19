@@ -56,4 +56,7 @@ export default defineConfig({
       'ae-missing-release-tag': 'error',
     },
   },
+
+  babel: {reactCompiler: true},
+  reactCompilerOptions: {target: '18'},
 })

@@ -1,3 +1,9 @@
 {
-  "ignores": ["@swc-node/register", "@types/react", "@types/react-dom"]
+  "ignores": [
+    "@swc-node/register",
+    "@types/react",
+    "@types/react-dom",
+    "babel-plugin-react-compiler",
+    "react-compiler-runtime"
+  ]
 }

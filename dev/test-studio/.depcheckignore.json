@@ -7,6 +7,7 @@
     "@sanity/preview-url-secret",
     "@sanity/react-loader",
     "@sanity/visual-editing",
-    "@vercel/stega"
+    "@vercel/stega",
+    "babel-plugin-react-compiler"
   ]
 }
