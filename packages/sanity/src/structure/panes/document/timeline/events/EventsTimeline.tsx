@@ -73,7 +73,7 @@ export const EventsTimeline = ({
         >
           <EventTimelineItem
             event={event}
-            isSelected={event.revisionId === selectedEventId}
+            isSelected={event.id === selectedEventId}
             onSelect={handleSelectChunk}
             optionsMenu={
               event.type === 'PublishDocumentVersion' ? <PublishedEventMenu event={event} /> : null

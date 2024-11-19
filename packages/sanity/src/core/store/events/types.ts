@@ -153,10 +153,42 @@ export type DocumentGroupEvent =
   | UpdateLiveDocumentEvent
   | EditDocumentVersionEvent
 
+export const isCreateDocumentVersionEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is CreateDocumentVersionEvent => event.type === 'CreateDocumentVersion'
+export const isDeleteDocumentVersionEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is DeleteDocumentVersionEvent => event.type === 'DeleteDocumentVersion'
+export const isPublishDocumentVersionEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is PublishDocumentVersionEvent => event.type === 'PublishDocumentVersion'
+export const isUnpublishDocumentEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is UnpublishDocumentEvent => event.type === 'UnpublishDocument'
+export const isScheduleDocumentVersionEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is ScheduleDocumentVersionEvent => event.type === 'ScheduleDocumentVersion'
+export const isUnscheduleDocumentVersionEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is UnscheduleDocumentVersionEvent => event.type === 'UnscheduleDocumentVersion'
+export const isDeleteDocumentGroupEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is DeleteDocumentGroupEvent => event.type === 'DeleteDocumentGroup'
+export const isCreateLiveDocumentEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is CreateLiveDocumentEvent => event.type === 'CreateLiveDocument'
+export const isUpdateLiveDocumentEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is UpdateLiveDocumentEvent => event.type === 'UpdateLiveDocument'
+export const isEditDocumentVersionEvent = (
+  event: Partial<DocumentGroupEvent>,
+): event is EditDocumentVersionEvent => event.type === 'EditDocumentVersion'
+
 /**
  * A generic event with a type and a timestamp.
  */
 export interface BaseEvent {
+  id: string
   timestamp: string
   author: string
 }
