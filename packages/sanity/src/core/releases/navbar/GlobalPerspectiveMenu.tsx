@@ -7,7 +7,7 @@ import {css, styled} from 'styled-components'
 import {MenuButton} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {CreateReleaseDialog} from '../components/dialog/CreateReleaseDialog'
-import {usePerspective} from '../hooks'
+import {usePerspective} from '../hooks/usePerspective'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {useReleases} from '../store/useReleases'
 import {
@@ -75,16 +75,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
   )
 
   const range: LayerRange = useMemo(() => {
-    let firstIndex = -1
     let lastIndex = 0
-
-    // if (!releases.published.hidden) {
-    firstIndex = 0
-    // }
-
-    if (currentGlobalBundleId === 'published') {
-      lastIndex = 0
-    }
 
     const {asap, scheduled} = sortedReleaseTypeReleases
     const countAsapReleases = asap.length
@@ -103,12 +94,6 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       groupSubsetReleases.forEach(({_id}, groupReleaseIndex) => {
         const index = offset + groupReleaseIndex
 
-        if (firstIndex === -1) {
-          // if (!item.hidden) {
-          firstIndex = index
-          // }
-        }
-
         if (_id === currentGlobalBundleId) {
           lastIndex = index
         }
@@ -118,7 +103,6 @@ export function GlobalPerspectiveMenu(): JSX.Element {
     orderedReleaseTypes.forEach(adjustIndexForReleaseType)
 
     return {
-      firstIndex,
       lastIndex,
       offsets,
     }
