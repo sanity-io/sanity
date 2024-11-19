@@ -12,6 +12,7 @@
     "@sanity/codegen",
     "@sanity/schema",
     "@sanity/block-tools",
-    "vite"
+    "vite",
+    "react-compiler-runtime"
   ]
 }

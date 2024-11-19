@@ -4,6 +4,8 @@
     "@sanity/eslint-config-studio",
     "dotenv-flow",
     "esbuild",
-    "esbuild-register"
+    "esbuild-register",
+    "react-compiler-runtime",
+    "babel-plugin-react-compiler"
   ]
 }

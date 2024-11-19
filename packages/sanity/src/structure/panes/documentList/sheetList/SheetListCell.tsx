@@ -1,3 +1,6 @@
+'use no memo'
+// The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
+
 /* eslint-disable i18next/no-literal-string */
 import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'

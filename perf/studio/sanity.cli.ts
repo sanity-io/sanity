@@ -7,4 +7,5 @@ export default defineCliConfig({
     projectId: STUDIO_PROJECT_ID,
     dataset: STUDIO_DATASET,
   },
+  reactCompiler: {target: '18'},
 })

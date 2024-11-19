@@ -54,7 +54,12 @@ export async function runTest({
   await vite.build({
     appType: 'spa',
     build: {outDir, sourcemap: true},
-    plugins: [{...sourcemaps(), enforce: 'pre'}, react()],
+    plugins: [
+      {...sourcemaps(), enforce: 'pre'},
+      react({
+        babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]},
+      }),
+    ],
     resolve: {alias},
     logLevel: 'silent',
   })

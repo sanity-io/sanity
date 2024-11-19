@@ -1,3 +1,3 @@
 {
-  "ignores": ["@repo/tsconfig", "sanity"]
+  "ignores": ["@repo/tsconfig", "sanity", "babel-plugin-react-compiler", "react-compiler-runtime"]
 }

@@ -76,5 +76,6 @@ function getDevServerConfig({
     ...baseConfig,
     staticPath: path.join(workDir, 'static'),
     reactStrictMode,
+    reactCompiler: cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
   }
 }
