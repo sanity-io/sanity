@@ -225,6 +225,11 @@ export default defineConfig([
         enabled: true,
       },
     },
+    // eslint-disable-next-line camelcase
+    __internal_serverDocumentActions: {
+      // TODO: Switched off because Actions API doesn't support versions (yet).
+      enabled: false,
+    },
   },
   {
     name: 'listener-events',
