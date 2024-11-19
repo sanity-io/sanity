@@ -2,7 +2,6 @@ import {type SanityClient} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
 import {map} from 'rxjs/operators'
 
-import {SUPPORTED_IMAGE_UPLOAD_TYPES} from '../../inputs/files/constants'
 import {set} from '../../patch'
 import {type Uploader, type UploaderDef, type UploadOptions} from './types'
 import {uploadFile} from './uploadFile'
@@ -10,7 +9,7 @@ import {uploadImage} from './uploadImage'
 
 const UPLOAD_IMAGE: UploaderDef = {
   type: 'image',
-  accepts: SUPPORTED_IMAGE_UPLOAD_TYPES.join(','),
+  accepts: 'image/*',
   upload: (client: SanityClient, file: File, type?: SchemaType, options?: UploadOptions) =>
     uploadImage(client, file, options),
 }

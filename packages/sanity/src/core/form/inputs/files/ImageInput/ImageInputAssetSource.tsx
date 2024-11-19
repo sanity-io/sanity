@@ -3,7 +3,6 @@ import {get} from 'lodash'
 import {memo, useMemo} from 'react'
 
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
-import {SUPPORTED_IMAGE_UPLOAD_TYPES} from '../constants'
 import {type BaseImageInputProps} from './types'
 
 function ImageInputAssetSourceComponent(
@@ -21,10 +20,7 @@ function ImageInputAssetSourceComponent(
     selectedAssetSource,
     value,
   } = props
-  const accept = useMemo(
-    () => get(schemaType, 'options.accept', SUPPORTED_IMAGE_UPLOAD_TYPES.join(',')),
-    [schemaType],
-  )
+  const accept = useMemo(() => get(schemaType, 'options.accept', 'image/*'), [schemaType])
 
   if (!selectedAssetSource) {
     return null

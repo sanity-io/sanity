@@ -73,13 +73,10 @@ export const uploadImageAsset = (
   client: SanityClient,
   file: File | Blob,
   options?: UploadOptions,
-): Observable<UploadEvent> => uploadAsset(client, 'image', file, options)
+) => uploadAsset(client, 'image', file, options)
 
-export const uploadFileAsset = (
-  client: SanityClient,
-  file: File | Blob,
-  options?: UploadOptions,
-): Observable<UploadEvent> => uploadAsset(client, 'file', file, options)
+export const uploadFileAsset = (client: SanityClient, file: File | Blob, options?: UploadOptions) =>
+  uploadAsset(client, 'file', file, options)
 
 /**
  *
@@ -126,17 +123,11 @@ function observeAssetDoc(documentPreviewStore: DocumentPreviewStore, id: string)
     )
 }
 
-export function observeImageAsset(
-  documentPreviewStore: DocumentPreviewStore,
-  id: string,
-): Observable<ImageAsset> {
+export function observeImageAsset(documentPreviewStore: DocumentPreviewStore, id: string) {
   return observeAssetDoc(documentPreviewStore, id) as Observable<ImageAsset>
 }
 
-export function observeFileAsset(
-  documentPreviewStore: DocumentPreviewStore,
-  id: string,
-): Observable<FileAsset> {
+export function observeFileAsset(documentPreviewStore: DocumentPreviewStore, id: string) {
   return observeAssetDoc(documentPreviewStore, id) as Observable<FileAsset>
 }
 

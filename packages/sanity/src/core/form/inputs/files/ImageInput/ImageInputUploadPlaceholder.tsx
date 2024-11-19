@@ -3,7 +3,6 @@ import {get} from 'lodash'
 import {memo, useMemo} from 'react'
 
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
-import {SUPPORTED_IMAGE_UPLOAD_TYPES} from '../constants'
 import {type BaseImageInputProps, type FileInfo} from './types'
 
 function ImageInputUploadPlaceholderComponent(props: {
@@ -29,10 +28,7 @@ function ImageInputUploadPlaceholderComponent(props: {
     () => hoveringFiles.filter((file) => resolveUploader(schemaType, file)),
     [hoveringFiles, resolveUploader, schemaType],
   )
-  const accept = useMemo(
-    () => get(schemaType, 'options.accept', SUPPORTED_IMAGE_UPLOAD_TYPES.join(',')),
-    [schemaType],
-  )
+  const accept = useMemo(() => get(schemaType, 'options.accept', 'image/*'), [schemaType])
 
   const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
