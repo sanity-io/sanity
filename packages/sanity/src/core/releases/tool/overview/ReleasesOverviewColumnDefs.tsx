@@ -23,7 +23,7 @@ import {type TableRelease} from './ReleasesOverview'
 
 const ReleaseTime = ({release}: {release: TableRelease}) => {
   const {t} = useTranslation()
-  const {timeZone} = useTimeZone()
+  const {timeZone, utcToCurrentZoneDate} = useTimeZone()
   const {abbreviation: localeTimeZoneAbbreviation} = getLocalTimeZone()
 
   const {metadata} = release
@@ -45,9 +45,9 @@ const ReleaseTime = ({release}: {release: TableRelease}) => {
     const publishDate = getPublishDateFromRelease(release)
 
     return publishDate
-      ? `${format(new Date(publishDate), 'PPpp')} ${getTimezoneAbbreviation()}`
+      ? `${format(utcToCurrentZoneDate(publishDate), 'PPpp')} ${getTimezoneAbbreviation()}`
       : null
-  }, [metadata.releaseType, release, t, getTimezoneAbbreviation])
+  }, [metadata.releaseType, release, utcToCurrentZoneDate, getTimezoneAbbreviation, t])
 
   return (
     <Text muted size={1}>
