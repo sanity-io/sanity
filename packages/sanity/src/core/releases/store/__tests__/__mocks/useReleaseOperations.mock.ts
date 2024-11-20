@@ -1,8 +1,9 @@
-import {type Mocked, vi} from 'vitest'
+import {type Mock, type Mocked, vi} from 'vitest'
 
 import {type ReleaseOperationsStore} from '../../createReleaseOperationStore'
+import {useReleaseOperations} from '../../useReleaseOperations'
 
-export const useReleaseOperationsMock: Mocked<ReleaseOperationsStore> = {
+export const useReleaseOperationsMockReturn: Mocked<ReleaseOperationsStore> = {
   archive: vi.fn(),
   unarchive: vi.fn(),
   createRelease: vi.fn(),
@@ -13,3 +14,5 @@ export const useReleaseOperationsMock: Mocked<ReleaseOperationsStore> = {
   unschedule: vi.fn(),
   updateRelease: vi.fn(),
 }
+
+export const mockUseReleaseOperations = useReleaseOperations as Mock<typeof useReleaseOperations>

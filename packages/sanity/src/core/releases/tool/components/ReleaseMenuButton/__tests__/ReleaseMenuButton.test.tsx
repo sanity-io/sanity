@@ -6,20 +6,23 @@ import {createTestProvider} from '../../../../../../../test/testUtils/TestProvid
 import {activeScheduledRelease} from '../../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../index'
-import {useReleaseOperationsMock} from '../../../../store/__tests__/__mocks/useReleaseOperations.mock'
+import {
+  mockUseReleaseOperations,
+  useReleaseOperationsMockReturn,
+} from '../../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {
-  documentsInRelease,
-  useBundleDocumentsMock,
+  mockUseBundleDocuments,
+  useBundleDocumentsMockReturn,
 } from '../../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
 vi.mock('../../../../store/useReleaseOperations', () => ({
-  useReleaseOperations: vi.fn(() => useReleaseOperationsMock),
+  useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
 
 vi.mock('../../../detail/useBundleDocuments', () => ({
-  useBundleDocuments: vi.fn(() => useBundleDocumentsMock),
+  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturn),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -37,6 +40,8 @@ const renderTest = async ({release, disabled = false}: ReleaseMenuButtonProps) =
 describe('ReleaseMenuButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
+    mockUseBundleDocuments.mockRestore()
   })
 
   describe('archive release', () => {
@@ -58,7 +63,10 @@ describe('ReleaseMenuButton', () => {
     }
 
     test('does not require confirmation when no documents in release', async () => {
-      useBundleDocumentsMock.results = []
+      mockUseBundleDocuments.mockReturnValue({
+        ...useBundleDocumentsMockReturn,
+        results: [],
+      })
 
       await renderTest({release: activeScheduledRelease})
 
@@ -75,8 +83,6 @@ describe('ReleaseMenuButton', () => {
 
       expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
       expect(useReleaseOperations().archive).toHaveBeenCalledWith(activeScheduledRelease._id)
-
-      useBundleDocumentsMock.results = [documentsInRelease]
     })
 
     test('can reject archiving', async () => {
@@ -106,7 +112,10 @@ describe('ReleaseMenuButton', () => {
 
     describe('when archiving fails', () => {
       beforeEach(async () => {
-        useReleaseOperationsMock.archive.mockRejectedValue(new Error('some rejection reason'))
+        mockUseReleaseOperations.mockReturnValue({
+          ...useReleaseOperationsMockReturn,
+          archive: vi.fn().mockRejectedValue(new Error('some rejection reason')),
+        })
 
         await openConfirmArchiveDialog()
       })
