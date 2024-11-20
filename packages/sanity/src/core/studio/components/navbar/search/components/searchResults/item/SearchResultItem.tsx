@@ -1,12 +1,15 @@
 import {type SanityDocumentLike} from '@sanity/types'
 import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
 import {type MouseEvent, useCallback, useMemo} from 'react'
-import {getPublishedId, useSearchState} from 'sanity'
 import {useIntentLink, useRouter} from 'sanity/router'
 
+import {Tooltip} from '../../../../../../../../ui-components'
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useDocumentPresence} from '../../../../../../../store'
+import {getPublishedId} from '../../../../../../../util/draftUtils'
+import {useSearchState} from '../../../contexts/search/useSearchState'
 import {SearchResultItemPreview} from './SearchResultItemPreview'
 
 export type ItemSelectHandler = (item: Pick<SanityDocumentLike, '_id' | '_type'>) => void
@@ -39,6 +42,7 @@ export function SearchResultItem({
     params,
   })
   const {state} = useSearchState()
+  const {t} = useTranslation()
 
   // if the perspective is set within the searchState then it means it should override the router perspective
   const pickedPerspective = state.perspective ? state.perspective[0] : perspective
@@ -61,7 +65,7 @@ export function SearchResultItem({
 
   if (!type) return null
 
-  return (
+  const content = (
     <Box {...rest}>
       <PreviewCard
         as={existsInRelease ? undefined : 'a'}
@@ -85,5 +89,13 @@ export function SearchResultItem({
         />
       </PreviewCard>
     </Box>
+  )
+
+  return existsInRelease ? (
+    <Tooltip content={t('release.tooltip.already-added')} placement="top">
+      {content}
+    </Tooltip>
+  ) : (
+    content
   )
 }
