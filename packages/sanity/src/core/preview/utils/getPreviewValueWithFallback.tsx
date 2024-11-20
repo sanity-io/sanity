@@ -1,8 +1,8 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {assignWith} from 'lodash'
-import {isPerspectiveRaw} from 'sanity'
 
+import {isPerspectiveRaw} from '../../search/common/isPerspectiveRaw'
 import {isPublishedId, isVersionId, resolveBundlePerspective} from '../../util'
 
 const getMissingDocumentFallback = (item: SanityDocument) => ({

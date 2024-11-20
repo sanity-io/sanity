@@ -1,4 +1,4 @@
-import {isString} from 'sanity'
+import {isString} from '../../util/isString'
 
 /**
  * Check if a perspective is 'raw'
