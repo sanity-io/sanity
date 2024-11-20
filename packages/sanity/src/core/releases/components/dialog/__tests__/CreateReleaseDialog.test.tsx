@@ -1,40 +1,17 @@
-import {fireEvent, render, screen} from '@testing-library/react'
-import {afterEach, beforeEach, describe, expect, it, type Mock, vi, vitest} from 'vitest'
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
 import {type ReleaseDocument} from '../../../index'
-import {useReleaseOperations} from '../../../store/useReleaseOperations'
-import {useReleases} from '../../../store/useReleases'
+import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {CreateReleaseDialog} from '../CreateReleaseDialog'
 
-vi.mock('../../../store/useReleases', () => ({
-  useReleases: vi.fn(),
+vi.mock('../../../store/useReleaseOperations', () => ({
+  useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
-
-vi.mock('../../../../store/release/useReleaseOperations', () => ({
-  useReleaseOperations: vi.fn().mockReturnValue({
-    createRelease: vi.fn(),
-    updateRelease: vi.fn(),
-  }),
-}))
-
-vi.mock('../../../i18n/hooks/useTranslation', () => ({
-  useTranslate: vi.fn().mockReturnValue({
-    t: vi.fn(),
-  }),
-}))
-
-const mockUseBundleStore = useReleases as Mock<typeof useReleases>
-//const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
 describe('CreateReleaseDialog', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-  afterEach(() => {
-    vi.clearAllMocks()
-  })
-
   describe('when creating a new release', () => {
     const onCancelMock = vi.fn()
     const onSubmitMock = vi.fn()
@@ -43,22 +20,8 @@ describe('CreateReleaseDialog', () => {
       onCancelMock.mockClear()
       onSubmitMock.mockClear()
 
-      mockUseBundleStore.mockReturnValue({
-        data: [],
-        loading: true,
-        dispatch: vi.fn(),
-        error: undefined,
-        releasesIds: [],
-        archivedReleases: [],
-      })
-
-      //mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
-
       const wrapper = await createTestProvider()
       render(<CreateReleaseDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
-    })
-    afterEach(() => {
-      vitest.resetAllMocks()
     })
 
     it('should render the dialog', () => {
@@ -71,35 +34,27 @@ describe('CreateReleaseDialog', () => {
       expect(onCancelMock).toHaveBeenCalled()
     })
 
-    // TODO: Fix this test
-    it.skip('should call createRelease and onCreate when form is submitted', async () => {
-      // const wrapper = await createTestProvider()
-      // render(<CreateReleaseDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
+    it('should call createRelease and onCreate when form is submitted', async () => {
+      const value: Partial<ReleaseDocument> = activeASAPRelease
 
-      const value: Partial<ReleaseDocument> = {
-        metadata: {
-          title: 'Bundle 1',
-          description: undefined,
-          intendedPublishAt: undefined,
-          releaseType: 'asap',
-        },
-      }
+      act(async () => {
+        const titleInput = screen.getByTestId('release-form-title')
+        fireEvent.change(titleInput, {target: {value: value.metadata?.title}})
 
-      const titleInput = screen.getByTestId('release-form-title')
-      fireEvent.change(titleInput, {target: {value: value.metadata?.title}})
+        const submitButton = screen.getByTestId('submit-release-button')
+        fireEvent.click(submitButton)
 
-      const submitButton = screen.getByTestId('submit-release-button')
-      fireEvent.click(submitButton)
+        waitFor(async () => {
+          await Promise.resolve()
 
-      expect(useReleaseOperations().createRelease).toHaveBeenCalledWith(
-        expect.objectContaining({
-          _id: expect.stringContaining('releases'),
-          ...value,
-        }),
-      )
-      await Promise.resolve()
-
-      expect(onSubmitMock).toHaveBeenCalled()
+          expect(onSubmitMock).toHaveBeenCalledOnce()
+          expect(useReleaseOperationsMockReturn.createRelease).toHaveBeenCalledWith(
+            expect.objectContaining({
+              _id: expect.stringContaining('releases'),
+            }),
+          )
+        })
+      })
     })
   })
 })

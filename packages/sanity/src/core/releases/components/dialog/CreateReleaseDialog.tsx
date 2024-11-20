@@ -30,6 +30,8 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): JSX.Elemen
     return {
       _id: createReleaseId(),
       metadata: {
+        title: '',
+        description: '',
         releaseType: DEFAULT_RELEASE_TYPE,
       },
     } as const
