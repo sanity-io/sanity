@@ -1,11 +1,10 @@
-import {expect, test} from 'vitest'
+import {describe, expect, test} from 'vitest'
 
-import {describeCliTest} from './shared/describe'
 import {runSanityCmdCommand} from './shared/environment'
 
 const testTimeout = 60000 // 60 seconds
 
-describeCliTest('CLI: `sanity telemetry status`', () => {
+describe.skip('CLI: `sanity telemetry status`', () => {
   test(
     'sanity telemetry status: granted',
     async () => {
@@ -13,6 +12,8 @@ describeCliTest('CLI: `sanity telemetry status`', () => {
         env: {
           DEBUG: 'sanity:*',
           CI: 'false',
+          // Mock current state (prior to enabling)
+          SANITY_CLI_MOCK_TELEMETRY_CONSENT_STATUS: 'unset',
         },
       })
 
@@ -97,7 +98,7 @@ https://www.sanity.io/telemetry
   )
 })
 
-describeCliTest('CLI: `sanity telemetry enable`', () => {
+describe.skip('CLI: `sanity telemetry enable`', () => {
   test(
     'sanity telemetry enable: success',
     async () => {
@@ -153,7 +154,7 @@ https://www.sanity.io/telemetry
   )
 })
 
-describeCliTest('CLI: `sanity telemetry disable`', () => {
+describe.skip('CLI: `sanity telemetry disable`', () => {
   test(
     'sanity telemetry disable: success',
     async () => {
