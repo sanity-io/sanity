@@ -1,6 +1,6 @@
-import {type Mocked} from 'vitest'
+import {type Mock, type Mocked} from 'vitest'
 
-import {type DocumentInRelease, type useBundleDocuments} from '../../useBundleDocuments'
+import {type DocumentInRelease, useBundleDocuments} from '../../useBundleDocuments'
 
 export const documentsInRelease: DocumentInRelease = {
   memoKey: 'a',
@@ -23,7 +23,9 @@ export const documentsInRelease: DocumentInRelease = {
   },
 }
 
-export const useBundleDocumentsMock: Mocked<ReturnType<typeof useBundleDocuments>> = {
+export const useBundleDocumentsMockReturn: Mocked<ReturnType<typeof useBundleDocuments>> = {
   loading: false,
   results: [documentsInRelease],
 }
+
+export const mockUseBundleDocuments = useBundleDocuments as Mock<typeof useBundleDocuments>

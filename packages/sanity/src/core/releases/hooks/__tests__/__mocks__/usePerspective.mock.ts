@@ -1,9 +1,9 @@
-import {type Mocked, vi} from 'vitest'
+import {type Mock, type Mocked, vi} from 'vitest'
 
 import {LATEST} from '../../../util/const'
-import {type PerspectiveValue} from '../../usePerspective'
+import {type PerspectiveValue, usePerspective} from '../../usePerspective'
 
-export const usePerspectiveMock: Mocked<PerspectiveValue> = {
+export const usePerspectiveMockReturn: Mocked<PerspectiveValue> = {
   perspective: undefined,
   excludedPerspectives: [],
   setPerspective: vi.fn(),
@@ -15,3 +15,5 @@ export const usePerspectiveMock: Mocked<PerspectiveValue> = {
   currentGlobalBundleId: 'drafts',
   bundlesPerspective: [],
 }
+
+export const mockUsePerspective = usePerspective as Mock<typeof usePerspective>

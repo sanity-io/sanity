@@ -1,14 +1,36 @@
 import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {useRouter} from 'sanity/router'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {queryByDataUi} from '../../../../../../test/setup/customQueries'
+import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {
+  activeASAPRelease,
+  activeScheduledRelease,
+  activeUndecidedRelease,
+  archivedScheduledRelease,
+  publishedASAPRelease,
+  scheduledRelease,
+} from '../../../__fixtures__/release.fixture'
+import {
+  mockUsePerspective,
+  usePerspectiveMockReturn,
+} from '../../../hooks/__tests__/__mocks__/usePerspective.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {
+  mockUseReleases,
+  useReleasesMockReturn,
+} from '../../../store/__tests__/__mocks/useReleases.mock'
+import {
+  mockUseReleasesMetadata,
+  useReleasesMetadataMockReturn,
+} from '../../../store/__tests__/__mocks/useReleasesMetadata.mock'
 import {type ReleaseDocument} from '../../../store/types'
-import {useReleases} from '../../../store/useReleases'
-import {type ReleasesMetadata, useReleasesMetadata} from '../../../store/useReleasesMetadata'
+import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
+import {useBundleDocumentsMockReturn} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleasesOverview} from '../ReleasesOverview'
+
+const TODAY = new Date()
 
 vi.mock('sanity', () => ({
   SANITY_VERSION: '0.0.0',
@@ -17,11 +39,15 @@ vi.mock('sanity', () => ({
 }))
 
 vi.mock('../../../store/useReleases', () => ({
-  useReleases: vi.fn(),
+  useReleases: vi.fn(() => useReleasesMockReturn),
 }))
 
 vi.mock('../../../store/useReleasesMetadata', () => ({
-  useReleasesMetadata: vi.fn(),
+  useReleasesMetadata: vi.fn(() => useReleasesMetadataMockReturn),
+}))
+
+vi.mock('../../detail/useBundleDocuments', () => ({
+  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturn),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -30,27 +56,17 @@ vi.mock('sanity/router', async (importOriginal) => ({
 }))
 
 vi.mock('../../../hooks/usePerspective', () => ({
-  usePerspective: vi.fn().mockReturnValue({currentGlobalBundle: {_id: 'global-bundle-id'}}),
+  usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
-const mockUseReleases = useReleases as Mock<typeof useReleases>
-const mockUseReleasesMetadata = useReleasesMetadata as Mock<typeof useReleasesMetadata>
-
 describe('ReleasesOverview', () => {
+  beforeEach(() => {
+    mockUseReleases.mockRestore()
+  })
+
   describe('when loading releases', () => {
     beforeEach(async () => {
-      mockUseReleases.mockReturnValue({
-        data: [],
-        archivedReleases: [],
-        loading: true,
-        dispatch: vi.fn(),
-        stack: [],
-      })
-      mockUseReleasesMetadata.mockReturnValue({
-        loading: true,
-        error: null,
-        data: null,
-      })
+      mockUseReleases.mockReturnValue({...useReleasesMockReturn, loading: true})
 
       const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle],
@@ -83,18 +99,6 @@ describe('ReleasesOverview', () => {
 
   describe('when no releases are available', () => {
     beforeEach(async () => {
-      mockUseReleases.mockReturnValue({
-        data: [],
-        archivedReleases: [],
-        loading: false,
-        dispatch: vi.fn(),
-        stack: [],
-      })
-      mockUseReleasesMetadata.mockReturnValue({
-        loading: false,
-        error: null,
-        data: null,
-      })
       const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle],
       })
@@ -124,164 +128,212 @@ describe('ReleasesOverview', () => {
     })
   })
 
-  describe.todo('when releases are loaded', () => {
-    const YESTERDAY = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    const NOW = new Date().toISOString()
+  describe('when releases are loaded', () => {
     const releases: ReleaseDocument[] = [
       {
-        _id: '_.releases.b1abcdefg',
-        // yesterday
-        _createdAt: YESTERDAY,
-        _updatedAt: YESTERDAY,
-        metadata: {
-          title: 'Release 1',
-        },
+        ...activeScheduledRelease,
+        metadata: {...activeScheduledRelease.metadata, intendedPublishAt: TODAY.toISOString()},
       },
-      {
-        _id: '_.releases.b2abcdefg',
-        // now
-        _createdAt: NOW,
-        _updatedAt: NOW,
-        metadata: {
-          title: 'Release 2',
-        },
-      },
-      {
-        _id: '_.releases.b3abcdefg',
-        _createdAt: NOW,
-        _updatedAt: NOW,
-        state: 'published',
-        publishAt: NOW,
-        metadata: {
-          title: 'Release 3',
-        },
-      },
-    ] satisfies ReleaseDocument[]
+      activeASAPRelease,
+      activeUndecidedRelease,
+      scheduledRelease,
+    ]
+
+    let activeRender: ReturnType<typeof render>
 
     beforeEach(async () => {
       mockUseReleases.mockReturnValue({
+        ...useReleasesMockReturn,
+        archivedReleases: [archivedScheduledRelease, publishedASAPRelease],
         data: releases,
-        archivedReleases: [
-          {
-            _id: '_.releases.b4abcdefg',
-            _createdAt: NOW,
-            _updatedAt: NOW,
-            state: 'archived',
-            metadata: {
-              archivedAt: NOW,
-              title: 'Release 4',
-            },
-          },
-        ],
-        loading: false,
-        dispatch: vi.fn(),
-        stack: [],
       })
       mockUseReleasesMetadata.mockReturnValue({
-        loading: false,
-        error: null,
+        ...useReleasesMetadataMockReturn,
         data: Object.fromEntries(
-          releases.map((release, index) => [
+          releases.map((release) => [
             release._id,
             {
               documentCount: 1,
-              updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000 * (index + 1)).toISOString(),
             } as ReleasesMetadata,
           ]),
         ),
       })
+
       const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return act(() => render(<ReleasesOverview />, {wrapper}))
+      return act(() => {
+        activeRender = render(<ReleasesOverview />, {wrapper})
+      })
     })
 
-    it.todo('shows each open release', () => {
+    it('shows each open release', () => {
       const releaseRows = screen.getAllByTestId('table-row')
-      // 2 open releases & 1 deleted release)
-      expect(releaseRows).toHaveLength(3)
+      expect(releaseRows).toHaveLength(4)
 
-      // reverse to match default sort order by _createdAt desc
-      const openReleases = [...releases].slice(0, 2).reverse()
-      openReleases.forEach((release, index) => {
-        // release title
-        within(releaseRows[index]).getByText(release.metadata.title)
-        // document count
-        within(releaseRows[index]).getByText('1')
-        if (index === 0) {
-          // updated at
-          within(releaseRows[index]).getByText('2 days ago')
-          // created at
-        } else if (index === 1) {
-          // updated
-          expect(within(releaseRows[index]).getByText('yesterday'))
-        }
+      const [unsortedFirstRelease, unsortedSecondRelease, unsortedThirdRelease] = releaseRows
+
+      within(unsortedFirstRelease).getByText(activeASAPRelease.metadata.title)
+      within(unsortedSecondRelease).getByText(scheduledRelease.metadata.title)
+      within(unsortedThirdRelease).getByText(activeScheduledRelease.metadata.title)
+    })
+
+    it('shows time as ASAP for asap release types', () => {
+      const asapReleaseRow = screen.getAllByTestId('table-row')[0]
+
+      within(asapReleaseRow).getByText('ASAP')
+    })
+
+    it('shows time as Undecided for undecided release types', () => {
+      const asapReleaseRow = screen.getAllByTestId('table-row')[3]
+
+      within(asapReleaseRow).getByText('Undecided')
+    })
+
+    it('has release menu actions for each release', () => {
+      const releaseRows = screen.getAllByTestId('table-row')
+      releaseRows.forEach((row) => {
+        within(row).getByTestId('release-menu-button')
       })
     })
 
-    it('allows for switching between history modes', async () => {
-      await waitFor(() => {
-        screen.getByText('Open')
-      })
+    it('shows lock next to scheduled releases', () => {
+      const scheduledReleaseRow = screen.getAllByTestId('table-row')[1]
+      within(scheduledReleaseRow).getByTestId('release-avatar-primary')
+      within(scheduledReleaseRow).getByTestId('release-lock-icon')
+    })
 
+    it('allows for switching between history modes', () => {
       expect(screen.getByText('Open').closest('button')).not.toBeDisabled()
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
     })
 
-    it('shows published releases', async () => {
-      fireEvent.click(screen.getByText('Archived'))
+    it('allows for pinning perspectives', () => {
+      fireEvent.click(
+        within(screen.getAllByTestId('table-row')[0]).getByTestId('pin-release-button'),
+      )
+
+      expect(usePerspectiveMockReturn.setPerspectiveFromReleaseDocumentId).toHaveBeenCalledWith(
+        '_.releases.activeASAPRelease',
+      )
     })
 
-    it.todo('sorts the list of releases', () => {
-      const [unsortedFirstRelease, unsortedSecondRelease] = screen.getAllByTestId('table-row')
-      within(unsortedFirstRelease).getByText('Release 2')
-      within(unsortedSecondRelease).getByText('Release 1')
-
-      // sort by asc created at
-      fireEvent.click(screen.getByText('Created'))
-      const [
-        ascCreatedSortedFirstRelease,
-        ascCreatedSortedSecondRelease,
-        ascCreatedSortedThirdRelease,
-      ] = screen.getAllByTestId('table-row')
-      within(ascCreatedSortedFirstRelease).getByText('Deleted Release')
-      within(ascCreatedSortedSecondRelease).getByText('Release 1')
-      within(ascCreatedSortedThirdRelease).getByText('Release 2')
-
-      // searching retains sort order
-      fireEvent.change(screen.getByPlaceholderText('Search releases'), {
-        target: {value: 'Release'},
+    it('will show pinned release in release list', () => {
+      mockUsePerspective.mockReturnValue({
+        ...usePerspectiveMockReturn,
+        currentGlobalBundleId: '_.releases.activeASAPRelease',
       })
+
+      // re-render to apply the update to global bundle id
+      activeRender.rerender(<ReleasesOverview />)
+
+      const releaseRows = screen.getAllByTestId('table-row')
+      const pinnedReleaseRow = releaseRows[0]
+
+      expect(within(pinnedReleaseRow).getByTestId('pin-release-button')).toHaveAttribute(
+        'data-selected',
+        '',
+      )
+    })
+
+    describe('calendar filter', () => {
+      const getCalendar = () => getByDataUi(document.body, 'Calendar')
+
+      it('has today in bold to signify that there is a release', () => {
+        const todayTile = within(getCalendar()).getByText(TODAY.getDate())
+        expect(todayTile.parentNode).toHaveStyle('font-weight: 700')
+      })
+
+      describe('selecting a release date', () => {
+        beforeEach(() => {
+          const todayTile = within(getCalendar()).getByText(TODAY.getDate())
+          fireEvent.click(todayTile)
+        })
+
+        it('does not show open and archive filter group buttons', () => {
+          expect(screen.queryByText('Open')).not.toBeInTheDocument()
+          expect(screen.queryByText('Archived')).not.toBeInTheDocument()
+        })
+
+        it('filters releases by date', () => {
+          const releaseRows = screen.getAllByTestId('table-row')
+
+          expect(releaseRows).toHaveLength(1)
+          within(releaseRows[0]).getByText(activeScheduledRelease.metadata.title)
+        })
+
+        it('clears the filter by clicking the selected date', async () => {
+          // not ideal, but the easiest way of finding the now selected date
+          const todayTile = getCalendar().querySelector('[data-selected]')
+          fireEvent.click(todayTile!)
+
+          await waitFor(() => {
+            expect(screen.getAllByTestId('table-row')).toHaveLength(4)
+          })
+        })
+
+        it('clears the filter by clicking the date filter button', async () => {
+          fireEvent.click(screen.getByTestId('selected-date-filter'))
+
+          await waitFor(() => {
+            expect(screen.getAllByTestId('table-row')).toHaveLength(4)
+          })
+        })
+      })
+    })
+
+    describe('archived releases', () => {
+      beforeEach(() => {
+        fireEvent.click(screen.getByText('Archived'))
+      })
+
+      it('shows published releases', async () => {
+        const archivedReleaseRow = screen.getAllByTestId('table-row')[0]
+        within(archivedReleaseRow).getByText('published Release')
+      })
+
+      it('shows archived releases', async () => {
+        const publishedReleaseRow = screen.getAllByTestId('table-row')[1]
+        within(publishedReleaseRow).getByText('archived Release')
+        within(publishedReleaseRow).getByTestId('release-avatar-default')
+      })
+
+      it('does not allow for perspective pinning', () => {
+        screen.getAllByTestId('table-row').forEach((row) => {
+          expect(within(row).getByTestId('pin-release-button').closest('button')).toBeDisabled()
+        })
+      })
+    })
+
+    it('sorts the list of releases', () => {
+      const [unsortedFirstRelease, unsortedSecondRelease, unsortedThirdRelease] =
+        screen.getAllByTestId('table-row')
+
+      // default sort asap, then scheduled by publish asc
+      within(unsortedFirstRelease).getByText(activeASAPRelease.metadata.title)
+      within(unsortedSecondRelease).getByText(scheduledRelease.metadata.title)
+      within(unsortedThirdRelease).getByText(activeScheduledRelease.metadata.title)
+
+      // sort by asc publish at
+      fireEvent.click(screen.getByText('Time'))
       const [
-        ascCreatedSortedFirstReleaseAfterSearch,
-        ascCreatedSortedSecondReleaseAfterSearch,
-        ascCreatedSortedThirdReleaseAfterSearch,
+        // first release is undecided
+        _,
+        descPublishSortedFirstRelease,
+        descPublishSortedSecondRelease,
+        descPublishSortedThirdRelease,
       ] = screen.getAllByTestId('table-row')
-      within(ascCreatedSortedFirstReleaseAfterSearch).getByText('Deleted Release')
-      within(ascCreatedSortedSecondReleaseAfterSearch).getByText('Release 1')
-      within(ascCreatedSortedThirdReleaseAfterSearch).getByText('Release 2')
-
-      // sort by desc created at
-      fireEvent.click(screen.getByText('Created'))
-      const [descCreatedSortedFirstRelease, descCreatedSortedSecondRelease] =
-        screen.getAllByTestId('table-row')
-      within(descCreatedSortedFirstRelease).getByText('Release 2')
-      within(descCreatedSortedSecondRelease).getByText('Release 1')
-
-      // sort by asc updated at
-      fireEvent.click(screen.getByText('Edited'))
-      const [ascEditedSortedFirstRelease, ascEditedSortedSecondRelease] =
-        screen.getAllByTestId('table-row')
-      within(ascEditedSortedFirstRelease).getByText('Release 1')
-      within(ascEditedSortedSecondRelease).getByText('Release 2')
+      within(descPublishSortedFirstRelease).getByText(activeScheduledRelease.metadata.title)
+      within(descPublishSortedSecondRelease).getByText(scheduledRelease.metadata.title)
+      within(descPublishSortedThirdRelease).getByText(activeASAPRelease.metadata.title)
     })
 
     it('should navigate to release when row clicked', async () => {
-      const releaseRow = screen.getAllByTestId('table-row')[1]
-      fireEvent.click(within(releaseRow).getByText('Release 1'))
+      const releaseRow = screen.getAllByTestId('table-row')[0]
+      fireEvent.click(within(releaseRow).getByText(activeASAPRelease.metadata.title))
 
-      expect(useRouter().navigate).toHaveBeenCalledWith({releaseId: 'b1abcdefg'})
+      expect(useRouter().navigate).toHaveBeenCalledWith({releaseId: 'activeASAPRelease'})
     })
   })
 })
