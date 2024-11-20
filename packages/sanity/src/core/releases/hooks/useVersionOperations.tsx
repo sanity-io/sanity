@@ -7,11 +7,13 @@ import {useReleaseOperations} from '../store/useReleaseOperations'
 import {getCreateVersionOrigin} from '../util/util'
 import {usePerspective} from './usePerspective'
 
-/** @internal */
-export function useVersionOperations(): {
+export interface VersionOperationsValue {
   createVersion: (releaseId: string, documentId: string) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
-} {
+}
+
+/** @internal */
+export function useVersionOperations(): VersionOperationsValue {
   const telemetry = useTelemetry()
   const {createVersion, discardVersion} = useReleaseOperations()
 
