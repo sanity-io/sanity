@@ -168,6 +168,40 @@ describe('deriveSearchWeightsFromType', () => {
     })
   })
 
+  it('returns a weight of 0 for hidden slug fields', () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        defineType({
+          name: 'testType',
+          type: 'document',
+          preview: {select: {}},
+          fields: [
+            defineField({
+              name: 'someSlug',
+              type: 'slug',
+              hidden: true,
+            }),
+          ],
+        }),
+      ],
+    })
+
+    expect(
+      deriveSearchWeightsFromType({
+        schemaType: schema.get('testType')!,
+        maxDepth: 5,
+      }),
+    ).toEqual({
+      typeName: 'testType',
+      paths: [
+        {path: '_id', weight: 1},
+        {path: '_type', weight: 1},
+        {path: 'someSlug.current', weight: 0},
+      ],
+    })
+  })
+
   it('respects `maxDepth`', () => {
     const schema = createSchema({
       name: 'default',
@@ -253,6 +287,21 @@ describe('deriveSearchWeightsFromType', () => {
             }),
           ],
         }),
+        defineType({
+          name: 'testType2',
+          type: 'document',
+          preview: {
+            select: {
+              title: 'someSlug.current',
+            },
+          },
+          fields: [
+            defineField({
+              name: 'someSlug',
+              type: 'slug',
+            }),
+          ],
+        }),
       ],
     })
 
@@ -269,6 +318,20 @@ describe('deriveSearchWeightsFromType', () => {
         {path: 'simpleObject.titleField', weight: 10},
         {path: 'arrayOfObjects[].subtitleField', weight: 5},
         {path: 'descriptionField', weight: 1.5, mapWith: 'pt::text'},
+      ],
+    })
+
+    expect(
+      deriveSearchWeightsFromType({
+        schemaType: schema.get('testType2')!,
+        maxDepth: 5,
+      }),
+    ).toEqual({
+      typeName: 'testType2',
+      paths: [
+        {path: '_id', weight: 1},
+        {path: '_type', weight: 1},
+        {path: 'someSlug.current', weight: 10},
       ],
     })
   })
@@ -341,6 +404,11 @@ describe('deriveSearchWeightsFromType', () => {
               type: 'string',
               options: {search: {weight: 7}},
             }),
+            defineField({
+              name: 'someSlug',
+              type: 'slug',
+              options: {search: {weight: 7}},
+            }),
           ],
         }),
       ],
@@ -361,6 +429,7 @@ describe('deriveSearchWeightsFromType', () => {
         {path: 'subtitleField', weight: 7},
         {path: 'descriptionField', weight: 7},
         {path: 'normalStringField', weight: 7},
+        {path: 'someSlug.current', weight: 7},
       ],
     })
   })

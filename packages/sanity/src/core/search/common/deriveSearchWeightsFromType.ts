@@ -1,4 +1,9 @@
-import {type CrossDatasetType, type SchemaType, type SearchConfiguration} from '@sanity/types'
+import {
+  type CrossDatasetType,
+  type SchemaType,
+  type SearchConfiguration,
+  type SlugSchemaType,
+} from '@sanity/types'
 import {toString as pathToString} from '@sanity/util/paths'
 
 import {isRecord} from '../../util'
@@ -20,7 +25,7 @@ const BASE_WEIGHTS: Record<string, Omit<SearchWeightEntry, 'path'>> = {
   _id: {weight: 1, type: 'string'},
   _type: {weight: 1, type: 'string'},
 }
-const ignoredBuiltInObjectTypes = ['reference', 'crossDatasetReference']
+const ignoredBuiltInObjectTypes = ['reference', 'crossDatasetReference', 'slug']
 
 const getTypeChain = (type: SchemaType | undefined): SchemaType[] =>
   type ? [type, ...getTypeChain(type.type)] : []
@@ -32,11 +37,25 @@ const isPtField = (type: SchemaType | undefined) =>
 const isStringField = (schemaType: SchemaType | undefined): boolean =>
   schemaType ? schemaType?.jsonType === 'string' : false
 
+const isSlugField = (schemaType: SchemaType | undefined): schemaType is SlugSchemaType => {
+  const typeChain = getTypeChain(schemaType)
+  return typeChain.some(({jsonType, name}) => jsonType === 'object' && name === 'slug')
+}
+
 const isSearchConfiguration = (options: unknown): options is SearchConfiguration =>
   isRecord(options) && 'search' in options && isRecord(options.search)
 
 function isSchemaType(input: SchemaType | CrossDatasetType | undefined): input is SchemaType {
   return typeof input !== 'undefined' && 'name' in input
+}
+
+function getFullyQualifiedPath(schemaType: SchemaType, path: string): string {
+  // Slug field weights should be applied to the object's `current` field.
+  if (isSlugField(schemaType)) {
+    return [path, 'current'].join('.')
+  }
+
+  return path
 }
 
 function getLeafWeights(
@@ -61,7 +80,20 @@ function getLeafWeights(
       return [{path, weight, type: isPtField(type) ? 'pt' : 'string'}]
     }
 
+    if (isSlugField(type)) {
+      const weight = getWeight(type, path)
+      if (typeof weight !== 'number') return []
+      return [
+        {
+          path: getFullyQualifiedPath(type, path),
+          weight,
+          type: isPtField(type) ? 'pt' : 'string',
+        },
+      ]
+    }
+
     const results: SearchWeightEntry[] = []
+
     const objectTypes = typeChain.filter(
       (t): t is Extract<SchemaType, {jsonType: 'object'}> =>
         t.jsonType === 'object' &&
@@ -173,8 +205,8 @@ const getPreviewWeights = (
     )
   }
 
-  return getLeafWeights(schemaType, maxDepth, (_, path) => {
-    const nested = nestedWeightsBySelectionPath[path]
+  return getLeafWeights(schemaType, maxDepth, (type, path) => {
+    const nested = nestedWeightsBySelectionPath[getFullyQualifiedPath(type, path)]
     return nested ? nested.weight : null
   })
 }

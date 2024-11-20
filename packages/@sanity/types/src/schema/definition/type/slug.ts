@@ -3,7 +3,11 @@ import {type SlugifierFn, type SlugSourceFn} from '../../../slug'
 import {type SlugIsUniqueValidator} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
-import {type BaseSchemaDefinition, type BaseSchemaTypeOptions} from './common'
+import {
+  type BaseSchemaDefinition,
+  type BaseSchemaTypeOptions,
+  type SearchConfiguration,
+} from './common'
 
 /** @public */
 export interface SlugValue {
@@ -16,7 +20,7 @@ export interface SlugValue {
 export interface SlugRule extends RuleDef<SlugRule, SlugValue> {}
 
 /** @public */
-export interface SlugOptions extends BaseSchemaTypeOptions {
+export interface SlugOptions extends SearchConfiguration, BaseSchemaTypeOptions {
   source?: string | Path | SlugSourceFn
   maxLength?: number
   slugify?: SlugifierFn
