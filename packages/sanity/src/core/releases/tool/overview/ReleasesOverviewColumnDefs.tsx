@@ -93,6 +93,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
             disabled={isArchived || release.state === 'published'}
             icon={pinButtonIcon}
             mode="bleed"
+            data-testid="pin-release-button"
             onClick={handlePinRelease}
             padding={2}
             round
@@ -162,7 +163,7 @@ export const releasesOverviewColumnDefs: (
         <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
           <ReleaseTime release={release} />
           {isReleaseScheduledOrScheduling(release) && (
-            <Text size={1}>
+            <Text size={1} data-testid="release-lock-icon">
               <LockIcon />
             </Text>
           )}

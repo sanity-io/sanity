@@ -7,17 +7,17 @@ import {
   activeScheduledRelease,
   scheduledRelease,
 } from '../../__fixtures__/release.fixture'
-import {usePerspectiveMock} from '../../hooks/__tests__/__mocks__/usePerspective.mock'
-import {useReleasesMock} from '../../store/__tests__/__mocks/useReleases.mock'
+import {usePerspectiveMockReturn} from '../../hooks/__tests__/__mocks__/usePerspective.mock'
+import {useReleasesMockReturn} from '../../store/__tests__/__mocks/useReleases.mock'
 import {LATEST} from '../../util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
 vi.mock('../../hooks/usePerspective', () => ({
-  usePerspective: vi.fn(() => usePerspectiveMock),
+  usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
 vi.mock('../../store/useReleases', () => ({
-  useReleases: vi.fn(() => useReleasesMock),
+  useReleases: vi.fn(() => useReleasesMockReturn),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -63,17 +63,17 @@ describe('ReleasesNav', () => {
   })
 
   it('should have clear button to unset perspective when a perspective is chosen', async () => {
-    usePerspectiveMock.currentGlobalBundle = activeScheduledRelease
+    usePerspectiveMockReturn.currentGlobalBundle = activeScheduledRelease
 
     await renderTest()
 
     fireEvent.click(screen.getByTestId('clear-perspective-button'))
 
-    expect(usePerspectiveMock.setPerspective).toHaveBeenCalledWith(LATEST._id)
+    expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith(LATEST._id)
   })
 
   it('should list the title of the chosen perspective', async () => {
-    usePerspectiveMock.currentGlobalBundle = activeScheduledRelease
+    usePerspectiveMockReturn.currentGlobalBundle = activeScheduledRelease
 
     await renderTest()
 
@@ -81,7 +81,7 @@ describe('ReleasesNav', () => {
   })
 
   it('should show release avatar for chosen perspective', async () => {
-    usePerspectiveMock.currentGlobalBundle = activeASAPRelease
+    usePerspectiveMockReturn.currentGlobalBundle = activeASAPRelease
 
     await renderTest()
 
@@ -100,7 +100,7 @@ describe('ReleasesNav', () => {
     }
 
     beforeEach(async () => {
-      useReleasesMock.data = [
+      useReleasesMockReturn.data = [
         activeScheduledRelease,
         {
           ...activeScheduledRelease,
@@ -122,7 +122,7 @@ describe('ReleasesNav', () => {
 
         fireEvent.click(screen.getByText('Published'))
 
-        expect(usePerspectiveMock.setPerspective).toHaveBeenCalledWith('published')
+        expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('published')
       })
 
       it('should list all the releases', async () => {
@@ -171,10 +171,10 @@ describe('ReleasesNav', () => {
         // since usePerspective is mocked, and the layering exclude toggle is
         // controlled by currentGlobalBundleId, we need to manually set it
         // to the release that will be selected in below tests
-        usePerspectiveMock.currentGlobalBundleId = '_.releases.active-scheduled-2'
+        usePerspectiveMockReturn.currentGlobalBundleId = '_.releases.active-scheduled-2'
         // add an undecided release to expand testing
-        useReleasesMock.data = [
-          ...useReleasesMock.data,
+        useReleasesMockReturn.data = [
+          ...useReleasesMockReturn.data,
           {
             ...activeASAPRelease,
             _id: '_.releases.undecidedRelease',
@@ -196,10 +196,10 @@ describe('ReleasesNav', () => {
         })
 
         it('should set a given perspective from the menu', async () => {
-          expect(usePerspectiveMock.setPerspectiveFromReleaseDocumentId).toHaveBeenCalledWith(
+          expect(usePerspectiveMockReturn.setPerspectiveFromReleaseDocumentId).toHaveBeenCalledWith(
             '_.releases.active-scheduled-2',
           )
-          expect(usePerspectiveMock.setPerspective).not.toHaveBeenCalled()
+          expect(usePerspectiveMockReturn.setPerspective).not.toHaveBeenCalled()
         })
 
         it('should allow for hiding of any deeper layered releases', async () => {
@@ -209,11 +209,15 @@ describe('ReleasesNav', () => {
 
           // toggle to hide
           fireEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
-          expect(usePerspectiveMock.toggleExcludedPerspective).toHaveBeenCalledWith('activeRelease')
+          expect(usePerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
+            'activeRelease',
+          )
 
           // toggle to include
           fireEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
-          expect(usePerspectiveMock.toggleExcludedPerspective).toHaveBeenCalledWith('activeRelease')
+          expect(usePerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
+            'activeRelease',
+          )
         })
 
         it('should not allow for hiding of published perspective', async () => {
@@ -258,7 +262,7 @@ describe('ReleasesNav', () => {
       })
 
       it('applies existing layering when opened', async () => {
-        usePerspectiveMock.isPerspectiveExcluded.mockImplementation((id) => {
+        usePerspectiveMockReturn.isPerspectiveExcluded.mockImplementation((id) => {
           return id === 'activeRelease'
         })
 

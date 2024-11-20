@@ -1,8 +1,8 @@
-import {type Mocked, vi} from 'vitest'
+import {type Mock, type Mocked, vi} from 'vitest'
 
-import {type useReleases} from '../../useReleases'
+import {useReleases} from '../../useReleases'
 
-export const useReleasesMock: Mocked<ReturnType<typeof useReleases>> = {
+export const useReleasesMockReturn: Mocked<ReturnType<typeof useReleases>> = {
   archivedReleases: [],
   data: [],
   dispatch: vi.fn(),
@@ -10,3 +10,5 @@ export const useReleasesMock: Mocked<ReturnType<typeof useReleases>> = {
   loading: false,
   releasesIds: [],
 }
+
+export const mockUseReleases = useReleases as Mock<typeof useReleases>

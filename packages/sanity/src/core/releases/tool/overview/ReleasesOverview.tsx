@@ -48,6 +48,7 @@ const DateFilterButton = ({filterDate, onClear}: {filterDate: Date; onClear: () 
     <AnimatePresence onExitComplete={handleOnExitComplete}>
       {!isExiting && (
         <MotionButton
+          data-testid="selected-date-filter"
           initial={{width: 0, opacity: 0}}
           animate={{width: 'auto', opacity: 1}}
           exit={{width: 0, opacity: 0}}
