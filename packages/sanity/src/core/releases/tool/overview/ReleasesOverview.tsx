@@ -13,6 +13,7 @@ import {
   type CalendarProps,
 } from '../../../../ui-components/inputs/DateFilters/calendar/CalendarFilter'
 import {useTranslation} from '../../../i18n'
+import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {usePerspective} from '../../hooks/usePerspective'
@@ -137,6 +138,7 @@ export function ReleasesOverview() {
   const {t: tCore} = useTranslation()
   const {timeZone} = useTimeZone()
   const {currentGlobalBundleId} = usePerspective()
+  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> =>
@@ -347,7 +349,9 @@ export function ReleasesOverview() {
                   mode="bleed"
                   padding={2}
                   text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
+                  onClick={dialogTimeZoneShow}
                 />
+                {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
                 {loadingOrHasReleases && createReleaseButton}
               </Flex>
             </Flex>
