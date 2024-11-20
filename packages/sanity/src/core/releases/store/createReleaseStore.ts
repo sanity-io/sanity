@@ -71,7 +71,7 @@ function migrateWith(client: SanityClient) {
             actionType: 'sanity.action.release.edit',
             releaseId,
             patch: {
-              set: {userMetadata: tmpDoc.metadata},
+              set: {metadata: tmpDoc.metadata},
             },
           }).catch((err) => {
             if (err instanceof ClientError) {

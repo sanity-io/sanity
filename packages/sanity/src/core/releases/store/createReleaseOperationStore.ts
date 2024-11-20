@@ -24,7 +24,7 @@ export interface ReleaseOperationsStore {
 
 const IS_CREATE_VERSION_ACTION_SUPPORTED = false
 // todo: change to `metadata` once the relevant PR has been deployed
-const METADATA_PROPERTY_NAME = 'userMetadata'
+const METADATA_PROPERTY_NAME = 'metadata'
 
 export function createReleaseOperationsStore(options: {
   client: SanityClient

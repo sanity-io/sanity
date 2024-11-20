@@ -56,6 +56,10 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): JSX.Elemen
           title: `Failed to create release`,
         })
       } finally {
+        // TODO: Remove this! temporary fix to give some time for the release to be created and the releases store state updated before closing the dialog.
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        // TODO: Remove the upper part
+
         setIsSubmitting(false)
         onSubmit(getBundleIdFromReleaseDocumentId(value._id))
       }
