@@ -54,6 +54,14 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
 
   useEffect(() => {
     const workspaces = arrify(props.config)
+    const projectIds: string[] = []
+    const datasetNames: string[] = []
+    const workspaceNames: string[] = []
+    workspaces.forEach((workspace) => {
+      projectIds.push(workspace.projectId)
+      datasetNames.push(workspace.dataset)
+      workspaceNames.push(workspace.name || '<unnamed>')
+    })
     store.logger.updateUserProperties({
       userAgent: navigator.userAgent,
       screen: {
@@ -70,11 +78,17 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
             name: plugin.name || '<unnamed>',
           })) || [],
       ),
-      workspaceNames: workspaces.map((workspace) =>
-        workspace.name ? getWellKnownName(workspace.name) || '<custom>' : '<missing>',
+      uniqueWorkspaceNames: new Set(workspaceNames).size,
+      uniqueDatasetNames: new Set(datasetNames).size,
+      workspaceNames: workspaceNames.map(
+        (workspaceName) =>
+          // log only well known dataset names to avoid sending private data
+          getWellKnownName(workspaceName) || '<custom>',
       ),
-      datasetNames: workspaces.flatMap((workspace) =>
-        workspace.dataset ? getWellKnownName(workspace.dataset) || '<custom>' : '<missing>',
+      datasetNames: datasetNames.map(
+        (datasetName) =>
+          // log only well known dataset names to avoid sending private data
+          getWellKnownName(datasetName) || '<custom>',
       ),
     })
   }, [props.config, store.logger])
