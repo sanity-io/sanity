@@ -23,6 +23,7 @@ export function ReleaseDashboardHeader(props: {
   const {inspector, release, setInspector} = props
   const title = release.metadata.title
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const router = useRouter()
   const handleNavigateToReleasesList = useCallback(() => {
     router.navigate({})
@@ -59,9 +60,10 @@ export function ReleaseDashboardHeader(props: {
           <Button
             mode="bleed"
             onClick={handleTitleClick}
-            text={title}
+            text={title || tCore('release.placeholder-untitled-release')}
             textWeight="semibold"
             padding={2}
+            style={title ? undefined : {opacity: 0.5}}
           />
         </Breadcrumbs>
       </Flex>
