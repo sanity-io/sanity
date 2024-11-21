@@ -9,6 +9,20 @@ import {SANITY_VERSION} from '../version'
 
 const sessionId = createSessionId()
 
+// A list of common dataset / workspace names we can safely log without collecting private data
+const WELL_KNOWN_NAMES = [
+  'staging',
+  'stage',
+  'stg',
+  'production',
+  'prod',
+  'preprod',
+  'development',
+  'dev',
+  'qa',
+  'test',
+]
+
 // Wrap the app in a TelemetryProvider
 // This will enable usage of the `useTelemetry()` hook
 export function StudioTelemetryProvider(props: {children: ReactNode; config: Config}) {
@@ -39,6 +53,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
   }, [client, projectId])
 
   useEffect(() => {
+    const workspaces = arrify(props.config)
     store.logger.updateUserProperties({
       userAgent: navigator.userAgent,
       screen: {
@@ -49,14 +64,24 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
         innerWidth: window.innerWidth,
       },
       studioVersion: SANITY_VERSION,
-      plugins: arrify(props.config).flatMap(
-        (config) =>
-          config.plugins?.flatMap((plugin) => ({
+      plugins: workspaces.flatMap(
+        (workspace) =>
+          workspace.plugins?.flatMap((plugin) => ({
             name: plugin.name || '<unnamed>',
           })) || [],
+      ),
+      workspaceNames: workspaces.map((workspace) =>
+        workspace.name ? getWellKnownName(workspace.name) || '<custom>' : '<missing>',
+      ),
+      datasetNames: workspaces.flatMap((workspace) =>
+        workspace.dataset ? getWellKnownName(workspace.dataset) || '<custom>' : '<missing>',
       ),
     })
   }, [props.config, store.logger])
 
   return <TelemetryProvider store={store}>{props.children}</TelemetryProvider>
+}
+
+function getWellKnownName(name: string) {
+  return WELL_KNOWN_NAMES.includes(name.toLowerCase()) ? name : undefined
 }
