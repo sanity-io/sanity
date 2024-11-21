@@ -1,11 +1,16 @@
 import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {format, set} from 'date-fns'
 import {useRouter} from 'sanity/router'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import useTimeZone, {getLocalTimeZone} from '../../../../scheduledPublishing/hooks/useTimeZone'
+import {
+  getLocalTimeZoneMockReturn,
+  mockGetLocaleTimeZone,
+  mockUseTimeZone,
+  useTimeZoneMockReturn,
+} from '../../../../scheduledPublishing/hooks/__tests__/__mocks__/useTimeZone.mock'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -68,24 +73,9 @@ vi.mock('../../../hooks/usePerspective', () => ({
 
 vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', async (importOriginal) => ({
   ...(await importOriginal()),
-  getLocalTimeZone: vi.fn().mockReturnValue({
-    abbreviation: 'SCT',
-  }),
-  default: vi.fn(() => ({
-    timeZone: {
-      abbreviation: 'SCT', // Sanity Central Time :)
-      namePretty: 'Sanity/Oslo',
-      offset: '+00:00',
-      name: 'SCT',
-    },
-    utcToCurrentZoneDate: vi.fn((date: Date) => date),
-    getCurrentZoneDate: vi.fn(),
-    zoneDateToUtc: vi.fn((date) => date),
-  })),
+  getLocalTimeZone: vi.fn(() => getLocalTimeZoneMockReturn),
+  default: vi.fn(() => useTimeZoneMockReturn),
 }))
-
-const mockGetLocaleTimeZone = getLocalTimeZone as Mock<typeof getLocalTimeZone>
-const mockUseTimeZone = useTimeZone as Mock<typeof useTimeZone>
 
 describe('ReleasesOverview', () => {
   beforeEach(() => {
@@ -173,6 +163,7 @@ describe('ReleasesOverview', () => {
     let activeRender: ReturnType<typeof render>
 
     beforeEach(async () => {
+      mockUseTimeZone.mockRestore()
       mockUseReleases.mockReturnValue({
         ...useReleasesMockReturn,
         archivedReleases: [archivedScheduledRelease, publishedASAPRelease],
@@ -354,21 +345,9 @@ describe('ReleasesOverview', () => {
       describe('when a different timezone is selected', () => {
         beforeEach(() => {
           mockUseTimeZone.mockReturnValue({
+            ...useTimeZoneMockReturn,
             // spoof a timezone that is 8 hours ahead of UTC
             zoneDateToUtc: vi.fn((date) => set(date, {hours: new Date(date).getHours() - 8})),
-            utcToCurrentZoneDate: vi.fn((date) => date),
-            getCurrentZoneDate: vi.fn(() => TODAY),
-            timeZone: {
-              abbreviation: 'SCT',
-              namePretty: 'Sanity/Oslo',
-              offset: '+00:00',
-              name: 'SCT',
-              alternativeName: 'Sanity/Oslo',
-              mainCities: 'Sanity City',
-              value: 'Sanity/Oslo',
-            },
-            setTimeZone: vi.fn(),
-            formatDateTz: vi.fn(),
           })
 
           activeRender.rerender(<ReleasesOverview />)
