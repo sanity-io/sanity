@@ -14,6 +14,7 @@ import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {
   mockUseBundleDocuments,
   useBundleDocumentsMockReturn,
+  useBundleDocumentsMockReturnWithResults,
 } from '../../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
@@ -22,7 +23,7 @@ vi.mock('../../../../store/useReleaseOperations', () => ({
 }))
 
 vi.mock('../../../detail/useBundleDocuments', () => ({
-  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturn),
+  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -63,10 +64,7 @@ describe('ReleaseMenuButton', () => {
     }
 
     test('does not require confirmation when no documents in release', async () => {
-      mockUseBundleDocuments.mockReturnValue({
-        ...useBundleDocumentsMockReturn,
-        results: [],
-      })
+      mockUseBundleDocuments.mockReturnValue(useBundleDocumentsMockReturn)
 
       await renderTest({release: activeScheduledRelease})
 

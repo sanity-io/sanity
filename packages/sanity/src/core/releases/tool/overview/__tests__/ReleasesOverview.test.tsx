@@ -27,7 +27,7 @@ import {
 } from '../../../store/__tests__/__mocks/useReleasesMetadata.mock'
 import {type ReleaseDocument} from '../../../store/types'
 import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
-import {useBundleDocumentsMockReturn} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
+import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleasesOverview} from '../ReleasesOverview'
 
 const TODAY = new Date()
@@ -47,7 +47,7 @@ vi.mock('../../../store/useReleasesMetadata', () => ({
 }))
 
 vi.mock('../../detail/useBundleDocuments', () => ({
-  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturn),
+  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
