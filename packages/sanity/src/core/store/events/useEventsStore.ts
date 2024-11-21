@@ -1,19 +1,21 @@
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, from, type Observable, of} from 'rxjs'
+import {BehaviorSubject, combineLatest, from, type Observable, of} from 'rxjs'
 import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators'
 import {
-  getPublishedId,
-  getVersionFromId,
-  isVersionId,
+  type MendozaPatch,
   type SanityClient,
   type SanityDocument,
+  type TransactionLogEventWithEffects,
+  type WithVersion,
 } from 'sanity'
 
 import {useClient} from '../../hooks'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromName} from '../../releases/util/getReleaseIdFromName'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {getPublishedId, getVersionFromId, isVersionId} from '../../util/draftUtils'
+import {type DocumentRemoteMutationEvent} from '../_legacy/document/buffered-doc/types'
 import {getDocumentChanges} from './getDocumentChanges'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {getEditEvents} from './getEditEvents'
@@ -32,6 +34,7 @@ import {
   isUnscheduleDocumentVersionEvent,
   isUpdateLiveDocumentEvent,
 } from './types'
+import {useRemoteMutations} from './useRemoteMutations'
 
 const INITIAL_VALUE = {
   events: [],
@@ -110,16 +113,76 @@ const addEventId = (
   }
   return {...event, id} as DocumentGroupEvent
 }
+
+function remoteMutationToTransaction(
+  event: DocumentRemoteMutationEvent,
+): TransactionLogEventWithEffects {
+  return {
+    author: event.author,
+    documentIDs: [],
+    id: event.transactionId,
+    timestamp: event.timestamp.toISOString(),
+    effects: {
+      [event.head._id]: {
+        // TODO: Find a way to validate that is a MendozaPatch
+        apply: event.effects.apply as MendozaPatch,
+        revert: event.effects.revert as MendozaPatch,
+      },
+    },
+  }
+}
+
 export function useEventsStore({
   documentId,
+  documentType,
   rev,
   since,
 }: {
   documentId: string
+  documentType: string
   rev?: string
   since?: string
 }): EventsStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+
+  const remoteTransactions$ = useMemo(
+    () => new BehaviorSubject<TransactionLogEventWithEffects[]>([]),
+    [],
+  )
+
+  const onUpdate = useCallback(
+    (remoteMutation: WithVersion<DocumentRemoteMutationEvent>) => {
+      // If the remote mutation happened to a published document we need to re-fetch the events.
+      // If it happens to a version, we need to add the mutation to the list of events.
+      // If it happens to a draft: we need to decide if it looks like an event
+      //       Looks like an event: we need to refetch the events list (e.g. publish, discard)
+      //       Doesn't look like an event: we need to add the mutation to the list of events.
+      const version = remoteMutation.version
+      if (version === 'version') {
+        remoteTransactions$.next([
+          ...remoteTransactions$.value,
+          remoteMutationToTransaction(remoteMutation),
+        ])
+        return
+      }
+      if (version === 'draft') {
+        console.log('IMPLEMENT ME PLEASE')
+        return
+      }
+      if (version === 'published') {
+        console.log('IMPLEMENT ME PLEASE')
+        return
+      }
+      console.error('Unknown version', version)
+    },
+    [remoteTransactions$],
+  )
+  useRemoteMutations({
+    client,
+    documentId,
+    documentType,
+    onUpdate: onUpdate,
+  })
   const {state$} = useReleasesStore()
 
   const eventsObservable$: Observable<{
@@ -132,7 +195,7 @@ export function useEventsStore({
 
     const params = new URLSearchParams({
       // This is not working yet, CL needs to fix it.
-      limit: '2',
+      limit: '50',
     })
     return client.observable
       .request<{
@@ -164,10 +227,9 @@ export function useEventsStore({
         // Get the edit events if necessary.
         switchMap((response) => {
           if (isPublishedDoc) {
-            // For the published document we don't need to fetch the edit events.
+            // For the published document we don't need to fetch the edit transactions.
             return of(response)
           }
-          console.log('EVENTS BEFORE EDIT EVENTS', response.events)
 
           // TODO: Improve how we get this value.
           const lastVersionRevisionIdIndex = response.events.findIndex(
@@ -212,10 +274,16 @@ export function useEventsStore({
   }, [client, documentId])
 
   const observable$ = useMemo(() => {
-    return combineLatest([state$, eventsObservable$]).pipe(
-      map(([releases, {events, nextCursor, loading, error}]) => {
+    return combineLatest([state$, eventsObservable$, remoteTransactions$]).pipe(
+      map(([releases, {events, nextCursor, loading, error}, remoteTransactions]) => {
+        const remoteEdits = getEditEvents(remoteTransactions, documentId)
+        const withRemoteEdits = [...remoteEdits, ...events].sort(
+          // Sort by timestamp, newest first
+          (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
+        )
+
         return {
-          events: events.map((event) => {
+          events: withRemoteEdits.map((event) => {
             if (event.type === 'PublishDocumentVersion') {
               const releaseId = getVersionFromId(event.versionId)
 
@@ -237,7 +305,7 @@ export function useEventsStore({
         }
       }),
     )
-  }, [state$, eventsObservable$])
+  }, [state$, eventsObservable$, remoteTransactions$, documentId])
 
   const {events, loading, error, nextCursor} = useObservable(observable$, INITIAL_VALUE)
 
@@ -309,6 +377,8 @@ export function useEventsStore({
 
   const changesList = useCallback(
     ({to, from: fromDoc}: {to: SanityDocument; from: SanityDocument | null}) => {
+      // TODO: We could pass here the remote edits to avoid fetching them again.
+      // Consider using the remoteTransactions$ observable to get the remote edits.
       return getDocumentChanges({
         client,
         events,

@@ -122,13 +122,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
     return formattedDate
   }, [timestamp, dateFormat])
 
-  const userIds =
-    // eslint-disable-next-line no-nested-ternary
-    event.type === 'EditDocumentVersion'
-      ? event.authors
-      : event.type === 'PublishDocumentVersion'
-        ? [event.publishCause.author]
-        : [event.author]
+  const userIds = event.type === 'EditDocumentVersion' ? event.authors : [event.author]
 
   return (
     <>

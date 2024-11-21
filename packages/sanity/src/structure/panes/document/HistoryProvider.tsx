@@ -75,6 +75,7 @@ function EventsStoreProvider(props: LegacyStoreProviderProps) {
 
   const eventsStore = useEventsStore({
     documentId,
+    documentType: props.documentType,
     rev: params.rev,
     since: params.since,
   })
