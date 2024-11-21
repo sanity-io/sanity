@@ -4,6 +4,7 @@ import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 
 import {
   deriveSearchWeightsFromType,
+  isPerspectiveRaw,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchPath,
@@ -127,6 +128,8 @@ export function createSearchQuery(
 
   // Extract search terms from string query, factoring in phrases wrapped in quotes
   const terms = extractTermsFromQuery(searchTerms.query)
+  const {perspective} = searchOpts
+  const isRaw = isPerspectiveRaw(perspective)
 
   // Construct search filters used in this GROQ query
   const filters = [
@@ -136,8 +139,8 @@ export function createSearchQuery(
     filter ? `(${filter})` : '',
     searchTerms.filter ? `(${searchTerms.filter})` : '',
     // Versions are collated server-side using the `bundlePerspective` option. Therefore, they must
-    // not be fetched individually.
-    '!(_id in path("versions.**"))',
+    // not be fetched individually. This should only be added if the search needs to be narrow to the perspective
+    isRaw ? '' : '!(_id in path("versions.**"))',
   ].filter(Boolean)
 
   const selections = specs.map((spec) => {
@@ -191,8 +194,8 @@ export function createSearchQuery(
     },
     options: {
       tag,
-      perspective: searchOpts.perspective,
-      bundlePerspective: searchOpts.bundlePerspective,
+      perspective: isRaw ? undefined : searchOpts.perspective,
+      bundlePerspective: isRaw ? undefined : searchOpts.bundlePerspective,
     },
     searchSpec: specs,
     terms,

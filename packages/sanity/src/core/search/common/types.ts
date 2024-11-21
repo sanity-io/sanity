@@ -70,6 +70,7 @@ export interface SearchFactoryOptions {
   /* only return unique documents (e.g. not both draft and published) */
   unique?: boolean
   strategy?: SearchStrategy
+  perspective?: string[]
 }
 
 /**
@@ -111,7 +112,7 @@ export type SearchOptions = {
   sort?: SearchSort[]
   cursor?: string
   limit?: number
-  perspective?: string
+  perspective?: string[]
   bundlePerspective?: string[]
   isCrossDataset?: boolean
   queryType?: 'prefixLast' | 'prefixNone'
@@ -195,7 +196,7 @@ export type TextSearchParams = {
    * Result ordering.
    */
   order?: TextSearchOrder[]
-  perspective?: string
+  perspective?: string[]
   bundlePerspective?: string[]
 }
 

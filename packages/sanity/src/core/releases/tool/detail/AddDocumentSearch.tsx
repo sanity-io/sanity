@@ -9,6 +9,7 @@ import {SearchProvider} from '../../../studio/components/navbar/search/contexts/
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 import {getCreateVersionOrigin} from '../../util/util'
+import {useBundleDocuments} from './useBundleDocuments'
 
 export function AddDocumentSearch({
   open,
@@ -22,6 +23,9 @@ export function AddDocumentSearch({
   const {createVersion} = useReleaseOperations()
   const toast = useToast()
   const telemetry = useTelemetry()
+
+  const {results} = useBundleDocuments(getBundleIdFromReleaseDocumentId(releaseId))
+  const idsInRelease: string[] = results.map((doc) => doc.document._id)
 
   const addDocument = useCallback(
     async (item: Pick<SanityDocumentLike, '_id' | '_type'>) => {
@@ -58,7 +62,8 @@ export function AddDocumentSearch({
 
   return (
     <LayerProvider zOffset={1}>
-      <SearchProvider>
+      {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
+      <SearchProvider perspective={['raw']} disabledDocumentIds={idsInRelease}>
         <PortalProvider>
           <SearchPopover
             onClose={handleClose}

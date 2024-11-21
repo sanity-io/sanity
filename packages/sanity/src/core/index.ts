@@ -44,7 +44,7 @@ export {
 export * from './scheduledPublishing'
 export * from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
-export {createSearch, getSearchableTypes} from './search'
+export {createSearch, getSearchableTypes, isPerspectiveRaw} from './search'
 export * from './store'
 export * from './studio'
 export * from './studioClient'

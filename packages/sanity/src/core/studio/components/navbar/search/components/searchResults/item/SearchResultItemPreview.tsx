@@ -3,7 +3,6 @@ import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {getPublishedId, useReleases} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
@@ -16,7 +15,11 @@ import {
   SanityDefaultPreview,
 } from '../../../../../../../preview'
 import {usePerspective} from '../../../../../../../releases/hooks/usePerspective'
+import {useReleases} from '../../../../../../../releases/store/useReleases'
+import {isPerspectiveRaw} from '../../../../../../../search/common/isPerspectiveRaw'
 import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
+import {isArray} from '../../../../../../../util/isArray'
+import {useSearchState} from '../../../contexts/search/useSearchState'
 
 interface SearchResultItemPreviewProps {
   documentId: string
@@ -53,14 +56,29 @@ export function SearchResultItemPreview({
   const documentPreviewStore = useDocumentPreviewStore()
   const releases = useReleases()
   const {bundlesPerspective} = usePerspective()
+  const {state} = useSearchState()
+  const isRaw = isPerspectiveRaw(state.perspective)
 
   const observable = useMemo(
     () =>
-      getPreviewStateObservable(documentPreviewStore, schemaType, getPublishedId(documentId), '', {
+      getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '', {
         bundleIds: releases.releasesIds,
-        bundleStack: bundlesPerspective,
+        /**
+         * if the perspective is defined in the state it means that there is a scope to the search
+         * and that the preview needs to take that into account
+         */
+        bundleStack: state.perspective && !isRaw ? state.perspective : bundlesPerspective,
+        isRaw: isRaw,
       }),
-    [documentPreviewStore, schemaType, documentId, releases.releasesIds, bundlesPerspective],
+    [
+      documentPreviewStore,
+      schemaType,
+      documentId,
+      releases.releasesIds,
+      state.perspective,
+      bundlesPerspective,
+      isRaw,
+    ],
   )
 
   const {
@@ -107,7 +125,7 @@ export function SearchResultItemPreview({
           published,
           version,
           value: sanityDocument,
-          perspective,
+          perspective: isArray(perspective) ? perspective[0] : perspective,
         })}
         isPlaceholder={isLoading ?? true}
         layout={layout || 'default'}

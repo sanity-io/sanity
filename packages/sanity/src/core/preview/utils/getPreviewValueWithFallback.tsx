@@ -2,7 +2,8 @@ import {WarningOutlineIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {assignWith} from 'lodash'
 
-import {resolveBundlePerspective} from '../../util'
+import {isPerspectiveRaw} from '../../search/common/isPerspectiveRaw'
+import {isPublishedId, isVersionId, resolveBundlePerspective} from '../../util'
 
 const getMissingDocumentFallback = (item: SanityDocument) => ({
   title: <em>{item.title ? String(item.title) : 'Missing document'}</em>,
@@ -31,15 +32,30 @@ export const getPreviewValueWithFallback = ({
 }) => {
   let snapshot: Partial<SanityDocument> | PreviewValue | null | undefined
 
-  switch (true) {
-    case typeof resolveBundlePerspective(perspective) !== 'undefined':
-      snapshot = version || draft || published
-      break
-    case perspective === 'published':
-      snapshot = published || draft
-      break
-    default:
-      snapshot = draft || published
+  // check if it's searching globally
+  // if it is then use the value directly
+  if (isPerspectiveRaw(perspective)) {
+    switch (true) {
+      case isVersionId(value._id):
+        snapshot = version
+        break
+      case isPublishedId(value._id):
+        snapshot = published
+        break
+      default:
+        snapshot = draft
+    }
+  } else {
+    switch (true) {
+      case typeof resolveBundlePerspective(perspective) !== 'undefined' || isVersionId(value._id):
+        snapshot = version || draft || published
+        break
+      case perspective === 'published':
+        snapshot = published || draft
+        break
+      default:
+        snapshot = draft || published
+    }
   }
 
   if (!snapshot) {
