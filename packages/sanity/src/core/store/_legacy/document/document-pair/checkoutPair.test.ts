@@ -28,8 +28,7 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-// TODO: Restore this test
-describe.skip('checkoutPair -- local actions', () => {
+describe('checkoutPair -- local actions', () => {
   test('patch', async () => {
     const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
     const combined = merge(draft.events, published.events)
@@ -215,8 +214,7 @@ describe.skip('checkoutPair -- local actions', () => {
   })
 })
 
-// TODO: Restore this test
-describe.skip('checkoutPair -- server actions', () => {
+describe('checkoutPair -- server actions', () => {
   test('patch', async () => {
     const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
     const combined = merge(draft.events, published.events)
