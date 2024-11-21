@@ -55,6 +55,7 @@ export function ReleaseDashboardHeader(props: {
             text={t('overview.title')}
             textWeight="regular"
             padding={2}
+            data-testid="back-to-releases-button"
           />
           <Button
             mode="bleed"

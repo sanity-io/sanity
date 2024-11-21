@@ -25,6 +25,13 @@ export const documentsInRelease: DocumentInRelease = {
 
 export const useBundleDocumentsMockReturn: Mocked<ReturnType<typeof useBundleDocuments>> = {
   loading: false,
+  results: [],
+}
+
+export const useBundleDocumentsMockReturnWithResults: Mocked<
+  ReturnType<typeof useBundleDocuments>
+> = {
+  loading: false,
   results: [documentsInRelease],
 }
 
