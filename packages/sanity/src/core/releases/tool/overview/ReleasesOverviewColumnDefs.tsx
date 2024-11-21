@@ -28,11 +28,11 @@ const ReleaseTime = ({release}: {release: TableRelease}) => {
 
   const {metadata} = release
 
-  const getTimezoneAbbreviation = useCallback(() => {
-    if (timeZone.abbreviation === localeTimeZoneAbbreviation) return ''
-
-    return `(${timeZone.abbreviation})`
-  }, [localeTimeZoneAbbreviation, timeZone.abbreviation])
+  const getTimezoneAbbreviation = useCallback(
+    () =>
+      timeZone.abbreviation === localeTimeZoneAbbreviation ? '' : `(${timeZone.abbreviation})`,
+    [localeTimeZoneAbbreviation, timeZone.abbreviation],
+  )
 
   const timeString = useMemo(() => {
     if (metadata.releaseType === 'asap') {
