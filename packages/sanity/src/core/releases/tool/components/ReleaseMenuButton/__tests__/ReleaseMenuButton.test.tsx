@@ -132,6 +132,7 @@ describe('ReleaseMenuButton', () => {
   })
 
   test.todo('will unarchive an archived release', async () => {
+    /** @todo update once unarchive has been implemented */
     const archivedRelease: ReleaseDocument = {...activeScheduledRelease, state: 'archived'}
 
     await renderTest({release: archivedRelease})
