@@ -121,7 +121,12 @@ function calculateDiff({
   transactions.forEach((transaction, index) => {
     const meta: EventMeta = {
       transactionIndex: index,
-      event: events.find((event) => 'revisionId' in event && event.revisionId === transaction.id),
+      event: events.find(
+        (event) =>
+          event.type !== 'EditDocumentVersion' &&
+          'revisionId' in event &&
+          event.revisionId === transaction.id,
+      ),
     }
     const effect = transaction.effects[documentId]
     if (effect) {
