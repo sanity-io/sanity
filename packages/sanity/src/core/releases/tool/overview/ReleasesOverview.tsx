@@ -139,7 +139,7 @@ export function ReleasesOverview() {
   const loadingTableData = loading || (!releasesMetadata && Boolean(releaseIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {timeZone} = useTimeZone()
+  const {timeZone, utcToCurrentZoneDate} = useTimeZone()
   const {currentGlobalBundleId} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
@@ -185,11 +185,19 @@ export function ReleasesOverview() {
     [],
   )
 
-  const handleSelectFilterDate = useCallback((date?: Date) => {
-    setReleaseFilterDate((prevFilterDate) =>
-      prevFilterDate && date && isSameDay(prevFilterDate, date) ? undefined : date,
-    )
-  }, [])
+  const handleSelectFilterDate = useCallback(
+    (date?: Date) =>
+      setReleaseFilterDate((prevFilterDate) => {
+        if (!date) return undefined
+
+        const timeZoneAdjustedDate = utcToCurrentZoneDate(date)
+
+        return prevFilterDate && isSameDay(prevFilterDate, timeZoneAdjustedDate)
+          ? undefined
+          : timeZoneAdjustedDate
+      }),
+    [utcToCurrentZoneDate],
+  )
 
   const clearFilterDate = useCallback(() => {
     setReleaseFilterDate(undefined)
