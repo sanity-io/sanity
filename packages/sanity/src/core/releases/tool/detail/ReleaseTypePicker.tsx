@@ -3,12 +3,6 @@ import {Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity
 import {format, isBefore, isValid} from 'date-fns'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {
-  getPublishDateFromRelease,
-  isReleaseScheduledOrScheduling,
-  type ReleaseDocument,
-  useTranslation,
-} from 'sanity'
 
 import {Button, Popover, Tab} from '../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/calendar/Calendar'
@@ -16,12 +10,14 @@ import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/c
 import {DatePicker} from '../../../../ui-components/inputs/DateInputs/DatePicker'
 import {LazyTextInput} from '../../../../ui-components/inputs/DateInputs/LazyTextInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseType} from '../../store'
+import {type ReleaseDocument, type ReleaseType} from '../../store'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 
 export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Element {
   const {release} = props
