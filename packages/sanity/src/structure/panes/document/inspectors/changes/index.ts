@@ -3,7 +3,7 @@ import {type DocumentInspector, useTranslation} from 'sanity'
 
 import {useStructureTool} from '../../../../useStructureTool'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
-import {ChangesInspector} from './ChangesInspector'
+import {ChangesTabs} from './ChangesTabs'
 
 export const changesInspector: DocumentInspector = {
   name: HISTORY_INSPECTOR_NAME,
@@ -17,7 +17,9 @@ export const changesInspector: DocumentInspector = {
       title: t('changes.title'),
     }
   },
-  component: ChangesInspector,
-  onClose: ({params}) => ({params: {...params, since: undefined}}),
+  component: ChangesTabs,
+  onClose: ({params}) => ({
+    params: {...params, since: undefined, rev: undefined, changesInspectorTab: undefined},
+  }),
   onOpen: ({params}) => ({params: {...params, since: '@lastPublished'}}),
 }

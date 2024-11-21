@@ -197,7 +197,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'calendar.weekday-names.short.wednesday': 'Wed',
 
   /** Label for the close button label in Review Changes pane */
-  'changes.action.close-label': 'Close review changes',
+  'changes.action.close-label': 'Close history',
   /** Cancel label for revert button prompt action */
   'changes.action.revert-all-cancel': 'Cancel',
   /** Revert all confirm label for revert button action - used on prompt button + review changes pane */
@@ -313,7 +313,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for when the action of the change was a removal, eg a field was cleared, an array item was removed, an asset was deselected or similar */
   'changes.removed-label': 'Removed',
   /** Title for the Review Changes pane */
-  'changes.title': 'Review changes',
+  'changes.title': 'History',
 
   /** --- Common components --- */
   /** Tooltip text for context menu buttons */
@@ -359,6 +359,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-status.not-published': 'Not published',
   /** Label to show in the document footer indicating the published date of the document */
   'document-status.published': 'Published {{date}}',
+  /** Label to show in the document footer indicating the revision from date of the document */
+  'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
@@ -1592,7 +1594,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'sheet-list.select-fields': 'Select up to 5 field types',
   /** Accessibility label for the navbar status button */
   'status-button.aria-label': 'Configuration status',
-
+  /** Title for the changes tooltip in the history inspector*/
+  'timeline.changes.title': 'Changes by',
   /** Description for error when the timeline for the given document can't be loaded */
   'timeline.error.load-document-changes-description':
     'Document history transactions have not been affected.',
@@ -1656,7 +1659,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter (`timestamp`).
    */
-  'timeline.since': 'Since: {{timestamp, datetime}}',
+  'timeline.since': '{{timestamp, datetime}}',
   /** Label for missing change version for timeline menu dropdown are showing */
   'timeline.since-version-missing': 'Since: unknown version',
   /** Aria label for the action buttons in the PTE toolbar */
