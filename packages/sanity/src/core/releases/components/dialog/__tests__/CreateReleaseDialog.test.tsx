@@ -30,6 +30,7 @@ const mockUseBundleStore = useReleases as Mock<typeof useReleases>
 describe('CreateReleaseDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // this is an inocuous comment
   })
   afterEach(() => {
     vi.clearAllMocks()
