@@ -1,7 +1,6 @@
 import {AddIcon, ChevronDownIcon, CloseIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, type ButtonMode, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {endOfDay, format, isSameDay, startOfDay} from 'date-fns'
-import {zonedTimeToUtc} from 'date-fns-tz'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type RouterContextValue, type SearchParam, useRouter} from 'sanity/router'
@@ -13,6 +12,7 @@ import {
   type CalendarProps,
 } from '../../../../ui-components/inputs/DateFilters/calendar/CalendarFilter'
 import {useTranslation} from '../../../i18n'
+import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {usePerspective} from '../../hooks/usePerspective'
@@ -74,18 +74,22 @@ export interface TableRelease extends ReleaseDocument {
   isDeleted?: boolean
 }
 
-// TODO: use the selected timezone rather than client
-const getTimezoneAdjustedDateTimeRange = (date: Date) => {
-  const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
+const useTimezoneAdjustedDateTimeRange = () => {
+  const {zoneDateToUtc} = useTimeZone()
 
-  return [startOfDay(date), endOfDay(date)].map((time) => zonedTimeToUtc(time, timeZone))
+  return useCallback(
+    (date: Date) => [startOfDay(date), endOfDay(date)].map(zoneDateToUtc),
+    [zoneDateToUtc],
+  )
 }
 
 const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
   const {data: releases} = useReleases()
+  const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
+
   const {date} = props
 
-  const [startOfDayUTC, endOfDayUTC] = getTimezoneAdjustedDateTimeRange(date)
+  const [startOfDayForTimeZone, endOfDayForTimeZone] = getTimezoneAdjustedDateTimeRange(date)
 
   const dayHasReleases = releases?.some((release) => {
     const releasePublishAt = release.publishAt || release.metadata.intendedPublishAt
@@ -95,8 +99,8 @@ const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
 
     return (
       release.metadata.releaseType === 'scheduled' &&
-      publishDateUTC >= startOfDayUTC &&
-      publishDateUTC <= endOfDayUTC
+      publishDateUTC >= startOfDayForTimeZone &&
+      publishDateUTC <= endOfDayForTimeZone
     )
   })
 
@@ -135,8 +139,10 @@ export function ReleasesOverview() {
   const loadingTableData = loading || (!releasesMetadata && Boolean(releaseIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {timeZone} = useTimeZone()
+  const {timeZone, utcToCurrentZoneDate} = useTimeZone()
   const {currentGlobalBundleId} = usePerspective()
+  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
+  const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> =>
@@ -179,11 +185,19 @@ export function ReleasesOverview() {
     [],
   )
 
-  const handleSelectFilterDate = useCallback((date?: Date) => {
-    setReleaseFilterDate((prevFilterDate) =>
-      prevFilterDate && date && isSameDay(prevFilterDate, date) ? undefined : date,
-    )
-  }, [])
+  const handleSelectFilterDate = useCallback(
+    (date?: Date) =>
+      setReleaseFilterDate((prevFilterDate) => {
+        if (!date) return undefined
+
+        const timeZoneAdjustedDate = utcToCurrentZoneDate(date)
+
+        return prevFilterDate && isSameDay(prevFilterDate, timeZoneAdjustedDate)
+          ? undefined
+          : timeZoneAdjustedDate
+      }),
+    [utcToCurrentZoneDate],
+  )
 
   const clearFilterDate = useCallback(() => {
     setReleaseFilterDate(undefined)
@@ -301,15 +315,22 @@ export function ReleasesOverview() {
   const filteredReleases = useMemo(() => {
     if (!releaseFilterDate) return releaseGroupMode === 'open' ? tableReleases : archivedReleases
 
-    const [startOfDayUTC, endOfDayUTC] = getTimezoneAdjustedDateTimeRange(releaseFilterDate)
+    const [startOfDayForTimeZone, endOfDayForTimeZone] =
+      getTimezoneAdjustedDateTimeRange(releaseFilterDate)
 
     return tableReleases.filter((release) => {
       if (!release.publishAt || release.metadata.releaseType !== 'scheduled') return false
 
       const publishDateUTC = new Date(release.publishAt)
-      return publishDateUTC >= startOfDayUTC && publishDateUTC <= endOfDayUTC
+      return publishDateUTC >= startOfDayForTimeZone && publishDateUTC <= endOfDayForTimeZone
     })
-  }, [releaseFilterDate, releaseGroupMode, tableReleases, archivedReleases])
+  }, [
+    releaseFilterDate,
+    releaseGroupMode,
+    tableReleases,
+    archivedReleases,
+    getTimezoneAdjustedDateTimeRange,
+  ])
 
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
@@ -347,7 +368,9 @@ export function ReleasesOverview() {
                   mode="bleed"
                   padding={2}
                   text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
+                  onClick={dialogTimeZoneShow}
                 />
+                {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
                 {loadingOrHasReleases && createReleaseButton}
               </Flex>
             </Flex>

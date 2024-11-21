@@ -1,9 +1,16 @@
 import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import {format, set} from 'date-fns'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {
+  getLocalTimeZoneMockReturn,
+  mockGetLocaleTimeZone,
+  mockUseTimeZone,
+  useTimeZoneMockReturn,
+} from '../../../../scheduledPublishing/hooks/__tests__/__mocks__/useTimeZone.mock'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -30,7 +37,12 @@ import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
 import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleasesOverview} from '../ReleasesOverview'
 
-const TODAY = new Date()
+const TODAY = set(new Date(), {
+  hours: 22,
+  minutes: 0,
+  seconds: 0,
+  milliseconds: 0,
+})
 
 vi.mock('sanity', () => ({
   SANITY_VERSION: '0.0.0',
@@ -57,6 +69,12 @@ vi.mock('sanity/router', async (importOriginal) => ({
 
 vi.mock('../../../hooks/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
+}))
+
+vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getLocalTimeZone: vi.fn(() => getLocalTimeZoneMockReturn),
+  default: vi.fn(() => useTimeZoneMockReturn),
 }))
 
 describe('ReleasesOverview', () => {
@@ -132,7 +150,10 @@ describe('ReleasesOverview', () => {
     const releases: ReleaseDocument[] = [
       {
         ...activeScheduledRelease,
-        metadata: {...activeScheduledRelease.metadata, intendedPublishAt: TODAY.toISOString()},
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          intendedPublishAt: TODAY.toISOString(),
+        },
       },
       activeASAPRelease,
       activeUndecidedRelease,
@@ -142,6 +163,7 @@ describe('ReleasesOverview', () => {
     let activeRender: ReturnType<typeof render>
 
     beforeEach(async () => {
+      mockUseTimeZone.mockRestore()
       mockUseReleases.mockReturnValue({
         ...useReleasesMockReturn,
         archivedReleases: [archivedScheduledRelease, publishedASAPRelease],
@@ -189,6 +211,13 @@ describe('ReleasesOverview', () => {
       const asapReleaseRow = screen.getAllByTestId('table-row')[3]
 
       within(asapReleaseRow).getByText('Undecided')
+    })
+
+    it('shows time for scheduled releases', () => {
+      const scheduledReleaseRow = screen.getAllByTestId('table-row')[2]
+
+      const date = format(TODAY, 'MMM d, yyyy')
+      within(scheduledReleaseRow).getByText(`${date}, 10:00:00 PM`)
     })
 
     it('has release menu actions for each release', () => {
@@ -279,6 +308,65 @@ describe('ReleasesOverview', () => {
           await waitFor(() => {
             expect(screen.getAllByTestId('table-row')).toHaveLength(4)
           })
+        })
+      })
+    })
+
+    describe('timezone selection', () => {
+      it('shows the selected timezone', () => {
+        screen.getByText('SCT (Sanity/Oslo)')
+      })
+
+      it('opens the timezone selector', () => {
+        fireEvent.click(screen.getByText('SCT (Sanity/Oslo)'))
+
+        within(getByDataUi(document.body, 'DialogCard')).getByText('Select time zone')
+      })
+
+      it('shows dates with timezone abbreviation when it is not the locale', () => {
+        mockGetLocaleTimeZone.mockReturnValue({
+          abbreviation: 'NST', // Not Sanity Time
+          namePretty: 'Not Sanity Time',
+          offset: '+00:00',
+          name: 'NST',
+          alternativeName: 'Not Sanity Time',
+          mainCities: 'Not Sanity City',
+          value: 'Not Sanity Time',
+        })
+
+        activeRender.rerender(<ReleasesOverview />)
+
+        const scheduledReleaseRow = screen.getAllByTestId('table-row')[2]
+
+        const date = format(TODAY, 'MMM d, yyyy')
+        within(scheduledReleaseRow).getByText(`${date}, 10:00:00 PM (SCT)`)
+      })
+
+      describe('when a different timezone is selected', () => {
+        beforeEach(() => {
+          mockUseTimeZone.mockReturnValue({
+            ...useTimeZoneMockReturn,
+            // spoof a timezone that is 8 hours ahead of UTC
+            zoneDateToUtc: vi.fn((date) => set(date, {hours: new Date(date).getHours() - 8})),
+          })
+
+          activeRender.rerender(<ReleasesOverview />)
+        })
+
+        it('shows today as having no releases', () => {
+          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByText(
+            TODAY.getDate(),
+          )
+          expect(todayTile.parentNode).not.toHaveStyle('font-weight: 700')
+        })
+
+        it('shows no releases when filtered by today', () => {
+          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByText(
+            TODAY.getDate(),
+          )
+          fireEvent.click(todayTile)
+
+          expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
         })
       })
     })
