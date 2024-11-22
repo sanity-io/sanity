@@ -173,6 +173,7 @@ export function StudioAnnouncementsDialog({
     <Dialog
       id="in-app-communication-dialog"
       onClose={onClose}
+      onClickOutside={onClose}
       width={1}
       bodyHeight="fill"
       padding={false}
