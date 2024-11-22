@@ -98,7 +98,7 @@ export interface ChangeIndicatorProps {
 }
 
 /** @internal */
-export function ChangeIndicator(
+export const ChangeIndicator = memo(function ChangeIndicator(
   props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
   const {children, hasFocus, isChanged, path, withHoverEffect, ...restProps} = props
@@ -114,4 +114,4 @@ export function ChangeIndicator(
       {children}
     </ChangeBarWrapper>
   )
-}
+})

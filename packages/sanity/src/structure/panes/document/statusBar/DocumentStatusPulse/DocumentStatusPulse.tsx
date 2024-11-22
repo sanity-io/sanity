@@ -1,4 +1,5 @@
 import {type ButtonTone, Flex, Text} from '@sanity/ui'
+import {memo} from 'react'
 import {TextWithTone, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -20,7 +21,9 @@ const STATUS_DICTIONARY: Record<StatusType, {i18nKey: string; tone: ButtonTone}>
   },
 }
 
-export const DocumentStatusPulse = (props: ReviewChangesButtonProps) => {
+export const DocumentStatusPulse = memo(function DocumentStatusPulse(
+  props: ReviewChangesButtonProps,
+) {
   const {status} = props
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -41,4 +44,4 @@ export const DocumentStatusPulse = (props: ReviewChangesButtonProps) => {
       </Text>
     </Flex>
   )
-}
+})

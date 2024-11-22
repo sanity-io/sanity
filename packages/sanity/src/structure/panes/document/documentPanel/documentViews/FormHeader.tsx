@@ -1,5 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {Heading, Stack, Text} from '@sanity/ui'
+import {memo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {css, styled} from 'styled-components'
 
@@ -59,7 +60,11 @@ export const TitleContainer = styled(Stack)`
  * Document type is hidden if the document `_id` matches the current document `_type`.
  * The entire header is hidden if container queries are not supported.
  */
-export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps) => {
+export const FormHeader = memo(function FormHeader({
+  documentId,
+  schemaType,
+  title,
+}: DocumentHeaderProps) {
   const isSingleton = documentId === schemaType.name
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -80,4 +85,4 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
       </Heading>
     </TitleContainer>
   )
-}
+})

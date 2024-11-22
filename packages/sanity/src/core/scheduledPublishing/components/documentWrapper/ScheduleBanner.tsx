@@ -2,6 +2,7 @@ import {CalendarIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type ValidationMarker} from '@sanity/types'
 import {Badge, Box, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
+import {memo} from 'react'
 
 import {DATE_FORMAT, DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'
 import usePollSchedules from '../../hooks/usePollSchedules'
@@ -14,7 +15,7 @@ interface Props {
   markers: ValidationMarker[]
 }
 
-export function ScheduleBanner(props: Props) {
+export const ScheduleBanner = memo(function ScheduleBanner(props: Props) {
   const {id, markers} = props
   const publishedId = usePublishedId(id)
   const {hasError} = useValidationState(markers)
@@ -90,4 +91,4 @@ export function ScheduleBanner(props: Props) {
       </Card>
     </Box>
   )
-}
+})

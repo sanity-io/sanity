@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react'
+import {memo, type ReactNode} from 'react'
 
 import {StickyOverlay} from './StickyOverlay'
 import {PresenceTracker} from './tracker'
@@ -12,10 +12,13 @@ export interface PresenceOverlayProps {
 const DEFAULT_MARGINS: [number, number, number, number] = [0, 0, 0, 0]
 
 /** @internal */
-export function PresenceOverlay({children, margins}: PresenceOverlayProps) {
+export const PresenceOverlay = memo(function PresenceOverlay({
+  children,
+  margins,
+}: PresenceOverlayProps) {
   return (
     <PresenceTracker>
       <StickyOverlay margins={margins || DEFAULT_MARGINS}>{children}</StickyOverlay>
     </PresenceTracker>
   )
-}
+})

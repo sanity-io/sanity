@@ -1,5 +1,5 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
-import {createElement, useEffect, useMemo, useRef, useState} from 'react'
+import {createElement, memo, useEffect, useMemo, useRef, useState} from 'react'
 import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
 import {css, styled} from 'styled-components'
 
@@ -44,7 +44,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
   `
 })
 
-export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
+export const DocumentPanel = memo(function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, headerHeight, isInspectOpen, rootElement, setDocumentPanelPortalElement} =
     props
   const {
@@ -207,4 +207,4 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       </Flex>
     </PaneContent>
   )
-}
+})

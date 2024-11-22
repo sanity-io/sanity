@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion'
-import {type ComponentProps} from 'react'
+import {type ComponentProps, memo} from 'react'
 import {keyframes, styled} from 'styled-components'
 
 const StyledMotionPath = styled(motion.path)`
@@ -19,9 +19,9 @@ const Arrows = (props: MotionPathProps) => (
     {...props}
   />
 )
-const Checkmark = (props: MotionPathProps) => (
-  <motion.path d="M9.5 12.1316L11.7414 14.5L16 10" {...props} />
-)
+const Checkmark = memo(function Checkmark(props: MotionPathProps) {
+  return <motion.path d="M9.5 12.1316L11.7414 14.5L16 10" {...props} />
+})
 
 const rotateAnimation = keyframes`
   0% {
