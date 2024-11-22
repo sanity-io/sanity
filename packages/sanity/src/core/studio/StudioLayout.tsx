@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
-import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import {lazy, memo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -67,13 +67,13 @@ export interface NavbarContextValue {
  *</StudioProvider>
  * ```
  */
-export function StudioLayout() {
+export const StudioLayout = memo(function StudioLayout() {
   // Use the layout component that is resolved by the Components API (`studio.components.layout`).
   // The default component is the `StudioLayoutComponent` defined below.
   const Layout = useLayoutComponent()
 
   return <Layout />
-}
+})
 
 /**
  * @internal

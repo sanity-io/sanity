@@ -1,6 +1,6 @@
 import {UnknownIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
-import {type MouseEvent, useCallback, useId} from 'react'
+import {memo, type MouseEvent, useCallback, useId} from 'react'
 import {StatusButton, useI18nText, useTranslation} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
@@ -52,7 +52,9 @@ export interface PaneHeaderMenuItemActionButtonProps {
   node: _PaneMenuItem
 }
 
-export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) {
+export const PaneHeaderMenuItemActionButton = memo(function PaneHeaderMenuItemActionButton(
+  props: PaneHeaderMenuItemActionButtonProps,
+) {
   const {node} = props
   const {title} = useI18nText(node)
   const {t} = useTranslation()
@@ -78,7 +80,7 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
       }}
     />
   )
-}
+})
 
 function PaneHeaderActionIntentButton(props: {intent: Intent; node: _PaneMenuItem}) {
   const {intent, node} = props

@@ -1,5 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
-import {useCallback} from 'react'
+import {memo, useCallback} from 'react'
 import {styled} from 'styled-components'
 
 import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
@@ -32,7 +32,11 @@ interface SearchResultsProps {
   onItemSelect?: ItemSelectHandler
 }
 
-export function SearchResults({disableIntentLink, inputElement, onItemSelect}: SearchResultsProps) {
+export const SearchResults = memo(function SearchResults({
+  disableIntentLink,
+  inputElement,
+  onItemSelect,
+}: SearchResultsProps) {
   const {
     dispatch,
     onClose,
@@ -121,4 +125,4 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
       </Card>
     </Flex>
   )
-}
+})

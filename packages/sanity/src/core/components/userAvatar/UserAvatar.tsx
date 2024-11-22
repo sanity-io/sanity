@@ -6,7 +6,7 @@ import {
   type AvatarSize,
   type AvatarStatus,
 } from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useState} from 'react'
+import {type ForwardedRef, forwardRef, memo, useState} from 'react'
 
 import {Tooltip} from '../../../ui-components'
 import {useUser} from '../../store'
@@ -105,7 +105,10 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
   )
 })
 
-function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
+const UserAvatarLoader = memo(function UserAvatarLoader({
+  user,
+  ...loadedProps
+}: Omit<UserAvatarProps, 'user'> & {user: string}) {
   const [value] = useUser(user)
 
   if (!value) {
@@ -114,4 +117,4 @@ function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> 
   }
 
   return <UserAvatar {...loadedProps} user={value} />
-}
+})

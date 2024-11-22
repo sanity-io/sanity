@@ -2,6 +2,7 @@ import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
 import {studioTheme, type ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {
   type ComponentType,
+  memo,
   type ReactNode,
   useContext,
   useEffect,
@@ -19,7 +20,7 @@ function useSystemScheme(): ThemeColorSchemeKey {
   return prefersDark ? 'dark' : 'light'
 }
 
-function ColorThemeProvider({
+const ColorThemeProvider = memo(function ColorThemeProvider({
   children,
   scheme: _scheme,
 }: {
@@ -38,7 +39,7 @@ function ColorThemeProvider({
       {children}
     </ThemeProvider>
   )
-}
+})
 
 const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 

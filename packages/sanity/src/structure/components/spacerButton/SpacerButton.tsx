@@ -1,3 +1,5 @@
+import {memo} from 'react'
+
 import {Button, type ButtonProps} from '../../../ui-components'
 
 interface SpacerButtonProps {
@@ -15,7 +17,7 @@ interface SpacerButtonProps {
  *
  * @internal
  */
-export function SpacerButton({size}: SpacerButtonProps) {
+export const SpacerButton = memo(function SpacerButton({size}: SpacerButtonProps) {
   return (
     <Button
       aria-hidden
@@ -29,4 +31,4 @@ export function SpacerButton({size}: SpacerButtonProps) {
       text="-"
     />
   )
-}
+})
