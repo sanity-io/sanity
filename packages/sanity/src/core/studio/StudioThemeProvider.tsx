@@ -2,7 +2,7 @@
 
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {type RootTheme} from '@sanity/ui/theme'
-import {type ReactNode} from 'react'
+import {memo, type ReactNode} from 'react'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 
 import {defaultTheme, type StudioTheme} from '../theme'
@@ -28,7 +28,9 @@ function getThemeValues(theme: StudioTheme): RootTheme {
 }
 
 /** @internal */
-export function StudioThemeProvider({children}: StudioThemeProviderProps) {
+export const StudioThemeProvider = memo(function StudioThemeProvider({
+  children,
+}: StudioThemeProviderProps) {
   const theme = useActiveWorkspace().activeWorkspace.theme
 
   if (theme.__legacy) {
@@ -49,4 +51,4 @@ export function StudioThemeProvider({children}: StudioThemeProviderProps) {
       <LayerProvider>{children}</LayerProvider>
     </ThemeProvider>
   )
-}
+})
