@@ -1,4 +1,5 @@
 import {Card, Layer, Spinner, Text} from '@sanity/ui'
+import {memo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../..'
@@ -117,11 +118,7 @@ const StyledText = styled(Text)`
  *
  * @internal
  */
-export const LoadingBlock = React.memo(function LoadingBlock({
-  fill,
-  showText,
-  title,
-}: LoadingTestProps) {
+export const LoadingBlock = memo(function LoadingBlock({fill, showText, title}: LoadingTestProps) {
   return (
     <StyledCard $fill={fill} as={fill ? Layer : 'div'}>
       <StyledSpinner $animatePosition={!!showText} muted />

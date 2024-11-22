@@ -1,5 +1,6 @@
 import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import classNames from 'classnames'
+import {memo, useMemo} from 'react'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
@@ -52,15 +53,42 @@ const SKELETON_DELAY = 300
 /**
  * @hidden
  * @beta */
-export function DefaultPreview(props: DefaultPreviewProps) {
+export const DefaultPreview = memo(function DefaultPreview(props: DefaultPreviewProps) {
   const {title, subtitle, media, status, isPlaceholder, children, styles} = props
   const {t} = useTranslation()
   const rootClassName = classNames(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
 
-  const statusNode = status && (
-    <Box className={styles?.status} data-testid="default-preview__status">
-      {renderPreviewNode(status, 'default')}
-    </Box>
+  const statusNode = useMemo(
+    () =>
+      status && (
+        <Box className={styles?.status} data-testid="default-preview__status">
+          {renderPreviewNode(status, 'default')}
+        </Box>
+      ),
+    [status, styles?.status],
+  )
+
+  const memoizedStatusBox = useMemo(
+    () => (
+      <Box flex="none" padding={1}>
+        {statusNode}
+      </Box>
+    ),
+    [statusNode],
+  )
+  const memoizedMediaBox = useMemo(
+    () =>
+      media && (
+        <Box flex="none">
+          <Media
+            dimensions={DEFAULT_MEDIA_DIMENSIONS}
+            layout="default"
+            media={media as any}
+            styles={styles}
+          />
+        </Box>
+      ),
+    [media, styles],
   )
 
   if (isPlaceholder) {
@@ -89,9 +117,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
             <SubtitleSkeleton delay={SKELETON_DELAY} />
           </Stack>
 
-          <Box flex="none" padding={1}>
-            {statusNode}
-          </Box>
+          {memoizedStatusBox}
         </Flex>
       </Root>
     )
@@ -106,16 +132,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
       paddingLeft={media ? 2 : 3}
     >
       <Flex align="center" flex={1} gap={2}>
-        {media && (
-          <Box flex="none">
-            <Media
-              dimensions={DEFAULT_MEDIA_DIMENSIONS}
-              layout="default"
-              media={media as any}
-              styles={styles}
-            />
-          </Box>
-        )}
+        {memoizedMediaBox}
 
         <Stack className={styles?.heading} data-testid="default-preview__header" flex={1} space={2}>
           <Text
@@ -140,12 +157,10 @@ export function DefaultPreview(props: DefaultPreviewProps) {
           )}
         </Stack>
 
-        <Box flex="none" padding={1}>
-          {statusNode}
-        </Box>
+        {memoizedStatusBox}
 
         {children && <div className={styles?.children}>{children}</div>}
       </Flex>
     </Root>
   )
-}
+})
