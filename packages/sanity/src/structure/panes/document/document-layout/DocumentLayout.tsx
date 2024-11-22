@@ -6,7 +6,7 @@ import {
   useElementRect,
 } from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {
   ChangeConnectorRoot,
@@ -64,7 +64,7 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
   min-width: 0;
 `
 
-export function DocumentLayout() {
+export const DocumentLayout = memo(function DocumentLayout() {
   const {
     changesOpen,
     documentId,
@@ -159,6 +159,12 @@ export function DocumentLayout() {
     [onPathOpen, onFocus],
   )
 
+  // Memoize 'portalElements' to prevent unnecessary re-renders of PortalProvider
+  const portalElements = useMemo(
+    () => ({[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}),
+    [documentPanelPortalElement],
+  )
+
   if (!schemaType) {
     return (
       <DocumentLayoutError
@@ -240,9 +246,7 @@ export function DocumentLayout() {
 
           {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
           {/* The portal element comes from `DocumentPanel`. */}
-          <PortalProvider
-            __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
-          >
+          <PortalProvider __unstable_elements={portalElements}>
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
               <PaneFooter ref={setFooterElement}>
                 <TooltipDelayGroupProvider>
@@ -259,7 +263,7 @@ export function DocumentLayout() {
       </FieldActionsProvider>
     </GetFormValueProvider>
   )
-}
+})
 
 /**
  * Prevents whatever is inside of it from rendering when the pane is collapsed.
