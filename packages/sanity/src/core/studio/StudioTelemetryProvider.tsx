@@ -97,5 +97,5 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
 }
 
 function getWellKnownName(name: string) {
-  return WELL_KNOWN_NAMES.includes(name.toLowerCase()) ? name : undefined
+  return WELL_KNOWN_NAMES.find((wellKnownName) => name.toLowerCase().includes(wellKnownName))
 }
