@@ -1,6 +1,7 @@
+/* eslint-disable max-nested-callbacks */
 import {Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
-import {forwardRef, type Ref, useMemo, useState} from 'react'
+import {forwardRef, memo, type Ref, useMemo, useState} from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {useRovingFocus} from '../../../../components'
@@ -14,7 +15,7 @@ interface ToolCollapseMenuProps {
   tools: Tool[]
 }
 
-export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
+export const ToolCollapseMenu = memo(function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   const {activeToolName, tools} = props
   const scheme = useColorSchemeValue()
   const [collapseMenuEl, setCollapseMenuEl] = useState<HTMLDivElement | null>(null)
@@ -77,4 +78,4 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
       </CollapseTabList>
     </Flex>
   )
-}
+})

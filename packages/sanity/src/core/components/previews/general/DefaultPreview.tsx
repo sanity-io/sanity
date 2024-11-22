@@ -1,6 +1,6 @@
 import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import classNames from 'classnames'
-import {memo, useMemo} from 'react'
+import {useMemo} from 'react'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
@@ -53,7 +53,7 @@ const SKELETON_DELAY = 300
 /**
  * @hidden
  * @beta */
-export const DefaultPreview = memo(function DefaultPreview(props: DefaultPreviewProps) {
+export function DefaultPreview(props: DefaultPreviewProps) {
   const {title, subtitle, media, status, isPlaceholder, children, styles} = props
   const {t} = useTranslation()
   const rootClassName = classNames(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
@@ -163,4 +163,4 @@ export const DefaultPreview = memo(function DefaultPreview(props: DefaultPreview
       </Flex>
     </Root>
   )
-})
+}
