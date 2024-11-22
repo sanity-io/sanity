@@ -137,7 +137,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
 SanityDefaultPreview.displayName = 'SanityDefaultPreview'
 
 function createImageUrl(
-  imageBuilder: typeof imageUrlBuilder,
+  imageBuilder: ReturnType<typeof imageUrlBuilder>,
   mediaProp: React.ComponentProps<typeof SanityDefaultPreview>['media'],
   dimensions: {
     width?: number
