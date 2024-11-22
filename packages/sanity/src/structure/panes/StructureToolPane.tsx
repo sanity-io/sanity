@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {isEqual} from 'lodash'
 import {lazy, memo, Suspense} from 'react'
 
@@ -77,8 +78,8 @@ export const StructureToolPane = memo(
     )
   },
   (
-    {params: prevParams = {}, payload: prevPayload = null, ...prev},
-    {params: nextParams = {}, payload: nextPayload = null, ...next},
+    {params: prevParams = {}, payload: prevPayload = null, ...prev} = {} as any,
+    {params: nextParams = {}, payload: nextPayload = null, ...next} = {} as any,
   ) => {
     // deeply compare these objects (it's okay, they're small)
     if (!isEqual(prevParams, nextParams)) return false

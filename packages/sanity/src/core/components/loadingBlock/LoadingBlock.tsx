@@ -26,15 +26,15 @@ interface LoadingTestProps {
   title?: string | null
 }
 
-const StyledCard = styled(Card)<{$fill?: boolean}>(({$fill}) => {
-  return css`
-    align-items: center;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+const StyledCard = styled(Card)<{$fill?: boolean}>`
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
-    ${$fill
+  ${({$fill}) =>
+    $fill
       ? css`
           bottom: 0;
           height: 100%;
@@ -52,44 +52,42 @@ const StyledCard = styled(Card)<{$fill?: boolean}>(({$fill}) => {
           width: -webkit-fill-available;
         `}
 
-    ${DEBUG_MODE &&
-    css`
-      background: linear-gradient(#5555ca, #daf9f9);
-      border: 2px solid black;
-      > * {
-        mix-blend-mode: multiply;
-      }
-    `}
+  ${DEBUG_MODE &&
+  css`
+    background: linear-gradient(#5555ca, #daf9f9);
+    border: 2px solid black;
+    > * {
+      mix-blend-mode: multiply;
+    }
+  `}
 
     > * {
-      position: absolute;
-    }
-  `
-})
+    position: absolute;
+  }
+`
 
-const StyledSpinner = styled(Spinner)<{$animatePosition: boolean}>(({$animatePosition = true}) => {
-  return css`
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+const StyledSpinner = styled(Spinner)<{$animatePosition: boolean}>`
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
     }
-    @keyframes slideUp {
-      from {
-        transform: translateY(0);
-      }
-      to {
-        transform: translateY(-15px);
-      }
+    to {
+      opacity: 1;
     }
-    animation: ${$animatePosition
-      ? `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running fadeIn, 750ms ease-out ${TEXT_DELAY}ms 1 normal both running slideUp`
-      : `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running fadeIn`};
-  `
-})
+  }
+  @keyframes slideUp {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-15px);
+    }
+  }
+  animation: ${({$animatePosition = true}) =>
+    $animatePosition
+      ? css`500ms ease-out ${SPINNER_DELAY}ms 1 normal both running fadeIn, 750ms ease-out ${TEXT_DELAY}ms 1 normal both running slideUp`
+      : css`500ms ease-out ${SPINNER_DELAY}ms 1 normal both running fadeIn`};
+`
 
 const StyledText = styled(Text)`
   @keyframes fadeIn {

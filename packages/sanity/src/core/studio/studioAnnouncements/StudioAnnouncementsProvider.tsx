@@ -1,6 +1,6 @@
-/* eslint-disable camelcase */
+/* eslint-disable max-nested-callbacks,camelcase */
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, type Observable, startWith} from 'rxjs'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
@@ -29,7 +29,9 @@ interface StudioAnnouncementsProviderProps {
 }
 const CLIENT_OPTIONS = {apiVersion: 'v2024-09-19'}
 
-function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProviderProps) {
+const StudioAnnouncementsProviderInner = memo(function StudioAnnouncementsProviderInner({
+  children,
+}: StudioAnnouncementsProviderProps) {
   const telemetry = useTelemetry()
   const [dialogMode, setDialogMode] = useState<DialogMode | null>(null)
   const [isCardDismissed, setIsCardDismissed] = useState(false)
@@ -155,17 +157,17 @@ function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProvide
       )}
     </StudioAnnouncementContext.Provider>
   )
-}
+})
 
 /**
  * @internal
  * @hidden
  */
-export function StudioAnnouncementsProvider(props: StudioAnnouncementsProviderProps) {
+export function StudioAnnouncementsProvider({children}: StudioAnnouncementsProviderProps) {
   const source = useSource()
 
   if (source.announcements?.enabled) {
-    return <StudioAnnouncementsProviderInner {...props} />
+    return <StudioAnnouncementsProviderInner>{children}</StudioAnnouncementsProviderInner>
   }
-  return props.children
+  return children
 }

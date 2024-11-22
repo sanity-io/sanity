@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "19.0.0-beta-0dec889-20241115",
+    "babel-plugin-react-compiler": "0.0.0-experimental-dc8bd44-20241121",
     "next": "15.0.3",
     "react": "rc",
     "react-dom": "rc",
