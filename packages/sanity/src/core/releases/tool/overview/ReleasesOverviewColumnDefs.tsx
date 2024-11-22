@@ -139,9 +139,16 @@ export const releasesOverviewColumnDefs: (
       id: 'title',
       sorting: false,
       width: null,
-      style: {minWidth: '50%'},
+      style: {minWidth: '50%', maxWidth: '50%'},
       header: ({headerProps}) => (
-        <Flex {...headerProps} flex={1} marginLeft={3} paddingY={3} sizing="border">
+        <Flex
+          {...headerProps}
+          flex={1}
+          marginLeft={3}
+          paddingRight={2}
+          paddingY={3}
+          sizing="border"
+        >
           <Headers.BasicHeader text={t('table-header.title')} />
         </Flex>
       ),
@@ -160,14 +167,7 @@ export const releasesOverviewColumnDefs: (
       },
       width: 250,
       header: (props) => (
-        <Flex
-          {...props.headerProps}
-          align="center"
-          gap={1}
-          paddingX={1}
-          paddingY={0}
-          sizing="border"
-        >
+        <Flex {...props.headerProps} paddingY={3} sizing="border">
           <Headers.SortHeaderButton text={t('table-header.time')} {...props} />
         </Flex>
       ),
