@@ -91,6 +91,23 @@ export function DefaultPreview(props: DefaultPreviewProps) {
     [media, styles],
   )
 
+  const memoizedSkeletonBox = useMemo(
+    () =>
+      media && (
+        <Box flex="none">
+          <Skeleton
+            animated
+            delay={SKELETON_DELAY}
+            radius={1}
+            style={PREVIEW_SIZES.default.media}
+          />
+        </Box>
+      ),
+    [media],
+  )
+
+  const memoizedSubtitleSkeleton = useMemo(() => <SubtitleSkeleton delay={SKELETON_DELAY} />, [])
+
   if (isPlaceholder) {
     return (
       <Root
@@ -101,20 +118,11 @@ export function DefaultPreview(props: DefaultPreviewProps) {
         paddingLeft={media ? 2 : 3}
       >
         <Flex align="center" flex={1} gap={2}>
-          {media && (
-            <Box flex="none">
-              <Skeleton
-                animated
-                delay={SKELETON_DELAY}
-                radius={1}
-                style={PREVIEW_SIZES.default.media}
-              />
-            </Box>
-          )}
+          {memoizedSkeletonBox}
 
           <Stack data-testid="default-preview__heading" flex={1} space={2}>
             <TitleSkeleton delay={SKELETON_DELAY} />
-            <SubtitleSkeleton delay={SKELETON_DELAY} />
+            {memoizedSubtitleSkeleton}
           </Stack>
 
           {memoizedStatusBox}
