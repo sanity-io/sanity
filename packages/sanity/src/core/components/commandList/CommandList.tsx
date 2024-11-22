@@ -15,7 +15,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {focusRingStyle} from '../../form/components/formField/styles'
 import {type CommandListElementType, type CommandListHandle, type CommandListProps} from './types'
@@ -24,29 +24,6 @@ import {type CommandListElementType, type CommandListHandle, type CommandListPro
 const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'
 // Selector to find the first interactive element in the virtual list element
 const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
-
-/**
- * Conditionally render a focus ring overlay over the command list, with adjustable offset
- */
-const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
-  return css`
-    bottom: ${-offset}px;
-    border-radius: ${rem(theme.sanity.radius[1])};
-    left: ${-offset}px;
-    pointer-events: none;
-    position: absolute;
-    right: ${-offset}px;
-    top: ${-offset}px;
-    z-index: 2;
-
-    ${VirtualListBox}:focus-visible & {
-      box-shadow: ${focusRingStyle({
-        base: theme.sanity.color.base,
-        focusRing: theme.sanity.focusRing,
-      })};
-    }
-  `
-})
 
 /*
  * Conditionally appears over command list items to cancel existing :hover states for all child elements.
@@ -75,6 +52,28 @@ const VirtualListBox = styled(Box)`
   overflow-y: auto;
   overscroll-behavior: contain;
   width: 100%;
+`
+
+/**
+ * Conditionally render a focus ring overlay over the command list, with adjustable offset
+ */
+const FocusOverlayDiv = styled.div<{offset: number}>`
+  bottom: ${({offset}) => -offset}px;
+  border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
+  left: ${({offset}) => -offset}px;
+  pointer-events: none;
+  position: absolute;
+  right: ${({offset}) => -offset}px;
+  top: ${({offset}) => -offset}px;
+  z-index: 2;
+
+  ${VirtualListBox}:focus-visible & {
+    box-shadow: ${({theme}) =>
+      focusRingStyle({
+        base: theme.sanity.color.base,
+        focusRing: theme.sanity.focusRing,
+      })};
+  }
 `
 
 type VirtualListChildBoxProps = {
@@ -126,7 +125,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   ref,
 ) {
   const isMountedRef = useRef(false)
-  const commandListId = useRef(useId())
+  const _commandListId = useId()
+  const [commandListId] = useState(_commandListId)
   const activeIndexRef = useRef(initialIndex ?? 0)
 
   const [childContainerElement, setChildContainerElement] = useState<HTMLElement | null>(null)
@@ -178,25 +178,23 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    */
   const itemIndices = useMemo(() => {
     let i = -1
-    return items.reduce<
-      {
-        activeIndex: number | null
-        selected: boolean
-        disabled: boolean
-      }[]
-    >((acc, _, index) => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const itemIndices = []
+
+    for (let index = 0; index < items.length; index++) {
       const disabled = getItemDisabled?.(index) ?? false
       const selected = getItemSelected?.(index) ?? false
       if (!disabled) {
         i += 1
       }
-      acc[index] = {
+      itemIndices[index] = {
         activeIndex: disabled ? null : i,
         disabled,
         selected,
       }
-      return acc
-    }, [])
+    }
+
+    return itemIndices
   }, [getItemDisabled, getItemSelected, items])
 
   const activeItemCount = useMemo(
@@ -214,11 +212,11 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   )
 
   const getChildDescendantId = useCallback(
-    (index: number) => `${commandListId.current}-item-${index}`,
-    [],
+    (index: number) => `${commandListId}-item-${index}`,
+    [commandListId],
   )
 
-  const getCommandListChildrenId = useCallback(() => `${commandListId.current}-children`, [])
+  const getCommandListChildrenId = useCallback(() => `${commandListId}-children`, [commandListId])
 
   /**
    * Iterate through all virtual list children and apply the active data-attribute on the selected index.
@@ -259,13 +257,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
         ?.toggleAttribute(activeItemDataAttr, false)
     })
   }, [activeItemDataAttr, childContainerElement?.children])
-
-  /**
-   * Throttled version of `showChildrenActiveState`, used when DOM mutations are detected in virtual lists
-   */
-  const refreshChildrenActiveStateThrottled = useMemo(() => {
-    return throttle(showChildrenActiveState, 200)
-  }, [showChildrenActiveState])
 
   /**
    * Assign active descendant on input element (if present)
@@ -546,6 +537,11 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    * this changes on _every_ internal state change.
    */
   useEffect(() => {
+    /**
+     * Throttled version of `showChildrenActiveState`, used when DOM mutations are detected in virtual lists
+     */
+    const refreshChildrenActiveStateThrottled = throttle(showChildrenActiveState, 200)
+
     const mutationObserver = new MutationObserver(refreshChildrenActiveStateThrottled)
 
     if (childContainerElement) {
@@ -558,7 +554,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     return () => {
       mutationObserver.disconnect()
     }
-  }, [childContainerElement, refreshChildrenActiveStateThrottled])
+  }, [childContainerElement, showChildrenActiveState])
 
   /**
    * Apply input aria attributes
