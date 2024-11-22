@@ -5,6 +5,7 @@ import {
   type ComponentType,
   type ErrorInfo,
   lazy,
+  memo,
   type ReactNode,
   useCallback,
   useState,
@@ -58,77 +59,81 @@ const View = styled(Box)`
   align-items: center;
 `
 
-export const StudioErrorBoundary: ComponentType<StudioErrorBoundaryProps> = ({
-  children,
-  heading = 'An error occurred',
-}) => {
-  const [{error, eventId}, setError] = useState<ErrorBoundaryState>(INITIAL_STATE)
-  const message = isRecord(error) && typeof error.message === 'string' && error.message
-  const stack = isRecord(error) && typeof error.stack === 'string' && error.stack
-  const handleResetError = useCallback(() => setError(INITIAL_STATE), [])
-  const handleCatchError: ErrorBoundaryProps['onCatch'] = useCallback((params) => {
-    const report = errorReporter.reportError(params.error, {
-      reactErrorInfo: params.info,
-      errorBoundary: 'StudioErrorBoundary',
-    })
+export const StudioErrorBoundary: ComponentType<StudioErrorBoundaryProps> = memo(
+  function StudioErrorBoundary({children, heading = 'An error occurred'}) {
+    const [{error, eventId}, setError] = useState<ErrorBoundaryState>(INITIAL_STATE)
+    const message = isRecord(error) && typeof error.message === 'string' && error.message
+    const stack = isRecord(error) && typeof error.stack === 'string' && error.stack
+    const handleResetError = useCallback(() => setError(INITIAL_STATE), [])
+    const handleCatchError: ErrorBoundaryProps['onCatch'] = useCallback((params) => {
+      const report = errorReporter.reportError(params.error, {
+        reactErrorInfo: params.info,
+        errorBoundary: 'StudioErrorBoundary',
+      })
 
-    setError({
-      error: params.error,
-      componentStack: params.info.componentStack,
-      eventId: report?.eventId || null,
-    })
-  }, [])
+      setError({
+        error: params.error,
+        componentStack: params.info.componentStack,
+        eventId: report?.eventId || null,
+      })
+    }, [])
 
-  useHotModuleReload(handleResetError)
+    useHotModuleReload(handleResetError)
 
-  if (error instanceof CorsOriginError) {
-    return <CorsOriginErrorScreen projectId={error?.projectId} />
-  }
+    if (error instanceof CorsOriginError) {
+      return <CorsOriginErrorScreen projectId={error?.projectId} />
+    }
 
-  if (error instanceof SchemaError) {
-    return <SchemaErrorsScreen schema={error.schema} />
-  }
+    if (error instanceof SchemaError) {
+      return <SchemaErrorsScreen schema={error.schema} />
+    }
 
-  if (error && 'ViteDevServerStoppedError' in error && error.ViteDevServerStoppedError) {
-    return <DevServerStoppedErrorScreen />
-  }
+    if (error && 'ViteDevServerStoppedError' in error && error.ViteDevServerStoppedError) {
+      return <DevServerStoppedErrorScreen />
+    }
 
-  if (!error) {
-    return <ErrorBoundary onCatch={handleCatchError}>{children}</ErrorBoundary>
-  }
+    if (!error) {
+      return <ErrorBoundary onCatch={handleCatchError}>{children}</ErrorBoundary>
+    }
 
-  return (
-    <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
-      <View display="flex" height="fill">
-        <Container width={3}>
-          <Stack space={6}>
-            <Stack space={4}>
-              <Heading>{heading}</Heading>
-              <Text>An error occurred that Sanity Studio was unable to recover from.</Text>
-              {isProd && (
-                <Text>
-                  <strong>To report this error,</strong> copy the error details and share them with
-                  your development team or Sanity Support.
-                </Text>
-              )}
-              {isDev && (
-                <Card border radius={2} overflow="auto" padding={4} tone="critical">
-                  <Stack space={4}>
-                    {message && (
-                      <Code size={1}>
-                        <strong>Error: {message}</strong>
-                      </Code>
-                    )}
-                    {stack && <Code size={1}>{stack}</Code>}
-                    {eventId && <Code size={1}>Event ID: {eventId}</Code>}
-                  </Stack>
-                </Card>
-              )}
+    return (
+      <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
+        <View display="flex" height="fill">
+          <Container width={3}>
+            <Stack space={6}>
+              <Stack space={4}>
+                <Heading>{heading}</Heading>
+                <Text>An error occurred that Sanity Studio was unable to recover from.</Text>
+                {isProd && (
+                  <Text>
+                    <strong>To report this error,</strong> copy the error details and share them
+                    with your development team or Sanity Support.
+                  </Text>
+                )}
+                {isDev && (
+                  <Card border radius={2} overflow="auto" padding={4} tone="critical">
+                    <Stack space={4}>
+                      {message && (
+                        <Code size={1}>
+                          <strong>Error: {message}</strong>
+                        </Code>
+                      )}
+                      {stack && <Code size={1}>{stack}</Code>}
+                      {eventId && <Code size={1}>Event ID: {eventId}</Code>}
+                    </Stack>
+                  </Card>
+                )}
+              </Stack>
+              <ErrorActions
+                error={error}
+                eventId={eventId}
+                onRetry={handleResetError}
+                size="large"
+              />
             </Stack>
-            <ErrorActions error={error} eventId={eventId} onRetry={handleResetError} size="large" />
-          </Stack>
-        </Container>
-      </View>
-    </Card>
-  )
-}
+          </Container>
+        </View>
+      </Card>
+    )
+  },
+)
