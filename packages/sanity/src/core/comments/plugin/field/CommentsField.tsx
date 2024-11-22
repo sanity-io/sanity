@@ -53,6 +53,7 @@ export function CommentsField(props: FieldProps) {
 
   return <CommentFieldInner {...props} mode={mode} />
 }
+CommentsField.displayName = 'CommentsField'
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
   const {radius, space, color} = theme.sanity
@@ -337,3 +338,4 @@ function CommentFieldInner(
     </FieldStack>
   )
 }
+CommentFieldInner.displayName = 'CommentFieldInner'

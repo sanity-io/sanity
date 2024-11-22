@@ -6,6 +6,7 @@ import {
   forwardRef,
   Fragment,
   isValidElement,
+  memo,
   type ReactElement,
   useCallback,
   useEffect,
@@ -97,565 +98,569 @@ const VirtualListChildBox = styled(Box) //
  *
  * @internal
  */
-export const CommandList = forwardRef<CommandListHandle, CommandListProps>(function CommandList(
-  {
-    activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
-    ariaLabel,
-    ariaMultiselectable = false,
-    autoFocus,
-    canReceiveFocus,
-    fixedHeight,
-    focusRingOffset = 0,
-    getItemDisabled,
-    getItemKey,
-    getItemSelected,
-    initialIndex,
-    initialScrollAlign = 'start',
-    inputElement,
-    itemHeight,
-    items,
-    onEndReached,
-    onEndReachedIndexOffset = 0,
-    onlyShowSelectionWhenActive,
-    overscan,
-    renderItem,
-    wrapAround = true,
-    ...responsivePaddingProps
-  },
-  ref,
-) {
-  const isMountedRef = useRef(false)
-  const _commandListId = useId()
-  const [commandListId] = useState(_commandListId)
-  const activeIndexRef = useRef(initialIndex ?? 0)
-
-  const [childContainerElement, setChildContainerElement] = useState<HTMLElement | null>(null)
-  const [hovered, setHovered] = useState(false)
-  const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
-  const [virtualListElement, setVirtualListElement] = useState<HTMLElement | null>(null)
-
-  const handleChange = useCallback(
-    (v: Virtualizer<HTMLElement, Element>) => {
-      if (!onEndReached) return
-
-      const [lastItem] = [...v.getVirtualItems()].reverse()
-
-      if (!lastItem) return
-
-      const reachedEnd = lastItem.index >= items.length - onEndReachedIndexOffset - 1
-
-      // Make sure we only trigger `onEndReached` after initial mount
-      if (reachedEnd && isMountedRef.current) {
-        onEndReached()
-      }
+export const CommandList = memo(
+  forwardRef<CommandListHandle, CommandListProps>(function CommandList(
+    {
+      activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
+      ariaLabel,
+      ariaMultiselectable = false,
+      autoFocus,
+      canReceiveFocus,
+      fixedHeight,
+      focusRingOffset = 0,
+      getItemDisabled,
+      getItemKey,
+      getItemSelected,
+      initialIndex,
+      initialScrollAlign = 'start',
+      inputElement,
+      itemHeight,
+      items,
+      onEndReached,
+      onEndReachedIndexOffset = 0,
+      onlyShowSelectionWhenActive,
+      overscan,
+      renderItem,
+      wrapAround = true,
+      ...responsivePaddingProps
     },
-    [onEndReached, items.length, onEndReachedIndexOffset],
-  )
+    ref,
+  ) {
+    const isMountedRef = useRef(false)
+    const _commandListId = useId()
+    const [commandListId] = useState(_commandListId)
+    const activeIndexRef = useRef(initialIndex ?? 0)
 
-  // This will trigger a re-render whenever its internal state changes
-  const virtualizer = useVirtualizer({
-    count: items.length,
-    getItemKey,
-    getScrollElement: () => virtualListElement,
-    estimateSize: () => itemHeight,
-    onChange: handleChange,
-    overscan,
-  })
+    const [childContainerElement, setChildContainerElement] = useState<HTMLElement | null>(null)
+    const [hovered, setHovered] = useState(false)
+    const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
+    const [virtualListElement, setVirtualListElement] = useState<HTMLElement | null>(null)
 
-  /**
-   * Return an array of values with `activeIndex`, `disabled` and `selected` defined, applying custom
-   * mapping functions (`getItemDisabled`, `getItemSelected`) if provided. E.g.:
-   *
-   * ```
-   * [
-   *  { activeIndex: 0  disabled: false, selected: false },
-   *  { activeIndex: null, disabled: true, selected: false },
-   *  { activeIndex: 1, disabled: false, selected: true }
-   * ]
-   * ```
-   *
-   * Disabled virtual list items are ignored when creating aria attributes.
-   */
-  const itemIndices = useMemo(() => {
-    let i = -1
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const itemIndices = []
+    const handleChange = useCallback(
+      (v: Virtualizer<HTMLElement, Element>) => {
+        if (!onEndReached) return
 
-    for (let index = 0; index < items.length; index++) {
-      const disabled = getItemDisabled?.(index) ?? false
-      const selected = getItemSelected?.(index) ?? false
-      if (!disabled) {
-        i += 1
-      }
-      itemIndices[index] = {
-        activeIndex: disabled ? null : i,
-        disabled,
-        selected,
-      }
-    }
+        const [lastItem] = [...v.getVirtualItems()].reverse()
 
-    return itemIndices
-  }, [getItemDisabled, getItemSelected, items])
+        if (!lastItem) return
 
-  const activeItemCount = useMemo(
-    () => itemIndices.filter((v) => !v.disabled).length,
-    [itemIndices],
-  )
+        const reachedEnd = lastItem.index >= items.length - onEndReachedIndexOffset - 1
 
-  /**
-   * Toggle pointer overlay element which will kill existing hover states
-   */
-  const enableChildContainerPointerEvents = useCallback(
-    (enabled: boolean) =>
-      pointerOverlayElement?.setAttribute('data-enabled', (!enabled).toString()),
-    [pointerOverlayElement],
-  )
+        // Make sure we only trigger `onEndReached` after initial mount
+        if (reachedEnd && isMountedRef.current) {
+          onEndReached()
+        }
+      },
+      [onEndReached, items.length, onEndReachedIndexOffset],
+    )
 
-  const getChildDescendantId = useCallback(
-    (index: number) => `${commandListId}-item-${index}`,
-    [commandListId],
-  )
-
-  const getCommandListChildrenId = useCallback(() => `${commandListId}-children`, [commandListId])
-
-  /**
-   * Iterate through all virtual list children and apply the active data-attribute on the selected index.
-   * Don't apply styles when `hideSelectionOnMouseLeave` is true and the command list is neither focused or hovered.
-   */
-  const showChildrenActiveState = useCallback(() => {
-    const hasFocus = [inputElement, virtualListElement].some((el) => document.activeElement === el)
-    if (onlyShowSelectionWhenActive && !hasFocus && !hovered) {
-      return
-    }
-
-    const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
-    childElements?.forEach((child) => {
-      const virtualIndex = Number(child.dataset?.index)
-      const targetIndex = itemIndices[virtualIndex]?.activeIndex
-      child
-        .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
-        ?.toggleAttribute(activeItemDataAttr, targetIndex === activeIndexRef.current)
+    // This will trigger a re-render whenever its internal state changes
+    const virtualizer = useVirtualizer({
+      count: items.length,
+      getItemKey,
+      getScrollElement: () => virtualListElement,
+      estimateSize: () => itemHeight,
+      onChange: handleChange,
+      overscan,
     })
-  }, [
-    activeItemDataAttr,
-    childContainerElement?.children,
-    hovered,
-    inputElement,
-    itemIndices,
-    onlyShowSelectionWhenActive,
-    virtualListElement,
-  ])
 
-  /**
-   * Iterate through all virtual list children and clear the active data-attribute.
-   */
-  const hideChildrenActiveState = useCallback(() => {
-    const childElements = Array.from(childContainerElement?.children || [])
-    childElements?.forEach((child) => {
-      child
-        .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
-        ?.toggleAttribute(activeItemDataAttr, false)
-    })
-  }, [activeItemDataAttr, childContainerElement?.children])
+    /**
+     * Return an array of values with `activeIndex`, `disabled` and `selected` defined, applying custom
+     * mapping functions (`getItemDisabled`, `getItemSelected`) if provided. E.g.:
+     *
+     * ```
+     * [
+     *  { activeIndex: 0  disabled: false, selected: false },
+     *  { activeIndex: null, disabled: true, selected: false },
+     *  { activeIndex: 1, disabled: false, selected: true }
+     * ]
+     * ```
+     *
+     * Disabled virtual list items are ignored when creating aria attributes.
+     */
+    const itemIndices = useMemo(() => {
+      let i = -1
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      const itemIndices = []
 
-  /**
-   * Assign active descendant on input element (if present)
-   */
-  const handleUpdateActiveDescendant = useCallback(() => {
-    const activeIndex = activeIndexRef?.current
-    if (items.length > 0) {
-      inputElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
-      virtualListElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
-    } else {
-      inputElement?.removeAttribute('aria-activedescendant')
-      virtualListElement?.removeAttribute('aria-activedescendant')
-    }
-  }, [getChildDescendantId, inputElement, items.length, virtualListElement])
-
-  /**
-   * Obtain index of the top most visible element
-   */
-  const handleGetTopIndex = useCallback(() => {
-    const childContainerParentElement = childContainerElement?.parentElement
-    if (childContainerElement && childContainerParentElement) {
-      const offset =
-        childContainerParentElement.getBoundingClientRect().top -
-        childContainerElement.getBoundingClientRect().top
-      return virtualizer.getVirtualItemForOffset(offset)?.index ?? -1
-    }
-    return -1
-  }, [childContainerElement, virtualizer])
-
-  /**
-   * Mark an index as active, re-assign aria attrs on all children and optionally scroll into view
-   */
-  const setActiveIndex = useCallback(
-    ({
-      index,
-      scrollAlign,
-      scrollIntoView = true,
-    }: {
-      index: number
-      scrollAlign?: ScrollToOptions['align']
-      scrollIntoView?: boolean
-    }) => {
-      activeIndexRef.current = index
-      handleUpdateActiveDescendant()
-      showChildrenActiveState()
-
-      if (scrollIntoView) {
-        const virtualListIndex = itemIndices.findIndex((i) => i.activeIndex === index)
-        if (virtualListIndex > -1) {
-          virtualizer.scrollToIndex(virtualListIndex, scrollAlign ? {align: scrollAlign} : {})
+      for (let index = 0; index < items.length; index++) {
+        const disabled = getItemDisabled?.(index) ?? false
+        const selected = getItemSelected?.(index) ?? false
+        if (!disabled) {
+          i += 1
+        }
+        itemIndices[index] = {
+          activeIndex: disabled ? null : i,
+          disabled,
+          selected,
         }
       }
-    },
-    [handleUpdateActiveDescendant, itemIndices, showChildrenActiveState, virtualizer],
-  )
 
-  /**
-   * Select adjacent virtual item index and scroll into view with `react-virtual`
-   */
-  const selectAdjacentItemIndex = useCallback(
-    (direction: 'previous' | 'next') => {
-      let nextIndex = -1
-      const lastIndex = activeItemCount - 1
+      return itemIndices
+    }, [getItemDisabled, getItemSelected, items])
 
-      if (direction === 'next') {
-        const wrapAroundIndex = wrapAround ? 0 : lastIndex
-        nextIndex =
-          activeIndexRef.current < activeItemCount - 1
-            ? activeIndexRef.current + 1
-            : wrapAroundIndex
-      }
-      if (direction === 'previous') {
-        const wrapAroundIndex = wrapAround ? lastIndex : 0
-        nextIndex = activeIndexRef.current > 0 ? activeIndexRef.current - 1 : wrapAroundIndex
-      }
-      setActiveIndex({index: nextIndex, scrollIntoView: true})
-      enableChildContainerPointerEvents(false)
-    },
-    [activeItemCount, enableChildContainerPointerEvents, setActiveIndex, wrapAround],
-  )
+    const activeItemCount = useMemo(
+      () => itemIndices.filter((v) => !v.disabled).length,
+      [itemIndices],
+    )
 
-  const focusElement = useCallback(
-    (type: CommandListElementType) => {
-      switch (type) {
-        case 'input':
-          inputElement?.focus()
-          break
-        case 'list':
-          virtualListElement?.focus()
-          break
-        default:
-          break
-      }
-    },
-    [inputElement, virtualListElement],
-  )
+    /**
+     * Toggle pointer overlay element which will kill existing hover states
+     */
+    const enableChildContainerPointerEvents = useCallback(
+      (enabled: boolean) =>
+        pointerOverlayElement?.setAttribute('data-enabled', (!enabled).toString()),
+      [pointerOverlayElement],
+    )
 
-  const focusInputElement = useCallback(() => {
-    inputElement?.focus()
-  }, [inputElement])
+    const getChildDescendantId = useCallback(
+      (index: number) => `${commandListId}-item-${index}`,
+      [commandListId],
+    )
 
-  const focusListElement = useCallback(() => {
-    virtualListElement?.focus()
-  }, [virtualListElement])
+    const getCommandListChildrenId = useCallback(() => `${commandListId}-children`, [commandListId])
 
-  /**
-   * Mark hovered child item as active
-   */
-  const handleChildMouseEnter = useCallback(
-    (index: number) => () => {
-      setActiveIndex({index, scrollIntoView: false})
-    },
-    [setActiveIndex],
-  )
-
-  const handleFocus = useCallback(() => {
-    showChildrenActiveState()
-  }, [showChildrenActiveState])
-
-  /**
-   * Handle keyboard events:
-   * - Up/down arrow: scroll to adjacent items
-   * - Enter: trigger click events on the current active element
-   */
-  const handleKeyDown = useCallback(
-    (type: CommandListElementType) => (event: KeyboardEvent) => {
-      const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
-      if (!childElements.length) {
+    /**
+     * Iterate through all virtual list children and apply the active data-attribute on the selected index.
+     * Don't apply styles when `hideSelectionOnMouseLeave` is true and the command list is neither focused or hovered.
+     */
+    const showChildrenActiveState = useCallback(() => {
+      const hasFocus = [inputElement, virtualListElement].some(
+        (el) => document.activeElement === el,
+      )
+      if (onlyShowSelectionWhenActive && !hasFocus && !hovered) {
         return
       }
 
-      if (event.key === 'ArrowDown') {
-        event.preventDefault()
-        focusElement(type)
-        selectAdjacentItemIndex('next')
-      }
-      if (event.key === 'ArrowUp') {
-        event.preventDefault()
-        focusElement(type)
-        selectAdjacentItemIndex('previous')
-      }
-
-      if (event.key === 'Enter') {
-        event.preventDefault()
-        focusElement(type)
-        const currentElement = childElements.find(
-          (el) =>
-            Number(el.dataset.index) ===
-            itemIndices.findIndex((i) => i.activeIndex === activeIndexRef.current),
-        )
-
-        if (currentElement) {
-          const clickableElement = currentElement?.querySelector<HTMLElement>(
-            LIST_ITEM_INTERACTIVE_SELECTOR,
-          )
-          clickableElement?.click()
-        }
-      }
-    },
-    [childContainerElement?.children, focusElement, itemIndices, selectAdjacentItemIndex],
-  )
-  const handleKeyDownInput = useCallback(
-    (event: KeyboardEvent) => handleKeyDown('input')(event),
-    [handleKeyDown],
-  )
-  const handleKeyDownList = useCallback(
-    (event: KeyboardEvent) => handleKeyDown('list')(event),
-    [handleKeyDown],
-  )
-
-  const handleVirtualListMouseEnter = useCallback(() => {
-    if (onlyShowSelectionWhenActive) {
-      showChildrenActiveState()
-      setHovered(true)
-    }
-  }, [onlyShowSelectionWhenActive, showChildrenActiveState])
-  const handleVirtualListMouseLeave = useCallback(() => {
-    if (onlyShowSelectionWhenActive) {
-      hideChildrenActiveState()
-      setHovered(false)
-    }
-  }, [hideChildrenActiveState, onlyShowSelectionWhenActive])
-
-  useImperativeHandle(ref, () => {
-    return {
-      focusInputElement() {
-        focusInputElement()
-      },
-      focusListElement() {
-        focusListElement()
-      },
-      getTopIndex() {
-        return handleGetTopIndex()
-      },
-      scrollToIndex(index: number) {
-        setActiveIndex({index})
-        enableChildContainerPointerEvents(true)
-      },
-    }
-  }, [
-    enableChildContainerPointerEvents,
-    focusInputElement,
-    focusListElement,
-    handleGetTopIndex,
-    setActiveIndex,
-  ])
-
-  /**
-   * Optionally set active index (and align) on mount only
-   */
-  useEffect(() => {
-    if (typeof initialIndex !== 'undefined' && !isMountedRef.current) {
-      setActiveIndex({
-        index: initialIndex,
-        scrollAlign: initialScrollAlign,
-        scrollIntoView: true,
+      const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
+      childElements?.forEach((child) => {
+        const virtualIndex = Number(child.dataset?.index)
+        const targetIndex = itemIndices[virtualIndex]?.activeIndex
+        child
+          .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
+          ?.toggleAttribute(activeItemDataAttr, targetIndex === activeIndexRef.current)
       })
-    }
-    isMountedRef.current = true
-  }, [initialIndex, initialScrollAlign, onlyShowSelectionWhenActive, setActiveIndex])
+    }, [
+      activeItemDataAttr,
+      childContainerElement?.children,
+      hovered,
+      inputElement,
+      itemIndices,
+      onlyShowSelectionWhenActive,
+      virtualListElement,
+    ])
 
-  /**
-   * Re-enable child pointer events on any mousemove / wheel event
-   */
-  useEffect(() => {
-    function handleMouseEvent() {
-      enableChildContainerPointerEvents(true)
-    }
-    virtualListElement?.addEventListener('mousemove', handleMouseEvent)
-    virtualListElement?.addEventListener('wheel', handleMouseEvent, {passive: true})
-    return () => {
-      virtualListElement?.removeEventListener('mousemove', handleMouseEvent)
-      virtualListElement?.removeEventListener('wheel', handleMouseEvent)
-    }
-  }, [enableChildContainerPointerEvents, virtualListElement])
-
-  /**
-   * Listen to keyboard / blur / focus events on both input element (if present) and the virtual list element.
-   */
-  useEffect(() => {
-    inputElement?.addEventListener('focus', handleFocus)
-    inputElement?.addEventListener('keydown', handleKeyDownInput)
-    virtualListElement?.addEventListener('focus', handleFocus)
-    virtualListElement?.addEventListener('keydown', handleKeyDownList)
-    return () => {
-      inputElement?.removeEventListener('focus', handleFocus)
-      inputElement?.removeEventListener('keydown', handleKeyDownInput)
-      virtualListElement?.removeEventListener('focus', handleFocus)
-      virtualListElement?.removeEventListener('keydown', handleKeyDownList)
-    }
-  }, [
-    canReceiveFocus,
-    handleFocus,
-    handleKeyDown,
-    handleKeyDownInput,
-    handleKeyDownList,
-    hideChildrenActiveState,
-    inputElement,
-    showChildrenActiveState,
-    virtualListElement,
-  ])
-
-  /**
-   * Refresh selected state when item values change (as a result of filtering).
-   * This is to ensure that we correctly clear aria-activedescendant attrs if the filtered array is empty.
-   */
-  useEffect(() => {
-    handleUpdateActiveDescendant()
-  }, [handleUpdateActiveDescendant, items])
-
-  /**
-   * On DOM mutations, re-assign active descendant on input element (if present) and update active state on all children.
-   *
-   * Useful since virtual lists will constantly mutate the DOM on scroll, and we want to ensure that
-   * new elements coming into view are rendered with the correct selected state.
-   *
-   * An alternative to using MutationObserver is hooking into the `onChange` callback that `react-virtual` provides, though
-   * this changes on _every_ internal state change.
-   */
-  useEffect(() => {
     /**
-     * Throttled version of `showChildrenActiveState`, used when DOM mutations are detected in virtual lists
+     * Iterate through all virtual list children and clear the active data-attribute.
      */
-    const refreshChildrenActiveStateThrottled = throttle(showChildrenActiveState, 200)
-
-    const mutationObserver = new MutationObserver(refreshChildrenActiveStateThrottled)
-
-    if (childContainerElement) {
-      mutationObserver.observe(childContainerElement, {
-        childList: true,
-        subtree: true,
+    const hideChildrenActiveState = useCallback(() => {
+      const childElements = Array.from(childContainerElement?.children || [])
+      childElements?.forEach((child) => {
+        child
+          .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
+          ?.toggleAttribute(activeItemDataAttr, false)
       })
-    }
+    }, [activeItemDataAttr, childContainerElement?.children])
 
-    return () => {
-      mutationObserver.disconnect()
-    }
-  }, [childContainerElement, showChildrenActiveState])
+    /**
+     * Assign active descendant on input element (if present)
+     */
+    const handleUpdateActiveDescendant = useCallback(() => {
+      const activeIndex = activeIndexRef?.current
+      if (items.length > 0) {
+        inputElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
+        virtualListElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
+      } else {
+        inputElement?.removeAttribute('aria-activedescendant')
+        virtualListElement?.removeAttribute('aria-activedescendant')
+      }
+    }, [getChildDescendantId, inputElement, items.length, virtualListElement])
 
-  /**
-   * Apply input aria attributes
-   */
-  useEffect(() => {
-    inputElement?.setAttribute('aria-autocomplete', 'list')
-    inputElement?.setAttribute('aria-expanded', 'true')
-    inputElement?.setAttribute('aria-controls', getCommandListChildrenId())
-    inputElement?.setAttribute('role', 'combobox')
-  }, [getCommandListChildrenId, inputElement])
+    /**
+     * Obtain index of the top most visible element
+     */
+    const handleGetTopIndex = useCallback(() => {
+      const childContainerParentElement = childContainerElement?.parentElement
+      if (childContainerElement && childContainerParentElement) {
+        const offset =
+          childContainerParentElement.getBoundingClientRect().top -
+          childContainerElement.getBoundingClientRect().top
+        return virtualizer.getVirtualItemForOffset(offset)?.index ?? -1
+      }
+      return -1
+    }, [childContainerElement, virtualizer])
 
-  /**
-   * Focus input / virtual list element on mount
-   */
-  useEffect(() => {
-    if (autoFocus) {
-      focusElement(autoFocus)
-    }
-  }, [autoFocus, canReceiveFocus, focusListElement, focusInputElement, focusElement])
+    /**
+     * Mark an index as active, re-assign aria attrs on all children and optionally scroll into view
+     */
+    const setActiveIndex = useCallback(
+      ({
+        index,
+        scrollAlign,
+        scrollIntoView = true,
+      }: {
+        index: number
+        scrollAlign?: ScrollToOptions['align']
+        scrollIntoView?: boolean
+      }) => {
+        activeIndexRef.current = index
+        handleUpdateActiveDescendant()
+        showChildrenActiveState()
 
-  const rootTabIndex = canReceiveFocus ? 0 : -1
+        if (scrollIntoView) {
+          const virtualListIndex = itemIndices.findIndex((i) => i.activeIndex === index)
+          if (virtualListIndex > -1) {
+            virtualizer.scrollToIndex(virtualListIndex, scrollAlign ? {align: scrollAlign} : {})
+          }
+        }
+      },
+      [handleUpdateActiveDescendant, itemIndices, showChildrenActiveState, virtualizer],
+    )
 
-  return (
-    <VirtualListBox
-      id={getCommandListChildrenId()}
-      onMouseEnter={handleVirtualListMouseEnter}
-      onMouseLeave={handleVirtualListMouseLeave}
-      ref={setVirtualListElement}
-      sizing="border"
-      tabIndex={rootTabIndex}
-      {...responsivePaddingProps}
-    >
-      {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
-      <PointerOverlayDiv aria-hidden="true" data-enabled ref={setPointerOverlayElement} />
-      {virtualizer && (
-        <VirtualListChildBox
-          forwardedAs="ul"
-          $height={virtualizer.getTotalSize()}
-          aria-label={ariaLabel}
-          aria-multiselectable={ariaMultiselectable}
-          flex={1}
-          ref={setChildContainerElement}
-          role="listbox"
-        >
-          {virtualizer.getVirtualItems().map((virtualRow) => {
-            const virtualIndex = virtualRow.index // visible index in the DOM
-            const {activeIndex, disabled, selected} = itemIndices[virtualIndex]
+    /**
+     * Select adjacent virtual item index and scroll into view with `react-virtual`
+     */
+    const selectAdjacentItemIndex = useCallback(
+      (direction: 'previous' | 'next') => {
+        let nextIndex = -1
+        const lastIndex = activeItemCount - 1
 
-            const itemToRender = renderItem(items[virtualIndex], {
-              activeIndex,
-              disabled,
-              selected,
-              virtualIndex,
-            }) as ReactElement
+        if (direction === 'next') {
+          const wrapAroundIndex = wrapAround ? 0 : lastIndex
+          nextIndex =
+            activeIndexRef.current < activeItemCount - 1
+              ? activeIndexRef.current + 1
+              : wrapAroundIndex
+        }
+        if (direction === 'previous') {
+          const wrapAroundIndex = wrapAround ? lastIndex : 0
+          nextIndex = activeIndexRef.current > 0 ? activeIndexRef.current - 1 : wrapAroundIndex
+        }
+        setActiveIndex({index: nextIndex, scrollIntoView: true})
+        enableChildContainerPointerEvents(false)
+      },
+      [activeItemCount, enableChildContainerPointerEvents, setActiveIndex, wrapAround],
+    )
 
-            const clonedItem = cloneElement(
-              itemToRender,
-              isValidElement(itemToRender) && itemToRender.type == Fragment
-                ? {}
-                : {
-                    tabIndex: -1,
-                  },
+    const focusElement = useCallback(
+      (type: CommandListElementType) => {
+        switch (type) {
+          case 'input':
+            inputElement?.focus()
+            break
+          case 'list':
+            virtualListElement?.focus()
+            break
+          default:
+            break
+        }
+      },
+      [inputElement, virtualListElement],
+    )
+
+    const focusInputElement = useCallback(() => {
+      inputElement?.focus()
+    }, [inputElement])
+
+    const focusListElement = useCallback(() => {
+      virtualListElement?.focus()
+    }, [virtualListElement])
+
+    /**
+     * Mark hovered child item as active
+     */
+    const handleChildMouseEnter = useCallback(
+      (index: number) => () => {
+        setActiveIndex({index, scrollIntoView: false})
+      },
+      [setActiveIndex],
+    )
+
+    const handleFocus = useCallback(() => {
+      showChildrenActiveState()
+    }, [showChildrenActiveState])
+
+    /**
+     * Handle keyboard events:
+     * - Up/down arrow: scroll to adjacent items
+     * - Enter: trigger click events on the current active element
+     */
+    const handleKeyDown = useCallback(
+      (type: CommandListElementType) => (event: KeyboardEvent) => {
+        const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
+        if (!childElements.length) {
+          return
+        }
+
+        if (event.key === 'ArrowDown') {
+          event.preventDefault()
+          focusElement(type)
+          selectAdjacentItemIndex('next')
+        }
+        if (event.key === 'ArrowUp') {
+          event.preventDefault()
+          focusElement(type)
+          selectAdjacentItemIndex('previous')
+        }
+
+        if (event.key === 'Enter') {
+          event.preventDefault()
+          focusElement(type)
+          const currentElement = childElements.find(
+            (el) =>
+              Number(el.dataset.index) ===
+              itemIndices.findIndex((i) => i.activeIndex === activeIndexRef.current),
+          )
+
+          if (currentElement) {
+            const clickableElement = currentElement?.querySelector<HTMLElement>(
+              LIST_ITEM_INTERACTIVE_SELECTOR,
             )
+            clickableElement?.click()
+          }
+        }
+      },
+      [childContainerElement?.children, focusElement, itemIndices, selectAdjacentItemIndex],
+    )
+    const handleKeyDownInput = useCallback(
+      (event: KeyboardEvent) => handleKeyDown('input')(event),
+      [handleKeyDown],
+    )
+    const handleKeyDownList = useCallback(
+      (event: KeyboardEvent) => handleKeyDown('list')(event),
+      [handleKeyDown],
+    )
 
-            const activeAriaAttributes =
-              typeof activeIndex === 'number' && !disabled
-                ? {
-                    'aria-posinset': activeIndex + 1,
-                    ...(ariaMultiselectable ? {'aria-selected': selected.toString()} : {}),
-                    'aria-setsize': activeItemCount,
-                    'id': getChildDescendantId(activeIndex),
-                    'role': 'option',
-                    'onMouseEnter': handleChildMouseEnter(activeIndex),
-                  }
-                : {}
+    const handleVirtualListMouseEnter = useCallback(() => {
+      if (onlyShowSelectionWhenActive) {
+        showChildrenActiveState()
+        setHovered(true)
+      }
+    }, [onlyShowSelectionWhenActive, showChildrenActiveState])
+    const handleVirtualListMouseLeave = useCallback(() => {
+      if (onlyShowSelectionWhenActive) {
+        hideChildrenActiveState()
+        setHovered(false)
+      }
+    }, [hideChildrenActiveState, onlyShowSelectionWhenActive])
 
-            return (
-              <Stack
-                as="li"
-                data-index={virtualIndex}
-                key={virtualRow.key}
-                ref={fixedHeight ? undefined : virtualizer.measureElement}
-                style={{
-                  flex: 1,
-                  ...(fixedHeight ? {height: `${virtualRow.size}px`} : {}),
-                  left: 0,
-                  position: 'absolute',
-                  top: 0,
-                  transform: `translateY(${virtualRow.start}px)`,
-                  width: '100%',
-                }}
-                tabIndex={-1}
-                {...activeAriaAttributes}
-              >
-                {clonedItem}
-              </Stack>
-            )
-          })}
-        </VirtualListChildBox>
-      )}
-    </VirtualListBox>
-  )
-})
-CommandList.displayName = 'ForwardRef(CommandList)'
+    useImperativeHandle(ref, () => {
+      return {
+        focusInputElement() {
+          focusInputElement()
+        },
+        focusListElement() {
+          focusListElement()
+        },
+        getTopIndex() {
+          return handleGetTopIndex()
+        },
+        scrollToIndex(index: number) {
+          setActiveIndex({index})
+          enableChildContainerPointerEvents(true)
+        },
+      }
+    }, [
+      enableChildContainerPointerEvents,
+      focusInputElement,
+      focusListElement,
+      handleGetTopIndex,
+      setActiveIndex,
+    ])
+
+    /**
+     * Optionally set active index (and align) on mount only
+     */
+    useEffect(() => {
+      if (typeof initialIndex !== 'undefined' && !isMountedRef.current) {
+        setActiveIndex({
+          index: initialIndex,
+          scrollAlign: initialScrollAlign,
+          scrollIntoView: true,
+        })
+      }
+      isMountedRef.current = true
+    }, [initialIndex, initialScrollAlign, onlyShowSelectionWhenActive, setActiveIndex])
+
+    /**
+     * Re-enable child pointer events on any mousemove / wheel event
+     */
+    useEffect(() => {
+      function handleMouseEvent() {
+        enableChildContainerPointerEvents(true)
+      }
+      virtualListElement?.addEventListener('mousemove', handleMouseEvent)
+      virtualListElement?.addEventListener('wheel', handleMouseEvent, {passive: true})
+      return () => {
+        virtualListElement?.removeEventListener('mousemove', handleMouseEvent)
+        virtualListElement?.removeEventListener('wheel', handleMouseEvent)
+      }
+    }, [enableChildContainerPointerEvents, virtualListElement])
+
+    /**
+     * Listen to keyboard / blur / focus events on both input element (if present) and the virtual list element.
+     */
+    useEffect(() => {
+      inputElement?.addEventListener('focus', handleFocus)
+      inputElement?.addEventListener('keydown', handleKeyDownInput)
+      virtualListElement?.addEventListener('focus', handleFocus)
+      virtualListElement?.addEventListener('keydown', handleKeyDownList)
+      return () => {
+        inputElement?.removeEventListener('focus', handleFocus)
+        inputElement?.removeEventListener('keydown', handleKeyDownInput)
+        virtualListElement?.removeEventListener('focus', handleFocus)
+        virtualListElement?.removeEventListener('keydown', handleKeyDownList)
+      }
+    }, [
+      canReceiveFocus,
+      handleFocus,
+      handleKeyDown,
+      handleKeyDownInput,
+      handleKeyDownList,
+      hideChildrenActiveState,
+      inputElement,
+      showChildrenActiveState,
+      virtualListElement,
+    ])
+
+    /**
+     * Refresh selected state when item values change (as a result of filtering).
+     * This is to ensure that we correctly clear aria-activedescendant attrs if the filtered array is empty.
+     */
+    useEffect(() => {
+      handleUpdateActiveDescendant()
+    }, [handleUpdateActiveDescendant, items])
+
+    /**
+     * On DOM mutations, re-assign active descendant on input element (if present) and update active state on all children.
+     *
+     * Useful since virtual lists will constantly mutate the DOM on scroll, and we want to ensure that
+     * new elements coming into view are rendered with the correct selected state.
+     *
+     * An alternative to using MutationObserver is hooking into the `onChange` callback that `react-virtual` provides, though
+     * this changes on _every_ internal state change.
+     */
+    useEffect(() => {
+      /**
+       * Throttled version of `showChildrenActiveState`, used when DOM mutations are detected in virtual lists
+       */
+      const refreshChildrenActiveStateThrottled = throttle(showChildrenActiveState, 200)
+
+      const mutationObserver = new MutationObserver(refreshChildrenActiveStateThrottled)
+
+      if (childContainerElement) {
+        mutationObserver.observe(childContainerElement, {
+          childList: true,
+          subtree: true,
+        })
+      }
+
+      return () => {
+        mutationObserver.disconnect()
+      }
+    }, [childContainerElement, showChildrenActiveState])
+
+    /**
+     * Apply input aria attributes
+     */
+    useEffect(() => {
+      inputElement?.setAttribute('aria-autocomplete', 'list')
+      inputElement?.setAttribute('aria-expanded', 'true')
+      inputElement?.setAttribute('aria-controls', getCommandListChildrenId())
+      inputElement?.setAttribute('role', 'combobox')
+    }, [getCommandListChildrenId, inputElement])
+
+    /**
+     * Focus input / virtual list element on mount
+     */
+    useEffect(() => {
+      if (autoFocus) {
+        focusElement(autoFocus)
+      }
+    }, [autoFocus, canReceiveFocus, focusListElement, focusInputElement, focusElement])
+
+    const rootTabIndex = canReceiveFocus ? 0 : -1
+
+    return (
+      <VirtualListBox
+        id={getCommandListChildrenId()}
+        onMouseEnter={handleVirtualListMouseEnter}
+        onMouseLeave={handleVirtualListMouseLeave}
+        ref={setVirtualListElement}
+        sizing="border"
+        tabIndex={rootTabIndex}
+        {...responsivePaddingProps}
+      >
+        {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
+        <PointerOverlayDiv aria-hidden="true" data-enabled ref={setPointerOverlayElement} />
+        {virtualizer && (
+          <VirtualListChildBox
+            forwardedAs="ul"
+            $height={virtualizer.getTotalSize()}
+            aria-label={ariaLabel}
+            aria-multiselectable={ariaMultiselectable}
+            flex={1}
+            ref={setChildContainerElement}
+            role="listbox"
+          >
+            {virtualizer.getVirtualItems().map((virtualRow) => {
+              const virtualIndex = virtualRow.index // visible index in the DOM
+              const {activeIndex, disabled, selected} = itemIndices[virtualIndex]
+
+              const itemToRender = renderItem(items[virtualIndex], {
+                activeIndex,
+                disabled,
+                selected,
+                virtualIndex,
+              }) as ReactElement
+
+              const clonedItem = cloneElement(
+                itemToRender,
+                isValidElement(itemToRender) && itemToRender.type == Fragment
+                  ? {}
+                  : {
+                      tabIndex: -1,
+                    },
+              )
+
+              const activeAriaAttributes =
+                typeof activeIndex === 'number' && !disabled
+                  ? {
+                      'aria-posinset': activeIndex + 1,
+                      ...(ariaMultiselectable ? {'aria-selected': selected.toString()} : {}),
+                      'aria-setsize': activeItemCount,
+                      'id': getChildDescendantId(activeIndex),
+                      'role': 'option',
+                      'onMouseEnter': handleChildMouseEnter(activeIndex),
+                    }
+                  : {}
+
+              return (
+                <Stack
+                  as="li"
+                  data-index={virtualIndex}
+                  key={virtualRow.key}
+                  ref={fixedHeight ? undefined : virtualizer.measureElement}
+                  style={{
+                    flex: 1,
+                    ...(fixedHeight ? {height: `${virtualRow.size}px`} : {}),
+                    left: 0,
+                    position: 'absolute',
+                    top: 0,
+                    transform: `translateY(${virtualRow.start}px)`,
+                    width: '100%',
+                  }}
+                  tabIndex={-1}
+                  {...activeAriaAttributes}
+                >
+                  {clonedItem}
+                </Stack>
+              )
+            })}
+          </VirtualListChildBox>
+        )}
+      </VirtualListBox>
+    )
+  }),
+)
+CommandList.displayName = 'Memo(ForwardRef(CommandList))'
