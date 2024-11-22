@@ -7,6 +7,7 @@ import {
   Menu,
   Text,
 } from '@sanity/ui'
+import {memo} from 'react'
 import {styled} from 'styled-components'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
@@ -26,7 +27,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
 }
 
-export function WorkspaceMenuButton() {
+export const WorkspaceMenuButton = memo(function WorkspaceMenuButton() {
   const workspaces = useWorkspaces()
   const {activeWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
@@ -101,4 +102,4 @@ export function WorkspaceMenuButton() {
       popover={POPOVER_PROPS}
     />
   )
-}
+})

@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Stack, Text} from '@sanity/ui'
-import {useCallback, useId, useState} from 'react'
+import {memo, useCallback, useId, useState} from 'react'
 
 import {Dialog} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
@@ -10,7 +10,7 @@ import {useTranslation} from '../../../../i18n'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
 
-export function ConfigIssuesButton() {
+export const ConfigIssuesButton = memo(function ConfigIssuesButton() {
   const schema = useSchema()
   const groupsWithWarnings =
     schema._validation?.filter((group) =>
@@ -78,4 +78,4 @@ export function ConfigIssuesButton() {
       )}
     </>
   )
-}
+})

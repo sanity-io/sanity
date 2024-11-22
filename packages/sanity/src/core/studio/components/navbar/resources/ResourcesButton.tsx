@@ -1,5 +1,6 @@
 import {HelpCircleIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
+import {memo} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, MenuButton} from '../../../../../ui-components'
@@ -12,7 +13,7 @@ const StyledMenu = styled(Menu)`
   min-width: 200px;
 `
 
-export function ResourcesButton() {
+export const ResourcesButton = memo(function ResourcesButton() {
   const {t} = useTranslation()
 
   const {value, error, isLoading} = useGetHelpResources()
@@ -36,4 +37,4 @@ export function ResourcesButton() {
       popover={{constrainSize: true}}
     />
   )
-}
+})
