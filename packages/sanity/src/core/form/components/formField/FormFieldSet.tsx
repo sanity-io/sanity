@@ -183,6 +183,59 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     )
   }, [children, collapsed, columns])
 
+  const headerContent = useMemo(
+    () => (
+      <Stack space={3}>
+        <Flex align="center">
+          {title && (
+            <FormFieldSetLegend
+              collapsed={Boolean(collapsed)}
+              collapsible={collapsible}
+              onClick={collapsible ? handleToggle : undefined}
+              title={title}
+            />
+          )}
+          {deprecated && (
+            <Box marginLeft={2}>
+              <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
+                {t('form.field.deprecated-label')}
+              </Badge>
+            </Box>
+          )}
+          {hasValidationMarkers && (
+            <Box marginLeft={2}>
+              <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
+            </Box>
+          )}
+        </Flex>
+
+        {deprecated && (
+          <TextWithTone data-testid={`deprecated-message-${title}`} tone="caution" size={1}>
+            {deprecated.reason}
+          </TextWithTone>
+        )}
+
+        {description && (
+          <Text muted size={1} id={createDescriptionId(inputId, description)}>
+            {description}
+          </Text>
+        )}
+      </Stack>
+    ),
+    [
+      collapsed,
+      collapsible,
+      deprecated,
+      description,
+      handleToggle,
+      hasValidationMarkers,
+      inputId,
+      t,
+      title,
+      validation,
+    ],
+  )
+
   return (
     <Root
       data-level={level}
@@ -199,44 +252,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         fieldHovered={hovered}
         presence={presence}
         inputId={inputId}
-        content={
-          <Stack space={3}>
-            <Flex align="center">
-              {title && (
-                <FormFieldSetLegend
-                  collapsed={Boolean(collapsed)}
-                  collapsible={collapsible}
-                  onClick={collapsible ? handleToggle : undefined}
-                  title={title}
-                />
-              )}
-              {deprecated && (
-                <Box marginLeft={2}>
-                  <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
-                    {t('form.field.deprecated-label')}
-                  </Badge>
-                </Box>
-              )}
-              {hasValidationMarkers && (
-                <Box marginLeft={2}>
-                  <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
-                </Box>
-              )}
-            </Flex>
-
-            {deprecated && (
-              <TextWithTone data-testid={`deprecated-message-${title}`} tone="caution" size={1}>
-                {deprecated.reason}
-              </TextWithTone>
-            )}
-
-            {description && (
-              <Text muted size={1} id={createDescriptionId(inputId, description)}>
-                {description}
-              </Text>
-            )}
-          </Stack>
-        }
+        content={headerContent}
       />
 
       <Content

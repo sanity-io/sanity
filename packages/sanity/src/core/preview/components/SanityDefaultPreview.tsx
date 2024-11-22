@@ -120,11 +120,12 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     [media, restProps, title],
   )
 
-  const layoutComponent = _previewComponents[layout || 'default']
-
-  const children = createElement(
-    layoutComponent as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
-    previewProps,
+  const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<
+    Omit<PreviewProps, 'renderDefault'>
+  >
+  const children = useMemo(
+    () => <LayoutComponent {...previewProps} />,
+    [LayoutComponent, previewProps],
   )
 
   if (tooltip) {

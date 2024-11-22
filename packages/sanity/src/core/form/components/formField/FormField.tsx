@@ -1,6 +1,6 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import {type HTMLProps, memo, type ReactNode} from 'react'
+import {type HTMLProps, memo, type ReactNode, useMemo} from 'react'
 
 import {type DocumentFieldActionNode} from '../../../config'
 import {type FormNodePresence} from '../../../presence'
@@ -65,6 +65,19 @@ export const FormField = memo(function FormField(
   } = props
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
 
+  const content = useMemo(
+    () => (
+      <FormFieldHeaderText
+        description={description}
+        inputId={inputId}
+        title={title}
+        validation={validation}
+        deprecated={deprecated}
+      />
+    ),
+    [deprecated, description, inputId, title, validation],
+  )
+
   return (
     <Stack
       {...restProps}
@@ -86,15 +99,7 @@ export const FormField = memo(function FormField(
           fieldHovered={hovered}
           presence={presence}
           inputId={inputId}
-          content={
-            <FormFieldHeaderText
-              description={description}
-              inputId={inputId}
-              title={title}
-              validation={validation}
-              deprecated={deprecated}
-            />
-          }
+          content={content}
         />
       )}
       <div>{children}</div>
