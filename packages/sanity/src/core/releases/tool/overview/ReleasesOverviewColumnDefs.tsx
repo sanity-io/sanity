@@ -87,7 +87,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
   const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
-    <Box {...cellProps} marginLeft={3} flex={1} padding={1}>
+    <Box {...cellProps} marginLeft={3} flex={1} paddingY={1} paddingRight={2} sizing={'border'}>
       <Tooltip
         disabled={!release.isDeleted}
         content={

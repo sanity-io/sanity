@@ -149,16 +149,14 @@ const TableInner = <TableData, AdditionalRowTableData>({
       sorting: false,
       width: 50,
       header: ({headerProps: {id}}) => (
-        <Flex as="th" id={id} paddingY={3} sizing="border" style={{width: 50}}>
-          <Box padding={2}>
-            <Text muted size={1} weight="medium">
-              &nbsp;
-            </Text>
-          </Box>
+        <Flex as="th" id={id} paddingY={3} paddingX={3} sizing="border" style={{width: '50px'}}>
+          <Text muted size={1} weight="medium">
+            &nbsp;
+          </Text>
         </Flex>
       ),
       cell: ({datum, cellProps: {id}}) => (
-        <Flex as="td" id={id} align="center" flex="none" padding={3}>
+        <Flex as="td" id={id} align="center" flex="none" padding={3} style={{width: '25px'}}>
           {rowActions?.({datum}) || <Box style={{width: '25px'}} />}
         </Flex>
       ),

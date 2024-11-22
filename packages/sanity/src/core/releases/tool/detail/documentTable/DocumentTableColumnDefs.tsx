@@ -93,12 +93,12 @@ export const getDocumentTableColumnDefs: (
   {
     id: 'search',
     width: null,
-    style: {minWidth: '50%'},
+    style: {minWidth: '50%', maxWidth: '50%'},
     header: (props) => (
       <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
     ),
     cell: ({cellProps, datum}) => (
-      <Box {...cellProps} flex={1} padding={1}>
+      <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
         <MemoReleaseDocumentPreview item={datum} releaseId={releaseId} />
       </Box>
     ),
@@ -138,7 +138,7 @@ export const getDocumentTableColumnDefs: (
       const validationErrorCount = datum.validation.validation.length
 
       return (
-        <Flex {...cellProps} flex={1} padding={1} justify="center" align="center">
+        <Flex {...cellProps} flex={1} padding={1} justify="center" align="center" sizing="border">
           {datum.validation.hasError && (
             <Tooltip
               portal
