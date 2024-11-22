@@ -36,7 +36,7 @@ export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDef
 /**
  * Used in cases where no custom preview component is provided
  * @internal
- * */
+ */
 export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactElement {
   const {icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
 

@@ -117,14 +117,18 @@ const StyledText = styled(Text)`
  *
  * @internal
  */
-export function LoadingBlock({fill, showText, title}: LoadingTestProps) {
+export const LoadingBlock = React.memo(function LoadingBlock({
+  fill,
+  showText,
+  title,
+}: LoadingTestProps) {
   return (
     <StyledCard $fill={fill} as={fill ? Layer : 'div'}>
       <StyledSpinner $animatePosition={!!showText} muted />
       {showText && <LoadingText title={title} />}
     </StyledCard>
   )
-}
+})
 
 function LoadingText({title}: {title?: string | null}) {
   const {t} = useTranslation()

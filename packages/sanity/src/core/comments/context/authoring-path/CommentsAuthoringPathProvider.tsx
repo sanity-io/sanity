@@ -1,4 +1,4 @@
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {CommentsAuthoringPathContext} from 'sanity/_singletons'
 
 import {type CommentsAuthoringPathContextValue} from './types'
@@ -17,7 +17,9 @@ interface CommentsAuthoringPathProviderProps {
  * the component re-renders, for example, when the form is temporarily set to `readOnly`
  * while reconnecting.
  */
-export function CommentsAuthoringPathProvider(props: CommentsAuthoringPathProviderProps) {
+export const CommentsAuthoringPathProvider = memo(function CommentsAuthoringPathProvider(
+  props: CommentsAuthoringPathProviderProps,
+) {
   const {children} = props
   const [authoringPath, setAuthoringPath] = useState<string | null>(null)
 
@@ -38,4 +40,4 @@ export function CommentsAuthoringPathProvider(props: CommentsAuthoringPathProvid
       {children}
     </CommentsAuthoringPathContext.Provider>
   )
-}
+})
