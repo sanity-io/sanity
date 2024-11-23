@@ -3,9 +3,13 @@ import {
   type MendozaPatch,
   type TransactionLogEventWithEffects,
 } from '@sanity/types'
-import {type EditDocumentVersionEvent, getVersionFromId} from 'sanity'
 
-function getEffectState(effect?: MendozaEffectPair): 'unedited' | 'deleted' | 'upsert' | 'created' {
+import {getVersionFromId} from '../../util/draftUtils'
+import {type EditDocumentVersionEvent} from './types'
+
+export function getEffectState(
+  effect?: MendozaEffectPair,
+): 'unedited' | 'deleted' | 'upsert' | 'created' {
   const modified = Boolean(effect)
   const deleted = effect && isDeletePatch(effect?.apply)
   const created = effect && isDeletePatch(effect?.revert)

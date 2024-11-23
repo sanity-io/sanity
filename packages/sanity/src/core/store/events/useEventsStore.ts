@@ -1,6 +1,7 @@
+/* eslint-disable max-nested-callbacks */
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {BehaviorSubject, combineLatest, from, type Observable, of} from 'rxjs'
+import {BehaviorSubject, combineLatest, from, type Observable, of, Subject} from 'rxjs'
 import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators'
 import {
   type MendozaPatch,
@@ -18,7 +19,7 @@ import {getPublishedId, getVersionFromId, isVersionId} from '../../util/draftUti
 import {type DocumentRemoteMutationEvent} from '../_legacy/document/buffered-doc/types'
 import {getDocumentChanges} from './getDocumentChanges'
 import {getDocumentTransactions} from './getDocumentTransactions'
-import {getEditEvents} from './getEditEvents'
+import {getEditEvents, getEffectState} from './getEditEvents'
 import {
   type DocumentGroupEvent,
   type EventsStore,
@@ -150,6 +151,103 @@ export function useEventsStore({
     [],
   )
 
+  const {state$} = useReleasesStore()
+
+  const refreshEventsTrigger$ = useMemo(() => new Subject<void>(), [])
+  const eventsObservable$: Observable<{
+    events: DocumentGroupEvent[]
+    nextCursor: string
+    loading: boolean
+    error: null | Error
+  }> = useMemo(() => {
+    const isPublishedDoc = getPublishedId(documentId) === documentId
+
+    const params = new URLSearchParams({
+      // This is not working yet, CL needs to fix it.
+      limit: '100',
+    })
+    return refreshEventsTrigger$.pipe(
+      startWith(undefined), // Emit once initially to start the observable
+      switchMap(() =>
+        client.observable
+          .request<{
+            events: Record<string, Omit<DocumentGroupEvent, 'id'>[]>
+            nextCursor: string
+          }>({
+            url: `/data/events/${client.config().dataset}/documents/${documentId}?${params.toString()}`,
+            tag: 'get-document-events',
+          })
+          .pipe(
+            map((response) => {
+              return {
+                events:
+                  response.events[documentId]?.map((ev) => addEventId(ev, isPublishedDoc)) || [],
+                nextCursor: response.nextCursor,
+                loading: false,
+                error: null,
+              }
+            }),
+            // This is temporal - The API is returning duplicated events, we need to remove them.
+            map((response) => {
+              return {
+                ...response,
+                events: response.events.filter(
+                  (event, index) =>
+                    index === response.events.length - 1 || event.type !== 'CreateDocumentVersion',
+                ),
+              }
+            }),
+            // Get the edit events if necessary.
+            switchMap((response) => {
+              if (isPublishedDoc) {
+                // For the published document we don't need to fetch the edit transactions.
+                return of(response)
+              }
+
+              // TODO: Improve how we get this value.
+              const lastVersionRevisionIdIndex = response.events.findIndex(
+                (event) => 'versionRevisionId' in event && event.versionRevisionId,
+              )
+              // TODO: Think how to handle more events in a version document.
+              // Version docs are kind of short-lived, they are created, edited and published, once published they are not re-created again.
+              if (
+                lastVersionRevisionIdIndex !== 0 &&
+                !isPublishedDoc &&
+                response.events.length &&
+                isVersionId(documentId)
+              ) {
+                console.log('Verify this, it could be an error', response.events)
+              }
+              const lastEventVersionRevisionId = response.events[lastVersionRevisionIdIndex]
+                ?.versionRevisionId as string
+
+              if (!lastEventVersionRevisionId) {
+                return of(response)
+              }
+              return from(
+                getDocumentTransactions({
+                  client,
+                  documentId,
+                  fromTransaction: lastEventVersionRevisionId,
+                  toTransaction: undefined, // We need to get up to the present moment
+                }),
+              ).pipe(
+                map((transactions) => {
+                  const editEvents = getEditEvents(transactions, documentId)
+                  return {...response, events: [...editEvents, ...response.events]}
+                }),
+              )
+            }),
+            catchError((error: Error) => {
+              console.error('Error fetching events', error)
+              return [{events: [], nextCursor: '', loading: false, error: error}]
+            }),
+            startWith({events: [], nextCursor: '', loading: true, error: null}),
+          ),
+      ),
+    )
+  }, [client, documentId, refreshEventsTrigger$])
+
   const onUpdate = useCallback(
     (remoteMutation: WithVersion<DocumentRemoteMutationEvent>) => {
       // If the remote mutation happened to a published document we need to re-fetch the events.
@@ -166,112 +264,35 @@ export function useEventsStore({
         return
       }
       if (version === 'draft') {
-        console.log('IMPLEMENT ME PLEASE')
+        const effectState = getEffectState({
+          apply: remoteMutation.effects.apply as MendozaPatch,
+          revert: remoteMutation.effects.revert as MendozaPatch,
+        })
+        if (effectState === 'upsert' || effectState === 'unedited') {
+          remoteTransactions$.next([
+            ...remoteTransactions$.value,
+            remoteMutationToTransaction(remoteMutation),
+          ])
+        } else {
+          refreshEventsTrigger$.next()
+        }
         return
       }
       if (version === 'published') {
-        console.log('IMPLEMENT ME PLEASE')
+        refreshEventsTrigger$.next()
         return
       }
       console.error('Unknown version', version)
     },
-    [remoteTransactions$],
+    [remoteTransactions$, refreshEventsTrigger$],
   )
+
   useRemoteMutations({
     client,
     documentId,
     documentType,
     onUpdate: onUpdate,
   })
-  const {state$} = useReleasesStore()
-
-  const eventsObservable$: Observable<{
-    events: DocumentGroupEvent[]
-    nextCursor: string
-    loading: boolean
-    error: null | Error
-  }> = useMemo(() => {
-    const isPublishedDoc = getPublishedId(documentId) === documentId
-
-    const params = new URLSearchParams({
-      // This is not working yet, CL needs to fix it.
-      limit: '50',
-    })
-    return client.observable
-      .request<{
-        events: Record<string, Omit<DocumentGroupEvent, 'id'>[]>
-        nextCursor: string
-      }>({
-        url: `/data/events/${client.config().dataset}/documents/${documentId}?${params.toString()}`,
-        tag: 'get-document-events',
-      })
-      .pipe(
-        map((response) => {
-          return {
-            events: response.events[documentId]?.map((ev) => addEventId(ev, isPublishedDoc)) || [],
-            nextCursor: response.nextCursor,
-            loading: false,
-            error: null,
-          }
-        }),
-        // This is temporal - The API is returning duplicated events, we need to remove them.
-        map((response) => {
-          return {
-            ...response,
-            events: response.events.filter(
-              (event, index) =>
-                index === response.events.length - 1 || event.type !== 'CreateDocumentVersion',
-            ),
-          }
-        }),
-        // Get the edit events if necessary.
-        switchMap((response) => {
-          if (isPublishedDoc) {
-            // For the published document we don't need to fetch the edit transactions.
-            return of(response)
-          }
-
-          // TODO: Improve how we get this value.
-          const lastVersionRevisionIdIndex = response.events.findIndex(
-            (event) => 'versionRevisionId' in event && event.versionRevisionId,
-          )
-          // TODO: Think how to handle more events in a version document.
-          // Version docs are kind of short-lived, they are created, edited and published, once published they are not re-created again.
-          if (
-            lastVersionRevisionIdIndex !== 0 &&
-            !isPublishedDoc &&
-            response.events.length &&
-            isVersionId(documentId)
-          ) {
-            console.log('Verify this, it could be an error', response.events)
-          }
-          const lastEventVersionRevisionId = response.events[lastVersionRevisionIdIndex]
-            ?.versionRevisionId as string
-
-          if (!lastEventVersionRevisionId) {
-            return of(response)
-          }
-          return from(
-            getDocumentTransactions({
-              client,
-              documentId,
-              fromTransaction: lastEventVersionRevisionId,
-              toTransaction: undefined, // We need to get up to the present moment
-            }),
-          ).pipe(
-            map((transactions) => {
-              const editEvents = getEditEvents(transactions, documentId)
-              return {...response, events: [...editEvents, ...response.events]}
-            }),
-          )
-        }),
-        catchError((error: Error) => {
-          console.error('Error fetching events', error)
-          return [{events: [], nextCursor: '', loading: false, error: error}]
-        }),
-        startWith({events: [], nextCursor: '', loading: true, error: null}),
-      )
-  }, [client, documentId])
 
   const observable$ = useMemo(() => {
     return combineLatest([state$, eventsObservable$, remoteTransactions$]).pipe(
