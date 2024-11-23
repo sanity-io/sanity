@@ -163,23 +163,23 @@ export function getDocumentChanges({
   // We need to expose this differently, as we need to also expose the transactions for versions and drafts, this implementation only works for published.
   // We need to find a way to listen to the incoming transactions and in the case of published documents, refetch the events when a new transaction comes in.
   // For versions and drafts we can keep the list of transactions updated just by the received transactions.
-  if (!since) {
-    return of({loading: false, diff: null})
-  }
 
   return from(
     getDocumentTransactions({
       documentId,
       client,
       toTransaction: to._rev,
-      fromTransaction: since._rev,
+      fromTransaction: since?._rev || to._rev,
     }),
   ).pipe(
     map((transactions) => {
       return {
         loading: false,
         diff: calculateDiff({
-          initialDoc: since,
+          initialDoc:
+            since ||
+            // Useful when inspecting initial creation value of a version document and the `created` event is selected as the to-event
+            ({_id: documentId, _type: to._type} as SanityDocument),
           finalDoc: to,
           transactions,
           events: events,

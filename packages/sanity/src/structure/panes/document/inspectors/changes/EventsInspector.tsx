@@ -54,6 +54,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     diff: null,
     loading: true,
   })
+  console.log('diff', diff)
   // Note that we are using the studio core namespace here, as changes theoretically should
   // be part of Sanity core (needs to be moved from structure at some point)
   const {t: structureT} = useTranslation(structureLocaleNamespace)
@@ -71,25 +72,11 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   }, [diff, documentId, isComparingCurrent, formState?.readOnly, schemaType, value])
 
   const [sinceEvent, toEvent] = useMemo(() => {
-    // This is the event that we are showing in the form, it will dictate the "to" state.
-    // It could either be the @latest, this is the current document state, or a specific revision.
-    // We will always compare it with the previous event, which will be the "from" state, unless the user has specified a specific "since" time.
-    if (revision?.revisionId) {
-      const revisionEventIndex = events.findIndex(
-        (event) => 'revisionId' in event && event.revisionId === revision.revisionId,
-      )
-      if (revisionEventIndex === -1) {
-        return [null, null]
-      }
-      const since = sinceRevision?.revisionId
-        ? events.find(
-            (event) => 'revisionId' in event && event.revisionId === sinceRevision.revisionId,
-          )
-        : null
-
-      return [since || events[revisionEventIndex + 1], events[revisionEventIndex]]
-    }
-    return [events[1], events[0]]
+    if (!events) return [null, null]
+    return [
+      events.find((e) => e.id === sinceRevision?.revisionId) || null,
+      events.find((e) => e.id === revision?.revisionId) || null,
+    ]
   }, [events, revision?.revisionId, sinceRevision?.revisionId])
 
   const fromEvents = useMemo(() => {

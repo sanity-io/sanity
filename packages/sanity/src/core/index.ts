@@ -35,6 +35,7 @@ export {
   isReleaseScheduledOrScheduling,
   LATEST,
   type ReleaseDocument,
+  RELEASES_INTENT,
   useDocumentVersions,
   useIsReleaseActive,
   usePerspective,

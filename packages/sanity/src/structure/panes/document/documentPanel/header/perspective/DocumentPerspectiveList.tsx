@@ -16,6 +16,7 @@ import {
 } from 'sanity'
 
 import {useDocumentPane} from '../../../useDocumentPane'
+import {usePaneRouter} from 'sanity/structure'
 
 type FilterReleases = {
   notCurrentReleases: ReleaseDocument[]
@@ -70,6 +71,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     dateStyle: 'medium',
     timeStyle: 'short',
   })
+  const {setParams, params} = usePaneRouter()
   const {data: releases, loading} = useReleases()
 
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()
@@ -94,8 +96,15 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const handleBundleChange = useCallback(
     (bundleId: string) => () => {
       setPerspective(bundleId)
+      setParams({
+        ...params,
+        // Reset the params related to history view.
+        rev: undefined,
+        since: undefined,
+        historyVersion: undefined,
+      })
     },
-    [setPerspective],
+    [setPerspective, params, setParams],
   )
 
   const isPublishedChipDisabled = useMemo(() => {
