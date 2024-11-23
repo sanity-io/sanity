@@ -46,7 +46,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
           console.error('Event is not selectable')
           return
         }
-        setTimelineRange(null, event.revisionId)
+        setTimelineRange(null, event.id)
       } catch (err) {
         toast.push({
           closable: true,

@@ -1,4 +1,4 @@
-import {useContext, useState} from 'react'
+import {useContext, useMemo, useState} from 'react'
 import {
   type EventsStore,
   getDraftId,
@@ -7,6 +7,7 @@ import {
   resolveBundlePerspective,
   useEventsStore,
   usePerspective,
+  useReleases,
   useSource,
   useTimelineStore,
 } from 'sanity'
@@ -58,26 +59,35 @@ function LegacyStoreProvider({
 }
 
 function EventsStoreProvider(props: LegacyStoreProviderProps) {
-  const {params = EMPTY_PARAMS, setParams} = usePaneRouter()
+  const {params = EMPTY_PARAMS} = usePaneRouter()
 
   const {perspective} = usePerspective()
   const bundlePerspective = resolveBundlePerspective(perspective)
-  const documentId =
-    // eslint-disable-next-line no-nested-ternary
-    typeof perspective === 'undefined'
-      ? getDraftId(props.documentId)
-      : // eslint-disable-next-line no-nested-ternary
-        perspective === 'published'
-        ? getPublishedId(props.documentId)
-        : bundlePerspective
-          ? getVersionId(props.documentId, bundlePerspective)
-          : props.documentId
+  const {archivedReleases} = useReleases()
+  const {rev, since, historyVersion} = params
+
+  const documentId = useMemo(() => {
+    if (historyVersion && archivedReleases.some((release) => release.name === historyVersion)) {
+      // Check if we have a release that matches with this historyVersion
+      return getVersionId(props.documentId, historyVersion)
+    }
+    if (typeof perspective === 'undefined') {
+      return getDraftId(props.documentId)
+    }
+    if (perspective === 'published') {
+      return getPublishedId(props.documentId)
+    }
+    if (bundlePerspective) {
+      return getVersionId(props.documentId, bundlePerspective)
+    }
+    return props.documentId
+  }, [archivedReleases, historyVersion, bundlePerspective, perspective, props.documentId])
 
   const eventsStore = useEventsStore({
     documentId,
     documentType: props.documentType,
-    rev: params.rev,
-    since: params.since,
+    rev: rev,
+    since: since,
   })
 
   return (

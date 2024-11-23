@@ -54,8 +54,6 @@ export const DocumentPanelHeader = memo(
       connectionState,
       views,
       unstable_languageFilter,
-      onHistoryOpen,
-      inspector,
     } = useDocumentPane()
     const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
@@ -125,10 +123,6 @@ export const DocumentPanelHeader = memo(
       ),
       [contextMenuNodes, referenceElement],
     )
-
-    const handleHistoryOpen = useCallback(() => {
-      onHistoryOpen()
-    }, [onHistoryOpen])
 
     return (
       <TooltipDelayGroupProvider>

@@ -22,6 +22,7 @@ import {getDocumentTransactions} from './getDocumentTransactions'
 import {getEditEvents, getEffectState} from './getEditEvents'
 import {
   type DocumentGroupEvent,
+  type EditDocumentVersionEvent,
   type EventsStore,
   type EventsStoreRevision,
   isCreateDocumentVersionEvent,
@@ -141,8 +142,8 @@ export function useEventsStore({
 }: {
   documentId: string
   documentType: string
-  rev?: string
-  since?: string
+  rev?: string | '@lastEdited'
+  since?: string | '@lastPublished'
 }): EventsStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
@@ -329,37 +330,42 @@ export function useEventsStore({
   }, [state$, eventsObservable$, remoteTransactions$, documentId])
 
   const {events, loading, error, nextCursor} = useObservable(observable$, INITIAL_VALUE)
-
+  const revisionId = useMemo(() => {
+    if (rev === '@lastEdited') {
+      const editEvent = events.find((event) => isEditDocumentVersionEvent(event)) as
+        | EditDocumentVersionEvent
+        | undefined
+      if (editEvent) return editEvent.revisionId
+    }
+    return rev
+  }, [events, rev])
   const revision$ = useMemo(
-    () => getDocumentAtRevision({client, documentId, revisionId: rev}),
-    [rev, client, documentId],
+    () => getDocumentAtRevision({client, documentId, revisionId: revisionId}),
+    [client, documentId, revisionId],
   )
   const revision = useObservable(revision$, null)
 
   const sinceId = useMemo(() => {
     if (since && since !== '@lastPublished') return since
+    if (!events) return null
+
+    if (since === '@lastPublished') {
+      // TODO:  Find the last published event
+    }
 
     // We want to try to infer the since Id from the events, we want to compare to the last event that happened before the rev as fallback
-    if (!events) return null
-    if (!rev) {
+    if (!revisionId) {
       // rev has not been selected, the user will be seeing the last version of the document.
       // we need to select the event that comes after
-      return events.slice(1).find((event) => 'revisionId' in event)?.revisionId || null
+      return events[1]?.id
     }
 
-    // If the user has a rev, we should show here the id of the event that is the previous event to the rev.
-    const revisionEventIndex = events.findIndex(
-      (event) => 'revisionId' in event && event.revisionId === rev,
-    )
-    if (revisionEventIndex === -1) {
-      return null
-    }
+    // If the user has selected a revisionId, we should show here the id of the event that is the previous event to the rev selected.
+    const revisionEventIndex = events.findIndex((e) => e.id === revisionId)
+    if (revisionEventIndex === -1) return null
 
-    return (
-      events.slice(revisionEventIndex + 1).find((event) => 'revisionId' in event)?.revisionId ||
-      null
-    )
-  }, [events, rev, since])
+    return events[revisionEventIndex + 1]?.id || null
+  }, [events, revisionId, since])
 
   const since$ = useMemo(
     () => getDocumentAtRevision({client, documentId, revisionId: sinceId}),
@@ -385,15 +391,15 @@ export function useEventsStore({
   const findRangeForSince = useCallback(
     (nextSince: string): [string | null, string | null] => {
       if (!events) return [null, null]
-      if (!rev) return [nextSince, null]
-      const revisionIndex = events.findIndex((event) => event.id === rev)
+      if (!revisionId) return [nextSince, null]
+      const revisionIndex = events.findIndex((event) => event.id === revisionId)
       const sinceIndex = events.findIndex((event) => event.id === nextSince)
       if (sinceIndex === -1 || revisionIndex === -1) return [nextSince, null]
       if (sinceIndex < revisionIndex) return [nextSince, null]
       if (sinceIndex === revisionIndex) return [nextSince, null]
-      return [nextSince, rev]
+      return [nextSince, revisionId]
     },
-    [events, rev],
+    [events, revisionId],
   )
 
   const changesList = useCallback(
@@ -410,8 +416,11 @@ export function useEventsStore({
     },
     [client, events, documentId],
   )
+  console.log('revision', revision)
+  console.log('EVENTS', events)
 
   return {
+    enabled: true,
     events: events,
     nextCursor: nextCursor,
     loading: loading,

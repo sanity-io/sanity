@@ -19,7 +19,13 @@ export const changesInspector: DocumentInspector = {
   },
   component: ChangesTabs,
   onClose: ({params}) => ({
-    params: {...params, since: undefined, rev: undefined, changesInspectorTab: undefined},
+    params: {
+      ...params,
+      since: undefined,
+      rev: undefined,
+      changesInspectorTab: undefined,
+      historyVersion: undefined,
+    },
   }),
   onOpen: ({params}) => ({params: {...params, since: '@lastPublished'}}),
 }

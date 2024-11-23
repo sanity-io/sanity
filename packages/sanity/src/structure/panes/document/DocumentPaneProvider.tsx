@@ -104,8 +104,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
   const {perspective, currentGlobalBundle} = usePerspective()
+  const seeingHistoricVersion = Boolean(params.historyVersion)
 
-  const bundlePerspective = resolveBundlePerspective(perspective)
+  const bundlePerspective = seeingHistoricVersion
+    ? params.historyVersion
+    : resolveBundlePerspective(perspective)
 
   /* Version and the global perspective should match.
    * If user clicks on add document, and then switches to another version, he should click again on create document.
@@ -288,10 +291,20 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {t} = useTranslation(structureLocaleNamespace)
 
   const inspectOpen = params.inspect === 'on'
-  const compareValue: Partial<SanityDocument> | null =
-    eventsStore?.sinceRevision?.document || changesOpen
-      ? sinceAttributes
-      : editState?.published || null
+  const compareValue: Partial<SanityDocument> | null = useMemo(() => {
+    if (eventsStore?.enabled) {
+      return changesOpen
+        ? eventsStore?.sinceRevision?.document || null
+        : editState?.published || null
+    }
+    return changesOpen ? sinceAttributes : editState?.published || null
+  }, [
+    changesOpen,
+    editState?.published,
+    eventsStore?.enabled,
+    eventsStore?.sinceRevision?.document,
+    sinceAttributes,
+  ])
 
   const fieldActions: DocumentFieldAction[] = useMemo(
     () => (schemaType ? fieldActionsResolver({documentId, documentType, schemaType}) : []),

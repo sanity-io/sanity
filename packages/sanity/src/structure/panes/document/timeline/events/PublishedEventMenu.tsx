@@ -6,16 +6,17 @@ import {
   Text,
   usePortal,
 } from '@sanity/ui'
-import {type PropsWithChildren} from 'react'
 import {
   ContextMenuButton,
   getReleaseTone,
+  getVersionFromId,
   type PublishDocumentVersionEvent,
+  RELEASES_INTENT,
   useTranslation,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
+import {usePaneRouter} from 'sanity/structure'
 
-import {RELEASES_INTENT} from '../../../../../core/releases/plugin'
 import {MenuButton} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
@@ -24,9 +25,15 @@ import {VersionInlineBadge} from './VersionInlineBadge'
 export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}) {
   const {t} = useTranslation(structureLocaleNamespace)
   const portalContext = usePortal()
+  const {params, setParams} = usePaneRouter()
 
   const handleOpenReleaseDocument = () => {
-    // Do something
+    setParams({
+      ...params,
+      rev: '@lastEdited',
+      since: undefined,
+      historyVersion: getVersionFromId(event.versionId),
+    })
   }
   const handleOpenDraftDocument = () => {
     // Do something
@@ -62,11 +69,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                   </Flex>
                 </MenuItem>
               </IntentLink>
-              <MenuItem
-                onClick={handleOpenReleaseDocument}
-                // This needs to be added
-                disabled
-              >
+              <MenuItem onClick={handleOpenReleaseDocument}>
                 <Flex align={'center'}>
                   <Text size={1}>
                     Inspect{' '}

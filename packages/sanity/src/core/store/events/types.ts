@@ -347,6 +347,7 @@ export interface EventsStoreRevision {
 }
 
 export interface EventsStore {
+  enabled: true
   events: DocumentGroupEvent[]
   nextCursor: string | null
   loading: boolean

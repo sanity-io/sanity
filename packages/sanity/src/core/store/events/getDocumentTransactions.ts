@@ -34,8 +34,10 @@ export async function getDocumentTransactions({
     // reverse: 'true',
     limit: TRANSLOG_ENTRY_LIMIT.toString(),
     // https://www.sanity.io/docs/history-api#fromTransaction-db53ef83c809
-    fromTransaction,
+    fromTransaction: fromTransaction,
   })
+
+  // fromTransaction,
   if (toTransaction) {
     queryParams.append('toTransaction', toTransaction)
   }
@@ -45,6 +47,7 @@ export async function getDocumentTransactions({
   )
   const transactions: TransactionLogEventWithEffects[] = []
 
+  const skipFromTransaction = fromTransaction !== toTransaction
   const stream = await getJsonStream(transactionsUrl, clientConfig.token)
   const reader = stream.getReader()
   for (;;) {
@@ -55,14 +58,15 @@ export async function getDocumentTransactions({
     if ('error' in result.value) {
       throw new Error(result.value.error.description || result.value.error.type)
     }
-    if (result.value.id === fromTransaction) continue
+    if (result.value.id === fromTransaction && skipFromTransaction) continue
     else transactions.push(result.value)
   }
 
   if (
-    transactions.length ===
-    // The transaction received with the id fromTransaction is not included in the list but it's returned by the API; remove that from the count
-    TRANSLOG_ENTRY_LIMIT - 1
+    skipFromTransaction
+      ? // The transaction received with the id fromTransaction is not included in the list but it's returned by the API; remove that from the count
+        transactions.length === TRANSLOG_ENTRY_LIMIT - 1
+      : transactions.length === TRANSLOG_ENTRY_LIMIT
   ) {
     // We have received the max values, we need to fetch the next batch. (Unless we have reached the toTransaction)
     if (

@@ -11,7 +11,7 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {PaneContent, usePane, usePaneLayout} from '../../../components'
+import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {isLiveEditEnabled} from '../../../components/paneItem/helpers'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
@@ -26,6 +26,7 @@ import {
 import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {FormView} from './documentViews'
+import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -71,6 +72,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     existsInBundle,
     documentType,
   } = useDocumentPane()
+  const {params} = usePaneRouter()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()
@@ -150,6 +152,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       : false
 
   const banners = useMemo(() => {
+    if (params?.historyVersion) {
+      return <ArchivedReleaseDocumentBanner documentId={documentId} />
+    }
     if ((!existsInBundle && currentPerspectiveIsRelease) || isScheduledRelease) {
       return (
         <AddToReleaseBanner
@@ -198,6 +203,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     requiredPermission,
     schemaType,
     value._id,
+    params
   ])
 
   return (
