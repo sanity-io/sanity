@@ -8,7 +8,11 @@ import {getCreateVersionOrigin} from '../util/util'
 import {usePerspective} from './usePerspective'
 
 export interface VersionOperationsValue {
-  createVersion: (releaseId: string, documentId: string) => Promise<void>
+  createVersion: (
+    releaseId: string,
+    documentId: string,
+    initialValue?: Record<string, unknown>,
+  ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
 }
 
@@ -21,10 +25,14 @@ export function useVersionOperations(): VersionOperationsValue {
   const toast = useToast()
   const {t} = useTranslation()
 
-  const handleCreateVersion = async (releaseId: string, documentId: string) => {
+  const handleCreateVersion = async (
+    releaseId: string,
+    documentId: string,
+    initialValue?: Record<string, unknown>,
+  ) => {
     const origin = getCreateVersionOrigin(documentId)
     try {
-      await createVersion(releaseId, documentId)
+      await createVersion(releaseId, documentId, initialValue)
       setPerspectiveFromReleaseId(releaseId)
       telemetry.log(AddedVersion, {
         documentOrigin: origin,
