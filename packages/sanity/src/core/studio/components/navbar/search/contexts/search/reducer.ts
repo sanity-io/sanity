@@ -225,7 +225,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           error: null,
           hasLocal: true,
           hits: state.result.hasLocal
-            ? deduplicate([...state.result.hits, ...action.hits])
+            ? deduplicate([...state.result.hits, ...action.hits], state)
             : action.hits,
           loaded: true,
           loading: false,
@@ -597,7 +597,11 @@ function stripRecent(terms: RecentSearch | SearchTerms) {
  *
  * Note that should any result appear again in subsequent pages, its first instance will be removed.
  */
-function deduplicate(hits: SearchHit[]): SearchHit[] {
+function deduplicate(hits: SearchHit[], {strategy}: {strategy?: SearchStrategy}): SearchHit[] {
+  if (strategy !== 'textSearch') {
+    return hits
+  }
+
   const hitsById = hits.reduce((map, hit) => {
     const id = getPublishedId(hit.hit._id)
 
