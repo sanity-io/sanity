@@ -361,7 +361,7 @@ export interface EventsStore {
   loadMoreEvents: () => void
   changesList: (docs: {
     to: SanityDocument
-    from: SanityDocument | null
+    since: SanityDocument | null
   }) => Observable<{diff: ObjectDiff | null; loading: boolean}>
 }
 

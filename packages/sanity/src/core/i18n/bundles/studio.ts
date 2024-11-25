@@ -1723,6 +1723,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.list.aria-label': 'Document revisions',
   /** Label for loading history */
   'timeline.loading-history': 'Loading history…',
+  /* Label for when no previous since events are available*/
+  'timeline.no-previous-events': 'No previous events',
   /** Label shown in review changes timeline when a document has been created */
   'timeline.operation.created': 'Created',
   /** Label shown in review changes timeline when a document was initially created */

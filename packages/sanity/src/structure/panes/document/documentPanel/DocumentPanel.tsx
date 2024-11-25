@@ -148,7 +148,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const banners = useMemo(() => {
     if (params?.historyVersion) {
-      return <ArchivedReleaseDocumentBanner documentId={documentId} />
+      return <ArchivedReleaseDocumentBanner />
     }
     if ((!existsInBundle && selectedReleaseId) || isScheduledRelease) {
       return (
