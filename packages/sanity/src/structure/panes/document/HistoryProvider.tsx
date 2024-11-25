@@ -1,4 +1,4 @@
-import {useContext, useMemo, useState} from 'react'
+import {useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type EventsStore,
   getDraftId,
@@ -13,6 +13,7 @@ import {
 } from 'sanity'
 import {EventsContext, HistoryContext, type HistoryContextValue} from 'sanity/_singletons'
 import {usePaneRouter} from 'sanity/structure'
+import {useEffectEvent} from 'use-effect-event'
 
 import {EMPTY_PARAMS} from './constants'
 
@@ -59,7 +60,7 @@ function LegacyStoreProvider({
 }
 
 function EventsStoreProvider(props: LegacyStoreProviderProps) {
-  const {params = EMPTY_PARAMS} = usePaneRouter()
+  const {params = EMPTY_PARAMS, setParams} = usePaneRouter()
 
   const {perspective} = usePerspective()
   const bundlePerspective = resolveBundlePerspective(perspective)
@@ -82,6 +83,28 @@ function EventsStoreProvider(props: LegacyStoreProviderProps) {
     }
     return props.documentId
   }, [archivedReleases, historyVersion, bundlePerspective, perspective, props.documentId])
+
+  const isMounted = useRef(false)
+  const updateHistoryParams = useEffectEvent((_perspective?: string) => {
+    setParams({
+      ...params,
+      // Reset the history related params when the perspective changes, as they don't make sense
+      // in the context of the new perspective
+      rev: undefined,
+      since: undefined,
+      historyVersion: undefined,
+    })
+  })
+  useEffect(() => {
+    // Skip the first run to avoid resetting the params on initial load
+    if (isMounted.current) {
+      updateHistoryParams(perspective)
+    } else {
+      isMounted.current = true
+    }
+    // https://react.dev/learn/separating-events-from-effects#declaring-an-effect-event
+    // TODO: Remove `updateHistoryParams` as a dependency when react eslint plugin is updated
+  }, [perspective, updateHistoryParams])
 
   const eventsStore = useEventsStore({
     documentId,
