@@ -104,6 +104,7 @@ function diffValue({
 
 function calculateDiff({
   initialDoc,
+  documentId,
   finalDoc,
   transactions,
   events = [],
@@ -112,9 +113,8 @@ function calculateDiff({
   finalDoc: SanityDocument
   transactions: TransactionLogEventWithEffects[]
   events: DocumentGroupEvent[]
+  documentId: string
 }) {
-  const documentId = initialDoc._id
-
   const initialValue = incremental.wrap<EventMeta>(omitRev(initialDoc), null)
   let document = incremental.wrap<EventMeta>(omitRev(initialDoc), null)
 
@@ -133,6 +133,7 @@ function calculateDiff({
       document = incremental.applyPatch(document, effect.apply, meta)
     }
   })
+
   const diff = diffValue({
     transactions,
     fromValue: initialValue,
@@ -163,6 +164,9 @@ export function getDocumentChanges({
   // We need to expose this differently, as we need to also expose the transactions for versions and drafts, this implementation only works for published.
   // We need to find a way to listen to the incoming transactions and in the case of published documents, refetch the events when a new transaction comes in.
   // For versions and drafts we can keep the list of transactions updated just by the received transactions.
+  if (!since) {
+    return of({loading: false, diff: null})
+  }
 
   return from(
     getDocumentTransactions({
@@ -176,10 +180,8 @@ export function getDocumentChanges({
       return {
         loading: false,
         diff: calculateDiff({
-          initialDoc:
-            since ||
-            // Useful when inspecting initial creation value of a version document and the `created` event is selected as the to-event
-            ({_id: documentId, _type: to._type} as SanityDocument),
+          documentId,
+          initialDoc: since,
           finalDoc: to,
           transactions,
           events: events,

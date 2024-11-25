@@ -24,9 +24,9 @@ import {
   ReferenceChangedBanner,
 } from './banners'
 import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
+import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {FormView} from './documentViews'
-import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -153,7 +153,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const banners = useMemo(() => {
     if (params?.historyVersion) {
-      return <ArchivedReleaseDocumentBanner documentId={documentId} />
+      return <ArchivedReleaseDocumentBanner />
     }
     if ((!existsInBundle && currentPerspectiveIsRelease) || isScheduledRelease) {
       return (
@@ -203,7 +203,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     requiredPermission,
     schemaType,
     value._id,
-    params
+    params,
   ])
 
   return (

@@ -32,6 +32,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
       ...params,
       rev: '@lastEdited',
       since: undefined,
+      historyEvent: event.id,
       historyVersion: getVersionFromId(event.versionId),
     })
   }

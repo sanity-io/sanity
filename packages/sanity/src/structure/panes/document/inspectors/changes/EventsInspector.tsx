@@ -46,7 +46,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     () =>
       changesList({
         to: revision?.document || (displayed as SanityDocument),
-        from: sinceRevision?.document || null,
+        since: sinceRevision?.document || null,
       }),
     [changesList, displayed, revision?.document, sinceRevision?.document],
   )
@@ -54,7 +54,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     diff: null,
     loading: true,
   })
-  console.log('diff', diff)
+
   // Note that we are using the studio core namespace here, as changes theoretically should
   // be part of Sanity core (needs to be moved from structure at some point)
   const {t: structureT} = useTranslation(structureLocaleNamespace)
@@ -79,8 +79,8 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     ]
   }, [events, revision?.revisionId, sinceRevision?.revisionId])
 
-  const fromEvents = useMemo(() => {
-    // The fromEvents need to account the toEvent showing only events that are older than the toEvent
+  const sinceEvents = useMemo(() => {
+    // The sinceEvents need to account the toEvent showing only events that are older than the toEvent
     if (!toEvent) return events.slice(1)
     return events.slice(events.indexOf(toEvent) + 1)
   }, [events, toEvent])
@@ -92,10 +92,9 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
           <Text size={1} muted>
             {structureT('changes.from.label')}
           </Text>
-
           <EventsTimelineMenu
             event={sinceEvent || null}
-            events={fromEvents}
+            events={sinceEvents}
             mode="since"
             placement="bottom-start"
           />

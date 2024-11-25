@@ -323,8 +323,19 @@ export function useEventsStore({
   const findRangeForRevision = useCallback(
     (nextRev: string): [string | null, string | null] => {
       if (!events) return [null, null]
-      if (!since) return [null, nextRev]
       const revisionIndex = events.findIndex((event) => event.id === nextRev)
+      if (!since) {
+        // Get the current revision and check if it's older than the next revision, in that case, use that value as the since.
+        const currentRevisionIndex = events.findIndex((event) => event.id === revisionId)
+        if (
+          currentRevisionIndex === -1 ||
+          revisionIndex === -1 ||
+          revisionIndex > currentRevisionIndex
+        ) {
+          return [null, nextRev]
+        }
+        return [revisionId || null, nextRev]
+      }
       const sinceIndex = events.findIndex((event) => event.id === since)
 
       if (sinceIndex === -1 || revisionIndex === -1) return [null, nextRev]
@@ -332,7 +343,7 @@ export function useEventsStore({
       if (sinceIndex === revisionIndex) return [null, nextRev]
       return [since, nextRev]
     },
-    [events, since],
+    [events, since, revisionId],
   )
 
   const findRangeForSince = useCallback(
@@ -350,7 +361,11 @@ export function useEventsStore({
   )
 
   const changesList = useCallback(
-    ({to, from: fromDoc}: {to: SanityDocument; from: SanityDocument | null}) => {
+    ({to, since: sinceDoc}: {to: SanityDocument; since: SanityDocument | null}) => {
+      const selectedToEvent = events.find((event) => event.id === to._rev)
+      const isShowingCreationEvent =
+        selectedToEvent && isCreateDocumentVersionEvent(selectedToEvent)
+
       // TODO: We could pass here the remote edits to avoid fetching them again.
       // Consider using the remoteTransactions$ observable to get the remote edits.
       return getDocumentChanges({
@@ -358,13 +373,13 @@ export function useEventsStore({
         events,
         documentId,
         to,
-        since: fromDoc,
+        since: isShowingCreationEvent
+          ? ({_type: to._type, _id: to._id} as SanityDocument)
+          : sinceDoc,
       })
     },
     [client, events, documentId],
   )
-  console.log('revision', revision)
-  console.log('EVENTS', events)
 
   return {
     documentVariantType: documentVariantType,

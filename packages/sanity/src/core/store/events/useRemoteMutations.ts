@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {useEffect, useMemo, useRef} from 'react'
-import {of, type Subscription, switchMap} from 'rxjs'
+import {filter, of, type Subscription} from 'rxjs'
 
 import {useWorkspace} from '../../studio/workspace'
 import {getDraftId, getPublishedId, isVersionId} from '../../util/draftUtils'
@@ -52,15 +52,7 @@ export function useRemoteMutations({
         documentType,
         serverActionsEnabled,
       )
-        .pipe(
-          switchMap((event) => {
-            // Type could be 'snapshot' or 'remoteMutation', we don't want the snapshots
-            if (event.type !== 'remoteMutation') {
-              return of(null)
-            }
-            return of(null)
-          }),
-        )
+        .pipe(filter((event) => event.type === 'remoteMutation'))
         .subscribe((ev) => {
           if (ev) onMutationReceived(ev)
         })

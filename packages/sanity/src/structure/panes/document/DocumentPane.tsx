@@ -129,7 +129,6 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
     )
   }
 
-  console.log('OPTIONS', options)
   return (
     <HistoryProvider documentId={options.id} documentType={options.type}>
       <DocumentPaneProvider

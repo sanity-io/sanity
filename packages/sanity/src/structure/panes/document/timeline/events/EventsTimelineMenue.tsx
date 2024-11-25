@@ -178,13 +178,16 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
       })
     : t('timeline.latest-revision')
 
+  // eslint-disable-next-line no-nested-ternary
   const sinceLabel = event
     ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.type], {
         context: 'timestamp',
         timestamp: new Date(event.timestamp),
         formatParams,
       })
-    : t('timeline.since-version-missing')
+    : events.length > 0
+      ? t('timeline.since-version-missing')
+      : t('timeline.no-previous-events')
 
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
 
@@ -204,7 +207,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
         <Flex width={'fill'}>
           <Button
             data-testid={open ? 'timeline-menu-close-button' : 'timeline-menu-open-button'}
-            disabled={loading}
+            disabled={loading || !events.length}
             mode="ghost"
             onClick={open ? handleClose : handleOpen}
             ref={setButton}
