@@ -10,13 +10,11 @@ import {
   merge,
   type Observable,
   of,
-  retry,
   scan,
   shareReplay,
   Subject,
   switchMap,
   tap,
-  timeout,
 } from 'rxjs'
 import {map, mergeMap, startWith, toArray} from 'rxjs/operators'
 
@@ -129,12 +127,6 @@ export function createReleaseStore(context: {
     tap(() => fetchPending$.next(true)),
     concatWith(
       listenQuery(client, QUERY, {}, {tag: 'releases.listen'}).pipe(
-        timeout(10_000), // 10s timeout
-        retry({
-          count: 2,
-          delay: 1_000,
-          resetOnSuccess: true,
-        }),
         tap(() => fetchPending$.next(false)),
         map((releases) =>
           releases.map(

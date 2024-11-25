@@ -84,18 +84,19 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         scrollContainerRef={scrollContainerRef}
         defaultSort={{column: 'search', direction: 'asc'}}
       />
-      <Container width={3}>
-        <Card padding={3}>
-          <Button
-            icon={AddIcon}
-            mode="bleed"
-            onClick={() => setAddDocumentDialog(true)}
-            padding={2}
-            text={t('action.add-document')}
-          />
-        </Card>
-      </Container>
-
+      {release.state === 'active' && (
+        <Container width={3}>
+          <Card padding={3}>
+            <Button
+              icon={AddIcon}
+              mode="bleed"
+              onClick={() => setAddDocumentDialog(true)}
+              padding={2}
+              text={t('action.add-document')}
+            />
+          </Card>
+        </Container>
+      )}
       <AddDocumentSearch
         open={openAddDocumentDialog}
         onClose={closeAddDialog}

@@ -5,6 +5,7 @@ import {
   useVirtualizer,
   type VirtualItem,
 } from '@tanstack/react-virtual'
+import {isValid} from 'date-fns'
 import {get} from 'lodash'
 import {
   type CSSProperties,
@@ -102,22 +103,32 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
     const sortColumn = columnDefs.find((column) => column.id === sort.column)
     return [...filteredResult].sort((a, b) => {
-      // TODO: Update this tos support sorting not only by date but also by string
-      const parseDate = (datum: TableData) => {
-        const transformedSortValue = sortColumn?.sortTransform?.(
-          datum as RowDatum<TableData, AdditionalRowTableData>,
-        )
-        if (transformedSortValue !== undefined) return transformedSortValue
+      let order: number
 
-        const sortValue = get(datum, sort.column)
+      const [aValue, bValue]: (number | string)[] = [a, b].map(
+        (sortValue) =>
+          sortColumn?.sortTransform?.(sortValue as RowDatum<TableData, AdditionalRowTableData>) ??
+          get(sortValue, sort.column),
+      )
+      if (
+        typeof aValue === 'string' &&
+        typeof bValue === 'string' &&
+        !isValid(aValue) &&
+        !isValid(bValue)
+      ) {
+        order = aValue.toLowerCase().localeCompare(bValue.toLowerCase())
+      } else {
+        const parseDate = (datum: number | string) => {
+          if (sortColumn?.sortTransform && typeof datum === 'number') return datum
 
-        return typeof sortValue === 'string' ? Date.parse(sortValue) : 0
+          return typeof datum === 'string' ? Date.parse(datum) : 0
+        }
+
+        const [aDate, bDate] = [aValue, bValue].map(parseDate)
+
+        order = aDate - bDate
       }
 
-      const aDate = parseDate(a)
-      const bDate = parseDate(b)
-
-      const order = aDate - bDate
       if (sort.direction === 'asc') return order
       return -order
     })
@@ -138,16 +149,14 @@ const TableInner = <TableData, AdditionalRowTableData>({
       sorting: false,
       width: 50,
       header: ({headerProps: {id}}) => (
-        <Flex as="th" id={id} paddingY={3} sizing="border" style={{width: 50}}>
-          <Box padding={2}>
-            <Text muted size={1} weight="medium">
-              &nbsp;
-            </Text>
-          </Box>
+        <Flex as="th" id={id} paddingY={3} paddingX={3} sizing="border" style={{width: '50px'}}>
+          <Text muted size={1} weight="medium">
+            &nbsp;
+          </Text>
         </Flex>
       ),
       cell: ({datum, cellProps: {id}}) => (
-        <Flex as="td" id={id} align="center" flex="none" padding={3}>
+        <Flex as="td" id={id} align="center" flex="none" padding={3} style={{width: '25px'}}>
           {rowActions?.({datum}) || <Box style={{width: '25px'}} />}
         </Flex>
       ),

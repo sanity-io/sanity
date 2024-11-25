@@ -2,12 +2,13 @@ import {LockIcon, PinFilledIcon, PinIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {type TFunction} from 'i18next'
-import {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RelativeTime} from '../../../components'
 import {Translate, useTranslation} from '../../../i18n'
+import useTimeZone, {getLocalTimeZone} from '../../../scheduledPublishing/hooks/useTimeZone'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -22,9 +23,18 @@ import {type TableRelease} from './ReleasesOverview'
 
 const ReleaseTime = ({release}: {release: TableRelease}) => {
   const {t} = useTranslation()
+  const {timeZone, utcToCurrentZoneDate} = useTimeZone()
+  const {abbreviation: localeTimeZoneAbbreviation} = getLocalTimeZone()
+
   const {metadata} = release
 
-  const getTimeString = () => {
+  const getTimezoneAbbreviation = useCallback(
+    () =>
+      timeZone.abbreviation === localeTimeZoneAbbreviation ? '' : `(${timeZone.abbreviation})`,
+    [localeTimeZoneAbbreviation, timeZone.abbreviation],
+  )
+
+  const timeString = useMemo(() => {
     if (metadata.releaseType === 'asap') {
       return t('release.type.asap')
     }
@@ -34,12 +44,14 @@ const ReleaseTime = ({release}: {release: TableRelease}) => {
 
     const publishDate = getPublishDateFromRelease(release)
 
-    return publishDate ? format(new Date(publishDate), 'PPpp') : null
-  }
+    return publishDate
+      ? `${format(utcToCurrentZoneDate(publishDate), 'PPpp')} ${getTimezoneAbbreviation()}`
+      : null
+  }, [metadata.releaseType, release, utcToCurrentZoneDate, getTimezoneAbbreviation, t])
 
   return (
     <Text muted size={1}>
-      {getTimeString()}
+      {timeString}
     </Text>
   )
 }
@@ -75,7 +87,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
   const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
-    <Box {...cellProps} marginLeft={3} flex={1} padding={1}>
+    <Box {...cellProps} marginLeft={3} flex={1} paddingY={1} paddingRight={2} sizing={'border'}>
       <Tooltip
         disabled={!release.isDeleted}
         content={
@@ -127,9 +139,16 @@ export const releasesOverviewColumnDefs: (
       id: 'title',
       sorting: false,
       width: null,
-      style: {minWidth: '50%'},
+      style: {minWidth: '50%', maxWidth: '50%'},
       header: ({headerProps}) => (
-        <Flex {...headerProps} flex={1} marginLeft={3} paddingY={3} sizing="border">
+        <Flex
+          {...headerProps}
+          flex={1}
+          marginLeft={3}
+          paddingRight={2}
+          paddingY={3}
+          sizing="border"
+        >
           <Headers.BasicHeader text={t('table-header.title')} />
         </Flex>
       ),
@@ -148,14 +167,7 @@ export const releasesOverviewColumnDefs: (
       },
       width: 250,
       header: (props) => (
-        <Flex
-          {...props.headerProps}
-          align="center"
-          gap={1}
-          paddingX={1}
-          paddingY={0}
-          sizing="border"
-        >
+        <Flex {...props.headerProps} paddingY={3} sizing="border">
           <Headers.SortHeaderButton text={t('table-header.time')} {...props} />
         </Flex>
       ),
