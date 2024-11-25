@@ -73,7 +73,7 @@ const sharedSettings = definePlugin({
 
   beta: {
     treeArrayEditing: {
-      enabled: true,
+      enabled: false,
     },
   },
 
@@ -97,7 +97,7 @@ const sharedSettings = definePlugin({
     },
     newDocumentOptions,
     comments: {
-      enabled: true,
+      enabled: false,
     },
     badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
@@ -171,7 +171,7 @@ const defaultWorkspace = {
     inputDateTimeFormat: 'MM/dd/yy h:mm a',
   },
   tasks: {
-    enabled: true,
+    enabled: false,
   },
 }
 

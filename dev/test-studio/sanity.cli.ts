@@ -19,6 +19,12 @@ export default defineCliConfig({
 
     return {
       ...viteConfig,
+      // plugins: [
+      //   MillionLint.vite({
+      //     telemetry: false,
+      //   }),
+      //   ...(viteConfig.plugins || []),
+      // ],
       optimizeDeps: {
         ...viteConfig.optimizeDeps,
         include: ['react/jsx-runtime'],

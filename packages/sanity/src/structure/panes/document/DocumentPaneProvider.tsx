@@ -6,11 +6,12 @@ import {
   type Path,
   type SanityDocument,
   type SanityDocumentLike,
+  type Schema,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, pathFor, resolveKeyedPath} from '@sanity/util/paths'
 import {omit, throttle} from 'lodash'
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 import {
   type DocumentFieldAction,
@@ -119,7 +120,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const editState = useEditState(documentId, documentType)
   const {validation: validationRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
-  const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
+  const schemaType = useSchemaType(schema, documentType)
   const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -229,6 +230,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const changesOpen = currentInspector?.name === HISTORY_INSPECTOR_NAME
 
   const {t} = useTranslation(structureLocaleNamespace)
+  const telemetry = useTelemetry()
 
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
@@ -292,19 +294,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [onFocusPath, setFocusPath],
   )
 
-  const patchRef = useRef<(event: PatchEvent) => void>(() => {
-    throw new Error('Nope')
-  })
-
-  patchRef.current = (event: PatchEvent) => {
-    // when creating a new draft
-    if (!editState.draft && !editState.published) {
-      telemetry.log(CreatedDraft)
-    }
-    patch.execute(toMutationPatches(event.patches), initialValue.value)
-  }
-
-  const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
+  const handleChange = useCallback(
+    (event: PatchEvent) => {
+      // when creating a new draft
+      if (!editState.draft && !editState.published) {
+        telemetry.log(CreatedDraft)
+      }
+      patch.execute(toMutationPatches(event.patches), initialValue.value)
+    },
+    [editState.draft, editState.published, initialValue.value, patch, telemetry],
+  )
 
   const closeInspector = useCallback(
     (closeInspectorName?: string) => {
@@ -408,8 +407,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     },
     [inspectOpen, params, setPaneParams],
   )
-
-  const telemetry = useTelemetry()
 
   const handleMenuAction = useCallback(
     (item: PaneMenuItem) => {
@@ -579,7 +576,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [documentId, documentType, schemaType, handleChange, setDocumentMeta])
 
   const formStateRef = useRef(formState)
-  formStateRef.current = formState
+  useInsertionEffect(() => {
+    formStateRef.current = formState
+  }, [formState])
 
   const setOpenPath = useCallback(
     (path: Path) => {
@@ -806,3 +805,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 })
 
 DocumentPaneProvider.displayName = 'Memo(DocumentPaneProvider)'
+
+function useSchemaType(schema: Schema, documentType: string) {
+  return schema.get(documentType) as ObjectSchemaType | undefined
+}

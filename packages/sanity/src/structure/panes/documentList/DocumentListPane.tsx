@@ -77,11 +77,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
-  const typeName = useMemo(() => {
-    const staticTypes = findStaticTypesInFilter(filter, params)
-    if (staticTypes?.length === 1) return staticTypes[0]
-    return null
-  }, [filter, params])
 
   const showIcons = displayOptions?.showIcons !== false
 
@@ -91,6 +86,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
+
+  const typeName = useTypeName(filter, params)
 
   const sortWithOrderingFn =
     typeName && sortOrderRaw
@@ -122,7 +119,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const handleClearSearch = useCallback(() => {
     setSearchQuery('')
     setSearchInputValue('')
-  }, [])
+  }, [setSearchQuery, setSearchInputValue])
 
   const handleSearchKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -216,3 +213,11 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     </>
   )
 })
+
+function useTypeName(filter: string, params: Record<string, unknown>) {
+  return useMemo(() => {
+    const staticTypes = findStaticTypesInFilter(filter, params)
+    if (staticTypes?.length === 1) return staticTypes[0]
+    return null
+  }, [filter, params])
+}
