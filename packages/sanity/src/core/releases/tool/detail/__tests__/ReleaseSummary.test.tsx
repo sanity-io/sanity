@@ -62,6 +62,7 @@ const releaseDocuments: DocumentInRelease[] = [
     memoKey: '456',
     document: {
       ...documentsInRelease.document,
+      _updatedAt: new Date().toISOString(),
       _id: '456',
       _rev: 'abc',
       title: 'Second document',
@@ -210,7 +211,6 @@ describe('ReleaseSummary', () => {
     within(sortedCreatedAscFirstDocument).getByText('Second document')
     within(sortedCreatedAscSecondDocument).getByText('First document')
 
-    fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
     fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
 
     const [sortedEditedDescFirstDocument, sortedEditedDescSecondDocument] =
