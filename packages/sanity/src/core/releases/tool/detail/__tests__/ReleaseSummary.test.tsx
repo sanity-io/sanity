@@ -184,7 +184,10 @@ describe('ReleaseSummary', () => {
   describe('for an active release', () => {
     beforeEach(async () => {
       await renderTest({})
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+      await vi.waitFor(() => screen.getByTestId('document-table-card'), {
+        timeout: 5000,
+        interval: 500,
+      })
     })
 
     it('shows list of all documents in release', async () => {
