@@ -172,6 +172,83 @@ const TableInner = <TableData, AdditionalRowTableData>({
       ) {
         const cardRowProps = rowProps(datum as TableData)
 
+        const d = {
+          document: {
+            _createdAt: '2024-11-04T08:05:47Z',
+            _rev: 'QTX0O7pd7iszGbKO41gLoa',
+            _type: 'book',
+            _id: 'versions.rVfLulAuK.2f107263-bcc1-45c8-bc57-0d7fa458490d',
+            title: 'Foo boo',
+            _updatedAt: '2024-11-04T08:05:52Z',
+            publishedDocumentExists: true,
+          },
+          validation: {
+            isValidating: false,
+            validation: [],
+            revision: 'QTX0O7pd7iszGbKO41gLoa',
+            hasError: false,
+          },
+          previewValues: {
+            isLoading: false,
+            values: {
+              _id: 'versions.rVfLulAuK.2f107263-bcc1-45c8-bc57-0d7fa458490d',
+              _type: 'book',
+              _createdAt: '2024-11-04T08:05:47Z',
+              _updatedAt: '2024-11-04T08:05:52Z',
+              title: 'Foo boo',
+              createdAt: '2024-11-04T08:05:47Z',
+              date: '2024-11-04T08:05:52Z',
+              subtitle: 'By <unknown>',
+            },
+          },
+          memoKey: '6e1316c3-80d2-4b2b-8ca9-58a1d9677b3e',
+          history: {
+            history: [
+              {
+                id: 'QTX0O7pd7iszGbKO41gLoa',
+                timestamp: '2024-11-04T08:51:45.299236Z',
+                author: 'pzAhBTkNX',
+                mutations: [
+                  {
+                    create: {
+                      _id: 'versions.rVfLulAuK.2f107263-bcc1-45c8-bc57-0d7fa458490d',
+                    },
+                  },
+                ],
+                documentIDs: ['versions.rVfLulAuK.2f107263-bcc1-45c8-bc57-0d7fa458490d'],
+                effects: {
+                  'versions.rVfLulAuK.2f107263-bcc1-45c8-bc57-0d7fa458490d': {
+                    apply: [
+                      0,
+                      {
+                        _createdAt: '2024-11-04T08:05:47Z',
+                        _id: 'versions.rVfLulAuK.2f107263-bcc1-45c8-bc57-0d7fa458490d',
+                        _type: 'book',
+                        _updatedAt: '2024-11-04T08:05:52Z',
+                        title: 'Foo boo',
+                      },
+                    ],
+                    revert: [0, null],
+                  },
+                },
+              },
+            ],
+            createdBy: 'pzAhBTkNX',
+            lastEditedBy: 'pzAhBTkNX',
+            editors: ['pzAhBTkNX'],
+          },
+          virtualRow: {
+            index: 0,
+            start: 0,
+            size: 59,
+            end: 59,
+            key: 0,
+            lane: 0,
+          },
+          index: 0,
+          isFirst: true,
+          isLast: true,
+        }
         return (
           <Card
             key={String(get(datum, rowId))}
@@ -181,7 +258,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
             display="flex"
             style={{
               height: `${datum.virtualRow.size}px`,
-              transform: `translateY(${datum.virtualRow.start - datum.index * datum.virtualRow.size}px)`,
+              transform: `translateY(${datum.virtualRow.start - datum.index * d.virtualRow.size}px)`,
               paddingInline: `max(
                 calc((100vw - var(--maxInlineSize)) / 2),
                 var(--paddingInline)

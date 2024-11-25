@@ -35,10 +35,12 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const aggregatedData = useMemo(
     () =>
-      documents.map((document) => ({
-        ...document,
-        history: documentsHistory[document.document._id],
-      })),
+      documents.map((document) => {
+        return {
+          ...document,
+          history: documentsHistory[document.document._id],
+        }
+      }),
     [documents, documentsHistory],
   )
 

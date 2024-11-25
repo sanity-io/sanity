@@ -28,6 +28,11 @@ export function ReleaseDocumentPreview({
   isLoading,
   hasValidationError,
 }: ReleaseDocumentPreviewProps) {
+  /** it seems that the breaking of the test is
+   *  particulally related to this component
+   * I'm not sure if it's a bad mock but every time I tried mocking it it didn't
+   * Not sure if I just had the wrong path or what */
+
   const documentPresence = useDocumentPresence(documentId)
   const {t} = useTranslation(releasesLocaleNamespace)
 

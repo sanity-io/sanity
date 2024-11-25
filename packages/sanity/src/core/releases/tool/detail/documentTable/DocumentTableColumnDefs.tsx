@@ -1,15 +1,16 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
-import {Badge, Box, Flex, Text} from '@sanity/ui'
+/* eslint-disable i18next/no-literal-string */
+//import {ErrorOutlineIcon} from '@sanity/icons'
+import {/*Badge,*/ Box, Flex, Text} from '@sanity/ui'
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
 
-import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
-import {Tooltip} from '../../../../../ui-components/tooltip'
-import {UserAvatar} from '../../../../components'
-import {RelativeTime} from '../../../../components/RelativeTime'
+//import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
+//import {Tooltip} from '../../../../../ui-components/tooltip'
+//import {UserAvatar} from '../../../../components'
+//import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
-import {Headers} from '../../components/Table/TableHeader'
+//import {Headers} from '../../components/Table/TableHeader'
 import {type Column} from '../../components/Table/types'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../useBundleDocuments'
@@ -54,22 +55,14 @@ export const getDocumentTableColumnDefs: (
     width: 100,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.BasicHeader text={t('table-header.action')} />
+        {/** temporary removal for test purpose */}
+        boop
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
-        <Box paddingX={2}>
-          {datum.document.publishedDocumentExists ? (
-            <Badge radius={2} tone={'caution'}>
-              {t('table-body.action.change')}
-            </Badge>
-          ) : (
-            <Badge radius={2} tone={'positive'}>
-              {t('table-body.action.add')}
-            </Badge>
-          )}
-        </Box>
+        {/** temporary removal for test purpose */}
+        <Box paddingX={2}>boop</Box>
       </Flex>
     ),
   },
@@ -79,14 +72,14 @@ export const getDocumentTableColumnDefs: (
     sorting: true,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('table-header.type')} {...props} />
+        {/** temporary removal for test purpose */}
+        boop
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
-        <Box paddingX={2}>
-          <MemoDocumentType type={datum.document._type} />
-        </Box>
+        {/** temporary removal for test purpose */}
+        <Box paddingX={2}>boop</Box>
       </Flex>
     ),
   },
@@ -94,16 +87,21 @@ export const getDocumentTableColumnDefs: (
     id: 'search',
     width: null,
     style: {minWidth: '50%'},
-    header: (props) => (
-      <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
-    ),
-    cell: ({cellProps, datum}) => (
-      <Box {...cellProps} flex={1} padding={1}>
-        <MemoReleaseDocumentPreview item={datum} releaseId={releaseId} />
-      </Box>
-    ),
+    header: (props) => <>'boop'</>,
+    // temporary removal for test purpose
+    /*<Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />*/
+    cell: ({cellProps, datum}) => 'boop',
+    // temporary removal for test purpose
+
+    /** it seems to be particulally related to this rendered component (which is defined at the top of the document) */
+    /*<Box {...cellProps} flex={1} padding={1}>
+        {<MemoReleaseDocumentPreview item={datum} releaseId={releaseId} />
+      </Box>*/
   },
-  {
+
+  /** temporary removal for test purpose */
+
+  /*{
     id: 'document._updatedAt',
     sorting: true,
     width: 130,
@@ -165,5 +163,5 @@ export const getDocumentTableColumnDefs: (
         </Flex>
       )
     },
-  },
+  },*/
 ]
