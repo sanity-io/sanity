@@ -5,7 +5,11 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {DefaultPreview} from '../../../../components/previews/general/DefaultPreview'
-import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
+import {
+  activeASAPRelease,
+  archivedScheduledRelease,
+  scheduledRelease,
+} from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../useBundleDocuments'
@@ -177,56 +181,90 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
 }
 
 describe('ReleaseSummary', () => {
-  beforeEach(async () => {
-    vi.clearAllMocks()
+  describe('for an active release', () => {
+    beforeEach(async () => {
+      vi.clearAllMocks()
 
-    await renderTest({})
-    await vi.waitFor(() => screen.getByTestId('document-table-card'))
-  })
-
-  it('shows list of all documents in release', async () => {
-    const documents = screen.getAllByTestId('table-row')
-
-    expect(documents).toHaveLength(2)
-  })
-
-  it('allows for document to be discarded', () => {
-    const [firstDocumentRow] = screen.getAllByTestId('table-row')
-
-    fireEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
-    fireEvent.click(screen.getByText('Discard version'))
-  })
-
-  it('allows for sorting of documents', () => {
-    const [initialFirstDocument, initialSecondDocument] = screen.getAllByTestId('table-row')
-
-    within(initialFirstDocument).getByText('First document')
-    within(initialSecondDocument).getByText('Second document')
-
-    fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
-
-    const [sortedCreatedAscFirstDocument, sortedCreatedAscSecondDocument] =
-      screen.getAllByTestId('table-row')
-
-    within(sortedCreatedAscFirstDocument).getByText('Second document')
-    within(sortedCreatedAscSecondDocument).getByText('First document')
-
-    fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
-
-    const [sortedEditedDescFirstDocument, sortedEditedDescSecondDocument] =
-      screen.getAllByTestId('table-row')
-
-    within(sortedEditedDescFirstDocument).getByText('First document')
-    within(sortedEditedDescSecondDocument).getByText('Second document')
-  })
-
-  it('allows for searching documents', async () => {
-    await act(() => {
-      fireEvent.change(screen.getByPlaceholderText('Search documents'), {target: {value: 'Second'}})
+      await renderTest({})
+      await vi.waitFor(() => screen.getByTestId('document-table-card'))
     })
 
-    const [searchedFirstDocument] = screen.getAllByTestId('table-row')
+    it('shows list of all documents in release', async () => {
+      const documents = screen.getAllByTestId('table-row')
 
-    within(searchedFirstDocument).getByText('Second document')
+      expect(documents).toHaveLength(2)
+    })
+
+    it('allows for document to be discarded', () => {
+      const [firstDocumentRow] = screen.getAllByTestId('table-row')
+
+      fireEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
+      fireEvent.click(screen.getByText('Discard version'))
+    })
+
+    it('allows for sorting of documents', () => {
+      const [initialFirstDocument, initialSecondDocument] = screen.getAllByTestId('table-row')
+
+      within(initialFirstDocument).getByText('First document')
+      within(initialSecondDocument).getByText('Second document')
+
+      fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
+
+      const [sortedCreatedAscFirstDocument, sortedCreatedAscSecondDocument] =
+        screen.getAllByTestId('table-row')
+
+      within(sortedCreatedAscFirstDocument).getByText('Second document')
+      within(sortedCreatedAscSecondDocument).getByText('First document')
+
+      fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
+
+      const [sortedEditedDescFirstDocument, sortedEditedDescSecondDocument] =
+        screen.getAllByTestId('table-row')
+
+      within(sortedEditedDescFirstDocument).getByText('First document')
+      within(sortedEditedDescSecondDocument).getByText('Second document')
+    })
+
+    it('allows for searching documents', async () => {
+      await act(() => {
+        fireEvent.change(screen.getByPlaceholderText('Search documents'), {
+          target: {value: 'Second'},
+        })
+      })
+
+      const [searchedFirstDocument] = screen.getAllByTestId('table-row')
+
+      within(searchedFirstDocument).getByText('Second document')
+    })
+
+    it('Allows for adding a document to an active release', () => {
+      screen.getByText('Add document')
+    })
+  })
+
+  describe('for an archived release', () => {
+    beforeEach(async () => {
+      vi.clearAllMocks()
+
+      await renderTest({release: archivedScheduledRelease})
+      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+    })
+
+    it('does not allow for adding documents', () => {
+      expect(screen.queryByText('Add document')).toBeNull()
+    })
+  })
+
+  describe('for a scheduled release', () => {
+    beforeEach(async () => {
+      vi.clearAllMocks()
+
+      await renderTest({release: scheduledRelease})
+      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+    })
+
+    it('does not allow for adding documents', () => {
+      expect(screen.queryByText('Add document')).toBeNull()
+    })
   })
 })
