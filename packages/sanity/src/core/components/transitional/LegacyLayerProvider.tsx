@@ -1,5 +1,5 @@
 import {LayerProvider} from '@sanity/ui'
-import {type ReactNode} from 'react'
+import {type ReactNode, useMemo} from 'react'
 
 import {type ZIndexContextValue} from '../zOffsets/types'
 import {useZIndex} from '../zOffsets/useZIndex'
@@ -21,5 +21,10 @@ export function LegacyLayerProvider({
   const zIndex = useZIndex()
   const zOffset = zIndex[zOffsetKey]
 
-  return <LayerProvider zOffset={zOffset}>{children}</LayerProvider>
+  const memoizedLayer = useMemo(
+    () => <LayerProvider zOffset={zOffset}>{children}</LayerProvider>,
+    [zOffset, children],
+  )
+
+  return memoizedLayer
 }

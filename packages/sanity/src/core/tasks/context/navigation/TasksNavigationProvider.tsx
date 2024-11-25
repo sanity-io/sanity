@@ -1,7 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {type ReactNode, useCallback, useEffect, useMemo, useReducer} from 'react'
+import {memo, type ReactNode, useCallback, useEffect, useMemo, useReducer} from 'react'
 import {TasksNavigationContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
@@ -71,7 +71,11 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
+export const TasksNavigationProvider = memo(function TasksNavigationProvider({
+  children,
+}: {
+  children: ReactNode
+}) {
   const [state, dispatch] = useReducer(reducer, initialState)
   const router = useRouter()
   const toast = useToast()
@@ -174,4 +178,4 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
   )
 
   return <TasksNavigationContext.Provider value={value}>{children}</TasksNavigationContext.Provider>
-}
+})

@@ -45,6 +45,6 @@ export function defineHookStateComponent<Args, State>({
   return memo(
     HookStateComponent,
     // Only re-render if the args prop changes, ignore other prop changes
-    (prev, next) => prev.args === next.args,
+    (prev, next) => prev?.args === next?.args,
   )
 }

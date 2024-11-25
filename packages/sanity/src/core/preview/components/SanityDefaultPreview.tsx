@@ -36,7 +36,7 @@ export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDef
 /**
  * Used in cases where no custom preview component is provided
  * @internal
- * */
+ */
 export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactElement {
   const {icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
 
@@ -56,17 +56,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
         <img
           alt={isString(title) ? title : undefined}
           referrerPolicy="strict-origin-when-cross-origin"
-          src={
-            imageBuilder
-              .image(
-                mediaProp as SanityImageSource /*will only enter this code path if it's compatible*/,
-              )
-              .width(dimensions.width || 100)
-              .height(dimensions.height || 100)
-              .fit(dimensions.fit)
-              .dpr(dimensions.dpr || 1)
-              .url() || ''
-          }
+          src={createImageUrl(imageBuilder, mediaProp, dimensions)}
         />
       )
     },
@@ -120,11 +110,12 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     [media, restProps, title],
   )
 
-  const layoutComponent = _previewComponents[layout || 'default']
-
-  const children = createElement(
-    layoutComponent as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
-    previewProps,
+  const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<
+    Omit<PreviewProps, 'renderDefault'>
+  >
+  const children = useMemo(
+    () => <LayoutComponent {...previewProps} />,
+    [LayoutComponent, previewProps],
   )
 
   if (tooltip) {
@@ -142,4 +133,26 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
   }
 
   return children
+}
+SanityDefaultPreview.displayName = 'SanityDefaultPreview'
+
+function createImageUrl(
+  imageBuilder: ReturnType<typeof imageUrlBuilder>,
+  mediaProp: React.ComponentProps<typeof SanityDefaultPreview>['media'],
+  dimensions: {
+    width?: number
+    height?: number
+    fit: ImageUrlFitMode
+    dpr?: number
+  },
+) {
+  return (
+    imageBuilder
+      .image(mediaProp as SanityImageSource /*will only enter this code path if it's compatible*/)
+      .width(dimensions.width || 100)
+      .height(dimensions.height || 100)
+      .fit(dimensions.fit)
+      .dpr(dimensions.dpr || 1)
+      .url() || ''
+  )
 }

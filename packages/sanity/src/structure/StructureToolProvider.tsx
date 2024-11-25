@@ -1,4 +1,4 @@
-import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
+import {memo, type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
 import {StructureToolContext} from 'sanity/_singletons'
 
@@ -17,7 +17,7 @@ export interface StructureToolProviderProps {
 }
 
 /** @internal */
-export function StructureToolProvider({
+export const StructureToolProvider = memo(function StructureToolProvider({
   defaultDocumentNode,
   structure: resolveStructure,
   children,
@@ -68,4 +68,4 @@ export function StructureToolProvider({
   return (
     <StructureToolContext.Provider value={structureTool}>{children}</StructureToolContext.Provider>
   )
-}
+})

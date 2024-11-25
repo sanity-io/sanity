@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {useMemo} from 'react'
+import {memo, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
@@ -35,7 +35,7 @@ const AvatarBox = styled(Box)`
   min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
 `
 
-export function UserMenu() {
+export const UserMenu = memo(function UserMenu() {
   const {currentUser, auth} = useWorkspace()
   const scheme = useColorSchemeValue()
   const setScheme = useColorSchemeSetValue()
@@ -110,4 +110,4 @@ export function UserMenu() {
       popover={popoverProps}
     />
   )
-}
+})

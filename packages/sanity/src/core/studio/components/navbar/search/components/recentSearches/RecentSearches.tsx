@@ -1,5 +1,5 @@
 import {Box, Card, Text, useMediaIndex} from '@sanity/ui'
-import {useCallback, useMemo, useRef} from 'react'
+import {memo, useCallback, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../../ui-components'
@@ -30,7 +30,7 @@ interface RecentSearchesProps {
   inputElement?: HTMLInputElement | null
 }
 
-export function RecentSearches({inputElement}: RecentSearchesProps) {
+export const RecentSearches = memo(function RecentSearches({inputElement}: RecentSearchesProps) {
   const {
     dispatch,
     state: {filtersVisible, fullscreen},
@@ -118,4 +118,4 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
       )}
     </RecentSearchesBox>
   )
-}
+})

@@ -1,11 +1,11 @@
 import {TabList} from '@sanity/ui'
-import {type ComponentType, type ReactNode, useCallback} from 'react'
+import {type ComponentType, memo, type ReactNode, useCallback} from 'react'
 
 import {Tab} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components'
 import {useDocumentPane} from '../../useDocumentPane'
 
-export function DocumentHeaderTabs() {
+export const DocumentHeaderTabs = memo(function DocumentHeaderTabs() {
   const {activeViewId, paneKey, views} = useDocumentPane()
   const tabPanelId = `${paneKey}tabpanel`
 
@@ -24,7 +24,7 @@ export function DocumentHeaderTabs() {
       ))}
     </TabList>
   )
-}
+})
 
 function DocumentHeaderTab(props: {
   icon?: ComponentType | ReactNode

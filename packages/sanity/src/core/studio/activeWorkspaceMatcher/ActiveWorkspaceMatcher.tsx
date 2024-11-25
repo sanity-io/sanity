@@ -1,5 +1,5 @@
 import {createBrowserHistory, createMemoryHistory} from 'history'
-import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
+import {type ComponentType, memo, type ReactNode, useCallback, useEffect, useMemo} from 'react'
 
 import {type RouterHistory} from '../router'
 import {useWorkspaces} from '../workspaces'
@@ -18,7 +18,7 @@ const createHistory = () =>
   typeof document === 'undefined' ? createMemoryHistory() : createBrowserHistory()
 
 /** @internal */
-export function ActiveWorkspaceMatcher({
+export const ActiveWorkspaceMatcher = memo(function ActiveWorkspaceMatcher({
   children,
   LoadingComponent,
   NotFoundComponent,
@@ -67,4 +67,4 @@ export function ActiveWorkspaceMatcher({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TS thinks this will never happen, but the point of the error is if it somehow did
       throw new Error(`Unknown type: ${(result as any).type}`)
   }
-}
+})

@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {type PropsWithChildren, useCallback, useMemo} from 'react'
+import {memo, type PropsWithChildren, useCallback, useMemo} from 'react'
 import {FieldActionsContext, type FieldActionsContextValue} from 'sanity/_singletons'
 
 import {type DocumentFieldActionNode} from '../../../config'
@@ -14,7 +14,9 @@ type FieldActionsProviderProps = PropsWithChildren<{
 }>
 
 /** @internal */
-export function FieldActionsProvider(props: FieldActionsProviderProps) {
+export const FieldActionsProvider = memo(function FieldActionsProvider(
+  props: FieldActionsProviderProps,
+) {
   const {actions, children, path, focused} = props
   const {onMouseEnter: onFieldMouseEnter, onMouseLeave: onFieldMouseLeave} = useHoveredField()
 
@@ -41,4 +43,5 @@ export function FieldActionsProvider(props: FieldActionsProviderProps) {
   )
 
   return <FieldActionsContext.Provider value={context}>{children}</FieldActionsContext.Provider>
-}
+})
+FieldActionsProvider.displayName = 'Memo(FieldActionsProvider)'

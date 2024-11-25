@@ -1,6 +1,6 @@
 import {AddUserIcon, UsersIcon} from '@sanity/icons'
 import {Box, Menu, MenuDivider, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
@@ -21,7 +21,7 @@ const FooterStack = styled(Stack)`
   background-color: var(--card-bg-color);
 `
 
-export function PresenceMenu() {
+export const PresenceMenu = memo(function PresenceMenu() {
   const presence = useGlobalPresence()
   const {projectId} = useWorkspace()
   const scheme = useColorSchemeValue()
@@ -121,4 +121,4 @@ export function PresenceMenu() {
       popover={popoverProps}
     />
   )
-}
+})

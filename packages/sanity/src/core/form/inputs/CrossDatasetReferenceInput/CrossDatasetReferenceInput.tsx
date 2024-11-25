@@ -5,6 +5,7 @@ import {Box, Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} fr
 import {
   type FocusEvent,
   type KeyboardEvent,
+  memo,
   useCallback,
   useId,
   useMemo,
@@ -57,7 +58,9 @@ const REF_PATH = ['_ref']
 const CROSS_DATASET_FEATUREKEY = 'crossDatasetReferences'
 
 /** @internal */
-export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProps) {
+export const CrossDatasetReferenceInput = memo(function CrossDatasetReferenceInput(
+  props: CrossDatasetReferenceInputProps,
+) {
   const {
     changed,
     focused,
@@ -425,4 +428,4 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
       )}
     </>
   )
-}
+})

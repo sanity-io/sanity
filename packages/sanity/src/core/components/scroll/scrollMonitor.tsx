@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react'
+import {memo, type ReactNode} from 'react'
 
 import {useOnScroll} from './hooks'
 import {type ScrollEventHandler} from './types'
@@ -10,7 +10,7 @@ export interface ScrollMonitorProps {
 }
 
 /** @internal */
-export function ScrollMonitor({onScroll, children}: ScrollMonitorProps) {
+export const ScrollMonitor = memo(function ScrollMonitor({onScroll, children}: ScrollMonitorProps) {
   useOnScroll(onScroll)
   return <>{children}</>
-}
+})

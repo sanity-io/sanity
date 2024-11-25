@@ -73,11 +73,13 @@ export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuI
     })
   }, [documentId, documentType, inspectors, setMenuItem])
 
-  return (
-    <>
-      {InspectorMenuItems.map(([InspectorMenuItem, key]) => key && <InspectorMenuItem key={key} />)}
-    </>
+  const renderedInspectorMenuItems = useMemo(
+    () =>
+      InspectorMenuItems.map(([InspectorMenuItem, key]) => key && <InspectorMenuItem key={key} />),
+    [InspectorMenuItems],
   )
+
+  return <>{renderedInspectorMenuItems}</>
 }
 
 function defineInspectorMenuItemComponent({

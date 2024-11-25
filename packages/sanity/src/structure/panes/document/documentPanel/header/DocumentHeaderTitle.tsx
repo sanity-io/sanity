@@ -1,10 +1,10 @@
-import {type ReactElement} from 'react'
+import {memo, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 
-export function DocumentHeaderTitle(): ReactElement {
+export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(): ReactElement {
   const {connectionState, schemaType, title, editState} = useDocumentPane()
   const documentValue = editState?.draft || editState?.published
   const subscribed = Boolean(documentValue)
@@ -47,4 +47,4 @@ export function DocumentHeaderTitle(): ReactElement {
       )}
     </>
   )
-}
+})

@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {useCallback, useEffect, useRef} from 'react'
+import {memo, useCallback, useEffect, useRef} from 'react'
 
 import {Button} from '../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../i18n'
@@ -15,7 +15,7 @@ import {FilterButton} from './filter/FilterButton'
 /**
  * @internal
  */
-export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
+export const Filters = memo(function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
   const {
     dispatch,
     state: {
@@ -88,4 +88,4 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
       )}
     </>
   )
-}
+})

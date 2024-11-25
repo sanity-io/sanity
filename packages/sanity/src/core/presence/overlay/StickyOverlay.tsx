@@ -151,7 +151,7 @@ function regionsWithComputedRects(
 }
 
 type Props = {margins: Margins; children: ReactNode}
-export function StickyOverlay(props: Props) {
+export const StickyOverlay = memo(function StickyOverlay(props: Props) {
   const {children, margins = DEFAULT_MARGINS} = props
   const reportedValues = usePresenceReportedValues()
   const [element, setElement] = useState<HTMLDivElement | null>(null)
@@ -222,7 +222,7 @@ export function StickyOverlay(props: Props) {
       {children}
     </RegionsWithIntersections>
   )
-}
+})
 
 const EMPTY_ARRAY: never[] = []
 

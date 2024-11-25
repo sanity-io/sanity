@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {memo, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks'
@@ -13,7 +13,9 @@ interface AddonDatasetSetupProviderProps {
   children: React.ReactNode
 }
 
-function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
+const AddonDatasetProviderInner = memo(function AddonDatasetProviderInner(
+  props: AddonDatasetSetupProviderProps,
+) {
   const {children} = props
   const {dataset, projectId} = useWorkspace()
   const originalClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -127,7 +129,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
   )
 
   return <AddonDatasetContext.Provider value={ctxValue}>{children}</AddonDatasetContext.Provider>
-}
+})
 
 /**
  * This provider sets the addon dataset client, currently called `comments` dataset.

@@ -76,10 +76,9 @@ export const StructureToolPane = memo(
       </PaneRouterProvider>
     )
   },
-  (
-    {params: prevParams = {}, payload: prevPayload = null, ...prev},
-    {params: nextParams = {}, payload: nextPayload = null, ...next},
-  ) => {
+  (_prev, _next) => {
+    const {params: prevParams = {}, payload: prevPayload = null, ...prev} = _prev || {}
+    const {params: nextParams = {}, payload: nextPayload = null, ...next} = _next || {}
     // deeply compare these objects (it's okay, they're small)
     if (!isEqual(prevParams, nextParams)) return false
     if (!isEqual(prevPayload, nextPayload)) return false

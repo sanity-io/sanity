@@ -1,5 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
-import {type Ref, useCallback, useState} from 'react'
+import {memo, type Ref, useCallback, useState} from 'react'
 import {
   type CreateLinkMetadata,
   isSanityCreateLinked,
@@ -24,7 +24,7 @@ export interface DocumentStatusBarProps {
 
 const CONTAINER_BREAKPOINT = 480 // px
 
-export function DocumentStatusBar(props: DocumentStatusBarProps) {
+export const DocumentStatusBar = memo(function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
   const {editState, timelineStore, onChange: onDocumentChange} = useDocumentPane()
   const {title} = useDocumentTitle()
@@ -99,4 +99,4 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
       </Flex>
     </Card>
   )
-}
+})

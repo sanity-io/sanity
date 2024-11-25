@@ -1,4 +1,4 @@
-import {type ReactNode, useMemo} from 'react'
+import {memo, type ReactNode, useMemo} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
 import {useSource} from '../../studio'
@@ -13,7 +13,9 @@ interface SanityCreateConfigProviderProps {
 /**
  * @internal
  */
-export function SanityCreateConfigProvider(props: SanityCreateConfigProviderProps): JSX.Element {
+export const SanityCreateConfigProvider = memo(function SanityCreateConfigProvider(
+  props: SanityCreateConfigProviderProps,
+): JSX.Element {
   const {children} = props
   const {beta} = useSource()
   const value = useMemo((): SanityCreateConfigContextValue => {
@@ -32,4 +34,4 @@ export function SanityCreateConfigProvider(props: SanityCreateConfigProviderProp
       {children}
     </SanityCreateConfigContext.Provider>
   )
-}
+})

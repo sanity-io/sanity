@@ -1,5 +1,5 @@
 import {ToastProvider} from '@sanity/ui'
-import {type ReactNode, useMemo} from 'react'
+import {memo, type ReactNode, useMemo} from 'react'
 import Refractor from 'react-refractor'
 import bash from 'refractor/lang/bash.js'
 import javascript from 'refractor/lang/javascript.js'
@@ -49,7 +49,7 @@ export interface StudioProviderProps extends StudioProps {
 /**
  * @hidden
  * @beta */
-export function StudioProvider({
+export const StudioProvider = memo(function StudioProvider({
   children,
   config,
   basePath,
@@ -113,4 +113,4 @@ export function StudioProvider({
       </ToastProvider>
     </ColorSchemeProvider>
   )
-}
+})

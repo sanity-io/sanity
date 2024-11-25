@@ -9,7 +9,15 @@ import {
   type TextInputProps,
   useClickOutsideEvent,
 } from '@sanity/ui'
-import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {
+  type ChangeEvent,
+  type KeyboardEvent,
+  memo,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 
 import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
@@ -43,7 +51,7 @@ interface NewDocumentButtonProps {
 /**
  * @internal
  */
-export function NewDocumentButton(props: NewDocumentButtonProps) {
+export const NewDocumentButton = memo(function NewDocumentButton(props: NewDocumentButtonProps) {
   const {canCreateDocument, modal = 'popover', loading, options} = props
 
   const [open, setOpen] = useState<boolean>(false)
@@ -286,4 +294,4 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       </div>
     </StyledPopover>
   )
-}
+})

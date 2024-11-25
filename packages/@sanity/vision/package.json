@@ -70,7 +70,7 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "quick-lru": "^5.1.1",
-    "react-compiler-runtime": "19.0.0-beta-0dec889-20241115"
+    "react-compiler-runtime": "0.0.0-experimental-dc8bd44-20241121"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
@@ -85,7 +85,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "@types/lodash": "^4.17.7",
-    "babel-plugin-react-compiler": "19.0.0-beta-0dec889-20241115",
+    "babel-plugin-react-compiler": "0.0.0-experimental-dc8bd44-20241121",
     "react": "^18.3.1",
     "sanity": "workspace:*",
     "styled-components": "^6.1.13"

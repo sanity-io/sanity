@@ -53,6 +53,7 @@ export function CommentsField(props: FieldProps) {
 
   return <CommentFieldInner {...props} mode={mode} />
 }
+CommentsField.displayName = 'CommentsField'
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
   const {radius, space, color} = theme.sanity
@@ -108,7 +109,7 @@ function CommentFieldInner(
   })
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
-  const stringPath = useMemo(() => PathUtils.toString(props.path), [props.path])
+  const stringPath = PathUtils.toString(props.path)
 
   // Use the cached value if it exists as the initial value
   const cachedValue = messageCache.get(stringPath) || null
@@ -278,9 +279,9 @@ function CommentFieldInner(
     [stringPath],
   )
 
-  const internalComments: FieldProps['__internal_comments'] = useMemo(
-    () => ({
-      button: currentUser && (
+  const button = useMemo(
+    () =>
+      currentUser && (
         <CommentsFieldButton
           count={Number(count)}
           currentUser={currentUser}
@@ -296,33 +297,39 @@ function CommentFieldInner(
           value={value}
         />
       ),
-      hasComments,
-      isAddingComment: isOpen,
-    }),
     [
-      currentUser,
       count,
+      currentUser,
       fieldTitle,
-      isCreatingDataset,
-      mentionOptions,
-      handleOnChange,
       handleClick,
       handleClose,
       handleCommentAdd,
-      resetMessageValue,
+      handleOnChange,
+      isCreatingDataset,
       isOpen,
+      mentionOptions,
+      resetMessageValue,
       value,
-      hasComments,
     ],
+  )
+
+  const content = useMemo(
+    () =>
+      props.renderDefault({
+        ...props,
+        // eslint-disable-next-line camelcase
+        __internal_comments: {
+          button,
+          hasComments,
+          isAddingComment: isOpen,
+        },
+      }),
+    [button, hasComments, isOpen, props],
   )
 
   return (
     <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>
-      {props.renderDefault({
-        ...props,
-        // eslint-disable-next-line camelcase
-        __internal_comments: internalComments,
-      })}
+      {content}
 
       <AnimatePresence>
         {isSelected && !isInlineCommentThread && (
@@ -337,3 +344,4 @@ function CommentFieldInner(
     </FieldStack>
   )
 }
+CommentFieldInner.displayName = 'CommentFieldInner'

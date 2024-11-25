@@ -1,4 +1,5 @@
 import {Card, Code} from '@sanity/ui'
+import {memo} from 'react'
 import {useI18nText} from 'sanity'
 
 import {Pane} from '../../components'
@@ -12,7 +13,7 @@ type ListPaneProps = BaseStructureToolPaneProps<'list'>
 /**
  * @internal
  */
-export function ListPane(props: ListPaneProps) {
+export const ListPane = memo(function ListPane(props: ListPaneProps) {
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
 
   const {defaultLayout, displayOptions, items, menuItems, menuItemGroups} = pane
@@ -53,4 +54,4 @@ export function ListPane(props: ListPaneProps) {
       />
     </Pane>
   )
-}
+})

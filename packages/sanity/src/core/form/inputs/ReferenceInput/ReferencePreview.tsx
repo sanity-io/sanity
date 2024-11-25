@@ -1,6 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {Badge, Box, Inline} from '@sanity/ui'
-import {useMemo} from 'react'
+import {memo, useMemo} from 'react'
 
 import {type PreviewLayoutKey} from '../../../components'
 import {DocumentStatus} from '../../../components/documentStatus'
@@ -14,7 +14,7 @@ import {type ReferenceInfo} from './types'
  * Used to preview a referenced type
  * Takes the reference type as props
  */
-export function ReferencePreview(props: {
+export const ReferencePreview = memo(function ReferencePreview(props: {
   id: string
   preview: ReferenceInfo['preview']
   refType: ObjectSchemaType
@@ -80,4 +80,4 @@ export function ReferencePreview(props: {
   )
 
   return renderPreview(previewProps)
-}
+})

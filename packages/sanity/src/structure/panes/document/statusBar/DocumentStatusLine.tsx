@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {useEffect, useLayoutEffect, useState} from 'react'
+import {memo, useEffect, useLayoutEffect, useState} from 'react'
 import {DocumentStatus, DocumentStatusIndicator, useSyncState} from 'sanity'
 
 import {Tooltip} from '../../../../ui-components'
@@ -13,7 +13,9 @@ interface DocumentStatusLineProps {
   singleLine?: boolean
 }
 
-export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
+export const DocumentStatusLine = memo(function DocumentStatusLine({
+  singleLine,
+}: DocumentStatusLineProps) {
   const {documentId, documentType, editState, value} = useDocumentPane()
 
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
@@ -70,4 +72,4 @@ export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
       </Flex>
     </Tooltip>
   )
-}
+})

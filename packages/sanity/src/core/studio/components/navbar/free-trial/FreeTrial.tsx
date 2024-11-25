@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useEffect, useState} from 'react'
+import {memo, useCallback, useEffect, useState} from 'react'
 
 import {Popover} from '../../../../../ui-components'
 import {useColorSchemeValue} from '../../../colorScheme'
@@ -19,7 +19,7 @@ interface FreeTrialProps {
   type: 'sidebar' | 'topbar'
 }
 
-export function FreeTrial({type}: FreeTrialProps) {
+export const FreeTrial = memo(function FreeTrial({type}: FreeTrialProps) {
   const {data, showDialog, showOnLoad, toggleShowContent} = useFreeTrialContext()
   const scheme = useColorSchemeValue()
   const telemetry = useTelemetry()
@@ -165,4 +165,4 @@ export function FreeTrial({type}: FreeTrialProps) {
       />
     </>
   )
-}
+})

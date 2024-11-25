@@ -1,5 +1,5 @@
 import {isEqual} from 'lodash'
-import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {memo, type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
@@ -27,7 +27,10 @@ interface SearchProviderProps {
 /**
  * @internal
  */
-export function SearchProvider({children, fullscreen}: SearchProviderProps) {
+export const SearchProvider = memo(function SearchProvider({
+  children,
+  fullscreen,
+}: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
 
@@ -189,4 +192,4 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   )
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
-}
+})
