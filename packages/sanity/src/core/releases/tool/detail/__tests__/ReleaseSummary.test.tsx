@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, within} from '@testing-library/react'
+import {act, fireEvent, render, screen, within} from '@testing-library/react'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -13,19 +13,6 @@ import {
   documentsInRelease,
   useBundleDocumentsMockReturnWithResults,
 } from './__mocks__/useBundleDocuments.mock'
-
-/*vi.mock('../../../../studio/addonDataset/useAddonDataset', () => ({
-  useAddonDataset: vi.fn().mockReturnValue({client: {}}),
-}))
-
-vi.mock('../../../../store', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useUser: vi.fn().mockReturnValue([{}]),
-}))
-
-vi.mock('../../../../user-color', () => ({
-  useUserColor: vi.fn().mockReturnValue('red'),
-}))*/
 
 vi.mock('../../../index', () => ({
   useDocumentPresence: vi.fn().mockReturnValue({
@@ -50,14 +37,10 @@ vi.mock('../../../../studio/components/navbar/search/components/SearchPopover')
 vi.mock('../../../../preview/components/_previewComponents', async () => {
   return {
     _previewComponents: {
-      default: vi.fn(() => DefaultPreview),
+      default: vi.fn((arg) => <DefaultPreview {...arg} />),
     },
   }
 })
-
-vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
-  SanityDefaultPreview: vi.fn().mockReturnValue(<div>"abc"</div>),
-}))
 
 const releaseDocuments: DocumentInRelease[] = [
   {
@@ -98,10 +81,10 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
   return render(
     <RouterProvider
       state={{
-        releaseId: 'abc',
+        releaseId: 'activeASAPRelease',
       }}
       onNavigate={vi.fn()}
-      router={route.create('/', [route.intents(':releaseId')])}
+      router={route.create('/', [route.create('/:releaseId'), route.intents('/intents')])}
     >
       <ReleaseSummary
         scrollContainerRef={{current: null}}
@@ -196,31 +179,30 @@ describe('ReleaseSummary', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
 
-    const result = await renderTest({})
-    result.debug()
+    await renderTest({})
+    await vi.waitFor(() => screen.getByTestId('document-table-card'))
   })
 
   it('shows list of all documents in release', async () => {
-    vi.waitFor(() => screen.getByTestId('table-row'))
     const documents = screen.getAllByTestId('table-row')
 
     expect(documents).toHaveLength(2)
   })
 
-  it.skip('allows for document to be discarded', () => {
+  it('allows for document to be discarded', () => {
     const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
     fireEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
     fireEvent.click(screen.getByText('Discard version'))
   })
 
-  it.skip('allows for sorting of documents', () => {
+  it('allows for sorting of documents', () => {
     const [initialFirstDocument, initialSecondDocument] = screen.getAllByTestId('table-row')
 
     within(initialFirstDocument).getByText('First document')
     within(initialSecondDocument).getByText('Second document')
 
-    fireEvent.click(within(screen.getByRole('table')).getByText('Created'))
+    fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
 
     const [sortedCreatedAscFirstDocument, sortedCreatedAscSecondDocument] =
       screen.getAllByTestId('table-row')
@@ -238,8 +220,10 @@ describe('ReleaseSummary', () => {
     within(sortedEditedDescSecondDocument).getByText('Second document')
   })
 
-  it.skip('allows for searching documents', () => {
-    fireEvent.change(screen.getByPlaceholderText('Search documents'), {target: {value: 'Second'}})
+  it('allows for searching documents', async () => {
+    await act(() => {
+      fireEvent.change(screen.getByPlaceholderText('Search documents'), {target: {value: 'Second'}})
+    })
 
     const [searchedFirstDocument] = screen.getAllByTestId('table-row')
 
