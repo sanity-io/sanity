@@ -14,14 +14,14 @@ import {fetchFeatureToggle} from '../_legacy/document/document-pair/utils/fetchF
  */
 export function useRemoteMutations({
   client,
-  onUpdate,
+  onMutationReceived,
   documentId,
   documentType,
 }: {
   client: SanityClient
   documentId: string
   documentType: string
-  onUpdate: (event: WithVersion<DocumentRemoteMutationEvent>) => void
+  onMutationReceived: (mutation: WithVersion<DocumentRemoteMutationEvent>) => void
 }) {
   const snapshotsSubscriptionRef = useRef<Subscription | null>(null)
   const workspace = useWorkspace()
@@ -62,7 +62,7 @@ export function useRemoteMutations({
           }),
         )
         .subscribe((ev) => {
-          if (ev) onUpdate(ev)
+          if (ev) onMutationReceived(ev)
         })
     }
     return () => {
@@ -71,5 +71,5 @@ export function useRemoteMutations({
         snapshotsSubscriptionRef.current = null
       }
     }
-  }, [client, documentId, documentType, onUpdate, serverActionsEnabled])
+  }, [client, documentId, documentType, onMutationReceived, serverActionsEnabled])
 }
