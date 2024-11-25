@@ -183,8 +183,6 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
 describe('ReleaseSummary', () => {
   describe('for an active release', () => {
     beforeEach(async () => {
-      vi.clearAllMocks()
-
       await renderTest({})
       await vi.waitFor(() => screen.getByTestId('document-table-card'))
     })
@@ -244,8 +242,6 @@ describe('ReleaseSummary', () => {
 
   describe('for an archived release', () => {
     beforeEach(async () => {
-      vi.clearAllMocks()
-
       await renderTest({release: archivedScheduledRelease})
       await vi.waitFor(() => screen.getByTestId('document-table-card'))
     })
@@ -257,8 +253,6 @@ describe('ReleaseSummary', () => {
 
   describe('for a scheduled release', () => {
     beforeEach(async () => {
-      vi.clearAllMocks()
-
       await renderTest({release: scheduledRelease})
       await vi.waitFor(() => screen.getByTestId('document-table-card'))
     })
