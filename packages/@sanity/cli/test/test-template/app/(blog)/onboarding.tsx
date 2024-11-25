@@ -1,21 +1,21 @@
-"use client";
+'use client'
 
 /**
  * This file is used for onboarding when you don't have any posts yet and are using the template for the first time.
  * Once you have content, and know where to go to access the Sanity Studio and create content, you can delete this file.
  */
 
-import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import Link from 'next/link'
+import {useSyncExternalStore} from 'react'
 
-const emptySubscribe = () => () => {};
+const emptySubscribe = () => () => {}
 
 export default function Onboarding() {
   const target = useSyncExternalStore(
     emptySubscribe,
-    () => (window.top === window ? undefined : "_blank"),
-    () => "_blank",
-  );
+    () => (window.top === window ? undefined : '_blank'),
+    () => '_blank'
+  )
 
   return (
     <div className="grid grid-flow-row gap-6 py-60 text-center">
@@ -46,9 +46,7 @@ export default function Onboarding() {
       </svg>
       <div>
         <h3 className="text-sm font-semibold text-gray-900">No posts</h3>
-        <p className="mt-1 text-sm text-gray-500">
-          Get started by creating a new post.
-        </p>
+        <p className="mt-1 text-sm text-gray-500">Get started by creating a new post.</p>
       </div>
 
       <div>
@@ -69,5 +67,5 @@ export default function Onboarding() {
         </Link>
       </div>
     </div>
-  );
+  )
 }

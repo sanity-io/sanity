@@ -1,67 +1,65 @@
-import { defineQuery } from "next-sanity";
-import type { Metadata, ResolvingMetadata } from "next";
-import { type PortableTextBlock } from "next-sanity";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import {defineQuery} from 'next-sanity'
+import type {Metadata, ResolvingMetadata} from 'next'
+import {type PortableTextBlock} from 'next-sanity'
+import Link from 'next/link'
+import {notFound} from 'next/navigation'
+import {Suspense} from 'react'
 
-import Avatar from "../../avatar";
-import CoverImage from "../../cover-image";
-import DateComponent from "../../date";
-import MoreStories from "../../more-stories";
-import PortableText from "../../portable-text";
+import Avatar from '../../avatar'
+import CoverImage from '../../cover-image'
+import DateComponent from '../../date'
+import MoreStories from '../../more-stories'
+import PortableText from '../../portable-text'
 
-import * as demo from "@/sanity/lib/demo";
-import { sanityFetch } from "@/sanity/lib/fetch";
-import { postQuery, settingsQuery } from "@/sanity/lib/queries";
-import { resolveOpenGraphImage } from "@/sanity/lib/utils";
+import * as demo from '@/sanity/lib/demo'
+import {sanityFetch} from '@/sanity/lib/fetch'
+import {postQuery, settingsQuery} from '@/sanity/lib/queries'
+import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 
 type Props = {
-  params: Promise<{ slug: string }>;
-};
+  params: Promise<{slug: string}>
+}
 
-const postSlugs = defineQuery(
-  `*[_type == "post" && defined(slug.current)]{"slug": slug.current}`,
-);
+const postSlugs = defineQuery(`*[_type == "post" && defined(slug.current)]{"slug": slug.current}`)
 
 export async function generateStaticParams() {
   return await sanityFetch({
     query: postSlugs,
-    perspective: "published",
+    perspective: 'published',
     stega: false,
-  });
+  })
 }
 
 export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata,
+  {params}: Props,
+  parent: ResolvingMetadata
 ): Promise<Metadata> {
   const post = await sanityFetch({
     query: postQuery,
     params,
     stega: false,
-  });
-  const previousImages = (await parent).openGraph?.images || [];
-  const ogImage = resolveOpenGraphImage(post?.coverImage);
+  })
+  const previousImages = (await parent).openGraph?.images || []
+  const ogImage = resolveOpenGraphImage(post?.coverImage)
 
   return {
-    authors: post?.author?.name ? [{ name: post?.author?.name }] : [],
+    authors: post?.author?.name ? [{name: post?.author?.name}] : [],
     title: post?.title,
     description: post?.excerpt,
     openGraph: {
       images: ogImage ? [ogImage, ...previousImages] : previousImages,
     },
-  } satisfies Metadata;
+  } satisfies Metadata
 }
 
-export default async function PostPage({ params }: Props) {
+export default async function PostPage({params}: Props) {
   const [post, settings] = await Promise.all([
-    sanityFetch({ query: postQuery, params }),
-    sanityFetch({ query: settingsQuery }),
-  ]);
+    sanityFetch({query: postQuery, params}),
+    sanityFetch({query: settingsQuery}),
+  ])
 
   if (!post?._id) {
-    return notFound();
+    return notFound()
   }
 
   return (
@@ -76,18 +74,14 @@ export default async function PostPage({ params }: Props) {
           {post.title}
         </h1>
         <div className="hidden md:mb-12 md:block">
-          {post.author && (
-            <Avatar name={post.author.name} picture={post.author.picture} />
-          )}
+          {post.author && <Avatar name={post.author.name} picture={post.author.picture} />}
         </div>
         <div className="mb-8 sm:mx-0 md:mb-16">
           <CoverImage image={post.coverImage} priority />
         </div>
         <div className="mx-auto max-w-2xl">
           <div className="mb-6 block md:hidden">
-            {post.author && (
-              <Avatar name={post.author.name} picture={post.author.picture} />
-            )}
+            {post.author && <Avatar name={post.author.name} picture={post.author.picture} />}
           </div>
           <div className="mb-6 text-lg">
             <div className="mb-4 text-lg">
@@ -96,10 +90,7 @@ export default async function PostPage({ params }: Props) {
           </div>
         </div>
         {post.content?.length && (
-          <PortableText
-            className="mx-auto max-w-2xl"
-            value={post.content as PortableTextBlock[]}
-          />
+          <PortableText className="mx-auto max-w-2xl" value={post.content as PortableTextBlock[]} />
         )}
       </article>
       <aside>
@@ -112,5 +103,5 @@ export default async function PostPage({ params }: Props) {
         </Suspense>
       </aside>
     </div>
-  );
+  )
 }
