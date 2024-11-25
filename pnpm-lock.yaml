@@ -121,7 +121,7 @@ importers:
         version: 9.1.0(eslint@8.57.0)
       eslint-config-sanity:
         specifier: ^7.1.2
-        version: 7.1.2(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint@8.57.0)(typescript@5.7.2))(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0)(eslint-plugin-react-hooks@4.6.2(eslint@8.57.0))(eslint-plugin-react@7.36.1(eslint@8.57.0))(eslint@8.57.0)
+        version: 7.1.2(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint@8.57.0)(typescript@5.7.2))(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0))(eslint-plugin-react-hooks@4.6.2(eslint@8.57.0))(eslint-plugin-react@7.36.1(eslint@8.57.0))(eslint@8.57.0)
       eslint-config-turbo:
         specifier: ^2.1.2
         version: 2.1.2(eslint@8.57.0)
@@ -130,7 +130,7 @@ importers:
         version: 3.6.3(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0)
       eslint-plugin-boundaries:
         specifier: ^4.2.2
-        version: 4.2.2(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0)
+        version: 4.2.2(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0))(eslint@8.57.0)
       eslint-plugin-import:
         specifier: ^2.30.0
         version: 2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0)
@@ -175,7 +175,7 @@ importers:
         version: 4.1.0
       lerna:
         specifier: ^8.1.9
-        version: 8.1.9(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13))(babel-plugin-macros@3.1.0)(encoding@0.1.13)
+        version: 8.1.9(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14)(babel-plugin-macros@3.1.0)(encoding@0.1.13)
       lint-staged:
         specifier: ^12.1.2
         version: 12.5.0(enquirer@2.4.1)
@@ -1771,6 +1771,9 @@ importers:
       use-device-pixel-ratio:
         specifier: ^1.1.0
         version: 1.1.2(react@18.3.1)
+      use-effect-event:
+        specifier: ^1.0.2
+        version: 1.0.2(react@18.3.1)
       use-hot-module-reload:
         specifier: ^2.0.0
         version: 2.0.0(react@18.3.1)
@@ -2081,7 +2084,7 @@ importers:
         version: 0.21.5
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.7.2)
+        version: 10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.7.2)
       typescript:
         specifier: 5.7.2
         version: 5.7.2
@@ -13366,12 +13369,12 @@ snapshots:
 
   '@juggle/resize-observer@3.4.0': {}
 
-  '@lerna/create@8.1.9(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13))(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.2)':
+  '@lerna/create@8.1.9(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.2)':
     dependencies:
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
-      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13)))
+      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14))
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 19.0.11(encoding@0.1.13)
       aproba: 2.0.0
@@ -13410,7 +13413,7 @@ snapshots:
       npm-package-arg: 11.0.2
       npm-packlist: 8.0.2
       npm-registry-fetch: 17.1.0
-      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13))
+      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14)
       p-map: 4.0.0
       p-map-series: 2.1.0
       p-queue: 6.6.2
@@ -13786,29 +13789,29 @@ snapshots:
       - bluebird
       - supports-color
 
-  '@nrwl/devkit@19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13)))':
+  '@nrwl/devkit@19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14))':
     dependencies:
-      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13)))
+      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14))
     transitivePeerDependencies:
       - nx
 
-  '@nrwl/tao@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13))':
+  '@nrwl/tao@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14)':
     dependencies:
-      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13))
+      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14)
       tslib: 2.8.1
     transitivePeerDependencies:
       - '@swc-node/register'
       - '@swc/core'
       - debug
 
-  '@nx/devkit@19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13)))':
+  '@nx/devkit@19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14))':
     dependencies:
-      '@nrwl/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13)))
+      '@nrwl/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14))
       ejs: 3.1.10
       enquirer: 2.3.6
       ignore: 5.3.2
       minimatch: 9.0.3
-      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13))
+      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14)
       semver: 7.6.3
       tmp: 0.2.3
       tslib: 2.8.1
@@ -15098,7 +15101,7 @@ snapshots:
       xstate: 5.19.0
     optionalDependencies:
       '@sanity/client': 6.24.1(debug@4.3.7)
-      next: 15.0.3(@babel/core@7.26.0)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.0.0-beta-df7b47d-20241124)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 15.0.3(@babel/core@7.26.0)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.0.0-beta-df7b47d-20241124)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
       - debug
 
@@ -17679,7 +17682,7 @@ snapshots:
     dependencies:
       eslint: 8.57.0
 
-  eslint-config-sanity@7.1.2(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint@8.57.0)(typescript@5.7.2))(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0)(eslint-plugin-react-hooks@4.6.2(eslint@8.57.0))(eslint-plugin-react@7.36.1(eslint@8.57.0))(eslint@8.57.0):
+  eslint-config-sanity@7.1.2(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint@8.57.0)(typescript@5.7.2))(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0))(eslint-plugin-react-hooks@4.6.2(eslint@8.57.0))(eslint-plugin-react@7.36.1(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       eslint: 8.57.0
       eslint-plugin-simple-import-sort: 12.1.1(eslint@8.57.0)
@@ -17709,7 +17712,7 @@ snapshots:
       debug: 4.3.7(supports-color@9.4.0)
       enhanced-resolve: 5.17.1
       eslint: 8.57.0
-      eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0)
+      eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0))(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.8.0
       is-bun-module: 1.2.1
@@ -17722,7 +17725,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.11.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0):
+  eslint-module-utils@2.11.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -17733,7 +17736,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -17744,12 +17747,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-boundaries@4.2.2(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0):
+  eslint-plugin-boundaries@4.2.2(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       chalk: 4.1.2
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0))(eslint@8.57.0)
       micromatch: 4.0.7
     transitivePeerDependencies:
       - '@typescript-eslint/parser'
@@ -17773,7 +17776,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0)
+      eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.7.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0))(eslint@8.57.0)
       hasown: 2.0.2
       is-core-module: 2.15.1
       is-glob: 4.0.3
@@ -19639,13 +19642,13 @@ snapshots:
     dependencies:
       readable-stream: 2.3.8
 
-  lerna@8.1.9(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13))(babel-plugin-macros@3.1.0)(encoding@0.1.13):
+  lerna@8.1.9(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14)(babel-plugin-macros@3.1.0)(encoding@0.1.13):
     dependencies:
-      '@lerna/create': 8.1.9(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13))(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.2)
+      '@lerna/create': 8.1.9(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.2)
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
-      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13)))
+      '@nx/devkit': 19.5.7(nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14))
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 19.0.11(encoding@0.1.13)
       aproba: 2.0.0
@@ -19690,7 +19693,7 @@ snapshots:
       npm-package-arg: 11.0.2
       npm-packlist: 8.0.2
       npm-registry-fetch: 17.1.0
-      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13))
+      nx: 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14)
       p-map: 4.0.0
       p-map-series: 2.1.0
       p-pipe: 3.1.0
@@ -20271,7 +20274,7 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  next@15.0.3(@babel/core@7.26.0)(@playwright/test@1.47.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.0.0-beta-df7b47d-20241124)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@15.0.3(@babel/core@7.26.0)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.0.0-beta-df7b47d-20241124)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@next/env': 15.0.3
       '@swc/counter': 0.1.3
@@ -20291,7 +20294,7 @@ snapshots:
       '@next/swc-linux-x64-musl': 15.0.3
       '@next/swc-win32-arm64-msvc': 15.0.3
       '@next/swc-win32-x64-msvc': 15.0.3
-      '@playwright/test': 1.47.0
+      '@playwright/test': 1.44.1
       babel-plugin-react-compiler: 19.0.0-beta-df7b47d-20241124
       sharp: 0.33.5
     transitivePeerDependencies:
@@ -20488,10 +20491,10 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13)):
+  nx@19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14):
     dependencies:
       '@napi-rs/wasm-runtime': 0.2.4
-      '@nrwl/tao': 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14(@swc/helpers@0.5.13))(@swc/types@0.1.12)(typescript@5.7.2))(@swc/core@1.7.14(@swc/helpers@0.5.13))
+      '@nrwl/tao': 19.5.7(@swc-node/register@1.10.9(@swc/core@1.7.14)(typescript@5.7.2))(@swc/core@1.7.14)
       '@yarnpkg/lockfile': 1.1.0
       '@yarnpkg/parsers': 3.0.0-rc.46
       '@zkochan/js-yaml': 0.0.7
@@ -22731,7 +22734,7 @@ snapshots:
     dependencies:
       typescript: 5.7.2
 
-  ts-node@10.9.2(@swc/core@1.7.14(@swc/helpers@0.5.13))(@types/node@18.19.44)(typescript@5.7.2):
+  ts-node@10.9.2(@swc/core@1.7.14)(@types/node@18.19.44)(typescript@5.7.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11

@@ -95,16 +95,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const handleBundleChange = useCallback(
     (bundleId: string) => () => {
-      setParams({
-        ...params,
-        // Reset the params related to history view.
-        rev: undefined,
-        since: undefined,
-        historyVersion: undefined,
-      })
       setPerspective(bundleId)
     },
-    [setPerspective, params, setParams],
+    [setPerspective],
   )
 
   const isPublishedChipDisabled = useMemo(() => {
