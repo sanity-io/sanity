@@ -1104,6 +1104,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * when there are templates/types available for creation
    */
   'new-document.create-new-document-label': 'New document…',
+  /** Tooltip message for add document button when the selected perspective is for published or inactive release */
+  'new-document.disabled-release.tooltip': 'You cannot add documents to this release',
   /** Placeholder for the "filter" input within the new document menu */
   'new-document.filter-placeholder': 'Search document types',
   /** Loading indicator text within the new document menu */

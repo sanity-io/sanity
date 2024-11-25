@@ -11,11 +11,13 @@ import {
 } from '@sanity/ui'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
+import {usePerspective} from 'sanity'
 
 import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useSchema} from '../../../../hooks'
 import {useGetI18nText, useTranslation} from '../../../../i18n'
+import {isDraftPerspective, isPublishedPerspective} from '../../../../releases'
 import {useCurrentUser} from '../../../../store'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {filterOptions} from './filter'
@@ -46,6 +48,7 @@ interface NewDocumentButtonProps {
 export function NewDocumentButton(props: NewDocumentButtonProps) {
   const {canCreateDocument, modal = 'popover', loading, options} = props
 
+  const {currentGlobalBundle} = usePerspective()
   const [open, setOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -59,8 +62,12 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const currentUser = useCurrentUser()
   const schema = useSchema()
 
+  const isReleaseActive =
+    !isPublishedPerspective(currentGlobalBundle) &&
+    (isDraftPerspective(currentGlobalBundle) || currentGlobalBundle.state === 'active')
+
   const hasNewDocumentOptions = options.length > 0
-  const disabled = !canCreateDocument || !hasNewDocumentOptions
+  const disabled = !canCreateDocument || !hasNewDocumentOptions || !isReleaseActive
   const placeholder = t('new-document.filter-placeholder')
   const title = t('new-document.title')
   const openDialogAriaLabel = t('new-document.open-dialog-aria-label')
@@ -174,6 +181,9 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   // Tooltip content for the open button
   const tooltipContent: TooltipProps['content'] = useMemo(() => {
+    if (!isReleaseActive) {
+      return <Text size={1}>{t('new-document.disabled-release.tooltip')}</Text>
+    }
     if (!hasNewDocumentOptions) {
       return <Text size={1}>{t('new-document.no-document-types-label')}</Text>
     }
@@ -185,7 +195,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     return (
       <InsufficientPermissionsMessage currentUser={currentUser} context="create-any-document" />
     )
-  }, [canCreateDocument, currentUser, hasNewDocumentOptions, t])
+  }, [canCreateDocument, currentUser, hasNewDocumentOptions, isReleaseActive, t])
 
   // Shared tooltip props for the popover and dialog
   const sharedTooltipProps: TooltipProps = useMemo(
