@@ -4,6 +4,7 @@ import {
   CommandList,
   type CommandListRenderItemCallback,
   type DocumentGroupEvent,
+  type DocumentVariantType,
   LoadingBlock,
   useTranslation,
 } from 'sanity'
@@ -22,6 +23,7 @@ interface TimelineProps {
    * The list needs a predefined max height for the scroller to work.
    */
   listMaxHeight?: string
+  documentVariantType: DocumentVariantType
 }
 
 export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
@@ -32,6 +34,7 @@ export const EventsTimeline = ({
   selectedEventId,
   onLoadMore,
   onSelect,
+  documentVariantType,
   listMaxHeight = 'calc(100vh - 280px)',
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
@@ -58,6 +61,16 @@ export const EventsTimeline = ({
     [onSelect],
   )
 
+  const renderOptionsMenu = useCallback(
+    (event: DocumentGroupEvent) => {
+      if (event.type === 'PublishDocumentVersion' && documentVariantType === 'published') {
+        return <PublishedEventMenu event={event} />
+      }
+      return null
+    },
+    [documentVariantType],
+  )
+
   const renderItem = useCallback<CommandListRenderItemCallback<DocumentGroupEvent[][number]>>(
     (event, {activeIndex}) => {
       const isFirst = activeIndex === 0
@@ -75,15 +88,21 @@ export const EventsTimeline = ({
             event={event}
             isSelected={event.id === selectedEventId}
             onSelect={handleSelectChunk}
-            optionsMenu={
-              event.type === 'PublishDocumentVersion' ? <PublishedEventMenu event={event} /> : null
-            }
+            optionsMenu={renderOptionsMenu(event)}
+            documentVariantType={documentVariantType}
           />
           {activeIndex === events.length - 1 && hasMoreEvents && <LoadingBlock />}
         </Box>
       )
     },
-    [events.length, handleSelectChunk, hasMoreEvents, selectedEventId],
+    [
+      events.length,
+      handleSelectChunk,
+      hasMoreEvents,
+      selectedEventId,
+      renderOptionsMenu,
+      documentVariantType,
+    ],
   )
 
   useEffect(() => setMounted(true), [])
@@ -109,7 +128,7 @@ export const EventsTimeline = ({
             autoFocus="list"
             initialIndex={selectedIndex}
             initialScrollAlign="center"
-            itemHeight={57}
+            itemHeight={61}
             items={events}
             onEndReached={onLoadMore}
             onEndReachedIndexOffset={20}
