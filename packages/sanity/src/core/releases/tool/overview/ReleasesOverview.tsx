@@ -3,6 +3,7 @@ import {Box, type ButtonMode, Card, Container, Flex, Stack, Text} from '@sanity/
 import {endOfDay, format, isSameDay, startOfDay} from 'date-fns'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useClient} from 'sanity'
 import {type RouterContextValue, type SearchParam, useRouter} from 'sanity/router'
 
 import {Button, Button as StudioButton} from '../../../../ui-components'
@@ -143,6 +144,16 @@ export function ReleasesOverview() {
   const {currentGlobalBundleId} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
+
+  const e = useClient()
+
+  useEffect(() => {
+    e.request({
+      uri: 'data/history/test/documents/versions.rrdcG2M84.b8719c0e-42a6-41ae-81b6-31721ffa3b4d?revision=xsRw0cezwwW4eJEHTCKRDP',
+    }).then((res) => {
+      console.log({res})
+    })
+  }, [e])
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> =>

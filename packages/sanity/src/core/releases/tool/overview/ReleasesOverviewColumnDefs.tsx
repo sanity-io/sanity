@@ -1,14 +1,12 @@
 import {LockIcon, PinFilledIcon, PinIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {format} from 'date-fns'
 import {type TFunction} from 'i18next'
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RelativeTime} from '../../../components'
 import {Translate, useTranslation} from '../../../i18n'
-import useTimeZone, {getLocalTimeZone} from '../../../scheduledPublishing/hooks/useTimeZone'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -20,41 +18,7 @@ import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ReleaseDocumentsCounter} from './ReleaseDocumentsCounter'
 import {type TableRelease} from './ReleasesOverview'
-
-const ReleaseTime = ({release}: {release: TableRelease}) => {
-  const {t} = useTranslation()
-  const {timeZone, utcToCurrentZoneDate} = useTimeZone()
-  const {abbreviation: localeTimeZoneAbbreviation} = getLocalTimeZone()
-
-  const {metadata} = release
-
-  const getTimezoneAbbreviation = useCallback(
-    () =>
-      timeZone.abbreviation === localeTimeZoneAbbreviation ? '' : `(${timeZone.abbreviation})`,
-    [localeTimeZoneAbbreviation, timeZone.abbreviation],
-  )
-
-  const timeString = useMemo(() => {
-    if (metadata.releaseType === 'asap') {
-      return t('release.type.asap')
-    }
-    if (metadata.releaseType === 'undecided') {
-      return t('release.type.undecided')
-    }
-
-    const publishDate = getPublishDateFromRelease(release)
-
-    return publishDate
-      ? `${format(utcToCurrentZoneDate(publishDate), 'PPpp')} ${getTimezoneAbbreviation()}`
-      : null
-  }, [metadata.releaseType, release, utcToCurrentZoneDate, getTimezoneAbbreviation, t])
-
-  return (
-    <Text muted size={1}>
-      {timeString}
-    </Text>
-  )
-}
+import {ReleaseTime} from './ReleaseTime'
 
 const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: release}) => {
   const router = useRouter()

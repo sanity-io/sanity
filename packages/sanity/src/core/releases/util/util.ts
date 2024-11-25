@@ -68,7 +68,7 @@ export function getPublishDateFromRelease(release: ReleaseDocument): Date {
   const dateString = release.publishAt || release.metadata.intendedPublishAt
   if (!dateString) {
     // Eventually we should remove this fallback, and assert the type of release that is passed in.
-    console.error('No publish date found on release', release)
+    // console.error('No publish date found on release', release)
     return new Date()
   }
 
