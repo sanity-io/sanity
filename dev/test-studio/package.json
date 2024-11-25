@@ -16,7 +16,7 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/editor": "^1.10.2",
+    "@portabletext/editor": "^1.11.3",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.0.2",
     "@sanity/block-tools": "3.64.3",
@@ -36,7 +36,7 @@
     "@sanity/react-loader": "^1.8.3",
     "@sanity/tsdoc": "1.0.134",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.8.24",
+    "@sanity/ui": "^2.8.25",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",

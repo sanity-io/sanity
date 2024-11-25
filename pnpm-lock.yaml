@@ -71,7 +71,7 @@ importers:
         version: 7.2.0
       '@types/lodash':
         specifier: ^4.17.7
-        version: 4.17.12
+        version: 4.17.13
       '@types/node':
         specifier: ^18.19.8
         version: 18.19.44
@@ -463,7 +463,7 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/editor':
-        specifier: ^1.10.2
+        specifier: ^1.11.3
         version: 1.11.3(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@portabletext/react':
         specifier: ^3.0.0
@@ -587,7 +587,7 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-hotspot-array:
         specifier: ^2.0.0
-        version: 2.1.0(@sanity/ui@2.8.25(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-b01722d5-20241114)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        version: 2.1.1(@sanity/ui@2.8.25(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-b01722d5-20241114)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       sanity-plugin-media:
         specifier: ^2.3.1
         version: 2.3.2(@sanity/ui@2.8.25(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-b01722d5-20241114)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
@@ -769,7 +769,7 @@ importers:
         version: 20.0.1
       '@types/lodash':
         specifier: ^4.17.7
-        version: 4.17.12
+        version: 4.17.13
       '@vercel/stega':
         specifier: 0.1.2
         version: 0.1.2
@@ -878,7 +878,7 @@ importers:
         version: 6.5.0
       '@types/lodash':
         specifier: ^4.17.7
-        version: 4.17.12
+        version: 4.17.13
       '@types/minimist':
         specifier: ^1.2.5
         version: 1.2.5
@@ -1170,7 +1170,7 @@ importers:
         version: 4.1.12
       '@types/lodash':
         specifier: ^4.17.7
-        version: 4.17.12
+        version: 4.17.13
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -1219,7 +1219,7 @@ importers:
         version: 1.0.4
       '@types/lodash':
         specifier: ^4.17.7
-        version: 4.17.12
+        version: 4.17.13
       '@types/object-inspect':
         specifier: ^1.13.0
         version: 1.13.0
@@ -1396,7 +1396,7 @@ importers:
         version: link:../util
       '@types/lodash':
         specifier: ^4.17.7
-        version: 4.17.12
+        version: 4.17.13
       babel-plugin-react-compiler:
         specifier: 19.0.0-beta-df7b47d-20241124
         version: 19.0.0-beta-df7b47d-20241124
@@ -1841,7 +1841,7 @@ importers:
         version: 20.0.1
       '@types/lodash':
         specifier: ^4.17.7
-        version: 4.17.12
+        version: 4.17.13
       '@types/log-symbols':
         specifier: ^2.0.0
         version: 2.0.0
@@ -2067,7 +2067,7 @@ importers:
         version: link:../../packages/@repo/test-config
       '@types/lodash':
         specifier: ^4.17.7
-        version: 4.17.12
+        version: 4.17.13
       '@types/node':
         specifier: ^18.15.3
         version: 18.19.44
@@ -5038,8 +5038,8 @@ packages:
   '@types/lodash.isequal@4.5.8':
     resolution: {integrity: sha512-uput6pg4E/tj2LGxCZo9+y27JNyB2OZuuI/T5F+ylVDYuqICLG2/ktjxx0v6GvVntAf8TvEzeQLcV0ffRirXuA==}
 
-  '@types/lodash@4.17.12':
-    resolution: {integrity: sha512-sviUmCE8AYdaF/KIHLDJBQgeYzPBI0vf/17NaYehBJfYD1j6/L95Slh07NlyK2iNyBNaEkb3En2jRt+a8y3xZQ==}
+  '@types/lodash@4.17.13':
+    resolution: {integrity: sha512-lfx+dftrEZcdBPczf9d0Qv0x+j/rfNCMuC6OcfXmO8gkfeNAY88PgKUbvG56whcN23gc27yenwF6oJZXGFpYxg==}
 
   '@types/log-symbols@2.0.0':
     resolution: {integrity: sha512-YJhbp0sz3egFFKl3BcCNPQKzuGFOP4PACcsifhK6ROGnJUW9ViYLuLybQ9GQZm7Zejy3tkGuiXYMq3GiyGkU4g==}
@@ -10286,8 +10286,8 @@ packages:
     resolution: {integrity: sha512-1OOTx/Uw0J3rwNkI4J/4XJfTGb2Rze/gl5jJGRw+M2hRGkp1QEu2wFHiC9adj83ABYthOczBCBpTHHeZluctdw==}
     engines: {node: '>=18.2'}
 
-  sanity-plugin-hotspot-array@2.1.0:
-    resolution: {integrity: sha512-q8W7uhHyr5X1DunSjRatX4v5/YPUp13DcnUpqMY0YZf+NlKt5j5LkuT0dbBc0MkybPaWn37BwKRQndIdwjb6nQ==}
+  sanity-plugin-hotspot-array@2.1.1:
+    resolution: {integrity: sha512-unSb/iIp5IOi6/7gLZqSqiZZEQh5/2y6ju+v91fb2FGV7I/cxTncPWhdD87Gy24XeT3Q3pjeQVgoeYm0QBxtpA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/ui': ^2.8.25
@@ -15496,13 +15496,13 @@ snapshots:
 
   '@types/lodash-es@4.17.12':
     dependencies:
-      '@types/lodash': 4.17.12
+      '@types/lodash': 4.17.13
 
   '@types/lodash.isequal@4.5.8':
     dependencies:
-      '@types/lodash': 4.17.12
+      '@types/lodash': 4.17.13
 
-  '@types/lodash@4.17.12': {}
+  '@types/lodash@4.17.13': {}
 
   '@types/log-symbols@2.0.0': {}
 
@@ -21831,7 +21831,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.1.1
 
-  sanity-plugin-hotspot-array@2.1.0(@sanity/ui@2.8.25(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-b01722d5-20241114)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+  sanity-plugin-hotspot-array@2.1.1(@sanity/ui@2.8.25(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-b01722d5-20241114)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       '@sanity/asset-utils': 2.2.0
       '@sanity/image-url': 1.1.0
