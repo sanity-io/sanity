@@ -240,6 +240,113 @@ describe('searchReducer', () => {
       ]
     `)
   })
+
+  it.each<SearchAction>([
+    {
+      type: 'SEARCH_CLEAR',
+    },
+    {
+      type: 'TERMS_QUERY_SET',
+      query: 'test query b',
+    },
+    {
+      type: 'TERMS_SET',
+      terms: {
+        query: 'test',
+        types: [],
+      },
+    },
+    {
+      type: 'ORDERING_SET',
+      ordering: {
+        titleKey: 'search.ordering.test-label',
+        sort: {
+          field: '_createdAt',
+          direction: 'desc',
+        },
+      },
+    },
+    {
+      type: 'ORDERING_RESET',
+    },
+    {
+      type: 'TERMS_FILTERS_ADD',
+      filter: {
+        filterName: 'test',
+        operatorType: 'test',
+      },
+    },
+    {
+      type: 'TERMS_FILTERS_REMOVE',
+      filterKey: 'test',
+    },
+    {
+      type: 'TERMS_FILTERS_SET_OPERATOR',
+      filterKey: 'test',
+      operatorType: 'test',
+    },
+    {
+      type: 'TERMS_FILTERS_SET_VALUE',
+      filterKey: 'test',
+    },
+    {
+      type: 'TERMS_FILTERS_CLEAR',
+    },
+    {
+      type: 'TERMS_TYPE_ADD',
+      schemaType: mockSearchableType,
+    },
+    {
+      type: 'TERMS_TYPE_REMOVE',
+      schemaType: mockSearchableType,
+    },
+    {
+      type: 'TERMS_TYPES_CLEAR',
+    },
+  ])('should reset cursor state when any parameter changes ($type)', async (action) => {
+    const {result} = renderHook(() => useReducer(searchReducer, initialState))
+    const [, dispatch] = result.current
+
+    act(() =>
+      dispatch({
+        type: 'TERMS_QUERY_SET',
+        query: 'test query a',
+      }),
+    )
+
+    act(() =>
+      dispatch({
+        type: 'SEARCH_REQUEST_COMPLETE',
+        nextCursor: 'cursorA',
+        hits: [],
+      }),
+    )
+
+    act(() =>
+      dispatch({
+        type: 'PAGE_INCREMENT',
+      }),
+    )
+
+    act(() =>
+      dispatch({
+        type: 'SEARCH_REQUEST_COMPLETE',
+        nextCursor: 'cursorB',
+        hits: [],
+      }),
+    )
+
+    const [stateA] = result.current
+
+    expect(stateA.cursor).toBe('cursorA')
+    expect(stateA.nextCursor).toBe('cursorB')
+    act(() => dispatch(action))
+
+    const [stateB] = result.current
+
+    expect(stateB.cursor).toBeNull()
+    expect(stateB.nextCursor).toBeNull()
+  })
 })
 
 it.each<SearchAction>([
