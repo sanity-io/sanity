@@ -37,12 +37,20 @@ const formatParams = {
 }
 
 export function EventsTimelineMenu({event, events, mode, placement}: TimelineMenuProps) {
-  const {setTimelineRange, timelineError} = useDocumentPane()
+  const {setTimelineRange} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
   const toast = useToast()
-  const {nextCursor, loading, findRangeForRevision, findRangeForSince, loadMoreEvents} = useEvents()
+  const {
+    nextCursor,
+    loading,
+    error: eventsError,
+    findRangeForRevision,
+    findRangeForSince,
+    loadMoreEvents,
+    documentVariantType,
+  } = useEvents()
 
   const {t} = useTranslation('studio')
 
@@ -125,7 +133,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
   }, [loading, loadMoreEvents, nextCursor])
 
   const content = useMemo(() => {
-    if (timelineError) return <TimelineError />
+    if (eventsError) return <TimelineError />
 
     if (mode === 'rev') {
       return (
@@ -135,6 +143,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
           selectedEventId={event?.id}
           onLoadMore={handleLoadMore}
           onSelect={selectRev}
+          documentVariantType={documentVariantType}
         />
       )
     }
@@ -146,9 +155,20 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
         selectedEventId={event?.id}
         onLoadMore={handleLoadMore}
         onSelect={selectSince}
+        documentVariantType={documentVariantType}
       />
     )
-  }, [event?.id, events, handleLoadMore, mode, nextCursor, selectRev, selectSince, timelineError])
+  }, [
+    event?.id,
+    events,
+    handleLoadMore,
+    mode,
+    nextCursor,
+    selectRev,
+    selectSince,
+    eventsError,
+    documentVariantType,
+  ])
 
   const revLabel = event
     ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.type], {

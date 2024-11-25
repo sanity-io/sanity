@@ -28,7 +28,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
     setListHeight(el?.clientHeight ? el.clientHeight - 1 : 0)
     setScrollRef(el)
   }, [])
-  const {events, nextCursor, loading, error, revision} = useEvents()
+  const {events, nextCursor, loading, error, revision, documentVariantType} = useEvents()
 
   const {t} = useTranslation('studio')
   const toast = useToast()
@@ -85,6 +85,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
                   onLoadMore={handleLoadMore}
                   onSelect={selectRev}
                   listMaxHeight={`${listHeight}px`}
+                  documentVariantType={documentVariantType}
                 />
               ) : (
                 <LoadingBlock />
