@@ -1,8 +1,4 @@
-import {
-  isPublishedPerspective,
-  unstable_useValuePreview as useValuePreview,
-  usePerspective,
-} from 'sanity'
+import {unstable_useValuePreview as useValuePreview} from 'sanity'
 
 import {useDocumentPane} from './useDocumentPane'
 
@@ -26,18 +22,14 @@ interface UseDocumentTitle {
  * @returns The document title or error. See {@link UseDocumentTitle}
  */
 export function useDocumentTitle(): UseDocumentTitle {
-  const {connectionState, schemaType, title, editState} = useDocumentPane()
-  const {selectedPerspectiveName} = usePerspective()
-  const documentValue =
-    selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)
-      ? editState?.published
-      : editState?.version || editState?.draft || editState?.published
-  const subscribed = Boolean(documentValue)
+  const {connectionState, schemaType, title, displayed} = useDocumentPane()
+
+  const subscribed = Boolean(displayed)
 
   const {error, value} = useValuePreview({
     enabled: subscribed,
     schemaType,
-    value: documentValue,
+    value: displayed,
   })
 
   if (connectionState === 'connecting' && !subscribed) {
@@ -48,7 +40,7 @@ export function useDocumentTitle(): UseDocumentTitle {
     return {error: undefined, title}
   }
 
-  if (!documentValue) {
+  if (!displayed) {
     return {error: undefined, title: `New ${schemaType?.title || schemaType?.name}`}
   }
 
