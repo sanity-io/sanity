@@ -141,16 +141,19 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       margin-top: -3px;
       left: calc(
         ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px
+            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+          1px
       );
       right: calc(
         ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px
+            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+          1px
       );
       width: calc(
         100% -
           ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} + 2px
+            $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} +
+          2px
       ) !important;
     }
   }
