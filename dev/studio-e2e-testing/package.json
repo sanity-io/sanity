@@ -1,6 +1,6 @@
 {
   "name": "studio-e2e-testing",
-  "version": "3.64.1",
+  "version": "3.65.0",
   "private": true,
   "keywords": [
     "sanity"
@@ -17,9 +17,11 @@
   "dependencies": {
     "@sanity/google-maps-input": "^4.0.0",
     "@sanity/icons": "^3.4.0",
-    "@sanity/ui": "^2.8.23",
-    "@sanity/vision": "3.64.1",
+    "@sanity/ui": "^2.8.25",
+    "@sanity/vision": "3.65.0",
+    "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
     "react": "^18.3.1",
+    "react-compiler-runtime": "19.0.0-beta-df7b47d-20241124",
     "react-dom": "^18.3.1",
     "sanity": "workspace:*",
     "sanity-plugin-media": "^2.3.1",

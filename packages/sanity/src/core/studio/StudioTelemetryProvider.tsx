@@ -13,6 +13,20 @@ import {SANITY_VERSION} from '../version'
 
 const sessionId = createSessionId()
 
+// A list of common dataset / workspace names we can safely log without collecting private data
+const WELL_KNOWN_NAMES = [
+  'staging',
+  'stage',
+  'stg',
+  'production',
+  'prod',
+  'preprod',
+  'development',
+  'dev',
+  'qa',
+  'test',
+]
+
 const DEBUG_TELEMETRY = process.env.SANITY_STUDIO_DEBUG_TELEMETRY
 
 /* eslint-disable no-console */
@@ -73,6 +87,15 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
   const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
 
   useEffect(() => {
+    const workspaces = arrify(props.config)
+    const projectIds: string[] = []
+    const datasetNames: string[] = []
+    const workspaceNames: string[] = []
+    workspaces.forEach((workspace) => {
+      projectIds.push(workspace.projectId)
+      datasetNames.push(workspace.dataset)
+      workspaceNames.push(workspace.name || '<unnamed>')
+    })
     store.logger.updateUserProperties({
       userAgent: navigator.userAgent,
       screen: {
@@ -83,14 +106,30 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
         innerWidth: window.innerWidth,
       },
       studioVersion: SANITY_VERSION,
-      plugins: arrify(props.config).flatMap(
-        (config) =>
-          config.plugins?.flatMap((plugin) => ({
+      plugins: workspaces.flatMap(
+        (workspace) =>
+          workspace.plugins?.flatMap((plugin) => ({
             name: plugin.name || '<unnamed>',
           })) || [],
+      ),
+      uniqueWorkspaceNames: new Set(workspaceNames).size,
+      uniqueDatasetNames: new Set(datasetNames).size,
+      workspaceNames: workspaceNames.map(
+        (workspaceName) =>
+          // log only well known dataset names to avoid sending private data
+          getWellKnownName(workspaceName) || '<custom>',
+      ),
+      datasetNames: datasetNames.map(
+        (datasetName) =>
+          // log only well known dataset names to avoid sending private data
+          getWellKnownName(datasetName) || '<custom>',
       ),
     })
   }, [props.config, store.logger])
 
   return <TelemetryProvider store={store}>{props.children}</TelemetryProvider>
+}
+
+function getWellKnownName(name: string) {
+  return WELL_KNOWN_NAMES.find((wellKnownName) => name.toLowerCase().includes(wellKnownName))
 }

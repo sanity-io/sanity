@@ -120,19 +120,14 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   useEffect(() => {
     const didPublish = publishState === 'publishing' && !hasDraft
-    if (didPublish) {
-      if (changesOpen) {
-        // Re-open the panel
-        onHistoryOpen()
-      }
-    }
+
     const nextState = didPublish ? 'published' : null
     const delay = didPublish ? 200 : 4000
     const timer = setTimeout(() => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
-  }, [changesOpen, publishState, hasDraft, onHistoryOpen])
+  }, [changesOpen, publishState, hasDraft])
 
   const telemetry = useTelemetry()
 

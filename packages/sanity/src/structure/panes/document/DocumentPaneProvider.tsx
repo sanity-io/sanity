@@ -462,7 +462,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
 
     if (resolvedChangesInspector) {
-      openInspector(resolvedChangesInspector.name)
+      openInspector(resolvedChangesInspector.name, {changesInspectorTab: 'review'})
     }
   }, [features.reviewChanges, openInspector, resolvedChangesInspector])
 

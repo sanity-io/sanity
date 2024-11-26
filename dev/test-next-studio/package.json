@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-next-studio",
-  "version": "3.64.1",
+  "version": "3.65.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "beta",
+    "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
     "next": "15.0.3",
-    "react": "19.0.0-rc-a7d1240c-20240731",
-    "react-dom": "19.0.0-rc-a7d1240c-20240731",
-    "react-is": "19.0.0-rc-a7d1240c-20240731",
+    "react": "rc",
+    "react-dom": "rc",
+    "react-is": "rc",
     "sanity": "workspace:*",
     "sanity-test-studio": "workspace:*",
     "styled-components": "^6.1.12",

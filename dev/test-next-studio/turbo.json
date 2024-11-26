@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["REACT_COMPILER", "REACT_PRODUCTION_PROFILING"],
+      "env": ["REACT_PRODUCTION_PROFILING"],
       "outputs": [".next/**", "!.next/cache/**", "out/**"],
       "dependsOn": ["^build"]
     },

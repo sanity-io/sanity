@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.64.1",
+  "version": "3.65.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -16,11 +16,11 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/editor": "^1.8.0",
+    "@portabletext/editor": "^1.11.3",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.0.2",
-    "@sanity/block-tools": "3.64.1",
-    "@sanity/client": "^6.22.4",
+    "@sanity/block-tools": "3.65.0",
+    "@sanity/client": "^6.22.5",
     "@sanity/color": "^3.0.0",
     "@sanity/google-maps-input": "^4.0.0",
     "@sanity/icons": "^3.4.0",
@@ -34,14 +34,14 @@
     "@sanity/migrate": "workspace:*",
     "@sanity/preview-url-secret": "^2.0.0",
     "@sanity/react-loader": "^1.8.3",
-    "@sanity/tsdoc": "1.0.131",
+    "@sanity/tsdoc": "1.0.134",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.8.23",
+    "@sanity/ui": "^2.8.25",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "workspace:*",
-    "@sanity/visual-editing": "2.7.0",
+    "@sanity/visual-editing": "2.8.0",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "@vercel/stega": "0.1.2",
@@ -51,6 +51,7 @@
     "lodash": "^4.17.21",
     "qs": "^6.10.2",
     "react": "^18.3.1",
+    "react-compiler-runtime": "19.0.0-beta-df7b47d-20241124",
     "react-dom": "^18.3.1",
     "react-refractor": "^2.1.6",
     "refractor": "^3.6.0",
@@ -62,6 +63,7 @@
     "styled-components": "^6.1.11"
   },
   "devDependencies": {
+    "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
     "chokidar": "^3.6.0",
     "vite": "^4.5.5"
   },

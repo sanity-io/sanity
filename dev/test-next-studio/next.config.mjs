@@ -2,9 +2,7 @@ function requireResolve(id) {
   return import.meta.resolve(id).replace('file://', '')
 }
 
-const reactCompiler = process.env.REACT_COMPILER === 'true'
 const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
-const productionBrowserSourceMaps = reactCompiler || reactProductionProfiling
 
 // eslint-disable-next-line tsdoc/syntax
 /** @type {import('next').NextConfig} */
@@ -86,10 +84,10 @@ const config = {
   },
   // Makes it much easier to see which component got memoized by the react compiler
   // when testing on https://test-next-studio.sanity.build
-  productionBrowserSourceMaps,
+  productionBrowserSourceMaps: reactProductionProfiling,
   reactProductionProfiling,
   experimental: {
-    reactCompiler,
+    reactCompiler: true,
     turbo: {
       resolveAlias: {
         '@sanity/block-tools': '@sanity/block-tools/src/index.ts',

@@ -4,6 +4,9 @@ export function isValidDate(date: Date): boolean {
   return date instanceof Date && !isNaN(date.valueOf())
 }
 
+/**
+ * @internal
+ */
 export function getCalendarLabels(
   t: (key: string, values?: Record<string, unknown>) => string,
 ): CalendarLabels {

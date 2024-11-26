@@ -176,6 +176,8 @@ export default async function buildSanityStudio(
       minify: Boolean(flags.minify),
       vite: cliConfig && 'vite' in cliConfig ? cliConfig.vite : undefined,
       importMap,
+      reactCompiler:
+        cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
     })
 
     trace.log({

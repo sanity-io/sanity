@@ -211,7 +211,6 @@ export function useTimelineStore({
       findRangeForSince: (chunk: Chunk) => controller.findRangeForNewSince(chunk),
       loadMore: () => {
         controller.setLoadMore(true)
-        timelineStateRef.current.isLoading = true
       },
       getSnapshot: () => timelineStateRef.current,
       subscribe: (callback: () => void) => {
@@ -234,7 +233,7 @@ export function useTimelineStore({
               return {
                 chunks,
                 diff: innerController.sinceTime ? innerController.currentObjectDiff() : null,
-                isLoading: false,
+                isLoading: innerController.isLoading,
                 isPristine: timelineReady ? chunks.length === 0 && hasMoreChunks === false : null,
                 hasMoreChunks: !innerController.timeline.reachedEarliestEntry,
                 lastNonDeletedRevId: lastNonDeletedChunk?.[0]?.id,

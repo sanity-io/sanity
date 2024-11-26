@@ -69,10 +69,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',
 
-  /** Message prompting the user to confirm that they want to restore to an earlier version*/
+  /** Message prompting the user to confirm that they want to restore to an earlier revision*/
   'action.restore.confirm.message': 'Are you sure you want to restore this document?',
-  /** Fallback tooltip for when user is looking at the initial version */
-  'action.restore.disabled.cannot-restore-initial': "You can't restore to the initial version",
+  /** Fallback tooltip for when user is looking at the initial revision */
+  'action.restore.disabled.cannot-restore-initial': "You can't restore to the initial revision",
 
   /** Label for the "Restore" document action */
   'action.restore.label': 'Revert to revision',
@@ -90,7 +90,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'This document has live edit enabled and cannot be unpublished',
 
   /** The text for the restore button on the deleted document banner */
-  'banners.deleted-document-banner.restore-button.text': 'Restore most recent version',
+  'banners.deleted-document-banner.restore-button.text': 'Restore most recent revision',
   /** The text content for the deleted document banner */
   'banners.deleted-document-banner.text': 'This document has been deleted.',
   /** The text content for the deprecated document type banner */
@@ -151,7 +151,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.split-pane-close-button.title': 'Close split pane',
   /** The title for the close group button on the split pane on the document panel header */
   'buttons.split-pane-close-group-button.title': 'Close pane group',
-
+  /** The label used in the changes inspector for the from selector */
+  'changes.from.label': 'From',
+  /* The label for the history tab in the changes inspector*/
+  'changes.tab.history': 'History',
+  /* The label for the review tab in the changes inspector*/
+  'changes.tab.review-changes': 'Review changes',
+  /** The label used in the changes inspector for the to selector */
+  'changes.to.label': 'To',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action and closes the dialog */
   'confirm-delete-dialog.cancel-button.text': 'Cancel',
   /** Used in `confirm-delete-dialog.cdr-summary.title` */
@@ -385,7 +392,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     '<Strong>{{title}}</Strong> was restored',
   /** The text when an unpublish operation succeeded  */
   'panes.document-operation-results.operation-success_unpublish':
-    '<Strong>{{title}}</Strong> was unpublished. A draft has been created from the latest published version.',
+    '<Strong>{{title}}</Strong> was unpublished. A draft has been created from the latest published revision.',
   /** The document title shown when document title is "undefined" in operation message */
   'panes.document-operation-results.operation-undefined-title': 'Untitled',
   /** The title of the reconnecting toast */
@@ -474,6 +481,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'structure-error.reload-button.text': 'Reload',
   /** Labels the structure path of the structure error screen */
   'structure-error.structure-path.label': 'Structure path',
+
+  /** The aria label for the menu button in the timeline item */
+  'timeline-item.menu-button.aria-label': 'Open action menu',
+  /** The text for the tooltip in menu button the timeline item */
+  'timeline-item.menu-button.tooltip': 'Actions',
+  /** The text for the collapse action in the timeline item menu */
+  'timeline-item.menu.action-collapse': 'Collapse',
+  /** The text for the expand action in the timeline item menu */
+  'timeline-item.menu.action-expand': 'Expand',
 })
 
 /**

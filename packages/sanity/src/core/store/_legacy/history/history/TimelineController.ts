@@ -126,6 +126,10 @@ export class TimelineController {
     return this._revTime && typeof this._revTime === 'object' ? this._revTime : null
   }
 
+  get isLoading(): boolean {
+    return this._isRunning
+  }
+
   get realRevChunk(): Chunk {
     return this.revTime || this.timeline.lastChunk()
   }
@@ -258,6 +262,7 @@ export class TimelineController {
       !this._isSuspended
 
     if (!shouldFetchMore) {
+      this._isRunning = false
       return
     }
 

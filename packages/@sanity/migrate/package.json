@@ -1,6 +1,6 @@
 {
   "name": "@sanity/migrate",
-  "version": "3.64.1",
+  "version": "3.65.0",
   "description": "Tooling for running data migrations on Sanity.io projects",
   "keywords": [
     "sanity",
@@ -50,10 +50,10 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.22.4",
+    "@sanity/client": "^6.22.5",
     "@sanity/mutate": "^0.10.2",
-    "@sanity/types": "3.64.1",
-    "@sanity/util": "3.64.1",
+    "@sanity/types": "3.65.0",
+    "@sanity/util": "3.65.0",
     "arrify": "^2.0.1",
     "debug": "^4.3.4",
     "fast-fifo": "^1.3.2",

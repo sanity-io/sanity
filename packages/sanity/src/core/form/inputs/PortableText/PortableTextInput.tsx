@@ -133,7 +133,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(initialFullscreen ?? false)
   const [isActive, setIsActive] = useState(initialActive ?? false)
-  const [isOffline, setIsOffline] = useState(false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const telemetry = useTelemetry()
 
@@ -220,13 +219,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         case 'mutation':
           onChange(toFormPatches(change.patches))
           break
-        case 'connection':
-          if (change.value === 'offline') {
-            setIsOffline(true)
-          } else if (change.value === 'online') {
-            setIsOffline(false)
-          }
-          break
         case 'selection':
           setFocusPathFromEditorSelection(change.selection)
           break
@@ -237,10 +229,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         case 'blur':
           onBlur(change.event)
           setHasFocusWithin(false)
-          break
-        case 'undo':
-        case 'redo':
-          onChange(toFormPatches(change.patches))
           break
         case 'invalidValue':
           setInvalidValue(change)
@@ -276,13 +264,13 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
             onChange={handleEditorChange}
             onIgnore={handleIgnoreInvalidValue}
             resolution={invalidValue.resolution}
-            readOnly={isOffline || readOnly}
+            readOnly={readOnly}
           />
         </Box>
       )
     }
     return null
-  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, isOffline, readOnly])
+  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, readOnly])
 
   const handleActivate = useCallback((): void => {
     if (!isActive) {
@@ -393,7 +381,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
               ref={editorRef}
-              readOnly={isOffline || readOnly}
+              readOnly={readOnly}
               schemaType={schemaType}
               value={value}
             >

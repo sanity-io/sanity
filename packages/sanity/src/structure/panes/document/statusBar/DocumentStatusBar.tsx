@@ -71,7 +71,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   }
 
   return (
-    <Card tone={showingRevision || showingVersion ? 'caution' : undefined}>
+    <Card tone={showingRevision ? 'caution' : undefined}>
       <Flex direction="column" ref={setRootElement} sizing="border">
         {shouldRender && (
           <Flex
@@ -79,12 +79,16 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             gap={1}
             justify="space-between"
             paddingY={2}
-            paddingLeft={4}
-            paddingRight={3}
+            paddingLeft={showingRevision ? 3 : 4}
+            paddingRight={showingRevision ? 2 : 3}
           >
             <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
               <Flex align="center">
-                {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
+                {showingRevision ? (
+                  <RevisionStatusLine />
+                ) : (
+                  <DocumentStatusLine singleLine={!collapsed} />
+                )}
                 <SpacerButton size="large" />
               </Flex>
               <DocumentBadges />

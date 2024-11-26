@@ -1,6 +1,6 @@
 {
   "name": "@sanity/mutator",
-  "version": "3.64.1",
+  "version": "3.65.0",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "keywords": [
     "sanity",
@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@sanity/diff-match-patch": "^3.1.1",
-    "@sanity/types": "3.64.1",
+    "@sanity/types": "3.65.0",
     "@sanity/uuid": "^3.0.1",
     "debug": "^4.3.4",
     "lodash": "^4.17.21"

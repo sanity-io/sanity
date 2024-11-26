@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "3.64.1",
+  "version": "3.65.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -121,8 +121,8 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.22.4",
-    "@sanity/types": "3.64.1",
+    "@sanity/client": "^6.22.5",
+    "@sanity/types": "3.65.0",
     "get-random-values-esm": "1.0.2",
     "moment": "^2.30.1",
     "rxjs": "^7.8.1"

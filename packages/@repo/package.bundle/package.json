@@ -1,6 +1,6 @@
 {
   "name": "@repo/package.bundle",
-  "version": "3.64.1",
+  "version": "3.65.0",
   "private": true,
   "description": "Shared package bundle configuration",
   "main": "./src/package.bundle.ts",

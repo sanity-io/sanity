@@ -1,6 +1,6 @@
 {
   "name": "blog-studio",
-  "version": "3.64.1",
+  "version": "3.65.0",
   "private": true,
   "description": "Content studio running with schema from the blog init template",
   "keywords": [

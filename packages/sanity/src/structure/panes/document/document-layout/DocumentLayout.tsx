@@ -25,7 +25,7 @@ import {type Path} from 'sanity-diff-patch'
 import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {Pane, PaneFooter, usePane, usePaneLayout} from '../../../components'
+import {Pane, PaneFooter, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
@@ -83,7 +83,7 @@ export function DocumentLayout() {
     schemaType,
     value,
   } = useDocumentPane()
-
+  const {params: paneParams} = usePaneRouter()
   const {features} = useStructureTool()
   const {t} = useTranslation(structureLocaleNamespace)
   const {collapsed: layoutCollapsed} = usePaneLayout()
@@ -230,7 +230,7 @@ export function DocumentLayout() {
             <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
               <StyledChangeConnectorRoot
                 data-testid="change-connector-root"
-                isReviewChangesOpen={changesOpen}
+                isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
                 onOpenReviewChanges={onHistoryOpen}
                 onSetFocus={onConnectorSetFocus}
               >

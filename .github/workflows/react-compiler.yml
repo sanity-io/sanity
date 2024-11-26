@@ -1,0 +1,48 @@
+name: Maintain React Compiler
+
+on:
+  schedule:
+    - cron: "10 12 * * 1" # Runs at 12:10 PM UTC every Monday, which is 3 hours after the React Compiler release: https://github.com/facebook/react/blob/989af12f72080c17db03ead91d99b6394a215564/.github/workflows/compiler_prereleases_weekly.yml#L5-L6
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+  run:
+    name: Should React Compiler dependencies be updated? 🤔
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+      - run: pnpm -r up --ignore-scripts react-compiler-runtime@beta babel-plugin-react-compiler@beta eslint-plugin-react-compiler@beta
+      - uses: actions/create-github-app-token@v1
+        id: generate-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+      - id: check-changes
+        run: |
+          if git diff --name-only | grep -q 'package.json'; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      - if: steps.check-changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f # v7
+        with:
+          body: I ran `pnpm -r up react-compiler-runtime@beta babel-plugin-react-compiler@beta eslint-plugin-react-compiler@beta` 🧑‍💻
+          branch: actions/react-compiler
+          commit-message: "fix(deps): update react compiler dependencies 🤖 ✨"
+          labels: 🤖 bot
+          sign-commits: true
+          title: "fix(deps): update React Compiler dependencies 🤖 ✨"
+          token: ${{ steps.generate-token.outputs.token }}

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.64.1",
+  "version": "3.65.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -63,19 +63,20 @@
     "@rexxars/react-split-pane": "^0.1.93",
     "@sanity/color": "^3.0.0",
     "@sanity/icons": "^3.4.0",
-    "@sanity/ui": "^2.8.23",
+    "@sanity/ui": "^2.8.25",
     "@uiw/react-codemirror": "^4.11.4",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
-    "quick-lru": "^5.1.1"
+    "quick-lru": "^5.1.1",
+    "react-compiler-runtime": "19.0.0-beta-df7b47d-20241124"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@sanity/block-tools": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^6.22.4",
+    "@sanity/client": "^6.22.5",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",
@@ -84,6 +85,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "@types/lodash": "^4.17.7",
+    "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
     "react": "^18.3.1",
     "sanity": "workspace:*",
     "styled-components": "^6.1.13"
