@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies, simple-import-sort/imports
+// import {scan} from 'react-scan' // import this BEFORE react
+
 import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
@@ -359,3 +362,14 @@ export default defineConfig([
     basePath: '/presentation',
   },
 ]) as WorkspaceOptions[]
+
+// if (typeof window !== 'undefined') {
+//   scan({
+//     enabled: true,
+//     log: true, // logs render info to console (default: false)
+//     renderCountThreshold: 10,
+//     maxRenders: 20,
+//     report: true,
+//     includeChildren: true,
+//   })
+// }

@@ -1,5 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
-import {memo, useCallback} from 'react'
+import {memo, useCallback, useEffect} from 'react'
 import {styled} from 'styled-components'
 
 import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
@@ -63,6 +63,10 @@ export const SearchResults = memo(function SearchResults({
   const handleEndReached = useCallback(() => {
     dispatch({type: 'PAGE_INCREMENT'})
   }, [dispatch])
+
+  // useEffect(() => {
+  //   onClose && console.count('onClose changed')
+  // }, [onClose])
 
   const renderItem = useCallback<CommandListRenderItemCallback<WeightedHit>>(
     (item) => {

@@ -22,7 +22,7 @@ export function SearchWrapper({
 
   const {
     dispatch,
-    searchCommandList,
+    searchCommandListRef,
     setOnClose,
     state: {result},
   } = useSearchState()
@@ -31,9 +31,24 @@ export function SearchWrapper({
    * Store top-most search result scroll index on close
    */
   const handleClose = useCallback(() => {
-    dispatch({index: searchCommandList?.getTopIndex() ?? -1, type: 'LAST_ACTIVE_INDEX_SET'})
+    dispatch({
+      index: searchCommandListRef.current?.getTopIndex() ?? -1,
+      type: 'LAST_ACTIVE_INDEX_SET',
+    })
     onClose()
-  }, [dispatch, onClose, searchCommandList])
+  }, [dispatch, onClose, searchCommandListRef])
+  useEffect(() => {
+    handleClose && console.count('handleClose changed')
+  }, [handleClose])
+  useEffect(() => {
+    dispatch && console.count('dispatch changed')
+  }, [dispatch])
+  useEffect(() => {
+    onClose && console.count('onClose changed')
+  }, [onClose])
+  useEffect(() => {
+    searchCommandListRef && console.count('searchCommandListRef changed')
+  }, [searchCommandListRef])
 
   /**
    * Bind hotkeys to open action

@@ -1,5 +1,6 @@
 import path from 'node:path'
 
+import MillionLint from '@million/lint'
 import {defineCliConfig} from 'sanity/cli'
 import {type UserConfig} from 'vite'
 
@@ -12,19 +13,25 @@ export default defineCliConfig({
   // Can be overriden by:
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above
-  reactStrictMode: true,
-  reactCompiler: {target: '18'},
+  // reactStrictMode: true,
+  // reactCompiler: {target: '18'},
   vite(viteConfig: UserConfig): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     return {
       ...viteConfig,
-      // plugins: [
-      //   MillionLint.vite({
-      //     telemetry: false,
-      //   }),
-      //   ...(viteConfig.plugins || []),
-      // ],
+      plugins: [
+        MillionLint.vite({
+          telemetry: false,
+
+          // dev: 'debug',
+          // stats: {
+          //   captures: 1,
+          //   components: 1,
+          // },
+        }),
+        ...(viteConfig.plugins || []),
+      ],
       optimizeDeps: {
         ...viteConfig.optimizeDeps,
         include: ['react/jsx-runtime'],

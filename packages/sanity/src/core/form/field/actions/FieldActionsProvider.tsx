@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {memo, type PropsWithChildren, useCallback, useMemo} from 'react'
+import {memo, type PropsWithChildren, useCallback, useMemo, useSyncExternalStore} from 'react'
 import {FieldActionsContext, type FieldActionsContextValue} from 'sanity/_singletons'
 
 import {type DocumentFieldActionNode} from '../../../config'
@@ -18,10 +18,16 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
   props: FieldActionsProviderProps,
 ) {
   const {actions, children, path, focused} = props
-  const {onMouseEnter: onFieldMouseEnter, onMouseLeave: onFieldMouseLeave} = useHoveredField()
+  const {
+    onMouseEnter: onFieldMouseEnter,
+    onMouseLeave: onFieldMouseLeave,
+    store: hoveredStore,
+  } = useHoveredField()
 
-  const hoveredPath = useHoveredField().hoveredStack[0]
-  const hovered = supportsTouch || (hoveredPath ? pathToString(path) === hoveredPath : false)
+  const hovered = useSyncExternalStore(hoveredStore.subscribe, () => {
+    const [hoveredPath] = hoveredStore.getSnapshot()
+    return supportsTouch || (hoveredPath ? pathToString(path) === hoveredPath : false)
+  })
 
   const handleMouseEnter = useCallback(() => {
     onFieldMouseEnter(path)

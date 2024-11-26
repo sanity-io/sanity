@@ -1,5 +1,15 @@
+import {type Schema} from '@sanity/types'
 import {isEqual} from 'lodash'
-import {memo, type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {
+  memo,
+  type ReactNode,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
@@ -10,8 +20,14 @@ import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {createFieldDefinitionDictionary, createFieldDefinitions} from '../../definitions/fields'
-import {createFilterDefinitionDictionary} from '../../definitions/filters'
-import {createOperatorDefinitionDictionary} from '../../definitions/operators'
+import {
+  createFilterDefinitionDictionary,
+  type SearchFilterDefinition,
+} from '../../definitions/filters'
+import {
+  createOperatorDefinitionDictionary,
+  type SearchOperatorDefinition,
+} from '../../definitions/operators'
 import {useSearch} from '../../hooks/useSearch'
 import {type SearchOrdering} from '../../types'
 import {validateFilter} from '../../utils/filterUtils'
@@ -33,6 +49,13 @@ export const SearchProvider = memo(function SearchProvider({
 }: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
+  const searchCommandListRef = useRef<CommandListHandle | null>(null)
+
+  useImperativeHandle<CommandListHandle | null, CommandListHandle | null>(
+    searchCommandListRef,
+    () => searchCommandList,
+    [searchCommandList],
+  )
 
   const schema = useSchema()
   const currentUser = useCurrentUser()
@@ -41,40 +64,37 @@ export const SearchProvider = memo(function SearchProvider({
   } = useSource()
 
   // Create field, filter and operator dictionaries
-  const {fieldDefinitions, filterDefinitions, operatorDefinitions} = useMemo(() => {
-    return {
-      fieldDefinitions: createFieldDefinitionDictionary(createFieldDefinitions(schema, filters)),
-      filterDefinitions: createFilterDefinitionDictionary(filters),
-      operatorDefinitions: createOperatorDefinitionDictionary(operators),
-    }
-  }, [filters, operators, schema])
-
-  const initialState = useMemo(
-    () =>
-      initialSearchState({
-        currentUser,
-        fullscreen,
-        definitions: {
-          fields: fieldDefinitions,
-          operators: operatorDefinitions,
-          filters: filterDefinitions,
-        },
-        pagination: {
-          cursor: null,
-          nextCursor: null,
-        },
-        strategy,
-      }),
-    [currentUser, fullscreen, fieldDefinitions, operatorDefinitions, filterDefinitions, strategy],
+  const {fieldDefinitions, filterDefinitions, operatorDefinitions} = useDefinitions(
+    filters,
+    operators,
+    schema,
   )
-  const [state, dispatch] = useReducer(searchReducer, initialState)
+
+  const [state, dispatch] = useReducer(
+    searchReducer,
+    {
+      currentUser,
+      fullscreen,
+      definitions: {
+        fields: fieldDefinitions,
+        operators: operatorDefinitions,
+        filters: filterDefinitions,
+      },
+      pagination: {
+        cursor: null,
+        nextCursor: null,
+      },
+      strategy,
+    },
+    initialSearchState,
+  )
 
   const {documentTypesNarrowed, filters: currentFilters, ordering, cursor, result, terms} = state
 
   const isMountedRef = useRef(false)
-  const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
-  const previousCursorRef = useRef<string | null>(initialState.cursor)
-  const previousTermsRef = useRef<SearchTerms | RecentSearch>(initialState.terms)
+  const previousOrderingRef = useRef<SearchOrdering>(state.ordering)
+  const previousCursorRef = useRef<string | null>(state.cursor)
+  const previousTermsRef = useRef<SearchTerms | RecentSearch>(state.terms)
 
   const {handleSearch, searchState} = useSearch({
     initialState: {...result, terms},
@@ -182,14 +202,26 @@ export const SearchProvider = memo(function SearchProvider({
       onClose,
       searchCommandList,
       setSearchCommandList,
+      searchCommandListRef,
       setOnClose,
-      state: {
-        ...state,
-        fullscreen,
-      },
+      state: {...state, fullscreen},
     }),
     [fullscreen, onClose, searchCommandList, state],
   )
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
 })
+
+function useDefinitions(
+  filters: SearchFilterDefinition[],
+  operators: SearchOperatorDefinition<any>[],
+  schema: Schema,
+) {
+  return useMemo(() => {
+    return {
+      fieldDefinitions: createFieldDefinitionDictionary(createFieldDefinitions(schema, filters)),
+      filterDefinitions: createFilterDefinitionDictionary(filters),
+      operatorDefinitions: createOperatorDefinitionDictionary(operators),
+    }
+  }, [filters, operators, schema])
+}
