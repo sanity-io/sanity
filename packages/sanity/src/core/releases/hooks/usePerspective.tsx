@@ -1,4 +1,4 @@
-import {useCallback, useMemo} from 'react'
+import {useCallback, useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {resolveBundlePerspective} from '../../util/resolvePerspective'
@@ -50,7 +50,7 @@ const EMPTY_ARRAY: string[] = []
  */
 export function usePerspective(): PerspectiveValue {
   const router = useRouter()
-  const {data: releases} = useReleases()
+  const {data: releases, archivedReleases} = useReleases()
   // TODO: Actually validate the perspective value, if it's not a valid perspective, we should fallback to undefined
   const perspective = router.stickyParams.perspective as
     | 'published'
@@ -84,10 +84,20 @@ export function usePerspective(): PerspectiveValue {
   const selectedBundle =
     perspective && releases
       ? releases.find(
-          (release: ReleaseDocument) =>
-            `bundle.${getBundleIdFromReleaseDocumentId(release._id)}` === perspective,
+          (release) => `bundle.${getBundleIdFromReleaseDocumentId(release._id)}` === perspective,
         )
       : LATEST
+
+  // clear the perspective param when it is not an active release
+  useEffect(() => {
+    if (
+      archivedReleases?.find(
+        (release) => `bundle.${getBundleIdFromReleaseDocumentId(release._id)}` === perspective,
+      )
+    ) {
+      setPerspective(LATEST._id)
+    }
+  }, [archivedReleases, perspective, selectedBundle, setPerspective])
 
   // TODO: Improve naming; this may not be global.
   const currentGlobalBundle: CurrentPerspective = useMemo(
