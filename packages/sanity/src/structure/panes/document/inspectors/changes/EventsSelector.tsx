@@ -28,7 +28,8 @@ export function EventsSelector({showList}: {showList: boolean}) {
     setListHeight(el?.clientHeight ? el.clientHeight - 1 : 0)
     setScrollRef(el)
   }, [])
-  const {events, nextCursor, loading, error, revision, documentVariantType} = useEvents()
+  const {events, nextCursor, loading, error, revision, documentVariantType, loadMoreEvents} =
+    useEvents()
 
   const {t} = useTranslation('studio')
   const toast = useToast()
@@ -59,13 +60,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
     [t, toast, setTimelineRange],
   )
 
-  const handleLoadMore = useCallback(() => {
-    // If updated, be sure to update the TimeLineMenu component as well
-    if (!loading) {
-      // timelineStore.loadMore()
-    }
-  }, [loading])
-
+  const initialLoad = loading && !events.length
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill">
       <Card flex={1} padding={2} paddingTop={0}>
@@ -77,19 +72,18 @@ export function EventsSelector({showList}: {showList: boolean}) {
               {listHeight &&
               // This forces the list to unmount and remount, which is needed to reset the scroll position
               showList &&
-              !loading ? (
+              !initialLoad ? (
                 <EventsTimeline
                   events={events}
                   hasMoreEvents={Boolean(nextCursor)}
                   selectedEventId={revision?.revisionId}
-                  onLoadMore={handleLoadMore}
+                  onLoadMore={loadMoreEvents}
                   onSelect={selectRev}
                   listMaxHeight={`${listHeight}px`}
                   documentVariantType={documentVariantType}
                 />
-              ) : (
-                <LoadingBlock />
-              )}
+              ) : null}
+              {loading && <LoadingBlock />}
             </Scroller>
           </BoundaryElementProvider>
         )}
