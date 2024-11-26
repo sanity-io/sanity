@@ -1,6 +1,5 @@
 import createPubSub from 'nano-pubsub'
 import {
-  createElement,
   type ElementType,
   type ForwardedRef,
   forwardRef,
@@ -20,8 +19,6 @@ export interface ScrollContainerProps<T extends ElementType>
   onScroll?: (event: Event) => () => void
 }
 
-const noop = () => undefined
-
 /**
  * This provides a utility function for use within Sanity Studios to create scrollable containers
  * It also provides a way for components inside a scrollable container to track onScroll on their first parent scroll container
@@ -35,7 +32,7 @@ export const ScrollContainer = forwardRef(function ScrollContainer<T extends Ele
   props: ScrollContainerProps<T>,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
-  const {as = 'div', onScroll, ...rest} = props
+  const {as: As = 'div', onScroll, ...rest} = props
   const ref = useRef<HTMLDivElement | null>(null)
 
   useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
@@ -48,7 +45,7 @@ export const ScrollContainer = forwardRef(function ScrollContainer<T extends Ele
       // emit scroll events from children
       return childContext.subscribe(onScroll)
     }
-    return noop
+    return undefined
   }, [childContext, onScroll])
 
   useEffect(() => {
@@ -56,7 +53,7 @@ export const ScrollContainer = forwardRef(function ScrollContainer<T extends Ele
     if (parentContext) {
       return childContext.subscribe(parentContext.publish)
     }
-    return noop
+    return undefined
   }, [parentContext, childContext])
 
   useEffect(() => {
@@ -82,7 +79,8 @@ export const ScrollContainer = forwardRef(function ScrollContainer<T extends Ele
 
   return (
     <ScrollContext.Provider value={childContext}>
-      {createElement(as, {'ref': ref, 'data-testid': 'scroll-container', ...rest})}
+      <As {...rest} ref={ref} data-testid="scroll-container" />
     </ScrollContext.Provider>
   )
 })
+ScrollContainer.displayName = 'ForwardRef(ScrollContainer)'
