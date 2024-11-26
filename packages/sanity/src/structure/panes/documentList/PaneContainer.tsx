@@ -1,6 +1,6 @@
 import {Card, Code} from '@sanity/ui'
 import {isEqual} from 'lodash'
-import {memo, useMemo, useRef} from 'react'
+import {memo, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
@@ -49,11 +49,12 @@ const addSelectedStateToMenuItems = (options: {
 }
 
 export function useShallowUnique<ValueType>(value: ValueType): ValueType {
-  const valueRef = useRef<ValueType>(value)
-  if (!shallowEquals(valueRef.current, value)) {
-    valueRef.current = value
+  const [memoValue, setMemoValue] = useState(value)
+  if (!shallowEquals(memoValue, value)) {
+    setMemoValue(value)
+    return value
   }
-  return valueRef.current
+  return memoValue
 }
 
 /**
@@ -146,3 +147,4 @@ export const PaneContainer = memo(function PaneContainer(
     </SourceProvider>
   )
 })
+PaneContainer.displayName = 'Memo(PaneContainer)'
