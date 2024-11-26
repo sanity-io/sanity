@@ -46,7 +46,6 @@ describe('useVersionOperations', () => {
     expect(useReleaseOperationsMockReturn.discardVersion).toHaveBeenCalledWith(
       'releaseId',
       'documentId',
-      undefined,
     )
   })
 })
