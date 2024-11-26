@@ -289,7 +289,7 @@
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.17.7",
     "@types/log-symbols": "^2.0.0",
-    "@types/node": "^18.19.8",
+    "@types/node": "^22.10.0",
     "@types/raf": "^3.4.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",

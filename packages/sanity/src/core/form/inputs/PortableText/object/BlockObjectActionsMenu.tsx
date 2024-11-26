@@ -106,7 +106,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
           menu={
             <Menu>
               <>
-                {'_ref' in value && value._ref && (
+                {'_ref' in value && !!value._ref && (
                   <MenuItem
                     as={referenceLink}
                     data-as="a"
@@ -123,19 +123,19 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
                   />
                 )}
                 {!readOnly && (
-                  <MenuItem
-                    icon={EditIcon}
-                    onClick={onOpen}
-                    text={t('inputs.portable-text.block.edit')}
-                  />
-                )}
-                {!readOnly && (
-                  <MenuItem
-                    icon={TrashIcon}
-                    onClick={handleDelete}
-                    text={t('inputs.portable-text.block.remove')}
-                    tone="critical"
-                  />
+                  <>
+                    <MenuItem
+                      icon={EditIcon}
+                      onClick={onOpen}
+                      text={t('inputs.portable-text.block.edit')}
+                    />
+                    <MenuItem
+                      icon={TrashIcon}
+                      onClick={handleDelete}
+                      text={t('inputs.portable-text.block.remove')}
+                      tone="critical"
+                    />
+                  </>
                 )}
               </>
             </Menu>
