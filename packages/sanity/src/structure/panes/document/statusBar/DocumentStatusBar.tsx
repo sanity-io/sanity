@@ -84,11 +84,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           >
             <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
               <Flex align="center">
-                {showingRevision ? (
-                  <RevisionStatusLine />
-                ) : (
-                  <DocumentStatusLine singleLine={!collapsed} />
-                )}
+                {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
                 <SpacerButton size="large" />
               </Flex>
               <DocumentBadges />
