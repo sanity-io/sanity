@@ -290,6 +290,13 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The title of the sync lock toast on the form view */
   'document-view.form-view.sync-lock-toast.title': 'Syncing document…',
 
+  /**The title for the menu items that will be shown when expanding a publish release event to inspect the document */
+  'events.inspect.release': 'Inspect <VersionBadge>{{releaseTitle}}</VersionBadge> document',
+  /**The title for the menu items that will be shown when expanding a publish draft event to inspect the draft document*/
+  'events.open.draft': 'Open <VersionBadge>{{releaseTitle}}</VersionBadge> document',
+  /**The title for the menu items that will be shown when expanding a publish release event to inspect the release*/
+  'events.open.release': 'Open <VersionBadge>{{releaseTitle}}</VersionBadge> release',
+
   /** The loading messaging for when the tooltip is still loading permission info */
   'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
 

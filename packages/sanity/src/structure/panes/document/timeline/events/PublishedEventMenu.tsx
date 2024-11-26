@@ -12,6 +12,8 @@ import {
   getVersionFromId,
   type PublishDocumentVersionEvent,
   RELEASES_INTENT,
+  Translate,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
@@ -26,7 +28,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
   const {t} = useTranslation(structureLocaleNamespace)
   const portalContext = usePortal()
   const {params, setParams} = usePaneRouter()
-
+  const {setPerspective} = usePerspective()
   const handleOpenReleaseDocument = () => {
     setParams({
       ...params,
@@ -38,8 +40,26 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
   }
   const handleOpenDraftDocument = () => {
     // Do something
+    setParams({
+      ...params,
+      // TODO: Event.versionREvisionId should be defined for this type of events, CL is missing this property
+      rev: event.versionRevisionId || event.revisionId,
+      preserveRev: 'true',
+      since: undefined,
+    })
+    setTimeout(() => {
+      // A bug is produced when we change the perspective and the params at the same time
+      setPerspective('drafts')
+    }, 100)
   }
 
+  const VersionBadge = ({children}: {children: React.ReactNode}) => {
+    return (
+      <VersionInlineBadge $tone={event.release ? getReleaseTone(event.release) : undefined}>
+        {children}
+      </VersionInlineBadge>
+    )
+  }
   return (
     <MenuButton
       id={`timeline-item-menu-button-${event.versionId}`}
@@ -61,11 +81,16 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                 <MenuItem padding={3}>
                   <Flex align={'center'}>
                     <Text size={1} style={{textDecoration: 'none'}}>
-                      Open{' '}
-                      <VersionInlineBadge $tone={getReleaseTone(event.release)}>
-                        {event.release.metadata.title}
-                      </VersionInlineBadge>{' '}
-                      release
+                      <Translate
+                        components={{
+                          VersionBadge: ({children}) => <VersionBadge>{children} </VersionBadge>,
+                        }}
+                        i18nKey="events.open.release"
+                        values={{
+                          releaseTitle: event.release.metadata.title,
+                        }}
+                        t={t}
+                      />
                     </Text>
                   </Flex>
                 </MenuItem>
@@ -73,11 +98,16 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
               <MenuItem onClick={handleOpenReleaseDocument}>
                 <Flex align={'center'}>
                   <Text size={1}>
-                    Inspect{' '}
-                    <VersionInlineBadge $tone={getReleaseTone(event.release)}>
-                      {event.release.metadata.title}
-                    </VersionInlineBadge>{' '}
-                    document
+                    <Translate
+                      components={{
+                        VersionBadge: ({children}) => <VersionBadge>{children} </VersionBadge>,
+                      }}
+                      i18nKey="events.inspect.release"
+                      values={{
+                        releaseTitle: event.release.metadata.title,
+                      }}
+                      t={t}
+                    />
                   </Text>
                 </Flex>
               </MenuItem>
@@ -86,7 +116,18 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
             <MenuItem onClick={handleOpenDraftDocument}>
               <Flex align={'center'}>
                 <Text size={1}>
-                  Open <VersionInlineBadge $tone={'caution'}>draft</VersionInlineBadge> document
+                  <Translate
+                    components={{
+                      VersionBadge: ({children}) => (
+                        <VersionInlineBadge $tone="caution">{children}</VersionInlineBadge>
+                      ),
+                    }}
+                    i18nKey="events.open.draft"
+                    values={{
+                      releaseTitle: 'draft',
+                    }}
+                    t={t}
+                  />
                 </Text>
               </Flex>
             </MenuItem>
