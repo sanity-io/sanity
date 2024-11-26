@@ -35,7 +35,8 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
   const [dateInputOpen, setDateInputOpen] = useState(release.metadata.releaseType === 'scheduled')
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
   const publishDate = useMemo(
-    () => (releaseType === 'scheduled' ? getPublishDateFromRelease(release) : new Date()),
+    () =>
+      releaseType === 'scheduled' ? (getPublishDateFromRelease(release) ?? new Date()) : new Date(),
     [release, releaseType],
   )
 
