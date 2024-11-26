@@ -6,14 +6,13 @@ import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {formatRelativeLocale} from '../../util/formatRelativeLocale'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {usePerspective} from '../hooks/usePerspective'
 import {type ReleaseDocument} from '../store/types'
 import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {
-  getPublishDateFromRelease,
+  formatRelativeLocalePublishDate,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../util/util'
@@ -176,7 +175,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               release.metadata.releaseType === 'scheduled' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (
                 <Text muted size={1}>
-                  {formatRelativeLocale(getPublishDateFromRelease(release), new Date())}
+                  {formatRelativeLocalePublishDate(release)}
                 </Text>
               )}
           </Stack>

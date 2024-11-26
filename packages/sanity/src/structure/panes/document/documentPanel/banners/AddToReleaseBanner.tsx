@@ -2,9 +2,7 @@ import {LockIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {
-  formatRelativeLocale,
   getBundleIdFromReleaseDocumentId,
-  getPublishDateFromRelease,
   getReleaseTone,
   isReleaseScheduledOrScheduling,
   LATEST,
@@ -15,17 +13,16 @@ import {
 } from 'sanity'
 import {structureLocaleNamespace} from 'sanity/structure'
 
+import {formatRelativeLocalePublishDate} from '../../../../../core/releases/util/util'
 import {Button} from '../../../../../ui-components'
 import {Banner} from './Banner'
 
 export function AddToReleaseBanner({
   documentId,
   currentRelease,
-  value,
 }: {
   documentId: string
   currentRelease: ReleaseDocument
-  value?: Record<string, unknown>
 }): JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -39,9 +36,9 @@ export function AddToReleaseBanner({
 
   const handleAddToRelease = useCallback(async () => {
     if (currentRelease._id) {
-      await createVersion(getBundleIdFromReleaseDocumentId(currentRelease._id), documentId, value)
+      await createVersion(getBundleIdFromReleaseDocumentId(currentRelease._id), documentId)
     }
-  }, [createVersion, currentRelease._id, documentId, value])
+  }, [createVersion, currentRelease._id, documentId])
 
   return (
     <Banner
@@ -57,10 +54,7 @@ export function AddToReleaseBanner({
                   t={tCore}
                   i18nKey="release.banner.scheduled-for-publishing-on"
                   values={{
-                    date: formatRelativeLocale(
-                      getPublishDateFromRelease(currentRelease),
-                      new Date(),
-                    ),
+                    date: formatRelativeLocalePublishDate(currentRelease),
                   }}
                 />
               </Flex>
