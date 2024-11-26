@@ -94,6 +94,9 @@ export const getDocumentTableColumnDefs: (
     id: 'search',
     width: null,
     style: {minWidth: '50%', maxWidth: '50%'},
+    sortTransform(value) {
+      return value.previewValues.values.title?.toLowerCase() || 0
+    },
     header: (props) => (
       <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
     ),

@@ -1,115 +1,95 @@
-import {defineType} from '@sanity/types'
-import {fireEvent, render, screen, within} from '@testing-library/react'
+import {act, fireEvent, render, screen, within} from '@testing-library/react'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
+import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {DefaultPreview} from '../../../../components/previews/general/DefaultPreview'
+import {
+  activeASAPRelease,
+  archivedScheduledRelease,
+  scheduledRelease,
+} from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
-import {type ReleaseDocument} from '../../../index'
-import {type DocumentHistory} from '../documentTable/useReleaseHistory'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../useBundleDocuments'
+import {
+  documentsInRelease,
+  useBundleDocumentsMockReturnWithResults,
+} from './__mocks__/useBundleDocuments.mock'
 
-vi.mock('../../../../studio/addonDataset/useAddonDataset', () => ({
-  useAddonDataset: vi.fn().mockReturnValue({client: {}}),
+vi.mock('../../../index', () => ({
+  useDocumentPresence: vi.fn().mockReturnValue({
+    user: '',
+    path: '',
+    sessionId: '',
+    lastActiveAt: '',
+  }),
+  useDocumentPreviewStore: vi.fn().mockReturnValue({
+    unstable_observeDocumentIdSet: vi.fn(() => ({
+      pipe: vi.fn(),
+    })),
+  }),
 }))
 
-vi.mock('../../../../store', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useUser: vi.fn().mockReturnValue([{}]),
+vi.mock('../useBundleDocuments', () => ({
+  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
-vi.mock('../../../../user-color', () => ({
-  useUserColor: vi.fn().mockReturnValue('red'),
-}))
+vi.mock('../../../../studio/components/navbar/search/components/SearchPopover')
 
-const timeNow = new Date()
+vi.mock('../../../../preview/components/_previewComponents', async () => {
+  return {
+    _previewComponents: {
+      default: vi.fn((arg) => <DefaultPreview {...arg} />),
+    },
+  }
+})
 
 const releaseDocuments: DocumentInRelease[] = [
   {
-    memoKey: 'key123',
+    ...documentsInRelease,
+    memoKey: '123',
     document: {
-      _id: '123',
-      _type: 'document',
-      // 3 days ago
-      _createdAt: new Date(timeNow.getTime() - 24 * 60 * 60 * 1000 * 3).toISOString(),
-      // 2 days ago
-      _updatedAt: new Date(timeNow.getTime() - 24 * 60 * 60 * 1000 * 2).toISOString(),
-      _version: {},
-      _rev: 'abc',
+      ...documentsInRelease.document,
       title: 'First document',
+      _id: '123',
+      _rev: 'abc',
     },
     previewValues: {
-      values: {
-        title: 'First document',
-      },
-      isLoading: false,
-    },
-    validation: {
-      hasError: false,
-      isValidating: true,
-      validation: [],
+      ...documentsInRelease.previewValues,
+      values: {title: 'First document'},
     },
   },
   {
-    memoKey: 'key456',
+    ...documentsInRelease,
+    memoKey: '456',
     document: {
+      ...documentsInRelease.document,
+      _updatedAt: new Date().toISOString(),
       _id: '456',
-      _type: 'document',
-      // 24 hrs ago
-      _createdAt: new Date(timeNow.getTime() - 24 * 60 * 60 * 1000).toISOString(),
-      // 12 hrs ago
-      _updatedAt: new Date(timeNow.getTime() - 12 * 60 * 60 * 1000).toISOString(),
-      _version: {},
       _rev: 'abc',
       title: 'Second document',
     },
     previewValues: {
-      values: {
-        title: 'Second document',
-      },
-      isLoading: false,
-    },
-    validation: {
-      hasError: false,
-      isValidating: true,
-      validation: [],
+      ...documentsInRelease.previewValues,
+      values: {title: 'Second document'},
     },
   },
 ]
 
 const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
   const wrapper = await createTestProvider({
-    config: {
-      projectId: 'test',
-      dataset: 'test',
-      name: 'default',
-      schema: {
-        types: [
-          defineType({
-            type: 'document' as const,
-            name: 'test',
-            title: 'Test',
-            fields: [
-              {
-                type: 'string',
-                name: 'title',
-                title: 'Title',
-              },
-            ],
-          }),
-        ],
-      },
-    },
     resources: [releasesUsEnglishLocaleBundle],
   })
 
   return render(
     <RouterProvider
-      state={{}}
+      state={{
+        releaseId: 'activeASAPRelease',
+      }}
       onNavigate={vi.fn()}
-      router={route.create('/test', [route.intents('/intent')])}
+      router={route.create('/', [route.create('/:releaseId'), route.intents('/intents')])}
     >
       <ReleaseSummary
         scrollContainerRef={{current: null}}
@@ -118,21 +98,79 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
           '123': {
             createdBy: 'created-author-id-1',
             lastEditedBy: 'edited-author-id-1',
-          } as DocumentHistory,
+            editors: ['edited-author-id-1'],
+            history: [
+              {
+                id: '123',
+                timestamp: '2024-11-04T07:53:25Z',
+                author: 'pJ61yWhkD',
+                documentIDs: ['versions.abc.123'],
+                effects: {
+                  'versions.abc.123': {
+                    apply: [
+                      0,
+                      {
+                        _createdAt: '2024-11-04T07:53:25Z',
+                        _id: 'versions.abc.123',
+                        _type: 'book',
+                        _updatedAt: '2024-11-04T07:53:25Z',
+                        address: {
+                          city: 'Stockholm',
+                          country: 'Sweden',
+                        },
+                        publishedAt: '2020-02-03T21:36:34.980Z',
+                        title: 'sdfsadfadsf sdf',
+                        translations: {
+                          no: '0',
+                          se: '0',
+                        },
+                      },
+                    ],
+                    revert: [0, null],
+                  },
+                },
+              },
+            ],
+          },
           '456': {
             createdBy: 'created-author-id-2',
+            lastEditedBy: 'edited-author-id-2',
             editors: ['edited-author-id-1', 'edited-author-id-2'],
-          } as DocumentHistory,
+            history: [
+              {
+                id: '456',
+                timestamp: '2024-11-04T07:53:25Z',
+                author: 'pJ61yWhkD',
+                documentIDs: ['versions.abc.456'],
+                effects: {
+                  'versions.abc.456': {
+                    apply: [
+                      0,
+                      {
+                        _createdAt: '2024-11-04T07:53:25Z',
+                        _id: 'versions.abc.456',
+                        _type: 'book',
+                        _updatedAt: '2024-11-04T07:53:25Z',
+                        address: {
+                          city: 'Stockholm',
+                          country: 'Sweden',
+                        },
+                        publishedAt: '2020-02-03T21:36:34.980Z',
+                        title: 'sdfsadfadsf sdf',
+                        translations: {
+                          no: '0',
+                          se: '0',
+                        },
+                      },
+                    ],
+                    revert: [0, null],
+                  },
+                },
+              },
+            ],
+          },
         }}
-        collaborators={['author-id', 'collaborator-id']}
-        release={
-          {
-            title: 'Release title',
-            description: 'Release description',
-            _createdAt: timeNow.toISOString(),
-            createdBy: 'author-id',
-          } as ReleaseDocument
-        }
+        release={activeASAPRelease}
         {...props}
       />
     </RouterProvider>,
@@ -142,65 +180,20 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
   )
 }
 
-describe.skip('ReleaseSummary', () => {
-  beforeEach(async () => {
-    vi.clearAllMocks()
+describe('ReleaseSummary', () => {
+  describe('for an active release', () => {
+    beforeEach(async () => {
+      await renderTest({})
+      await vi.waitFor(() => screen.getByTestId('document-table-card'), {
+        timeout: 5000,
+        interval: 500,
+      })
+    })
 
-    await renderTest({})
-  })
-
-  it('lists the release title and description', () => {
-    screen.getByText('Release title')
-    screen.getByText('Release description')
-  })
-
-  it('shows the number of documents in release', () => {
-    screen.getByText('2 documents')
-  })
-
-  it('shows the creator and date of release', () => {
-    within(screen.getByTestId('summary')).getByText('just now')
-  })
-
-  it('shows whether release has been published', () => {
-    screen.getByText('Not published')
-  })
-
-  it('shows a list of collaborators on release', () => {
-    const collaborators = getByDataUi(screen.getByTestId('summary'), 'AvatarStack')
-    expect(collaborators.childNodes).toHaveLength(2)
-  })
-
-  describe('documents table', () => {
-    it('shows list of all documents in release', () => {
+    it('shows list of all documents in release', async () => {
       const documents = screen.getAllByTestId('table-row')
 
       expect(documents).toHaveLength(2)
-
-      const [firstDocument, secondDocument] = documents
-
-      // first document
-      const [previewCellFirst, createdCellFirst, editedCellFirst] =
-        within(firstDocument).getAllByRole('cell')
-      within(previewCellFirst).getByText('First document')
-      within(createdCellFirst).getByText('3 days ago')
-      getByDataUi(createdCellFirst, 'Avatar')
-      within(editedCellFirst).getByText('2 days ago')
-      getByDataUi(editedCellFirst, 'Avatar')
-
-      // second document
-      const [
-        previewCellSecond,
-        createdCellSecond,
-        editedCellSecond,
-        publishedCellSecond,
-        collaboratorsCellSecond,
-      ] = within(secondDocument).getAllByRole('cell')
-      within(previewCellSecond).getByText('Second document')
-      within(createdCellSecond).getByText('yesterday')
-      within(editedCellSecond).getByText('12 hr. ago')
-      const collaborators = getByDataUi(collaboratorsCellSecond, 'AvatarStack')
-      expect(getAllByDataUi(collaborators, 'Avatar')).toHaveLength(2)
     })
 
     it('allows for document to be discarded', () => {
@@ -216,7 +209,7 @@ describe.skip('ReleaseSummary', () => {
       within(initialFirstDocument).getByText('First document')
       within(initialSecondDocument).getByText('Second document')
 
-      fireEvent.click(within(screen.getByRole('table')).getByText('Created'))
+      fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
 
       const [sortedCreatedAscFirstDocument, sortedCreatedAscSecondDocument] =
         screen.getAllByTestId('table-row')
@@ -224,7 +217,6 @@ describe.skip('ReleaseSummary', () => {
       within(sortedCreatedAscFirstDocument).getByText('Second document')
       within(sortedCreatedAscSecondDocument).getByText('First document')
 
-      fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
       fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
 
       const [sortedEditedDescFirstDocument, sortedEditedDescSecondDocument] =
@@ -234,12 +226,42 @@ describe.skip('ReleaseSummary', () => {
       within(sortedEditedDescSecondDocument).getByText('Second document')
     })
 
-    it('allows for searching documents', () => {
-      fireEvent.change(screen.getByPlaceholderText('Search documents'), {target: {value: 'Second'}})
+    it('allows for searching documents', async () => {
+      await act(() => {
+        fireEvent.change(screen.getByPlaceholderText('Search documents'), {
+          target: {value: 'Second'},
+        })
+      })
 
       const [searchedFirstDocument] = screen.getAllByTestId('table-row')
 
       within(searchedFirstDocument).getByText('Second document')
+    })
+
+    it('Allows for adding a document to an active release', () => {
+      screen.getByText('Add document')
+    })
+  })
+
+  describe('for an archived release', () => {
+    beforeEach(async () => {
+      await renderTest({release: archivedScheduledRelease})
+      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+    })
+
+    it('does not allow for adding documents', () => {
+      expect(screen.queryByText('Add document')).toBeNull()
+    })
+  })
+
+  describe('for a scheduled release', () => {
+    beforeEach(async () => {
+      await renderTest({release: scheduledRelease})
+      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+    })
+
+    it('does not allow for adding documents', () => {
+      expect(screen.queryByText('Add document')).toBeNull()
     })
   })
 })

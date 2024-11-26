@@ -72,7 +72,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   }, [])
 
   return (
-    <Card borderTop ref={scrollContainerRef}>
+    <Card borderTop data-testid="document-table-card" ref={scrollContainerRef}>
       <Table<DocumentWithHistory>
         data={aggregatedData}
         emptyState={t('summary.no-documents')}
@@ -82,6 +82,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         rowActions={renderRowActions}
         searchFilter={filterRows}
         scrollContainerRef={scrollContainerRef}
+        defaultSort={{column: 'search', direction: 'asc'}}
       />
       {release.state === 'active' && (
         <Container width={3}>
