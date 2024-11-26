@@ -73,12 +73,9 @@ export const EventsTimeline = ({
 
   const renderItem = useCallback<CommandListRenderItemCallback<DocumentGroupEvent[][number]>>(
     (event, {activeIndex}) => {
-      const isFirst = activeIndex === 0
-
       return (
         <Box
           paddingBottom={1}
-          paddingTop={isFirst ? 1 : 0}
           paddingRight={1}
           paddingLeft={1}
           key={event.timestamp}
@@ -128,7 +125,7 @@ export const EventsTimeline = ({
             autoFocus="list"
             initialIndex={selectedIndex}
             initialScrollAlign="center"
-            itemHeight={61}
+            itemHeight={57}
             items={events}
             onEndReached={onLoadMore}
             onEndReachedIndexOffset={20}
