@@ -15,8 +15,7 @@ export default defineConfig({
 
   beta: {
     create: {
-      // defaults to true
-      //startInCreateEnabled: true,
+      startInCreateEnabled: true,
       fallbackStudioOrigin: 'create-integration-test.sanity.studio',
     },
   },

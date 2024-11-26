@@ -660,7 +660,7 @@ function resolveSource({
         enabled: false,
       },
       create: {
-        startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: true}),
+        startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: false}),
         fallbackStudioOrigin: createFallbackOriginReducer(config),
       },
     },
