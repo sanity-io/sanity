@@ -30,6 +30,7 @@ describe('useVersionOperations', () => {
     expect(useReleaseOperationsMockReturn.createVersion).toHaveBeenCalledWith(
       'releaseId',
       'documentId',
+      undefined,
     )
     expect(usePerspectiveMockReturn.setPerspectiveFromReleaseId).toHaveBeenCalledWith('releaseId')
   })

@@ -18,7 +18,11 @@ export interface ReleaseOperationsStore {
   unarchive: (releaseId: string) => Promise<void>
   updateRelease: (release: EditableReleaseDocument) => Promise<void>
   createRelease: (release: EditableReleaseDocument) => Promise<void>
-  createVersion: (releaseId: string, documentId: string) => Promise<void>
+  createVersion: (
+    releaseId: string,
+    documentId: string,
+    initialvalue?: Record<string, unknown>,
+  ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
 }
 
@@ -96,19 +100,23 @@ export function createReleaseOperationsStore(options: {
       },
     ])
 
-  const handleCreateVersion = async (releaseId: string, documentId: string) => {
+  const handleCreateVersion = async (
+    releaseId: string,
+    documentId: string,
+    initialValue?: Record<string, unknown>,
+  ) => {
     // the documentId will show you where the document is coming from and which
     // document should it copy from
 
     // fetch original document
     const document = await client.getDocument(documentId)
 
-    if (!document) {
-      throw new Error(`Document with id ${documentId} not found`)
+    if (!document && !initialValue) {
+      throw new Error(`Document with id ${documentId} not found and no initial value provided`)
     }
 
     const versionDocument = {
-      ...document,
+      ...(document || initialValue || {}),
       _id: getVersionId(documentId, releaseId),
     } as IdentifiedSanityDocumentStub
 
@@ -116,7 +124,7 @@ export function createReleaseOperationsStore(options: {
       ? requestAction(client, [
           {
             actionType: 'sanity.action.document.createVersion',
-            releaseId: getBundleIdFromReleaseDocumentId(releaseId),
+            releaseId,
             attributes: versionDocument,
           },
         ])

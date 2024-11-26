@@ -155,6 +155,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <AddToReleaseBanner
           documentId={value._id}
           currentRelease={currentGlobalBundle as ReleaseDocument}
+          value={displayed || undefined}
         />
       )
     }

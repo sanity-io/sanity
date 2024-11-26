@@ -21,9 +21,11 @@ import {Banner} from './Banner'
 export function AddToReleaseBanner({
   documentId,
   currentRelease,
+  value,
 }: {
   documentId: string
   currentRelease: ReleaseDocument
+  value?: Record<string, unknown>
 }): JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -37,9 +39,9 @@ export function AddToReleaseBanner({
 
   const handleAddToRelease = useCallback(async () => {
     if (currentRelease._id) {
-      await createVersion(getBundleIdFromReleaseDocumentId(currentRelease._id), documentId)
+      await createVersion(getBundleIdFromReleaseDocumentId(currentRelease._id), documentId, value)
     }
-  }, [createVersion, currentRelease._id, documentId])
+  }, [createVersion, currentRelease._id, documentId, value])
 
   return (
     <Banner
