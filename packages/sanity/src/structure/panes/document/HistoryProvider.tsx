@@ -90,7 +90,8 @@ function EventsStoreProvider(props: LegacyStoreProviderProps) {
       ...params,
       // Reset the history related params when the perspective changes, as they don't make sense
       // in the context of the new perspective
-      rev: undefined,
+      rev: params.preserveRev === 'true' ? params.rev : undefined,
+      preserveRev: undefined,
       since: undefined,
       historyVersion: undefined,
     })
