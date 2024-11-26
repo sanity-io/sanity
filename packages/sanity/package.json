@@ -169,7 +169,7 @@
     "@sanity/icons": "^3.4.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/import": "^3.37.3",
-    "@sanity/insert-menu": "1.0.12",
+    "@sanity/insert-menu": "1.0.13",
     "@sanity/logos": "^2.1.4",
     "@sanity/migrate": "3.64.3",
     "@sanity/mutator": "3.64.3",
