@@ -270,13 +270,17 @@ describe('ReleasesOverview', () => {
       const getCalendar = () => getByDataUi(document.body, 'Calendar')
 
       it('has today in bold to signify that there is a release', () => {
-        const todayTile = within(getCalendar()).getByText(TODAY.getDate())
-        expect(todayTile.parentNode).toHaveStyle('font-weight: 700')
+        const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
+          'day-tile-today',
+        )
+        expect(todayTile.firstChild).toHaveStyle('font-weight: 700')
       })
 
       describe('selecting a release date', () => {
         beforeEach(() => {
-          const todayTile = within(getCalendar()).getByText(TODAY.getDate())
+          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
+            'day-tile-today',
+          )
           fireEvent.click(todayTile)
         })
 
@@ -354,15 +358,15 @@ describe('ReleasesOverview', () => {
         })
 
         it('shows today as having no releases', () => {
-          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByText(
-            TODAY.getDate(),
+          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
+            'day-tile-today',
           )
           expect(todayTile.parentNode).not.toHaveStyle('font-weight: 700')
         })
 
         it('shows no releases when filtered by today', () => {
-          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByText(
-            TODAY.getDate(),
+          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
+            'day-tile-today',
           )
           fireEvent.click(todayTile)
 
