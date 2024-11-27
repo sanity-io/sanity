@@ -8,6 +8,9 @@ import {type UserListWithPermissionsHookValue} from '../../../../hooks'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
 import {type CommentMessage} from '../../../types'
 
+/**
+ * @internal
+ */
 export interface CommentInputContextValue {
   canSubmit?: boolean
   closeMentions: () => void
@@ -39,6 +42,9 @@ interface CommentInputProviderProps {
   value: CommentMessage
 }
 
+/**
+ * @internal
+ */
 export function CommentInputProvider(props: CommentInputProviderProps) {
   const {
     children,

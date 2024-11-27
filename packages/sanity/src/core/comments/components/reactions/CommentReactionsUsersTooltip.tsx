@@ -64,6 +64,10 @@ interface CommentReactionsUsersTooltipProps {
   userIds: string[]
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export function CommentReactionsUsersTooltip(props: CommentReactionsUsersTooltipProps) {
   const {children, ...restProps} = props
 
@@ -135,6 +139,10 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
   return elements
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export function CommentReactionsUsersTooltipContent(
   props: Omit<CommentReactionsUsersTooltipProps, 'children'>,
 ) {

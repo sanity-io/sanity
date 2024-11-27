@@ -3,6 +3,9 @@ import {CommentsSelectedPathContext} from 'sanity/_singletons'
 
 import {type CommentsSelectedPathContextValue} from '../context'
 
+/**
+ * @internal
+ */
 export function useCommentsSelectedPath(): CommentsSelectedPathContextValue {
   const ctx = useContext(CommentsSelectedPathContext)
 

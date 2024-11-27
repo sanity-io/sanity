@@ -21,10 +21,22 @@ import {reactOperation} from './reactOperation'
 import {removeOperation} from './removeOperation'
 import {updateOperation} from './updateOperation'
 
+/**
+ * @internal
+ * @hidden
+ */
 export interface CommentOperationsHookValue {
+  /**
+   * @internal
+   * @hidden
+   */
   operation: CommentOperations
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export interface CommentOperationsHookOptions {
   client: SanityClient | null
   currentUser: CurrentUser | null
@@ -46,6 +58,10 @@ export interface CommentOperationsHookOptions {
   getCommentLink?: (commentId: string) => string
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export function useCommentOperations(
   opts: CommentOperationsHookOptions,
 ): CommentOperationsHookValue {

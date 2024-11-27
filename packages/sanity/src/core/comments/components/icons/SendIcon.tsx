@@ -1,5 +1,8 @@
 import {forwardRef, type Ref, type SVGProps} from 'react'
 
+/**
+ * @internal
+ */
 export const SendIcon = forwardRef(function Icon(
   props: SVGProps<SVGSVGElement>,
   ref: Ref<SVGSVGElement>,

@@ -20,6 +20,7 @@ interface BuildCommentThreadItemsProps {
  * It also validates each comment against the document value and schema type to ensure
  * that the comment is valid. If the comment is invalid, it will be omitted from the
  * returned array.
+ * @internal
  */
 export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): CommentThreadItem[] {
   const {comments, currentUser, documentValue, schemaType, type} = props

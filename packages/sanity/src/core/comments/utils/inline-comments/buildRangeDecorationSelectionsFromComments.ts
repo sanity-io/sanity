@@ -39,6 +39,10 @@ function diffApply(current: string, patches: Patch[]) {
   })[0]
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export const CHILD_SYMBOL = '\uF0D0'
 function toPlainTextWithChildSeparators(inputBlock: PortableTextTextBlock) {
   return inputBlock.children
@@ -46,16 +50,26 @@ function toPlainTextWithChildSeparators(inputBlock: PortableTextTextBlock) {
     .join(CHILD_SYMBOL)
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export const COMMENT_INDICATORS = ['\uF000', '\uF001']
 const COMMENT_INDICATORS_REGEX = new RegExp(`[${COMMENT_INDICATORS.join('')}]`, 'g')
 
 const EMPTY_ARRAY: [] = []
 
+/**
+ * @internal
+ */
 export interface BuildCommentsRangeDecorationsProps {
   value: PortableTextBlock[] | undefined
   comments: CommentDocument[]
 }
 
+/**
+ * @internal
+ */
 export interface BuildCommentsRangeDecorationsResultItem {
   selection: RangeDecoration['selection']
   comment: CommentDocument
@@ -64,6 +78,7 @@ export interface BuildCommentsRangeDecorationsResultItem {
 
 /**
  * A function that builds range decoration selections from comments and their associated text.
+ * @internal
  */
 export function buildRangeDecorationSelectionsFromComments(
   props: BuildCommentsRangeDecorationsProps,
@@ -167,6 +182,10 @@ export function buildRangeDecorationSelectionsFromComments(
   return decorators
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export interface BuildCommentRangeDecorationsProps {
   value: PortableTextBlock[] | undefined
   comment: CommentDocument
@@ -177,6 +196,9 @@ interface ValidateTextSelectionCommentProps {
   value: PortableTextBlock[]
 }
 
+/**
+ * @internal
+ */
 export function validateTextSelectionComment(props: ValidateTextSelectionCommentProps): boolean {
   const {comment, value} = props
   if (!isTextSelectionComment(comment)) return false

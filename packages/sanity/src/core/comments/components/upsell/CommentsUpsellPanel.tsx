@@ -9,6 +9,10 @@ interface CommentsUpsellPanelProps {
   onSecondaryClick: () => void
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export function CommentsUpsellPanel(props: CommentsUpsellPanelProps) {
   const {data, onPrimaryClick, onSecondaryClick} = props
   return (

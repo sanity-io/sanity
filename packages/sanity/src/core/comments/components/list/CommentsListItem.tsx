@@ -91,6 +91,9 @@ const GhostButton = styled.button`
   left: 0;
 `
 
+/**
+ * @internal
+ */
 export interface CommentsListItemProps {
   avatarConfig?: {
     avatarSize: AvatarSize
@@ -119,6 +122,9 @@ export interface CommentsListItemProps {
   replies: CommentDocument[] | undefined
 }
 
+/**
+ * @internal
+ */
 export const CommentsListItem = memo(function CommentsListItem(props: CommentsListItemProps) {
   const {
     avatarConfig = DEFAULT_AVATAR_CONFIG,

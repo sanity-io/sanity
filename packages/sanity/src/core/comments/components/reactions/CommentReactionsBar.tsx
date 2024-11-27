@@ -30,6 +30,8 @@ import {TransparentCard} from './TransparentCard.styled'
  *  [':name2:', [{shortName: ':name2:', userId: 'user1'}]
  * ]
  *```
+ * @internal
+ * @hidden
  */
 function groupReactionsByName(reactions: CommentReactionItem[]) {
   const grouped = reactions.reduce(
@@ -82,6 +84,10 @@ interface CommentReactionsBarProps {
   mode: CommentsUIMode
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export const CommentReactionsBar = memo(function CommentReactionsBar(
   props: CommentReactionsBarProps,
 ) {

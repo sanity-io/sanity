@@ -2,6 +2,9 @@ import {forwardRef, type Ref, type SVGProps} from 'react'
 
 // A slightly (arguably) more optically centered version of the current <CommentIcon> provided by @sanity/icons
 // @todo: remove this and replace with an updated version from @sanity/icons
+/**
+ * @internal
+ */
 export const CommentIcon = forwardRef(function Icon(
   props: SVGProps<SVGSVGElement>,
   ref: Ref<SVGSVGElement>,
