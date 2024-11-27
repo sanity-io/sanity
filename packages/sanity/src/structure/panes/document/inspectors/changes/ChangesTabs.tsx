@@ -34,10 +34,13 @@ export function ChangesTabs(props: DocumentInspectorProps) {
   const paneRouterTab = isValidTab(params?.changesInspectorTab)
     ? params.changesInspectorTab
     : TABS[0]
+
   const setPaneRouterTab = (tab: (typeof TABS)[number]) =>
     setParams({
       ...params,
       changesInspectorTab: tab,
+      // Reset the since when changing the tab, as it's not relevant for the history tab
+      since: tab === 'history' ? undefined : params?.since,
     })
 
   return (
