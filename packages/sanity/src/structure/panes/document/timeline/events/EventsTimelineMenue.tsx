@@ -50,6 +50,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
     findRangeForSince,
     loadMoreEvents,
     documentVariantType,
+    handleExpandEvent,
   } = useEvents()
 
   const {t} = useTranslation('studio')
@@ -88,9 +89,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
           console.error('Event is not selectable')
           return
         }
-        // ('versionRevisionId' in revEvent && revEvent.versionRevisionId) || revEvent.revisionId,
         const [since, rev] = findRangeForRevision(revEvent?.id)
-        console.log('selectRev', {since, rev})
         setTimelineRange(since, rev)
         handleClose()
       } catch (err) {
@@ -108,10 +107,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
   const selectSince = useCallback(
     (sinceEvent: DocumentGroupEvent) => {
       try {
-        // ('versionRevisionId' in sinceEvent && sinceEvent.versionRevisionId) || sinceEvent.revisionId,
         const [since, rev] = findRangeForSince(sinceEvent.id)
-        console.log('selectSince', {since, rev})
-
         setTimelineRange(since, rev)
         handleClose()
       } catch (err) {
@@ -135,39 +131,28 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
   const content = useMemo(() => {
     if (eventsError) return <TimelineError />
 
-    if (mode === 'rev') {
-      return (
-        <EventsTimeline
-          events={events}
-          hasMoreEvents={Boolean(nextCursor)}
-          selectedEventId={event?.id}
-          onLoadMore={handleLoadMore}
-          onSelect={selectRev}
-          documentVariantType={documentVariantType}
-        />
-      )
-    }
-
     return (
       <EventsTimeline
         events={events}
+        onExpand={handleExpandEvent}
         hasMoreEvents={Boolean(nextCursor)}
         selectedEventId={event?.id}
         onLoadMore={handleLoadMore}
-        onSelect={selectSince}
+        onSelect={mode === 'rev' ? selectRev : selectSince}
         documentVariantType={documentVariantType}
       />
     )
   }, [
-    event?.id,
-    events,
-    handleLoadMore,
-    mode,
-    nextCursor,
-    selectRev,
-    selectSince,
     eventsError,
+    mode,
+    handleExpandEvent,
+    events,
+    nextCursor,
+    event?.id,
+    handleLoadMore,
+    selectSince,
     documentVariantType,
+    selectRev,
   ])
 
   const revLabel = event
