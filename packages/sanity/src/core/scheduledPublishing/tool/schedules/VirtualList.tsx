@@ -1,3 +1,6 @@
+'use no memo'
+// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
+
 import {CheckmarkCircleIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'

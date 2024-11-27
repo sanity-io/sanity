@@ -1,3 +1,6 @@
+'use no memo'
+// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
+
 import {Box, Card, Flex, Label} from '@sanity/ui'
 import {type VirtualItem, type Virtualizer} from '@tanstack/react-virtual'
 import {type CSSProperties, useEffect, useMemo, useState} from 'react'
