@@ -53,6 +53,7 @@ export function CalendarDay(props: CalendarDayProps) {
         __unstable_focusRing
         data-weekday
         data-focused={focused ? 'true' : ''}
+        data-testid={isToday ? 'day-tile-today' : `day-tile-${date.getDate()}-${date.getMonth()}`}
         role="button"
         tabIndex={-1}
         onClick={handleClick}
