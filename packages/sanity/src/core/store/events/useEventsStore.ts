@@ -3,7 +3,7 @@
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {BehaviorSubject, combineLatest, from, type Observable, of} from 'rxjs'
-import {catchError, map, scan, startWith, switchMap, tap} from 'rxjs/operators'
+import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
 import {type SanityClient, type SanityDocument} from 'sanity'
 
 import {useClient} from '../../hooks'
@@ -135,7 +135,7 @@ export function useEventsStore({
 }): EventsStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentVariantType = getDocumentVariantType(documentId)
-  const {state$} = useReleasesStore()
+  const {state$: releases$} = useReleasesStore()
 
   const {events$, refetchEvents$, refreshEvents} = useMemo(() => {
     const refetchEventsTrigger$ = new BehaviorSubject<{
@@ -146,7 +146,7 @@ export function useEventsStore({
       origin: 'initial',
     })
 
-    const fetchEvents = ({limit, nextCursor}: {limit?: number; nextCursor: string | null}) => {
+    const fetchEvents = ({limit, nextCursor}: {limit: number; nextCursor: string | null}) => {
       const params = new URLSearchParams({
         // This is not working yet, CL needs to fix it.
         limit: limit.toString(),
@@ -176,7 +176,6 @@ export function useEventsStore({
     }
 
     const fetchTransactions = (events: DocumentGroupEvent[]) => {
-      // TODO: Improve how we get this value.
       const lastVersionRevisionIdIndex = events.findIndex(
         (event) => 'versionRevisionId' in event && event.versionRevisionId,
       )
@@ -245,6 +244,7 @@ export function useEventsStore({
             error: next.error,
           }
         }, INITIAL_VALUE),
+        shareReplay(1),
       ),
       refetchEvents$: refetchEventsTrigger$,
       refreshEvents: () => refetchEventsTrigger$.next({nextCursor: null, origin: 'refresh'}),
@@ -260,38 +260,51 @@ export function useEventsStore({
   })
 
   const observable$ = useMemo(() => {
-    return combineLatest([state$, events$, remoteTransactions$]).pipe(
+    return combineLatest([releases$, events$, remoteTransactions$]).pipe(
       map(([releases, {events, nextCursor, loading, error}, remoteTransactions]) => {
         const remoteEdits = getEditEvents(remoteTransactions, documentId)
-        const withRemoteEdits = [...remoteEdits, ...events].sort(
+        const eventsWithRemoteEdits = [...remoteEdits, ...events].sort(
           // Sort by timestamp, newest first
           (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
         )
 
-        return {
-          events: withRemoteEdits.map((event) => {
-            if (event.type === 'PublishDocumentVersion') {
-              const releaseId = getVersionFromId(event.versionId)
-
-              if (releaseId) {
-                const release = releases.releases.get(getReleaseIdFromName(releaseId))
-
-                return {
-                  ...event,
-                  release: release,
+        if (documentVariantType === 'published') {
+          // We need to add the release information to the publish events
+          return {
+            events: eventsWithRemoteEdits.map((event) => {
+              if (event.type === 'PublishDocumentVersion') {
+                const releaseId = getVersionFromId(event.versionId)
+                if (releaseId) {
+                  const release = releases.releases.get(getReleaseIdFromName(releaseId))
+                  return {...event, release: release}
                 }
+                return event
               }
               return event
-            }
-            return event
-          }),
+            }),
+            nextCursor: nextCursor,
+            loading: loading,
+            error: error,
+          }
+        }
+
+        if (documentVariantType === 'draft') {
+          return {
+            events: collapseDraftEvents(eventsWithRemoteEdits, nextCursor),
+            nextCursor: nextCursor,
+            loading: loading,
+            error: error,
+          }
+        }
+        return {
+          events: eventsWithRemoteEdits,
           nextCursor: nextCursor,
           loading: loading,
           error: error,
         }
       }),
     )
-  }, [state$, events$, remoteTransactions$, documentId])
+  }, [releases$, events$, remoteTransactions$, documentId, documentVariantType])
 
   const {events, loading, error, nextCursor} = useObservable(observable$, INITIAL_VALUE)
 
@@ -333,7 +346,8 @@ export function useEventsStore({
     if (!events) return null
 
     if (since === '@lastPublished') {
-      // TODO:  Find the last published event
+      const lastPublishedId = events.find(isPublishDocumentVersionEvent)?.id
+      if (lastPublishedId) return lastPublishedId
     }
 
     // We want to try to infer the since Id from the events, we want to compare to the last event that happened before the rev as fallback
@@ -407,7 +421,7 @@ export function useEventsStore({
       const isShowingCreationEvent =
         selectedToEvent && isCreateDocumentVersionEvent(selectedToEvent)
 
-      // TODO: We could pass here the remote edits to avoid fetching them again.
+      // TODO: We could pass here the remoteTransactions to avoid fetching them again specially when editing a document.
       // Consider using the remoteTransactions$ observable to get the remote edits.
       return getDocumentChanges({
         client,

@@ -293,10 +293,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /**The title for the menu items that will be shown when expanding a publish release event to inspect the document */
   'events.inspect.release': 'Inspect <VersionBadge>{{releaseTitle}}</VersionBadge> document',
   /**The title for the menu items that will be shown when expanding a publish draft event to inspect the draft document*/
-  'events.open.draft': 'Open <VersionBadge>{{releaseTitle}}</VersionBadge> document',
+  'events.open.draft': 'Open <VersionBadge>draft</VersionBadge> document',
   /**The title for the menu items that will be shown when expanding a publish release event to inspect the release*/
   'events.open.release': 'Open <VersionBadge>{{releaseTitle}}</VersionBadge> release',
-
+  /**The title that will be shown in the badge inside the events when the item is a draft */
+  'events.version.draft': 'Draft',
   /** The loading messaging for when the tooltip is still loading permission info */
   'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
 

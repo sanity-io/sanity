@@ -123,9 +123,6 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                       ),
                     }}
                     i18nKey="events.open.draft"
-                    values={{
-                      releaseTitle: 'draft',
-                    }}
                     t={t}
                   />
                 </Text>
