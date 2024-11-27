@@ -12,6 +12,7 @@ import {getReleaseIdFromName} from '../../releases/util/getReleaseIdFromName'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getVersionFromId, isVersionId} from '../../util/draftUtils'
 import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
+import {decorateEvents} from './decorateEvents'
 import {getDocumentChanges} from './getDocumentChanges'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {getEditEvents} from './getEditEvents'
@@ -31,9 +32,10 @@ import {
   isUnscheduleDocumentVersionEvent,
   isUpdateLiveDocumentEvent,
 } from './types'
+import {useExpandEvents} from './useExpandEvents'
 import {useRemoteTransactions} from './useRemoteTransactions'
 
-interface EventsObservableValue {
+export interface EventsObservableValue {
   events: DocumentGroupEvent[]
   nextCursor: string
   loading: boolean
@@ -83,6 +85,7 @@ function getDocumentAtRevision({
         return [{document: null, loading: false, revisionId: revisionId}]
       }),
       startWith({document: null, loading: true, revisionId: revisionId}),
+      shareReplay(1),
     )
 }
 
@@ -259,52 +262,57 @@ export function useEventsStore({
     onRefetch: refreshEvents,
   })
 
-  const observable$ = useMemo(() => {
-    return combineLatest([releases$, events$, remoteTransactions$]).pipe(
-      map(([releases, {events, nextCursor, loading, error}, remoteTransactions]) => {
-        const remoteEdits = getEditEvents(remoteTransactions, documentId)
-        const eventsWithRemoteEdits = [...remoteEdits, ...events].sort(
-          // Sort by timestamp, newest first
-          (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
-        )
+  const {expandedEvents$, handleExpandEvent} = useExpandEvents({client, documentId})
 
-        if (documentVariantType === 'published') {
-          // We need to add the release information to the publish events
-          return {
-            events: eventsWithRemoteEdits.map((event) => {
-              if (event.type === 'PublishDocumentVersion') {
-                const releaseId = getVersionFromId(event.versionId)
-                if (releaseId) {
-                  const release = releases.releases.get(getReleaseIdFromName(releaseId))
-                  return {...event, release: release}
+  const observable$ = useMemo(() => {
+    return combineLatest([releases$, events$, remoteTransactions$, expandedEvents$]).pipe(
+      map(
+        ([releases, {events, nextCursor, loading, error}, remoteTransactions, expandedEvents]) => {
+          const remoteEdits = getEditEvents(remoteTransactions, documentId)
+          const eventsWithRemoteEdits = [...remoteEdits, ...events, ...expandedEvents].sort(
+            // Sort by timestamp, newest first
+            (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
+          )
+
+          if (documentVariantType === 'published') {
+            // We need to add the release information to the publish events
+            return {
+              events: eventsWithRemoteEdits.map((event) => {
+                if (event.type === 'PublishDocumentVersion') {
+                  const releaseId = getVersionFromId(event.versionId)
+                  if (releaseId) {
+                    const release = releases.releases.get(getReleaseIdFromName(releaseId))
+                    return {...event, release: release}
+                  }
+                  return event
                 }
                 return event
-              }
-              return event
-            }),
-            nextCursor: nextCursor,
-            loading: loading,
-            error: error,
+              }),
+              nextCursor: nextCursor,
+              loading: loading,
+              error: error,
+            }
           }
-        }
 
-        if (documentVariantType === 'draft') {
+          if (documentVariantType === 'draft') {
+            decorateEvents(eventsWithRemoteEdits)
+            return {
+              events: eventsWithRemoteEdits,
+              nextCursor: nextCursor,
+              loading: loading,
+              error: error,
+            }
+          }
           return {
-            events: collapseDraftEvents(eventsWithRemoteEdits, nextCursor),
+            events: eventsWithRemoteEdits,
             nextCursor: nextCursor,
             loading: loading,
             error: error,
           }
-        }
-        return {
-          events: eventsWithRemoteEdits,
-          nextCursor: nextCursor,
-          loading: loading,
-          error: error,
-        }
-      }),
+        },
+      ),
     )
-  }, [releases$, events$, remoteTransactions$, documentId, documentVariantType])
+  }, [releases$, events$, remoteTransactions$, expandedEvents$, documentId, documentVariantType])
 
   const {events, loading, error, nextCursor} = useObservable(observable$, INITIAL_VALUE)
 
@@ -449,5 +457,6 @@ export function useEventsStore({
     findRangeForSince: findRangeForSince,
     loadMoreEvents: handleLoadMoreEvents,
     changesList,
+    handleExpandEvent,
   }
 }

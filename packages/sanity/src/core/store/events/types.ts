@@ -206,6 +206,11 @@ export interface CreateDocumentVersionEvent extends BaseEvent {
    * This is undefined for versions and drafts. (will be present only in publish document?)
    */
   revisionId?: string
+
+  /**
+   * This is present when this creation event is already published.
+   */
+  parentId?: string
 }
 
 export interface DeleteDocumentVersionEvent extends BaseEvent {
@@ -332,11 +337,9 @@ export interface EditDocumentVersionEvent extends BaseEvent {
     revisionId: string
   }[]
   /**
-   * This is added client side to enhance the UI.
-   * For draft documents, it indicates the event that created this document that was later published
-   * It will be used to expand the publish view.
+   * Present when an edit was already published, then the user decided to expand the event.
    */
-  // creationEvent?: CreateDocumentVersionEvent
+  parentId?: string
 }
 
 export interface EventsStoreRevision {
@@ -361,6 +364,7 @@ export interface EventsStore {
     to: SanityDocument
     since: SanityDocument | null
   }) => Observable<{diff: ObjectDiff | null; loading: boolean}>
+  handleExpandEvent: (event: DocumentGroupEvent) => Promise<void>
 }
 
 /**

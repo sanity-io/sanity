@@ -1,14 +1,17 @@
 import {Box, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
   type CommandListRenderItemCallback,
   type DocumentGroupEvent,
   type DocumentVariantType,
+  isCreateDocumentVersionEvent,
+  isEditDocumentVersionEvent,
   LoadingBlock,
   useTranslation,
 } from 'sanity'
 
+import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
 import {EventTimelineItem} from './EventTimelineItem'
 import {PublishedEventMenu} from './PublishedEventMenu'
@@ -19,6 +22,7 @@ interface TimelineProps {
   selectedEventId?: string
   onLoadMore: () => void
   onSelect: (event: DocumentGroupEvent) => void
+  onExpand: (event: DocumentGroupEvent) => Promise<void>
   /**
    * The list needs a predefined max height for the scroller to work.
    */
@@ -29,29 +33,66 @@ interface TimelineProps {
 export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
 
 export const EventsTimeline = ({
-  events,
+  events: allEvents,
   hasMoreEvents,
   selectedEventId,
   onLoadMore,
   onSelect,
   documentVariantType,
   listMaxHeight = 'calc(100vh - 280px)',
+  onExpand,
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
   const {t} = useTranslation('studio')
   const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set())
+  const [expandingParents, setExpandingParents] = useState<Set<string>>(new Set())
+
+  const events = useMemo(() => {
+    return allEvents.filter((event) => {
+      if (isCreateDocumentVersionEvent(event) && event.parentId) {
+        // Check if it's the last event in the list, in that case, we want to show it
+        const isLastEvent = allEvents[allEvents.length - 1].id === event.id
+        if (isLastEvent) return true
+        return expandedParents.has(event.parentId)
+      }
+      if (isEditDocumentVersionEvent(event) && event.parentId) {
+        return expandedParents.has(event.parentId)
+      }
+      return true
+    })
+  }, [expandedParents, allEvents])
 
   const handleExpandParent = useCallback(
-    (parentId: string) => () =>
+    (event: DocumentGroupEvent) => async () => {
+      const parentId = event.id
+
+      let isExpanding = false
       setExpandedParents((prev) => {
         const next = new Set(prev)
 
         if (prev.has(parentId)) next.delete(parentId)
-        else next.add(parentId)
+        else {
+          isExpanding = true
+          next.add(parentId)
+        }
 
         return next
-      }),
-    [],
+      })
+      if (isExpanding) {
+        setExpandingParents((prev) => {
+          const next = new Set(prev)
+          next.add(parentId)
+          return next
+        })
+        await onExpand(event)
+        setExpandingParents((prev) => {
+          const next = new Set(prev)
+          next.delete(parentId)
+          return next
+        })
+      }
+    },
+    [onExpand, setExpandingParents],
   )
 
   const handleSelectChunk = useCallback(
@@ -66,21 +107,51 @@ export const EventsTimeline = ({
       if (event.type === 'PublishDocumentVersion' && documentVariantType === 'published') {
         return <PublishedEventMenu event={event} />
       }
+      if (
+        event.type === 'PublishDocumentVersion' &&
+        documentVariantType === 'draft' &&
+        event.creationEvent
+      ) {
+        return (
+          <ExpandableTimelineItemButton
+            isExpanded={expandedParents.has(event.id)}
+            onExpand={handleExpandParent(event)}
+          />
+        )
+      }
       return null
     },
-    [documentVariantType],
+    [documentVariantType, expandedParents, handleExpandParent],
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<DocumentGroupEvent[][number]>>(
     (event, {activeIndex}) => {
+      const showLoading =
+        isCreateDocumentVersionEvent(event) &&
+        event.parentId &&
+        expandingParents.has(event.parentId)
+      const opacity =
+        (isEditDocumentVersionEvent(event) || isCreateDocumentVersionEvent(event)) &&
+        event.parentId &&
+        expandingParents.has(event.parentId)
+
       return (
         <Box
           paddingBottom={1}
           paddingRight={1}
-          paddingLeft={1}
           key={event.timestamp}
-          // paddingLeft={isNonPublishChunk(event) && event.parentId ? 4 : 1}
+          style={{
+            transition: 'opacity 0.2s',
+            opacity: opacity ? 0 : 1,
+          }}
+          paddingLeft={
+            (isEditDocumentVersionEvent(event) || isCreateDocumentVersionEvent(event)) &&
+            event.parentId
+              ? 4
+              : 1
+          }
         >
+          {showLoading && <LoadingBlock />}
           <EventTimelineItem
             event={event}
             isSelected={event.id === selectedEventId}
@@ -93,17 +164,19 @@ export const EventsTimeline = ({
       )
     },
     [
-      events.length,
-      handleSelectChunk,
-      hasMoreEvents,
+      expandingParents,
       selectedEventId,
+      handleSelectChunk,
       renderOptionsMenu,
       documentVariantType,
+      events.length,
+      hasMoreEvents,
     ],
   )
 
   useEffect(() => setMounted(true), [])
-  const selectedIndex = 0
+  const selectedIndex = events.findIndex((event) => event.id === selectedEventId)
+
   return (
     <Root
       /**
