@@ -73,7 +73,7 @@ export function EventTimelineItem({
             cursor: isSelectable ? 'pointer' : 'default',
           }}
         >
-          <Event event={event} showChangesBy="tooltip" />
+          <Event event={event} showChangesBy="tooltip" documentVariantType={documentVariantType} />
         </Card>
         {optionsMenu}
       </Flex>

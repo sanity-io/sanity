@@ -1,0 +1,263 @@
+import {describe, expect, it} from 'vitest'
+
+import {collapseDraftEvents} from './collapseDraftEvents'
+import {type DocumentGroupEvent} from './types'
+
+describe('collapseDraftEvents', () => {
+  it('should not join the creation events with the publish event if it is the first one', () => {
+    const events: DocumentGroupEvent[] = [
+      {
+        type: 'EditDocumentVersion',
+        id: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        timestamp: '2024-11-27T09:19:00.114198Z',
+        author: 'p8xDvUMxC',
+        authors: ['p8xDvUMxC'],
+        revisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        fromRevisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        transactions: [
+          {
+            type: 'EditTransaction',
+            author: 'p8xDvUMxC',
+            timestamp: '2024-11-27T09:19:00.114198Z',
+            revisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+          },
+        ],
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'CreateDocumentVersion',
+        timestamp: '2024-11-27T09:18:57.967708Z',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '86404359-65f6-4d61-ab64-3bf2b48548b8',
+        author: 'p8xDvUMxC',
+        id: '86404359-65f6-4d61-ab64-3bf2b48548b8',
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'PublishDocumentVersion',
+        timestamp: '2024-11-27T09:18:38.462031Z',
+        revisionId: '6hXXdAa0DnULjSgoCHbaYC',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: 'fcb92fd0-ef4d-4ae8-9816-2236e2f91e3e',
+        publishCause: 'document.publish',
+        author: 'p8xDvUMxC',
+        id: 'fcb92fd0-ef4d-4ae8-9816-2236e2f91e3e',
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'CreateDocumentVersion',
+        timestamp: '2024-11-27T09:18:13.703349Z',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '8d9fd8e9-c86c-4f9d-bf05-25fb65cb8ced',
+        author: 'p8xDvUMxC',
+        id: '8d9fd8e9-c86c-4f9d-bf05-25fb65cb8ced',
+      },
+    ]
+
+    const collapsed = collapseDraftEvents(events, undefined)
+    expect(collapsed).toEqual([
+      {
+        type: 'EditDocumentVersion',
+        id: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        timestamp: '2024-11-27T09:19:00.114198Z',
+        author: 'p8xDvUMxC',
+        authors: ['p8xDvUMxC'],
+        revisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        fromRevisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        transactions: [
+          {
+            type: 'EditTransaction',
+            author: 'p8xDvUMxC',
+            timestamp: '2024-11-27T09:19:00.114198Z',
+            revisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+          },
+        ],
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'CreateDocumentVersion',
+        timestamp: '2024-11-27T09:18:57.967708Z',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '86404359-65f6-4d61-ab64-3bf2b48548b8',
+        author: 'p8xDvUMxC',
+        id: '86404359-65f6-4d61-ab64-3bf2b48548b8',
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'PublishDocumentVersion',
+        timestamp: '2024-11-27T09:18:38.462031Z',
+        revisionId: '6hXXdAa0DnULjSgoCHbaYC',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: 'fcb92fd0-ef4d-4ae8-9816-2236e2f91e3e',
+        publishCause: 'document.publish',
+        author: 'p8xDvUMxC',
+        id: 'fcb92fd0-ef4d-4ae8-9816-2236e2f91e3e',
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'CreateDocumentVersion',
+        timestamp: '2024-11-27T09:18:13.703349Z',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '8d9fd8e9-c86c-4f9d-bf05-25fb65cb8ced',
+        author: 'p8xDvUMxC',
+        id: '8d9fd8e9-c86c-4f9d-bf05-25fb65cb8ced',
+      },
+    ])
+  })
+  it('should not join the creation events with the publish event if it is the first one', () => {
+    const events: DocumentGroupEvent[] = [
+      {
+        type: 'EditDocumentVersion',
+        id: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        timestamp: '2024-11-27T09:19:00.114198Z',
+        author: 'p8xDvUMxC',
+        authors: ['p8xDvUMxC'],
+        revisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        fromRevisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        transactions: [
+          {
+            type: 'EditTransaction',
+            author: 'p8xDvUMxC',
+            timestamp: '2024-11-27T09:19:00.114198Z',
+            revisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+          },
+        ],
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'CreateDocumentVersion',
+        timestamp: '2024-11-27T09:18:57.967708Z',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '86404359-65f6-4d61-ab64-3bf2b48548b8',
+        author: 'p8xDvUMxC',
+        id: '86404359-65f6-4d61-ab64-3bf2b48548b8',
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'PublishDocumentVersion',
+        timestamp: '2024-11-27T09:18:38.462031Z',
+        revisionId: '6hXXdAa0DnULjSgoCHbaYC',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: 'fcb92fd0-ef4d-4ae8-9816-2236e2f91e3e',
+        publishCause: 'document.publish',
+        author: 'p8xDvUMxC',
+        id: 'fcb92fd0-ef4d-4ae8-9816-2236e2f91e3e',
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'CreateDocumentVersion',
+        timestamp: '2024-11-27T09:18:13.703349Z',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '8d9fd8e9-c86c-4f9d-bf05-25fb65cb8ced',
+        author: 'p8xDvUMxC',
+        id: '8d9fd8e9-c86c-4f9d-bf05-25fb65cb8ced',
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'PublishDocumentVersion',
+        timestamp: '2024-11-27T09:18:00.365255Z',
+        revisionId: 'LT9K0VHx3gMBjHyj9jBMxg',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '38ddea70-68e4-4763-831a-a9df62864951',
+        publishCause: 'document.publish',
+        author: 'p8xDvUMxC',
+        id: '38ddea70-68e4-4763-831a-a9df62864951',
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'CreateDocumentVersion',
+        timestamp: '2024-11-27T09:12:19.096145Z',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '7a8bd1c0-deb3-49fe-820f-40b09752bff0',
+        author: 'p8xDvUMxC',
+        id: '7a8bd1c0-deb3-49fe-820f-40b09752bff0',
+      },
+    ]
+
+    const collapsed = collapseDraftEvents(events, undefined)
+    expect(collapsed).toEqual([
+      {
+        type: 'EditDocumentVersion',
+        id: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        timestamp: '2024-11-27T09:19:00.114198Z',
+        author: 'p8xDvUMxC',
+        authors: ['p8xDvUMxC'],
+        revisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        fromRevisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+        transactions: [
+          {
+            type: 'EditTransaction',
+            author: 'p8xDvUMxC',
+            timestamp: '2024-11-27T09:19:00.114198Z',
+            revisionId: '51ddf651-657c-4ea2-82e2-39212a1eb74e',
+          },
+        ],
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'CreateDocumentVersion',
+        timestamp: '2024-11-27T09:18:57.967708Z',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '86404359-65f6-4d61-ab64-3bf2b48548b8',
+        author: 'p8xDvUMxC',
+        id: '86404359-65f6-4d61-ab64-3bf2b48548b8',
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'PublishDocumentVersion',
+        timestamp: '2024-11-27T09:18:38.462031Z',
+        revisionId: '6hXXdAa0DnULjSgoCHbaYC',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: 'fcb92fd0-ef4d-4ae8-9816-2236e2f91e3e',
+        publishCause: 'document.publish',
+        author: 'p8xDvUMxC',
+        id: 'fcb92fd0-ef4d-4ae8-9816-2236e2f91e3e',
+        creationEvent: {
+          documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+          type: 'CreateDocumentVersion',
+          timestamp: '2024-11-27T09:18:13.703349Z',
+          releaseId: '',
+          versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+          versionRevisionId: '8d9fd8e9-c86c-4f9d-bf05-25fb65cb8ced',
+          author: 'p8xDvUMxC',
+          id: '8d9fd8e9-c86c-4f9d-bf05-25fb65cb8ced',
+        },
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'PublishDocumentVersion',
+        timestamp: '2024-11-27T09:18:00.365255Z',
+        revisionId: 'LT9K0VHx3gMBjHyj9jBMxg',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '38ddea70-68e4-4763-831a-a9df62864951',
+        publishCause: 'document.publish',
+        author: 'p8xDvUMxC',
+        id: '38ddea70-68e4-4763-831a-a9df62864951',
+      },
+      {
+        documentId: 'f8dece19-c458-4cff-bf76-732b00617183',
+        type: 'CreateDocumentVersion',
+        timestamp: '2024-11-27T09:12:19.096145Z',
+        releaseId: '',
+        versionId: 'drafts.f8dece19-c458-4cff-bf76-732b00617183',
+        versionRevisionId: '7a8bd1c0-deb3-49fe-820f-40b09752bff0',
+        author: 'p8xDvUMxC',
+        id: '7a8bd1c0-deb3-49fe-820f-40b09752bff0',
+      },
+    ])
+  })
+})

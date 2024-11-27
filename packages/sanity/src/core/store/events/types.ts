@@ -202,7 +202,10 @@ export interface CreateDocumentVersionEvent extends BaseEvent {
   versionId: string
   versionRevisionId: string
 
-  revisionId: string
+  /**
+   * This is undefined for versions and drafts. (will be present only in publish document?)
+   */
+  revisionId?: string
 }
 
 export interface DeleteDocumentVersionEvent extends BaseEvent {
@@ -226,31 +229,20 @@ export interface PublishDocumentVersionEvent extends BaseEvent {
   versionRevisionId?: string
 
   /** What caused this document to be published. */
-  publishCause: PublishCause
+  publishCause: 'document.publish' | 'release.publish' | 'release.schedule'
 
   /**
    * This is added client side to enhance the UI.
    */
   release?: ReleaseDocument
-}
 
-export type PublishCause =
-  | {
-      // The document was explicitly published.
-      type: 'document.publish'
-      author: string
-    }
-  | {
-      // The whole release was explicitly published.
-      type: 'release.publish'
-      author: string
-    }
-  | {
-      // The whole release was published through a schedule.
-      type: 'release.schedule'
-      author: string
-      scheduledAt: string
-    }
+  /**
+   * This is added client side to enhance the UI.
+   * For draft documents, it indicates the event that created this document that was later published
+   * It will be used to expand the publish view.
+   */
+  creationEvent?: CreateDocumentVersionEvent
+}
 
 export interface UnpublishDocumentEvent extends BaseEvent {
   type: 'UnpublishDocument'
@@ -339,6 +331,12 @@ export interface EditDocumentVersionEvent extends BaseEvent {
     timestamp: string
     revisionId: string
   }[]
+  /**
+   * This is added client side to enhance the UI.
+   * For draft documents, it indicates the event that created this document that was later published
+   * It will be used to expand the publish view.
+   */
+  // creationEvent?: CreateDocumentVersionEvent
 }
 
 export interface EventsStoreRevision {

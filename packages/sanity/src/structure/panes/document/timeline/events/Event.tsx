@@ -4,6 +4,7 @@ import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {createElement, useMemo} from 'react'
 import {
   type DocumentGroupEvent,
+  type DocumentVariantType,
   getReleaseTone,
   type RelativeTimeOptions,
   useDateTimeFormat,
@@ -101,9 +102,10 @@ const ChangesBy = ({collaborators}: {collaborators: string[]}) => {
 
 export interface TimelineItemProps {
   event: DocumentGroupEvent
+  documentVariantType: DocumentVariantType
   showChangesBy: 'tooltip' | 'inline' | 'hidden'
 }
-export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
+export function Event({event, showChangesBy = 'tooltip', documentVariantType}: TimelineItemProps) {
   const {t} = useTranslation('studio')
   const {type, timestamp} = event
 
@@ -135,8 +137,8 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
         </div>
         <Stack space={2}>
           <Text size={1} weight="medium">
-            {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type]) || <code>{type}</code>}
-            {event.type === 'PublishDocumentVersion' && (
+            {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type])}
+            {event.type === 'PublishDocumentVersion' && documentVariantType === 'published' && (
               <>
                 {' '}
                 {event.release ? (
@@ -144,8 +146,9 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
                     {event.release.metadata.title}
                   </VersionInlineBadge>
                 ) : (
-                  // TODO: Do we want to display when a draft was published or is that too much info  and the user can derive it?
-                  <VersionInlineBadge $tone="caution">Draft</VersionInlineBadge>
+                  <VersionInlineBadge $tone="caution">
+                    {t('events.version.draft')}
+                  </VersionInlineBadge>
                 )}
               </>
             )}
