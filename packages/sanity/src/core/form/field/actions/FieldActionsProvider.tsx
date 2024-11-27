@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {type PropsWithChildren, useCallback, useMemo} from 'react'
+import {memo, type PropsWithChildren, useCallback, useMemo, useSyncExternalStore} from 'react'
 import {FieldActionsContext, type FieldActionsContextValue} from 'sanity/_singletons'
 
 import {type DocumentFieldActionNode} from '../../../config'
@@ -14,12 +14,23 @@ type FieldActionsProviderProps = PropsWithChildren<{
 }>
 
 /** @internal */
-export function FieldActionsProvider(props: FieldActionsProviderProps) {
+export const FieldActionsProvider = memo(function FieldActionsProvider(
+  props: FieldActionsProviderProps,
+) {
   const {actions, children, path, focused} = props
-  const {onMouseEnter: onFieldMouseEnter, onMouseLeave: onFieldMouseLeave} = useHoveredField()
-
-  const hoveredPath = useHoveredField().hoveredStack[0]
-  const hovered = supportsTouch || (hoveredPath ? pathToString(path) === hoveredPath : false)
+  const {
+    onMouseEnter: onFieldMouseEnter,
+    onMouseLeave: onFieldMouseLeave,
+    store: hoveredStore,
+  } = useHoveredField()
+  /**
+   * The `useSyncExternalStore` has a super power: if the value returned by the snapshot hasn't changed since last time, React won't re-render the component.
+   * This is why we can subscribe to the state of what's currently being hovered, but the component won't re-render unless the hovered state changes between `true` and `false`.
+   */
+  const hovered = useSyncExternalStore(hoveredStore.subscribe, () => {
+    const [hoveredPath] = hoveredStore.getSnapshot()
+    return supportsTouch || (hoveredPath ? pathToString(path) === hoveredPath : false)
+  })
 
   const handleMouseEnter = useCallback(() => {
     onFieldMouseEnter(path)
@@ -41,4 +52,5 @@ export function FieldActionsProvider(props: FieldActionsProviderProps) {
   )
 
   return <FieldActionsContext.Provider value={context}>{children}</FieldActionsContext.Provider>
-}
+})
+FieldActionsProvider.displayName = 'Memo(FieldActionsProvider)'

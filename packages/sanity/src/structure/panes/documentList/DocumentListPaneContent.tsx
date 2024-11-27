@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
 import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
   type CommandListRenderItemCallback,
@@ -67,7 +67,9 @@ function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
   )
 }
 
-export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
+export const DocumentListPaneContent = memo(function DocumentListPaneContent(
+  props: DocumentListPaneContentProps,
+) {
   const {
     childItemId,
     error,
@@ -180,78 +182,53 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     )
   }, [filterIsSimpleTypeConstraint, hasSearchQuery, t])
 
-  const mainContent = useMemo(() => {
-    if (!shouldRender) {
-      return null
-    }
+  return (
+    <PaneContent
+      data-testid="document-list-pane"
+      overflow={layoutCollapsed || loadingVariant === 'initial' ? 'hidden' : 'auto'}
+    >
+      <DocumentListPaneContentContent
+        collapsed={collapsed}
+        error={error}
+        handleEndReached={handleEndReached}
+        index={index}
+        isLoading={isLoading}
+        items={items}
+        layout={layout}
+        loadingVariant={loadingVariant}
+        noDocumentsContent={noDocumentsContent}
+        onRetry={onRetry}
+        paneTitle={paneTitle}
+        renderItem={renderItem}
+        searchInputElement={searchInputElement}
+        shouldRender={shouldRender}
+      />
+    </PaneContent>
+  )
+})
+DocumentListPaneContent.displayName = 'Memo(DocumentListPaneContent)'
 
-    if (error) {
-      return (
-        <Flex align="center" direction="column" height="fill" justify="center">
-          <Container width={1}>
-            <Stack paddingX={4} paddingY={5} space={4}>
-              <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
-              <Text as="p">
-                <Translate
-                  t={t}
-                  i18nKey="panes.document-list-pane.error.text"
-                  values={{error: error.message}}
-                  components={{Code: ({children}) => <code>{children}</code>}}
-                />
-              </Text>
-              <ErrorActions error={error} eventId={null} onRetry={onRetry} />
-            </Stack>
-          </Container>
-        </Flex>
-      )
-    }
-
-    if (!isLoading && items.length === 0) {
-      return noDocumentsContent
-    }
-
-    if (loadingVariant === 'initial' && isLoading) {
-      return (
-        <Delay ms={300}>
-          <LoadingView layout={layout} />
-        </Delay>
-      )
-    }
-
-    if (loadingVariant === 'spinner' && isLoading) {
-      return null
-    }
-
-    // prevents bug when panes won't render if first rendered while collapsed
-    const key = `${index}-${collapsed}`
-
-    return (
-      <RootBox overflow="hidden" height="fill" $opacity={loadingVariant === 'subtle' ? 0.8 : 1}>
-        <CommandListBox>
-          <CommandList
-            activeItemDataAttr="data-hovered"
-            ariaLabel={paneTitle}
-            canReceiveFocus
-            inputElement={searchInputElement}
-            itemHeight={51}
-            items={items}
-            key={key}
-            onEndReached={handleEndReached}
-            onlyShowSelectionWhenActive
-            overscan={10}
-            paddingBottom={1}
-            paddingX={3}
-            renderItem={renderItem}
-            wrapAround={false}
-          />
-        </CommandListBox>
-      </RootBox>
-    )
-    // Explicitly don't include `noDocumentsContent` in the deps array, as it's
-    // causing a visual bug where the "No documents" message is shown for a split second
-    // when clearing a search query with no results
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
+const DocumentListPaneContentContent = memo(function DocumentListPaneContentContent(
+  props: {
+    collapsed: boolean
+    handleEndReached: () => void
+    index: number | undefined
+    noDocumentsContent: JSX.Element
+    renderItem: CommandListRenderItemCallback<SanityDocument>
+    shouldRender: boolean
+  } & Pick<
+    DocumentListPaneContentProps,
+    | 'error'
+    | 'isLoading'
+    | 'items'
+    | 'layout'
+    | 'loadingVariant'
+    | 'onRetry'
+    | 'paneTitle'
+    | 'searchInputElement'
+  >,
+) {
+  const {
     collapsed,
     error,
     handleEndReached,
@@ -260,19 +237,80 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     items,
     layout,
     loadingVariant,
-    // noDocumentsContent,
+    noDocumentsContent,
     onRetry,
+    paneTitle,
     renderItem,
     searchInputElement,
     shouldRender,
-  ])
+  } = props
+  const {t} = useTranslation(structureLocaleNamespace)
+
+  if (!shouldRender) {
+    return null
+  }
+
+  if (error) {
+    return (
+      <Flex align="center" direction="column" height="fill" justify="center">
+        <Container width={1}>
+          <Stack paddingX={4} paddingY={5} space={4}>
+            <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
+            <Text as="p">
+              <Translate
+                t={t}
+                i18nKey="panes.document-list-pane.error.text"
+                values={{error: error.message}}
+                components={{Code: ({children}) => <code>{children}</code>}}
+              />
+            </Text>
+            <ErrorActions error={error} eventId={null} onRetry={onRetry} />
+          </Stack>
+        </Container>
+      </Flex>
+    )
+  }
+
+  if (!isLoading && items.length === 0) {
+    return noDocumentsContent
+  }
+
+  if (loadingVariant === 'initial' && isLoading) {
+    return (
+      <Delay ms={300}>
+        <LoadingView layout={layout} />
+      </Delay>
+    )
+  }
+
+  if (loadingVariant === 'spinner' && isLoading) {
+    return null
+  }
+
+  // prevents bug when panes won't render if first rendered while collapsed
+  const key = `${index}-${collapsed}`
 
   return (
-    <PaneContent
-      data-testid="document-list-pane"
-      overflow={layoutCollapsed || loadingVariant === 'initial' ? 'hidden' : 'auto'}
-    >
-      {mainContent}
-    </PaneContent>
+    <RootBox overflow="hidden" height="fill" $opacity={loadingVariant === 'subtle' ? 0.8 : 1}>
+      <CommandListBox>
+        <CommandList
+          activeItemDataAttr="data-hovered"
+          ariaLabel={paneTitle}
+          canReceiveFocus
+          inputElement={searchInputElement}
+          itemHeight={51}
+          items={items}
+          key={key}
+          onEndReached={handleEndReached}
+          onlyShowSelectionWhenActive
+          overscan={10}
+          paddingBottom={1}
+          paddingX={3}
+          renderItem={renderItem}
+          wrapAround={false}
+        />
+      </CommandListBox>
+    </RootBox>
   )
-}
+})
+DocumentListPaneContentContent.displayName = 'Memo(DocumentListPaneContentContent)'

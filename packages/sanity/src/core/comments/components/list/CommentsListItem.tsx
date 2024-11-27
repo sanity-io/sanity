@@ -144,8 +144,8 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
-  const [collapsed, setCollapsed] = useState<boolean>(true)
-  const didExpand = useRef<boolean>(false)
+  const [collapsed, setCollapsed] = useState(true)
+  const [didExpand, setDidExpand] = useState(false)
   const replyInputRef = useRef<CommentInputHandle>(null)
 
   const {isTopLayer} = useLayer()
@@ -238,7 +238,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   const handleExpand = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     setCollapsed(false)
-    didExpand.current = true
+    setDidExpand(true)
   }, [])
 
   const splicedReplies = useMemo(() => {
@@ -258,10 +258,10 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   }, [replies?.length])
 
   useEffect(() => {
-    if (replies.length > MAX_COLLAPSED_REPLIES && !didExpand.current) {
+    if (replies.length > MAX_COLLAPSED_REPLIES && !didExpand) {
       setCollapsed(true)
     }
-  }, [replies])
+  }, [replies, didExpand])
 
   const renderedReplies = useMemo(
     () =>
@@ -356,7 +356,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
           />
         </Stack>
 
-        {showCollapseButton && !didExpand.current && (
+        {showCollapseButton && !didExpand && (
           <Flex gap={1} paddingY={1} sizing="border">
             <SpacerAvatar />
 

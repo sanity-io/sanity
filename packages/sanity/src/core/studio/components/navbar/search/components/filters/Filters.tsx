@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {useCallback, useEffect, useRef} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 import {Button} from '../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../i18n'
@@ -27,7 +27,10 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
   } = useSearchState()
   const {t} = useTranslation()
 
-  const isMounted = useRef(false)
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const handleClear = useCallback(() => {
     if (showTypeFilter) dispatch({type: 'TERMS_TYPES_CLEAR'})
@@ -35,11 +38,6 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
   }, [dispatch, showTypeFilter])
 
   const clearFiltersButtonVisible = filters.length > 0 || (showTypeFilter && types.length > 0)
-
-  useEffect(() => {
-    isMounted.current = true
-  }, [])
-
   const lastAddedFilterKey = lastAddedFilter && getFilterKey(lastAddedFilter)
 
   const ClearFiltersButton = () => (
@@ -62,7 +60,7 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
             return (
               <FilterButton
                 filter={filter}
-                initialOpen={isMounted.current && lastAddedFilterKey === key}
+                initialOpen={isMounted && lastAddedFilterKey === key}
                 key={key}
               />
             )

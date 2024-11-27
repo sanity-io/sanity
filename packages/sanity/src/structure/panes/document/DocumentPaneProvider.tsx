@@ -122,6 +122,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
   const [isDeleting, setIsDeleting] = useState(false)
+  const telemetry = useTelemetry()
 
   // Resolve document actions
   const actions = useMemo(
@@ -292,17 +293,21 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [onFocusPath, setFocusPath],
   )
 
-  const patchRef = useRef<(event: PatchEvent) => void>(() => {
-    throw new Error('Nope')
-  })
+  const initPatchRef = useCallback(
+    (event: PatchEvent) => {
+      // when creating a new draft
+      if (!editState.draft && !editState.published) {
+        telemetry.log(CreatedDraft)
+      }
+      patch.execute(toMutationPatches(event.patches), initialValue.value)
+    },
+    [editState.draft, editState.published, initialValue.value, patch, telemetry],
+  )
+  const patchRef = useRef(initPatchRef)
 
-  patchRef.current = (event: PatchEvent) => {
-    // when creating a new draft
-    if (!editState.draft && !editState.published) {
-      telemetry.log(CreatedDraft)
-    }
-    patch.execute(toMutationPatches(event.patches), initialValue.value)
-  }
+  useEffect(() => {
+    patchRef.current = initPatchRef
+  }, [initPatchRef])
 
   const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
 
@@ -408,8 +413,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     },
     [inspectOpen, params, setPaneParams],
   )
-
-  const telemetry = useTelemetry()
 
   const handleMenuAction = useCallback(
     (item: PaneMenuItem) => {
@@ -579,7 +582,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [documentId, documentType, schemaType, handleChange, setDocumentMeta])
 
   const formStateRef = useRef(formState)
-  formStateRef.current = formState
+  useEffect(() => {
+    formStateRef.current = formState
+  }, [formState])
 
   const setOpenPath = useCallback(
     (path: Path) => {

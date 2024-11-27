@@ -15,6 +15,7 @@ import {
   useDocumentStore,
   useTranslation,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {Delay} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -27,8 +28,6 @@ interface FormViewProps {
   hidden: boolean
   margins: [number, number, number, number]
 }
-
-const preventDefault = (ev: FormEvent) => ev.preventDefault()
 
 export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormView(props, ref) {
   const {hidden, margins} = props
@@ -103,21 +102,23 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   }, [documentId, documentStore, documentType, patchChannel])
 
   const hasRev = Boolean(value?._rev)
+  const handleInitialRev = useEffectEvent(() => {
+    // this is a workaround for an issue that caused the document pushed to withDocument to get
+    // stuck at the first initial value.
+    // This effect is triggered only when the document goes from not having a revision, to getting one
+    // so it will kick in as soon as the document is received from the backend
+    patchChannel.publish({
+      type: 'mutation',
+      patches: [],
+      snapshot: value,
+    })
+  })
   useEffect(() => {
     if (hasRev) {
-      // this is a workaround for an issue that caused the document pushed to withDocument to get
-      // stuck at the first initial value.
-      // This effect is triggered only when the document goes from not having a revision, to getting one
-      // so it will kick in as soon as the document is received from the backend
-      patchChannel.publish({
-        type: 'mutation',
-        patches: [],
-        snapshot: value,
-      })
+      handleInitialRev()
     }
-    // React to changes in hasRev only
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasRev])
+    // React to changes in hasRev only, useEffectEvent let's us do this without supressing the linter
+  }, [handleInitialRev, hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
 
@@ -165,7 +166,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       width={1}
     >
       <PresenceOverlay margins={margins}>
-        <Box as="form" onSubmit={preventDefault} ref={setRef}>
+        <Box as="form" onSubmit={handleSubmit} ref={setRef}>
           {connectionState === 'connecting' && !editState?.draft && !editState?.published ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
@@ -223,6 +224,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     </Container>
   )
 })
+FormView.displayName = 'ForwardRef(FormView)'
 
 function prepareMutationEvent(event: DocumentMutationEvent): PatchMsg {
   const patches = event.mutations.map((mut) => mut.patch).filter(Boolean)
@@ -245,4 +247,8 @@ function prepareRebaseEvent(event: DocumentRebaseEvent): PatchMsg {
       fromMutationPatches('local', localPatches),
     ),
   }
+}
+
+function handleSubmit(ev: FormEvent) {
+  ev.preventDefault()
 }
