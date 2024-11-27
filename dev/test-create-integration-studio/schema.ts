@@ -11,6 +11,20 @@ export const seoGroup: FieldGroupDefinition = {
 
 export const schemaTypes = [
   defineType({
+    type: 'document',
+    name: 'sanity-create-excluded',
+    fields: [
+      defineField({
+        name: 'title',
+        title: 'New documents of this type should not have a Start in Create button',
+        type: 'string',
+      }),
+    ],
+    options: {
+      sanityCreate: {exclude: true},
+    },
+  }),
+  defineType({
     title: 'Documentation Article',
     name: 'create-test-article',
     type: 'document',

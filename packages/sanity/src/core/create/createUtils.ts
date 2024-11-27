@@ -29,5 +29,12 @@ export function isSanityCreateLinkedDocument(doc: SanityDocumentLike | undefined
  * @internal
  */
 export function isSanityCreateExcludedType(schemaType: SchemaType): boolean {
-  return !!(schemaType?.type?.options as BaseSchemaTypeOptions | undefined)?.sanityCreate?.exclude
+  const options = schemaType.options as BaseSchemaTypeOptions | undefined
+  if (typeof options?.sanityCreate?.exclude === 'boolean') {
+    return options?.sanityCreate?.exclude
+  }
+  if (schemaType?.type) {
+    return isSanityCreateExcludedType(schemaType?.type)
+  }
+  return false
 }
