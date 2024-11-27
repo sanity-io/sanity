@@ -17,8 +17,8 @@ import {type ItemSelectHandler, SearchResultItem} from './item/SearchResultItem'
 const VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT = 57 // px
 const VIRTUAL_LIST_OVERSCAN = 4
 
-const SearchResultsInnerFlex = styled(Flex)<{$loading: boolean}>`
-  opacity: ${({$loading}) => ($loading ? 0.5 : 1)};
+const SearchResultsInnerFlex = styled(Flex)<{$loadingFirstPage: boolean}>`
+  opacity: ${({$loadingFirstPage}) => ($loadingFirstPage ? 0.5 : 1)};
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
@@ -37,7 +37,7 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
     dispatch,
     onClose,
     setSearchCommandList,
-    state: {debug, filters, fullscreen, lastActiveIndex, result, terms},
+    state: {debug, filters, fullscreen, lastActiveIndex, result, terms, cursor},
   } = useSearchState()
   const {t} = useTranslation()
   const recentSearchesStore = useRecentSearchesStore()
@@ -90,7 +90,11 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
           {hasSearchResults && <SortMenu />}
 
           {/* Results */}
-          <SearchResultsInnerFlex $loading={result.loading} aria-busy={result.loading} flex={1}>
+          <SearchResultsInnerFlex
+            $loadingFirstPage={result.loading && cursor === null}
+            aria-busy={result.loading}
+            flex={1}
+          >
             {hasError ? (
               <SearchError />
             ) : (
