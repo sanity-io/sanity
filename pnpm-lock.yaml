@@ -515,7 +515,7 @@ importers:
         version: 2.0.4(@sanity/client@6.22.5(debug@4.3.7))
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.10.21(@sanity/client@6.22.5)(react@18.3.1)
+        version: 1.10.22(@sanity/client@6.22.5)(react@18.3.1)
       '@sanity/tsdoc':
         specifier: 1.0.140
         version: 1.0.140(@types/babel__core@7.20.5)(@types/node@22.10.0)(babel-plugin-react-compiler@19.0.0-beta-df7b47d-20241124)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc-b01722d5-20241114)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.32.0)(yaml@2.5.0)
@@ -4608,8 +4608,8 @@ packages:
     peerDependencies:
       '@sanity/client': ^6.22.5
 
-  '@sanity/react-loader@1.10.21':
-    resolution: {integrity: sha512-rlMxwrt23ecMloQEZwB+TP5es/EVNesoN2YcLdbZ/cm54Be8YKUAV1gnkMEX/Mn1vUOvL2d5+6Qt6qcYbhvmPw==}
+  '@sanity/react-loader@1.10.22':
+    resolution: {integrity: sha512-OKYjDh/B5HgSxSZ/RfbKEiOSKGxAz+G/f0Bx64VeP8c+2ltZ7Mq8mpMQVR+OHFndOYrpykdsfsVCjEOqnwnvAg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.22.5
@@ -14758,7 +14758,7 @@ snapshots:
       '@sanity/client': 6.22.5(debug@4.3.7)
       '@sanity/uuid': 3.0.2
 
-  '@sanity/react-loader@1.10.21(@sanity/client@6.22.5)(react@18.3.1)':
+  '@sanity/react-loader@1.10.22(@sanity/client@6.22.5)(react@18.3.1)':
     dependencies:
       '@sanity/client': 6.22.5(debug@4.3.7)
       '@sanity/core-loader': 1.7.13(@sanity/client@6.22.5)
