@@ -28,8 +28,16 @@ export function EventsSelector({showList}: {showList: boolean}) {
     setListHeight(el?.clientHeight ? el.clientHeight - 1 : 0)
     setScrollRef(el)
   }, [])
-  const {events, nextCursor, loading, error, revision, documentVariantType, loadMoreEvents} =
-    useEvents()
+  const {
+    events,
+    nextCursor,
+    loading,
+    error,
+    revision,
+    documentVariantType,
+    loadMoreEvents,
+    findRangeForRevision,
+  } = useEvents()
 
   const {t} = useTranslation('studio')
   const toast = useToast()
@@ -47,7 +55,8 @@ export function EventsSelector({showList}: {showList: boolean}) {
           console.error('Event is not selectable')
           return
         }
-        setTimelineRange(null, event.id)
+        const [since, rev] = findRangeForRevision(event.id)
+        setTimelineRange(since, rev)
       } catch (err) {
         toast.push({
           closable: true,
@@ -57,7 +66,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
         })
       }
     },
-    [t, toast, setTimelineRange],
+    [t, toast, setTimelineRange, findRangeForRevision],
   )
 
   const initialLoad = loading && !events.length
@@ -76,7 +85,8 @@ export function EventsSelector({showList}: {showList: boolean}) {
                 <EventsTimeline
                   events={events}
                   hasMoreEvents={Boolean(nextCursor)}
-                  selectedEventId={revision?.revisionId}
+                  // If we have a revision, we select it, otherwise we select the first event
+                  selectedEventId={revision?.revisionId || events[0]?.id}
                   onLoadMore={loadMoreEvents}
                   onSelect={selectRev}
                   listMaxHeight={`${listHeight}px`}

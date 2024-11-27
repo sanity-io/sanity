@@ -360,6 +360,11 @@ export function useEventsStore({
     (nextRev: string): [string | null, string | null] => {
       if (!events) return [null, null]
       const revisionIndex = events.findIndex((event) => event.id === nextRev)
+      if (revisionIndex === 0) {
+        // When selecting the first element of the events (latest) the rev is removed.
+        return [since || null, null]
+      }
+
       if (!since) {
         // Get the current revision and check if it's older than the next revision, in that case, use that value as the since.
         const currentRevisionIndex = events.findIndex((event) => event.id === revisionId)
