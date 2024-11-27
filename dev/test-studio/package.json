@@ -16,7 +16,7 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/editor": "^1.11.3",
+    "@portabletext/editor": "^1.12.0",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.0.2",
     "@sanity/block-tools": "3.65.0",
@@ -41,7 +41,7 @@
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "workspace:*",
-    "@sanity/visual-editing": "2.8.0",
+    "@sanity/visual-editing": "2.10.0",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "@vercel/stega": "0.1.2",
