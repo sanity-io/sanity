@@ -268,6 +268,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
   const hasError = validation.some((v) => v.level === 'error')
   const hasWarning = validation.some((v) => v.level === 'warning')
   const hasMarkers = markers.length > 0
+  const isReady = Boolean(children)
 
   const {t} = useTranslation()
   const toneKey = useMemo(() => {
@@ -296,18 +297,22 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
       onClick={readOnly ? onOpen : undefined}
     >
       {textElement}
-      <AnnotationToolbarPopover
-        annotationOpen={open}
-        floatingBoundary={floatingBoundary}
-        onOpen={onOpen}
-        onRemove={onRemove}
-        referenceBoundary={referenceBoundary}
-        referenceElement={referenceElement}
-        selected={selected}
-        title={
-          schemaType.i18nTitleKey ? t(schemaType.i18nTitleKey) : schemaType.title || schemaType.name
-        }
-      />
+      {isReady && (
+        <AnnotationToolbarPopover
+          annotationOpen={open}
+          floatingBoundary={floatingBoundary}
+          onOpen={onOpen}
+          onRemove={onRemove}
+          referenceBoundary={referenceBoundary}
+          referenceElement={referenceElement}
+          selected={selected}
+          title={
+            schemaType.i18nTitleKey
+              ? t(schemaType.i18nTitleKey)
+              : schemaType.title || schemaType.name
+          }
+        />
+      )}
       {open && (
         <ObjectEditModal
           defaultType="popover"
