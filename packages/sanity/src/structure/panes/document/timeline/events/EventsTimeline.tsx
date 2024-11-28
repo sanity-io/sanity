@@ -1,4 +1,5 @@
-import {Box, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {motion, type Variants} from 'framer-motion'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
@@ -29,6 +30,21 @@ interface TimelineProps {
   listMaxHeight?: string
   documentVariantType: DocumentVariantType
 }
+
+const TimelineItemWrapper = motion(Box)
+const CHILDREN_ITEMS_VARIANTS: Variants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+  },
+  exit: {
+    opacity: 0,
+  },
+}
+
+const ITEM_HEIGHT = 57
 
 export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
 
@@ -126,32 +142,48 @@ export const EventsTimeline = ({
 
   const renderItem = useCallback<CommandListRenderItemCallback<DocumentGroupEvent[][number]>>(
     (event, {activeIndex}) => {
-      const showLoading =
+      /**
+       * The create version event will be present while expanding (loading the edits), so we are attaching to it the loading block at the top.
+       * - publishEvent (expanding?)
+       * --- loadingBlock  ~createEvent~
+       * */
+      const showExpandingLoader =
         isCreateDocumentVersionEvent(event) &&
         event.parentId &&
         expandingParents.has(event.parentId)
-      const opacity =
-        (isEditDocumentVersionEvent(event) || isCreateDocumentVersionEvent(event)) &&
-        event.parentId &&
-        expandingParents.has(event.parentId)
 
+      const isLastEvent = activeIndex === events.length - 1
+      if (showExpandingLoader) {
+        return (
+          <TimelineItemWrapper
+            animate={{opacity: 1}}
+            initial={{opacity: 0}}
+            transition={{duration: 0.2, delay: 0.2}}
+          >
+            {/* We need this item to match the same height as the rest of the list items, which is 57px */}
+            <Flex align={'center'} justify={'center'} style={{height: `${ITEM_HEIGHT}px`}}>
+              <Spinner />
+            </Flex>
+          </TimelineItemWrapper>
+        )
+      }
       return (
-        <Box
+        <TimelineItemWrapper
           paddingBottom={1}
           paddingRight={1}
           key={event.timestamp}
-          style={{
-            transition: 'opacity 0.2s',
-            opacity: opacity ? 0 : 1,
-          }}
+          animate="animate"
+          exit="exit"
+          initial="initial"
+          variants={'parentId' in event ? CHILDREN_ITEMS_VARIANTS : undefined}
           paddingLeft={
             (isEditDocumentVersionEvent(event) || isCreateDocumentVersionEvent(event)) &&
-            event.parentId
+            event.parentId &&
+            !isLastEvent
               ? 4
               : 1
           }
         >
-          {showLoading && <LoadingBlock />}
           <EventTimelineItem
             event={event}
             isSelected={event.id === selectedEventId}
@@ -159,8 +191,9 @@ export const EventsTimeline = ({
             optionsMenu={renderOptionsMenu(event)}
             documentVariantType={documentVariantType}
           />
-          {activeIndex === events.length - 1 && hasMoreEvents && <LoadingBlock />}
-        </Box>
+
+          {isLastEvent && hasMoreEvents && <LoadingBlock />}
+        </TimelineItemWrapper>
       )
     },
     [
@@ -198,7 +231,7 @@ export const EventsTimeline = ({
             autoFocus="list"
             initialIndex={selectedIndex}
             initialScrollAlign="center"
-            itemHeight={57}
+            itemHeight={ITEM_HEIGHT}
             items={events}
             onEndReached={onLoadMore}
             onEndReachedIndexOffset={20}

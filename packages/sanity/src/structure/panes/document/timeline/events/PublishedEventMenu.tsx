@@ -6,6 +6,7 @@ import {
   Text,
   usePortal,
 } from '@sanity/ui'
+import {useCallback} from 'react'
 import {
   ContextMenuButton,
   getReleaseTone,
@@ -29,21 +30,20 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
   const portalContext = usePortal()
   const {params, setParams} = usePaneRouter()
   const {setPerspective} = usePerspective()
-  const handleOpenReleaseDocument = () => {
+  const handleOpenReleaseDocument = useCallback(() => {
     setParams({
       ...params,
-      rev: '@lastEdited',
+      rev: event.versionRevisionId || '@lastPublished',
       since: undefined,
       historyEvent: event.id,
       historyVersion: getVersionFromId(event.versionId),
     })
-  }
-  const handleOpenDraftDocument = () => {
-    // Do something
+  }, [setParams, params, event])
+
+  const handleOpenDraftDocument = useCallback(() => {
     setParams({
       ...params,
-      // TODO: Event.versionREvisionId should be defined for this type of events, CL is missing this property
-      rev: event.versionRevisionId || event.revisionId,
+      rev: event.versionRevisionId,
       preserveRev: 'true',
       since: undefined,
     })
@@ -51,7 +51,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
       // A bug is produced when we change the perspective and the params at the same time
       setPerspective('drafts')
     }, 100)
-  }
+  }, [setParams, params, event.versionRevisionId, setPerspective])
 
   const VersionBadge = ({children}: {children: React.ReactNode}) => {
     return (
@@ -113,7 +113,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
               </MenuItem>
             </>
           ) : (
-            <MenuItem onClick={handleOpenDraftDocument}>
+            <MenuItem onClick={handleOpenDraftDocument} disabled={!event.versionRevisionId}>
               <Flex align={'center'}>
                 <Text size={1}>
                   <Translate

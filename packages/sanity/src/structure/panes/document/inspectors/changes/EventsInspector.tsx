@@ -75,7 +75,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     if (!events) return [null, null]
     return [
       events.find((e) => e.id === sinceRevision?.revisionId) || null,
-      events.find((e) => e.id === revision?.revisionId) || null,
+      events.find((e) => e.id === revision?.revisionId) || events[0],
     ]
   }, [events, revision?.revisionId, sinceRevision?.revisionId])
 

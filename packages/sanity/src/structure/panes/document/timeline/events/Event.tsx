@@ -16,6 +16,7 @@ import {
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
+import {structureLocaleNamespace} from '../../../../i18n/index'
 import {UserAvatarStack} from '../userAvatarStack'
 import {
   TIMELINE_ICON_COMPONENTS,
@@ -107,6 +108,7 @@ export interface TimelineItemProps {
 }
 export function Event({event, showChangesBy = 'tooltip', documentVariantType}: TimelineItemProps) {
   const {t} = useTranslation('studio')
+  const {t: structureT} = useTranslation(structureLocaleNamespace)
   const {type, timestamp} = event
 
   const iconComponent = TIMELINE_ICON_COMPONENTS[type]
@@ -147,7 +149,7 @@ export function Event({event, showChangesBy = 'tooltip', documentVariantType}: T
                   </VersionInlineBadge>
                 ) : (
                   <VersionInlineBadge $tone="caution">
-                    {t('events.version.draft')}
+                    {structureT('events.version.draft')}
                   </VersionInlineBadge>
                 )}
               </>

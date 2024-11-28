@@ -13,10 +13,7 @@ export interface TimelineItemProps {
   documentVariantType: DocumentVariantType
 }
 
-const getIsSelectable = (event: DocumentGroupEvent, documentVariantType: DocumentVariantType) => {
-  if (documentVariantType === 'version' && event.type === 'PublishDocumentVersion') {
-    return false
-  }
+const getIsSelectable = (event: DocumentGroupEvent) => {
   const {type} = event
   return (
     type !== 'DeleteDocumentVersion' &&
@@ -34,7 +31,7 @@ export function EventTimelineItem({
   optionsMenu,
   documentVariantType,
 }: TimelineItemProps) {
-  const isSelectable = getIsSelectable(event, documentVariantType)
+  const isSelectable = getIsSelectable(event)
 
   const handleClick = useCallback(
     (evt: MouseEvent<HTMLDivElement>) => {
