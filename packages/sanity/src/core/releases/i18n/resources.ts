@@ -12,6 +12,8 @@ const releasesLocaleStrings = {
   'action.archive.tooltip': 'Unschedule this release to archive it',
   /** Action text for showing the archived releases */
   'action.archived': 'Archived',
+  /** Action text for comparing document versions */
+  'action.compare-versions': 'Compare versions',
   /** Action text for deleting a release */
   'action.delete': 'Delete',
   /** Description for toast when release deletion failed */
