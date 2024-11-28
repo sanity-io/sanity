@@ -42,8 +42,10 @@ const ThrowViteServerStopped = () => {
   return null
 }
 
-export const DetectViteDevServerStopped = (): ReactNode =>
-  isViteServer(serverHot) ? <ThrowViteServerStopped /> : null
+export function DetectViteDevServerStopped(): ReactNode {
+  'use no memo'
+  return isViteServer(serverHot) ? <ThrowViteServerStopped /> : null
+}
 
 export const DevServerStoppedErrorScreen = (): ReactNode => (
   <Card

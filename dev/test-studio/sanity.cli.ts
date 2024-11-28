@@ -14,7 +14,7 @@ export default defineCliConfig({
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above
   // reactStrictMode: true,
-  // reactCompiler: {target: '18'},
+  reactCompiler: {target: '18'},
   vite(viteConfig: UserConfig): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
@@ -23,7 +23,13 @@ export default defineCliConfig({
       plugins: [
         MillionLint.vite({
           telemetry: false,
-
+          filter: {
+            include: ['../../packages/sanity/src/**/*.{mtsx,mjsx,tsx,jsx}'],
+            // exclude: [
+            //   '**/node_modules/**/*',
+            //   '../../packages/sanity/src/{core/components/hookCollection,structure/documentActions}/**/*.{mtsx,mjsx,tsx,jsx}',
+            // ],
+          },
           // dev: 'debug',
           // stats: {
           //   captures: 1,

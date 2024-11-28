@@ -16,7 +16,7 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@million/lint": "^1.0.12",
+    "@million/lint": "^1.0.13",
     "@portabletext/editor": "^1.10.2",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.0.2",
