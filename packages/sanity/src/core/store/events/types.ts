@@ -323,11 +323,6 @@ export interface EditDocumentVersionEvent extends BaseEvent {
   releaseId?: string
   /**
    * One edit event could contain multiple transactions that are merged together.
-   * This represents the oldest transaction in the merged events.
-   */
-  fromRevisionId: string
-  /**
-   * One edit event could contain multiple transactions that are merged together.
    * This represents the newest transaction in the merged events.
    */
   revisionId: string
