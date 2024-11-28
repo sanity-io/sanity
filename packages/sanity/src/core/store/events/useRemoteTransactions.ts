@@ -1,16 +1,18 @@
 /* eslint-disable max-nested-callbacks */
 import {useCallback, useMemo} from 'react'
-import {BehaviorSubject} from 'rxjs'
+import {BehaviorSubject, map} from 'rxjs'
 import {
   type MendozaPatch,
+  type ObjectSchemaType,
   type SanityClient,
   type TransactionLogEventWithEffects,
+  useSchema,
   type WithVersion,
 } from 'sanity'
 
 import {type DocumentVariantType} from '../../util/draftUtils'
 import {type DocumentRemoteMutationEvent} from '../_legacy/document/buffered-doc/types'
-import {getEffectState} from './getEditEvents'
+import {getEditEvents, getEffectState} from './getEditEvents'
 import {useRemoteMutations} from './useRemoteMutations'
 
 function remoteMutationToTransaction(
@@ -44,9 +46,16 @@ export function useRemoteTransactions({
   documentVariantType: DocumentVariantType
   onRefetch: () => void
 }) {
+  const schema = useSchema()
+  const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
+  const isLiveEdit = Boolean(schemaType?.liveEdit)
+
   const remoteTransactions$ = useMemo(
     () => new BehaviorSubject<TransactionLogEventWithEffects[]>([]),
     [],
+  )
+  const remoteEdits$ = remoteTransactions$.pipe(
+    map((transactions) => getEditEvents(transactions, documentId, isLiveEdit)),
   )
 
   const handleReceiveMutation = useCallback(
@@ -61,35 +70,25 @@ export function useRemoteTransactions({
         // The mutation is not for the current document variant, we don't need to do anything.
         return
       }
-      if (variant === 'version') {
-        remoteTransactions$.next([
-          ...remoteTransactions$.value,
-          remoteMutationToTransaction(remoteMutation),
-        ])
-        return
-      }
-      if (variant === 'draft') {
-        const effectState = getEffectState({
-          apply: remoteMutation.effects.apply as MendozaPatch,
-          revert: remoteMutation.effects.revert as MendozaPatch,
-        })
-        if (effectState === 'upsert' || effectState === 'unedited') {
-          remoteTransactions$.next([
-            ...remoteTransactions$.value,
-            remoteMutationToTransaction(remoteMutation),
-          ])
-        } else {
-          onRefetch()
-        }
-        return
-      }
-      if (variant === 'published') {
+      if (variant === 'published' && !isLiveEdit) {
         onRefetch()
         return
       }
-      console.error('Unknown variant', variant)
+
+      const effectState = getEffectState({
+        apply: remoteMutation.effects.apply as MendozaPatch,
+        revert: remoteMutation.effects.revert as MendozaPatch,
+      })
+      if (effectState !== 'upsert' && effectState !== 'unedited') {
+        onRefetch()
+        return
+      }
+      remoteTransactions$.next([
+        ...remoteTransactions$.value,
+        remoteMutationToTransaction(remoteMutation),
+      ])
     },
-    [remoteTransactions$, onRefetch, documentVariantType],
+    [documentVariantType, isLiveEdit, remoteTransactions$, onRefetch],
   )
 
   useRemoteMutations({
@@ -98,5 +97,5 @@ export function useRemoteTransactions({
     documentType,
     onMutationReceived: handleReceiveMutation,
   })
-  return remoteTransactions$
+  return {remoteTransactions$, remoteEdits$}
 }

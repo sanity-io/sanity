@@ -5,7 +5,12 @@ import {
 } from '@sanity/types'
 
 import {getVersionFromId} from '../../util/draftUtils'
-import {type EditDocumentVersionEvent} from './types'
+import {
+  type EditDocumentVersionEvent,
+  isEditDocumentVersionEvent,
+  type UpdateLiveDocumentEvent,
+} from './types'
+import {isWithinMergeWindow} from './utils'
 
 export function getEffectState(
   effect?: MendozaEffectPair,
@@ -32,12 +37,6 @@ function isDeletePatch(patch: MendozaPatch): boolean {
   return patch[0] === 0 && patch[1] === null
 }
 
-const MERGE_WINDOW = 5 * 60 * 1000 // 5 minutes
-
-function isWithinMergeWindow(a: string, b: string) {
-  return Math.abs(Date.parse(a) - Date.parse(b)) < MERGE_WINDOW
-}
-
 const getEditTransaction = (
   transaction: TransactionLogEventWithEffects,
 ): EditDocumentVersionEvent['transactions'][number] => {
@@ -57,7 +56,8 @@ export type NotMergedEditEvent = Omit<
 export function getEditEvents(
   transactions: TransactionLogEventWithEffects[],
   documentId: string,
-): EditDocumentVersionEvent[] {
+  liveEdit: boolean,
+): (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[] {
   const editTransactions = transactions
     .filter((tx) => {
       const effectState = getEffectState(tx.effects[documentId])
@@ -67,20 +67,31 @@ export function getEditEvents(
     // We sort the transactions by timestamp, newest first
     .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
 
-  const result: EditDocumentVersionEvent[] = []
+  const result: (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[] = []
   for (const transaction of editTransactions) {
     // If result is empty, add the current event
-    const event: EditDocumentVersionEvent = {
-      type: 'EditDocumentVersion',
-      id: transaction.id,
-      timestamp: transaction.timestamp,
-      author: transaction.author,
-      authors: [transaction.author],
-      releaseId: getVersionFromId(documentId),
-      revisionId: transaction.id,
-      fromRevisionId: transaction.id,
-      transactions: [getEditTransaction(transaction)],
-    }
+    const event = liveEdit
+      ? ({
+          id: transaction.id,
+          timestamp: transaction.timestamp,
+          type: 'UpdateLiveDocument',
+          documentId: documentId,
+          revisionId: transaction.id,
+          author: transaction.author,
+        } satisfies UpdateLiveDocumentEvent)
+      : ({
+          type: 'EditDocumentVersion',
+          id: transaction.id,
+          timestamp: transaction.timestamp,
+          author: transaction.author,
+          contributors: [transaction.author],
+          releaseId: getVersionFromId(documentId),
+          revisionId: transaction.id,
+
+          // TODO: Do we need the `fromRevisionId` and transactions?
+          fromRevisionId: transaction.id,
+          transactions: [getEditTransaction(transaction)],
+        } satisfies EditDocumentVersionEvent)
     if (result.length === 0) {
       result.push(event)
       continue
@@ -89,14 +100,16 @@ export function getEditEvents(
     const lastEvent = result[result.length - 1]
 
     if (isWithinMergeWindow(lastEvent.timestamp, event.timestamp)) {
-      // Add the transaction event to the transactions
-      lastEvent.transactions.push(getEditTransaction(transaction))
-      if (!lastEvent.authors.includes(event.author)) {
-        // Update event the authors list
-        lastEvent.authors.push(event.author)
+      if (isEditDocumentVersionEvent(lastEvent)) {
+        // Add the transaction event to the transactions
+        lastEvent.transactions.push(getEditTransaction(transaction))
+        if (!lastEvent.contributors.includes(event.author) && lastEvent.author !== event.author) {
+          // Update event the contributors list
+          lastEvent.contributors.push(event.author)
+        }
+        // Modify the from revision id to be the latest transaction
+        lastEvent.fromRevisionId = transaction.id
       }
-      // Modify the from revision id to be the latest transaction
-      lastEvent.fromRevisionId = transaction.id
     } else {
       // If the time difference is greater than the window, add as a new event
       result.push(event)

@@ -26,7 +26,7 @@ export function useExpandEvents({documentId, client}: {client: SanityClient; doc
           fromTransaction: event.creationEvent.versionRevisionId,
           toTransaction: event.versionRevisionId,
         })
-        const editEvents = getEditEvents(transactions, documentId).map((editEvent) => ({
+        const editEvents = getEditEvents(transactions, documentId, false).map((editEvent) => ({
           ...editEvent,
           parentId: event.id,
         }))
