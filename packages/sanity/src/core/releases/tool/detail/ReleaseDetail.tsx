@@ -42,12 +42,14 @@ export const ReleaseDetail = () => {
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
 
-  const documentIds = results.map((result) => result.document?._id)
-  const history = useReleaseHistory(documentIds, releaseId)
-
   const releaseInDetail = data
     .concat(archivedReleases)
     .find((candidate) => getBundleIdFromReleaseDocumentId(candidate._id) === releaseId)
+
+  const isReleaseActive = releaseInDetail?.state === 'active'
+
+  const documentIds = isReleaseActive ? results.map((result) => result.document?._id) : []
+  const history = useReleaseHistory(documentIds, releaseId)
 
   const navigateToReview = useCallback(() => {
     router.navigate({

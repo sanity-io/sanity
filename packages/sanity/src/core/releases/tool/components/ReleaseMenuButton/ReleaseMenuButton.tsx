@@ -22,6 +22,11 @@ const ARCHIVABLE_STATES = ['active', 'published']
 export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) => {
   const toast = useToast()
   const {archive} = useReleaseOperations()
+  /**
+   *  don't require this here anymore, move the bit that uses
+   * releaseDocuments to a separate place that is conditionally called
+   * when the release is archivable, or something like that
+   */
   const {loading: isLoadingReleaseDocuments, results: releaseDocuments} = useBundleDocuments(
     getBundleIdFromReleaseDocumentId(release._id),
   )

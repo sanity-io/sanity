@@ -42,15 +42,16 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [documents, documentsHistory],
   )
 
-  const renderRowActions: ({datum}: {datum: BundleDocumentRow | unknown}) => JSX.Element =
-    useCallback(
-      ({datum}) => {
-        const document = datum as BundleDocumentRow
+  const renderRowActions: React.FC<{datum: BundleDocumentRow | unknown}> = useCallback(
+    ({datum}) => {
+      if (release.state !== 'active') return null
 
-        return <DocumentActions document={document} releaseTitle={release.metadata.title} />
-      },
-      [release.metadata.title],
-    )
+      const document = datum as BundleDocumentRow
+
+      return <DocumentActions document={document} releaseTitle={release.metadata.title} />
+    },
+    [release.metadata.title, release.state],
+  )
 
   const documentTableColumnDefs = useMemo(
     () => getDocumentTableColumnDefs(release._id, t),
