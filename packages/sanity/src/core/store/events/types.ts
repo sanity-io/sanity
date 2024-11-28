@@ -132,11 +132,12 @@
  *    - `DeleteDocumentGroupEvent`: Delete action - "Published document doesn't exist"
  *    - `UpdateLiveDocumentEvent`: Raw Update mutation - "Published document exists"
  */
-import {type Diff} from '@sanity/diff'
-import {type ReleaseDocument, type SanityDocument} from 'sanity'
+import {type SanityDocument} from '@sanity/types'
+import {type Observable} from 'rxjs'
 
-import {ObjectDiff, type Annotation} from '../../field'
-import {Observable} from 'rxjs'
+import {type ObjectDiff} from '../../field'
+import {type ReleaseDocument} from '../../releases/store/types'
+import {type DocumentVariantType} from '../../util/draftUtils'
 
 /**
  * Events relevant for the whole document group.
@@ -348,6 +349,7 @@ export interface EventsStoreRevision {
 
 export interface EventsStore {
   enabled: true
+  documentVariantType: DocumentVariantType
   events: DocumentGroupEvent[]
   nextCursor: string | null
   loading: boolean

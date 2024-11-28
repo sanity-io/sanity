@@ -3,13 +3,7 @@ import {useEffect, useMemo, useRef} from 'react'
 import {of, type Subscription, switchMap} from 'rxjs'
 
 import {useWorkspace} from '../../studio/workspace'
-import {
-  getDraftId,
-  getPublishedId,
-  isDraftId,
-  isPublishedId,
-  isVersionId,
-} from '../../util/draftUtils'
+import {getDraftId, getPublishedId, isVersionId} from '../../util/draftUtils'
 import {type DocumentRemoteMutationEvent} from '../_legacy/document/buffered-doc/types'
 import {remoteSnapshots, type WithVersion} from '../_legacy/document/document-pair'
 import {fetchFeatureToggle} from '../_legacy/document/document-pair/utils/fetchFeatureToggle'
@@ -63,17 +57,6 @@ export function useRemoteMutations({
             // Type could be 'snapshot' or 'remoteMutation', we don't want the snapshots
             if (event.type !== 'remoteMutation') {
               return of(null)
-            }
-            // This is to only get the events we're interested in.
-            // The eventsStore works for only 1 document at a time, not for the docPair.
-            if (isVersionId(documentId) && event.version === 'version') {
-              return of(event)
-            }
-            if (isPublishedId(documentId) && event.version === 'published') {
-              return of(event)
-            }
-            if (isDraftId(documentId) && event.version === 'draft') {
-              return of(event)
             }
             return of(null)
           }),
