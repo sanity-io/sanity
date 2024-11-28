@@ -1503,8 +1503,8 @@ importers:
         specifier: 3.65.1
         version: link:../@sanity/mutator
       '@sanity/presentation':
-        specifier: 1.19.2
-        version: 1.19.2(@sanity/client@6.22.5(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 1.19.3
+        version: 1.19.3(@sanity/client@6.22.5(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
         specifier: 3.65.1
         version: link:../@sanity/schema
@@ -4582,8 +4582,8 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/presentation@1.19.2':
-    resolution: {integrity: sha512-jgFgGPUUZBUt0AX2ZTioFTZAK/47mJmktUzQYEUp2ARdGQvHOTx70ftAldQR1g4F0BJa3lBVWplgkxEpJsBXDg==}
+  '@sanity/presentation@1.19.3':
+    resolution: {integrity: sha512-TMkU78n7RGrd1rV5B78KfU+JlPESzdOuCXvKYnHzeQ55WcdEfSaq6zf7SPfAwyRay7sA1TPY2CtOr2Sr3qr/tQ==}
     engines: {node: '>=16.14'}
     peerDependencies:
       '@sanity/client': ^6.22.5
@@ -14683,7 +14683,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation@1.19.2(@sanity/client@6.22.5(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/presentation@1.19.3(@sanity/client@6.22.5(debug@4.3.7))(@sanity/color@3.0.6)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@sanity/client': 6.22.5(debug@4.3.7)
       '@sanity/comlink': 2.0.0
