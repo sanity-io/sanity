@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable max-nested-callbacks */
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -15,7 +16,8 @@ import {useClient} from '../../hooks'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromName} from '../../releases/util/getReleaseIdFromName'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {getPublishedId, getVersionFromId, isVersionId} from '../../util/draftUtils'
+import {getVersionFromId, isVersionId} from '../../util/draftUtils'
+import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type DocumentRemoteMutationEvent} from '../_legacy/document/buffered-doc/types'
 import {getDocumentChanges} from './getDocumentChanges'
 import {getDocumentTransactions} from './getDocumentTransactions'
@@ -87,23 +89,27 @@ function getDocumentAtRevision({
 
 const addEventId = (
   event: Omit<DocumentGroupEvent, 'id'>,
-  isPublishedDoc: boolean,
+  documentVariantType: DocumentVariantType,
 ): DocumentGroupEvent => {
   let id = ''
   if (isCreateDocumentVersionEvent(event)) {
-    id = isPublishedDoc ? event.revisionId : event.versionRevisionId
+    id = documentVariantType === 'published' ? event.revisionId : event.versionRevisionId
   } else if (isDeleteDocumentVersionEvent(event)) {
-    id = isPublishedDoc ? `deleteAt-${event.timestamp}` : event.versionRevisionId
+    id =
+      documentVariantType === 'published' ? `deleteAt-${event.timestamp}` : event.versionRevisionId
   } else if (isPublishDocumentVersionEvent(event)) {
-    id = isPublishedDoc ? event.revisionId : event.versionRevisionId || event.revisionId
+    id =
+      documentVariantType === 'published'
+        ? event.revisionId
+        : event.versionRevisionId || event.revisionId
   } else if (isUnpublishDocumentEvent(event)) {
     // This event is only available for the published document
-    id = isPublishedDoc ? `unpublishAt-${event.timestamp}` : ''
+    id = documentVariantType === 'published' ? `unpublishAt-${event.timestamp}` : ''
   } else if (isScheduleDocumentVersionEvent(event)) {
     // This event is only available for the version document
-    id = isPublishedDoc ? '' : event.versionRevisionId
+    id = documentVariantType === 'published' ? '' : event.versionRevisionId
   } else if (isUnscheduleDocumentVersionEvent(event)) {
-    id = isPublishedDoc ? '' : event.versionRevisionId
+    id = documentVariantType === 'published' ? '' : event.versionRevisionId
   } else if (isDeleteDocumentGroupEvent(event)) {
     id = `deleted-${event.timestamp}`
   } else if (isCreateLiveDocumentEvent(event)) {
@@ -146,7 +152,7 @@ export function useEventsStore({
   since?: string | '@lastPublished'
 }): EventsStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
+  const documentVariantType = getDocumentVariantType(documentId)
   const remoteTransactions$ = useMemo(
     () => new BehaviorSubject<TransactionLogEventWithEffects[]>([]),
     [],
@@ -161,8 +167,6 @@ export function useEventsStore({
     loading: boolean
     error: null | Error
   }> = useMemo(() => {
-    const isPublishedDoc = getPublishedId(documentId) === documentId
-
     const params = new URLSearchParams({
       // This is not working yet, CL needs to fix it.
       limit: '100',
@@ -182,7 +186,8 @@ export function useEventsStore({
             map((response) => {
               return {
                 events:
-                  response.events[documentId]?.map((ev) => addEventId(ev, isPublishedDoc)) || [],
+                  response.events[documentId]?.map((ev) => addEventId(ev, documentVariantType)) ||
+                  [],
                 nextCursor: response.nextCursor,
                 loading: false,
                 error: null,
@@ -200,7 +205,7 @@ export function useEventsStore({
             }),
             // Get the edit events if necessary.
             switchMap((response) => {
-              if (isPublishedDoc) {
+              if (documentVariantType === 'published') {
                 // For the published document we don't need to fetch the edit transactions.
                 return of(response)
               }
@@ -213,14 +218,13 @@ export function useEventsStore({
               // Version docs are kind of short-lived, they are created, edited and published, once published they are not re-created again.
               if (
                 lastVersionRevisionIdIndex !== 0 &&
-                !isPublishedDoc &&
                 response.events.length &&
                 isVersionId(documentId)
               ) {
                 console.log('Verify this, it could be an error', response.events)
               }
-              const lastEventVersionRevisionId = response.events[lastVersionRevisionIdIndex]
-                ?.versionRevisionId as string
+              const lastEventVersionRevisionId = // @ts-expect-error - Fix this
+                response.events[lastVersionRevisionIdIndex]?.versionRevisionId as string
 
               if (!lastEventVersionRevisionId) {
                 return of(response)
@@ -247,7 +251,7 @@ export function useEventsStore({
           ),
       ),
     )
-  }, [client, documentId, refreshEventsTrigger$])
+  }, [client, documentId, refreshEventsTrigger$, documentVariantType])
 
   const onUpdate = useCallback(
     (remoteMutation: WithVersion<DocumentRemoteMutationEvent>) => {
@@ -256,15 +260,19 @@ export function useEventsStore({
       // If it happens to a draft: we need to decide if it looks like an event
       //       Looks like an event: we need to refetch the events list (e.g. publish, discard)
       //       Doesn't look like an event: we need to add the mutation to the list of events.
-      const version = remoteMutation.version
-      if (version === 'version') {
+      const variant = remoteMutation.version
+      if (variant !== documentVariantType) {
+        // The mutation is not for the current document variant, we don't need to do anything.
+        return
+      }
+      if (variant === 'version') {
         remoteTransactions$.next([
           ...remoteTransactions$.value,
           remoteMutationToTransaction(remoteMutation),
         ])
         return
       }
-      if (version === 'draft') {
+      if (variant === 'draft') {
         const effectState = getEffectState({
           apply: remoteMutation.effects.apply as MendozaPatch,
           revert: remoteMutation.effects.revert as MendozaPatch,
@@ -279,13 +287,13 @@ export function useEventsStore({
         }
         return
       }
-      if (version === 'published') {
+      if (variant === 'published') {
         refreshEventsTrigger$.next()
         return
       }
-      console.error('Unknown version', version)
+      console.error('Unknown variant', variant)
     },
-    [remoteTransactions$, refreshEventsTrigger$],
+    [remoteTransactions$, refreshEventsTrigger$, documentVariantType],
   )
 
   useRemoteMutations({
@@ -336,6 +344,15 @@ export function useEventsStore({
         | EditDocumentVersionEvent
         | undefined
       if (editEvent) return editEvent.revisionId
+      // If we don't have an edit event, we should return the last event that is not a publish | delete event
+      const lastEvent = events.find((event) => {
+        return (
+          !isPublishDocumentVersionEvent(event) &&
+          !isDeleteDocumentGroupEvent(event) &&
+          !isDeleteDocumentVersionEvent(event)
+        )
+      })
+      return lastEvent?.id || null
     }
     return rev
   }, [events, rev])
@@ -420,6 +437,7 @@ export function useEventsStore({
   console.log('EVENTS', events)
 
   return {
+    documentVariantType: documentVariantType,
     enabled: true,
     events: events,
     nextCursor: nextCursor,
