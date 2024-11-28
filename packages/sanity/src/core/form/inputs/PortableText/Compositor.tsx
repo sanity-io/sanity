@@ -32,6 +32,7 @@ import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
+import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
 import {TextBlock} from './text'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
@@ -507,6 +508,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
               <Box data-wrapper="" ref={setWrapperElement}>
                 <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
                   {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                  <AnnotationObjectEditModal
+                    focused={focused}
+                    onItemClose={onItemClose}
+                    referenceBoundary={scrollElement}
+                  />
                 </Portal>
               </Box>
               <div data-border="" />
