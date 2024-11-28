@@ -10,7 +10,7 @@ import {useClient} from '../../hooks'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromName} from '../../releases/util/getReleaseIdFromName'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {getVersionFromId, isVersionId} from '../../util/draftUtils'
+import {getVersionFromId} from '../../util/draftUtils'
 import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {decorateEvents} from './decorateEvents'
 import {getDocumentChanges} from './getDocumentChanges'
@@ -18,7 +18,6 @@ import {getDocumentTransactions} from './getDocumentTransactions'
 import {getEditEvents} from './getEditEvents'
 import {
   type DocumentGroupEvent,
-  type EditDocumentVersionEvent,
   type EventsStore,
   type EventsStoreRevision,
   isCreateDocumentVersionEvent,
@@ -96,7 +95,10 @@ const addEventId = (
   // this tries to infer the id of the event by checking if we are dealing with a published or version document
   let id = ''
   if (isCreateDocumentVersionEvent(event)) {
-    id = documentVariantType === 'published' ? event.revisionId : event.versionRevisionId
+    id =
+      documentVariantType === 'published'
+        ? event.revisionId || `publishCreation--${event.timestamp}`
+        : event.versionRevisionId
   } else if (isDeleteDocumentVersionEvent(event)) {
     id =
       documentVariantType === 'published' ? `deleteAt-${event.timestamp}` : event.versionRevisionId
@@ -179,26 +181,24 @@ export function useEventsStore({
     }
 
     const fetchTransactions = (events: DocumentGroupEvent[]) => {
-      const lastVersionRevisionIdIndex = events.findIndex(
-        (event) => 'versionRevisionId' in event && event.versionRevisionId,
-      )
-      // TODO: Think how to handle more events in a version document.
-      // Version docs are kind of short-lived, they are created, edited and published, once published they are not re-created again.
-      if (lastVersionRevisionIdIndex !== 0 && events.length && isVersionId(documentId)) {
-        // eslint-disable-next-line no-console
-        console.log('Verify this, it could be an error', events)
-      }
-      const lastEventVersionRevisionId = events[lastVersionRevisionIdIndex]
-        ?.versionRevisionId as string
+      const eventWithRevision =
+        documentVariantType === 'version'
+          ? events.find(isCreateDocumentVersionEvent)
+          : events.find((event) => 'versionRevisionId' in event && event.versionRevisionId)
 
-      if (!lastEventVersionRevisionId) {
+      const revisionId =
+        eventWithRevision &&
+        'versionRevisionId' in eventWithRevision &&
+        eventWithRevision.versionRevisionId
+
+      if (!revisionId) {
         return of([])
       }
       return from(
         getDocumentTransactions({
           client,
           documentId,
-          fromTransaction: lastEventVersionRevisionId,
+          fromTransaction: revisionId,
           toTransaction: undefined, // We need to get up to the present moment
         }),
       )
@@ -234,6 +234,11 @@ export function useEventsStore({
         scan((prev, next) => {
           const removeDupes = [...prev.events, ...next.events].reduce((acc, event) => {
             if (acc.has(event.id)) {
+              const existingEvent = acc.get(event.id) as DocumentGroupEvent
+              if (isEditDocumentVersionEvent(existingEvent) && !isEditDocumentVersionEvent(event)) {
+                // Replaces the edit event with the none edit event, the publish event and the last edit event before the publish have the same id.
+                acc.set(event.id, event)
+              }
               return acc
             }
             return acc.set(event.id, event)
@@ -326,20 +331,13 @@ export function useEventsStore({
   }, [nextCursor, refetchEvents$])
 
   const revisionId = useMemo(() => {
+    if (rev === '@lastPublished') {
+      const publishEvent = events.find(isPublishDocumentVersionEvent)
+      return publishEvent?.id || null
+    }
     if (rev === '@lastEdited') {
-      const editEvent = events.find((event) => isEditDocumentVersionEvent(event)) as
-        | EditDocumentVersionEvent
-        | undefined
+      const editEvent = events.find((event) => isEditDocumentVersionEvent(event))
       if (editEvent) return editEvent.revisionId
-      // If we don't have an edit event, we should return the last event that is not a publish | delete event
-      const lastEvent = events.find((event) => {
-        return (
-          !isPublishDocumentVersionEvent(event) &&
-          !isDeleteDocumentGroupEvent(event) &&
-          !isDeleteDocumentVersionEvent(event)
-        )
-      })
-      return lastEvent?.id || null
     }
     return rev
   }, [events, rev])
@@ -383,6 +381,10 @@ export function useEventsStore({
       if (!events) return [null, null]
       const revisionIndex = events.findIndex((event) => event.id === nextRev)
       if (revisionIndex === 0) {
+        // If last event is publish and we are in a version, select that one as the nextRev
+        if (documentVariantType === 'version' && isPublishDocumentVersionEvent(events[0])) {
+          return [since || null, nextRev]
+        }
         // When selecting the first element of the events (latest) the rev is removed.
         return [since || null, null]
       }
@@ -406,7 +408,7 @@ export function useEventsStore({
       if (sinceIndex === revisionIndex) return [null, nextRev]
       return [since, nextRev]
     },
-    [events, since, revisionId],
+    [events, since, documentVariantType, revisionId],
   )
 
   const findRangeForSince = useCallback(

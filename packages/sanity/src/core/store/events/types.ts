@@ -233,8 +233,9 @@ export interface PublishDocumentVersionEvent extends BaseEvent {
   /** This is only available when it was triggered by Publish action. */
   versionRevisionId?: string
 
-  /** What caused this document to be published. */
   publishCause: 'document.publish' | 'release.publish' | 'release.schedule'
+
+  contributors?: string[]
 
   /**
    * This is added client side to enhance the UI.

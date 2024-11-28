@@ -2,6 +2,7 @@ import {type Path} from '@sanity/types'
 import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {type ReactElement, type ReactNode} from 'react'
 
+import {useEvents} from '../../../../structure/panes/document/HistoryProvider'
 import {Event} from '../../../../structure/panes/document/timeline/events/Event'
 import {Tooltip, type TooltipProps} from '../../../../ui-components'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
@@ -74,13 +75,17 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
   const color = useAnnotationColor(annotation)
   const timeAgo = useRelativeTime(timestamp, {minimal: true})
   const {t} = useTranslation()
-
+  const {documentVariantType} = useEvents()
   return (
     <>
       {annotation.event ? (
         <>
           <Card borderBottom marginBottom={2} />
-          <Event event={annotation.event} showChangesBy="inline" />
+          <Event
+            documentVariantType={documentVariantType}
+            event={annotation.event}
+            showChangesBy="inline"
+          />
         </>
       ) : (
         <Inline space={2}>
