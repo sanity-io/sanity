@@ -47,12 +47,7 @@ const getEditTransaction = (
     revisionId: transaction.id,
   }
 }
-export type NotMergedEditEvent = Omit<
-  EditDocumentVersionEvent,
-  'fromRevisionId' | 'toRevisionId'
-> & {
-  transactionId: string
-}
+
 export function getEditEvents(
   transactions: TransactionLogEventWithEffects[],
   documentId: string,
@@ -88,8 +83,7 @@ export function getEditEvents(
           releaseId: getVersionFromId(documentId),
           revisionId: transaction.id,
 
-          // TODO: Do we need the `fromRevisionId` and transactions?
-          fromRevisionId: transaction.id,
+          // TODO: Do we need the transactions? It could be useful to avoid refetching the transactions
           transactions: [getEditTransaction(transaction)],
         } satisfies EditDocumentVersionEvent)
     if (result.length === 0) {
@@ -107,8 +101,6 @@ export function getEditEvents(
           // Update event the contributors list
           lastEvent.contributors.push(event.author)
         }
-        // Modify the from revision id to be the latest transaction
-        lastEvent.fromRevisionId = transaction.id
       }
     } else {
       // If the time difference is greater than the window, add as a new event
