@@ -319,7 +319,7 @@ export interface UpdateLiveDocumentEvent extends BaseEvent {
 export interface EditDocumentVersionEvent extends BaseEvent {
   type: 'EditDocumentVersion'
   // Given this event could be a result of multiple edits, we could have more than one author.
-  authors: string[]
+  contributors: string[]
   releaseId?: string
   /**
    * One edit event could contain multiple transactions that are merged together.

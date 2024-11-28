@@ -11,8 +11,7 @@ import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromName} from '../../releases/util/getReleaseIdFromName'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getVersionFromId} from '../../util/draftUtils'
-import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
-import {decorateEvents} from './decorateEvents'
+import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {getDocumentChanges} from './getDocumentChanges'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {getEditEvents} from './getEditEvents'
@@ -21,18 +20,12 @@ import {
   type EventsStore,
   type EventsStoreRevision,
   isCreateDocumentVersionEvent,
-  isCreateLiveDocumentEvent,
-  isDeleteDocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
   isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
-  isScheduleDocumentVersionEvent,
-  isUnpublishDocumentEvent,
-  isUnscheduleDocumentVersionEvent,
-  isUpdateLiveDocumentEvent,
 } from './types'
 import {useExpandEvents} from './useExpandEvents'
 import {useRemoteTransactions} from './useRemoteTransactions'
+import {addEventId, decorateDraftEvents, removeDupes, squashLiveEditEvents} from './utils'
 
 export interface EventsObservableValue {
   events: DocumentGroupEvent[]
@@ -86,45 +79,6 @@ function getDocumentAtRevision({
       startWith({document: null, loading: true, revisionId: revisionId}),
       shareReplay(1),
     )
-}
-
-const addEventId = (
-  event: Omit<DocumentGroupEvent, 'id'>,
-  documentVariantType: DocumentVariantType,
-): DocumentGroupEvent => {
-  // this tries to infer the id of the event by checking if we are dealing with a published or version document
-  let id = ''
-  if (isCreateDocumentVersionEvent(event)) {
-    id =
-      documentVariantType === 'published'
-        ? event.revisionId || `publishCreation--${event.timestamp}`
-        : event.versionRevisionId
-  } else if (isDeleteDocumentVersionEvent(event)) {
-    id =
-      documentVariantType === 'published' ? `deleteAt-${event.timestamp}` : event.versionRevisionId
-  } else if (isPublishDocumentVersionEvent(event)) {
-    id =
-      documentVariantType === 'published'
-        ? event.revisionId
-        : event.versionRevisionId || event.revisionId
-  } else if (isUnpublishDocumentEvent(event)) {
-    // This event is only available for the published document
-    id = documentVariantType === 'published' ? `unpublishAt-${event.timestamp}` : ''
-  } else if (isScheduleDocumentVersionEvent(event)) {
-    // This event is only available for the version document
-    id = documentVariantType === 'published' ? '' : event.versionRevisionId
-  } else if (isUnscheduleDocumentVersionEvent(event)) {
-    id = documentVariantType === 'published' ? '' : event.versionRevisionId
-  } else if (isDeleteDocumentGroupEvent(event)) {
-    id = `deleted-${event.timestamp}`
-  } else if (isCreateLiveDocumentEvent(event)) {
-    id = event.revisionId
-  } else if (isUpdateLiveDocumentEvent(event)) {
-    id = event.revisionId
-  } else if (isEditDocumentVersionEvent(event)) {
-    id = event.revisionId
-  }
-  return {...event, id} as DocumentGroupEvent
 }
 
 export function useEventsStore({
@@ -218,7 +172,7 @@ export function useEventsStore({
               }
               return fetchTransactions(response.events).pipe(
                 map((transactions) => {
-                  const editEvents = getEditEvents(transactions, documentId)
+                  const editEvents = getEditEvents(transactions, documentId, false)
                   return {...response, events: [...editEvents, ...response.events], origin}
                 }),
               )
@@ -232,20 +186,8 @@ export function useEventsStore({
           )
         }),
         scan((prev, next) => {
-          const removeDupes = [...prev.events, ...next.events].reduce((acc, event) => {
-            if (acc.has(event.id)) {
-              const existingEvent = acc.get(event.id) as DocumentGroupEvent
-              if (isEditDocumentVersionEvent(existingEvent) && !isEditDocumentVersionEvent(event)) {
-                // Replaces the edit event with the none edit event, the publish event and the last edit event before the publish have the same id.
-                acc.set(event.id, event)
-              }
-              return acc
-            }
-            return acc.set(event.id, event)
-          }, new Map<string, DocumentGroupEvent>())
-
           return {
-            events: Array.from(removeDupes.values()),
+            events: removeDupes(prev.events, next.events),
             // If we are refreshing, we should keep the cursor as it was before.
             nextCursor: next.origin === 'refresh' ? prev.nextCursor : next.nextCursor,
             loading: next.loading,
@@ -259,7 +201,11 @@ export function useEventsStore({
     }
   }, [client, documentId, documentVariantType])
 
-  const remoteTransactions$ = useRemoteTransactions({
+  const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    remoteTransactions$, // Use this as an optimization to avoid fetching the remote transactions again in the changes list
+    remoteEdits$,
+  } = useRemoteTransactions({
     client,
     documentId,
     documentType,
@@ -270,54 +216,53 @@ export function useEventsStore({
   const {expandedEvents$, handleExpandEvent} = useExpandEvents({client, documentId})
 
   const observable$ = useMemo(() => {
-    return combineLatest([releases$, events$, remoteTransactions$, expandedEvents$]).pipe(
-      map(
-        ([releases, {events, nextCursor, loading, error}, remoteTransactions, expandedEvents]) => {
-          const remoteEdits = getEditEvents(remoteTransactions, documentId)
-          const eventsWithRemoteEdits = [...remoteEdits, ...events, ...expandedEvents].sort(
-            // Sort by timestamp, newest first
-            (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
-          )
+    return combineLatest([releases$, events$, remoteEdits$, expandedEvents$]).pipe(
+      map(([releases, {events, nextCursor, loading, error}, remoteEdits, expandedEvents]) => {
+        const eventsWithRemoteEdits = [...remoteEdits, ...events, ...expandedEvents].sort(
+          // Sort by timestamp, newest first
+          (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
+        )
 
-          if (documentVariantType === 'published') {
-            // We need to add the release information to the publish events
-            return {
-              events: eventsWithRemoteEdits.map((event) => {
-                if (event.type === 'PublishDocumentVersion') {
-                  const releaseId = getVersionFromId(event.versionId)
-                  if (releaseId) {
-                    const release = releases.releases.get(getReleaseIdFromName(releaseId))
-                    return {...event, release: release}
-                  }
-                  return event
+        if (documentVariantType === 'published') {
+          // We need to add the release information to the publish events
+          return {
+            events: eventsWithRemoteEdits.map((event) => {
+              if (event.type === 'PublishDocumentVersion') {
+                const releaseId = getVersionFromId(event.versionId)
+                if (releaseId) {
+                  const release = releases.releases.get(getReleaseIdFromName(releaseId))
+                  return {...event, release: release}
                 }
                 return event
-              }),
-              nextCursor: nextCursor,
-              loading: loading,
-              error: error,
-            }
+              }
+              return event
+            }),
+            nextCursor: nextCursor,
+            loading: loading,
+            error: error,
           }
+        }
 
-          if (documentVariantType === 'draft') {
-            decorateEvents(eventsWithRemoteEdits)
-            return {
-              events: eventsWithRemoteEdits,
-              nextCursor: nextCursor,
-              loading: loading,
-              error: error,
-            }
-          }
+        if (documentVariantType === 'draft') {
+          decorateDraftEvents(eventsWithRemoteEdits)
           return {
             events: eventsWithRemoteEdits,
             nextCursor: nextCursor,
             loading: loading,
             error: error,
           }
-        },
-      ),
+        }
+        return {
+          events: eventsWithRemoteEdits,
+          nextCursor: nextCursor,
+          loading: loading,
+          error: error,
+        }
+      }),
+      // TODO: This is temporal - liveEditEvents will be squashed in the API
+      map((value) => ({...value, events: squashLiveEditEvents(value.events)})),
     )
-  }, [releases$, events$, remoteTransactions$, expandedEvents$, documentId, documentVariantType])
+  }, [releases$, events$, remoteEdits$, expandedEvents$, documentVariantType])
 
   const {events, loading, error, nextCursor} = useObservable(observable$, INITIAL_VALUE)
 

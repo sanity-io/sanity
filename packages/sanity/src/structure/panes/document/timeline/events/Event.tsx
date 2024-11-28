@@ -112,7 +112,7 @@ export function Event({event, showChangesBy = 'tooltip', documentVariantType}: T
   const {type, timestamp} = event
 
   const iconComponent = TIMELINE_ICON_COMPONENTS[type]
-  const collaboratorsUsersIds = 'authors' in event ? event.authors : []
+  const contributors = 'contributors' in event ? event.contributors || [] : []
 
   const dateFormat = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
   const date = new Date(timestamp)
@@ -126,7 +126,7 @@ export function Event({event, showChangesBy = 'tooltip', documentVariantType}: T
     return formattedDate
   }, [timestamp, dateFormat])
 
-  const userIds = event.type === 'EditDocumentVersion' ? event.authors : [event.author]
+  const userIds = event.type === 'EditDocumentVersion' ? event.contributors : [event.author]
 
   return (
     <>
@@ -161,17 +161,13 @@ export function Event({event, showChangesBy = 'tooltip', documentVariantType}: T
           </Text>
         </Stack>
 
-        {collaboratorsUsersIds.length > 0 && showChangesBy == 'tooltip' && (
+        {contributors.length > 0 && showChangesBy == 'tooltip' && (
           <Flex flex={1} justify="flex-end" align="center">
-            <Tooltip
-              placement="top"
-              content={<ChangesBy collaborators={collaboratorsUsersIds} />}
-              portal
-            >
+            <Tooltip placement="top" content={<ChangesBy collaborators={contributors} />} portal>
               <Box paddingLeft={2} paddingY={2}>
                 <UserAvatarStack
                   maxLength={3}
-                  userIds={collaboratorsUsersIds}
+                  userIds={contributors}
                   size={0}
                   withTooltip={false}
                 />
@@ -180,9 +176,9 @@ export function Event({event, showChangesBy = 'tooltip', documentVariantType}: T
           </Flex>
         )}
       </Flex>
-      {collaboratorsUsersIds.length > 0 && showChangesBy === 'inline' && (
+      {contributors.length > 0 && showChangesBy === 'inline' && (
         <Box paddingTop={2}>
-          <ChangesBy collaborators={collaboratorsUsersIds} />
+          <ChangesBy collaborators={contributors} />
         </Box>
       )}
     </>
