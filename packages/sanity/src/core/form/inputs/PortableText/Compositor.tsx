@@ -25,6 +25,7 @@ import {
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
 import {ExpandedLayer, Root} from './Compositor.styles'
+import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
 import {Editor} from './Editor'
 import {useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
@@ -50,9 +51,6 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   renderCustomMarkers?: RenderCustomMarkers
   renderEditable?: PortableTextInputProps['renderEditable']
 }
-
-/** @internal */
-export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement
 
 /** @internal */
 export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>): ReactNode {
@@ -94,6 +92,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   } = props
 
   const editor = usePortableTextEditor()
+  const setElementRef = useSetPortableTextMemberItemElementRef()
 
   const boundaryElement = useBoundaryElement().element
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
@@ -155,6 +154,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderBlock={renderBlock}
           schemaType={blockSchemaType}
           selected={selected}
+          setElementRef={setElementRef}
           value={block as PortableTextTextBlock}
         >
           {children}
@@ -180,6 +180,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderItem,
       renderPreview,
       scrollElement,
+      setElementRef,
     ],
   )
 
@@ -216,6 +217,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderPreview={renderPreview}
           schemaType={blockSchemaType}
           selected={blockSelected}
+          setElementRef={setElementRef}
           value={blockValue}
         />
       )
@@ -239,6 +241,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
+      setElementRef,
     ],
   )
 
@@ -291,6 +294,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderPreview={renderPreview}
           schemaType={childSchemaType}
           selected={selected}
+          setElementRef={setElementRef}
           value={child}
         />
       )
@@ -312,6 +316,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
+      setElementRef,
     ],
   )
 
@@ -346,6 +351,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderPreview={renderPreview}
           schemaType={aSchemaType}
           selected={selected}
+          setElementRef={setElementRef}
           value={aValue}
         >
           {children}
@@ -369,6 +375,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
+      setElementRef,
     ],
   )
   const ariaDescribedBy = elementProps['aria-describedby']

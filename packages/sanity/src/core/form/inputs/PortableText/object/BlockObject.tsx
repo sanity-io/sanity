@@ -6,7 +6,6 @@ import {isEqual} from '@sanity/util/paths'
 import {
   type MouseEvent,
   type PropsWithChildren,
-  type RefObject,
   useCallback,
   useEffect,
   useMemo,
@@ -34,6 +33,7 @@ import {type RenderBlockActionsCallback} from '../../../types/_transitional'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {BlockActions} from '../BlockActions'
+import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -73,6 +73,7 @@ interface BlockObjectProps extends PropsWithChildren {
   renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
   selected: boolean
+  setElementRef: SetPortableTextMemberItemElementRef
   value: PortableTextBlock
 }
 
@@ -99,6 +100,7 @@ export function BlockObject(props: BlockObjectProps) {
     renderPreview,
     schemaType,
     selected,
+    setElementRef,
     value,
   } = props
   const {onChange} = useFormCallbacks()
@@ -106,6 +108,7 @@ export function BlockObject(props: BlockObjectProps) {
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const markers = usePortableTextMarkers(path)
   const editor = usePortableTextEditor()
+  const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const isDeleting = useRef<boolean>(false)
 
@@ -209,13 +212,13 @@ export function BlockObject(props: BlockObjectProps) {
   const isOpen = Boolean(memberItem?.member.open)
   const input = memberItem?.input
   const nodePath = memberItem?.node.path || EMPTY_ARRAY
-  const referenceElement = memberItem?.elementRef?.current
+  const referenceElement = divElement
 
   const componentProps: BlockProps = useMemo(
     () => ({
       __unstable_floatingBoundary: floatingBoundary,
       __unstable_referenceBoundary: referenceBoundary,
-      __unstable_referenceElement: (referenceElement || null) as HTMLElement | null,
+      __unstable_referenceElement: referenceElement,
       children: input,
       focused,
       markers,
@@ -274,12 +277,19 @@ export function BlockObject(props: BlockObjectProps) {
   const blockActionsEnabled = renderBlockActions && value && !readOnly
   const changeIndicatorVisible = isFullscreen && memberItem
 
+  const setRef = useCallback(
+    (elm: HTMLDivElement) => {
+      if (memberItem) {
+        setElementRef({key: memberItem.member.key, elementRef: elm})
+      }
+      setDivElement(elm) // update state here so the reference element is available on first render
+    },
+    [memberItem, setElementRef, setDivElement],
+  )
+
   return useMemo(
     () => (
-      <Box
-        ref={memberItem?.elementRef as RefObject<HTMLDivElement> | undefined}
-        contentEditable={false}
-      >
+      <Box ref={setRef} contentEditable={false}>
         <Flex paddingBottom={1} marginY={3} style={debugRender()}>
           <PreviewContainer {...innerPaddingProps}>
             <Box flex={1}>
@@ -341,6 +351,7 @@ export function BlockObject(props: BlockObjectProps) {
       renderBlock,
       renderBlockActions,
       reviewChangesHovered,
+      setRef,
       toolTipContent,
       tooltipEnabled,
       value,

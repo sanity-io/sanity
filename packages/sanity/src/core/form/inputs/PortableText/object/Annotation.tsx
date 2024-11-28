@@ -28,6 +28,7 @@ import {
 } from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
+import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -56,6 +57,7 @@ interface AnnotationProps {
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
   selected: boolean
+  setElementRef: SetPortableTextMemberItemElementRef
   schemaType: ObjectSchemaType
   value: PortableTextObject
 }
@@ -82,6 +84,7 @@ export function Annotation(props: AnnotationProps): ReactNode {
     renderPreview,
     schemaType,
     selected,
+    setElementRef,
     value,
   } = props
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
@@ -224,12 +227,12 @@ export function Annotation(props: AnnotationProps): ReactNode {
 
   const setRef = useCallback(
     (elm: HTMLSpanElement) => {
-      if (memberItem?.elementRef) {
-        memberItem.elementRef.current = elm
+      if (memberItem) {
+        setElementRef({key: memberItem.member.key, elementRef: elm})
       }
       setSpanElement(elm) // update state here so the reference element is available on first render
     },
-    [memberItem],
+    [memberItem, setElementRef, setSpanElement],
   )
 
   return useMemo(

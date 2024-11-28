@@ -2,7 +2,7 @@ import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@
 import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
-import {type ReactNode, type RefObject, useCallback, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
@@ -23,6 +23,7 @@ import {type RenderBlockActionsCallback} from '../../../types/_transitional'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {BlockActions} from '../BlockActions'
+import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -63,6 +64,7 @@ export interface TextBlockProps {
   renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
   selected: boolean
+  setElementRef: SetPortableTextMemberItemElementRef
   spellCheck?: boolean
   value: PortableTextTextBlock
 }
@@ -90,12 +92,14 @@ export function TextBlock(props: TextBlockProps) {
     renderPreview,
     schemaType,
     selected,
+    setElementRef,
     spellCheck,
     value,
   } = props
   const {Markers} = useFormBuilder().__internal.components
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const markers = usePortableTextMarkers(path)
+  const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const editor = usePortableTextEditor()
   const {onChange} = useFormCallbacks()
@@ -182,12 +186,13 @@ export function TextBlock(props: TextBlockProps) {
 
   const isOpen = Boolean(memberItem?.member.open)
   const parentSchemaType = editor.schemaTypes.portableText
+  const referenceElement = divElement
 
   const componentProps: BlockProps = useMemo(
     () => ({
       __unstable_floatingBoundary: floatingBoundary,
       __unstable_referenceBoundary: referenceBoundary,
-      __unstable_referenceElement: (memberItem?.elementRef?.current || null) as HTMLElement | null,
+      __unstable_referenceElement: referenceElement,
       children: text,
       focused,
       markers,
@@ -218,7 +223,6 @@ export function TextBlock(props: TextBlockProps) {
       focused,
       isOpen,
       markers,
-      memberItem?.elementRef,
       memberItem?.node.path,
       onItemClose,
       onOpen,
@@ -227,6 +231,7 @@ export function TextBlock(props: TextBlockProps) {
       parentSchemaType,
       readOnly,
       referenceBoundary,
+      referenceElement,
       renderAnnotation,
       renderBlock,
       renderField,
@@ -261,14 +266,19 @@ export function TextBlock(props: TextBlockProps) {
   const blockActionsEnabled = renderBlockActions && !readOnly
   const changeIndicatorVisible = isFullscreen && memberItem
 
+  const setRef = useCallback(
+    (elm: HTMLDivElement) => {
+      if (memberItem) {
+        setElementRef({key: memberItem.member.key, elementRef: elm})
+      }
+      setDivElement(elm) // update state here so the reference element is available on first render
+    },
+    [memberItem, setElementRef, setDivElement],
+  )
+
   return useMemo(
     () => (
-      <Box
-        {...outerPaddingProps}
-        data-testid="text-block"
-        ref={memberItem?.elementRef as RefObject<HTMLDivElement>}
-        style={debugRender()}
-      >
+      <Box {...outerPaddingProps} data-testid="text-block" ref={setRef} style={debugRender()}>
         <TextBlockFlexWrapper data-testid="text-block__wrapper">
           <Flex flex={1} {...innerPaddingProps}>
             <Box flex={1}>
@@ -345,6 +355,7 @@ export function TextBlock(props: TextBlockProps) {
       renderBlock,
       renderBlockActions,
       reviewChangesHovered,
+      setRef,
       spellCheck,
       toolTipContent,
       tooltipEnabled,
