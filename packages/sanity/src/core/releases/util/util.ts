@@ -69,10 +69,7 @@ export function getPublishDateFromRelease(release: ReleaseDocument): Date | null
   if (release.metadata.releaseType !== 'scheduled') return null
 
   const dateString = release.publishAt || release.metadata.intendedPublishAt
-  if (!dateString) {
-    console.error('No publish date found on scheduled release', release)
-    return new Date()
-  }
+  if (!dateString) return new Date()
 
   return new Date(dateString)
 }
