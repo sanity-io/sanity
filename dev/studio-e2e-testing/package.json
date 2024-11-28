@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@sanity/google-maps-input": "^4.0.0",
-    "@sanity/icons": "^3.4.0",
+    "@sanity/icons": "^3.5.0",
     "@sanity/ui": "^2.8.25",
     "@sanity/vision": "3.65.1",
     "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
