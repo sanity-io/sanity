@@ -48,7 +48,7 @@ export interface ReleaseDocument {
   metadata: {
     title: string
     description?: string
-
+    actualPublishAt?: string
     intendedPublishAt?: string
     // todo: the below properties should probably live at the system document
     releaseType: ReleaseType

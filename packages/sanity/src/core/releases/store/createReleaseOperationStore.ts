@@ -59,13 +59,26 @@ export function createReleaseOperationsStore(options: {
     })
   }
 
-  const handlePublishRelease = (releaseId: string) =>
-    requestAction(client, [
+  const handlePublishRelease = async (releaseId: string) => {
+    const bundleId = getBundleIdFromReleaseDocumentId(releaseId)
+
+    await requestAction(client, [
       {
         actionType: 'sanity.action.release.publish',
-        releaseId: getBundleIdFromReleaseDocumentId(releaseId),
+        releaseId: bundleId,
       },
     ])
+
+    // Content Lake does not allow for combining of release actions
+    // in time actual publish dateTime should become a backend concern
+    await requestAction(client, {
+      actionType: 'sanity.action.release.edit',
+      releaseId: bundleId,
+      patch: {
+        set: {[`${METADATA_PROPERTY_NAME}.actualPublishAt`]: new Date().toISOString()},
+      },
+    })
+  }
 
   const handleScheduleRelease = (releaseId: string, publishAt: Date) =>
     requestAction(client, [
@@ -139,6 +152,14 @@ export function createReleaseOperationsStore(options: {
       },
     ])
 
+  const handleDeleteRel = (releaseId: string) =>
+    requestAction(client, [
+      {
+        actionType: 'sanity.action.release.delete',
+        releaseId: getBundleIdFromReleaseDocumentId(releaseId),
+      },
+    ])
+
   return {
     archive: handleArchiveRelease,
     unarchive: handleUnarchiveRelease,
@@ -149,6 +170,7 @@ export function createReleaseOperationsStore(options: {
     publishRelease: handlePublishRelease,
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
+    deleteRel: handleDeleteRel,
   }
 }
 
