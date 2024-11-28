@@ -1212,7 +1212,7 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/test-config
       '@sanity/icons':
-        specifier: ^3.4.0
+        specifier: ^3.5.0
         version: 3.5.0(react@19.0.0-rc-f994737d14-20240522)
       '@types/arrify':
         specifier: ^1.0.4
@@ -1334,7 +1334,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.6
       '@sanity/icons':
-        specifier: ^3.4.0
+        specifier: ^3.5.0
         version: 3.5.0(react@18.3.1)
       '@sanity/ui':
         specifier: ^2.8.25
@@ -1482,7 +1482,7 @@ importers:
         specifier: ^3.41.0
         version: 3.41.0
       '@sanity/icons':
-        specifier: ^3.4.0
+        specifier: ^3.5.0
         version: 3.5.0(react@18.3.1)
       '@sanity/image-url':
         specifier: ^1.0.2
