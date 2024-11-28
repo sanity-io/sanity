@@ -3,10 +3,9 @@ import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 
 import {useTranslation} from '../../../../i18n'
-import {formatRelativeLocale} from '../../../../util/formatRelativeLocale'
 import {type ReleaseDocument} from '../../../store/types'
 import {getReleaseTone} from '../../../util/getReleaseTone'
-import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../../util/util'
+import {formatRelativeLocalePublishDate, isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 export const VersionContextMenuItem = memo(function VersionContextMenuItem(props: {
@@ -27,7 +26,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.metadata.releaseType === 'scheduled' &&
             (release.metadata.intendedPublishAt ? (
-              <>{formatRelativeLocale(getPublishDateFromRelease(release), new Date())}</>
+              <>{formatRelativeLocalePublishDate(release)}</>
             ) : (
               /** should not be allowed to do, but a fall back in case if somehow no date is added */
               <>{t('release.chip.tooltip.unknown-date')}</>

@@ -1,8 +1,7 @@
 import {Text} from '@sanity/ui'
 import {memo, useCallback, useMemo} from 'react'
 import {
-  formatRelativeLocale,
-  getPublishDateFromRelease,
+  formatRelativeLocalePublishDate,
   getReleaseTone,
   getVersionFromId,
   isReleaseScheduledOrScheduling,
@@ -40,7 +39,7 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
               t={t}
               i18nKey="release.chip.tooltip.intended-for-date"
               values={{
-                date: formatRelativeLocale(getPublishDateFromRelease(release), new Date()),
+                date: formatRelativeLocalePublishDate(release),
               }}
             />
           ) : (
@@ -48,7 +47,7 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
               t={t}
               i18nKey="release.chip.tooltip.scheduled-for-date"
               values={{
-                date: formatRelativeLocale(getPublishDateFromRelease(release), new Date()),
+                date: formatRelativeLocalePublishDate(release),
               }}
             />
           )}

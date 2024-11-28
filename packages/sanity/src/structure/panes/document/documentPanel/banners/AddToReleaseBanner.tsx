@@ -2,9 +2,8 @@ import {LockIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {
-  formatRelativeLocale,
+  formatRelativeLocalePublishDate,
   getBundleIdFromReleaseDocumentId,
-  getPublishDateFromRelease,
   getReleaseTone,
   isReleaseScheduledOrScheduling,
   LATEST,
@@ -57,10 +56,7 @@ export function AddToReleaseBanner({
                   t={tCore}
                   i18nKey="release.banner.scheduled-for-publishing-on"
                   values={{
-                    date: formatRelativeLocale(
-                      getPublishDateFromRelease(currentRelease),
-                      new Date(),
-                    ),
+                    date: formatRelativeLocalePublishDate(currentRelease),
                   }}
                 />
               </Flex>

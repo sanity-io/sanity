@@ -25,6 +25,7 @@ export * from './preview'
 export {
   AddedVersion,
   DiscardVersionDialog,
+  formatRelativeLocalePublishDate,
   getBundleIdFromReleaseDocumentId,
   getPublishDateFromRelease,
   getReleaseTone,
