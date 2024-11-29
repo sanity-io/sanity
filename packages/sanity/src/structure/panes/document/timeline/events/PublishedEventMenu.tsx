@@ -16,6 +16,7 @@ import {
   Translate,
   usePerspective,
   useTranslation,
+  VersionInlineBadge,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 import {usePaneRouter} from 'sanity/structure'
@@ -23,7 +24,6 @@ import {usePaneRouter} from 'sanity/structure'
 import {MenuButton} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
-import {VersionInlineBadge} from './VersionInlineBadge'
 
 export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}) {
   const {t} = useTranslation(structureLocaleNamespace)

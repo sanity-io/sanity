@@ -39,6 +39,10 @@ export const TIMELINE_ITEM_EVENT_TONE: Record<DocumentVersionEventType, ThemeCol
     PublishDocumentVersion: 'green',
   }
 
+/**
+ * @internal
+ * mapping of events types with a readable key for translation
+ */
 export const TIMELINE_ITEM_I18N_KEY_MAPPING: Record<
   DocumentVersionEventType,
   StudioLocaleResourceKeys

@@ -2,12 +2,7 @@
 /* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
-import {
-  type DocumentActionComponent,
-  type DocumentActionDescription,
-  Hotkeys,
-  useTimelineSelector,
-} from 'sanity'
+import {type DocumentActionComponent, type DocumentActionDescription, Hotkeys} from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
@@ -141,14 +136,13 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 })
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {actions, connectionState, editState, timelineStore} = useDocumentPane()
+  const {actions, connectionState, editState, revisionId} = useDocumentPane()
 
-  // Subscribe to external timeline state changes
-  const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
-
-  const revision = revTime?.id || ''
-  const disabled = (editState?.draft || editState?.published || {})._rev === revision
-  const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
+  const disabled = (editState?.draft || editState?.published || {})._rev === revisionId
+  const actionProps = useMemo(
+    () => ({...(editState || {}), revision: revisionId}),
+    [editState, revisionId],
+  )
 
   // If multiple `restore` actions are defined, ensure only the final one is used.
   const historyActions = useMemo(() => (actions ?? []).filter(isRestoreAction).slice(-1), [actions])

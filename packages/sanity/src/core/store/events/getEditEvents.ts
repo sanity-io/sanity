@@ -93,6 +93,7 @@ export function getEditEvents(
         } satisfies UpdateLiveDocumentEvent)
       : ({
           type: 'EditDocumentVersion',
+          documentId: documentId,
           id: transaction.id,
           timestamp: transaction.timestamp,
           author: transaction.author,

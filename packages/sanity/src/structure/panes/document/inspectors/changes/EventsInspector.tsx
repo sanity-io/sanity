@@ -11,13 +11,13 @@ import {
   NoChanges,
   type ObjectSchemaType,
   ScrollContainer,
+  useEvents,
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useEvents} from '../../HistoryProvider'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenue'
 import {useDocumentPane} from '../../useDocumentPane'
 

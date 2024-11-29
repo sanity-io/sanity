@@ -1,6 +1,9 @@
 import {type BadgeTone} from '@sanity/ui'
 import {css, styled} from 'styled-components'
 
+/**
+ * @internal
+ */
 export const VersionInlineBadge = styled.span<{$tone?: BadgeTone}>((props) => {
   const {$tone} = props
   return css`

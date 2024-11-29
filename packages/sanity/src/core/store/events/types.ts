@@ -387,6 +387,7 @@ export interface UpdateLiveDocumentEvent extends BaseEvent {
  */
 export interface EditDocumentVersionEvent extends BaseEvent {
   type: 'EditDocumentVersion'
+  documentId: string
   // Given this event could be a result of multiple edits, we could have more than one author.
   contributors: string[]
   releaseId?: string

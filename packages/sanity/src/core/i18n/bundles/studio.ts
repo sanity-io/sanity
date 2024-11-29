@@ -322,6 +322,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.removed-label': 'Removed',
   /** Title for the Review Changes pane */
   'changes.title': 'History',
+  /**The title that will be shown in the badge inside the events when the item is a draft */
+  'changes.versions.draft': 'Draft',
 
   /** --- Common components --- */
   /** Tooltip text for context menu buttons */

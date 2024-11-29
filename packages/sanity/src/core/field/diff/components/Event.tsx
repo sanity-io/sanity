@@ -1,4 +1,4 @@
-import {Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {type AvatarSize, AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {createElement, useMemo} from 'react'
@@ -15,15 +15,31 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../../ui-components'
-import {structureLocaleNamespace} from '../../../../i18n/index'
-import {UserAvatarStack} from '../userAvatarStack'
+import {Tooltip} from '../../../../ui-components'
 import {
   TIMELINE_ICON_COMPONENTS,
   TIMELINE_ITEM_EVENT_TONE,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
 } from './constants'
 import {VersionInlineBadge} from './VersionInlineBadge'
+
+interface UserAvatarStackProps {
+  maxLength?: number
+  userIds: string[]
+  size?: AvatarSize
+  withTooltip?: boolean
+}
+
+function UserAvatarStack({maxLength, userIds, size, withTooltip = true}: UserAvatarStackProps) {
+  return (
+    // eslint-disable-next-line react/jsx-no-undef
+    <AvatarStack maxLength={maxLength} size={size}>
+      {userIds.map((userId) => (
+        <UserAvatar key={userId} user={userId} withTooltip={withTooltip} />
+      ))}
+    </AvatarStack>
+  )
+}
 
 const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
   const theme = getTheme_v2(props.theme)
@@ -101,14 +117,16 @@ const ChangesBy = ({collaborators}: {collaborators: string[]}) => {
   )
 }
 
-export interface TimelineItemProps {
+interface TimelineItemProps {
   event: DocumentGroupEvent
   documentVariantType: DocumentVariantType
   showChangesBy: 'tooltip' | 'inline' | 'hidden'
 }
+/**
+ * @internal
+ */
 export function Event({event, showChangesBy = 'tooltip', documentVariantType}: TimelineItemProps) {
   const {t} = useTranslation('studio')
-  const {t: structureT} = useTranslation(structureLocaleNamespace)
   const {type, timestamp} = event
 
   const iconComponent = TIMELINE_ICON_COMPONENTS[type]
@@ -149,7 +167,7 @@ export function Event({event, showChangesBy = 'tooltip', documentVariantType}: T
                   </VersionInlineBadge>
                 ) : (
                   <VersionInlineBadge $tone="caution">
-                    {structureT('events.version.draft')}
+                    {t('changes.versions.draft')}
                   </VersionInlineBadge>
                 )}
               </>
