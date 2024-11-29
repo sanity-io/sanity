@@ -597,8 +597,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const isLocked = editState.transactionSyncLock?.enabled
     // in cases where the document has drafts but the schema is live edit,
     // there is a risk of data loss, so we disable editing in this case
-    const isLiveEditAndDraft = Boolean(liveEdit && editState.draft)
-    const isSystemPerspectiveApplied = perspective && typeof bundlePerspective === 'undefined'
+    const isLiveEditAndDraftPerspective = liveEdit && !perspective
+    const isLiveEditAndPublishedPerspective = liveEdit && perspective === 'published'
+
+    const isSystemPerspectiveApplied =
+      isLiveEditAndPublishedPerspective || (perspective ? perspective && bundlePerspective : true)
 
     const isReleaseLocked =
       typeof currentGlobalBundle === 'object' && 'state' in currentGlobalBundle
@@ -607,7 +610,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
     return (
       (bundlePerspective && !existsInBundle) ||
-      isSystemPerspectiveApplied ||
+      !isSystemPerspectiveApplied ||
       !ready ||
       revTime !== null ||
       hasNoPermission ||
@@ -617,7 +620,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isLocked ||
       isDeleting ||
       isDeleted ||
-      isLiveEditAndDraft ||
+      isLiveEditAndDraftPerspective ||
       isCreateLinked ||
       isReleaseLocked
     )
@@ -628,7 +631,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     isNonExistent,
     connectionState,
     editState.transactionSyncLock?.enabled,
-    editState.draft,
     liveEdit,
     perspective,
     bundlePerspective,

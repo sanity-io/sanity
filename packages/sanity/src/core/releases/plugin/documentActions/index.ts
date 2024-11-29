@@ -8,12 +8,8 @@ export default function resolveDocumentActions(
   existingActions: Action[],
   context: DocumentActionsContext,
 ): Action[] {
-  if (context.perspective === 'version') {
-    const duplicateAction = existingActions.find((action) => {
-      return action.name === 'DuplicateAction'
-    })
-    return [...(duplicateAction ? [duplicateAction] : []), DiscardVersionAction]
-  }
-
-  return existingActions
+  const duplicateAction = existingActions.filter(({name}) => name === 'DuplicateAction')
+  return context.perspective === 'version'
+    ? duplicateAction.concat(DiscardVersionAction)
+    : existingActions
 }
