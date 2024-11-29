@@ -9,9 +9,14 @@ import {type TimelineState, type TimelineStore} from './useTimelineStore'
  * @internal
  */
 export function useTimelineSelector<ReturnValue>(
-  timelineStore: TimelineStore,
+  timelineStore: TimelineStore | undefined,
   selector: (timelineState: TimelineState) => ReturnValue,
 ): ReturnValue {
+  if (!timelineStore) {
+    throw new Error(
+      'timelineStore is not defined,  your are using events timeline, use `useEvents()` instead \n If you need to use this, opt in by setting the `beta.eventsAPI.enabled` feature flag to `true`',
+    )
+  }
   return useSyncExternalStoreWithSelector(
     timelineStore.subscribe,
     timelineStore.getSnapshot,

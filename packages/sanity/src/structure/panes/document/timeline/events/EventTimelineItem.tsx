@@ -1,9 +1,8 @@
 import {Card, Flex} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
-import {type DocumentGroupEvent, type DocumentVariantType} from 'sanity'
+import {type DocumentGroupEvent, type DocumentVariantType, Event} from 'sanity'
 
 import {Tooltip} from '../../../../../ui-components'
-import {Event} from './Event'
 
 export interface TimelineItemProps {
   event: DocumentGroupEvent

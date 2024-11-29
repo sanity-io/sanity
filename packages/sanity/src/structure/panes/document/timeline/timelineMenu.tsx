@@ -72,7 +72,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const selectRev = useCallback(
     (revChunk: Chunk) => {
       try {
-        const [sinceId, revId] = timelineStore.findRangeForRev(revChunk)
+        const [sinceId, revId] = timelineStore?.findRangeForRev(revChunk) || [null, null]
         setTimelineMode('closed')
         setTimelineRange(sinceId, revId)
       } catch (err) {
@@ -90,7 +90,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const selectSince = useCallback(
     (sinceChunk: Chunk) => {
       try {
-        const [sinceId, revId] = timelineStore.findRangeForSince(sinceChunk)
+        const [sinceId, revId] = timelineStore?.findRangeForSince(sinceChunk) || [null, null]
         setTimelineMode('closed')
         setTimelineRange(sinceId, revId)
       } catch (err) {
@@ -107,7 +107,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   const handleLoadMore = useCallback(() => {
     if (!loading) {
-      timelineStore.loadMore()
+      timelineStore?.loadMore()
     }
   }, [loading, timelineStore])
 

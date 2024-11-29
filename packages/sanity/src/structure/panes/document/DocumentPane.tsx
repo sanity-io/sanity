@@ -23,7 +23,6 @@ import {LoadingPane} from '../loading'
 import {CommentsWrapper} from './comments'
 import {useDocumentLayoutComponent} from './document-layout'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
-import {HistoryProvider} from './HistoryProvider'
 import {type DocumentPaneProviderProps} from './types'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
@@ -130,32 +129,33 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   }
 
   return (
-    <HistoryProvider documentId={options.id} documentType={options.type}>
-      <DocumentPaneProvider
-        // this needs to be here to avoid formState from being re-used across (incompatible) document types
-        // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
-        key={`${documentType}-${options.id}-${selectedPerspectiveName || ''}`}
-        {...providerProps}
+    <DocumentPaneProvider
+      // this needs to be here to avoid formState from being re-used across (incompatible) document types
+      // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
+      key={`${documentType}-${options.id}-${selectedPerspectiveName || ''}`}
+      {...providerProps}
+    >
+      {/* NOTE: this is a temporary location for this provider until we */}
+      {/* stabilize the reference input options formally in the form builder */}
+      {/* eslint-disable-next-line react/jsx-pascal-case */}
+      <ReferenceInputOptionsProvider
+        EditReferenceLinkComponent={ReferenceChildLink}
+        onEditReference={handleEditReference}
+        initialValueTemplateItems={templatePermissions}
+        activePath={activePath}
       >
-        {/* NOTE: this is a temporary location for this provider until we */}
-        {/* stabilize the reference input options formally in the form builder */}
-        {/* eslint-disable-next-line react/jsx-pascal-case */}
-        <ReferenceInputOptionsProvider
-          EditReferenceLinkComponent={ReferenceChildLink}
-          onEditReference={handleEditReference}
-          initialValueTemplateItems={templatePermissions}
-          activePath={activePath}
-        >
-          <CommentsWrapper documentId={options.id} documentType={options.type}>
-            <DocumentLayout documentId={options.id} documentType={options.type} />
-          </CommentsWrapper>
-        </ReferenceInputOptionsProvider>
-      </DocumentPaneProvider>
-    </HistoryProvider>
+        <CommentsWrapper documentId={options.id} documentType={options.type}>
+          <DocumentLayout documentId={options.id} documentType={options.type} />
+        </CommentsWrapper>
+      </ReferenceInputOptionsProvider>
+    </DocumentPaneProvider>
   )
 }
 
-function usePaneOptions(
+/**
+ * @internal
+ */
+export function usePaneOptions(
   options: DocumentPaneOptions,
   params: Record<string, string | undefined> = {},
 ): DocumentPaneOptions {

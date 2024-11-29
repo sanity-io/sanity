@@ -174,6 +174,11 @@ const defaultWorkspace = {
   tasks: {
     enabled: true,
   },
+  beta: {
+    eventsAPI: {
+      enabled: true,
+    },
+  },
 }
 
 export default defineConfig([
@@ -263,11 +268,6 @@ export default defineConfig([
     },
     unstable_tasks: {
       enabled: true,
-    },
-    beta: {
-      eventsAPI: {
-        enabled: true,
-      },
     },
   },
   {

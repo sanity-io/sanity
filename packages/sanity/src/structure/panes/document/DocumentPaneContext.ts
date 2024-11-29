@@ -76,7 +76,11 @@ export interface DocumentPaneContextValue {
   setIsDeleting: (state: boolean) => void
   timelineError: Error | null
   timelineMode: TimelineMode
-  timelineStore: TimelineStore
+  /**
+   * @deprecated use `useEvents()` instead.
+   * If you need to use this, opt in by setting the `beta.eventsAPI.enabled` feature flag to `true`.
+   */
+  timelineStore?: TimelineStore
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike
@@ -92,4 +96,8 @@ export interface DocumentPaneContextValue {
   __internal_tasks?: {
     footerAction: React.ReactNode
   }
+
+  // History specific
+  revisionId: string | null
+  lastNonDeletedRevId: string | null
 }

@@ -1,10 +1,15 @@
 import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {type DocumentGroupEvent, LoadingBlock, ScrollContainer, useTranslation} from 'sanity'
+import {
+  type DocumentGroupEvent,
+  LoadingBlock,
+  ScrollContainer,
+  useEvents,
+  useTranslation,
+} from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 import {styled} from 'styled-components'
 
-import {useEvents} from '../../HistoryProvider'
 import {EventsTimeline} from '../../timeline/events/EventsTimeline'
 import {TimelineError} from '../../timeline/TimelineError'
 

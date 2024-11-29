@@ -1,9 +1,8 @@
 import {type Path} from '@sanity/types'
 import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {type ReactElement, type ReactNode} from 'react'
+import {getDocumentVariantType} from 'sanity'
 
-import {useEvents} from '../../../../structure/panes/document/HistoryProvider'
-import {Event} from '../../../../structure/panes/document/timeline/events/Event'
 import {Tooltip, type TooltipProps} from '../../../../ui-components'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useRelativeTime} from '../../../hooks'
@@ -11,6 +10,7 @@ import {useTranslation} from '../../../i18n'
 import {useUser} from '../../../store'
 import {type AnnotationDetails, type Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
+import {Event} from '../components/Event'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
@@ -75,14 +75,14 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
   const color = useAnnotationColor(annotation)
   const timeAgo = useRelativeTime(timestamp, {minimal: true})
   const {t} = useTranslation()
-  const {documentVariantType} = useEvents()
+
   return (
     <>
       {annotation.event ? (
         <>
           <Card borderBottom marginBottom={2} />
           <Event
-            documentVariantType={documentVariantType}
+            documentVariantType={getDocumentVariantType(annotation.event.documentId)}
             event={annotation.event}
             showChangesBy="inline"
           />

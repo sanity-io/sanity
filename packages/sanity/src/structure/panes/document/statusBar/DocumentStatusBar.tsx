@@ -7,7 +7,6 @@ import {
   isSanityCreateLinked,
   usePerspective,
   useSanityCreateConfig,
-  useTimelineSelector,
 } from 'sanity'
 
 import {SpacerButton} from '../../../components/spacerButton'
@@ -29,14 +28,14 @@ const CONTAINER_BREAKPOINT = 480 // px
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
-  const {editState, timelineStore, onChange: onDocumentChange, existsInBundle} = useDocumentPane()
+  const {editState, revisionId, onChange: onDocumentChange, existsInBundle} = useDocumentPane()
   const {selectedPerspective} = usePerspective()
   const {title} = useDocumentTitle()
 
   const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
 
   // Subscribe to external timeline state changes
-  const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
+  const showingRevision = Boolean(revisionId)
   const showingVersion = editState?.version !== null
 
   const [collapsed, setCollapsed] = useState<boolean | null>(null)

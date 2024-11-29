@@ -8,14 +8,17 @@ import {
   useToast,
 } from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {type DocumentGroupEvent, useTranslation} from 'sanity'
+import {
+  type DocumentGroupEvent,
+  TIMELINE_ITEM_I18N_KEY_MAPPING,
+  useEvents,
+  useTranslation,
+} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, Popover} from '../../../../../ui-components'
-import {useEvents} from '../../HistoryProvider'
 import {useDocumentPane} from '../../useDocumentPane'
 import {TimelineError} from '../TimelineError'
-import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './constants'
 import {EventsTimeline} from './EventsTimeline'
 
 interface TimelineMenuProps {
