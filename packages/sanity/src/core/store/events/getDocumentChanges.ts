@@ -152,7 +152,7 @@ function calculateDiff({
     fromRaw: initialDoc,
     toValue: document,
     toRaw: finalDocument,
-  })
+  }) as ObjectDiff
   return diff
 }
 
@@ -181,6 +181,7 @@ export function getDocumentChanges({
   since$: Observable<EventsStoreRevision | null>
 }): Observable<{loading: boolean; diff: ObjectDiff | null}> {
   let lastResolvedSince: string | null = null
+  let lastResolvedTo: string | null = null
   let lastTransactions: TransactionLogEventWithEffects[] = []
 
   return combineLatest(to$, since$, eventsObservable$).pipe(
@@ -200,39 +201,47 @@ export function getDocumentChanges({
       if (!sinceDoc) {
         return of({loading: false, diff: null})
       }
+
       return remoteTransactions$.pipe(
         switchMap((remoteTx) => {
           const viewingLatest = !to?._rev
-          return (
-            // The document has been previously resolved and it's on latest, we can use the remote transactions, we don't need to fetch them again
-            (
-              viewingLatest && lastResolvedSince === sinceDoc._rev
-                ? of(removeDuplicatedTransactions(lastTransactions.concat(remoteTx)))
-                : from(
-                    getDocumentTransactions({
-                      documentId,
-                      client,
-                      toTransaction: to?._rev,
-                      fromTransaction: sinceDoc._rev,
-                    }),
-                  )
-            ).pipe(
-              tap((transactions) => {
-                lastResolvedSince = sinceDoc._rev
-                lastTransactions = transactions
-              }),
-              map((transactions) => {
-                return {
-                  loading: false,
-                  diff: calculateDiff({
-                    documentId,
-                    initialDoc: sinceDoc,
-                    transactions,
-                    events: events,
-                  }) as ObjectDiff,
-                }
+          const getTransactions = (): Observable<TransactionLogEventWithEffects[]> => {
+            if (viewingLatest && lastResolvedSince === sinceDoc._rev) {
+              // The document has been previously resolved and it's on latest, we can use the remote transactions, we don't need to fetch them again
+              return of(removeDuplicatedTransactions(lastTransactions.concat(remoteTx)))
+            }
+            if (
+              lastResolvedSince &&
+              lastResolvedSince === sinceDoc._rev &&
+              lastResolvedTo &&
+              lastResolvedTo === to?._rev
+            ) {
+              // The since and to haven't changed, use the same transactions.
+              return of(lastTransactions)
+            }
+            return from(
+              getDocumentTransactions({
+                documentId,
+                client,
+                toTransaction: to?._rev,
+                fromTransaction: sinceDoc._rev,
               }),
             )
+          }
+          return getTransactions().pipe(
+            tap((transactions) => {
+              lastResolvedSince = sinceDoc._rev
+              lastTransactions = transactions
+              if (to?._rev) {
+                lastResolvedTo = to._rev
+              }
+            }),
+            map((transactions) => {
+              return {
+                loading: false,
+                diff: calculateDiff({documentId, initialDoc: sinceDoc, transactions, events}),
+              }
+            }),
           )
         }),
         startWith({
