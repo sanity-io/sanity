@@ -1,3 +1,3 @@
 export * from './EventsProvider'
 export * from './types'
-export * from './useEventsStore'
+export {useEventsStore} from './useEventsStore'
