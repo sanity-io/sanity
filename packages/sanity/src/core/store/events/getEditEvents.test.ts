@@ -52,11 +52,12 @@ describe('getEditEvents()', () => {
   ]
   const expectedEvent: EditDocumentVersionEvent = {
     type: 'EditDocumentVersion',
+    id: 'edit-tx-2',
+    documentId: 'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
     timestamp: '2024-11-19T08:27:33.251404Z',
     author: 'p8xDvUMxC',
-    authors: ['p8xDvUMxC'],
+    contributors: ['p8xDvUMxC'],
     releaseId: 'rkaihDvC1',
-    fromRevisionId: 'edit-tx-1',
     revisionId: 'edit-tx-2',
     transactions: [
       {
@@ -78,6 +79,7 @@ describe('getEditEvents()', () => {
     const events = getEditEvents(
       editTransactions,
       'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
+      false,
     )
     expect(events).toEqual([expectedEvent])
   })
@@ -97,11 +99,12 @@ describe('getEditEvents()', () => {
     }
     const newEvent: EditDocumentVersionEvent = {
       type: 'EditDocumentVersion',
+      documentId: 'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
       timestamp: '2024-11-19T08:35:27.753746Z',
+      id: 'new-tx',
       author: 'p8xDvUMxC',
-      authors: ['p8xDvUMxC'],
+      contributors: ['p8xDvUMxC'],
       releaseId: 'rkaihDvC1',
-      fromRevisionId: 'new-tx',
       revisionId: 'new-tx',
       transactions: [
         {
@@ -115,6 +118,7 @@ describe('getEditEvents()', () => {
     const events = getEditEvents(
       [...editTransactions, newTransaction],
       'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
+      false,
     )
     expect(events).toEqual([newEvent, expectedEvent])
   })
@@ -158,6 +162,7 @@ describe('getEditEvents()', () => {
     const events = getEditEvents(
       [deleteTx, ...editTransactions, undefinedTx, creationTransaction],
       'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
+      false,
     )
     expect(events).toEqual([expectedEvent])
   })
