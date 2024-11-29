@@ -653,6 +653,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',
   /** Error: `{{errorMessage}}` */
   'inputs.imagetool.load-error': 'Error: {{errorMessage}}',
+  /** SVG images are not adjusted for hotspot and crop when served from the Sanity image. If you want the below hotspot and crop settings to apply, make sure to append `fp=jpg` to the image url, or call `format('jpg')` if using `@sanity/image-url` */
+  'inputs.imagetool.svg-gotcha.description': `SVG images are not adjusted for hotspot and crop when served from the Sanity image. If you want the below hotspot and crop settings to apply, make sure to append  <code>fp=jpg</code> to the <ImageUrlDocumentationLink>image url</ImageUrlDocumentationLink>, or call <code>format('jpg')</code> if using <ImageUrlPackageDocumentationLink>@sanity/image-url</ImageUrlPackageDocumentationLink>`,
+  /** Gotcha: Serving SVGs with hotspot and crop from the Sanity Image API */
+  'inputs.imagetool.svg-gotcha.title':
+    'Gotcha: Serving SVGs with hotspot and crop from the Sanity Image API',
   /** Hotspot & Crop */
   'inputs.imagetool.title': 'Hotspot & Crop',
   /** Convert to `{{targetType}}` */
