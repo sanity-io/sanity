@@ -1,6 +1,7 @@
 export * from './ChangeBreadcrumb'
 export * from './ChangeList'
 export * from './ChangeResolver'
+export * from './ChangesError'
 export * from './ChangeTitleSegment'
 export * from './DiffCard'
 export * from './DiffErrorBoundary'

@@ -241,6 +241,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.error-boundary.developer-info': 'Check the developer console for more information',
   /** Text shown when a diff component crashes during rendering, triggering the error boundary */
   'changes.error-boundary.title': 'Rendering the changes to this field caused an error',
+  /* Error description when changes could not be loaded */
+  'changes.error-description': "We're unable to load the changes for this document.",
+  /** Error title when changes could not be loaded */
+  'changes.error-title': 'Something went wrong',
   /** Error message shown when the value of a field is not the expected one */
   'changes.error.incorrect-type-message':
     'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',

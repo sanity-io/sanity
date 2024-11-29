@@ -1,9 +1,11 @@
 import {BoundaryElementProvider, Box, Card, Flex, Spinner, Text} from '@sanity/ui'
+import {motion} from 'framer-motion'
 import {type ReactElement, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {
   ChangeFieldWrapper,
   ChangeList,
+  ChangesError,
   type DocumentChangeContextInstance,
   LoadingBlock,
   NoChanges,
@@ -35,6 +37,12 @@ const Grid = styled(Box)`
   gap: 0.25em;
 `
 
+const SpinnerContainer = styled(Flex)`
+  width: 100%;
+  position: absolute;
+  bottom: -4px;
+`
+
 const DIFF_INITIAL_VALUE = {
   diff: null,
   loading: true,
@@ -51,6 +59,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
 
   // Note that we are using the studio core namespace here, as changes theoretically should
   // be part of Sanity core (needs to be moved from structure at some point)
+  const {t} = useTranslation('studio')
   const {t: structureT} = useTranslation(structureLocaleNamespace)
 
   const documentContext: DocumentChangeContextInstance = useMemo(() => {
@@ -81,7 +90,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
 
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
-      <Box padding={3}>
+      <Box padding={3} style={{position: 'relative'}}>
         <Grid paddingX={2} paddingBottom={2}>
           <Text size={1} muted>
             {structureT('changes.from.label')}
@@ -102,6 +111,20 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
             placement="bottom-end"
           />
         </Grid>
+        {diffLoading && (
+          <motion.div
+            animate={{opacity: 1}}
+            initial={{opacity: 0}}
+            transition={{delay: 0.2, duration: 0.2}}
+          >
+            <SpinnerContainer justify="center" align="center" gap={2}>
+              <Text muted size={0}>
+                {t('changes.loading-changes')}
+              </Text>
+              <Spinner size={0} />
+            </SpinnerContainer>
+          </motion.div>
+        )}
       </Box>
 
       <Card flex={1} paddingX={2} paddingY={2}>
@@ -110,7 +133,6 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
             <Box flex={1} paddingX={3} height="fill">
               {showChanges && (
                 <Content
-                  showDiffLoading={diffLoading}
                   documentContext={documentContext}
                   error={timelineError}
                   loading={revision?.loading || sinceRevision?.loading || false}
@@ -130,16 +152,14 @@ function Content({
   documentContext,
   loading,
   schemaType,
-  showDiffLoading,
 }: {
-  showDiffLoading: boolean
   error?: Error | null
   documentContext: DocumentChangeContextInstance
   loading: boolean
   schemaType: ObjectSchemaType
 }) {
   if (error) {
-    return <NoChanges />
+    return <ChangesError />
   }
 
   if (loading) {
@@ -147,16 +167,19 @@ function Content({
   }
 
   if (!documentContext.rootDiff) {
-    return <NoChanges />
+    return (
+      <motion.div
+        animate={{opacity: 1}}
+        initial={{opacity: 0}}
+        transition={{delay: 0.2, duration: 0.2}}
+      >
+        <NoChanges />
+      </motion.div>
+    )
   }
 
   return (
     <DocumentChangeContext.Provider value={documentContext}>
-      {showDiffLoading && (
-        <Flex justify={'center'} padding={2}>
-          <Spinner />
-        </Flex>
-      )}
       <ChangeList diff={documentContext.rootDiff} schemaType={schemaType} />
     </DocumentChangeContext.Provider>
   )
