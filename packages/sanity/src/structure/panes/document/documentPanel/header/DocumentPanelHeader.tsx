@@ -1,5 +1,5 @@
-import {ArrowLeftIcon, CloseIcon, RestoreIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Flex, Text} from '@sanity/ui'
+import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
+import {Flex} from '@sanity/ui'
 import {
   createElement,
   type ForwardedRef,
@@ -12,7 +12,7 @@ import {
 } from 'react'
 import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
 
-import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {
   PaneContextMenuButton,
   PaneHeader,
