@@ -4,7 +4,6 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient} from '../../../../hooks'
 import {getJsonStream} from '../../../../store/_legacy/history/history/getJsonStream'
 import {API_VERSION} from '../../../../tasks/constants'
-import {getVersionId} from '../../../../util'
 
 export type DocumentHistory = {
   history: TransactionLogEventWithEffects[]
@@ -26,7 +25,7 @@ export function useReleaseHistory(
   const {dataset, token} = client.config()
   const [history, setHistory] = useState<TransactionLogEventWithEffects[]>([])
   const queryParams = `tag=sanity.studio.tasks.history&effectFormat=mendoza&excludeContent=true&includeIdentifiedDocumentsOnly=true`
-  const versionIds = releaseDocumentsIds.map((id) => getVersionId(id, releaseId)).join(',')
+  const versionIds = releaseDocumentsIds.map((id) => id).join(',')
   const transactionsUrl = client.getUrl(
     `/data/history/${dataset}/transactions/${versionIds}?${queryParams}`,
   )

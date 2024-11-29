@@ -60,13 +60,13 @@ export const getDocumentTableColumnDefs: (
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
         <Box paddingX={2}>
-          {datum.document.publishedDocumentExists ? (
-            <Badge radius={2} tone={'caution'}>
-              {t('table-body.action.change')}
-            </Badge>
-          ) : (
+          {datum.document.isNewDocument ? (
             <Badge radius={2} tone={'positive'}>
               {t('table-body.action.add')}
+            </Badge>
+          ) : (
+            <Badge radius={2} tone={'caution'}>
+              {t('table-body.action.change')}
             </Badge>
           )}
         </Box>

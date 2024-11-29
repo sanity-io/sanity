@@ -339,7 +339,7 @@ describe('after releases have loaded', () => {
         results: [
           {
             ...documentsInRelease,
-            document: {...documentsInRelease.document, publishedDocumentExists: true},
+            document: {...documentsInRelease.document, isNewDocument: false},
           },
         ],
       })

@@ -1,5 +1,6 @@
 import {isValidationErrorMarker, type SanityDocument} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
+import {isBefore} from 'date-fns'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, from, of} from 'rxjs'
@@ -20,7 +21,7 @@ export interface DocumentValidationStatus extends ValidationStatus {
 
 export interface DocumentInRelease {
   memoKey: string
-  document: SanityDocument & {publishedDocumentExists: boolean}
+  document: SanityDocument & {isNewDocument: boolean}
   validation: DocumentValidationStatus
   previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
 }
@@ -69,7 +70,7 @@ export function useBundleDocuments(releaseId: string): {
                 switchMap((publishedDocumentExists) =>
                   of({
                     ...doc,
-                    publishedDocumentExists: !!publishedDocumentExists.length,
+                    isNewDocument: !publishedDocumentExists.length,
                   }),
                 ),
               ),
@@ -123,60 +124,93 @@ export function useBundleDocuments(releaseId: string): {
   }, [documentPreviewStore, groqFilter, i18n, getClient, schema, observableClient, releaseId])
 
   const publishedReleaseDocumentsObservable = useMemo(() => {
-    if (!release?.finalDocumentStates) return of({loading: false, results: []})
+    if (!release?.finalDocumentStates?.length) return of({loading: false, results: []})
 
     const documentStates = release.finalDocumentStates
-    if (!documentStates.length) return of({loading: false, results: []})
 
-    return from(documentStates).pipe(
-      mergeMap(({id: documentId}) => {
-        const document$ = observableClient
-          .request<{documents: DocumentInRelease['document'][]}>({
-            url: `/data/history/${dataset}/documents/${documentId}?lastRevision=true`,
-          })
-          .pipe(map(({documents: [document]}) => document))
+    return combineLatest([
+      from(documentStates).pipe(
+        mergeMap(({id: documentId}) => {
+          const document$ = observableClient
+            .request<{documents: DocumentInRelease['document'][]}>({
+              url: `/data/history/${dataset}/documents/${documentId}?lastRevision=true`,
+            })
+            .pipe(map(({documents: [document]}) => document))
 
-        const previewValues$ = document$.pipe(
-          switchMap((document) => {
-            const schemaType = schema.get(document._type)
-            if (!schemaType) {
-              throw new Error(`Schema type not found for document type ${document._type}`)
-            }
+          const previewValues$ = document$.pipe(
+            switchMap((document) => {
+              const schemaType = schema.get(document._type)
+              if (!schemaType) {
+                throw new Error(`Schema type not found for document type ${document._type}`)
+              }
 
-            return documentPreviewStore.observeForPreview(document, schemaType).pipe(
-              take(1),
+              return documentPreviewStore.observeForPreview(document, schemaType).pipe(
+                take(1),
+                // eslint-disable-next-line max-nested-callbacks
+                map((version) => ({
+                  isLoading: false,
+                  values: prepareForPreview(
+                    getPreviewValueWithFallback({
+                      value: document,
+                      version: version.snapshot || document,
+                      perspective: `bundle.${releaseId}`,
+                    }),
+                    schemaType,
+                  ),
+                })),
+                startWith({isLoading: true, values: {}}),
+              )
+            }),
+            filter(({isLoading}) => !isLoading),
+          )
+
+          return combineLatest([document$, previewValues$]).pipe(
+            map(([document, previewValues]) => ({
+              document,
+              previewValues,
+              memoKey: uuid(),
+              validation: {validation: [], hasError: false, isValidating: false},
+            })),
+          )
+        }),
+        toArray(),
+      ),
+
+      documentPreviewStore
+        .unstable_observeDocuments(documentStates.map(({id}) => `${getPublishedId(id)}`))
+        .pipe(take(1), filter(Boolean)),
+    ]).pipe(
+      // Combine results from both streams
+      map(([processedDocuments, observedDocuments]) =>
+        processedDocuments.map((result) => {
+          const documentId = result.document._id
+
+          const getIsNewDocument = () => {
+            // Check if the document exists in the observedDocuments array
+            const publishedDocumentExists = observedDocuments.find(
               // eslint-disable-next-line max-nested-callbacks
-              map((version) => ({
-                isLoading: false,
-                values: prepareForPreview(
-                  getPreviewValueWithFallback({
-                    value: document,
-                    // TODO: hmm, not sure... there are times when snapshot is null
-                    // so fallback to document rather than let getPreviewValueWithFallback
-                    // use draft or published??
-                    version: version.snapshot || document,
-                    perspective: `bundle.${releaseId}`,
-                  }),
-                  schemaType,
-                ),
-              })),
-              startWith({isLoading: true, values: {}}),
+              (observedDoc) => observedDoc?._id === getPublishedId(documentId),
             )
-          }),
-          filter(({isLoading}) => !isLoading),
-        )
 
-        return combineLatest([document$, previewValues$]).pipe(
-          map(([document, previewValues]) => ({
-            document,
-            previewValues,
-            memoKey: uuid(),
-            // no validation needed as this document is not editable anymore
-            validation: {validation: [], hasError: false, isValidating: false},
-          })),
-        )
-      }),
-      toArray(),
+            // this means that the pub doc has now been deleted...
+            // or potentially was deleted as part of this release
+            if (!publishedDocumentExists) return true
+
+            const releasePublishAt = release.publishAt || release.metadata.actualPublishAt
+            if (!releasePublishAt) return false
+
+            const publishedCreatedAtDate = new Date(publishedDocumentExists._createdAt)
+            const releasePublishAtDate = new Date(releasePublishAt)
+
+            return !isBefore(publishedCreatedAtDate, releasePublishAtDate)
+          }
+
+          return {
+            ...result,
+            document: {...result.document, isNewDocument: getIsNewDocument()},
+          }
+        }),
+      ),
       map((results) => ({
         loading: false,
         results,
@@ -187,6 +221,8 @@ export function useBundleDocuments(releaseId: string): {
     documentPreviewStore,
     observableClient,
     release?.finalDocumentStates,
+    release?.metadata.actualPublishAt,
+    release?.publishAt,
     releaseId,
     schema,
   ])

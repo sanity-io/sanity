@@ -10,7 +10,7 @@ export const documentsInRelease: DocumentInRelease = {
     _updatedAt: '2023-10-01T09:00:00Z',
     _rev: 'a',
     _type: 'document',
-    publishedDocumentExists: true,
+    isNewDocument: false,
   },
   validation: {
     hasError: false,

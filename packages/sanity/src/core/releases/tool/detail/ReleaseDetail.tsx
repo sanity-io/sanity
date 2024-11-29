@@ -48,8 +48,12 @@ export const ReleaseDetail = () => {
 
   const isReleaseActive = releaseInDetail?.state === 'active'
 
-  const documentIds = isReleaseActive ? results.map((result) => result.document?._id) : []
+  const documentIds = isReleaseActive
+    ? results.map((result) => result.document?._id)
+    : results.map((result) => result.document?._id)
   const history = useReleaseHistory(documentIds, releaseId)
+
+  console.log({history})
 
   const navigateToReview = useCallback(() => {
     router.navigate({
