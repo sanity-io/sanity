@@ -51,6 +51,23 @@ const getEditTransaction = (
 export function getEditEvents(
   transactions: TransactionLogEventWithEffects[],
   documentId: string,
+  liveEdit: true,
+): UpdateLiveDocumentEvent[]
+
+export function getEditEvents(
+  transactions: TransactionLogEventWithEffects[],
+  documentId: string,
+  liveEdit: false,
+): EditDocumentVersionEvent[]
+
+export function getEditEvents(
+  transactions: TransactionLogEventWithEffects[],
+  documentId: string,
+  liveEdit: boolean,
+): (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[]
+export function getEditEvents(
+  transactions: TransactionLogEventWithEffects[],
+  documentId: string,
   liveEdit: boolean,
 ): (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[] {
   const editTransactions = transactions

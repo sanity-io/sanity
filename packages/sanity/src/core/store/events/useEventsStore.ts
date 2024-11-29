@@ -1,31 +1,28 @@
 /* eslint-disable no-console */
 /* eslint-disable max-nested-callbacks */
-import {useCallback, useMemo} from 'react'
+import {type ObjectSchemaType} from '@sanity/types'
+import {useCallback, useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {BehaviorSubject, combineLatest, from, type Observable, of} from 'rxjs'
-import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
-import {type SanityClient, type SanityDocument} from 'sanity'
+import {of} from 'rxjs'
 
-import {useClient} from '../../hooks'
+import {useClient, useSchema} from '../../hooks'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
-import {getReleaseIdFromName} from '../../releases/util/getReleaseIdFromName'
+import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {getVersionFromId} from '../../util/draftUtils'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
+import {fetchFeatureToggle} from '../_legacy/document/document-pair/utils/fetchFeatureToggle'
+import {createEventsObservable} from './createEventsObservable'
+import {getDocumentAtRevision} from './getDocumentAtRevision'
 import {getDocumentChanges} from './getDocumentChanges'
-import {getDocumentTransactions} from './getDocumentTransactions'
-import {getEditEvents} from './getEditEvents'
+import {getExpandEvents} from './getExpandEvents'
+import {getInitialFetchEvents} from './getInitialFetchEvents'
+import {getRemoteTransactionsSubscription} from './getRemoteTransactionsSubscription'
 import {
   type DocumentGroupEvent,
   type EventsStore,
-  type EventsStoreRevision,
-  isCreateDocumentVersionEvent,
   isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
 } from './types'
-import {useExpandEvents} from './useExpandEvents'
-import {useRemoteTransactions} from './useRemoteTransactions'
-import {addEventId, decorateDraftEvents, removeDupes, squashLiveEditEvents} from './utils'
 
 export interface EventsObservableValue {
   events: DocumentGroupEvent[]
@@ -38,47 +35,6 @@ const INITIAL_VALUE: EventsObservableValue = {
   nextCursor: '',
   loading: true,
   error: null,
-}
-const documentRevisionCache: Record<string, SanityDocument> = Object.create(null)
-
-function getDocumentAtRevision({
-  client,
-  documentId,
-  revisionId,
-}: {
-  client: SanityClient
-  documentId: string
-  revisionId: string | null | undefined
-}): Observable<EventsStoreRevision | null> {
-  if (!revisionId) {
-    return of(null)
-  }
-  const cacheKey = `${documentId}@${revisionId}`
-  const dataset = client.config().dataset
-  if (documentRevisionCache[cacheKey]) {
-    return of({document: documentRevisionCache[cacheKey], loading: false, revisionId: revisionId})
-  }
-  return client.observable
-    .request<{documents: SanityDocument[]}>({
-      url: `/data/history/${dataset}/documents/${documentId}?revision=${revisionId}`,
-      tag: 'get-document-revision',
-    })
-    .pipe(
-      map((response) => {
-        const document = response.documents[0]
-        return {document: document, loading: false, revisionId: revisionId}
-      }),
-      tap((resp) => {
-        documentRevisionCache[cacheKey] = resp.document
-      }),
-      catchError((error: Error) => {
-        // TODO: Handle error
-        console.error('Error fetching document at revision', error)
-        return [{document: null, loading: false, revisionId: revisionId}]
-      }),
-      startWith({document: null, loading: true, revisionId: revisionId}),
-      shareReplay(1),
-    )
 }
 
 export function useEventsStore({
@@ -93,187 +49,51 @@ export function useEventsStore({
   since?: string | '@lastPublished'
 }): EventsStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const documentVariantType = getDocumentVariantType(documentId)
+
   const {state$: releases$} = useReleasesStore()
+  const workspace = useWorkspace()
+  const serverActionsEnabled = useMemo(() => {
+    const configFlag = workspace.__internal_serverDocumentActions?.enabled
+    // If it's explicitly set, let it override the feature toggle
+    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
+  }, [client, workspace.__internal_serverDocumentActions?.enabled])
+  const schema = useSchema()
+  const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
+  const isLiveEdit = Boolean(schemaType?.liveEdit)
 
-  const {events$, refetchEvents$, refreshEvents} = useMemo(() => {
-    const refetchEventsTrigger$ = new BehaviorSubject<{
-      nextCursor: string | null
-      origin: 'loadMore' | 'refresh' | 'initial'
-    }>({
-      nextCursor: null,
-      origin: 'initial',
-    })
-
-    const fetchEvents = ({limit, nextCursor}: {limit: number; nextCursor: string | null}) => {
-      const params = new URLSearchParams({
-        // This is not working yet, CL needs to fix it.
-        limit: limit.toString(),
-      })
-      if (nextCursor) {
-        params.append('nextCursor', nextCursor)
-      }
-      return client.observable
-        .request<{
-          events: Record<string, Omit<DocumentGroupEvent, 'id'>[]>
-          nextCursor: string
-        }>({
-          url: `/data/events/${client.config().dataset}/documents/${documentId}?${params.toString()}`,
-          tag: 'get-document-events',
-        })
-        .pipe(
-          map((response) => {
-            return {
-              events:
-                response.events[documentId]?.map((ev) => addEventId(ev, documentVariantType)) || [],
-              nextCursor: response.nextCursor,
-              loading: false,
-              error: null,
-            }
-          }),
-        )
-    }
-
-    const fetchTransactions = (events: DocumentGroupEvent[]) => {
-      const eventWithRevision =
-        documentVariantType === 'version'
-          ? events.find(isCreateDocumentVersionEvent)
-          : events.find((event) => 'versionRevisionId' in event && event.versionRevisionId)
-
-      const revisionId =
-        eventWithRevision &&
-        'versionRevisionId' in eventWithRevision &&
-        eventWithRevision.versionRevisionId
-
-      if (!revisionId) {
-        return of([])
-      }
-      return from(
-        getDocumentTransactions({
-          client,
-          documentId,
-          fromTransaction: revisionId,
-          toTransaction: undefined, // We need to get up to the present moment
-        }),
-      )
-    }
-
-    return {
-      events$: refetchEventsTrigger$.pipe(
-        switchMap(({nextCursor, origin}) => {
-          return fetchEvents({
-            nextCursor: nextCursor,
-            limit: origin === 'refresh' ? 10 : 100,
-          }).pipe(
-            switchMap((response) => {
-              if (documentVariantType === 'published' || origin === 'loadMore') {
-                // For the published document we don't need to fetch the edit transactions.
-                return of({...response, origin})
-              }
-              return fetchTransactions(response.events).pipe(
-                map((transactions) => {
-                  const editEvents = getEditEvents(transactions, documentId, false)
-                  return {...response, events: [...editEvents, ...response.events], origin}
-                }),
-              )
-            }),
-
-            catchError((error: Error) => {
-              console.error('Error fetching events', error)
-              return [{events: [], nextCursor: '', loading: false, error: error, origin}]
-            }),
-            startWith({events: [], nextCursor: '', loading: true, error: null, origin}),
-          )
-        }),
-        scan((prev, next) => {
-          return {
-            events: removeDupes(prev.events, next.events),
-            // If we are refreshing, we should keep the cursor as it was before.
-            nextCursor: next.origin === 'refresh' ? prev.nextCursor : next.nextCursor,
-            loading: next.loading,
-            error: next.error,
-          }
-        }, INITIAL_VALUE),
-        shareReplay(1),
-      ),
-      refetchEvents$: refetchEventsTrigger$,
-      refreshEvents: () => refetchEventsTrigger$.next({nextCursor: null, origin: 'refresh'}),
-    }
-  }, [client, documentId, documentVariantType])
-
-  const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    remoteTransactions$, // Use this as an optimization to avoid fetching the remote transactions again in the changes list
-    remoteEdits$,
-  } = useRemoteTransactions({
-    client,
-    documentId,
-    documentType,
-    documentVariantType,
-    onRefetch: refreshEvents,
-  })
-
-  const {expandedEvents$, handleExpandEvent} = useExpandEvents({client, documentId})
-
-  const observable$ = useMemo(() => {
-    return combineLatest([releases$, events$, remoteEdits$, expandedEvents$]).pipe(
-      map(([releases, {events, nextCursor, loading, error}, remoteEdits, expandedEvents]) => {
-        const eventsWithRemoteEdits = [...remoteEdits, ...events, ...expandedEvents].sort(
-          // Sort by timestamp, newest first
-          (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
-        )
-
-        if (documentVariantType === 'published') {
-          // We need to add the release information to the publish events
-          return {
-            events: eventsWithRemoteEdits.map((event) => {
-              if (event.type === 'PublishDocumentVersion') {
-                const releaseId = getVersionFromId(event.versionId)
-                if (releaseId) {
-                  const release = releases.releases.get(getReleaseIdFromName(releaseId))
-                  return {...event, release: release}
-                }
-                return event
-              }
-              return event
-            }),
-            nextCursor: nextCursor,
-            loading: loading,
-            error: error,
-          }
-        }
-
-        if (documentVariantType === 'draft') {
-          decorateDraftEvents(eventsWithRemoteEdits)
-          return {
-            events: eventsWithRemoteEdits,
-            nextCursor: nextCursor,
-            loading: loading,
-            error: error,
-          }
-        }
-        return {
-          events: eventsWithRemoteEdits,
-          nextCursor: nextCursor,
-          loading: loading,
-          error: error,
-        }
+  const {events$, loadMore, reloadEvents} = useMemo(
+    () => getInitialFetchEvents({client, documentId}),
+    [client, documentId],
+  )
+  const {expandedEvents$, handleExpandEvent} = useMemo(
+    () => getExpandEvents({client, documentId}),
+    [client, documentId],
+  )
+  const {remoteTransactions$, remoteEdits$, subscribe} = useMemo(
+    () =>
+      getRemoteTransactionsSubscription({
+        client,
+        documentId,
+        documentType,
+        isLiveEdit,
+        serverActionsEnabled,
+        onRefetch: reloadEvents,
       }),
-      // TODO: This is temporal - liveEditEvents will be squashed in the API
-      map((value) => ({...value, events: squashLiveEditEvents(value.events)})),
-    )
-  }, [releases$, events$, remoteEdits$, expandedEvents$, documentVariantType])
+    [client, documentId, documentType, isLiveEdit, serverActionsEnabled, reloadEvents],
+  )
+  const eventsObservable$ = useMemo(() => {
+    return createEventsObservable({releases$, events$, remoteEdits$, expandedEvents$, documentId})
+  }, [releases$, events$, remoteEdits$, expandedEvents$, documentId])
 
-  const {events, loading, error, nextCursor} = useObservable(observable$, INITIAL_VALUE)
+  const {events, loading, error, nextCursor} = useObservable(eventsObservable$, INITIAL_VALUE)
 
-  const handleLoadMoreEvents = useCallback(() => {
-    if (nextCursor) {
-      const currentValue = refetchEvents$.getValue()
-      if (currentValue.nextCursor !== nextCursor) {
-        refetchEvents$.next({origin: 'loadMore', nextCursor: nextCursor})
-      }
+  useEffect(() => {
+    // Subscribe to the remove edits - listening to transactions received from the document pair.
+    const subscription = subscribe()
+    return () => {
+      subscription.unsubscribe()
     }
-  }, [nextCursor, refetchEvents$])
+  }, [subscribe])
 
   const revisionId = useMemo(() => {
     if (rev === '@lastPublished') {
@@ -286,18 +106,20 @@ export function useEventsStore({
     }
     return rev
   }, [events, rev])
+
   const revision$ = useMemo(
     () => getDocumentAtRevision({client, documentId, revisionId: revisionId}),
     [client, documentId, revisionId],
   )
-  const revision = useObservable(revision$, null)
+  const revision = useObservable(revision$)
 
   const sinceId = useMemo(() => {
     if (since && since !== '@lastPublished') return since
     if (!events) return null
 
-    if (since === '@lastPublished') {
-      const lastPublishedId = events.find(isPublishDocumentVersionEvent)?.id
+    if (since === '@lastPublished' || !since) {
+      // Skip the first published, the since and rev cannot be the same.
+      const lastPublishedId = events.slice(1).find(isPublishDocumentVersionEvent)?.id
       if (lastPublishedId) return lastPublishedId
     }
 
@@ -319,8 +141,9 @@ export function useEventsStore({
     () => getDocumentAtRevision({client, documentId, revisionId: sinceId}),
     [sinceId, client, documentId],
   )
-  const sinceRevision = useObservable(since$, null)
+  const sinceRevision = useObservable(since$)
 
+  const documentVariantType = getDocumentVariantType(documentId)
   const findRangeForRevision = useCallback(
     (nextRev: string): [string | null, string | null] => {
       if (!events) return [null, null]
@@ -370,40 +193,30 @@ export function useEventsStore({
     [events, revisionId],
   )
 
-  const changesList = useCallback(
-    ({to, since: sinceDoc}: {to: SanityDocument; since: SanityDocument | null}) => {
-      const selectedToEvent = events.find((event) => event.id === to._rev)
-      const isShowingCreationEvent =
-        selectedToEvent && isCreateDocumentVersionEvent(selectedToEvent)
-
-      // TODO: We could pass here the remoteTransactions to avoid fetching them again specially when editing a document.
-      // Consider using the remoteTransactions$ observable to get the remote edits.
-      return getDocumentChanges({
-        client,
-        events,
-        documentId,
-        to,
-        since: isShowingCreationEvent
-          ? ({_type: to._type, _id: to._id} as SanityDocument)
-          : sinceDoc,
-      })
-    },
-    [client, events, documentId],
-  )
+  const getChangesList = useCallback(() => {
+    return getDocumentChanges({
+      client,
+      eventsObservable$,
+      documentId,
+      remoteTransactions$,
+      since$,
+      to$: revision$,
+    })
+  }, [client, eventsObservable$, documentId, remoteTransactions$, since$, revision$])
 
   return {
     documentVariantType: documentVariantType,
-    enabled: true,
+    enabled: true as const,
     events: events,
     nextCursor: nextCursor,
     loading: loading,
     error: error,
-    revision: revision,
-    sinceRevision: sinceRevision,
+    revision: revision || null,
+    sinceRevision: sinceRevision || null,
     findRangeForRevision: findRangeForRevision,
     findRangeForSince: findRangeForSince,
-    loadMoreEvents: handleLoadMoreEvents,
-    changesList,
-    handleExpandEvent,
+    loadMoreEvents: loadMore,
+    getChangesList,
+    expandEvent: handleExpandEvent,
   }
 }
