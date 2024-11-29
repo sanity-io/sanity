@@ -4,7 +4,7 @@ import {type RemoteSnapshotVersionEvent} from '../../document/document-pair/chec
 
 /**
  * @hidden
- * @beta */
+ * @internal */
 export type DocumentRemoteMutationVersionEvent = Exclude<
   RemoteSnapshotVersionEvent,
   {type: 'snapshot'}

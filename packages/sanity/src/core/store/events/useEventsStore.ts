@@ -31,6 +31,9 @@ const INITIAL_VALUE: EventsObservableValue = {
   error: null,
 }
 
+/**
+ * @internal
+ */
 export function useEventsStore({
   documentId,
   documentType,

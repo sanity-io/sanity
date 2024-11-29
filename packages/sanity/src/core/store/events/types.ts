@@ -408,6 +408,9 @@ export interface EditDocumentVersionEvent extends BaseEvent {
   parentId?: string
 }
 
+/**
+ * @internal
+ */
 export interface EventsStoreRevision {
   revisionId: string
   loading: boolean
@@ -435,6 +438,5 @@ export interface EventsStore {
 
 /**
  * @internal
- * @beta
  **/
 export type DocumentVersionEventType = DocumentGroupEvent['type']
