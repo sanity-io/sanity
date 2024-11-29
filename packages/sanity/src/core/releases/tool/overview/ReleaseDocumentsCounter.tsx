@@ -44,7 +44,7 @@ export const ReleaseDocumentsCounter = ({releaseDocumentMetadata}: Props) => {
                 <Flex key={type} gap={3} padding={2}>
                   <Box flex="none">
                     <Text size={1}>
-                      <ToneIcon symbol={CHANGE_ICON_MAP[type]} tone={tone} />
+                      <ToneIcon icon={CHANGE_ICON_MAP[type]} tone={tone} />
                     </Text>
                   </Box>
                   <Box flex={1}>

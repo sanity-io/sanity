@@ -149,7 +149,7 @@ export const getDocumentTableColumnDefs: (
               content={
                 <Text muted size={1}>
                   <Flex align={'center'} gap={3} padding={1}>
-                    <ToneIcon symbol={ErrorOutlineIcon} tone="critical" />
+                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
                     {t(
                       validationErrorCount === 1
                         ? 'document-validation.error-singular'
@@ -161,7 +161,7 @@ export const getDocumentTableColumnDefs: (
               }
             >
               <Text size={1}>
-                <ToneIcon symbol={ErrorOutlineIcon} tone="critical" />
+                <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
               </Text>
             </Tooltip>
           )}

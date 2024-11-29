@@ -5,13 +5,13 @@ type Tone = ThemeColorStateToneKey
 
 export const ToneIcon = ({
   tone,
-  symbol: Symbol,
+  icon: Icon,
 }: {
   tone: Tone
-  symbol: React.FC<React.SVGProps<SVGSVGElement>>
+  icon: React.FC<React.SVGProps<SVGSVGElement>>
 }) => {
   return (
-    <Symbol
+    <Icon
       style={
         {
           '--card-icon-color': `var(--card-badge-${tone}-icon-color)`,
