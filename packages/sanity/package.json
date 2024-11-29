@@ -189,7 +189,7 @@
     "@types/speakingurl": "^13.0.3",
     "@types/tar-stream": "^3.1.3",
     "@types/use-sync-external-store": "^0.0.6",
-    "@vitejs/plugin-react": "^4.3.3",
+    "@vitejs/plugin-react": "^4.3.4",
     "archiver": "^7.0.0",
     "arrify": "^1.0.1",
     "async-mutex": "^0.4.1",
@@ -262,7 +262,7 @@
     "use-device-pixel-ratio": "^1.1.0",
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.2.0",
-    "vite": "^5.4.8",
+    "vite": "^5.4.11",
     "yargs": "^17.3.0"
   },
   "devDependencies": {
