@@ -94,21 +94,30 @@ export function isPrefixToken(token: string | undefined): boolean {
   return typeof token !== 'undefined' && token.trim().at(-1) === WILDCARD_TOKEN
 }
 
+// TODO: Solidify and test.
+export function isExactMatchToken(token: string | undefined): boolean {
+  return [token?.at(0), token?.at(-1)].every((character) => character === '"')
+}
+
 export function prefixLast(query: string): string {
   const tokens = (query.match(TOKEN_REGEX) ?? []).map((token) => token.trim())
-  const finalNonNegationTokenIndex = tokens.findLastIndex((token) => !isNegationToken(token))
-  const finalNonNegationToken = tokens[finalNonNegationTokenIndex]
+
+  const finalIncrementalTokenIndex = tokens.findLastIndex(
+    (token) => !isNegationToken(token) && !isExactMatchToken(token),
+  )
+
+  const finalIncrementalToken = tokens[finalIncrementalTokenIndex]
 
   if (tokens.length === 0) {
     return WILDCARD_TOKEN
   }
 
-  if (isPrefixToken(finalNonNegationToken) || typeof finalNonNegationToken === 'undefined') {
+  if (isPrefixToken(finalIncrementalToken) || typeof finalIncrementalToken === 'undefined') {
     return tokens.join(' ')
   }
 
   const prefixedTokens = [...tokens]
-  prefixedTokens.splice(finalNonNegationTokenIndex, 1, `${finalNonNegationToken}${WILDCARD_TOKEN}`)
+  prefixedTokens.splice(finalIncrementalTokenIndex, 1, `${finalIncrementalToken}${WILDCARD_TOKEN}`)
   return prefixedTokens.join(' ')
 }
 
