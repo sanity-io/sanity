@@ -1,13 +1,28 @@
 import {diffInput, wrap} from '@sanity/diff'
 import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
-import {incremental} from 'mendoza'
-import {from, map, type Observable, of, startWith} from 'rxjs'
+import {applyPatch, incremental} from 'mendoza'
+import {
+  combineLatest,
+  from,
+  map,
+  type Observable,
+  of,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs'
 import {type SanityClient} from 'sanity'
 
 import {type Annotation, type ObjectDiff} from '../../field'
 import {wrapValue} from '../_legacy/history/history/diffValue'
 import {getDocumentTransactions} from './getDocumentTransactions'
-import {type DocumentGroupEvent} from './types'
+import {
+  type DocumentGroupEvent,
+  type EventsStoreRevision,
+  isCreateDocumentVersionEvent,
+} from './types'
+import {type EventsObservableValue} from './useEventsStore'
 
 const buildDocumentForDiffInput = (document?: Partial<SanityDocument> | null) => {
   if (!document) return {}
@@ -24,10 +39,7 @@ type EventMeta = {
   event?: DocumentGroupEvent
 } | null
 
-function omitRev(document: SanityDocument | undefined) {
-  if (document === undefined) {
-    return undefined
-  }
+function omitRev(document: SanityDocument): Omit<SanityDocument, '_rev'> {
   const {_rev, ...doc} = document
   return doc
 }
@@ -78,9 +90,9 @@ function diffValue({
 }: {
   transactions: TransactionLogEventWithEffects[]
   fromValue: incremental.Value<EventMeta>
-  fromRaw: unknown
+  fromRaw: Omit<SanityDocument, '_rev'>
   toValue: incremental.Value<EventMeta>
-  toRaw: unknown
+  toRaw: Omit<SanityDocument, '_rev'>
 }) {
   const fromInput = wrapValue<EventMeta>(fromValue, fromRaw, {
     fromValue(value) {
@@ -105,19 +117,18 @@ function diffValue({
 function calculateDiff({
   initialDoc,
   documentId,
-  finalDoc,
   transactions,
   events = [],
 }: {
   initialDoc: SanityDocument
-  finalDoc: SanityDocument
+  finalDoc?: SanityDocument
   transactions: TransactionLogEventWithEffects[]
   events: DocumentGroupEvent[]
   documentId: string
 }) {
   const initialValue = incremental.wrap<EventMeta>(omitRev(initialDoc), null)
   let document = incremental.wrap<EventMeta>(omitRev(initialDoc), null)
-
+  let finalDocument = omitRev(initialDoc)
   transactions.forEach((transaction, index) => {
     const meta: EventMeta = {
       transactionIndex: index,
@@ -131,6 +142,7 @@ function calculateDiff({
     const effect = transaction.effects[documentId]
     if (effect) {
       document = incremental.applyPatch(document, effect.apply, meta)
+      finalDocument = applyPatch(finalDocument, effect.apply)
     }
   })
 
@@ -139,61 +151,99 @@ function calculateDiff({
     fromValue: initialValue,
     fromRaw: initialDoc,
     toValue: document,
-    toRaw: finalDoc,
+    toRaw: finalDocument,
   })
   return diff
 }
 
+function removeDuplicatedTransactions(transactions: TransactionLogEventWithEffects[]) {
+  const seen = new Set()
+  return transactions.filter((tx) => {
+    if (seen.has(tx.id)) return false
+    seen.add(tx.id)
+    return true
+  })
+}
+
 export function getDocumentChanges({
-  events,
+  eventsObservable$,
   documentId,
   client,
-  to,
-  since,
+  to$,
+  since$,
+  remoteTransactions$,
 }: {
-  events: DocumentGroupEvent[]
+  eventsObservable$: Observable<EventsObservableValue>
   documentId: string
   client: SanityClient
-  to: SanityDocument
-  since: SanityDocument | null
+  to$: Observable<EventsStoreRevision | null>
+  remoteTransactions$: Observable<TransactionLogEventWithEffects[]>
+  since$: Observable<EventsStoreRevision | null>
 }): Observable<{loading: boolean; diff: ObjectDiff | null}> {
-  // Extremely raw implementation to get the differences between two versions.
-  // Transactions could be cached, given they are not gonna change EVER.
-  // We could also cache the diff, given it's not gonna change either
-  // Transactions are in an order, so if we have [rev4, rev3, rev2] and we already got [rev4, rev3] we can just get the diff between rev3 and rev2 and increment it.
-  // We need to expose this differently, as we need to also expose the transactions for versions and drafts, this implementation only works for published.
-  // We need to find a way to listen to the incoming transactions and in the case of published documents, refetch the events when a new transaction comes in.
-  // For versions and drafts we can keep the list of transactions updated just by the received transactions.
-  if (!since) {
-    return of({loading: false, diff: null})
-  }
+  let lastResolvedSince: string | null = null
+  let lastTransactions: TransactionLogEventWithEffects[] = []
 
-  return from(
-    getDocumentTransactions({
-      documentId,
-      client,
-      toTransaction: to._rev,
-      fromTransaction: since?._rev || to._rev,
-    }),
-  ).pipe(
-    map((transactions) => {
-      return {
-        loading: false,
-        diff: calculateDiff({
-          documentId,
-          initialDoc: since,
-          finalDoc: to,
-          transactions,
-          events: events,
-        }) as ObjectDiff,
+  return combineLatest(to$, since$, eventsObservable$).pipe(
+    switchMap(([toObs, since, {events}]) => {
+      const to = toObs?.document
+      let sinceDoc: SanityDocument | undefined = undefined
+      if (since?.document) {
+        sinceDoc = since?.document
+      } else {
+        const selectedToEvent = events.find((event) => event.id === to?._rev)
+        const isShowingCreationEvent =
+          selectedToEvent && isCreateDocumentVersionEvent(selectedToEvent)
+        if (isShowingCreationEvent && to) {
+          sinceDoc = {_type: to._type, _id: to._id, _rev: to._rev} as SanityDocument
+        }
       }
-    }),
-    startWith({
-      loading: true,
-      diff: diffInput(
-        wrap(buildDocumentForDiffInput(since), null),
-        wrap(buildDocumentForDiffInput(to), null),
-      ) as ObjectDiff,
+      if (!sinceDoc) {
+        return of({loading: false, diff: null})
+      }
+      return remoteTransactions$.pipe(
+        switchMap((remoteTx) => {
+          const viewingLatest = !to?._rev
+          return (
+            // The document has been previously resolved and it's on latest, we can use the remote transactions, we don't need to fetch them again
+            (
+              viewingLatest && lastResolvedSince === sinceDoc._rev
+                ? of(removeDuplicatedTransactions(lastTransactions.concat(remoteTx)))
+                : from(
+                    getDocumentTransactions({
+                      documentId,
+                      client,
+                      toTransaction: to?._rev,
+                      fromTransaction: sinceDoc._rev,
+                    }),
+                  )
+            ).pipe(
+              tap((transactions) => {
+                lastResolvedSince = sinceDoc._rev
+                lastTransactions = transactions
+              }),
+              map((transactions) => {
+                return {
+                  loading: false,
+                  diff: calculateDiff({
+                    documentId,
+                    initialDoc: sinceDoc,
+                    transactions,
+                    events: events,
+                  }) as ObjectDiff,
+                }
+              }),
+            )
+          )
+        }),
+        startWith({
+          loading: true,
+          diff: diffInput(
+            wrap(buildDocumentForDiffInput(sinceDoc), null),
+            wrap(buildDocumentForDiffInput(to), null),
+          ) as ObjectDiff,
+        }),
+        shareReplay(1),
+      )
     }),
   )
 }

@@ -356,11 +356,8 @@ export interface EventsStore {
   findRangeForRevision: (nextRev: string) => [string | null, string | null]
   findRangeForSince: (nextSince: string) => [string | null, string | null]
   loadMoreEvents: () => void
-  changesList: (docs: {
-    to: SanityDocument
-    since: SanityDocument | null
-  }) => Observable<{diff: ObjectDiff | null; loading: boolean}>
-  handleExpandEvent: (event: DocumentGroupEvent) => Promise<void>
+  getChangesList: () => Observable<{diff: ObjectDiff | null; loading: boolean}>
+  expandEvent: (event: DocumentGroupEvent) => Promise<void>
 }
 
 /**

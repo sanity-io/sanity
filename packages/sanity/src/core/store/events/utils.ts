@@ -1,4 +1,7 @@
+import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
+
 import {type DocumentVariantType} from '../../util/draftUtils'
+import {type DocumentRemoteMutationEvent} from '../_legacy'
 import {
   type DocumentGroupEvent,
   isCreateDocumentVersionEvent,
@@ -107,4 +110,22 @@ export function squashLiveEditEvents(events: DocumentGroupEvent[]): DocumentGrou
     acc.push(event)
     return acc
   }, [])
+}
+
+export function remoteMutationToTransaction(
+  event: DocumentRemoteMutationEvent,
+): TransactionLogEventWithEffects {
+  return {
+    author: event.author,
+    documentIDs: [],
+    id: event.transactionId,
+    timestamp: event.timestamp.toISOString(),
+    effects: {
+      [event.head._id]: {
+        // TODO: Find a way to validate that is a MendozaPatch
+        apply: event.effects.apply as MendozaPatch,
+        revert: event.effects.revert as MendozaPatch,
+      },
+    },
+  }
 }

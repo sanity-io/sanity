@@ -89,7 +89,7 @@ function EventsStoreProvider(props: LegacyStoreProviderProps) {
     setParams({
       ...params,
       // Reset the history related params when the perspective changes, as they don't make sense
-      // in the context of the new perspective
+      // in the context of the new perspective - preserveRev is used when setting draft revision.
       rev: params.preserveRev === 'true' ? params.rev : undefined,
       preserveRev: undefined,
       since: undefined,
@@ -113,9 +113,10 @@ function EventsStoreProvider(props: LegacyStoreProviderProps) {
     rev: rev,
     since: since,
   })
+  const value = useMemo(() => eventsStore, [eventsStore])
 
   return (
-    <EventsContext.Provider value={eventsStore}>
+    <EventsContext.Provider value={value}>
       <LegacyStoreProvider {...props} eventsStore={eventsStore} />
     </EventsContext.Provider>
   )

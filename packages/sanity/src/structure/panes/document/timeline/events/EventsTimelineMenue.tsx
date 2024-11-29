@@ -50,7 +50,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
     findRangeForSince,
     loadMoreEvents,
     documentVariantType,
-    handleExpandEvent,
+    expandEvent,
   } = useEvents()
 
   const {t} = useTranslation('studio')
@@ -134,7 +134,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
     return (
       <EventsTimeline
         events={events}
-        onExpand={handleExpandEvent}
+        onExpand={expandEvent}
         hasMoreEvents={Boolean(nextCursor)}
         selectedEventId={event?.id}
         onLoadMore={handleLoadMore}
@@ -145,7 +145,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
   }, [
     eventsError,
     mode,
-    handleExpandEvent,
+    expandEvent,
     events,
     nextCursor,
     event?.id,

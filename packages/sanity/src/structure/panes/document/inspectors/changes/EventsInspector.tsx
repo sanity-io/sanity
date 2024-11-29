@@ -8,7 +8,6 @@ import {
   LoadingBlock,
   NoChanges,
   type ObjectSchemaType,
-  type SanityDocument,
   ScrollContainer,
   useTranslation,
 } from 'sanity'
@@ -36,24 +35,19 @@ const Grid = styled(Box)`
   gap: 0.25em;
 `
 
+const DIFF_INITIAL_VALUE = {
+  diff: null,
+  loading: true,
+}
 export function EventsInspector({showChanges}: {showChanges: boolean}): ReactElement {
-  const {documentId, schemaType, timelineError, value, displayed, formState} = useDocumentPane()
+  const {documentId, schemaType, timelineError, value, formState} = useDocumentPane()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
 
-  const {events, revision, sinceRevision, changesList} = useEvents()
+  const {events, revision, sinceRevision, getChangesList} = useEvents()
+
   const isComparingCurrent = !revision?.revisionId
-  const diff$ = useMemo(
-    () =>
-      changesList({
-        to: revision?.document || (displayed as SanityDocument),
-        since: sinceRevision?.document || null,
-      }),
-    [changesList, displayed, revision?.document, sinceRevision?.document],
-  )
-  const {diff, loading: diffLoading} = useObservable(diff$, {
-    diff: null,
-    loading: true,
-  })
+  const changesList$ = useMemo(() => getChangesList(), [getChangesList])
+  const {diff, loading: diffLoading} = useObservable(changesList$, DIFF_INITIAL_VALUE)
 
   // Note that we are using the studio core namespace here, as changes theoretically should
   // be part of Sanity core (needs to be moved from structure at some point)

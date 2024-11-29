@@ -37,7 +37,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
     documentVariantType,
     loadMoreEvents,
     findRangeForRevision,
-    handleExpandEvent,
+    expandEvent,
   } = useEvents()
 
   const {t} = useTranslation('studio')
@@ -85,7 +85,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
               !initialLoad ? (
                 <EventsTimeline
                   events={events}
-                  onExpand={handleExpandEvent}
+                  onExpand={expandEvent}
                   hasMoreEvents={Boolean(nextCursor)}
                   // If we have a revision, we select it, otherwise we select the first event
                   selectedEventId={revision?.revisionId || events[0]?.id}
