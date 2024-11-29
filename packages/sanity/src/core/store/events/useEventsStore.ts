@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable max-nested-callbacks */
 import {type ObjectSchemaType} from '@sanity/types'
 import {useCallback, useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -11,12 +9,8 @@ import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {fetchFeatureToggle} from '../_legacy/document/document-pair/utils/fetchFeatureToggle'
-import {createEventsObservable} from './createEventsObservable'
+import {createEventsStore} from './createEventsStore'
 import {getDocumentAtRevision} from './getDocumentAtRevision'
-import {getDocumentChanges} from './getDocumentChanges'
-import {getExpandEvents} from './getExpandEvents'
-import {getInitialFetchEvents} from './getInitialFetchEvents'
-import {getRemoteTransactionsSubscription} from './getRemoteTransactionsSubscription'
 import {
   type DocumentGroupEvent,
   type EventsStore,
@@ -49,9 +43,9 @@ export function useEventsStore({
   since?: string | '@lastPublished'
 }): EventsStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
   const {state$: releases$} = useReleasesStore()
   const workspace = useWorkspace()
+
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
     // If it's explicitly set, let it override the feature toggle
@@ -61,39 +55,30 @@ export function useEventsStore({
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const isLiveEdit = Boolean(schemaType?.liveEdit)
 
-  const {events$, loadMore, reloadEvents} = useMemo(
-    () => getInitialFetchEvents({client, documentId}),
-    [client, documentId],
-  )
-  const {expandedEvents$, handleExpandEvent} = useMemo(
-    () => getExpandEvents({client, documentId}),
-    [client, documentId],
-  )
-  const {remoteTransactions$, remoteEdits$, subscribe} = useMemo(
+  const eventsStore = useMemo(
     () =>
-      getRemoteTransactionsSubscription({
+      createEventsStore({
         client,
         documentId,
         documentType,
-        isLiveEdit,
+        releases$,
         serverActionsEnabled,
-        onRefetch: reloadEvents,
+        isLiveEdit,
       }),
-    [client, documentId, documentType, isLiveEdit, serverActionsEnabled, reloadEvents],
+    [client, documentId, documentType, releases$, serverActionsEnabled, isLiveEdit],
   )
-  const eventsObservable$ = useMemo(() => {
-    return createEventsObservable({releases$, events$, remoteEdits$, expandedEvents$, documentId})
-  }, [releases$, events$, remoteEdits$, expandedEvents$, documentId])
-
-  const {events, loading, error, nextCursor} = useObservable(eventsObservable$, INITIAL_VALUE)
+  const {events, loading, error, nextCursor} = useObservable(
+    eventsStore.eventsObservable$,
+    INITIAL_VALUE,
+  )
 
   useEffect(() => {
     // Subscribe to the remove edits - listening to transactions received from the document pair.
-    const subscription = subscribe()
+    const subscription = eventsStore.remoteTransactionsListener()
     return () => {
       subscription.unsubscribe()
     }
-  }, [subscribe])
+  }, [eventsStore])
 
   const revisionId = useMemo(() => {
     if (rev === '@lastPublished') {
@@ -111,7 +96,7 @@ export function useEventsStore({
     () => getDocumentAtRevision({client, documentId, revisionId: revisionId}),
     [client, documentId, revisionId],
   )
-  const revision = useObservable(revision$)
+  const revision = useObservable(revision$, null)
 
   const sinceId = useMemo(() => {
     if (since && since !== '@lastPublished') return since
@@ -123,12 +108,8 @@ export function useEventsStore({
       if (lastPublishedId) return lastPublishedId
     }
 
-    // We want to try to infer the since Id from the events, we want to compare to the last event that happened before the rev as fallback
-    if (!revisionId) {
-      // rev has not been selected, the user will be seeing the last version of the document.
-      // we need to select the event that comes after
-      return events[1]?.id
-    }
+    // rev has not been selected, the is seeing the last version of the document, select the event that comes after
+    if (!revisionId) return events[1]?.id
 
     // If the user has selected a revisionId, we should show here the id of the event that is the previous event to the rev selected.
     const revisionEventIndex = events.findIndex((e) => e.id === revisionId)
@@ -141,9 +122,16 @@ export function useEventsStore({
     () => getDocumentAtRevision({client, documentId, revisionId: sinceId}),
     [sinceId, client, documentId],
   )
-  const sinceRevision = useObservable(since$)
+
+  const getChangesList = useCallback(
+    () => eventsStore.getDocumentChanges(revision$, since$),
+    [eventsStore, revision$, since$],
+  )
+
+  const sinceRevision = useObservable(since$, null)
 
   const documentVariantType = getDocumentVariantType(documentId)
+
   const findRangeForRevision = useCallback(
     (nextRev: string): [string | null, string | null] => {
       if (!events) return [null, null]
@@ -193,30 +181,19 @@ export function useEventsStore({
     [events, revisionId],
   )
 
-  const getChangesList = useCallback(() => {
-    return getDocumentChanges({
-      client,
-      eventsObservable$,
-      documentId,
-      remoteTransactions$,
-      since$,
-      to$: revision$,
-    })
-  }, [client, eventsObservable$, documentId, remoteTransactions$, since$, revision$])
-
   return {
-    documentVariantType: documentVariantType,
+    documentVariantType,
     enabled: true as const,
-    events: events,
-    nextCursor: nextCursor,
-    loading: loading,
-    error: error,
-    revision: revision || null,
-    sinceRevision: sinceRevision || null,
-    findRangeForRevision: findRangeForRevision,
-    findRangeForSince: findRangeForSince,
-    loadMoreEvents: loadMore,
+    events,
+    nextCursor,
+    loading,
+    error,
+    revision,
+    sinceRevision,
+    findRangeForRevision,
+    findRangeForSince,
+    loadMoreEvents: eventsStore.loadMoreEvents,
+    expandEvent: eventsStore.handleExpandEvent,
     getChangesList,
-    expandEvent: handleExpandEvent,
   }
 }

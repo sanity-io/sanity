@@ -107,12 +107,7 @@ function EventsStoreProvider(props: LegacyStoreProviderProps) {
     // TODO: Remove `updateHistoryParams` as a dependency when react eslint plugin is updated
   }, [perspective, updateHistoryParams])
 
-  const eventsStore = useEventsStore({
-    documentId,
-    documentType: props.documentType,
-    rev: rev,
-    since: since,
-  })
+  const eventsStore = useEventsStore({documentId, documentType: props.documentType, rev, since})
   const value = useMemo(() => eventsStore, [eventsStore])
 
   return (

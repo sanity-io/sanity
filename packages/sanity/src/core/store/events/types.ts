@@ -88,7 +88,7 @@
  *
  * ## Overall document lifecycle
  *
- * The overall document's existence is defined by the existance of either the
+ * The overall document's existence is defined by the existence of either the
  * published document or a draft (either the main draft or a version in a
  * release).
  *
@@ -141,7 +141,8 @@ import {type DocumentVariantType} from '../../util/draftUtils'
 
 /**
  * Events relevant for the whole document group.
- **/
+ * @internal
+ */
 export type DocumentGroupEvent =
   | CreateDocumentVersionEvent
   | DeleteDocumentVersionEvent
@@ -154,39 +155,79 @@ export type DocumentGroupEvent =
   | UpdateLiveDocumentEvent
   | EditDocumentVersionEvent
 
+/**
+ * @internal
+ */
 export const isCreateDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is CreateDocumentVersionEvent => event.type === 'CreateDocumentVersion'
+
+/**
+ * @internal
+ */
 export const isDeleteDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is DeleteDocumentVersionEvent => event.type === 'DeleteDocumentVersion'
+
+/**
+ * @internal
+ */
 export const isPublishDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is PublishDocumentVersionEvent => event.type === 'PublishDocumentVersion'
+
+/**
+ * @internal
+ */
 export const isUnpublishDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is UnpublishDocumentEvent => event.type === 'UnpublishDocument'
+
+/**
+ * @internal
+ */
 export const isScheduleDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is ScheduleDocumentVersionEvent => event.type === 'ScheduleDocumentVersion'
+
+/**
+ * @internal
+ */
 export const isUnscheduleDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is UnscheduleDocumentVersionEvent => event.type === 'UnscheduleDocumentVersion'
+
+/**
+ * @internal
+ */
 export const isDeleteDocumentGroupEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is DeleteDocumentGroupEvent => event.type === 'DeleteDocumentGroup'
+
+/**
+ * @internal
+ */
 export const isCreateLiveDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is CreateLiveDocumentEvent => event.type === 'CreateLiveDocument'
+
+/**
+ * @internal
+ */
 export const isUpdateLiveDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is UpdateLiveDocumentEvent => event.type === 'UpdateLiveDocument'
+
+/**
+ * @internal
+ */
 export const isEditDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is EditDocumentVersionEvent => event.type === 'EditDocumentVersion'
 
 /**
  * A generic event with a type and a timestamp.
+ * @internal
  */
 export interface BaseEvent {
   id: string
@@ -194,6 +235,9 @@ export interface BaseEvent {
   author: string
 }
 
+/**
+ * @internal
+ */
 export interface CreateDocumentVersionEvent extends BaseEvent {
   type: 'CreateDocumentVersion'
   documentId: string
@@ -213,6 +257,9 @@ export interface CreateDocumentVersionEvent extends BaseEvent {
   parentId?: string
 }
 
+/**
+ * @internal
+ */
 export interface DeleteDocumentVersionEvent extends BaseEvent {
   type: 'DeleteDocumentVersion'
   documentId: string
@@ -222,6 +269,9 @@ export interface DeleteDocumentVersionEvent extends BaseEvent {
   versionRevisionId: string
 }
 
+/**
+ * @internal
+ */
 export interface PublishDocumentVersionEvent extends BaseEvent {
   type: 'PublishDocumentVersion'
   documentId: string
@@ -250,6 +300,9 @@ export interface PublishDocumentVersionEvent extends BaseEvent {
   creationEvent?: CreateDocumentVersionEvent
 }
 
+/**
+ * @internal
+ */
 export interface UnpublishDocumentEvent extends BaseEvent {
   type: 'UnpublishDocument'
   documentId: string
@@ -262,6 +315,9 @@ export interface UnpublishDocumentEvent extends BaseEvent {
   author: string
 }
 
+/**
+ * @internal
+ */
 export interface ScheduleDocumentVersionEvent extends BaseEvent {
   type: 'ScheduleDocumentVersion'
   documentId: string
@@ -277,6 +333,9 @@ export interface ScheduleDocumentVersionEvent extends BaseEvent {
   publishAt: string
 }
 
+/**
+ * @internal
+ */
 export interface UnscheduleDocumentVersionEvent extends BaseEvent {
   type: 'UnscheduleDocumentVersion'
   documentId: string
@@ -288,6 +347,9 @@ export interface UnscheduleDocumentVersionEvent extends BaseEvent {
   author: string
 }
 
+/**
+ * @internal
+ */
 export interface DeleteDocumentGroupEvent extends BaseEvent {
   type: 'DeleteDocumentGroup'
   documentId: string
@@ -295,6 +357,9 @@ export interface DeleteDocumentGroupEvent extends BaseEvent {
   author: string
 }
 
+/**
+ * @internal
+ */
 export interface CreateLiveDocumentEvent extends BaseEvent {
   type: 'CreateLiveDocument'
   documentId: string
@@ -303,6 +368,9 @@ export interface CreateLiveDocumentEvent extends BaseEvent {
   author: string
 }
 
+/**
+ * @internal
+ */
 export interface UpdateLiveDocumentEvent extends BaseEvent {
   type: 'UpdateLiveDocument'
   documentId: string
@@ -312,6 +380,7 @@ export interface UpdateLiveDocumentEvent extends BaseEvent {
 }
 
 /**
+ * @internal
  * This event won't be exposed by the API, it needs to be generated by validating the
  * transactions that occurred between two events. Usually, between two PublishDocumentEvents.
  * Or a create event and a publish event.
@@ -344,6 +413,9 @@ export interface EventsStoreRevision {
   document?: SanityDocument | null
 }
 
+/**
+ * @internal
+ * */
 export interface EventsStore {
   enabled: true
   documentVariantType: DocumentVariantType
