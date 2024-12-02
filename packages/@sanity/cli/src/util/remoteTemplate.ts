@@ -50,7 +50,8 @@ function isGithubRepoShorthand(value: string): boolean {
   // sanity-io/sanity
   // sanity-io/sanity/templates/next-js
   // sanity-io/templates/live-content-api
-  return /^[\w-]+\/[\w-.]+(\/[\w-.]+)*$/.test(value)
+  // sanity-io/sanity/packages/@sanity/cli/test/test-template
+  return /^[\w-]+\/[\w-.]+(\/[@\w-.]+)*$/.test(value)
 }
 
 function isGithubRepoUrl(value: string | URL): value is URL | GithubUrlString {
