@@ -100,8 +100,6 @@ export function getEditEvents(
           contributors: [transaction.author],
           releaseId: getVersionFromId(documentId),
           revisionId: transaction.id,
-
-          // TODO: Do we need the transactions? It could be useful to avoid refetching the transactions
           transactions: [getEditTransaction(transaction)],
         } satisfies EditDocumentVersionEvent)
     if (result.length === 0) {

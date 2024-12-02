@@ -48,7 +48,8 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
       since: undefined,
     })
     setTimeout(() => {
-      // A bug is produced when we change the perspective and the params at the same time
+      // A bug is generated when we change the perspective and the params at the same time
+      // Resetting the params to the value it had before, because the paneRouter uses the previous value
       setPerspective('drafts')
     }, 100)
   }, [setParams, params, event.versionRevisionId, setPerspective])

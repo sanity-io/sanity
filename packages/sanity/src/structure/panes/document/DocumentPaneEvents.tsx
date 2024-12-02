@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {useEffect, useMemo, useRef} from 'react'
 import {
   EventsProvider,
@@ -65,7 +63,6 @@ export const DocumentPaneEvents = (props: DocumentPaneProviderProps) => {
     } else {
       isMounted.current = true
     }
-    // https://react.dev/learn/separating-events-from-effects#declaring-an-effect-event
     // TODO: Remove `updateHistoryParams` as a dependency when react eslint plugin is updated
   }, [perspective, updateHistoryParams])
 

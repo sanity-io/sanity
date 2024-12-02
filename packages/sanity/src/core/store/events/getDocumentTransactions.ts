@@ -34,13 +34,10 @@ export async function getDocumentTransactions({
     effectFormat: 'mendoza',
     excludeContent: 'true',
     includeIdentifiedDocumentsOnly: 'true',
-    // reverse: 'true',
     limit: TRANSLOG_ENTRY_LIMIT.toString(),
-    // https://www.sanity.io/docs/history-api#fromTransaction-db53ef83c809
     fromTransaction: fromTransaction,
   })
 
-  // fromTransaction,
   if (toTransaction) {
     queryParams.append('toTransaction', toTransaction)
   }

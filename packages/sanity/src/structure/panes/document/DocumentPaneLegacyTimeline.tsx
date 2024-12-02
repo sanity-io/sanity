@@ -26,11 +26,6 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
 
   const [timelineError, setTimelineError] = useState<Error | null>(null)
 
-  /**
-   * Create an intermediate store which handles document Timeline + TimelineController
-   * creation, and also fetches pre-requsite document snapshots. Compatible with `useSyncExternalStore`
-   * and made available to child components via DocumentPaneContext.
-   */
   const timelineStore = useTimelineStore({
     documentId: getPublishedId(options.id),
     documentType: options.type,
@@ -45,8 +40,6 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
   const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
   const timelineDisplayed = useTimelineSelector(timelineStore, (state) => state.timelineDisplayed)
   const sinceAttributes = useTimelineSelector(timelineStore, (state) => state.sinceAttributes)
-
-  // Subscribe to external timeline state changes
   const timelineReady = useTimelineSelector(timelineStore, (state) => state.timelineReady)
   const isPristine = useTimelineSelector(timelineStore, (state) => state.isPristine)
   const lastNonDeletedRevId = useTimelineSelector(

@@ -57,8 +57,6 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   const changesList$ = useMemo(() => getChangesList(), [getChangesList])
   const {diff, loading: diffLoading} = useObservable(changesList$, DIFF_INITIAL_VALUE)
 
-  // Note that we are using the studio core namespace here, as changes theoretically should
-  // be part of Sanity core (needs to be moved from structure at some point)
   const {t} = useTranslation('studio')
   const {t: structureT} = useTranslation(structureLocaleNamespace)
 
@@ -93,7 +91,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
       <Box padding={3} style={{position: 'relative'}}>
         <Grid paddingX={2} paddingBottom={2}>
           <Text size={1} muted>
-            {structureT('changes.from.label')}
+            {t('changes.inspector.from-label')}
           </Text>
           <EventsTimelineMenu
             event={sinceEvent || null}
@@ -102,7 +100,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
             placement="bottom-start"
           />
           <Text size={1} muted>
-            {structureT('changes.to.label')}
+            {t('changes.inspector.to-label')}
           </Text>
           <EventsTimelineMenu
             event={toEvent || null}

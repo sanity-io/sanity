@@ -1,6 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
-import {type DocumentGroupEvent, Event} from 'sanity'
+import {type DocumentGroupEvent, Event, useTranslation} from 'sanity'
 
 import {Tooltip} from '../../../../../ui-components'
 
@@ -23,6 +23,7 @@ const getIsSelectable = (event: DocumentGroupEvent) => {
 }
 
 export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: TimelineItemProps) {
+  const {t} = useTranslation('studio')
   const isSelectable = getIsSelectable(event)
   const handleClick = useCallback(
     (evt: MouseEvent<HTMLDivElement>) => {
@@ -35,18 +36,8 @@ export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: Ti
     },
     [onSelect, event, isSelectable],
   )
-
   return (
-    <Tooltip
-      content={
-        isSelectable
-          ? ''
-          : // TODO: Confirm this and translate it
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-            'It is not possible to select this event'
-      }
-      disabled={isSelectable}
-    >
+    <Tooltip content={isSelectable ? '' : t('changes.not-selectable')} disabled={isSelectable}>
       <Flex gap={1}>
         <Card
           as={isSelectable ? 'button' : 'div'}

@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable max-nested-callbacks */
 import {BehaviorSubject, from, of} from 'rxjs'
 import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
 import {type SanityClient} from 'sanity'
@@ -39,7 +37,6 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
 
   const fetchEvents = ({limit, nextCursor}: {limit: number; nextCursor: string | null}) => {
     const params = new URLSearchParams({
-      // This is not working yet, CL needs to fix it.
       limit: limit.toString(),
     })
     if (nextCursor) {

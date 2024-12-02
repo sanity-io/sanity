@@ -122,7 +122,6 @@ export function remoteMutationToTransaction(
     timestamp: event.timestamp.toISOString(),
     effects: {
       [event.head._id]: {
-        // TODO: Find a way to validate that is a MendozaPatch
         apply: event.effects.apply as MendozaPatch,
         revert: event.effects.revert as MendozaPatch,
       },
