@@ -108,6 +108,7 @@ function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
         pressed={node.selected}
         text={title}
         tone={node.tone}
+        data-testid={`action-${node.title?.toLocaleLowerCase().replace(' ', '')}`}
       />
     </TooltipOfDisabled>
   )
