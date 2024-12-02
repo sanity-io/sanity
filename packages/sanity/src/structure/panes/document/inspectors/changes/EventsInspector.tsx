@@ -17,7 +17,6 @@ import {
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
-import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
 
@@ -58,7 +57,6 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   const {diff, loading: diffLoading} = useObservable(changesList$, DIFF_INITIAL_VALUE)
 
   const {t} = useTranslation('studio')
-  const {t: structureT} = useTranslation(structureLocaleNamespace)
 
   const documentContext: DocumentChangeContextInstance = useMemo(() => {
     return {
@@ -83,7 +81,13 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   const sinceEvents = useMemo(() => {
     // The sinceEvents need to account the toEvent showing only events that are older than the toEvent
     if (!toEvent) return events.slice(1)
-    return events.slice(events.indexOf(toEvent) + 1)
+    return events.slice(events.indexOf(toEvent) + 1).map((event) => {
+      // If the to event has a parent id, we need to remove the parent id from the since events or they won't be rendered, as they have no parent to expand.
+      if ('parentId' in toEvent && 'parentId' in event && event.parentId === toEvent.parentId) {
+        return {...event, parentId: undefined}
+      }
+      return event
+    })
   }, [events, toEvent])
 
   return (
