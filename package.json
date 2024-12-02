@@ -185,6 +185,7 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
+      "@sanity/client": "6.22.2-bundle-perspective-2",
       "@sanity/insert-menu": "1.0.11-release.4",
       "@sanity/presentation": "1.17.8-release.4",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
