@@ -5,7 +5,7 @@ import {omit} from 'lodash'
 import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
 import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
 
-import {type DocumentVariantType} from '../../../../util/draftUtils'
+import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
   type BufferedDocumentEvent,
   type CommitRequest,

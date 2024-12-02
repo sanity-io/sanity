@@ -2,7 +2,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 
 import {Translate, useTranslation} from '../../i18n'
-import {getDocumentVariantType} from '../../util/draftUtils'
+import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
 import {useReleaseOperations} from '../store/useReleaseOperations'
 import {usePerspective} from './usePerspective'

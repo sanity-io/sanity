@@ -6,7 +6,7 @@ import {AddedVersion} from 'sanity'
 
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
-import {getDocumentVariantType} from '../../../util/draftUtils'
+import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
 import {useBundleDocuments} from './useBundleDocuments'
