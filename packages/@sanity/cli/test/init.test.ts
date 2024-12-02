@@ -183,7 +183,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         '--dataset',
         testRunArgs.dataset,
         '--template',
-        'SimeonGriggs/sanity-remix-template',
+        'sanity-io/sanity/packages/@sanity/cli/test/test-template',
         '--output-path',
         `${baseTestPath}/${outpath}`,
         '--package-manager',
