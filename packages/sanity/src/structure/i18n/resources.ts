@@ -88,7 +88,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Fallback tooltip for the Unpublish document action when publish is invoked for a document with live edit enabled.*/
   'action.unpublish.live-edit.disabled':
     'This document has live edit enabled and cannot be unpublished',
-
+  /** Description for the archived release banner, rendered when viewing the history of a version document from the publihed view */
+  'banners.archived-release.description':
+    "You are viewing a read-only document that was published in a release. It can't be edited",
   /** The text for the restore button on the deleted document banner */
   'banners.deleted-document-banner.restore-button.text': 'Restore most recent revision',
   /** The text content for the deleted document banner */

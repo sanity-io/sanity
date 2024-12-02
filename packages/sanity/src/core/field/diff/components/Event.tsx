@@ -32,7 +32,6 @@ interface UserAvatarStackProps {
 
 function UserAvatarStack({maxLength, userIds, size, withTooltip = true}: UserAvatarStackProps) {
   return (
-    // eslint-disable-next-line react/jsx-no-undef
     <AvatarStack maxLength={maxLength} size={size}>
       {userIds.map((userId) => (
         <UserAvatar key={userId} user={userId} withTooltip={withTooltip} />

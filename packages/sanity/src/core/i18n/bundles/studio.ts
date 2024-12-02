@@ -279,6 +279,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
   /** No Changes title in the Review Changes pane */
   'changes.no-changes-title': 'There are no changes',
+  /* Label for the tooltip that shows when an action is not selectable*/
+  'changes.not-selectable': 'It is not possible to select this event',
   /** Portable Text diff: An annotation was added */
   'changes.portable-text.annotation_added': 'Added annotation',
   /** Portable Text diff: An annotation was changed */
