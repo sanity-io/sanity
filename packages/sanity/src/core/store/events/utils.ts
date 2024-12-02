@@ -85,6 +85,12 @@ export function decorateDraftEvents(events: DocumentGroupEvent[]): void {
         creationEvent.parentId = event.id
       }
     }
+    if (isEditDocumentVersionEvent(event)) {
+      // If it's the first edit event after expanding a publish, the id of this event will be shared with the id of the published event, we need to use the following transaction id.
+      if (event.parentId === event.id && event.transactions[1]?.revisionId) {
+        event.id = event.transactions[1]?.revisionId
+      }
+    }
   })
 }
 

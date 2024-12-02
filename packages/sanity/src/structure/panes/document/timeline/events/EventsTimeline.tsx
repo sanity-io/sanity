@@ -58,7 +58,16 @@ export const EventsTimeline = ({
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
   const {t} = useTranslation('studio')
-  const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set())
+  const [expandedParents, setExpandedParents] = useState<Set<string>>(() => {
+    if (selectedEventId) {
+      // Find that event and if it has a parent, expand the parent.
+      const selectedEvent = allEvents.find((event) => event.id === selectedEventId)
+      if (selectedEvent && 'parentId' in selectedEvent && selectedEvent.parentId) {
+        return new Set([selectedEvent.parentId])
+      }
+    }
+    return new Set()
+  })
   const [expandingParents, setExpandingParents] = useState<Set<string>>(new Set())
 
   const events = useMemo(() => {
