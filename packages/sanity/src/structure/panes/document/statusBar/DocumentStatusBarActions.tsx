@@ -58,7 +58,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
               <Button
-                data-testid={`action-${firstActionState.label}`}
+                data-testid={`action-${firstActionState.label.toLocaleLowerCase().replaceAll(' ', '')}`}
                 disabled={disabled || Boolean(firstActionState.disabled)}
                 icon={firstActionState.icon}
                 // eslint-disable-next-line react/jsx-handler-names
