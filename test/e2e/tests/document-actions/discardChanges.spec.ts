@@ -19,11 +19,7 @@ test(`isn't possible to discard changes if a changed document has no published v
   await expect(discardChangesButton).toBeHidden()
 })
 
-/* 
-  Test skipped due to on going developments around server actions that make them flaky 
-  Re-enable this test when the server actions are stable 
-  */
-test.skip(`is possible to discard changes if a changed document has a published version`, async ({
+test(`is possible to discard changes if a changed document has a published version`, async ({
   page,
   createDraftDocument,
 }) => {
@@ -46,11 +42,7 @@ test.skip(`is possible to discard changes if a changed document has a published 
   await expect(discardChangesButton).toBeEnabled()
 })
 
-/* 
-  Test skipped due to on going developments around server actions that make them flaky 
-  Re-enable this test when the server actions are stable 
-  */
-test.skip(`displays the published document state after discarding changes`, async ({
+test(`displays the published document state after discarding changes`, async ({
   page,
   createDraftDocument,
 }) => {
