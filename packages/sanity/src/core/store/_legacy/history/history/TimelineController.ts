@@ -12,7 +12,7 @@ const TRANSLOG_ENTRY_LIMIT = 50
 
 /**
  * @hidden
- * @internal */
+ * @beta */
 export type TimelineControllerOptions = {
   timeline: Timeline
   client: SanityClient
@@ -23,7 +23,7 @@ export type TimelineControllerOptions = {
 
 /**
  * @hidden
- * @internal */
+ * @beta */
 export type SelectionState = 'inactive' | 'rev' | 'range' | 'loading' | 'invalid'
 
 /**
@@ -32,7 +32,7 @@ export type SelectionState = 'inactive' | 'rev' | 'range' | 'loading' | 'invalid
  *
  *
  * @hidden
- * @internal
+ * @beta
  */
 export class TimelineController {
   timeline: Timeline

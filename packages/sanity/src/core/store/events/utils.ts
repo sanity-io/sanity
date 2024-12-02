@@ -1,6 +1,6 @@
 import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
 
-import {type DocumentVariantType} from '../../util/draftUtils'
+import {type DocumentVariantType} from '../../util/getDocumentVariantType'
 import {type DocumentRemoteMutationEvent} from '../_legacy'
 import {
   type DocumentGroupEvent,

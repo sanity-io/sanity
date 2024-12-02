@@ -38,7 +38,7 @@ export interface TimelineOptions {
  *
  *
  * @hidden
- * @internal
+ * @beta
  */
 export class Timeline {
   reachedEarliestEntry = false

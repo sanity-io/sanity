@@ -67,7 +67,7 @@ export type Chunk = {
  *
  *
  * @hidden
- * @internal
+ * @beta
  */
 export type AnnotationDetails = {
   chunk?: Chunk // This is not used anywhere, could be removed
@@ -78,7 +78,7 @@ export type AnnotationDetails = {
 
 /**
  * @hidden
- * @internal */
+ * @beta */
 export type Annotation = AnnotationDetails | null
 
 // Diff types with annotation type set automatically

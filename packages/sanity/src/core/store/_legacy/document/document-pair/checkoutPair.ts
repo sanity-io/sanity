@@ -27,22 +27,22 @@ const isMutationEventForDocId =
 
 /**
  * @hidden
- * @internal */
+ * @beta */
 export type WithVersion<T> = T & {version: DocumentVariantType}
 
 /**
  * @hidden
- * @internal */
+ * @beta */
 export type DocumentVersionEvent = WithVersion<ReconnectEvent | BufferedDocumentEvent>
 
 /**
  * @hidden
- * @internal */
+ * @beta */
 export type RemoteSnapshotVersionEvent = WithVersion<RemoteSnapshotEvent>
 
 /**
  * @hidden
- * @internal */
+ * @beta */
 export interface DocumentVersion {
   consistency$: Observable<boolean>
   remoteSnapshot$: Observable<RemoteSnapshotVersionEvent>
@@ -60,7 +60,7 @@ export interface DocumentVersion {
 
 /**
  * @hidden
- * @internal */
+ * @beta */
 export type Pair = {
   /** @internal */
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
