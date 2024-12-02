@@ -371,7 +371,7 @@ export const eventsAPIReducer = (opts: {config: PluginOptions; initialValue: boo
   const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
     const enabled = innerConfig.beta?.eventsAPI?.enabled
 
-    if (!enabled) return acc
+    if (typeof enabled === 'undefined') return acc
     if (typeof enabled === 'boolean') return enabled
 
     throw new Error(
