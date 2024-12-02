@@ -52,7 +52,6 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
     findRangeForRevision,
     findRangeForSince,
     loadMoreEvents,
-    documentVariantType,
     expandEvent,
   } = useEvents()
 
@@ -142,7 +141,6 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
         selectedEventId={event?.id}
         onLoadMore={handleLoadMore}
         onSelect={mode === 'rev' ? selectRev : selectSince}
-        documentVariantType={documentVariantType}
       />
     )
   }, [
@@ -154,7 +152,6 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
     event?.id,
     handleLoadMore,
     selectSince,
-    documentVariantType,
     selectRev,
   ])
 

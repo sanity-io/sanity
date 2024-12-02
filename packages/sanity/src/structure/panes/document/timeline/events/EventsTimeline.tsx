@@ -5,7 +5,7 @@ import {
   CommandList,
   type CommandListRenderItemCallback,
   type DocumentGroupEvent,
-  type DocumentVariantType,
+  getDocumentVariantType,
   isCreateDocumentVersionEvent,
   isEditDocumentVersionEvent,
   LoadingBlock,
@@ -28,7 +28,6 @@ interface TimelineProps {
    * The list needs a predefined max height for the scroller to work.
    */
   listMaxHeight?: string
-  documentVariantType: DocumentVariantType
 }
 
 const TimelineItemWrapper = motion(Box)
@@ -54,7 +53,6 @@ export const EventsTimeline = ({
   selectedEventId,
   onLoadMore,
   onSelect,
-  documentVariantType,
   listMaxHeight = 'calc(100vh - 280px)',
   onExpand,
 }: TimelineProps) => {
@@ -120,6 +118,7 @@ export const EventsTimeline = ({
 
   const renderOptionsMenu = useCallback(
     (event: DocumentGroupEvent) => {
+      const documentVariantType = getDocumentVariantType(event.id)
       if (event.type === 'PublishDocumentVersion' && documentVariantType === 'published') {
         return <PublishedEventMenu event={event} />
       }
@@ -137,7 +136,7 @@ export const EventsTimeline = ({
       }
       return null
     },
-    [documentVariantType, expandedParents, handleExpandParent],
+    [expandedParents, handleExpandParent],
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<DocumentGroupEvent[][number]>>(
@@ -189,7 +188,6 @@ export const EventsTimeline = ({
             isSelected={event.id === selectedEventId}
             onSelect={handleSelectChunk}
             optionsMenu={renderOptionsMenu(event)}
-            documentVariantType={documentVariantType}
           />
 
           {isLastEvent && hasMoreEvents && <LoadingBlock />}
@@ -201,7 +199,6 @@ export const EventsTimeline = ({
       selectedEventId,
       handleSelectChunk,
       renderOptionsMenu,
-      documentVariantType,
       events.length,
       hasMoreEvents,
     ],

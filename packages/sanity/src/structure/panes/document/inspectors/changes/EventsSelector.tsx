@@ -39,7 +39,6 @@ export function EventsSelector({showList}: {showList: boolean}) {
     loading,
     error,
     revision,
-    documentVariantType,
     loadMoreEvents,
     findRangeForRevision,
     expandEvent,
@@ -97,7 +96,6 @@ export function EventsSelector({showList}: {showList: boolean}) {
                   onLoadMore={loadMoreEvents}
                   onSelect={selectRev}
                   listMaxHeight={`${listHeight}px`}
-                  documentVariantType={documentVariantType}
                 />
               ) : null}
               {loading && <LoadingBlock />}
