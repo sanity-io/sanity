@@ -125,7 +125,7 @@ interface TimelineItemProps {
  */
 export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
   const {t} = useTranslation('studio')
-  const documentVariantType = getDocumentVariantType(event.id)
+  const documentVariantType = getDocumentVariantType(event.documentId)
   const {type, timestamp} = event
 
   const iconComponent = TIMELINE_ICON_COMPONENTS[type]

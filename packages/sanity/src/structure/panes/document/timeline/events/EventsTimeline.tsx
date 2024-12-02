@@ -118,7 +118,7 @@ export const EventsTimeline = ({
 
   const renderOptionsMenu = useCallback(
     (event: DocumentGroupEvent) => {
-      const documentVariantType = getDocumentVariantType(event.id)
+      const documentVariantType = getDocumentVariantType(event.documentId)
       if (event.type === 'PublishDocumentVersion' && documentVariantType === 'published') {
         return <PublishedEventMenu event={event} />
       }
