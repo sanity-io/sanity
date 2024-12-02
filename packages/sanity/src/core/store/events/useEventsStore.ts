@@ -134,7 +134,6 @@ export function useEventsStore({
   const sinceRevision = useObservable(since$, null)
 
   const documentVariantType = getDocumentVariantType(documentId)
-
   const findRangeForRevision = useCallback(
     (nextRev: string): [string | null, string | null] => {
       if (!events) return [null, null]

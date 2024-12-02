@@ -2,7 +2,9 @@ import {Card, Stack, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../i18n'
 
-/** @internal */
+/**
+ * @internal
+ * */
 export function ChangesError() {
   const {t} = useTranslation()
   return (

@@ -76,6 +76,7 @@ export function addEventId(
 export function decorateDraftEvents(events: DocumentGroupEvent[]): void {
   events.forEach((event, index) => {
     if (isPublishDocumentVersionEvent(event)) {
+      event.documentId = event.versionId
       // Find the creation event for this published event
       const creationEvent = events.slice(index + 1).find((e) => isCreateDocumentVersionEvent(e))
       if (creationEvent) {

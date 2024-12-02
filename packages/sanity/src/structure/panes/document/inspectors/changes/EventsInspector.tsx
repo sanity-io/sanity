@@ -18,7 +18,7 @@ import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../i18n'
-import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenue'
+import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
 
 const Scroller = styled(ScrollContainer)`
