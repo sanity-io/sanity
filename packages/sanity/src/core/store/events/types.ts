@@ -137,7 +137,6 @@ import {type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
 import {type ObjectDiff} from '../../field'
-import {type DocumentVariantType} from '../../util/getDocumentVariantType'
 
 /**
  * Events relevant for the whole document group.
@@ -445,8 +444,6 @@ export interface EventsStoreRevision {
  * @internal
  * */
 export interface EventsStore {
-  enabled: true
-  documentVariantType: DocumentVariantType
   events: DocumentGroupEvent[]
   nextCursor: string | null
   loading: boolean

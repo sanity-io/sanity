@@ -185,8 +185,6 @@ export function useEventsStore({
   )
 
   return {
-    documentVariantType,
-    enabled: true as const,
     events,
     nextCursor,
     loading,

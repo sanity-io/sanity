@@ -15,7 +15,7 @@ import {
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
-import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
+import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {
   TIMELINE_ICON_COMPONENTS,
   TIMELINE_ITEM_EVENT_TONE,
@@ -119,14 +119,14 @@ const ChangesBy = ({collaborators}: {collaborators: string[]}) => {
 
 interface TimelineItemProps {
   event: DocumentGroupEvent
-  documentVariantType: DocumentVariantType
   showChangesBy: 'tooltip' | 'inline' | 'hidden'
 }
 /**
  * @internal
  */
-export function Event({event, showChangesBy = 'tooltip', documentVariantType}: TimelineItemProps) {
+export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
   const {t} = useTranslation('studio')
+  const documentVariantType = getDocumentVariantType(event.id)
   const {type, timestamp} = event
 
   const iconComponent = TIMELINE_ICON_COMPONENTS[type]

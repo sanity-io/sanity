@@ -1,6 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
-import {type DocumentGroupEvent, type DocumentVariantType, Event} from 'sanity'
+import {type DocumentGroupEvent, Event} from 'sanity'
 
 import {Tooltip} from '../../../../../ui-components'
 
@@ -9,7 +9,6 @@ export interface TimelineItemProps {
   isSelected: boolean
   onSelect: (chunk: DocumentGroupEvent) => void
   optionsMenu?: React.ReactNode
-  documentVariantType: DocumentVariantType
 }
 
 const getIsSelectable = (event: DocumentGroupEvent) => {
@@ -23,15 +22,8 @@ const getIsSelectable = (event: DocumentGroupEvent) => {
   )
 }
 
-export function EventTimelineItem({
-  event,
-  isSelected,
-  onSelect,
-  optionsMenu,
-  documentVariantType,
-}: TimelineItemProps) {
+export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: TimelineItemProps) {
   const isSelectable = getIsSelectable(event)
-
   const handleClick = useCallback(
     (evt: MouseEvent<HTMLDivElement>) => {
       evt.preventDefault()
@@ -69,7 +61,7 @@ export function EventTimelineItem({
             cursor: isSelectable ? 'pointer' : 'default',
           }}
         >
-          <Event event={event} showChangesBy="tooltip" documentVariantType={documentVariantType} />
+          <Event event={event} showChangesBy="tooltip" />
         </Card>
         {optionsMenu}
       </Flex>
