@@ -8,6 +8,7 @@ import {Button, Dialog} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
+import {usePerspective} from '../../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type ReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -28,6 +29,7 @@ export const ReleasePublishAllButton = ({
   const router = useRouter()
   const {publishRelease} = useReleaseOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
+  const perspective = usePerspective()
   const telemetry = useTelemetry()
   const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
     'idle',
@@ -60,6 +62,12 @@ export const ReleasePublishAllButton = ({
       })
       // TODO: handle a published release on the document list
       router.navigate({})
+      if (
+        perspective.currentGlobalBundle !== 'published' &&
+        perspective.currentGlobalBundle?._id === release._id
+      ) {
+        perspective.setPerspective('drafts')
+      }
     } catch (publishingError) {
       toast.push({
         status: 'error',
@@ -77,7 +85,7 @@ export const ReleasePublishAllButton = ({
     } finally {
       setPublishBundleStatus('idle')
     }
-  }, [release, publishRelease, telemetry, toast, t, router])
+  }, [release, publishRelease, telemetry, toast, t, router, perspective])
 
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null
