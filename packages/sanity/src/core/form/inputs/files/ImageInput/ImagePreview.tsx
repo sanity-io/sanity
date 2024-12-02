@@ -94,7 +94,7 @@ function OverlayComponent({
   content: ReactNode
 }) {
   return (
-    <Overlay justify="flex-end" padding={3} $tone={cardTone}>
+    <Overlay padding={3} tone={cardTone}>
       <FlexOverlay direction="column" align="center" justify="center">
         {content}
       </FlexOverlay>

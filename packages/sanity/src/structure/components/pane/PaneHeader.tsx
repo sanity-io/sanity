@@ -63,7 +63,14 @@ export const PaneHeader = forwardRef(function PaneHeader(
       >
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
-            <Layout gap={1} onClick={handleLayoutClick} sizing="border" style={layoutStyle}>
+            <Layout
+              gap={1}
+              onClick={handleLayoutClick}
+              padding={3}
+              paddingBottom={collapsed || !showTabsOrSubActions ? 3 : 2}
+              sizing="border"
+              style={layoutStyle}
+            >
               {backButton && <Box flex="none">{backButton}</Box>}
 
               <TitleCard

@@ -1,4 +1,3 @@
-import {useTheme} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -46,10 +45,8 @@ export const StatusButton = forwardRef(function StatusButton(
     tone,
     ...restProps
   } = props
-  const theme = useTheme()
-  // @ts-expect-error fixme after sanity/ui and sanity/icons release
-  const toneColor = tone && theme.sanity.color.solid[tone]
-  const dotStyle = useMemo(() => ({backgroundColor: toneColor?.enabled.bg}), [toneColor])
+
+  const dotStyle = useMemo(() => ({backgroundColor: `var(--card-badge-${tone}-dot-color)`}), [tone])
   const disabled = Boolean(disabledProp)
 
   return (
