@@ -246,10 +246,13 @@ export function getDocumentChanges({
         }),
         startWith({
           loading: true,
-          diff: diffInput(
-            wrap(buildDocumentForDiffInput(sinceDoc), null),
-            wrap(buildDocumentForDiffInput(to), null),
-          ) as ObjectDiff,
+          diff:
+            sinceDoc && to
+              ? (diffInput(
+                  wrap(buildDocumentForDiffInput(sinceDoc), null),
+                  wrap(buildDocumentForDiffInput(to), null),
+                ) as ObjectDiff)
+              : null,
         }),
         shareReplay(1),
       )
