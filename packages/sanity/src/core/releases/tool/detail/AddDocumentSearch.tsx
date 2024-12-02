@@ -6,9 +6,9 @@ import {AddedVersion} from 'sanity'
 
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
+import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
-import {getCreateVersionOrigin} from '../../util/util'
 import {useBundleDocuments} from './useBundleDocuments'
 
 export function AddDocumentSearch({
@@ -38,7 +38,7 @@ export function AddDocumentSearch({
           title: 'Document added to release',
         })
 
-        const origin = getCreateVersionOrigin(item._id)
+        const origin = getDocumentVariantType(item._id)
 
         telemetry.log(AddedVersion, {
           documentOrigin: origin,

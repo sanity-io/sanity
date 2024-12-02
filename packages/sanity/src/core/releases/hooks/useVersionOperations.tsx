@@ -2,9 +2,9 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 
 import {Translate, useTranslation} from '../../i18n'
+import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
 import {useReleaseOperations} from '../store/useReleaseOperations'
-import {getCreateVersionOrigin} from '../util/util'
 import {usePerspective} from './usePerspective'
 
 export interface VersionOperationsValue {
@@ -30,7 +30,7 @@ export function useVersionOperations(): VersionOperationsValue {
     documentId: string,
     initialValue?: Record<string, unknown>,
   ) => {
-    const origin = getCreateVersionOrigin(documentId)
+    const origin = getDocumentVariantType(documentId)
     try {
       await createVersion(releaseId, documentId, initialValue)
       setPerspectiveFromReleaseId(releaseId)
