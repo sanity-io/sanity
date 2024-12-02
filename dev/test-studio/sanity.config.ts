@@ -174,11 +174,6 @@ const defaultWorkspace = {
   tasks: {
     enabled: true,
   },
-  beta: {
-    eventsAPI: {
-      enabled: true,
-    },
-  },
 }
 
 export default defineConfig([
@@ -225,11 +220,6 @@ export default defineConfig([
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
-    beta: {
-      eventsAPI: {
-        enabled: true,
-      },
-    },
     // eslint-disable-next-line camelcase
     __internal_serverDocumentActions: {
       // TODO: Switched off because Actions API doesn't support versions (yet).
