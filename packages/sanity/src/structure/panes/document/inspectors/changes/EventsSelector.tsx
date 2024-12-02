@@ -24,15 +24,20 @@ export function EventsSelector({showList}: {showList: boolean}) {
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
   const [listHeight, setListHeight] = useState(0)
   const {setTimelineRange} = useDocumentPane()
-  const getScrollerRef = useCallback((el: HTMLDivElement | null) => {
-    /**
-     * Hacky solution, the list height needs to be defined, it cannot be obtained from the parent using a `max-height: 100%`
-     * Because the scroller won't work properly and it won't scroll to the selected element on mount.
-     * To fix this, this component will set the list height to the height of the parent element - 1px, to avoid a double scroll line.
-     */
-    setListHeight(el?.clientHeight ? el.clientHeight - 1 : 0)
-    setScrollRef(el)
-  }, [])
+  const getScrollerRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      if (!listHeight && el) {
+        /**
+         * Hacky solution, the list height needs to be defined, it cannot be obtained from the parent using a `max-height: 100%`
+         * Because the scroller won't work properly and it won't scroll to the selected element on mount.
+         * To fix this, this component will set the list height to the height of the parent element - 1px, to avoid a double scroll line.
+         */
+        setListHeight(el.clientHeight ? el.clientHeight - 1 : 0)
+        setScrollRef(el)
+      }
+    },
+    [listHeight],
+  )
   const {
     events,
     nextCursor,
