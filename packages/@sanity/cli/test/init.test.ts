@@ -123,7 +123,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         .then(() => true)
         .catch(() => false)
       const hasEnvFile = await fs
-        .access(path.join(baseTestPath, outpath, '.env'))
+        .access(path.join(baseTestPath, outpath, '.env.local'))
         .then(() => true)
         .catch(() => false)
 
@@ -161,7 +161,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         .then(() => true)
         .catch(() => false)
       const hasEnvFile = await fs
-        .access(path.join(baseTestPath, outpath, '.env'))
+        .access(path.join(baseTestPath, outpath, '.env.local'))
         .then(() => true)
         .catch(() => false)
 
@@ -190,7 +190,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         'manual',
       ])
 
-      const envContent = await fs.readFile(path.join(baseTestPath, outpath, '.env'), 'utf-8')
+      const envContent = await fs.readFile(path.join(baseTestPath, outpath, '.env.local'), 'utf-8')
 
       expect(envContent).toContain(`SANITY_PROJECT_ID=${cliProjectId}`)
       expect(envContent).toContain(`SANITY_DATASET=${testRunArgs.dataset}`)
