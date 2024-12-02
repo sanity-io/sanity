@@ -23,6 +23,7 @@ export type ReleaseFinalDocumentState = {
 }
 
 /**
+ * TODO: When made `beta`, update the PublishDocumentVersionEvent to use this type
  * @internal
  */
 export interface ReleaseDocument {

@@ -4,7 +4,6 @@ import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {createElement, useMemo} from 'react'
 import {
   type DocumentGroupEvent,
-  type DocumentVariantType,
   getReleaseTone,
   type RelativeTimeOptions,
   useDateTimeFormat,
@@ -16,6 +15,7 @@ import {
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
+import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {
   TIMELINE_ICON_COMPONENTS,
   TIMELINE_ITEM_EVENT_TONE,

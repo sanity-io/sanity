@@ -2,8 +2,9 @@
 /* eslint-disable max-nested-callbacks */
 import {BehaviorSubject, from, of} from 'rxjs'
 import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
-import {getDocumentVariantType, type SanityClient} from 'sanity'
+import {type SanityClient} from 'sanity'
 
+import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {getEditEvents} from './getEditEvents'
 import {type DocumentGroupEvent, isCreateDocumentVersionEvent} from './types'
