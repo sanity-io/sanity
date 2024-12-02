@@ -349,3 +349,12 @@ export interface CliConfig {
 export type UserViteConfig =
   | InlineConfig
   | ((config: InlineConfig, env: ConfigEnv) => InlineConfig | Promise<InlineConfig>)
+
+export type SanityUser = {
+  id: string
+  name: string
+  email: string
+  profileImage?: string
+  tosAcceptedAt?: string
+  provider: 'google' | 'github' | 'sanity' | `saml-${string}`
+}
