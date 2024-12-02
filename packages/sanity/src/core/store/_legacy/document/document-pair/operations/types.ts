@@ -23,9 +23,6 @@ export interface Operation<ExtraArgs extends any[] = [], ErrorStrings extends st
 type GuardedOperation = Operation<any[], 'NOT_READY'>
 type Patch = any
 
-/** @beta */
-export type VersionOriginTypes = 'published' | 'draft' | 'version'
-
 /** @internal */
 // Note: Changing this interface in a backwards incompatible manner will be a breaking change
 export interface OperationsAPI {

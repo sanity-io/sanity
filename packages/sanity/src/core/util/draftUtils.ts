@@ -210,3 +210,16 @@ export function removeDupes(documents: SanityDocumentLike[]): SanityDocumentLike
     .map((entry) => entry.draft || entry.published)
     .filter(isNonNullable)
 }
+
+/**
+ * @beta
+ * Given a document id, it indicates whether it is a draft, version or published document.
+ */
+export type DocumentVariantType = 'draft' | 'version' | 'published'
+
+/** @beta */
+export function getDocumentVariantType(documentId: string): 'draft' | 'version' | 'published' {
+  if (isDraftId(documentId)) return 'draft'
+  if (isVersionId(documentId)) return 'version'
+  return 'published'
+}

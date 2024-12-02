@@ -5,6 +5,7 @@ import {omit} from 'lodash'
 import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
 import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
 
+import {type DocumentVariantType} from '../../../../util/draftUtils'
 import {
   type BufferedDocumentEvent,
   type CommitRequest,
@@ -14,7 +15,6 @@ import {
 } from '../buffered-doc'
 import {getPairListener, type ListenerEvent, type PairListenerOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
-import {type VersionOriginTypes} from './operations'
 import {actionsApiClient} from './utils/actionsApiClient'
 
 const isMutationEventForDocId =
@@ -28,7 +28,7 @@ const isMutationEventForDocId =
 /**
  * @hidden
  * @beta */
-export type WithVersion<T> = T & {version: VersionOriginTypes}
+export type WithVersion<T> = T & {version: DocumentVariantType}
 
 /**
  * @hidden

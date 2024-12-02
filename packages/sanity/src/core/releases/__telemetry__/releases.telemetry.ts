@@ -1,6 +1,6 @@
 import {defineEvent} from '@sanity/telemetry'
 
-import {type VersionOriginTypes} from '../index'
+import {type DocumentVariantType} from '../../util/draftUtils'
 
 interface VersionInfo {
   /**
@@ -10,7 +10,7 @@ interface VersionInfo {
   /**
    * the origin of the version created (from a draft or from a version)
    */
-  documentOrigin: VersionOriginTypes
+  documentOrigin: DocumentVariantType
 }
 
 export interface OriginInfo {
