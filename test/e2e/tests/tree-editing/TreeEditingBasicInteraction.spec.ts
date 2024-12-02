@@ -55,7 +55,7 @@ test.skip('basic - main document action', () => {
   })
 
   test(`actions - blocked main document action when modal is open`, async ({page}) => {
-    await expect(page.getByTestId('action-Publish')).toBeDisabled()
+    await expect(page.getByTestId('action-publish')).toBeDisabled()
   })
 
   test(`actions - main document action when modal is closed will be enabled`, async ({
@@ -68,6 +68,6 @@ test.skip('basic - main document action', () => {
     await page.getByTestId('tree-editing-done').click()
 
     await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
-    await expect(page.getByTestId('action-Publish')).not.toBeDisabled()
+    await expect(page.getByTestId('action-publish')).not.toBeDisabled()
   })
 })

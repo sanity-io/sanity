@@ -27,7 +27,7 @@ test(`is possible to discard changes if a changed document has a published versi
 
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
   const paneFooter = page.getByTestId('pane-footer')
-  const publishButton = page.getByTestId('action-Publish')
+  const publishButton = page.getByTestId('action-publish')
   const actionMenuButton = page.getByTestId('action-menu-button')
   const discardChangesButton = page.getByTestId('action-Discardchanges')
 
@@ -50,7 +50,7 @@ test(`displays the published document state after discarding changes`, async ({
 
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
   const paneFooter = page.getByTestId('pane-footer')
-  const publishButton = page.getByTestId('action-Publish')
+  const publishButton = page.getByTestId('action-publish')
   const actionMenuButton = page.getByTestId('action-menu-button')
   const discardChangesButton = page.getByTestId('action-Discardchanges')
   const confirmButton = page.getByTestId('confirm-dialog-confirm-button')
