@@ -140,7 +140,9 @@ export async function getGitHubRepoInfo(value: string, bearerToken?: string): Pr
     if (infoResponse.status !== 200) {
       if (infoResponse.status === 404) {
         throw new Error(
-          'GitHub repository not found. For private repositories, use --template-token to provide an access token',
+          'GitHub repository not found. For private repositories, use --template-token to provide an access token.\n\n' +
+            'You can generate a new token at https://github.com/settings/personal-access-tokens/new\n' +
+            'Set the token to "read-only" with repository access and a short expiry (e.g. 7 days) for security.',
         )
       }
       throw new Error('GitHub repository not found')
