@@ -14,8 +14,9 @@ import {
 export const UnpublishVersionAction = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
-  const {id, type, bundleId, version} = props
+  const {id, type, bundleId, version, published} = props
   const currentUser = useCurrentUser()
+  const isPublished = published !== null
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -54,6 +55,7 @@ export const UnpublishVersionAction = (
     label: 'Unpublish',
     icon: UnpublishIcon,
     onHandle: handleDialogOpen,
+    disabled: !isPublished,
     /** @todo translate */
     title: 'Unpublish',
   }

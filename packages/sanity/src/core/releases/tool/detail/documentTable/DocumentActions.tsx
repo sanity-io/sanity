@@ -38,7 +38,11 @@ export const DocumentActions = memo(
                   {/** @todo translate */}
                   <Label size={1}>When releasing</Label>
                 </Box>
-                <MenuItem text={coreT('release.action.unpublish-version')} icon={UnpublishIcon} />
+                <MenuItem
+                  text={coreT('release.action.unpublish-version')}
+                  icon={UnpublishIcon}
+                  disabled={!document.document.publishedDocumentExists}
+                />
               </Menu>
             }
           />
