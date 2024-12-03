@@ -79,6 +79,15 @@ const sharedSettings = definePlugin({
 
   document: {
     actions: documentActions,
+    /*actionsGroups: (documentActions) => {
+      // if the action is "ublished then return a specific group"
+      // filtering potentially which actions you want based on documentActions
+      return [
+        {name: 'boop', label: 'boop', list: ['Published', 'Discard']},
+        {name: 'boop', label: 'boop', list: ['Discard', '????']},
+      ]
+    }, // this would define the rendering order*/
+
     inspectors: (prev, ctx) => {
       if (ctx.documentType === 'inspectorsTest') {
         return [customInspector, ...prev]
