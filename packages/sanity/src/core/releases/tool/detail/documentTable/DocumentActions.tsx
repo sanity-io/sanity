@@ -1,5 +1,6 @@
-import {CloseIcon} from '@sanity/icons'
-import {Card, Menu} from '@sanity/ui'
+/* eslint-disable i18next/no-literal-string */
+import {CloseIcon, UnpublishIcon} from '@sanity/icons'
+import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui'
 import {memo, useState} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'
@@ -32,6 +33,12 @@ export const DocumentActions = memo(
                   icon={CloseIcon}
                   onClick={() => setShowDiscardDialog(true)}
                 />
+                <MenuDivider />
+                <Box padding={3} paddingBottom={2}>
+                  {/** @todo translate */}
+                  <Label size={1}>When releasing</Label>
+                </Box>
+                <MenuItem text={coreT('release.action.unpublish-version')} icon={UnpublishIcon} />
               </Menu>
             }
           />
