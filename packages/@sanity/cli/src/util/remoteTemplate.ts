@@ -13,7 +13,6 @@ const ENV_VAR = {
   PROJECT_ID: /SANITY(?:_STUDIO)?_PROJECT_ID/, // Matches SANITY_PROJECT_ID and SANITY_STUDIO_PROJECT_ID
   DATASET: /SANITY(?:_STUDIO)?_DATASET/, // Matches SANITY_DATASET and SANITY_STUDIO_DATASET
   READ_TOKEN: 'SANITY_API_READ_TOKEN',
-  API_VERSION: /SANITY(?:_STUDIO)?_API_VERSION/, // Matches SANITY_API_VERSION and SANITY_STUDIO_API_VERSION
 } as const
 
 const ENV_FILE = {
@@ -28,7 +27,6 @@ type EnvData = {
   projectId: string
   dataset: string
   readToken?: string
-  apiVersion?: string
 }
 
 type GithubUrlString =
@@ -438,7 +436,7 @@ export async function applyEnvVariables(
 
   try {
     const templateContent = await readFile(join(root, templatePath), 'utf8')
-    const {projectId, dataset, readToken = '', apiVersion = 'vX'} = envData
+    const {projectId, dataset, readToken = ''} = envData
 
     const findAndReplaceVariable = (
       content: string,
@@ -462,7 +460,6 @@ export async function applyEnvVariables(
       {pattern: ENV_VAR.PROJECT_ID, value: projectId},
       {pattern: ENV_VAR.DATASET, value: dataset},
       {pattern: ENV_VAR.READ_TOKEN, value: readToken},
-      {pattern: ENV_VAR.API_VERSION, value: apiVersion},
     ]
     const useQuotes = templateContent.includes('="')
 
