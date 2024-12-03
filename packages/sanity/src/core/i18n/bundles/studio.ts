@@ -1160,6 +1160,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     '<strong>{{title}}</strong> version was successfully discarded',
   /** Action message for when a new release is created off an existing version, draft or published document */
   'release.action.new-release': 'New Release',
+  /** Action message for scheduling an unpublished of a document  */
+  'release.action.unpublish-version': 'Unpublish',
   /** Action message for when the view release is pressed */
   'release.action.view-release': 'View release',
   /** Label for banner when release is scheduled */
