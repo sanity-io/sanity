@@ -127,6 +127,11 @@ export async function getGitHubRepoInfo(value: string, bearerToken?: string): Pr
     throw new Error('Invalid GitHub repository format')
   }
 
+  const tokenMessage =
+    'GitHub repository not found. For private repositories, use --template-token to provide an access token.\n\n' +
+    'You can generate a new token at https://github.com/settings/personal-access-tokens/new\n' +
+    'Set the token to "read-only" with repository access and a short expiry (e.g. 7 days) for security.'
+
   try {
     const headers: Record<string, string> = {}
     if (bearerToken) {
@@ -139,11 +144,7 @@ export async function getGitHubRepoInfo(value: string, bearerToken?: string): Pr
 
     if (infoResponse.status !== 200) {
       if (infoResponse.status === 404) {
-        throw new Error(
-          'GitHub repository not found. For private repositories, use --template-token to provide an access token.\n\n' +
-            'You can generate a new token at https://github.com/settings/personal-access-tokens/new\n' +
-            'Set the token to "read-only" with repository access and a short expiry (e.g. 7 days) for security.',
-        )
+        throw new Error(tokenMessage)
       }
       throw new Error('GitHub repository not found')
     }
@@ -157,9 +158,7 @@ export async function getGitHubRepoInfo(value: string, bearerToken?: string): Pr
       filePath,
     }
   } catch {
-    throw new Error(
-      'GitHub repository not found. For private repositories, use --template-token to provide an access token',
-    )
+    throw new Error(tokenMessage)
   }
 }
 
@@ -167,7 +166,7 @@ export async function downloadAndExtractRepo(
   root: string,
   {username, name, branch, filePath}: RepoInfo,
   bearerToken?: string,
-) {
+): Promise<void> {
   let rootPath: string | null = null
   await pipeline(
     await downloadTarStream(
