@@ -153,7 +153,7 @@
     "@dnd-kit/sortable": "^7.0.1",
     "@dnd-kit/utilities": "^3.2.0",
     "@juggle/resize-observer": "^3.3.1",
-    "@portabletext/editor": "^1.12.2",
+    "@portabletext/editor": "^1.12.3",
     "@portabletext/react": "^3.0.0",
     "@rexxars/react-json-inspector": "^8.0.1",
     "@sanity/asset-utils": "^2.0.6",
