@@ -277,7 +277,6 @@ async function validatePackage(
   baseUrl: string,
   packagePath: string,
   headers: Record<string, string>,
-  isRoot: boolean,
 ): Promise<{
   hasSanityConfig: boolean
   hasSanityCli: boolean
@@ -386,7 +385,7 @@ export async function validateRemoteTemplate(
   }
 
   const validations = await Promise.all(
-    packages.map((pkg) => validatePackage(baseUrl, pkg, headers, pkg === '')),
+    packages.map((pkg) => validatePackage(baseUrl, pkg, headers)),
   )
 
   const hasSanityDep = validations.some((v) => v.hasSanityDep)
