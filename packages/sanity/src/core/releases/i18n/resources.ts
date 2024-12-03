@@ -202,6 +202,8 @@ const releasesLocaleStrings = {
   'table-body.action.add': 'Add',
   /** Change action type that will be shown in the table*/
   'table-body.action.change': 'Change',
+  /** Change action type that will be shown in the table*/
+  'table-body.action.unpublish': 'Unpublish',
 
   /** Header for the document table in the release tool - contributors */
   'table-header.contributors': 'Contributors',
