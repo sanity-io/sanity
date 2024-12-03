@@ -19,7 +19,6 @@ import {
   createSearch,
   createSWR,
   getSearchableTypes,
-  resolvePerspectiveOptions,
   type SanityDocumentLike,
   type Schema,
   type SearchOptions,
@@ -37,7 +36,7 @@ interface ListenQueryOptions {
   schema: Schema
   searchQuery: string
   sort: SortOrder
-  perspective?: string[]
+  perspective?: string | string[]
   staticTypeNames?: string[] | null
   maxFieldDepth?: number
   searchStrategy?: SearchStrategy
@@ -152,7 +151,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               limit,
               skipSortByScore: true,
               sort: sortBy,
-              ...resolvePerspectiveOptions(perspective),
+              perspective,
             }
 
             return search(searchTerms, searchOptions).pipe(

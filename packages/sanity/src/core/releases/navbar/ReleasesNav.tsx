@@ -37,7 +37,7 @@ export function ReleasesNav(): JSX.Element {
     ),
   )
 
-  const {currentGlobalBundle, setPerspective} = usePerspective()
+  const {selectedPerspective, setPerspective} = usePerspective()
   const {t} = useTranslation()
 
   const handleClearPerspective = () => setPerspective(LATEST._id)
@@ -62,21 +62,21 @@ export function ReleasesNav(): JSX.Element {
   )
 
   const currentGlobalPerspectiveLabel = useMemo(() => {
-    if (!currentGlobalBundle || isDraftPerspective(currentGlobalBundle)) return null
+    if (!selectedPerspective || isDraftPerspective(selectedPerspective)) return null
 
     let displayTitle
-    if (isPublishedPerspective(currentGlobalBundle)) {
+    if (isPublishedPerspective(selectedPerspective)) {
       displayTitle = t('release.chip.published')
     } else {
       displayTitle =
-        currentGlobalBundle.metadata?.title || t('release.placeholder-untitled-release')
+        selectedPerspective.metadata?.title || t('release.placeholder-untitled-release')
     }
 
     const visibleLabelChildren = () => {
       const labelContent = (
         <Flex align="flex-start" gap={0}>
           <Box flex="none">
-            <ReleaseAvatar padding={2} tone={getReleaseTone(currentGlobalBundle)} />
+            <ReleaseAvatar padding={2} tone={getReleaseTone(selectedPerspective)} />
           </Box>
           <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
             <Text size={1} textOverflow="ellipsis" weight="medium">
@@ -86,7 +86,7 @@ export function ReleasesNav(): JSX.Element {
         </Flex>
       )
 
-      if (isPublishedPerspective(currentGlobalBundle)) {
+      if (isPublishedPerspective(selectedPerspective)) {
         return <Card tone="inherit">{labelContent}</Card>
       }
 
@@ -94,7 +94,7 @@ export function ReleasesNav(): JSX.Element {
         <IntentLink
           {...intentProps}
           intent={RELEASES_INTENT}
-          params={{id: getBundleIdFromReleaseDocumentId(currentGlobalBundle._id!)}}
+          params={{id: getBundleIdFromReleaseDocumentId(selectedPerspective._id!)}}
         >
           {children}
         </IntentLink>
@@ -116,7 +116,7 @@ export function ReleasesNav(): JSX.Element {
     }
 
     return <AnimatedMotionDiv>{visibleLabelChildren()}</AnimatedMotionDiv>
-  }, [currentGlobalBundle, t])
+  }, [selectedPerspective, t])
 
   return (
     <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
@@ -124,7 +124,7 @@ export function ReleasesNav(): JSX.Element {
         <Box flex="none">{releasesToolLink}</Box>
         <AnimatePresence>{currentGlobalPerspectiveLabel}</AnimatePresence>
         <GlobalPerspectiveMenu />
-        {!isDraftPerspective(currentGlobalBundle) && (
+        {!isDraftPerspective(selectedPerspective) && (
           <div>
             <Button
               icon={CloseIcon}

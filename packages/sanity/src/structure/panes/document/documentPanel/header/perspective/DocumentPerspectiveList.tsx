@@ -63,7 +63,7 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
 }
 
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
-  const {perspective} = usePerspective()
+  const {selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
   const dateTimeFormat = useDateTimeFormat({
@@ -123,8 +123,10 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
            * when the perspective is published
            */
           !!(
-            (editState?.published?._id === displayed?._id && !editState?.draft && perspective) ||
-            perspective === 'published'
+            (editState?.published?._id === displayed?._id &&
+              !editState?.draft &&
+              selectedPerspectiveName) ||
+            selectedPerspectiveName === 'published'
           )
         }
         text={t('release.chip.published')}
@@ -173,7 +175,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
            */
           !!(
             editState?.draft?._id === displayed?._id ||
-            !perspective ||
+            !selectedPerspectiveName ||
             (!editState?.published &&
               editState?.draft &&
               editState?.draft?._id === displayed?._id) ||

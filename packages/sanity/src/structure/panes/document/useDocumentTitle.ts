@@ -27,9 +27,9 @@ interface UseDocumentTitle {
  */
 export function useDocumentTitle(): UseDocumentTitle {
   const {connectionState, schemaType, title, editState} = useDocumentPane()
-  const {perspective} = usePerspective()
+  const {selectedPerspectiveName} = usePerspective()
   const documentValue =
-    perspective && isPublishedPerspective(perspective)
+    selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)
       ? editState?.published
       : editState?.version || editState?.draft || editState?.published
   const subscribed = Boolean(documentValue)

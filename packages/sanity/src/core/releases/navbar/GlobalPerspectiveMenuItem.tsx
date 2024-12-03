@@ -84,7 +84,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
 >((props, ref) => {
   const {release, rangePosition} = props
   const {
-    currentGlobalBundleId,
+    globalReleaseDocumentId,
     setPerspectiveFromReleaseDocumentId,
     setPerspective,
     toggleExcludedPerspective,
@@ -93,7 +93,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   const isReleasePublishedPerspective = isPublishedPerspective(release)
   const isUnnamedRelease = !isReleasePublishedPerspective && !release.metadata.title
   const releaseId = isReleasePublishedPerspective ? 'published' : release._id
-  const active = releaseId === currentGlobalBundleId
+  const active = releaseId === globalReleaseDocumentId
   const first = rangePosition === 'first'
   const within = rangePosition === 'within'
   const last = rangePosition === 'last'

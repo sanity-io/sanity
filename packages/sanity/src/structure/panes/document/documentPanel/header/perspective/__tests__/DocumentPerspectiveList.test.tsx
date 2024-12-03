@@ -68,13 +68,13 @@ describe('DocumentPerspectiveList', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: mockCurrent,
+      selectedPerspective: mockCurrent,
       setPerspective: vi.fn(),
-      bundlesPerspective: ['drafts'],
-      currentGlobalBundleId: '_.releases.spring-drop',
+      perspectiveStack: ['drafts'],
+      globalReleaseDocumentId: '_.releases.spring-drop',
       excludedPerspectives: [],
       isPerspectiveExcluded: vi.fn().mockReturnValue(false),
-      perspective: undefined,
+      selectedPerspectiveName: undefined,
       toggleExcludedPerspective: vi.fn(),
       setPerspectiveFromReleaseDocumentId: vi.fn(),
       setPerspectiveFromReleaseId: vi.fn(),

@@ -21,10 +21,10 @@ const DISABLED_REASON_TITLE_KEY = {
 }
 
 /** @internal */
-export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete, bundleId}) => {
+export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete, release}) => {
   const {setIsDeleting: paneSetIsDeleting} = useDocumentPane()
 
-  const {delete: deleteOp} = useDocumentOperation(id, type, bundleId)
+  const {delete: deleteOp} = useDocumentOperation(id, type, release)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
@@ -50,7 +50,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleId,
+    version: release,
     permission: 'delete',
   })
 

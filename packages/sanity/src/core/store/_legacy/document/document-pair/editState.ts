@@ -43,9 +43,9 @@ export interface EditStateFor {
   liveEditSchemaType: boolean
   ready: boolean
   /**
-   * When editing a version, the slug of the bundle the document belongs to.
+   * When editing a version, the name of the release the document belongs to.
    */
-  bundleId?: string
+  release?: string
 }
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}

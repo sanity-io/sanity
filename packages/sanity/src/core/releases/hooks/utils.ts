@@ -1,5 +1,4 @@
 import {DRAFTS_FOLDER} from '../../util/draftUtils'
-import {resolveBundlePerspective} from '../../util/resolvePerspective'
 import {type ReleaseDocument} from '../store/types'
 import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
 
@@ -49,26 +48,21 @@ export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[
 }
 
 export function getReleasesPerspective({
+  selectedPerspective,
   releases,
-  perspective,
   excluded,
 }: {
+  selectedPerspective: string | undefined
   releases: ReleaseDocument[]
-  perspective: string | undefined // Includes the bundle.<releaseName> or 'published'
   excluded: string[]
 }): string[] {
-  if (!perspective?.startsWith('bundle.')) {
+  if (!selectedPerspective) {
     return []
   }
-  const perspectiveId = resolveBundlePerspective(perspective)
-  if (!perspectiveId) {
-    return []
-  }
-
   const sorted = sortReleases(releases).map((release) =>
     getBundleIdFromReleaseDocumentId(release._id),
   )
-  const selectedIndex = sorted.indexOf(perspectiveId)
+  const selectedIndex = sorted.indexOf(selectedPerspective)
   if (selectedIndex === -1) {
     return []
   }

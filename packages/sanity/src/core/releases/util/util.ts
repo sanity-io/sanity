@@ -1,9 +1,4 @@
-import {
-  formatRelativeLocale,
-  getVersionFromId,
-  isVersionId,
-  resolveBundlePerspective,
-} from '../../util'
+import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
 import {type CurrentPerspective} from '../hooks/usePerspective'
 import {type ReleaseDocument} from '../store/types'
 import {LATEST} from './const'
@@ -29,13 +24,11 @@ export function getDocumentIsInPerspective(
 
   if (!perspective) return !isVersionId(documentId)
 
-  const releasePerspective = resolveBundlePerspective(perspective)
-
-  if (typeof releasePerspective === 'undefined') return false
+  if (typeof perspective === 'undefined') return false
   // perspective is `release.${releaseId}`
 
   if (releaseId === 'Published') return false
-  return releaseId === releasePerspective
+  return releaseId === perspective
 }
 
 /** @internal */

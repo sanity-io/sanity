@@ -38,12 +38,13 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {children, documentId, documentType} = props
 
   const {enabled} = useCommentsEnabled()
-  const {connectionState, onPathOpen, inspector, openInspector, version} = useDocumentPane()
+  const {connectionState, onPathOpen, inspector, openInspector, selectedReleaseName} =
+    useDocumentPane()
   const {params, setParams, createPathWithParams} = usePaneRouter()
-  const {perspective} = usePerspective()
+  const {selectedPerspectiveName} = usePerspective()
   const versionOrPublishedId = useMemo(
-    () => (version ? getVersionId(documentId, version) : documentId),
-    [documentId, version],
+    () => (selectedReleaseName ? getVersionId(documentId, selectedReleaseName) : documentId),
+    [documentId, selectedReleaseName],
   )
 
   const selectedCommentId = params?.comment
@@ -97,7 +98,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
       selectedCommentId={selectedCommentId}
       sortOrder="desc"
       type="field"
-      perspective={perspective}
+      perspective={selectedPerspectiveName}
     >
       {children}
     </CommentsProvider>

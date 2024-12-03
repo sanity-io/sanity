@@ -140,7 +140,7 @@ export function ReleasesOverview() {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {timeZone, utcToCurrentZoneDate} = useTimeZone()
-  const {currentGlobalBundleId} = usePerspective()
+  const {globalReleaseDocumentId} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
 
@@ -149,9 +149,9 @@ export function ReleasesOverview() {
       datum.isDeleted
         ? {tone: 'transparent'}
         : {
-            tone: currentGlobalBundleId === datum._id ? getReleaseTone(datum) : 'default',
+            tone: globalReleaseDocumentId === datum._id ? getReleaseTone(datum) : 'default',
           },
-    [currentGlobalBundleId],
+    [globalReleaseDocumentId],
   )
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)

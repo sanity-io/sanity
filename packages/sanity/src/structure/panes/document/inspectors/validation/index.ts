@@ -7,7 +7,6 @@ import {
   type FormNodeValidation,
   isValidationError,
   isValidationWarning,
-  resolveBundlePerspective,
   usePerspective,
   useTranslation,
   useValidationStatus,
@@ -19,11 +18,11 @@ import {ValidationInspector} from './ValidationInspector'
 function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {documentId, documentType} = props
   const {t} = useTranslation('validation')
-  const {perspective} = usePerspective()
+  const {selectedPerspectiveName} = usePerspective()
   const {validation: validationMarkers} = useValidationStatus(
     documentId,
     documentType,
-    resolveBundlePerspective(perspective),
+    selectedPerspectiveName === 'published' ? undefined : selectedPerspectiveName,
   )
 
   const validation: FormNodeValidation[] = useMemo(

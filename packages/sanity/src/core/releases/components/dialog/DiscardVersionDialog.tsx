@@ -24,7 +24,7 @@ export function DiscardVersionDialog(props: {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
 
-  const {currentGlobalBundle} = usePerspective()
+  const {selectedPerspective} = usePerspective()
   const {discardVersion} = useVersionOperations()
   const schema = useSchema()
   const [isDiscarding, setIsDiscarding] = useState(false)
@@ -37,7 +37,7 @@ export function DiscardVersionDialog(props: {
     if (isVersionId(documentId)) {
       await discardVersion(
         getVersionFromId(documentId) ||
-          getBundleIdFromReleaseDocumentId((currentGlobalBundle as ReleaseDocument)._id),
+          getBundleIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
         documentId,
       )
     } else {
@@ -48,7 +48,7 @@ export function DiscardVersionDialog(props: {
     setIsDiscarding(false)
 
     onClose()
-  }, [currentGlobalBundle, discardChanges, discardVersion, documentId, onClose])
+  }, [selectedPerspective, discardChanges, discardVersion, documentId, onClose])
 
   return (
     <Dialog

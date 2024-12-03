@@ -30,7 +30,7 @@ import {type DocumentListPaneItem, type SortOrder} from './types'
 interface UseDocumentListOpts {
   apiVersion?: string
   filter: string
-  perspective?: string[]
+  perspective?: string | string[]
   params: Record<string, unknown>
   searchQuery: string | null
   sortOrder?: SortOrder

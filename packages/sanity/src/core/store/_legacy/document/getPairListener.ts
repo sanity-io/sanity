@@ -7,6 +7,7 @@ import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/op
 
 import {LISTENER_RESET_DELAY} from '../../../preview/constants'
 import {shareReplayLatest} from '../../../preview/utils/shareReplayLatest'
+import {getVersionFromId} from '../../../util'
 import {debug} from './debug'
 import {
   type IdPair,
@@ -77,7 +78,12 @@ export function getPairListener(
   options: PairListenerOptions = {},
 ): Observable<ListenerEvent> {
   const {publishedId, draftId, versionId} = idPair
-
+  if (
+    (idPair.versionId && getVersionFromId(idPair.versionId) === 'published') ||
+    (idPair.versionId && getVersionFromId(idPair.versionId) === 'drafts')
+  ) {
+    throw new Error('VersionId cannot be "published" or "drafts"')
+  }
   const sharedEvents = defer(() =>
     client.observable
       .listen(

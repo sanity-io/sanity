@@ -63,7 +63,7 @@ describe('ReleasesNav', () => {
   })
 
   it('should have clear button to unset perspective when a perspective is chosen', async () => {
-    usePerspectiveMockReturn.currentGlobalBundle = activeScheduledRelease
+    usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
 
     await renderTest()
 
@@ -73,7 +73,7 @@ describe('ReleasesNav', () => {
   })
 
   it('should list the title of the chosen perspective', async () => {
-    usePerspectiveMockReturn.currentGlobalBundle = activeScheduledRelease
+    usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
 
     await renderTest()
 
@@ -81,7 +81,7 @@ describe('ReleasesNav', () => {
   })
 
   it('should show release avatar for chosen perspective', async () => {
-    usePerspectiveMockReturn.currentGlobalBundle = activeASAPRelease
+    usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
 
     await renderTest()
 
@@ -171,7 +171,7 @@ describe('ReleasesNav', () => {
         // since usePerspective is mocked, and the layering exclude toggle is
         // controlled by currentGlobalBundleId, we need to manually set it
         // to the release that will be selected in below tests
-        usePerspectiveMockReturn.currentGlobalBundleId = '_.releases.active-scheduled-2'
+        usePerspectiveMockReturn.globalReleaseDocumentId = '_.releases.active-scheduled-2'
         // add an undecided release to expand testing
         useReleasesMockReturn.data = [
           ...useReleasesMockReturn.data,

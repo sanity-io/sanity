@@ -9,7 +9,6 @@ import {debounceTime, map} from 'rxjs/operators'
 import {
   type DocumentAvailability,
   getPublishedId,
-  resolveBundlePerspective,
   useDocumentPreviewStore,
   usePerspective,
   useTranslation,
@@ -34,7 +33,7 @@ interface ParentReferenceInfo {
 
 export const ReferenceChangedBanner = memo(() => {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {perspective} = usePerspective()
+  const {selectedPerspectiveName} = usePerspective()
   const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
   const routerReferenceId = routerPanesState[groupIndex]?.[0].id
   const parentGroup = routerPanesState[groupIndex - 1] as RouterPaneGroup | undefined
@@ -45,8 +44,6 @@ export const ReferenceChangedBanner = memo(() => {
     return (params?.parentRefPath && pathFromString(params.parentRefPath)) || null
   }, [params?.parentRefPath])
   const {t} = useTranslation(structureLocaleNamespace)
-
-  const bundlePerspective = resolveBundlePerspective(perspective)
 
   /**
    * Loads information regarding the reference field of the parent pane. This
@@ -84,7 +81,7 @@ export const ReferenceChangedBanner = memo(() => {
           publishedId,
           (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][],
           {
-            version: bundlePerspective,
+            version: selectedPerspectiveName,
           },
         )
         .pipe(
@@ -115,7 +112,7 @@ export const ReferenceChangedBanner = memo(() => {
           ),
         ),
     )
-  }, [bundlePerspective, documentPreviewStore, parentId, parentRefPath])
+  }, [selectedPerspectiveName, documentPreviewStore, parentId, parentRefPath])
   const referenceInfo = useObservable(referenceInfoObservable, {loading: true})
 
   const handleReloadReference = useCallback(() => {

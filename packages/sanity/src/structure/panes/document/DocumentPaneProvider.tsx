@@ -13,21 +13,22 @@ import {omit, throttle} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 import {
-  type DocumentActionsPerspective,
+  type DocumentActionsContext,
+  type DocumentActionsVersionType,
   type DocumentFieldAction,
   type DocumentInspector,
   type DocumentPresence,
   EMPTY_ARRAY,
+  getBundleIdFromReleaseDocumentId,
   getDraftId,
   getExpandOperations,
   getPublishedId,
-  getVersionFromId,
   isReleaseScheduledOrScheduling,
   isSanityCreateLinkedDocument,
   isVersionId,
   type OnPathFocusPayload,
+  type PartialContext,
   type PatchEvent,
-  resolveBundlePerspective,
   setAtPath,
   type StateTree,
   toMutationPatches,
@@ -103,14 +104,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-  const {perspective, currentGlobalBundle} = usePerspective()
-
-  const bundlePerspective = resolveBundlePerspective(perspective)
+  const {selectedPerspectiveName, selectedReleaseName, selectedPerspective} = usePerspective()
 
   /* Version and the global perspective should match.
    * If user clicks on add document, and then switches to another version, he should click again on create document.
    */
-  const newDocumentVersion = params.version === bundlePerspective ? params.version : undefined
+  const newDocumentVersion = params.version === selectedPerspectiveName ? params.version : undefined
 
   const panePayload = useUnique(paneRouter.payload)
   const {templateName, templateParams} = useMemo(
@@ -129,28 +128,31 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     templateName,
     templateParams,
-    version: newDocumentVersion,
+    version: selectedReleaseName,
   })
 
   const initialValue = useUnique(initialValueRaw)
-  const {patch} = useDocumentOperation(documentId, documentType, bundlePerspective)
+
+  const {patch} = useDocumentOperation(documentId, documentType, selectedReleaseName)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
-  const editState = useEditState(documentId, documentType, 'default', bundlePerspective)
+  const editState = useEditState(documentId, documentType, 'default', selectedReleaseName)
   const {validation: validationRaw} = useValidationStatus(
     documentId,
     documentType,
-    bundlePerspective,
+    selectedReleaseName,
   )
-  const connectionState = useConnectionState(documentId, documentType, {version: bundlePerspective})
+  const connectionState = useConnectionState(documentId, documentType, {
+    version: selectedReleaseName,
+  })
   const {data: documentVersions} = useDocumentVersions({documentId})
 
   let value: SanityDocumentLike = initialValue.value
 
   switch (true) {
-    case typeof bundlePerspective !== 'undefined':
+    case typeof selectedReleaseName !== 'undefined':
       value = editState.version || editState.draft || editState.published || value
       break
-    case perspective === 'published':
+    case selectedPerspectiveName === 'published':
       value = editState.published || editState.draft || value
       break
     default:
@@ -159,20 +161,20 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const [isDeleting, setIsDeleting] = useState(false)
 
-  const getDocumentPerspective = useCallback(() => {
-    let version: DocumentActionsPerspective
+  const getDocumentVersionType = useCallback(() => {
+    let version: DocumentActionsVersionType
     switch (true) {
       /**
        * bundle Perspective will always be undefined in published and draft but not on version
        * should also check if the current value is a version otherwise this would impact the document actions
        */
-      case typeof bundlePerspective !== 'undefined' && isVersionId(value._id):
+      case typeof selectedPerspectiveName !== 'undefined' && isVersionId(value._id):
         version = 'version'
         break
       case Boolean(params):
         version = 'revision'
         break
-      case perspective === 'published':
+      case selectedPerspectiveName === 'published':
         version = 'published'
         break
       default:
@@ -180,18 +182,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
 
     return version
-  }, [bundlePerspective, params, perspective, value._id])
+  }, [selectedPerspectiveName, params, value._id])
 
-  const actionsPerspective = useMemo(() => getDocumentPerspective(), [getDocumentPerspective])
+  const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
 
-  const documentActionsProps = useMemo(
+  const documentActionsProps: PartialContext<DocumentActionsContext> = useMemo(
     () => ({
       schemaType: documentType,
       documentId,
-      perspective: actionsPerspective,
-      ...(bundlePerspective && {bundleId: bundlePerspective}),
+      versionType: actionsPerspective,
+      ...(selectedPerspectiveName && {versionName: selectedReleaseName}),
     }),
-    [actionsPerspective, bundlePerspective, documentId, documentType],
+    [documentType, documentId, actionsPerspective, selectedPerspectiveName, selectedReleaseName],
   )
 
   // Resolve document actions
@@ -235,7 +237,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onError: setTimelineError,
     rev: params.rev,
     since: params.since,
-    version: bundlePerspective,
+    version: selectedReleaseName,
   })
 
   // Subscribe to external timeline state changes
@@ -587,7 +589,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
   const existsInBundle =
-    typeof bundlePerspective !== 'undefined' && getVersionFromId(value._id) === bundlePerspective
+    typeof selectedReleaseName !== 'undefined' &&
+    documentVersions.some(
+      (version) => getBundleIdFromReleaseDocumentId(version._id) === selectedReleaseName,
+    )
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
@@ -597,19 +602,20 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const isLocked = editState.transactionSyncLock?.enabled
     // in cases where the document has drafts but the schema is live edit,
     // there is a risk of data loss, so we disable editing in this case
-    const isLiveEditAndDraftPerspective = liveEdit && !perspective
-    const isLiveEditAndPublishedPerspective = liveEdit && perspective === 'published'
+    const isLiveEditAndDraftPerspective = liveEdit && !selectedPerspectiveName
+    const isLiveEditAndPublishedPerspective = liveEdit && selectedPerspectiveName === 'published'
 
     const isSystemPerspectiveApplied =
-      isLiveEditAndPublishedPerspective || (perspective ? perspective && bundlePerspective : true)
+      isLiveEditAndPublishedPerspective ||
+      (selectedPerspectiveName ? selectedPerspectiveName : true)
 
     const isReleaseLocked =
-      typeof currentGlobalBundle === 'object' && 'state' in currentGlobalBundle
-        ? isReleaseScheduledOrScheduling(currentGlobalBundle)
+      typeof selectedPerspective === 'object' && 'state' in selectedPerspective
+        ? isReleaseScheduledOrScheduling(selectedPerspective)
         : false
 
     return (
-      (bundlePerspective && !existsInBundle) ||
+      (selectedPerspectiveName && !existsInBundle) ||
       !isSystemPerspectiveApplied ||
       !ready ||
       revTime !== null ||
@@ -632,9 +638,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     connectionState,
     editState.transactionSyncLock?.enabled,
     liveEdit,
-    perspective,
-    bundlePerspective,
-    currentGlobalBundle,
+    selectedPerspectiveName,
+    selectedPerspective,
     existsInBundle,
     ready,
     revTime,
@@ -781,24 +786,22 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       timelineStore,
       title,
       value,
-      version: bundlePerspective,
+      selectedVersionName: selectedPerspectiveName,
+      selectedReleaseName,
       views,
       formState,
       unstable_languageFilter: languageFilter,
     }),
     [
-      __internal_tasks,
       actions,
       activeViewId,
       badges,
-      bundlePerspective,
       changesOpen,
       closeInspector,
       collapsedFieldSets,
       collapsedPaths,
       compareValue,
       connectionState,
-      currentInspector,
       displayed,
       documentId,
       documentIdRaw,
@@ -808,43 +811,47 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       existsInBundle,
       fieldActions,
       focusPath,
-      formState,
+      currentInspector,
+      inspectors,
+      __internal_tasks,
       handleBlur,
       handleChange,
       handleFocus,
+      setOpenPath,
       handleHistoryClose,
       handleHistoryOpen,
       handleLegacyInspectClose,
       handleMenuAction,
-      handleOnSetCollapsedFieldSet,
-      handleOnSetCollapsedPath,
       handlePaneClose,
       handlePaneSplit,
       handleSetActiveFieldGroup,
-      index,
-      inspectOpen,
-      inspectors,
-      isDeleted,
-      isDeleting,
-      isPermissionsLoading,
-      languageFilter,
-      menuItemGroups,
+      handleOnSetCollapsedPath,
+      handleOnSetCollapsedFieldSet,
       openInspector,
       openPath,
+      index,
+      inspectOpen,
+      validation,
+      menuItemGroups,
       paneKey,
-      permissions,
       previewUrl,
       ready,
       schemaType,
-      setOpenPath,
+      isPermissionsLoading,
+      permissions,
       setTimelineRange,
+      isDeleting,
+      isDeleted,
       timelineError,
       timelineMode,
       timelineStore,
       title,
-      validation,
       value,
+      selectedPerspectiveName,
+      selectedReleaseName,
       views,
+      formState,
+      languageFilter,
     ],
   )
 

@@ -35,7 +35,7 @@ const renderTest = async () => {
 
 describe('DeletedDocumentBanners', () => {
   it('does not show either banner when document is not deleted', async () => {
-    mockUsePerspective.mockReturnValue({currentGlobalBundle: {_id: 'test'}} as ReturnType<
+    mockUsePerspective.mockReturnValue({selectedPerspective: {_id: 'test'}} as ReturnType<
       typeof usePerspective
     >)
     mockUseReleases.mockReturnValue({
@@ -58,7 +58,7 @@ describe('DeletedDocumentBanners', () => {
 
   it('prefers to show release deleted banner when document was in a release', async () => {
     const mockReleaseDocument = {_id: 'test', state: 'archived'} as ReleaseDocument
-    mockUsePerspective.mockReturnValue({currentGlobalBundle: mockReleaseDocument} as ReturnType<
+    mockUsePerspective.mockReturnValue({selectedPerspective: mockReleaseDocument} as ReturnType<
       typeof usePerspective
     >)
     mockUseReleases.mockReturnValue({
@@ -85,7 +85,7 @@ describe('DeletedDocumentBanners', () => {
     const mockBundleDocument: ReleaseDocument = {_id: 'test', state: 'archived'} as ReleaseDocument
 
     mockUsePerspective.mockReturnValue({
-      currentGlobalBundle: LATEST,
+      selectedPerspective: LATEST,
       setPerspective: vi.fn(),
     } as ReturnType<typeof usePerspective>)
 

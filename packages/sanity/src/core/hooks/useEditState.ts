@@ -9,8 +9,11 @@ export function useEditState(
   publishedDocId: string,
   docTypeName: string,
   priority: 'default' | 'low' = 'default',
-  version?: string,
+  version?: string | undefined,
 ): EditStateFor {
+  if (version === 'published' || version === 'draft') {
+    throw new Error('Version cannot be published or daft')
+  }
   const documentStore = useDocumentStore()
 
   const observable = useMemo(() => {

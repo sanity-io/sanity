@@ -44,7 +44,7 @@ const ASAP_RANGE_OFFSET = 2
 
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {loading, data: releases} = useReleases()
-  const {currentGlobalBundleId} = usePerspective()
+  const {globalReleaseDocumentId} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
@@ -94,7 +94,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       groupSubsetReleases.forEach(({_id}, groupReleaseIndex) => {
         const index = offset + groupReleaseIndex
 
-        if (_id === currentGlobalBundleId) {
+        if (_id === globalReleaseDocumentId) {
           lastIndex = index
         }
       })
@@ -106,7 +106,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       lastIndex,
       offsets,
     }
-  }, [currentGlobalBundleId, sortedReleaseTypeReleases])
+  }, [globalReleaseDocumentId, sortedReleaseTypeReleases])
 
   const releasesList = useMemo(() => {
     if (loading) {
