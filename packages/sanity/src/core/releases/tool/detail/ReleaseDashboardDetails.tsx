@@ -23,16 +23,16 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
 
-  const {currentGlobalBundleId, setPerspective, setPerspectiveFromReleaseDocumentId} =
+  const {globalReleaseDocumentId, setPerspective, setPerspectiveFromReleaseDocumentId} =
     usePerspective()
 
   const handlePinRelease = useCallback(() => {
-    if (_id === currentGlobalBundleId) {
+    if (_id === globalReleaseDocumentId) {
       setPerspective('drafts')
     } else {
       setPerspectiveFromReleaseDocumentId(_id)
     }
-  }, [_id, currentGlobalBundleId, setPerspective, setPerspectiveFromReleaseDocumentId])
+  }, [_id, globalReleaseDocumentId, setPerspective, setPerspectiveFromReleaseDocumentId])
 
   return (
     <Container width={3}>
@@ -40,12 +40,12 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
         <Flex gap={1}>
           <Button
             disabled={state === 'archived' || state === 'published'}
-            icon={_id === currentGlobalBundleId ? PinFilledIcon : PinIcon}
+            icon={_id === globalReleaseDocumentId ? PinFilledIcon : PinIcon}
             mode="bleed"
             onClick={handlePinRelease}
             padding={2}
             radius="full"
-            selected={_id === currentGlobalBundleId}
+            selected={_id === globalReleaseDocumentId}
             space={2}
             text={tRelease('dashboard.details.pin-release')}
             tone={getReleaseTone(release)}

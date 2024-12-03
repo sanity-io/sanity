@@ -251,7 +251,7 @@ describe('ReleasesOverview', () => {
     it('will show pinned release in release list', () => {
       mockUsePerspective.mockReturnValue({
         ...usePerspectiveMockReturn,
-        currentGlobalBundleId: '_.releases.activeASAPRelease',
+        globalReleaseDocumentId: '_.releases.activeASAPRelease',
       })
 
       // re-render to apply the update to global bundle id

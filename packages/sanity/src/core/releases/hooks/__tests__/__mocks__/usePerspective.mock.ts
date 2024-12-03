@@ -4,16 +4,16 @@ import {LATEST} from '../../../util/const'
 import {type PerspectiveValue, usePerspective} from '../../usePerspective'
 
 export const usePerspectiveMockReturn: Mocked<PerspectiveValue> = {
-  perspective: undefined,
+  selectedPerspectiveName: undefined,
   excludedPerspectives: [],
   setPerspective: vi.fn(),
-  currentGlobalBundle: LATEST,
+  selectedPerspective: LATEST,
   setPerspectiveFromReleaseId: vi.fn(),
   setPerspectiveFromReleaseDocumentId: vi.fn(),
   toggleExcludedPerspective: vi.fn(),
   isPerspectiveExcluded: vi.fn(),
-  currentGlobalBundleId: 'drafts',
-  bundlesPerspective: [],
+  globalReleaseDocumentId: 'drafts',
+  perspectiveStack: [],
 }
 
 export const mockUsePerspective = usePerspective as Mock<typeof usePerspective>

@@ -55,7 +55,7 @@ export function SearchResultItemPreview({
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const releases = useReleases()
-  const {bundlesPerspective} = usePerspective()
+  const {perspectiveStack} = usePerspective()
   const {state} = useSearchState()
   const isRaw = isPerspectiveRaw(state.perspective)
 
@@ -67,7 +67,7 @@ export function SearchResultItemPreview({
          * if the perspective is defined in the state it means that there is a scope to the search
          * and that the preview needs to take that into account
          */
-        bundleStack: state.perspective && !isRaw ? state.perspective : bundlesPerspective,
+        bundleStack: state.perspective && !isRaw ? state.perspective : perspectiveStack,
         isRaw: isRaw,
       }),
     [
@@ -76,7 +76,7 @@ export function SearchResultItemPreview({
       documentId,
       releases.releasesIds,
       state.perspective,
-      bundlesPerspective,
+      perspectiveStack,
       isRaw,
     ],
   )

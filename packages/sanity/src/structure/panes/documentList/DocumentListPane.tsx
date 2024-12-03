@@ -76,7 +76,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
   const releases = useReleases()
-  const {bundlesPerspective} = usePerspective()
+  const {perspectiveStack} = usePerspective()
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -113,7 +113,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   } = useDocumentList({
     apiVersion,
     filter,
-    perspective: bundlesPerspective,
+    perspective: perspectiveStack,
     params,
     searchQuery: searchQuery?.trim(),
     sortOrder,

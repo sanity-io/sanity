@@ -15,13 +15,13 @@ import {
 export const DiscardVersionAction = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
-  const {id, type, bundleId, version} = props
+  const {id, type, release, version} = props
   const currentUser = useCurrentUser()
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleId,
+    version: release,
     permission: 'publish',
   })
 

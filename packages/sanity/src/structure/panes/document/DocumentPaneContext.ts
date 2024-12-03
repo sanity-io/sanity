@@ -80,7 +80,8 @@ export interface DocumentPaneContextValue {
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike
-  version?: string
+  selectedReleaseName?: `r${string}`
+  selectedVersionName?: string // 'published'
   views: View[]
   formState: DocumentFormNode | null
   permissions?: PermissionCheckResult | null

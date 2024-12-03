@@ -30,14 +30,14 @@ export function ReleaseTypeMenuSection({
   currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
 }): JSX.Element | null {
   const {t} = useTranslation()
-  const {currentGlobalBundleId} = usePerspective()
+  const {globalReleaseDocumentId} = usePerspective()
 
   const getMenuItemRef = useCallback(
     (releaseId: string) =>
-      releaseId === currentGlobalBundleId
+      releaseId === globalReleaseDocumentId
         ? (currentGlobalBundleMenuItemRef as React.RefObject<HTMLDivElement>)
         : undefined,
-    [currentGlobalBundleId, currentGlobalBundleMenuItemRef],
+    [globalReleaseDocumentId, currentGlobalBundleMenuItemRef],
   )
 
   if (releases.length === 0) return null

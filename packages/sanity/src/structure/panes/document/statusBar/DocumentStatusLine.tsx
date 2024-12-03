@@ -29,7 +29,7 @@ export function DocumentStatusLine() {
   const schema = useSchema()
   const schemaType = schema.get(documentType)
   const releases = useReleases()
-  const {currentGlobalBundle, bundlesPerspective} = usePerspective()
+  const {selectedPerspective, perspectiveStack} = usePerspective()
   const previewStateObservable = useMemo(
     () =>
       schemaType
@@ -37,14 +37,14 @@ export function DocumentStatusLine() {
             bundleIds: (releases.data ?? []).map((release) =>
               getBundleIdFromReleaseDocumentId(release._id),
             ),
-            bundleStack: bundlesPerspective,
+            bundleStack: perspectiveStack,
           })
         : of({versions: {}}),
-    [documentPreviewStore, schemaType, value._id, releases.data, bundlesPerspective],
+    [documentPreviewStore, schemaType, value._id, releases.data, perspectiveStack],
   )
   const {versions} = useObservable(previewStateObservable, {versions: {}})
 
-  const syncState = useSyncState(documentId, documentType, {version: editState?.bundleId})
+  const syncState = useSyncState(documentId, documentType, {version: editState?.release})
 
   const lastUpdated = value?._updatedAt
 
@@ -76,7 +76,7 @@ export function DocumentStatusLine() {
   }, [syncState.isSyncing, lastUpdated])
 
   const getMode = () => {
-    if (isPublishedPerspective(currentGlobalBundle)) {
+    if (isPublishedPerspective(selectedPerspective)) {
       return 'published'
     }
     if (editState?.version) {
@@ -90,7 +90,7 @@ export function DocumentStatusLine() {
   const mode = getMode()
 
   const isReleasePerspective =
-    !isPublishedPerspective(currentGlobalBundle) && !isDraftPerspective(currentGlobalBundle)
+    !isPublishedPerspective(selectedPerspective) && !isDraftPerspective(selectedPerspective)
 
   if (status) {
     return <DocumentStatusPulse status={status || undefined} />
@@ -114,10 +114,10 @@ export function DocumentStatusLine() {
           versions={
             mode === 'version' &&
             isReleasePerspective &&
-            currentGlobalBundle.name &&
+            selectedPerspective.name &&
             editState?.version
               ? {
-                  [currentGlobalBundle.name]: {snapshot: editState?.version},
+                  [selectedPerspective.name]: {snapshot: editState?.version},
                 }
               : undefined
           }

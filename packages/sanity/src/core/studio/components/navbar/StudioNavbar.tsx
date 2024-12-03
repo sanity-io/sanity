@@ -85,7 +85,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {currentGlobalBundle} = usePerspective()
+  const {selectedPerspective} = usePerspective()
 
   const ToolMenu = useToolMenuComponent()
 
@@ -189,7 +189,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
-          tone={getReleaseTone(currentGlobalBundle)}
+          tone={getReleaseTone(selectedPerspective)}
           borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"

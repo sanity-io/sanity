@@ -3,7 +3,7 @@ import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {assignWith} from 'lodash'
 
 import {isPerspectiveRaw} from '../../search/common/isPerspectiveRaw'
-import {isPublishedId, isVersionId, resolveBundlePerspective} from '../../util'
+import {isPublishedId, isVersionId} from '../../util'
 
 const getMissingDocumentFallback = (item: SanityDocument) => ({
   title: <em>{item.title ? String(item.title) : 'Missing document'}</em>,
@@ -47,11 +47,11 @@ export const getPreviewValueWithFallback = ({
     }
   } else {
     switch (true) {
-      case typeof resolveBundlePerspective(perspective) !== 'undefined' || isVersionId(value._id):
-        snapshot = version || draft || published
-        break
       case perspective === 'published':
         snapshot = published || draft
+        break
+      case typeof perspective !== 'undefined' || isVersionId(value._id):
+        snapshot = version || draft || published
         break
       default:
         snapshot = draft || published

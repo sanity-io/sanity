@@ -10,22 +10,22 @@ import {
 } from 'sanity'
 
 export const useBundleDeletedToast = () => {
-  const {currentGlobalBundle} = usePerspective()
+  const {selectedPerspective} = usePerspective()
   const {data: bundles} = useReleases()
   const toast = useToast()
   const {t} = useTranslation()
 
   useEffect(() => {
-    if (isPublishedPerspective(currentGlobalBundle) || isDraftPerspective(currentGlobalBundle))
+    if (isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective))
       return
 
-    const hasCheckedOutBundleBeenArchived = currentGlobalBundle.state === 'archived'
+    const hasCheckedOutBundleBeenArchived = selectedPerspective.state === 'archived'
 
     if (hasCheckedOutBundleBeenArchived) {
       const {
         metadata: {title: deletedBundleTitle},
         _id: deletedBundleId,
-      } = currentGlobalBundle
+      } = selectedPerspective
 
       toast.push({
         id: `bundle-deleted-toast-${deletedBundleId}`,
@@ -42,5 +42,5 @@ export const useBundleDeletedToast = () => {
         duration: 10000,
       })
     }
-  }, [bundles?.length, toast, t, currentGlobalBundle])
+  }, [bundles?.length, toast, t, selectedPerspective])
 }

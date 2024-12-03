@@ -8,7 +8,6 @@ import {usePerspective} from '../../../../../../releases/hooks/usePerspective'
 import {useReleases} from '../../../../../../releases/store/useReleases'
 import {isPerspectiveRaw, type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
-import {resolvePerspectiveOptions} from '../../../../../../util/resolvePerspective'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
 import {type RecentSearch} from '../../datastores/recentSearches'
@@ -49,7 +48,7 @@ export function SearchProvider({
 }: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
-  const {bundlesPerspective} = usePerspective()
+  const {perspectiveStack} = usePerspective()
   const {data: releases} = useReleases()
   const schema = useSchema()
   const currentUser = useCurrentUser()
@@ -155,7 +154,6 @@ export function SearchProvider({
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
-          ...resolvePerspectiveOptions(isRaw ? undefined : (perspective ?? bundlesPerspective)),
           perspective: isRaw ? ['raw'] : state.perspective,
         },
         terms: {
@@ -182,7 +180,7 @@ export function SearchProvider({
     searchState.terms,
     terms,
     cursor,
-    bundlesPerspective,
+    perspectiveStack,
     releases,
     state.perspective,
     perspective,

@@ -35,6 +35,9 @@ import {type IdPair} from './types'
 export type QueryParams = Record<string, string | number | boolean | string[]>
 
 function getIdPairFromPublished(publishedId: string, version?: string): IdPair {
+  if (version === 'published' || version === 'drafts') {
+    throw new Error('Version Id cannot be "published" or "drafts"')
+  }
   if (isVersionId(publishedId)) {
     throw new Error('editOpsOf does not expect a version id.')
   }

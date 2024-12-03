@@ -31,7 +31,7 @@ export function DraftLiveEditBanner({
   const {t} = useTranslation(structureLocaleNamespace)
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)
-  const {perspective} = usePerspective()
+  const {selectedPerspectiveName} = usePerspective()
 
   const telemetry = useTelemetry()
 
@@ -57,7 +57,7 @@ export function DraftLiveEditBanner({
   })
 
   const hasDraft = displayed && displayed._id && isDraftId(displayed._id)
-  if (perspective && !hasDraft) {
+  if (selectedPerspectiveName && !hasDraft) {
     return null
   }
   return (

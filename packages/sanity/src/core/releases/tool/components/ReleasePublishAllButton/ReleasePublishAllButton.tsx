@@ -63,8 +63,8 @@ export const ReleasePublishAllButton = ({
       // TODO: handle a published release on the document list
       router.navigate({})
       if (
-        perspective.currentGlobalBundle !== 'published' &&
-        perspective.currentGlobalBundle?._id === release._id
+        perspective.selectedPerspective !== 'published' &&
+        perspective.selectedPerspective?._id === release._id
       ) {
         perspective.setPerspective('drafts')
       }

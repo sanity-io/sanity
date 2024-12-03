@@ -40,9 +40,7 @@ export function ReleaseDocumentPreview({
               id: getPublishedId(documentId),
               type: documentTypeName,
             }}
-            searchParams={[
-              ['perspective', `bundle.${getBundleIdFromReleaseDocumentId(releaseId)}`],
-            ]}
+            searchParams={[['perspective', getBundleIdFromReleaseDocumentId(releaseId)]]}
             ref={ref}
           />
         )

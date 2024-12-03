@@ -107,7 +107,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
             intent="edit"
             params={{id: getPublishedId(documentId), type: documentType}}
             ref={ref}
-            searchParams={versionId ? [['perspective', `bundle.${versionId}`]] : undefined}
+            searchParams={versionId ? [['perspective', versionId]] : undefined}
           />
         )
       }),

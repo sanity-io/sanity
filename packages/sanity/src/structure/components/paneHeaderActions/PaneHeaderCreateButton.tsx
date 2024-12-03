@@ -1,9 +1,7 @@
 import {AddIcon} from '@sanity/icons'
-import {type Schema} from '@sanity/types'
 import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
-  getBundleIdFromReleaseDocumentId,
   type InitialValueTemplateItem,
   isPublishedPerspective,
   LATEST,
@@ -32,7 +30,6 @@ const POPOVER_PROPS: PopoverProps = {
 }
 
 const getIntent = (
-  schema: Schema,
   templates: Template[],
   item: InitialValueTemplateItem,
   version?: string,
@@ -51,9 +48,7 @@ const getIntent = (
   return {
     type: 'create',
     params: item.parameters ? [baseParams, item.parameters] : baseParams,
-    searchParams: isBundleIntent
-      ? [['perspective', `bundle.${getBundleIdFromReleaseDocumentId(version)}`]]
-      : undefined,
+    searchParams: isBundleIntent ? [['perspective', version]] : undefined,
   }
 }
 
@@ -64,7 +59,7 @@ interface PaneHeaderCreateButtonProps {
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const schema = useSchema()
   const templates = useTemplates()
-  const {currentGlobalBundleId} = usePerspective()
+  const {selectedReleaseName} = usePerspective()
 
   const {t} = useTranslation(structureLocaleNamespace)
   const getI18nText = useGetI18nText([...templateItems, ...templates])
@@ -115,7 +110,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
-    const intent = getIntent(schema, templates, firstItem, currentGlobalBundleId)
+    const intent = getIntent(templates, firstItem, selectedReleaseName)
     if (!intent) return null
 
     return (
@@ -153,7 +148,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(schema, templates, item, currentGlobalBundleId)
+            const intent = getIntent(templates, item, selectedReleaseName)
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
 

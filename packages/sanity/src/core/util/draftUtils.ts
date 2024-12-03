@@ -79,6 +79,9 @@ export function getIdPair(
   publishedId: PublishedId
   versionId?: string
 } {
+  if (version === 'drafts' || version === 'published') {
+    throw new Error('Version can not be "published" or "drafts"')
+  }
   return {
     publishedId: getPublishedId(id),
     draftId: getDraftId(id),
@@ -106,16 +109,20 @@ export function getDraftId(id: string): DraftId {
 }
 
 /**  @internal */
-export function getVersionId(id: string, bundle: string): string {
+export function getVersionId(id: string, version: string): string {
+  if (version === 'drafts' || version === 'published') {
+    throw new Error('Version can not be "published" or "drafts"')
+  }
+
   if (isVersionId(id)) {
     const [_versionPrefix, versionId, ...publishedId] = id.split(PATH_SEPARATOR)
-    if (versionId === bundle) return id
-    return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
+    if (versionId === version) return id
+    return `${VERSION_PREFIX}${version}${PATH_SEPARATOR}${publishedId}`
   }
 
   const publishedId = getPublishedId(id)
 
-  return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
+  return `${VERSION_PREFIX}${version}${PATH_SEPARATOR}${publishedId}`
 }
 
 /**

@@ -46,12 +46,12 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       : null
 
   const releases = useReleases()
-  const {bundlesPerspective, perspective} = usePerspective()
+  const {perspectiveStack, selectedPerspectiveName} = usePerspective()
   const previewStateObservable = useMemo(
     () =>
       getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {
         bundleIds: releases.releasesIds,
-        bundleStack: bundlesPerspective,
+        bundleStack: perspectiveStack,
       }),
     [
       props.documentPreviewStore,
@@ -59,7 +59,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       value._id,
       title,
       releases.releasesIds,
-      bundlesPerspective,
+      perspectiveStack,
     ],
   )
 
@@ -75,7 +75,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     published: null,
     version: null,
     versions: {},
-    perspective,
+    selectedPerspectiveName,
   })
 
   const isLoading = previewIsLoading || releases.loading
@@ -93,7 +93,13 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   return (
     <SanityDefaultPreview
-      {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
+      {...getPreviewValueWithFallback({
+        value,
+        draft,
+        published,
+        version,
+        perspective: selectedPerspectiveName,
+      })}
       isPlaceholder={isLoading}
       icon={icon}
       layout={layout}

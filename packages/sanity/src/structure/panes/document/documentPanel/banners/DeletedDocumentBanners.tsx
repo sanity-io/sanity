@@ -19,14 +19,14 @@ import {Banner} from './Banner'
 
 export function DeletedDocumentBanners() {
   const {isDeleted, isDeleting} = useDocumentPane()
-  const {currentGlobalBundle} = usePerspective()
+  const {selectedPerspective} = usePerspective()
 
   if (
-    !isPublishedPerspective(currentGlobalBundle) &&
-    !isDraftPerspective(currentGlobalBundle) &&
-    currentGlobalBundle.state === 'archived'
+    !isPublishedPerspective(selectedPerspective) &&
+    !isDraftPerspective(selectedPerspective) &&
+    selectedPerspective.state === 'archived'
   ) {
-    return <ArchivedReleaseBanner release={currentGlobalBundle as ReleaseDocument} />
+    return <ArchivedReleaseBanner release={selectedPerspective as ReleaseDocument} />
   }
   if (isDeleted && !isDeleting) return <DeletedDocumentBanner />
 }

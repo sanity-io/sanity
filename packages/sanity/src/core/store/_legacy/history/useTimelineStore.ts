@@ -105,6 +105,10 @@ export function useTimelineStore({
   since,
   version,
 }: UseTimelineControllerOpts): TimelineStore {
+  if (version === 'drafts' || version === 'published') {
+    throw new Error('Version can not be "published" or "drafts"')
+  }
+
   const historyStore = useHistoryStore()
   const snapshotsSubscriptionRef = useRef<Subscription | null>(null)
   const timelineStateRef = useRef<TimelineState>(INITIAL_TIMELINE_STATE)

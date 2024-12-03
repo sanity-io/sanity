@@ -138,7 +138,7 @@ export function createSearchQuery(
     ...createConstraints(terms, specs),
     filter ? `(${filter})` : '',
     searchTerms.filter ? `(${searchTerms.filter})` : '',
-    // Versions are collated server-side using the `bundlePerspective` option. Therefore, they must
+    // Versions are collated server-side using the `perspective` option. Therefore, they must
     // not be fetched individually. This should only be added if the search needs to be narrow to the perspective
     isRaw ? '' : '!(_id in path("versions.**"))',
   ].filter(Boolean)
@@ -195,7 +195,6 @@ export function createSearchQuery(
     options: {
       tag,
       perspective: isRaw ? undefined : searchOpts.perspective,
-      bundlePerspective: isRaw ? undefined : searchOpts.bundlePerspective,
     },
     searchSpec: specs,
     terms,
