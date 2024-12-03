@@ -1,3 +1,5 @@
+import {type Tool, type Workspace} from '../../core'
+
 export type ManifestSerializable =
   | string
   | number
@@ -11,19 +13,17 @@ export interface CreateManifest {
   workspaces: ManifestWorkspaceFile[]
 }
 
-export interface ManifestWorkspaceFile {
-  name: string
-  dataset: string
+export interface ManifestWorkspaceFile extends Omit<CreateWorkspaceManifest, 'schema' | 'tools'> {
   schema: string // filename
+  tools: string // filename
 }
 
-export interface CreateWorkspaceManifest {
-  name: string
-  title?: string
-  subtitle?: string
-  basePath: string
-  dataset: string
+export interface CreateWorkspaceManifest
+  extends Pick<Workspace, 'name' | 'basePath' | 'dataset' | 'projectId'>,
+    Partial<Pick<Workspace, 'title' | 'subtitle'>> {
   schema: ManifestSchemaType[]
+  tools: ManifestTool[]
+  icon: string
 }
 
 export interface ManifestSchemaType {
@@ -82,4 +82,8 @@ export type ManifestValidationRule = {
   flag: string
   constraint?: ManifestSerializable
   [index: string]: ManifestSerializable | undefined
+}
+
+export interface ManifestTool extends Pick<Tool, 'name' | 'title'> {
+  icon: string
 }

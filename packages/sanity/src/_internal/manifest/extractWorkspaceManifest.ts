@@ -1,4 +1,6 @@
 import startCase from 'lodash/startCase'
+import {createElement} from 'react'
+import {renderToString} from 'react-dom/server'
 import {
   type ArraySchemaType,
   type BlockDefinition,
@@ -22,6 +24,7 @@ import {
   type Workspace,
 } from 'sanity'
 
+import {SchemaIcon} from './Icon'
 import {
   getCustomFields,
   isCrossDatasetReference,
@@ -40,6 +43,7 @@ import {
   type ManifestSchemaType,
   type ManifestSerializable,
   type ManifestTitledValue,
+  type ManifestTool,
   type ManifestValidationGroup,
   type ManifestValidationRule,
 } from './manifestTypes'
@@ -70,14 +74,24 @@ const INLINE_TYPES = ['document', 'object', 'image', 'file']
 
 export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWorkspaceManifest {
   const serializedSchema = extractManifestSchemaTypes(workspace.schema)
+  const serialisedTools = extractManifestTools(workspace.tools)
 
   return {
     name: workspace.name,
     title: workspace.title,
     subtitle: workspace.subtitle,
     basePath: workspace.basePath,
+    projectId: workspace.projectId,
     dataset: workspace.dataset,
+    icon: renderToString(
+      createElement(SchemaIcon, {
+        icon: workspace.icon,
+        title: workspace.title,
+        subtitle: workspace.subtitle,
+      }),
+    ),
     schema: serializedSchema,
+    tools: serialisedTools,
   }
 }
 
@@ -500,3 +514,18 @@ function resolveTitleValueArray(possibleArray: unknown): ManifestTitledValue[] |
 
   return titledValues
 }
+
+const extractManifestTools = (tools: Workspace['tools']): ManifestTool[] =>
+  tools.map(
+    ({title, name, icon}) =>
+      ({
+        title,
+        name,
+        icon: renderToString(
+          createElement(SchemaIcon, {
+            icon,
+            title,
+          }),
+        ),
+      }) satisfies ManifestTool,
+  )
