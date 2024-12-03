@@ -488,6 +488,7 @@ export async function tryApplyPackageName(root: string, name: string): Promise<v
 }
 
 export async function generateSanityApiReadToken(
+  label: string,
   projectId: string,
   apiClient: CliApiClient,
 ): Promise<string> {
@@ -497,7 +498,7 @@ export async function generateSanityApiReadToken(
       uri: `/projects/${projectId}/tokens`,
       method: 'POST',
       body: {
-        label: `API Read Token (${Date.now()})`,
+        label: `${label} (${Date.now()})`, // Add timestamp to ensure uniqueness
         roleName: 'viewer',
       },
     })
