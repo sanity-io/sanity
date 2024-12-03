@@ -29,6 +29,8 @@
 /packages/@sanity/client/umd
 /packages/@sanity/cli/bin/sanity-cli.js
 /packages/@sanity/cli/templates
+/packages/@sanity/cli/test/test-template
+
 
 /test/v2-studio/dist
 /turbo.json
