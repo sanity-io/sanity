@@ -102,7 +102,14 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     return () => {
       sub.unsubscribe()
     }
-  }, [documentId, documentStore, documentType, patchChannel, selectedVersionName])
+  }, [
+    documentId,
+    documentStore,
+    documentType,
+    patchChannel,
+    selectedReleaseName,
+    selectedVersionName,
+  ])
 
   const hasRev = Boolean(value?._rev)
   useEffect(() => {
