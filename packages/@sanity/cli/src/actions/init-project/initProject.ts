@@ -72,7 +72,7 @@ import {
 } from './templates/nextjs'
 
 // eslint-disable-next-line no-process-env
-const isCI = process.env.CI
+const isCI = Boolean(process.env.CI)
 
 /**
  * @deprecated - No longer used
@@ -1127,6 +1127,7 @@ export default async function initSanity(
           repoInfo: remoteTemplateInfo,
           bearerToken: cliFlags['template-token'],
           variables: bootstrapVariables,
+          isCI,
         },
         context,
       )
