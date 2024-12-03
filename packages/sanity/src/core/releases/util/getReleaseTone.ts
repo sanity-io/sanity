@@ -22,7 +22,7 @@ export function getReleaseTone(release: ReleaseDocument | 'published' | typeof L
   }
 
   if (release?.metadata?.releaseType === 'undecided') {
-    return 'explore'
+    return 'suggest'
   }
 
   if (release?.metadata?.releaseType === 'scheduled') {
