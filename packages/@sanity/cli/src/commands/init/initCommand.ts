@@ -58,6 +58,11 @@ export interface InitFlags {
   'project'?: string
   'dataset'?: string
   'template'?: string
+  /**
+   * Used for accessing private GitHub repo templates
+   * @beta
+   */
+  'template-token'?: string
 
   'visibility'?: string
   'typescript'?: boolean
