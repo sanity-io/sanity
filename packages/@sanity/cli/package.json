@@ -73,8 +73,7 @@
     "semver": "^7.3.5",
     "silver-fleece": "1.1.0",
     "validate-npm-package-name": "^3.0.0",
-    "yaml": "^2.6.1",
-    "yarn": "^1.22.22"
+    "yaml": "^2.6.1"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
