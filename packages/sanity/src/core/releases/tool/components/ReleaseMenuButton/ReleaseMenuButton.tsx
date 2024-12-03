@@ -9,7 +9,7 @@ import {ArchivedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
-import {getBundleIdFromReleaseDocumentId} from '../../../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {useBundleDocuments} from '../../detail/useBundleDocuments'
 
 export type ReleaseMenuButtonProps = {
@@ -23,7 +23,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
   const toast = useToast()
   const {archive} = useReleaseOperations()
   const {loading: isLoadingReleaseDocuments, results: releaseDocuments} = useBundleDocuments(
-    getBundleIdFromReleaseDocumentId(release._id),
+    getReleaseIdFromReleaseDocumentId(release._id),
   )
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<'edit' | 'confirm-archive'>()

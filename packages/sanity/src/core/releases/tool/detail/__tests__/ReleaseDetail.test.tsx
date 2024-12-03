@@ -11,7 +11,7 @@ import {
   mockUseReleases,
   useReleasesMockReturn,
 } from '../../../store/__tests__/__mocks/useReleases.mock'
-import {getBundleIdFromReleaseDocumentId} from '../../../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseDetail} from '../ReleaseDetail'
 import {
   documentsInRelease,
@@ -133,7 +133,7 @@ describe('ReleaseDetail', () => {
       })
 
       mockUseRouterReturn.state = {
-        releaseId: getBundleIdFromReleaseDocumentId(activeASAPRelease._id),
+        releaseId: getReleaseIdFromReleaseDocumentId(activeASAPRelease._id),
       }
       await renderTest()
     })
@@ -290,7 +290,7 @@ describe('after releases have loaded', () => {
       })
 
       mockUseRouterReturn.state = {
-        releaseId: getBundleIdFromReleaseDocumentId(publishedASAPRelease._id),
+        releaseId: getReleaseIdFromReleaseDocumentId(publishedASAPRelease._id),
       }
 
       await renderTest()
@@ -331,7 +331,7 @@ describe('after releases have loaded', () => {
       })
 
       mockUseRouterReturn.state = {
-        releaseId: getBundleIdFromReleaseDocumentId(publishedASAPRelease._id),
+        releaseId: getReleaseIdFromReleaseDocumentId(publishedASAPRelease._id),
       }
 
       mockUseBundleDocuments.mockReturnValue({
@@ -364,7 +364,7 @@ describe('after releases have loaded', () => {
       })
 
       mockUseRouterReturn.state = {
-        releaseId: getBundleIdFromReleaseDocumentId(activeASAPRelease._id),
+        releaseId: getReleaseIdFromReleaseDocumentId(activeASAPRelease._id),
       }
 
       await renderTest()

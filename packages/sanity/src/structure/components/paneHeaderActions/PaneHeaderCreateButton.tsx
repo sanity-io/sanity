@@ -59,7 +59,7 @@ interface PaneHeaderCreateButtonProps {
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const schema = useSchema()
   const templates = useTemplates()
-  const {selectedReleaseName} = usePerspective()
+  const {selectedReleaseId} = usePerspective()
 
   const {t} = useTranslation(structureLocaleNamespace)
   const getI18nText = useGetI18nText([...templateItems, ...templates])
@@ -110,7 +110,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
-    const intent = getIntent(templates, firstItem, selectedReleaseName)
+    const intent = getIntent(templates, firstItem, selectedReleaseId)
     if (!intent) return null
 
     return (
@@ -148,7 +148,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(templates, item, selectedReleaseName)
+            const intent = getIntent(templates, item, selectedReleaseId)
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
 

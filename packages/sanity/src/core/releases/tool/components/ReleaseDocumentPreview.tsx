@@ -7,7 +7,7 @@ import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {getPublishedId} from '../../../util/draftUtils'
 import {useDocumentPresence} from '../../index'
-import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 interface ReleaseDocumentPreviewProps {
   documentId: string
@@ -40,7 +40,7 @@ export function ReleaseDocumentPreview({
               id: getPublishedId(documentId),
               type: documentTypeName,
             }}
-            searchParams={[['perspective', getBundleIdFromReleaseDocumentId(releaseId)]]}
+            searchParams={[['perspective', getReleaseIdFromReleaseDocumentId(releaseId)]]}
             ref={ref}
           />
         )

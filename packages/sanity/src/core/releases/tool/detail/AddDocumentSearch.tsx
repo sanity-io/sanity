@@ -8,7 +8,7 @@ import {SearchPopover} from '../../../studio/components/navbar/search/components
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {useBundleDocuments} from './useBundleDocuments'
 
 export function AddDocumentSearch({
@@ -24,13 +24,13 @@ export function AddDocumentSearch({
   const toast = useToast()
   const telemetry = useTelemetry()
 
-  const {results} = useBundleDocuments(getBundleIdFromReleaseDocumentId(releaseId))
+  const {results} = useBundleDocuments(getReleaseIdFromReleaseDocumentId(releaseId))
   const idsInRelease: string[] = results.map((doc) => doc.document._id)
 
   const addDocument = useCallback(
     async (item: Pick<SanityDocumentLike, '_id' | '_type'>) => {
       try {
-        await createVersion(getBundleIdFromReleaseDocumentId(releaseId), item._id)
+        await createVersion(getReleaseIdFromReleaseDocumentId(releaseId), item._id)
 
         toast.push({
           closable: true,

@@ -137,7 +137,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseName} = usePerspective()
+  const {selectedPerspective, selectedReleaseId} = usePerspective()
 
   const isScheduledRelease =
     typeof selectedPerspective === 'object' && 'state' in selectedPerspective
@@ -145,7 +145,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       : false
 
   const banners = useMemo(() => {
-    if ((!existsInBundle && selectedReleaseName) || isScheduledRelease) {
+    if ((!existsInBundle && selectedReleaseId) || isScheduledRelease) {
       return (
         <AddToReleaseBanner
           documentId={value._id}
@@ -191,7 +191,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     ready,
     requiredPermission,
     schemaType,
-    selectedReleaseName,
+    selectedReleaseId,
     value._id,
   ])
 

@@ -4,7 +4,7 @@ import {useRouter} from 'sanity/router'
 import {type ReleaseDocument} from '../store/types'
 import {useReleases} from '../store/useReleases'
 import {LATEST} from '../util/const'
-import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {isPublishedPerspective} from '../util/util'
 import {getReleasesPerspective} from './utils'
 
@@ -19,7 +19,7 @@ export type CurrentPerspective = ReleaseDocument | 'published' | typeof LATEST
 export interface PerspectiveValue {
   /* The current perspective */
   selectedPerspectiveName: 'published' | `r${string}` | undefined
-  selectedReleaseName: `r${string}` | undefined
+  selectedReleaseId: `r${string}` | undefined
 
   /* Return the current global release */
   selectedPerspective: CurrentPerspective
@@ -86,7 +86,7 @@ export function usePerspective(): PerspectiveValue {
   const selectedBundle =
     currentPerspectiveName && releases
       ? releases.find(
-          (release) => getBundleIdFromReleaseDocumentId(release._id) === currentPerspectiveName,
+          (release) => getReleaseIdFromReleaseDocumentId(release._id) === currentPerspectiveName,
         )
       : LATEST
 
@@ -94,14 +94,13 @@ export function usePerspective(): PerspectiveValue {
   useEffect(() => {
     if (
       archivedReleases?.find(
-        (release) => getBundleIdFromReleaseDocumentId(release._id) === currentPerspectiveName,
+        (release) => getReleaseIdFromReleaseDocumentId(release._id) === currentPerspectiveName,
       )
     ) {
       setPerspective(LATEST._id)
     }
   }, [archivedReleases, currentPerspectiveName, selectedBundle, setPerspective])
 
-  // TODO: Improve naming; this may not be global.
   const currentPerspective: CurrentPerspective = useMemo(
     () =>
       currentPerspectiveName === 'published' ? currentPerspectiveName : selectedBundle || LATEST,
@@ -114,7 +113,8 @@ export function usePerspective(): PerspectiveValue {
   )
 
   const setPerspectiveFromReleaseDocumentId = useCallback(
-    (releaseId: string) => setPerspectiveFromReleaseId(getBundleIdFromReleaseDocumentId(releaseId)),
+    (releaseId: string) =>
+      setPerspectiveFromReleaseId(getReleaseIdFromReleaseDocumentId(releaseId)),
     [setPerspectiveFromReleaseId],
   )
 
@@ -133,11 +133,9 @@ export function usePerspective(): PerspectiveValue {
       if (excluded === LATEST._id) return
       const existingPerspectives = excludedPerspectives || []
 
-      const excludedPerspectiveId = isPublishedPerspective(excluded) ? 'published' : excluded
-
-      const nextExcludedPerspectives = existingPerspectives.includes(excludedPerspectiveId)
-        ? existingPerspectives.filter((id) => id !== excludedPerspectiveId)
-        : [...existingPerspectives, excludedPerspectiveId]
+      const nextExcludedPerspectives = existingPerspectives.includes(excluded)
+        ? existingPerspectives.filter((id) => id !== excluded)
+        : [...existingPerspectives, excluded]
 
       router.navigateStickyParams({excludedPerspectives: nextExcludedPerspectives.toString()})
     },
@@ -145,19 +143,14 @@ export function usePerspective(): PerspectiveValue {
   )
 
   const isPerspectiveExcluded = useCallback(
-    (perspectiveId: string) =>
-      Boolean(
-        excludedPerspectives?.includes(
-          isPublishedPerspective(perspectiveId) ? 'published' : perspectiveId,
-        ),
-      ),
+    (perspectiveId: string) => Boolean(excludedPerspectives?.includes(perspectiveId)),
     [excludedPerspectives],
   )
 
   return useMemo(
     () => ({
       selectedPerspectiveName: currentPerspectiveName,
-      selectedReleaseName:
+      selectedReleaseId:
         currentPerspectiveName === 'published' ? undefined : currentPerspectiveName,
       excludedPerspectives,
       setPerspective,
