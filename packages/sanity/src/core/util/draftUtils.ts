@@ -114,15 +114,7 @@ export function getVersionId(id: string, version: string): string {
     throw new Error('Version can not be "published" or "drafts"')
   }
 
-  if (isVersionId(id)) {
-    const [_versionPrefix, versionId, ...publishedId] = id.split(PATH_SEPARATOR)
-    if (versionId === version) return id
-    return `${VERSION_PREFIX}${version}${PATH_SEPARATOR}${publishedId}`
-  }
-
-  const publishedId = getPublishedId(id)
-
-  return `${VERSION_PREFIX}${version}${PATH_SEPARATOR}${publishedId}`
+  return `${VERSION_PREFIX}${version}${PATH_SEPARATOR}${getPublishedId(id)}`
 }
 
 /**

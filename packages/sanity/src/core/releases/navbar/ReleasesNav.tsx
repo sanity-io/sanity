@@ -12,7 +12,7 @@ import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {usePerspective} from '../hooks/usePerspective'
 import {RELEASES_INTENT, RELEASES_TOOL_NAME} from '../plugin'
 import {LATEST} from '../util/const'
-import {getBundleIdFromReleaseDocumentId} from '../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {isDraftPerspective, isPublishedPerspective} from '../util/util'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
@@ -94,7 +94,7 @@ export function ReleasesNav(): JSX.Element {
         <IntentLink
           {...intentProps}
           intent={RELEASES_INTENT}
-          params={{id: getBundleIdFromReleaseDocumentId(selectedPerspective._id!)}}
+          params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id!)}}
         >
           {children}
         </IntentLink>

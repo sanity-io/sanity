@@ -3,7 +3,7 @@ import {Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {
   formatRelativeLocalePublishDate,
-  getBundleIdFromReleaseDocumentId,
+  getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   isReleaseScheduledOrScheduling,
   LATEST,
@@ -38,7 +38,7 @@ export function AddToReleaseBanner({
 
   const handleAddToRelease = useCallback(async () => {
     if (currentRelease._id) {
-      await createVersion(getBundleIdFromReleaseDocumentId(currentRelease._id), documentId, value)
+      await createVersion(getReleaseIdFromReleaseDocumentId(currentRelease._id), documentId, value)
     }
   }, [createVersion, currentRelease._id, documentId, value])
 

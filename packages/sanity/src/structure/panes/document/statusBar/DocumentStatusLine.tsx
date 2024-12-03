@@ -4,8 +4,8 @@ import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {
   DocumentStatus,
-  getBundleIdFromReleaseDocumentId,
   getPreviewStateObservable,
+  getReleaseIdFromReleaseDocumentId,
   isDraftPerspective,
   isPublishedPerspective,
   useDocumentPreviewStore,
@@ -35,7 +35,7 @@ export function DocumentStatusLine() {
       schemaType
         ? getPreviewStateObservable(documentPreviewStore, schemaType, value._id, 'Untitled', {
             bundleIds: (releases.data ?? []).map((release) =>
-              getBundleIdFromReleaseDocumentId(release._id),
+              getReleaseIdFromReleaseDocumentId(release._id),
             ),
             bundleStack: perspectiveStack,
           })

@@ -19,10 +19,10 @@ import {
   type DocumentInspector,
   type DocumentPresence,
   EMPTY_ARRAY,
-  getBundleIdFromReleaseDocumentId,
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  getReleaseIdFromReleaseDocumentId,
   isReleaseScheduledOrScheduling,
   isSanityCreateLinkedDocument,
   isVersionId,
@@ -104,7 +104,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-  const {selectedPerspectiveName, selectedReleaseName, selectedPerspective} = usePerspective()
+  const {selectedPerspectiveName, selectedReleaseId, selectedPerspective} = usePerspective()
 
   /* Version and the global perspective should match.
    * If user clicks on add document, and then switches to another version, he should click again on create document.
@@ -128,28 +128,28 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     templateName,
     templateParams,
-    version: selectedReleaseName,
+    version: selectedReleaseId,
   })
 
   const initialValue = useUnique(initialValueRaw)
 
-  const {patch} = useDocumentOperation(documentId, documentType, selectedReleaseName)
+  const {patch} = useDocumentOperation(documentId, documentType, selectedReleaseId)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
-  const editState = useEditState(documentId, documentType, 'default', selectedReleaseName)
+  const editState = useEditState(documentId, documentType, 'default', selectedReleaseId)
   const {validation: validationRaw} = useValidationStatus(
     documentId,
     documentType,
-    selectedReleaseName,
+    selectedReleaseId,
   )
   const connectionState = useConnectionState(documentId, documentType, {
-    version: selectedReleaseName,
+    version: selectedReleaseId,
   })
   const {data: documentVersions} = useDocumentVersions({documentId})
 
   let value: SanityDocumentLike = initialValue.value
 
   switch (true) {
-    case typeof selectedReleaseName !== 'undefined':
+    case typeof selectedReleaseId !== 'undefined':
       value = editState.version || editState.draft || editState.published || value
       break
     case selectedPerspectiveName === 'published':
@@ -191,9 +191,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       schemaType: documentType,
       documentId,
       versionType: actionsPerspective,
-      ...(selectedPerspectiveName && {versionName: selectedReleaseName}),
+      ...(selectedPerspectiveName && {versionName: selectedReleaseId}),
     }),
-    [documentType, documentId, actionsPerspective, selectedPerspectiveName, selectedReleaseName],
+    [documentType, documentId, actionsPerspective, selectedPerspectiveName, selectedReleaseId],
   )
 
   // Resolve document actions
@@ -237,7 +237,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onError: setTimelineError,
     rev: params.rev,
     since: params.since,
-    version: selectedReleaseName,
+    version: selectedReleaseId,
   })
 
   // Subscribe to external timeline state changes
@@ -589,9 +589,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
   const existsInBundle =
-    typeof selectedReleaseName !== 'undefined' &&
+    typeof selectedReleaseId !== 'undefined' &&
     documentVersions.some(
-      (version) => getBundleIdFromReleaseDocumentId(version._id) === selectedReleaseName,
+      (version) => getReleaseIdFromReleaseDocumentId(version._id) === selectedReleaseId,
     )
 
   const readOnly = useMemo(() => {
@@ -787,7 +787,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       title,
       value,
       selectedVersionName: selectedPerspectiveName,
-      selectedReleaseName,
+      selectedReleaseId,
       views,
       formState,
       unstable_languageFilter: languageFilter,
@@ -848,7 +848,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       title,
       value,
       selectedPerspectiveName,
-      selectedReleaseName,
+      selectedReleaseId,
       views,
       formState,
       languageFilter,

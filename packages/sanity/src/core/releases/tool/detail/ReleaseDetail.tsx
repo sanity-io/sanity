@@ -7,7 +7,7 @@ import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleases} from '../../store/useReleases'
 import {type ReleasesRouterState} from '../../types/router'
-import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
@@ -47,7 +47,7 @@ export const ReleaseDetail = () => {
 
   const releaseInDetail = data
     .concat(archivedReleases)
-    .find((candidate) => getBundleIdFromReleaseDocumentId(candidate._id) === releaseId)
+    .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
 
   const navigateToReview = useCallback(() => {
     router.navigate({

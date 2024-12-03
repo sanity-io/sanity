@@ -10,7 +10,7 @@ import {getPublishedId, getVersionFromId, isVersionId} from '../../../util/draft
 import {usePerspective, useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store'
-import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 /**
  * @internal
@@ -37,7 +37,7 @@ export function DiscardVersionDialog(props: {
     if (isVersionId(documentId)) {
       await discardVersion(
         getVersionFromId(documentId) ||
-          getBundleIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
+          getReleaseIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
         documentId,
       )
     } else {

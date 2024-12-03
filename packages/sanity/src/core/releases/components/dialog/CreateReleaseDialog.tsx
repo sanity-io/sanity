@@ -10,7 +10,7 @@ import {type EditableReleaseDocument} from '../../store/types'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
 import {createReleaseId} from '../../util/createReleaseId'
-import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseForm} from './ReleaseForm'
 
 interface CreateReleaseDialogProps {
@@ -63,7 +63,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): JSX.Elemen
         // TODO: Remove the upper part
 
         setIsSubmitting(false)
-        onSubmit(getBundleIdFromReleaseDocumentId(value._id))
+        onSubmit(getReleaseIdFromReleaseDocumentId(value._id))
       }
     },
     [value, createRelease, telemetry, origin, toast, onSubmit],

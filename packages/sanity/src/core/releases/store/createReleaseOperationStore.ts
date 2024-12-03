@@ -6,7 +6,7 @@ import {
 } from '@sanity/client'
 
 import {getVersionId} from '../../util'
-import {getBundleIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
+import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type EditableReleaseDocument} from './types'
 
 export interface ReleaseOperationsStore {
@@ -37,12 +37,12 @@ export function createReleaseOperationsStore(options: {
   const handleCreateRelease = (release: EditableReleaseDocument) =>
     requestAction(client, {
       actionType: 'sanity.action.release.create',
-      releaseId: getBundleIdFromReleaseDocumentId(release._id),
+      releaseId: getReleaseIdFromReleaseDocumentId(release._id),
       [METADATA_PROPERTY_NAME]: release.metadata,
     })
 
   const handleUpdateRelease = async (release: EditableReleaseDocument) => {
-    const bundleId = getBundleIdFromReleaseDocumentId(release._id)
+    const bundleId = getReleaseIdFromReleaseDocumentId(release._id)
 
     const unsetKeys = Object.entries(release)
       .filter(([_, value]) => value === undefined)
@@ -63,7 +63,7 @@ export function createReleaseOperationsStore(options: {
     requestAction(client, [
       {
         actionType: 'sanity.action.release.publish',
-        releaseId: getBundleIdFromReleaseDocumentId(releaseId),
+        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
       },
     ])
 
@@ -71,7 +71,7 @@ export function createReleaseOperationsStore(options: {
     requestAction(client, [
       {
         actionType: 'sanity.action.release.schedule',
-        releaseId: getBundleIdFromReleaseDocumentId(releaseId),
+        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
         publishAt: publishAt.toISOString(),
       },
     ])
@@ -80,7 +80,7 @@ export function createReleaseOperationsStore(options: {
     requestAction(client, [
       {
         actionType: 'sanity.action.release.unschedule',
-        releaseId: getBundleIdFromReleaseDocumentId(releaseId),
+        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
       },
     ])
 
@@ -88,7 +88,7 @@ export function createReleaseOperationsStore(options: {
     requestAction(client, [
       {
         actionType: 'sanity.action.release.archive',
-        releaseId: getBundleIdFromReleaseDocumentId(releaseId),
+        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
       },
     ])
 
@@ -96,7 +96,7 @@ export function createReleaseOperationsStore(options: {
     requestAction(client, [
       {
         actionType: 'sanity.action.release.unarchive',
-        releaseId: getBundleIdFromReleaseDocumentId(releaseId),
+        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
       },
     ])
 

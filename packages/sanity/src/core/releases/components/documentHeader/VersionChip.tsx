@@ -16,7 +16,7 @@ import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {getVersionId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {type ReleaseDocument} from '../../store/types'
-import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
@@ -135,7 +135,7 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
-      await createVersion(getBundleIdFromReleaseDocumentId(targetRelease), docId)
+      await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
       close()
     },
     [createVersion, docId, close],
@@ -211,7 +211,7 @@ export const VersionChip = memo(function VersionChip(props: {
           onClose={() => setIsDiscardDialogOpen(false)}
           documentId={
             isVersion
-              ? getVersionId(documentId, getBundleIdFromReleaseDocumentId(menuReleaseId))
+              ? getVersionId(documentId, getReleaseIdFromReleaseDocumentId(menuReleaseId))
               : documentId
           }
           documentType={documentType}
@@ -224,7 +224,7 @@ export const VersionChip = memo(function VersionChip(props: {
           onCreateVersion={handleAddVersion}
           documentId={
             isVersion
-              ? getVersionId(documentId, getBundleIdFromReleaseDocumentId(menuReleaseId))
+              ? getVersionId(documentId, getReleaseIdFromReleaseDocumentId(menuReleaseId))
               : documentId
           }
           documentType={documentType}

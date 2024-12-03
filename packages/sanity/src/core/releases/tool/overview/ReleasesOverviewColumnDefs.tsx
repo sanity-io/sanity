@@ -12,7 +12,7 @@ import useTimeZone, {getLocalTimeZone} from '../../../scheduledPublishing/hooks/
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
-import {getBundleIdFromReleaseDocumentId} from '../../util/getBundleIdFromReleaseDocumentId'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 import {type TableRowProps} from '../components/Table/Table'
@@ -78,7 +78,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
     : {
         as: 'a',
         // navigate to release detail
-        onClick: () => router.navigate({releaseId: getBundleIdFromReleaseDocumentId(release._id)}),
+        onClick: () => router.navigate({releaseId: getReleaseIdFromReleaseDocumentId(release._id)}),
         tone: 'inherit',
       }
 
