@@ -69,6 +69,11 @@ export const getDocumentTableColumnDefs: (
               {t('table-body.action.add')}
             </Badge>
           )}
+          {datum.document && (
+            <Badge radius={2} tone={'critical'}>
+              {t('table-body.action.unpublish')}
+            </Badge>
+          )}
         </Box>
       </Flex>
     ),
