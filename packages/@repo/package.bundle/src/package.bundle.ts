@@ -12,7 +12,12 @@ export const defaultConfig: UserConfig = {
     'process.env.NODE_ENV': '"production"',
     'process.env': {},
   },
-  plugins: [react(), tsconfigPaths()],
+  plugins: [
+    react({
+      babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]},
+    }),
+    tsconfigPaths(),
+  ],
   build: {
     emptyOutDir: true,
     sourcemap: true,
