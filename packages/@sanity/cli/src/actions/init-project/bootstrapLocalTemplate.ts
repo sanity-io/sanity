@@ -14,8 +14,9 @@ import {createPackageManifest} from './createPackageManifest'
 import {createStudioConfig, type GenerateConfigOptions} from './createStudioConfig'
 import {type ProjectTemplate} from './initProject'
 import templates from './templates'
+import {updateInitialTemplateMetadata} from './updateInitialTemplateMetadata'
 
-export interface BootstrapOptions {
+export interface BootstrapLocalOptions {
   packageName: string
   templateName: string
   /**
@@ -28,8 +29,8 @@ export interface BootstrapOptions {
   variables: GenerateConfigOptions['variables']
 }
 
-export async function bootstrapTemplate(
-  opts: BootstrapOptions,
+export async function bootstrapLocalTemplate(
+  opts: BootstrapLocalOptions,
   context: CliCommandContext,
 ): Promise<ProjectTemplate> {
   const {apiClient, cliRoot, output} = context
@@ -142,22 +143,8 @@ export async function bootstrapTemplate(
     ),
   ])
 
-  // Store template name metadata on project
-  try {
-    await apiClient({api: {projectId}}).request({
-      method: 'PATCH',
-      uri: `/projects/${projectId}`,
-      body: {metadata: {initialTemplate: `cli-${templateName}`}},
-    })
-  } catch (err: unknown) {
-    // Non-critical that we update this metadata, and user does not need to be aware
-    let message = typeof err === 'string' ? err : '<unknown error>'
-    if (err instanceof Error) {
-      message = err.message
-    }
-
-    debug('Failed to update initial template metadata for project: %s', message)
-  }
+  debug('Updating initial template metadata')
+  await updateInitialTemplateMetadata(apiClient, variables.projectId, `cli-${templateName}`)
 
   // Finish up by providing init process with template-specific info
   spinner.succeed()
