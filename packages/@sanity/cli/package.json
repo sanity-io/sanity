@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.23.5",
-    "@sanity/client": "^6.23.0",
+    "@sanity/client": "^6.24.0",
     "@sanity/codegen": "3.65.1",
     "@sanity/telemetry": "^0.7.7",
     "@sanity/util": "3.65.1",
