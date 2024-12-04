@@ -1,4 +1,5 @@
 import {ArchiveIcon, EllipsisHorizontalIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
+import {type DefinedTelemetryLog} from '@sanity/telemetry'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, Spinner, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
@@ -20,7 +21,21 @@ export type ReleaseMenuButtonProps = {
 
 const ARCHIVABLE_STATES = ['active', 'published']
 
-const RELEASE_ACTION_MAP = {
+type ReleaseAction = 'archive' | 'delete'
+
+interface ReleaseActionMap {
+  actionId: string
+  dialogId: string
+  dialogHeaderI18nKey: string
+  dialogDescriptionSingularI18nKey: string
+  dialogDescriptionMultipleI18nKey: string
+  dialogConfirmButtonI18nKey: string
+  toastSuccessI18nKey: string
+  toastFailureI18nKey: string
+  telemetry: DefinedTelemetryLog<void>
+}
+
+const RELEASE_ACTION_MAP: Record<ReleaseAction, ReleaseActionMap> = {
   delete: {
     actionId: 'confirm-delete',
     dialogId: 'confirm-delete-dialog',
@@ -28,6 +43,9 @@ const RELEASE_ACTION_MAP = {
     dialogDescriptionSingularI18nKey: 'delete-dialog.confirm-delete-description_one',
     dialogDescriptionMultipleI18nKey: 'delete-dialog.confirm-delete-description_other',
     dialogConfirmButtonI18nKey: 'delete-dialog.confirm-delete-button',
+    toastSuccessI18nKey: 'toast.delete.success',
+    toastFailureI18nKey: 'toast.delete.error',
+    telemetry: DeletedRelease,
   },
   archive: {
     actionId: 'confirm-archive',
@@ -36,6 +54,9 @@ const RELEASE_ACTION_MAP = {
     dialogDescriptionSingularI18nKey: 'archive-dialog.confirm-archive-description_one',
     dialogDescriptionMultipleI18nKey: 'archive-dialog.confirm-archive-description_other',
     dialogConfirmButtonI18nKey: 'archive-dialog.confirm-archive-button',
+    toastSuccessI18nKey: 'toast.archive.success',
+    toastFailureI18nKey: 'toast.archive.error',
+    telemetry: ArchivedRelease,
   },
 }
 
@@ -47,115 +68,86 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
     getReleaseIdFromReleaseDocumentId(release._id),
   )
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
-  const [selectedAction, setSelectedAction] = useState<'confirm-delete' | 'confirm-archive'>()
+  const [selectedAction, setSelectedAction] = useState<ReleaseAction>()
 
   const releaseMenuDisabled = !release || isLoadingReleaseDocuments || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
 
-  const handleArchive = useCallback(async () => {
-    if (releaseMenuDisabled) return
-
-    try {
-      setIsPerformingOperation(true)
-      await archive(release._id)
-
-      // it's in the process of becoming true, so the event we want to track is archive
-      telemetry.log(ArchivedRelease)
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey="toast.archive.success"
-              values={{title: release.metadata.title}}
-            />
-          </Text>
-        ),
-      })
-    } catch (archivingError) {
-      toast.push({
-        status: 'error',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey="toast.archive.error"
-              values={{title: release.metadata.title, error: archivingError.toString()}}
-            />
-          </Text>
-        ),
-      })
-      console.error(archivingError)
-    } finally {
-      setIsPerformingOperation(false)
-      setSelectedAction(undefined)
-    }
-  }, [archive, release._id, release.metadata.title, releaseMenuDisabled, t, telemetry, toast])
-
   const handleDelete = useCallback(async () => {
-    if (!release) return
+    await deleteRelease(release._id)
 
-    try {
-      setIsPerformingOperation(true)
-      await deleteRelease(release._id)
-      telemetry.log(DeletedRelease)
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey="toast.delete.success"
-              values={{title: release.metadata.title}}
-            />
-          </Text>
-        ),
-      })
-      // return to release overview list now that release is deleted
-      router.navigate({})
-    } catch (publishingError) {
-      toast.push({
-        status: 'error',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey="toast.delete.error"
-              values={{title: release.metadata.title}}
-            />
-          </Text>
-        ),
-      })
-      console.error(publishingError)
-    } finally {
-      setIsPerformingOperation(false)
-      setSelectedAction(undefined)
-    }
-  }, [release, deleteRelease, telemetry, toast, t, router])
+    // return to release overview list now that release is deleted
+    router.navigate({})
+  }, [deleteRelease, release._id, router])
+
+  const handleAction = useCallback(
+    async (action: ReleaseAction) => {
+      if (releaseMenuDisabled) return
+
+      const actionLookup = {
+        delete: handleDelete,
+        archive: archive,
+      }
+      const actionValues = RELEASE_ACTION_MAP[action]
+
+      try {
+        setIsPerformingOperation(true)
+        await actionLookup[action](release._id)
+        telemetry.log(actionValues.telemetry)
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: (
+            <Text muted size={1}>
+              <Translate
+                t={t}
+                i18nKey={actionValues.toastSuccessI18nKey}
+                values={{title: release.metadata.title}}
+              />
+            </Text>
+          ),
+        })
+      } catch (actionError) {
+        toast.push({
+          status: 'error',
+          title: (
+            <Text muted size={1}>
+              <Translate
+                t={t}
+                i18nKey={actionValues.toastFailureI18nKey}
+                values={{title: release.metadata.title, error: actionError.toString()}}
+              />
+            </Text>
+          ),
+        })
+        console.error(actionError)
+      } finally {
+        setIsPerformingOperation(false)
+        setSelectedAction(undefined)
+      }
+    },
+    [
+      archive,
+      handleDelete,
+      release._id,
+      release.metadata.title,
+      releaseMenuDisabled,
+      t,
+      telemetry,
+      toast,
+    ],
+  )
 
   const handleUnarchive = async () => {
     // noop
     // TODO: similar to handleArchive - complete once server action exists
   }
 
-  const handleAction = useCallback(
-    (action: 'archive' | 'delete') => {
-      if (action === 'delete') return handleDelete()
-      else if (action === 'archive') return handleArchive()
-
-      return null
-    },
-    [handleArchive, handleDelete],
-  )
-
   const confirmActionDialog = useMemo(() => {
-    if (selectedAction !== 'confirm-delete' && selectedAction !== 'confirm-archive') return null
-    const actionValues =
-      RELEASE_ACTION_MAP[selectedAction === 'confirm-archive' ? 'archive' : 'delete']
+    if (!selectedAction) return null
+
+    const actionValues = RELEASE_ACTION_MAP[selectedAction]
 
     const dialogDescription =
       releaseDocuments.length === 1
@@ -172,8 +164,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
           confirmButton: {
             text: t(actionValues.dialogConfirmButtonI18nKey),
             tone: 'positive',
-            onClick: () =>
-              handleAction(selectedAction === 'confirm-archive' ? 'archive' : 'delete'),
+            onClick: () => handleAction(selectedAction),
             loading: isPerformingOperation,
             disabled: isPerformingOperation,
           },
@@ -202,9 +193,9 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
   ])
 
   const handleOnInitiateAction = useCallback(
-    (action: 'archive' | 'delete') => {
+    (action: ReleaseAction) => {
       if (releaseDocuments.length > 0) {
-        setSelectedAction(action === 'archive' ? 'confirm-archive' : 'confirm-delete')
+        setSelectedAction(action)
       } else {
         handleAction(action)
       }
