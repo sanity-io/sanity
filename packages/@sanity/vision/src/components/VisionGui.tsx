@@ -28,7 +28,7 @@ import {
   isSupportedPerspective,
   SUPPORTED_PERSPECTIVES,
   type SupportedPerspective,
-} from '../SUPPORTED_PERSPECTIVES'
+} from '../perspectives'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
 import {getCsvBlobUrl, getJsonBlobUrl} from '../util/getBlobUrl'
