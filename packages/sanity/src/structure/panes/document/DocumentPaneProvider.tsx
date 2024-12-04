@@ -80,7 +80,7 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, forcedVersion} = props
+  const {children, index, pane, paneKey, onFocusPath, forcedVersion, perspectiveOverride} = props
   const schema = useSchema()
   const templates = useTemplates()
   const {setDocumentMeta} = useCopyPaste()
@@ -112,7 +112,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
 
-  const perspective = usePerspective()
+  const perspective = usePerspective({
+    perspectiveOverride,
+  })
 
   const {isReleaseLocked, selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     if (forcedVersion) {

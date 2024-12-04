@@ -39,19 +39,31 @@ export interface PerspectiveValue {
   perspectiveStack: string[]
 }
 
+/**
+ * @internal
+ */
+export interface PerspectiveOptions {
+  /**
+   * The perspective is normally determined by the router. The `perspectiveOverride` prop can be
+   * used to explicitly set the perspective, overriding the perspective provided by the router.
+   */
+  perspectiveOverride?: string
+}
+
 const EMPTY_ARRAY: string[] = []
 
 /**
  * @internal
  */
-export function usePerspective(): PerspectiveValue {
+export function usePerspective({perspectiveOverride}: PerspectiveOptions = {}): PerspectiveValue {
   const router = useRouter()
   const {data: releases, archivedReleases, loading: releasesLoading} = useReleases()
-  const selectedPerspectiveName = router.stickyParams.perspective as
+  const selectedPerspectiveName = (perspectiveOverride ?? router.stickyParams.perspective) as
     | 'published'
     | ReleaseId
     | undefined
 
+  // TODO: When `perspectiveOverride` is set, exclusion should not have an effect.
   const excludedPerspectives = useMemo(
     () => router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY,
     [router.stickyParams.excludedPerspectives],
