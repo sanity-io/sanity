@@ -2,7 +2,6 @@ import {Stack, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {usePerspective, useVersionOperations} from 'sanity'
 
-import {isString} from '../../../../_internal/manifest/manifestTypeHelpers'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../hooks/useSchema'
@@ -68,9 +67,10 @@ export function UnpublishVersionDialog(props: {
             t={t}
             i18nKey="unpublish-dialog.description.to-draft"
             values={{
-              title: isString(selectedPerspective)
-                ? selectedPerspective
-                : selectedPerspective.metadata.title,
+              title:
+                typeof selectedPerspective === 'string'
+                  ? selectedPerspective
+                  : selectedPerspective.metadata.title,
             }}
           />
         </Text>
