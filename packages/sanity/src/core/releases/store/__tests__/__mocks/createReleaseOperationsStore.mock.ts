@@ -15,6 +15,7 @@ export const createReleaseOperationsStoreReturn: Mocked<ReleaseOperationsStore> 
   schedule: vi.fn(),
   unschedule: vi.fn(),
   updateRelease: vi.fn(),
+  deleteRelease: vi.fn(),
 }
 
 export const mockCreateReleaseOperationsStore = createReleaseOperationsStore as Mock<
