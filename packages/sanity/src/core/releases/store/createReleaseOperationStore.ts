@@ -5,7 +5,7 @@ import {
   type SanityClient,
 } from '@sanity/client'
 
-import {getVersionId} from '../../util'
+import {getPublishedId, getVersionId} from '../../util'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type EditableReleaseDocument} from './types'
 
@@ -25,6 +25,7 @@ export interface ReleaseOperationsStore {
     initialvalue?: Record<string, unknown>,
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
+  unpublishVersion: (documentId: string) => Promise<void>
 }
 
 const IS_CREATE_VERSION_ACTION_SUPPORTED = false
@@ -147,6 +148,15 @@ export function createReleaseOperationsStore(options: {
       },
     ])
 
+  const handleUnpublishVersion = (documentId: string) =>
+    requestAction(client, [
+      {
+        actionType: 'sanity.action.document.version.unpublish',
+        draftId: documentId,
+        publishedId: getPublishedId(documentId),
+      },
+    ])
+
   return {
     archive: handleArchiveRelease,
     unarchive: handleUnarchiveRelease,
@@ -158,6 +168,7 @@ export function createReleaseOperationsStore(options: {
     deleteRelease: handleDeleteRelease,
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
+    unpublishVersion: handleUnpublishVersion,
   }
 }
 
@@ -199,6 +210,12 @@ interface CreateVersionReleaseApiAction {
   attributes: IdentifiedSanityDocumentStub
 }
 
+interface UnpublishVersionReleaseApiAction {
+  actionType: 'sanity.action.document.version.unpublish'
+  draftId: string
+  publishedId: string
+}
+
 interface EditReleaseApiAction {
   actionType: 'sanity.action.release.edit'
   releaseId: string
@@ -221,6 +238,7 @@ type ReleaseAction =
   | UnarchiveApiAction
   | DeleteApiAction
   | CreateVersionReleaseApiAction
+  | UnpublishVersionReleaseApiAction
 
 export function requestAction(client: SanityClient, actions: ReleaseAction | ReleaseAction[]) {
   const {dataset} = client.config()

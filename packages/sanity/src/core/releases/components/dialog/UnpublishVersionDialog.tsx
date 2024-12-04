@@ -1,6 +1,6 @@
 import {Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
-import {usePerspective} from 'sanity'
+import {useCallback, useState} from 'react'
+import {usePerspective, useVersionOperations} from 'sanity'
 
 import {isString} from '../../../../_internal/manifest/manifestTypeHelpers'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -15,18 +15,24 @@ export function UnpublishVersionDialog(props: {
   onClose: () => void
   documentVersionId: string
   documentType: string
-}) {
+}): JSX.Element {
   const {onClose, documentVersionId, documentType} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const schema = useSchema()
   const {currentGlobalBundle} = usePerspective()
+  const {unpublishVersion} = useVersionOperations()
+  const [isUnpublishing, setIsUnpublishing] = useState(false)
 
   const schemaType = schema.get(documentType)
 
-  const handleUnpublish = useCallback(() => {
-    /** @todo unpublish */
+  const handleUnpublish = useCallback(async () => {
+    setIsUnpublishing(true)
+
+    await unpublishVersion(documentVersionId)
+    setIsUnpublishing(false)
+
     onClose()
-  }, [onClose])
+  }, [documentVersionId, onClose, unpublishVersion])
 
   return (
     <Dialog
@@ -45,6 +51,8 @@ export function UnpublishVersionDialog(props: {
           text: t('unpublish-dialog.action.unpublish'),
           onClick: handleUnpublish,
           tone: 'critical',
+          disabled: isUnpublishing,
+          loading: isUnpublishing,
         },
       }}
     >
