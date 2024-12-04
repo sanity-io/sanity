@@ -34,7 +34,7 @@ const releasesLocaleStrings = {
   'action.unarchive': 'Unarchive release',
   /** Header for the dialog confirming the archive of a release */
   'archive-dialog.confirm-archive-header':
-    "Are you sure you want to archive the <strong>'{{title}}'</strong> release?",
+    "Are you sure you want to archive the '{{title}}' release?",
   /** Description for the dialog confirming the archive of a release with one document */
   'archive-dialog.confirm-archive-description_one': 'This will archive 1 document version.',
   /** Description for the dialog confirming the archive of a release with more than one document */
