@@ -2,7 +2,7 @@ import JSONInspector from '@rexxars/react-json-inspector'
 import {LinkIcon} from '@sanity/icons'
 import {Code} from '@sanity/ui'
 import LRU from 'quick-lru'
-import {useWorkspace} from 'sanity'
+import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
 
 import {ResultViewWrapper} from './ResultView.styled'
@@ -11,7 +11,7 @@ const lru = new LRU({maxSize: 50000})
 
 export function ResultView(props: {data: unknown; datasetName: string}): JSX.Element {
   const {data, datasetName} = props
-  const workspace = useWorkspace()
+  const workspaceDataset = useDataset()
 
   if (isRecord(data) || Array.isArray(data)) {
     return (
@@ -21,7 +21,7 @@ export function ResultView(props: {data: unknown; datasetName: string}): JSX.Ele
           search={false}
           isExpanded={isExpanded}
           onClick={toggleExpanded}
-          interactiveLabel={workspace.dataset === datasetName ? DocumentEditLabel : undefined}
+          interactiveLabel={workspaceDataset === datasetName ? DocumentEditLabel : undefined}
         />
       </ResultViewWrapper>
     )
