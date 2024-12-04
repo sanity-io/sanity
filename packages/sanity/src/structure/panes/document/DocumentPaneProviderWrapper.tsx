@@ -1,7 +1,7 @@
 import {memo} from 'react'
+import {useSource} from 'sanity'
 
-import {useSource} from '../../../core/studio/source'
-import {DocumentPaneEvents} from './DocumentPaneEvents'
+import {DocumentPaneEvents} from './DocumentEventsPane'
 import {DocumentPaneWithLegacyTimelineStore} from './DocumentPaneLegacyTimeline'
 import {type DocumentPaneProviderProps} from './types'
 

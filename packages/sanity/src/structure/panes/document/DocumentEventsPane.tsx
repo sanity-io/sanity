@@ -4,7 +4,6 @@ import {
   getDraftId,
   getPublishedId,
   getVersionId,
-  resolveBundlePerspective,
   useEventsStore,
   usePerspective,
   useReleases,
@@ -14,15 +13,14 @@ import {useEffectEvent} from 'use-effect-event'
 import {usePaneRouter} from '../../components'
 import {EMPTY_PARAMS} from './constants'
 import {usePaneOptions} from './DocumentPane'
-import {DocumentPaneProviderInner} from './DocumentPaneProvider'
+import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
 
 export const DocumentPaneEvents = (props: DocumentPaneProviderProps) => {
   const {params = EMPTY_PARAMS, setParams} = usePaneRouter()
   const options = usePaneOptions(props.pane.options, params)
 
-  const {perspective} = usePerspective()
-  const bundlePerspective = resolveBundlePerspective(perspective)
+  const {selectedPerspectiveName} = usePerspective()
   const {archivedReleases} = useReleases()
   const {rev, since, historyVersion} = params
 
@@ -31,17 +29,17 @@ export const DocumentPaneEvents = (props: DocumentPaneProviderProps) => {
       // Check if we have a release that matches with this historyVersion
       return getVersionId(options.id, historyVersion)
     }
-    if (typeof perspective === 'undefined') {
+    if (typeof selectedPerspectiveName === 'undefined') {
       return getDraftId(options.id)
     }
-    if (perspective === 'published') {
+    if (selectedPerspectiveName === 'published') {
       return getPublishedId(options.id)
     }
-    if (bundlePerspective) {
-      return getVersionId(options.id, bundlePerspective)
+    if (selectedPerspectiveName.startsWith('r')) {
+      return getVersionId(options.id, selectedPerspectiveName)
     }
     return options.id
-  }, [archivedReleases, historyVersion, bundlePerspective, perspective, options.id])
+  }, [archivedReleases, historyVersion, selectedPerspectiveName, options.id])
 
   const isMounted = useRef(false)
 
@@ -59,12 +57,12 @@ export const DocumentPaneEvents = (props: DocumentPaneProviderProps) => {
   useEffect(() => {
     // Skip the first run to avoid resetting the params on initial load
     if (isMounted.current) {
-      updateHistoryParams(perspective)
+      updateHistoryParams(selectedPerspectiveName)
     } else {
       isMounted.current = true
     }
     // TODO: Remove `updateHistoryParams` as a dependency when react eslint plugin is updated
-  }, [perspective, updateHistoryParams])
+  }, [selectedPerspectiveName, updateHistoryParams])
 
   const eventsStore = useEventsStore({documentId, documentType: options.type, rev, since})
 
@@ -89,7 +87,7 @@ export const DocumentPaneEvents = (props: DocumentPaneProviderProps) => {
 
   return (
     <EventsProvider value={value}>
-      <DocumentPaneProviderInner {...props} historyStore={historyStoreProps} />
+      <DocumentPaneProvider {...props} historyStore={historyStoreProps} />
     </EventsProvider>
   )
 }

@@ -1,25 +1,18 @@
 /* eslint-disable camelcase */
 import {type SanityDocument} from '@sanity/types'
 import {useMemo, useState} from 'react'
-import {
-  getPublishedId,
-  resolveBundlePerspective,
-  usePerspective,
-  useTimelineSelector,
-  useTimelineStore,
-} from 'sanity'
+import {getPublishedId, usePerspective, useTimelineSelector, useTimelineStore} from 'sanity'
 
 import {usePaneRouter} from '../../components'
 import {EMPTY_PARAMS} from './constants'
 import {usePaneOptions} from './DocumentPane'
-import {DocumentPaneProviderInner} from './DocumentPaneProvider'
+import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
 
 export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderProps) => {
   const {pane} = props
   const paneRouter = usePaneRouter()
-  const {perspective} = usePerspective()
-  const bundlePerspective = resolveBundlePerspective(perspective)
+  const {selectedReleaseId} = usePerspective()
   const options = usePaneOptions(pane.options, paneRouter.params)
 
   const params = paneRouter.params || EMPTY_PARAMS
@@ -32,7 +25,7 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
     onError: setTimelineError,
     rev: params.rev,
     since: params.since,
-    version: bundlePerspective,
+    version: selectedReleaseId,
   })
 
   const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
@@ -70,5 +63,5 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
       lastNonDeletedRevId,
     ],
   )
-  return <DocumentPaneProviderInner {...props} historyStore={historyStoreProps} />
+  return <DocumentPaneProvider {...props} historyStore={historyStoreProps} />
 }
