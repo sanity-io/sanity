@@ -1,11 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import {Card, Flex} from '@sanity/ui'
+import {useMemo} from 'react'
 
 import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../index'
+import {ReleasePublishAllButton} from '../components/releaseCTAButtons/ReleasePublishAllButton'
+import {ReleaseScheduleButton} from '../components/releaseCTAButtons/ReleaseScheduleButton'
+import {ReleaseUnscheduleButton} from '../components/releaseCTAButtons/ReleaseUnscheduleButton'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
-import {ReleasePublishAllButton} from '../components/ReleasePublishAllButton/ReleasePublishAllButton'
-import {ReleaseScheduleButton} from '../components/ReleasePublishAllButton/ReleaseScheduleButton'
-import {ReleaseUnscheduleButton} from '../components/ReleasePublishAllButton/ReleaseUnscheduleButton'
 import {ReleaseStatusItems} from './ReleaseStatusItems'
 import {type DocumentInRelease} from './useBundleDocuments'
 
@@ -14,6 +15,36 @@ export function ReleaseDashboardFooter(props: {
   release: ReleaseDocument
 }) {
   const {documents, release} = props
+
+  const releaseActionButton = useMemo(() => {
+    if (release.state === 'scheduled' || release.state === 'scheduling') {
+      return isReleaseScheduledOrScheduling(release) ? (
+        <ReleaseUnscheduleButton
+          release={release}
+          documents={documents}
+          disabled={!documents.length}
+        />
+      ) : (
+        <ReleaseScheduleButton
+          release={release}
+          documents={documents}
+          disabled={!documents.length}
+        />
+      )
+    }
+
+    if (release.state === 'active') {
+      return (
+        <ReleasePublishAllButton
+          release={release}
+          documents={documents}
+          disabled={!documents.length}
+        />
+      )
+    }
+
+    return null
+  }, [documents, release])
 
   return (
     <Card flex="none">
@@ -25,27 +56,7 @@ export function ReleaseDashboardFooter(props: {
         </Flex>
 
         <Flex flex="none" gap={1}>
-          {release.metadata.releaseType === 'scheduled' ? (
-            isReleaseScheduledOrScheduling(release) ? (
-              <ReleaseUnscheduleButton
-                release={release}
-                documents={documents}
-                disabled={!documents.length}
-              />
-            ) : (
-              <ReleaseScheduleButton
-                release={release}
-                documents={documents}
-                disabled={!documents.length}
-              />
-            )
-          ) : (
-            <ReleasePublishAllButton
-              release={release}
-              documents={documents}
-              disabled={!documents.length}
-            />
-          )}
+          {releaseActionButton}
           <ReleaseMenuButton release={release} />
         </Flex>
       </Flex>
