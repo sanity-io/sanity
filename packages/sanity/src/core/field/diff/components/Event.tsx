@@ -15,13 +15,13 @@ import {
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
+import {VersionInlineBadge} from '../../../releases/components/VersionInlineBadge'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {
   TIMELINE_ICON_COMPONENTS,
   TIMELINE_ITEM_EVENT_TONE,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
 } from './constants'
-import {VersionInlineBadge} from './VersionInlineBadge'
 
 interface UserAvatarStackProps {
   maxLength?: number

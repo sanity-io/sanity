@@ -48,9 +48,9 @@ Key updates:
 
 Each event represents a significant state change in the lifecycle of a document, its versions, and its published state. These events help to track the creation, modification, scheduling, publication and deletion of documents.
 
-### **Version Lifecycle**
+### **Version variant Lifecycle**
 
-A version is a short-lived document that undergoes creation, editing, and publication or deletion. Once published, the same ID will not be reused for a new version. The events affecting a version include:
+A version variant is document that has an id which starts with `versions.` is a short-lived document that undergoes creation, editing, and publication or deletion. Once published, the same ID will not be reused for a new version. The events affecting a version include:
 
 - **`CreateDocumentVersionEvent`**: Triggered when a version is created.
 - **`DeleteDocumentVersionEvent`**: Occurs if a version is deleted, though this is uncommon.

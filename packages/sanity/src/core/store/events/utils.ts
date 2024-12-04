@@ -73,8 +73,9 @@ export function addEventId(
   return {...event, id} as DocumentGroupEvent
 }
 
-export function decorateDraftEvents(events: DocumentGroupEvent[]): void {
-  events.forEach((event, index) => {
+export function addParentToEvents(events: DocumentGroupEvent[]): DocumentGroupEvent[] {
+  const eventsWithParent = JSON.parse(JSON.stringify(events)) as DocumentGroupEvent[]
+  eventsWithParent.forEach((event, index) => {
     if (isPublishDocumentVersionEvent(event)) {
       event.documentId = event.versionId
       // Find the creation event for this published event
@@ -92,6 +93,7 @@ export function decorateDraftEvents(events: DocumentGroupEvent[]): void {
       }
     }
   })
+  return eventsWithParent
 }
 
 const MERGE_WINDOW = 5 * 60 * 1000 // 5 minutes

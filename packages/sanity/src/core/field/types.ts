@@ -70,7 +70,6 @@ export type Chunk = {
  * @beta
  */
 export type AnnotationDetails = {
-  chunk?: Chunk // This is not used anywhere, could be removed
   event?: DocumentGroupEvent
   timestamp: string
   author: string
